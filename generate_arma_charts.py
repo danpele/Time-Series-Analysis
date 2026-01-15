@@ -713,54 +713,84 @@ def plot_model_identification_table():
     save_chart(fig, 'model_identification_table')
 
 # =============================================================================
-# 15. BOX-JENKINS METHODOLOGY FLOWCHART
+# 15. BOX-JENKINS METHODOLOGY FLOWCHART (IMPROVED)
 # =============================================================================
 def plot_box_jenkins_flowchart():
-    """Create Box-Jenkins methodology flowchart"""
-    fig, ax = plt.subplots(figsize=(14, 10))
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 12)
+    """Create professional Box-Jenkins methodology flowchart"""
+    from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle
+    from matplotlib.patches import Polygon
+
+    fig, ax = plt.subplots(figsize=(16, 12))
+    ax.set_xlim(0, 16)
+    ax.set_ylim(0, 14)
     ax.axis('off')
 
-    # Box style
-    box_props = dict(boxstyle='round,pad=0.3', facecolor=BLUE, edgecolor=BLUE, alpha=0.9)
-    decision_props = dict(boxstyle='round,pad=0.3', facecolor=ORANGE, edgecolor=ORANGE, alpha=0.9)
+    # Colors
+    step_colors = [BLUE, GREEN, ORANGE, PURPLE]
 
-    # Boxes
-    boxes = [
-        (5, 11, 'Step 1: IDENTIFICATION\nAnalyze ACF/PACF\nSelect p, d, q'),
-        (5, 8.5, 'Step 2: ESTIMATION\nEstimate parameters\n(MLE or Yule-Walker)'),
-        (5, 6, 'Step 3: DIAGNOSTIC\nCheck residuals\nLjung-Box test'),
-        (5, 3.5, 'Step 4: FORECASTING\nGenerate predictions\nwith confidence intervals')
-    ]
+    # Draw main process boxes
+    def draw_box(ax, x, y, width, height, text, color, step_num=None):
+        box = FancyBboxPatch((x - width/2, y - height/2), width, height,
+                             boxstyle="round,pad=0.02,rounding_size=0.3",
+                             facecolor=color, edgecolor='white', linewidth=2)
+        ax.add_patch(box)
+        if step_num:
+            ax.text(x, y + height/2 - 0.4, f'STEP {step_num}', ha='center', va='top',
+                   fontsize=10, color='white', fontweight='bold', alpha=0.8)
+        ax.text(x, y - 0.1, text, ha='center', va='center', fontsize=11,
+               color='white', fontweight='bold', wrap=True)
 
-    for x, y, text in boxes:
-        ax.text(x, y, text, ha='center', va='center', fontsize=11,
-                color='white', fontweight='bold', bbox=box_props)
+    # Draw diamond decision box
+    def draw_diamond(ax, x, y, size, text, color):
+        diamond = Polygon([(x, y + size), (x + size, y), (x, y - size), (x - size, y)],
+                         facecolor=color, edgecolor='white', linewidth=2)
+        ax.add_patch(diamond)
+        ax.text(x, y, text, ha='center', va='center', fontsize=10,
+               color='white', fontweight='bold')
+
+    # Main steps
+    draw_box(ax, 5, 12, 5, 1.8, 'IDENTIFICATION\nAnalyze ACF/PACF patterns\nDetermine p, d, q orders', step_colors[0], 1)
+    draw_box(ax, 5, 9, 5, 1.8, 'ESTIMATION\nEstimate parameters\nMLE or Yule-Walker', step_colors[1], 2)
+    draw_box(ax, 5, 6, 5, 1.8, 'DIAGNOSTIC CHECKING\nResidual analysis\nLjung-Box test', step_colors[2], 3)
+    draw_box(ax, 5, 2.5, 5, 1.8, 'FORECASTING\nGenerate predictions\nConfidence intervals', step_colors[3], 4)
 
     # Decision diamond
-    ax.text(8, 6, 'Residuals\nWhite Noise?', ha='center', va='center', fontsize=10,
-            color='white', fontweight='bold', bbox=decision_props)
+    draw_diamond(ax, 11, 6, 1.2, 'Model\nAdequate?', '#E74C3C')
+
+    # Side boxes with details
+    detail_color = '#34495E'
+    draw_box(ax, 12.5, 12, 4.5, 1.5, 'Plot time series\nCheck stationarity\nTransform if needed', detail_color)
+    draw_box(ax, 12.5, 9, 4.5, 1.5, 'Maximum Likelihood\nLeast Squares\nMethod of Moments', detail_color)
+    draw_box(ax, 12.5, 2.5, 4.5, 1.5, 'Point forecasts\n95% prediction intervals\nModel uncertainty', detail_color)
 
     # Arrows
-    arrow_props = dict(arrowstyle='->', color=GRAY, lw=2)
+    arrow_style = dict(arrowstyle='->', color=GRAY, lw=2.5, mutation_scale=20)
 
-    # Main flow
-    ax.annotate('', xy=(5, 9.8), xytext=(5, 10.2), arrowprops=arrow_props)
-    ax.annotate('', xy=(5, 7.3), xytext=(5, 7.7), arrowprops=arrow_props)
-    ax.annotate('', xy=(6.3, 6), xytext=(6.7, 6), arrowprops=arrow_props)
-    ax.annotate('', xy=(5, 4.7), xytext=(5, 5.1), arrowprops=arrow_props)
+    # Main flow arrows
+    ax.annotate('', xy=(5, 10.9), xytext=(5, 11.1), arrowprops=arrow_style)
+    ax.annotate('', xy=(5, 7.9), xytext=(5, 8.1), arrowprops=arrow_style)
+    ax.annotate('', xy=(7.5, 6), xytext=(9.8, 6), arrowprops=arrow_style)
 
-    # Yes/No labels
-    ax.text(5.3, 4.9, 'Yes', fontsize=10, color=GREEN, fontweight='bold')
+    # Yes arrow down
+    ax.annotate('', xy=(5, 4.3), xytext=(5, 4.9), arrowprops=dict(arrowstyle='->', color=GREEN, lw=2.5, mutation_scale=20))
+    ax.text(4.3, 4.6, 'YES', fontsize=11, color=GREEN, fontweight='bold')
 
-    # Loop back arrow for "No"
-    ax.annotate('', xy=(8, 10), xytext=(8, 6.8),
-                arrowprops=dict(arrowstyle='->', color=RED, lw=2,
-                              connectionstyle='arc3,rad=0.3'))
-    ax.text(8.5, 8.5, 'No\nRevise\nmodel', fontsize=10, color=RED, fontweight='bold', ha='left')
+    # No arrow - loop back
+    ax.annotate('', xy=(11, 10.5), xytext=(11, 7.2),
+                arrowprops=dict(arrowstyle='->', color='#E74C3C', lw=2.5,
+                              connectionstyle='arc3,rad=-0.3', mutation_scale=20))
+    ax.annotate('', xy=(7.5, 11), xytext=(10, 10.5),
+                arrowprops=dict(arrowstyle='->', color='#E74C3C', lw=2.5, mutation_scale=20))
+    ax.text(11.3, 8.5, 'NO', fontsize=11, color='#E74C3C', fontweight='bold')
+    ax.text(11.5, 8, 'Revise\nmodel', fontsize=10, color='#E74C3C', ha='left')
 
-    ax.set_title('Box-Jenkins Methodology', fontweight='bold', fontsize=16)
+    # Dotted lines to detail boxes
+    for y in [12, 9, 2.5]:
+        ax.plot([7.5, 10.2], [y, y], '--', color=GRAY, alpha=0.5, linewidth=1.5)
+
+    # Title
+    ax.text(8, 13.5, 'Box-Jenkins Methodology', ha='center', va='center',
+           fontsize=18, fontweight='bold', color=BLUE)
 
     plt.tight_layout()
     save_chart(fig, 'box_jenkins_flowchart')
@@ -836,6 +866,523 @@ def plot_ljung_box():
     save_chart(fig, 'ljung_box_test')
 
 # =============================================================================
+# 17. AR(2) STATIONARITY TRIANGLE
+# =============================================================================
+def plot_ar2_stationarity_triangle():
+    """Visualize AR(2) stationarity region as triangle"""
+    from matplotlib.patches import Polygon
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    # Stationarity triangle vertices
+    # phi1 + phi2 < 1, phi2 - phi1 < 1, |phi2| < 1
+    vertices = np.array([[-2, 1], [2, 1], [0, -1]])
+    triangle = Polygon(vertices, facecolor=GREEN, alpha=0.3, edgecolor=GREEN, linewidth=2)
+    ax.add_patch(triangle)
+
+    # Plot boundary lines
+    phi1 = np.linspace(-2.5, 2.5, 100)
+    ax.plot(phi1, 1 - phi1, '--', color=BLUE, linewidth=2, label='$\\phi_1 + \\phi_2 = 1$')
+    ax.plot(phi1, phi1 - 1, '--', color=RED, linewidth=2, label='$\\phi_2 - \\phi_1 = 1$')
+    ax.axhline(y=1, color=ORANGE, linestyle='--', linewidth=2, label='$\\phi_2 = 1$')
+    ax.axhline(y=-1, color=PURPLE, linestyle='--', linewidth=2, label='$\\phi_2 = -1$')
+
+    # Sample points
+    stationary_points = [(0.5, 0.3), (0.3, -0.2), (-0.5, 0.2), (0.8, 0.1)]
+    nonstationary_points = [(1.5, 0.5), (0.5, 0.8), (-0.5, -0.8)]
+
+    for p in stationary_points:
+        ax.plot(p[0], p[1], 'o', color=GREEN, markersize=12)
+    for p in nonstationary_points:
+        ax.plot(p[0], p[1], 'x', color=RED, markersize=15, mew=3)
+
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-1.5, 1.5)
+    ax.set_xlabel('$\\phi_1$', fontsize=14)
+    ax.set_ylabel('$\\phi_2$', fontsize=14)
+    ax.set_title('AR(2) Stationarity Region', fontweight='bold', fontsize=16)
+    ax.axhline(y=0, color='gray', linewidth=0.5)
+    ax.axvline(x=0, color='gray', linewidth=0.5)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False)
+
+    # Add labels
+    ax.text(0, 0, 'STATIONARY\nREGION', ha='center', va='center', fontsize=14,
+           color=GREEN, fontweight='bold', alpha=0.8)
+    ax.text(1.8, 0.8, 'Non-stationary', ha='center', va='center', fontsize=11, color=RED)
+
+    ax.set_aspect('equal')
+    plt.tight_layout()
+    save_chart(fig, 'ar2_stationarity_triangle')
+
+# =============================================================================
+# 18. ARMA MODEL STRUCTURE DIAGRAM
+# =============================================================================
+def plot_arma_structure():
+    """Create ARMA model structure diagram"""
+    from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle
+
+    fig, ax = plt.subplots(figsize=(16, 8))
+    ax.set_xlim(0, 16)
+    ax.set_ylim(0, 8)
+    ax.axis('off')
+
+    # Helper function
+    def draw_box(x, y, w, h, text, color):
+        box = FancyBboxPatch((x-w/2, y-h/2), w, h,
+                            boxstyle="round,pad=0.02,rounding_size=0.2",
+                            facecolor=color, edgecolor='white', linewidth=2)
+        ax.add_patch(box)
+        ax.text(x, y, text, ha='center', va='center', fontsize=11,
+               color='white', fontweight='bold')
+
+    def draw_circle(x, y, r, text, color):
+        circle = Circle((x, y), r, facecolor=color, edgecolor='white', linewidth=2)
+        ax.add_patch(circle)
+        ax.text(x, y, text, ha='center', va='center', fontsize=14,
+               color='white', fontweight='bold')
+
+    # White noise input
+    draw_box(1.5, 4, 2, 1.2, '$\\varepsilon_t$\nWhite Noise', GRAY)
+
+    # MA component
+    draw_box(5, 4, 2.5, 1.5, 'MA(q)\n$\\theta(L)\\varepsilon_t$', GREEN)
+
+    # Summation
+    draw_circle(8, 4, 0.5, '+', ORANGE)
+
+    # AR component (feedback)
+    draw_box(8, 1.5, 2.5, 1.2, 'AR(p)\n$\\phi(L)$', BLUE)
+
+    # Output
+    draw_box(11, 4, 2, 1.2, '$X_t$\nOutput', PURPLE)
+
+    # Delay block
+    draw_box(13.5, 4, 1.5, 1, '$L$\nLag', GRAY)
+
+    # Arrows
+    arrow_style = dict(arrowstyle='->', color=GRAY, lw=2, mutation_scale=15)
+
+    ax.annotate('', xy=(3.6, 4), xytext=(2.5, 4), arrowprops=arrow_style)
+    ax.annotate('', xy=(7.5, 4), xytext=(6.3, 4), arrowprops=arrow_style)
+    ax.annotate('', xy=(10, 4), xytext=(8.5, 4), arrowprops=arrow_style)
+    ax.annotate('', xy=(12.8, 4), xytext=(12, 4), arrowprops=arrow_style)
+
+    # Feedback loop
+    ax.annotate('', xy=(14.3, 4), xytext=(14.3, 1.5),
+                arrowprops=dict(arrowstyle='-', color=GRAY, lw=2))
+    ax.annotate('', xy=(9.3, 1.5), xytext=(14.3, 1.5),
+                arrowprops=dict(arrowstyle='-', color=GRAY, lw=2))
+    ax.annotate('', xy=(8, 3.5), xytext=(8, 2.1),
+                arrowprops=dict(arrowstyle='->', color=GRAY, lw=2, mutation_scale=15))
+    ax.annotate('', xy=(6.7, 1.5), xytext=(8, 1.5),
+                arrowprops=dict(arrowstyle='-', color=GRAY, lw=2))
+
+    # Title and equation
+    ax.text(8, 7.3, 'ARMA(p,q) Model Structure', ha='center', va='center',
+           fontsize=16, fontweight='bold', color=BLUE)
+    ax.text(8, 6.5, '$X_t = \\phi_1 X_{t-1} + ... + \\phi_p X_{t-p} + \\varepsilon_t + \\theta_1 \\varepsilon_{t-1} + ... + \\theta_q \\varepsilon_{t-q}$',
+           ha='center', va='center', fontsize=12)
+
+    plt.tight_layout()
+    save_chart(fig, 'arma_structure')
+
+# =============================================================================
+# 19. WOLD REPRESENTATION
+# =============================================================================
+def plot_wold_representation():
+    """Visualize Wold's decomposition theorem"""
+    n = 100
+
+    # AR(1) process
+    phi = 0.8
+    ar = np.array([1, -phi])
+    ma = np.array([1])
+    data = ArmaProcess(ar, ma).generate_sample(nsample=n)
+
+    # MA(infinity) coefficients (psi weights)
+    n_psi = 20
+    psi = [phi**k for k in range(n_psi)]
+
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+
+    # Original AR(1) series
+    axes[0].plot(data, color=BLUE, linewidth=1)
+    axes[0].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    axes[0].set_title('AR(1) Process: $X_t = 0.8X_{t-1} + \\varepsilon_t$', fontweight='bold')
+    axes[0].set_xlabel('Time')
+    axes[0].set_ylabel('$X_t$')
+
+    # Psi weights (MA infinity representation)
+    markerline, stemlines, baseline = axes[1].stem(range(n_psi), psi, basefmt='gray')
+    plt.setp(stemlines, color=GREEN)
+    plt.setp(markerline, color=GREEN, markersize=8)
+    axes[1].axhline(y=0, color='gray', linewidth=0.5)
+    axes[1].set_title('$\\psi$-weights: $\\psi_j = \\phi^j$', fontweight='bold')
+    axes[1].set_xlabel('Lag $j$')
+    axes[1].set_ylabel('$\\psi_j$')
+
+    # Add equation
+    axes[1].text(0.95, 0.95, '$X_t = \\sum_{j=0}^{\\infty} \\psi_j \\varepsilon_{t-j}$',
+                transform=axes[1].transAxes, ha='right', va='top', fontsize=12,
+                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+    # Cumulative effect
+    cumsum_psi = np.cumsum(psi)
+    axes[2].plot(range(n_psi), cumsum_psi, 'o-', color=ORANGE, linewidth=2, markersize=8)
+    axes[2].axhline(y=1/(1-phi), color=RED, linestyle='--', linewidth=2,
+                   label=f'Long-run: $1/(1-\\phi) = {1/(1-phi):.1f}$')
+    axes[2].set_title('Cumulative Impulse Response', fontweight='bold')
+    axes[2].set_xlabel('Lag $j$')
+    axes[2].set_ylabel('$\\sum_{k=0}^{j} \\psi_k$')
+    axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
+
+    plt.tight_layout()
+    save_chart(fig, 'wold_representation')
+
+# =============================================================================
+# 20. CHARACTERISTIC POLYNOMIAL ROOTS
+# =============================================================================
+def plot_characteristic_roots():
+    """Visualize characteristic polynomial roots"""
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+    cases = [
+        ('AR(1): $\\phi=0.8$', [1, -0.8], GREEN),
+        ('AR(2): Complex roots', [1, -1.0, 0.5], BLUE),
+        ('AR(2): Real roots', [1, -0.5, -0.3], ORANGE)
+    ]
+
+    for idx, (title, coeffs, color) in enumerate(cases):
+        ax = axes[idx]
+
+        # Unit circle
+        theta = np.linspace(0, 2*np.pi, 100)
+        ax.plot(np.cos(theta), np.sin(theta), '--', color=GRAY, linewidth=2)
+        ax.fill(np.cos(theta), np.sin(theta), alpha=0.1, color=RED)
+
+        # Roots
+        roots = np.roots(coeffs)
+        for root in roots:
+            ax.plot(root.real, root.imag, 'o', color=color, markersize=15)
+            ax.plot([0, root.real], [0, root.imag], '-', color=color, alpha=0.5)
+            # Label
+            ax.annotate(f'  $|z|={abs(root):.2f}$',
+                       xy=(root.real, root.imag), fontsize=10, color=color)
+
+        ax.axhline(y=0, color='gray', linewidth=0.5)
+        ax.axvline(x=0, color='gray', linewidth=0.5)
+        ax.set_xlim(-2, 2)
+        ax.set_ylim(-2, 2)
+        ax.set_aspect('equal')
+        ax.set_xlabel('Real')
+        ax.set_ylabel('Imaginary')
+        ax.set_title(title, fontweight='bold')
+
+        # Stationarity label
+        is_stationary = all(abs(r) > 1 for r in roots)
+        status = 'STATIONARY' if is_stationary else 'NON-STATIONARY'
+        status_color = GREEN if is_stationary else RED
+        ax.text(0.05, 0.95, status, transform=ax.transAxes,
+               fontsize=11, va='top', color=status_color, fontweight='bold')
+
+    plt.tight_layout()
+    save_chart(fig, 'characteristic_roots')
+
+# =============================================================================
+# 21. ESTIMATION METHODS COMPARISON
+# =============================================================================
+def plot_estimation_comparison():
+    """Compare different estimation methods"""
+    from matplotlib.patches import FancyBboxPatch
+
+    fig, ax = plt.subplots(figsize=(14, 8))
+    ax.set_xlim(0, 14)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    def draw_method_box(x, y, title, pros, cons, color):
+        # Title box
+        title_box = FancyBboxPatch((x-2.5, y+1.2), 5, 0.8,
+                                   boxstyle="round,pad=0.02",
+                                   facecolor=color, edgecolor='white', linewidth=2)
+        ax.add_patch(title_box)
+        ax.text(x, y+1.6, title, ha='center', va='center',
+               fontsize=12, color='white', fontweight='bold')
+
+        # Content box
+        content_box = FancyBboxPatch((x-2.5, y-2), 5, 3.2,
+                                    boxstyle="round,pad=0.02",
+                                    facecolor='white', edgecolor=color, linewidth=2)
+        ax.add_patch(content_box)
+
+        # Pros
+        ax.text(x, y+0.9, 'Pros:', ha='center', va='top', fontsize=10,
+               color=GREEN, fontweight='bold')
+        for i, pro in enumerate(pros):
+            ax.text(x, y+0.5-i*0.4, f'+ {pro}', ha='center', va='top', fontsize=9)
+
+        # Cons
+        ax.text(x, y-0.5, 'Cons:', ha='center', va='top', fontsize=10,
+               color=RED, fontweight='bold')
+        for i, con in enumerate(cons):
+            ax.text(x, y-0.9-i*0.4, f'- {con}', ha='center', va='top', fontsize=9)
+
+    # Method boxes
+    draw_method_box(3, 6, 'Yule-Walker',
+                   ['Simple computation', 'Closed-form solution'],
+                   ['AR only', 'Less efficient'],
+                   BLUE)
+
+    draw_method_box(8, 6, 'Maximum Likelihood',
+                   ['Most efficient', 'Works for ARMA'],
+                   ['Iterative', 'Local optima risk'],
+                   GREEN)
+
+    draw_method_box(13, 6, 'Conditional LS',
+                   ['Simple to implement', 'Fast computation'],
+                   ['Biased for small n', 'Ignores initial values'],
+                   ORANGE)
+
+    # Title
+    ax.text(8, 9.5, 'ARMA Parameter Estimation Methods', ha='center',
+           fontsize=16, fontweight='bold', color=BLUE)
+
+    # Bottom recommendation
+    rec_box = FancyBboxPatch((3.5, 0.5), 9, 1.2,
+                             boxstyle="round,pad=0.02",
+                             facecolor='#f0f0f0', edgecolor=PURPLE, linewidth=2)
+    ax.add_patch(rec_box)
+    ax.text(8, 1.1, 'Recommendation: Use MLE for final estimation,\nYule-Walker for initial values',
+           ha='center', va='center', fontsize=11, fontweight='bold', color=PURPLE)
+
+    plt.tight_layout()
+    save_chart(fig, 'estimation_comparison')
+
+# =============================================================================
+# 22. INVERTIBILITY CONDITIONS
+# =============================================================================
+def plot_invertibility():
+    """Visualize MA invertibility conditions"""
+    n = 100
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # Invertible MA(1)
+    theta_inv = 0.6
+    ar = np.array([1])
+    ma = np.array([1, theta_inv])
+    data_inv = ArmaProcess(ar, ma).generate_sample(nsample=n)
+
+    axes[0, 0].plot(data_inv, color=GREEN, linewidth=1)
+    axes[0, 0].set_title(f'Invertible MA(1): $\\theta = {theta_inv}$', fontweight='bold')
+    axes[0, 0].set_xlabel('Time')
+    axes[0, 0].text(0.02, 0.98, '$|\\theta| < 1$ ✓', transform=axes[0, 0].transAxes,
+                   va='top', fontsize=12, color=GREEN, fontweight='bold')
+
+    # Non-invertible MA(1)
+    theta_noninv = 1.5
+
+    axes[0, 1].text(0.5, 0.5, f'MA(1) with $\\theta = {theta_noninv}$\n\nNOT INVERTIBLE\n$|\\theta| > 1$',
+                   ha='center', va='center', transform=axes[0, 1].transAxes,
+                   fontsize=14, color=RED, fontweight='bold',
+                   bbox=dict(boxstyle='round', facecolor='#ffe0e0'))
+    axes[0, 1].set_title(f'Non-Invertible MA(1): $\\theta = {theta_noninv}$', fontweight='bold')
+    axes[0, 1].axis('off')
+
+    # Pi weights for invertible
+    n_pi = 15
+    pi_weights = [(-theta_inv)**k for k in range(n_pi)]
+    markerline, stemlines, baseline = axes[1, 0].stem(range(n_pi), pi_weights, basefmt='gray')
+    plt.setp(stemlines, color=BLUE)
+    plt.setp(markerline, color=BLUE)
+    axes[1, 0].axhline(y=0, color='gray', linewidth=0.5)
+    axes[1, 0].set_title('$\\pi$-weights: $\\pi_j = (-\\theta)^j$', fontweight='bold')
+    axes[1, 0].set_xlabel('Lag $j$')
+    axes[1, 0].set_ylabel('$\\pi_j$')
+    axes[1, 0].text(0.95, 0.95, '$\\varepsilon_t = \\sum_{j=0}^{\\infty} \\pi_j X_{t-j}$',
+                   transform=axes[1, 0].transAxes, ha='right', va='top', fontsize=11,
+                   bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+    # Unit circle for MA
+    ax = axes[1, 1]
+    theta_circle = np.linspace(0, 2*np.pi, 100)
+    ax.plot(np.cos(theta_circle), np.sin(theta_circle), '--', color=GRAY, linewidth=2)
+    ax.fill(np.cos(theta_circle), np.sin(theta_circle), alpha=0.1, color=RED)
+
+    # Plot roots
+    root_inv = -1/theta_inv
+    root_noninv = -1/theta_noninv
+
+    ax.plot(root_inv, 0, 'o', color=GREEN, markersize=15, label=f'$\\theta={theta_inv}$: $|z|={abs(root_inv):.2f}$')
+    ax.plot(root_noninv, 0, 'x', color=RED, markersize=15, mew=3, label=f'$\\theta={theta_noninv}$: $|z|={abs(root_noninv):.2f}$')
+
+    ax.axhline(y=0, color='gray', linewidth=0.5)
+    ax.axvline(x=0, color='gray', linewidth=0.5)
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-2, 2)
+    ax.set_aspect('equal')
+    ax.set_title('MA Invertibility: Roots of $\\theta(z)$', fontweight='bold')
+    ax.set_xlabel('Real')
+    ax.set_ylabel('Imaginary')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), frameon=False)
+    ax.text(0, -0.3, 'Invertible if roots\nOUTSIDE unit circle', ha='center', fontsize=10)
+
+    plt.tight_layout()
+    save_chart(fig, 'invertibility')
+
+# =============================================================================
+# 23. ARMA SIMULATION STEPS
+# =============================================================================
+def plot_arma_simulation_steps():
+    """Show step-by-step ARMA simulation"""
+    np.random.seed(123)
+    n = 50
+    phi = 0.7
+    theta = 0.4
+
+    # Generate components
+    eps = np.random.randn(n)
+    x = np.zeros(n)
+
+    for t in range(1, n):
+        x[t] = phi * x[t-1] + eps[t] + theta * eps[t-1]
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # White noise
+    markerline, stemlines, baseline = axes[0, 0].stem(range(n), eps, basefmt='gray')
+    plt.setp(stemlines, color=GRAY)
+    plt.setp(markerline, color=GRAY)
+    axes[0, 0].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    axes[0, 0].set_title('Step 1: Generate White Noise $\\varepsilon_t$', fontweight='bold')
+    axes[0, 0].set_xlabel('Time')
+    axes[0, 0].set_ylabel('$\\varepsilon_t$')
+
+    # AR component
+    ar_component = np.zeros(n)
+    for t in range(1, n):
+        ar_component[t] = phi * x[t-1]
+    axes[0, 1].plot(ar_component, color=BLUE, linewidth=1.5)
+    axes[0, 1].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    axes[0, 1].set_title(f'Step 2: AR Component $\\phi X_{{t-1}}$ ($\\phi={phi}$)', fontweight='bold')
+    axes[0, 1].set_xlabel('Time')
+    axes[0, 1].set_ylabel('$\\phi X_{t-1}$')
+
+    # MA component
+    ma_component = np.zeros(n)
+    for t in range(1, n):
+        ma_component[t] = theta * eps[t-1]
+    axes[1, 0].plot(ma_component, color=GREEN, linewidth=1.5)
+    axes[1, 0].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    axes[1, 0].set_title(f'Step 3: MA Component $\\theta \\varepsilon_{{t-1}}$ ($\\theta={theta}$)', fontweight='bold')
+    axes[1, 0].set_xlabel('Time')
+    axes[1, 0].set_ylabel('$\\theta \\varepsilon_{t-1}$')
+
+    # Final ARMA process
+    axes[1, 1].plot(x, color=PURPLE, linewidth=1.5)
+    axes[1, 1].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    axes[1, 1].set_title(f'Step 4: ARMA(1,1) = AR + MA + $\\varepsilon_t$', fontweight='bold')
+    axes[1, 1].set_xlabel('Time')
+    axes[1, 1].set_ylabel('$X_t$')
+    axes[1, 1].text(0.02, 0.98, '$X_t = \\phi X_{t-1} + \\varepsilon_t + \\theta \\varepsilon_{t-1}$',
+                   transform=axes[1, 1].transAxes, va='top', fontsize=11,
+                   bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+    plt.tight_layout()
+    save_chart(fig, 'arma_simulation_steps')
+
+# =============================================================================
+# 24. PARSIMONY PRINCIPLE
+# =============================================================================
+def plot_parsimony():
+    """Illustrate parsimony principle in model selection"""
+    fig, ax = plt.subplots(figsize=(12, 7))
+
+    # Number of parameters
+    n_params = np.arange(1, 11)
+
+    # Simulated metrics
+    np.random.seed(42)
+    in_sample_error = 100 * np.exp(-0.5 * n_params) + np.random.randn(10) * 2
+    out_sample_error = 100 * np.exp(-0.3 * n_params) + 0.5 * (n_params - 3)**2 + np.random.randn(10) * 3
+
+    ax.plot(n_params, in_sample_error, 'o-', color=BLUE, linewidth=2, markersize=10,
+           label='In-sample error (Training)')
+    ax.plot(n_params, out_sample_error, 's-', color=RED, linewidth=2, markersize=10,
+           label='Out-of-sample error (Test)')
+
+    # Optimal point
+    optimal_idx = np.argmin(out_sample_error)
+    ax.axvline(x=n_params[optimal_idx], color=GREEN, linestyle='--', linewidth=2,
+              label=f'Optimal complexity (p+q = {n_params[optimal_idx]})')
+    ax.plot(n_params[optimal_idx], out_sample_error[optimal_idx], '*',
+           color=GREEN, markersize=20)
+
+    # Regions
+    ax.axvspan(1, n_params[optimal_idx], alpha=0.1, color=ORANGE)
+    ax.axvspan(n_params[optimal_idx], 10, alpha=0.1, color=RED)
+    ax.text(2, 60, 'UNDERFITTING\n(High bias)', ha='center', fontsize=11,
+           color=ORANGE, fontweight='bold')
+    ax.text(8, 60, 'OVERFITTING\n(High variance)', ha='center', fontsize=11,
+           color=RED, fontweight='bold')
+
+    ax.set_xlabel('Model Complexity (Number of Parameters p + q)', fontsize=12)
+    ax.set_ylabel('Prediction Error', fontsize=12)
+    ax.set_title('Parsimony Principle: Bias-Variance Trade-off', fontweight='bold', fontsize=14)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, frameon=False)
+    ax.set_xlim(0.5, 10.5)
+
+    plt.tight_layout()
+    save_chart(fig, 'parsimony_principle')
+
+# =============================================================================
+# 25. FORECAST ERROR DECOMPOSITION
+# =============================================================================
+def plot_forecast_error_decomposition():
+    """Show forecast error variance decomposition over horizon"""
+    phi = 0.8
+    sigma2 = 1
+
+    horizons = np.arange(1, 21)
+
+    # Forecast error variance for AR(1)
+    var_forecast = sigma2 * (1 - phi**(2*horizons)) / (1 - phi**2)
+    unconditional_var = sigma2 / (1 - phi**2)
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # Forecast error variance
+    axes[0].plot(horizons, var_forecast, 'o-', color=BLUE, linewidth=2, markersize=8)
+    axes[0].axhline(y=unconditional_var, color=RED, linestyle='--', linewidth=2,
+                   label=f'Unconditional variance = {unconditional_var:.2f}')
+    axes[0].fill_between(horizons, 0, var_forecast, alpha=0.2, color=BLUE)
+    axes[0].set_xlabel('Forecast Horizon $h$', fontsize=12)
+    axes[0].set_ylabel('$Var(e_t(h))$', fontsize=12)
+    axes[0].set_title(f'Forecast Error Variance: AR(1) with $\\phi={phi}$', fontweight='bold')
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
+    axes[0].set_ylim(0, unconditional_var * 1.2)
+
+    # Confidence interval width
+    ci_width = 2 * 1.96 * np.sqrt(var_forecast)
+    axes[1].fill_between(horizons, -1.96*np.sqrt(var_forecast), 1.96*np.sqrt(var_forecast),
+                        alpha=0.3, color=BLUE, label='95% CI')
+    axes[1].plot(horizons, 1.96*np.sqrt(var_forecast), color=BLUE, linewidth=2)
+    axes[1].plot(horizons, -1.96*np.sqrt(var_forecast), color=BLUE, linewidth=2)
+    axes[1].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    axes[1].set_xlabel('Forecast Horizon $h$', fontsize=12)
+    axes[1].set_ylabel('Prediction Interval Bounds', fontsize=12)
+    axes[1].set_title('Forecast Uncertainty Grows with Horizon', fontweight='bold')
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
+
+    # Add annotation
+    axes[1].annotate('Uncertainty\nincreases', xy=(15, 1.96*np.sqrt(var_forecast[14])),
+                    xytext=(17, 3), fontsize=10, ha='center',
+                    arrowprops=dict(arrowstyle='->', color=BLUE))
+
+    plt.tight_layout()
+    save_chart(fig, 'forecast_error_decomposition')
+
+# =============================================================================
 # MAIN EXECUTION
 # =============================================================================
 if __name__ == '__main__':
@@ -859,6 +1406,17 @@ if __name__ == '__main__':
     plot_model_identification_table()
     plot_box_jenkins_flowchart()
     plot_ljung_box()
+
+    # New charts
+    plot_ar2_stationarity_triangle()
+    plot_arma_structure()
+    plot_wold_representation()
+    plot_characteristic_roots()
+    plot_estimation_comparison()
+    plot_invertibility()
+    plot_arma_simulation_steps()
+    plot_parsimony()
+    plot_forecast_error_decomposition()
 
     print("=" * 50)
     print("All charts generated successfully!")
