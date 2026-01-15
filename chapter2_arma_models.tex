@@ -1,0 +1,1071 @@
+% Chapter 2: ARMA Models
+% Comprehensive Beamer Presentation
+% Target: Master Students in Statistics and Data Science
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Ensure content fits on slides
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% THEME AND STYLE CONFIGURATION
+%=============================================================================
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+% IDA-Inspired Color Palette
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{42, 82, 140}
+\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=MainBlue}
+\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+            \usebeamerfont{author in head/foot}\insertshortauthor
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+            \usebeamerfont{title in head/foot}\insertshorttitle
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+        \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+%=============================================================================
+% PACKAGES
+%=============================================================================
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\graphicspath{{logos/}{charts/}}
+
+%=============================================================================
+% THEOREM ENVIRONMENTS
+%=============================================================================
+\theoremstyle{definition}
+\setbeamertemplate{theorems}[numbered]
+\newtheorem{defn}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{rmk}{Remark}
+
+%=============================================================================
+% CUSTOM COMMANDS
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\B}{\mathbf{B}}
+\newcommand{\imark}{\textcolor{MainBlue}{\textbullet}}
+
+%=============================================================================
+% TITLE INFORMATION
+%=============================================================================
+\title[Chapter 2: ARMA Models]{Chapter 2: ARMA Models}
+\subtitle{Autoregressive, Moving Average, and Mixed Models}
+\author[Time Series Analysis]{Time Series Analysis and Forecasting}
+\institute{Master in Statistics and Data Science}
+\date{Academic Year 2025-2026}
+
+\begin{document}
+
+%=============================================================================
+% TITLE SLIDE
+%=============================================================================
+\begin{frame}
+    \titlepage
+\end{frame}
+
+%=============================================================================
+% TABLE OF CONTENTS
+%=============================================================================
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+%=============================================================================
+% SECTION 1: INTRODUCTION AND LAG OPERATOR
+%=============================================================================
+\section{Introduction and Lag Operator}
+
+\begin{frame}{Recap: Stationarity}
+    \textbf{From Chapter 1:} A process $\{X_t\}$ is \textbf{weakly stationary} if:
+    \begin{enumerate}
+        \item $\E[X_t] = \mu$ (constant mean)
+        \item $\Var(X_t) = \sigma^2 < \infty$ (constant, finite variance)
+        \item $\Cov(X_t, X_{t+h}) = \gamma(h)$ (covariance depends only on lag $h$)
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \textbf{Why stationarity matters for ARMA:}
+    \begin{itemize}
+        \item ARMA models assume the underlying process is stationary
+        \item Non-stationary data must be differenced first (ARIMA)
+        \item Stationarity ensures stable model parameters
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Today:} We build models for stationary time series using past values and past errors.
+\end{frame}
+
+\begin{frame}{The Lag Operator (Backshift Operator)}
+    \begin{defn}[Lag Operator]
+        The \textbf{lag operator} $L$ (or backshift operator $B$) shifts a time series back by one period:
+        $$L X_t = X_{t-1}$$
+    \end{defn}
+
+    \textbf{Properties:}
+    \begin{itemize}
+        \item $L^k X_t = X_{t-k}$ (shift back $k$ periods)
+        \item $L^0 X_t = X_t$ (identity)
+        \item $(1-L)X_t = X_t - X_{t-1} = \Delta X_t$ (first difference)
+        \item $(1-L)^d X_t = \Delta^d X_t$ ($d$-th difference)
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Lag Polynomials:}
+    $$\phi(L) = 1 - \phi_1 L - \phi_2 L^2 - \cdots - \phi_p L^p$$
+    $$\theta(L) = 1 + \theta_1 L + \theta_2 L^2 + \cdots + \theta_q L^q$$
+\end{frame}
+
+\begin{frame}{White Noise Process}
+    \begin{defn}[White Noise]
+        A process $\{\varepsilon_t\}$ is \textbf{white noise}, denoted $\varepsilon_t \sim WN(0, \sigma^2)$, if:
+        \begin{enumerate}
+            \item $\E[\varepsilon_t] = 0$ for all $t$
+            \item $\Var(\varepsilon_t) = \sigma^2$ for all $t$
+            \item $\Cov(\varepsilon_t, \varepsilon_s) = 0$ for all $t \neq s$
+        \end{enumerate}
+    \end{defn}
+
+    \vspace{0.3cm}
+    \textbf{Properties:}
+    \begin{itemize}
+        \item White noise is the ``building block'' of ARMA models
+        \item ACF: $\rho(0) = 1$, $\rho(h) = 0$ for $h \neq 0$
+        \item PACF: same pattern
+        \item \textbf{Gaussian white noise:} additionally $\varepsilon_t \sim N(0, \sigma^2)$
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Note:} White noise is \textit{not} predictable --- it's pure randomness.
+\end{frame}
+
+%=============================================================================
+% SECTION 2: AR MODELS
+%=============================================================================
+\section{Autoregressive (AR) Models}
+
+\begin{frame}{AR(1) Model: Definition}
+    \begin{defn}[AR(1) Process]
+        An \textbf{autoregressive process of order 1} is:
+        $$X_t = c + \phi X_{t-1} + \varepsilon_t$$
+        where $\varepsilon_t \sim WN(0, \sigma^2)$ and $|\phi| < 1$ for stationarity.
+    \end{defn}
+
+    \vspace{0.3cm}
+    \textbf{Interpretation:}
+    \begin{itemize}
+        \item $c$: constant (intercept)
+        \item $\phi$: autoregressive coefficient --- measures persistence
+        \item $\varepsilon_t$: innovation (unpredictable shock)
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Using lag operator:}
+    $$(1 - \phi L)X_t = c + \varepsilon_t$$
+    $$\phi(L) X_t = c + \varepsilon_t \quad \text{where } \phi(L) = 1 - \phi L$$
+\end{frame}
+
+\begin{frame}{AR(1) Stationarity Condition}
+    \textbf{For AR(1) to be stationary:} $|\phi| < 1$
+
+    \vspace{0.3cm}
+    \textbf{Intuition:}
+    \begin{itemize}
+        \item If $|\phi| < 1$: shocks decay over time $\rightarrow$ stationary
+        \item If $|\phi| = 1$: random walk $\rightarrow$ non-stationary (unit root)
+        \item If $|\phi| > 1$: explosive process $\rightarrow$ non-stationary
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Characteristic equation:}
+    $$\phi(z) = 1 - \phi z = 0 \implies z = \frac{1}{\phi}$$
+
+    Stationarity requires the root $z = 1/\phi$ to lie \textbf{outside the unit circle}, i.e., $|z| > 1$, which means $|\phi| < 1$.
+\end{frame}
+
+\begin{frame}{AR(1) Properties}
+    For a stationary AR(1) with $|\phi| < 1$:
+
+    \vspace{0.3cm}
+    \textbf{Mean:}
+    $$\mu = \E[X_t] = \frac{c}{1-\phi}$$
+
+    \textbf{Variance:}
+    $$\gamma(0) = \Var(X_t) = \frac{\sigma^2}{1-\phi^2}$$
+
+    \textbf{Autocovariance:}
+    $$\gamma(h) = \phi^h \gamma(0) = \frac{\phi^h \sigma^2}{1-\phi^2}$$
+
+    \textbf{Autocorrelation (ACF):}
+    $$\rho(h) = \phi^h$$
+
+    \textbf{Key insight:} ACF decays exponentially at rate $\phi$
+\end{frame}
+
+\begin{frame}{AR(1) ACF and PACF Patterns}
+    \textbf{ACF of AR(1):}
+    \begin{itemize}
+        \item Decays exponentially: $\rho(h) = \phi^h$
+        \item If $\phi > 0$: all positive, gradual decay
+        \item If $\phi < 0$: alternating signs, decay in magnitude
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{PACF of AR(1):}
+    \begin{itemize}
+        \item \textbf{Cuts off after lag 1}
+        \item $\pi_1 = \phi$, $\pi_k = 0$ for $k > 1$
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \begin{center}
+    \begin{tabular}{lcc}
+        \toprule
+        & \textbf{ACF} & \textbf{PACF} \\
+        \midrule
+        AR(1) & Exponential decay & Cuts off at lag 1 \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+    \textbf{This is the key identification pattern for AR(1)!}
+\end{frame}
+
+\begin{frame}{AR(p) Model: General Form}
+    \begin{defn}[AR(p) Process]
+        An \textbf{autoregressive process of order p} is:
+        $$X_t = c + \phi_1 X_{t-1} + \phi_2 X_{t-2} + \cdots + \phi_p X_{t-p} + \varepsilon_t$$
+    \end{defn}
+
+    \textbf{Using lag operator:}
+    $$\phi(L) X_t = c + \varepsilon_t$$
+    where $\phi(L) = 1 - \phi_1 L - \phi_2 L^2 - \cdots - \phi_p L^p$
+
+    \vspace{0.3cm}
+    \textbf{Stationarity condition:}
+    \begin{itemize}
+        \item All roots of $\phi(z) = 0$ must lie \textbf{outside} the unit circle
+        \item Equivalently: all roots have modulus $> 1$
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{PACF pattern:}
+    \begin{itemize}
+        \item PACF cuts off after lag $p$
+        \item ACF decays (exponentially or with damped oscillations)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AR(2) Model}
+    \begin{defn}[AR(2) Process]
+        $$X_t = c + \phi_1 X_{t-1} + \phi_2 X_{t-2} + \varepsilon_t$$
+    \end{defn}
+
+    \textbf{Stationarity conditions for AR(2):}
+    \begin{enumerate}
+        \item $\phi_1 + \phi_2 < 1$
+        \item $\phi_2 - \phi_1 < 1$
+        \item $|\phi_2| < 1$
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \textbf{ACF behavior depends on roots:}
+    \begin{itemize}
+        \item \textbf{Real roots:} mixture of two exponential decays
+        \item \textbf{Complex roots:} damped sinusoidal pattern (pseudo-cycles)
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{PACF:} Cuts off after lag 2 ($\pi_k = 0$ for $k > 2$)
+\end{frame}
+
+%=============================================================================
+% SECTION 3: MA MODELS
+%=============================================================================
+\section{Moving Average (MA) Models}
+
+\begin{frame}{MA(1) Model: Definition}
+    \begin{defn}[MA(1) Process]
+        A \textbf{moving average process of order 1} is:
+        $$X_t = \mu + \varepsilon_t + \theta \varepsilon_{t-1}$$
+        where $\varepsilon_t \sim WN(0, \sigma^2)$.
+    \end{defn}
+
+    \vspace{0.3cm}
+    \textbf{Interpretation:}
+    \begin{itemize}
+        \item $\mu$: mean of the process
+        \item $\theta$: MA coefficient --- measures impact of past shock
+        \item Current value depends on current and one past shock
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Using lag operator:}
+    $$X_t = \mu + \theta(L)\varepsilon_t$$
+    where $\theta(L) = 1 + \theta L$
+
+    \vspace{0.3cm}
+    \textbf{Key property:} MA processes are \textbf{always stationary} for any finite $\theta$
+\end{frame}
+
+\begin{frame}{MA(1) Properties}
+    For MA(1): $X_t = \mu + \varepsilon_t + \theta \varepsilon_{t-1}$
+
+    \vspace{0.3cm}
+    \textbf{Mean:}
+    $$\E[X_t] = \mu$$
+
+    \textbf{Variance:}
+    $$\gamma(0) = \Var(X_t) = \sigma^2(1 + \theta^2)$$
+
+    \textbf{Autocovariance:}
+    $$\gamma(1) = \theta\sigma^2, \quad \gamma(h) = 0 \text{ for } h > 1$$
+
+    \textbf{Autocorrelation (ACF):}
+    $$\rho(1) = \frac{\theta}{1+\theta^2}, \quad \rho(h) = 0 \text{ for } h > 1$$
+
+    \vspace{0.3cm}
+    \textbf{Key insight:} ACF \textbf{cuts off} after lag 1
+\end{frame}
+
+\begin{frame}{MA(1) ACF and PACF Patterns}
+    \textbf{ACF of MA(1):}
+    \begin{itemize}
+        \item \textbf{Cuts off after lag 1}
+        \item $\rho(1) = \frac{\theta}{1+\theta^2}$, $\rho(h) = 0$ for $h > 1$
+        \item Note: $|\rho(1)| \leq 0.5$ always (maximum at $\theta = \pm 1$)
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{PACF of MA(1):}
+    \begin{itemize}
+        \item Decays exponentially (or with alternating signs)
+        \item Does \textit{not} cut off
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \begin{center}
+    \begin{tabular}{lcc}
+        \toprule
+        & \textbf{ACF} & \textbf{PACF} \\
+        \midrule
+        MA(1) & Cuts off at lag 1 & Exponential decay \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+    \textbf{This is the opposite pattern from AR(1)!}
+\end{frame}
+
+\begin{frame}{Invertibility of MA Models}
+    \begin{defn}[Invertibility]
+        An MA process is \textbf{invertible} if it can be written as an infinite AR process:
+        $$X_t = \mu + \sum_{j=1}^{\infty} \pi_j (X_{t-j} - \mu) + \varepsilon_t$$
+    \end{defn}
+
+    \vspace{0.3cm}
+    \textbf{For MA(1):} Invertible if $|\theta| < 1$
+
+    \textbf{For MA(q):} All roots of $\theta(z) = 0$ must lie outside the unit circle
+
+    \vspace{0.3cm}
+    \textbf{Why invertibility matters:}
+    \begin{itemize}
+        \item Ensures unique representation
+        \item Required for forecasting and estimation
+        \item Creates correspondence: AR($\infty$) $\leftrightarrow$ MA(q)
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Note:} Stationarity is for AR, Invertibility is for MA
+\end{frame}
+
+\begin{frame}{MA(q) Model: General Form}
+    \begin{defn}[MA(q) Process]
+        A \textbf{moving average process of order q} is:
+        $$X_t = \mu + \varepsilon_t + \theta_1\varepsilon_{t-1} + \theta_2\varepsilon_{t-2} + \cdots + \theta_q\varepsilon_{t-q}$$
+    \end{defn}
+
+    \textbf{Using lag operator:}
+    $$X_t = \mu + \theta(L)\varepsilon_t$$
+    where $\theta(L) = 1 + \theta_1 L + \theta_2 L^2 + \cdots + \theta_q L^q$
+
+    \vspace{0.3cm}
+    \textbf{Properties:}
+    \begin{itemize}
+        \item Always stationary (finite variance)
+        \item ACF cuts off after lag $q$: $\rho(h) = 0$ for $h > q$
+        \item PACF decays gradually
+        \item Invertible if all roots of $\theta(z) = 0$ lie outside unit circle
+    \end{itemize}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: ARMA MODELS
+%=============================================================================
+\section{ARMA Models}
+
+\begin{frame}{ARMA(p,q) Model: Definition}
+    \begin{defn}[ARMA(p,q) Process]
+        An \textbf{autoregressive moving average process} of order (p,q) is:
+        $$X_t = c + \phi_1 X_{t-1} + \cdots + \phi_p X_{t-p} + \varepsilon_t + \theta_1\varepsilon_{t-1} + \cdots + \theta_q\varepsilon_{t-q}$$
+    \end{defn}
+
+    \textbf{Compact form using lag operators:}
+    $$\phi(L)(X_t - \mu) = \theta(L)\varepsilon_t$$
+
+    or equivalently:
+    $$\phi(L)X_t = c + \theta(L)\varepsilon_t$$
+
+    where $\mu = \frac{c}{1-\phi_1-\cdots-\phi_p}$
+
+    \vspace{0.3cm}
+    \textbf{Key idea:} Combines AR and MA components for more flexible modeling
+\end{frame}
+
+\begin{frame}{ARMA(1,1) Model}
+    \begin{defn}[ARMA(1,1) Process]
+        $$X_t = c + \phi X_{t-1} + \varepsilon_t + \theta\varepsilon_{t-1}$$
+    \end{defn}
+
+    \textbf{Properties (assuming stationarity and invertibility):}
+    \begin{itemize}
+        \item Mean: $\mu = \frac{c}{1-\phi}$
+        \item Variance: $\gamma(0) = \frac{(1+2\phi\theta+\theta^2)\sigma^2}{1-\phi^2}$
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{ACF:}
+    $$\rho(1) = \frac{(1+\phi\theta)(\phi+\theta)}{1+2\phi\theta+\theta^2}$$
+    $$\rho(h) = \phi \cdot \rho(h-1) \quad \text{for } h \geq 2$$
+
+    \vspace{0.3cm}
+    \textbf{Pattern:} ACF decays exponentially after lag 1 (like AR), but starting point depends on both $\phi$ and $\theta$
+\end{frame}
+
+\begin{frame}{ARMA ACF and PACF Patterns}
+    \begin{center}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Model} & \textbf{ACF} & \textbf{PACF} \\
+        \midrule
+        AR(p) & Decays (exp./damped) & Cuts off at lag $p$ \\
+        MA(q) & Cuts off at lag $q$ & Decays (exp./damped) \\
+        ARMA(p,q) & Decays after lag $q-p$ & Decays after lag $p-q$ \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.5cm}
+    \textbf{Key identification rule:}
+    \begin{itemize}
+        \item \textbf{PACF cuts off} $\rightarrow$ AR process (order = cutoff lag)
+        \item \textbf{ACF cuts off} $\rightarrow$ MA process (order = cutoff lag)
+        \item \textbf{Both decay} $\rightarrow$ ARMA process
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Caution:} In practice, sample ACF/PACF are noisy; use confidence bands
+\end{frame}
+
+\begin{frame}{Stationarity and Invertibility Summary}
+    \textbf{For ARMA(p,q) to be well-behaved:}
+
+    \vspace{0.3cm}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Condition} & \textbf{Requirement} \\
+        \midrule
+        Stationarity & Roots of $\phi(z) = 0$ outside unit circle \\
+        Invertibility & Roots of $\theta(z) = 0$ outside unit circle \\
+        \bottomrule
+    \end{tabular}
+
+    \vspace{0.5cm}
+    \textbf{Implications:}
+    \begin{itemize}
+        \item \textbf{Stationarity:} Can write as MA($\infty$): $X_t = \mu + \sum_{j=0}^{\infty} \psi_j \varepsilon_{t-j}$
+        \item \textbf{Invertibility:} Can write as AR($\infty$): $X_t = \mu + \sum_{j=1}^{\infty} \pi_j (X_{t-j}-\mu) + \varepsilon_t$
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Causal representation:} $X_t$ depends only on \textit{past} shocks (not future)
+\end{frame}
+
+%=============================================================================
+% SECTION 5: MODEL IDENTIFICATION
+%=============================================================================
+\section{Model Identification}
+
+\begin{frame}{The Box-Jenkins Methodology}
+    \begin{center}
+    \begin{tikzpicture}[node distance=1.5cm, auto,
+        box/.style={rectangle, draw=MainBlue, thick, fill=MainBlue!10,
+            text width=3cm, text centered, minimum height=1cm, font=\small}]
+
+        \node[box] (id) {1. Identification\\(Choose $p$, $q$)};
+        \node[box, right=of id] (est) {2. Estimation\\(Fit parameters)};
+        \node[box, right=of est] (diag) {3. Diagnostics\\(Check residuals)};
+        \node[box, right=of diag] (fore) {4. Forecasting\\(Predict future)};
+
+        \draw[->, thick, MainBlue] (id) -- (est);
+        \draw[->, thick, MainBlue] (est) -- (diag);
+        \draw[->, thick, MainBlue] (diag) -- (fore);
+
+        \draw[->, thick, Crimson, dashed] (diag.south) -- ++(0,-0.7) -| (id.south)
+            node[pos=0.25, below, font=\scriptsize] {If fails};
+    \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+    \textbf{Step 1: Identification}
+    \begin{itemize}
+        \item Check stationarity (ADF/KPSS tests); difference if needed
+        \item Examine ACF and PACF plots
+        \item Use information criteria (AIC, BIC) to compare models
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{ACF/PACF Identification Rules}
+    \textbf{Theoretical patterns for stationary processes:}
+
+    \vspace{0.3cm}
+    \begin{center}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Model} & \textbf{ACF Pattern} & \textbf{PACF Pattern} \\
+        \midrule
+        AR(1) & Exponential decay & Spike at lag 1, then 0 \\
+        AR(2) & Damped exponential/sine & Spikes at lags 1-2, then 0 \\
+        AR(p) & Decays gradually & Cuts off after lag $p$ \\
+        \midrule
+        MA(1) & Spike at lag 1, then 0 & Exponential decay \\
+        MA(2) & Spikes at lags 1-2, then 0 & Damped exponential/sine \\
+        MA(q) & Cuts off after lag $q$ & Decays gradually \\
+        \midrule
+        ARMA(p,q) & Decays & Decays \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+    \textbf{Practical tip:} Start simple (low $p$, $q$), increase if diagnostics fail
+\end{frame}
+
+\begin{frame}{Information Criteria}
+    \textbf{Purpose:} Balance goodness-of-fit against model complexity
+
+    \vspace{0.3cm}
+    \textbf{Akaike Information Criterion (AIC):}
+    $$\text{AIC} = -2\ln(\hat{L}) + 2k$$
+
+    \textbf{Bayesian Information Criterion (BIC/SBC):}
+    $$\text{BIC} = -2\ln(\hat{L}) + k\ln(n)$$
+
+    where $\hat{L}$ = maximized likelihood, $k$ = number of parameters, $n$ = sample size
+
+    \vspace{0.3cm}
+    \textbf{Usage:}
+    \begin{itemize}
+        \item Lower values are better
+        \item BIC penalizes complexity more strongly than AIC
+        \item AIC tends to choose larger models; BIC more parsimonious
+        \item Compare models fit to the \textit{same data}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Automatic Model Selection}
+    \textbf{Grid search approach:}
+    \begin{enumerate}
+        \item Fit ARMA(p,q) for $p = 0,1,\ldots,p_{max}$ and $q = 0,1,\ldots,q_{max}$
+        \item Select model with lowest AIC or BIC
+        \item Verify with diagnostic checks
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \textbf{In Python (statsmodels):}
+    \begin{itemize}
+        \item \texttt{pm.auto\_arima()} from \texttt{pmdarima} package
+        \item Automatically tests stationarity, searches over orders
+        \item Returns best model by AIC/BIC
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Caution:}
+    \begin{itemize}
+        \item Automatic selection is a starting point, not final answer
+        \item Always check diagnostics
+        \item Consider domain knowledge
+    \end{itemize}
+\end{frame}
+
+%=============================================================================
+% SECTION 6: PARAMETER ESTIMATION
+%=============================================================================
+\section{Parameter Estimation}
+
+\begin{frame}{Estimation Methods Overview}
+    \textbf{Three main approaches:}
+
+    \vspace{0.3cm}
+    \textbf{1. Method of Moments / Yule-Walker (AR only)}
+    \begin{itemize}
+        \item Match sample autocorrelations to theoretical values
+        \item Simple, closed-form for AR models
+        \item Not efficient for MA components
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{2. Maximum Likelihood Estimation (MLE)}
+    \begin{itemize}
+        \item Most common approach
+        \item Requires distributional assumption (usually Gaussian)
+        \item Efficient and consistent
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{3. Conditional Least Squares}
+    \begin{itemize}
+        \item Minimize sum of squared residuals
+        \item Conditioning on initial observations
+        \item Computationally simpler than exact MLE
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Yule-Walker Equations for AR(p)}
+    For AR(p): $X_t = \phi_1 X_{t-1} + \cdots + \phi_p X_{t-p} + \varepsilon_t$
+
+    \vspace{0.3cm}
+    \textbf{Yule-Walker equations:}
+    $$\rho(k) = \phi_1\rho(k-1) + \phi_2\rho(k-2) + \cdots + \phi_p\rho(k-p)$$
+
+    for $k = 1, 2, \ldots, p$
+
+    \vspace{0.3cm}
+    \textbf{Matrix form:}
+    $$\begin{pmatrix} \rho(0) & \rho(1) & \cdots & \rho(p-1) \\ \rho(1) & \rho(0) & \cdots & \rho(p-2) \\ \vdots & \vdots & \ddots & \vdots \\ \rho(p-1) & \rho(p-2) & \cdots & \rho(0) \end{pmatrix}
+    \begin{pmatrix} \phi_1 \\ \phi_2 \\ \vdots \\ \phi_p \end{pmatrix} =
+    \begin{pmatrix} \rho(1) \\ \rho(2) \\ \vdots \\ \rho(p) \end{pmatrix}$$
+
+    \vspace{0.3cm}
+    \textbf{Estimation:} Replace $\rho(k)$ with sample autocorrelations $\hat{\rho}(k)$
+\end{frame}
+
+\begin{frame}{Maximum Likelihood Estimation}
+    \textbf{Assuming Gaussian errors:} $\varepsilon_t \sim N(0, \sigma^2)$
+
+    \vspace{0.3cm}
+    \textbf{Log-likelihood for ARMA(p,q):}
+    $$\ell(\bm{\phi}, \bm{\theta}, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{t=1}^{n}\varepsilon_t^2$$
+
+    where $\varepsilon_t$ are the innovations computed recursively.
+
+    \vspace{0.3cm}
+    \textbf{Estimation procedure:}
+    \begin{enumerate}
+        \item Initialize: use method of moments or OLS for starting values
+        \item Optimize: numerical methods (e.g., BFGS, Newton-Raphson)
+        \item Iterate until convergence
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \textbf{In practice:} Use \texttt{statsmodels.tsa.arima.model.ARIMA}
+\end{frame}
+
+\begin{frame}{Standard Errors and Inference}
+    \textbf{Asymptotic distribution of MLE:}
+    $$\hat{\bm{\theta}} \xrightarrow{d} N\left(\bm{\theta}_0, \frac{1}{n}\mathbf{I}(\bm{\theta}_0)^{-1}\right)$$
+
+    where $\mathbf{I}(\bm{\theta})$ is the Fisher information matrix.
+
+    \vspace{0.3cm}
+    \textbf{Standard errors:} Square root of diagonal of $\frac{1}{n}\hat{\mathbf{I}}^{-1}$
+
+    \vspace{0.3cm}
+    \textbf{Hypothesis testing:}
+    \begin{itemize}
+        \item $H_0: \phi_j = 0$ (or $\theta_j = 0$)
+        \item Test statistic: $z = \frac{\hat{\phi}_j}{SE(\hat{\phi}_j)} \sim N(0,1)$ asymptotically
+        \item Reject if $|z| > 1.96$ at 5\% level
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Confidence interval:} $\hat{\phi}_j \pm 1.96 \cdot SE(\hat{\phi}_j)$
+\end{frame}
+
+%=============================================================================
+% SECTION 7: MODEL DIAGNOSTICS
+%=============================================================================
+\section{Model Diagnostics}
+
+\begin{frame}{Residual Analysis}
+    \textbf{If model is correctly specified, residuals should be white noise:}
+
+    \vspace{0.3cm}
+    \textbf{1. Plot residuals over time}
+    \begin{itemize}
+        \item Should fluctuate around zero
+        \item No obvious patterns or trends
+        \item Constant variance (no heteroskedasticity)
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{2. Check ACF of residuals}
+    \begin{itemize}
+        \item All correlations should be within confidence bands
+        \item No significant spikes $\rightarrow$ white noise
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{3. Check histogram / Q-Q plot}
+    \begin{itemize}
+        \item Should be approximately normal (if assuming Gaussian)
+        \item Heavy tails suggest non-normal errors
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ljung-Box Test}
+    \begin{defn}[Ljung-Box Test]
+        Tests whether residuals are independently distributed (no autocorrelation).
+    \end{defn}
+
+    \textbf{Test statistic:}
+    $$Q(m) = n(n+2)\sum_{k=1}^{m}\frac{\hat{\rho}_k^2}{n-k}$$
+
+    \textbf{Hypotheses:}
+    \begin{itemize}
+        \item $H_0$: Residuals are white noise (no autocorrelation up to lag $m$)
+        \item $H_1$: Residuals are autocorrelated
+    \end{itemize}
+
+    \textbf{Distribution:} Under $H_0$, $Q(m) \sim \chi^2(m-p-q)$ approximately
+
+    \vspace{0.3cm}
+    \textbf{Decision:}
+    \begin{itemize}
+        \item p-value $> 0.05$ $\rightarrow$ fail to reject $H_0$ $\rightarrow$ residuals look like white noise (good!)
+        \item p-value $< 0.05$ $\rightarrow$ significant autocorrelation remains $\rightarrow$ model inadequate
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Diagnostic Checklist}
+    \textbf{A good ARMA model should satisfy:}
+
+    \vspace{0.3cm}
+    \begin{enumerate}
+        \item \textbf{Stationarity:} AR roots outside unit circle \\
+              \textcolor{Forest}{$\checkmark$} Check with \texttt{arroots}
+
+        \item \textbf{Invertibility:} MA roots outside unit circle \\
+              \textcolor{Forest}{$\checkmark$} Check with \texttt{maroots}
+
+        \item \textbf{White noise residuals:} No significant ACF \\
+              \textcolor{Forest}{$\checkmark$} ACF plot, Ljung-Box test
+
+        \item \textbf{Normal residuals:} (if assumed) \\
+              \textcolor{Forest}{$\checkmark$} Q-Q plot, Jarque-Bera test
+
+        \item \textbf{No heteroskedasticity:} Constant variance \\
+              \textcolor{Forest}{$\checkmark$} Plot residuals, ARCH test
+
+        \item \textbf{Parsimonious:} Lowest AIC/BIC among adequate models
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \textbf{If diagnostics fail:} Return to identification, try different orders
+\end{frame}
+
+%=============================================================================
+% SECTION 8: FORECASTING
+%=============================================================================
+\section{Forecasting with ARMA}
+
+\begin{frame}{Point Forecasts}
+    \textbf{Optimal forecast:} Conditional expectation minimizes MSE
+    $$\hat{X}_{n+h|n} = \E[X_{n+h} | X_n, X_{n-1}, \ldots]$$
+
+    \vspace{0.3cm}
+    \textbf{For AR(1):} $X_t = c + \phi X_{t-1} + \varepsilon_t$
+    \begin{align*}
+        \hat{X}_{n+1|n} &= c + \phi X_n \\
+        \hat{X}_{n+2|n} &= c + \phi \hat{X}_{n+1|n} = c(1+\phi) + \phi^2 X_n \\
+        \hat{X}_{n+h|n} &= \mu + \phi^h(X_n - \mu)
+    \end{align*}
+
+    \vspace{0.3cm}
+    \textbf{Key property:} Forecasts converge to mean $\mu$ as $h \to \infty$
+
+    \vspace{0.3cm}
+    \textbf{For MA(1):} $X_t = \mu + \varepsilon_t + \theta\varepsilon_{t-1}$
+    \begin{align*}
+        \hat{X}_{n+1|n} &= \mu + \theta\varepsilon_n \\
+        \hat{X}_{n+h|n} &= \mu \quad \text{for } h > 1
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Forecast Uncertainty}
+    \textbf{Forecast error:}
+    $$e_{n+h|n} = X_{n+h} - \hat{X}_{n+h|n}$$
+
+    \textbf{Mean squared forecast error (MSFE):}
+    $$\text{MSFE}(h) = \E[e_{n+h|n}^2] = \sigma^2 \sum_{j=0}^{h-1}\psi_j^2$$
+
+    where $\psi_j$ are the MA($\infty$) coefficients.
+
+    \vspace{0.3cm}
+    \textbf{For AR(1):} $\psi_j = \phi^j$
+    $$\text{MSFE}(h) = \sigma^2 \frac{1-\phi^{2h}}{1-\phi^2} \to \frac{\sigma^2}{1-\phi^2} = \Var(X_t)$$
+
+    \vspace{0.3cm}
+    \textbf{Key insight:} Forecast uncertainty increases with horizon, eventually reaching unconditional variance
+\end{frame}
+
+\begin{frame}{Confidence Intervals for Forecasts}
+    \textbf{Assuming Gaussian errors:}
+    $$X_{n+h} | X_n, \ldots \sim N\left(\hat{X}_{n+h|n}, \text{MSFE}(h)\right)$$
+
+    \vspace{0.3cm}
+    \textbf{$(1-\alpha)$ confidence interval:}
+    $$\hat{X}_{n+h|n} \pm z_{\alpha/2} \cdot \sqrt{\text{MSFE}(h)}$$
+
+    where $z_{\alpha/2} = 1.96$ for 95\% CI.
+
+    \vspace{0.3cm}
+    \textbf{Properties:}
+    \begin{itemize}
+        \item Intervals widen as horizon increases
+        \item Eventually converge to unconditional interval: $\mu \pm z_{\alpha/2}\sigma_X$
+        \item Width depends on model parameters (AR coefficients, etc.)
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{In Python:} \texttt{model.get\_forecast(h).conf\_int()}
+\end{frame}
+
+\begin{frame}{Forecast Evaluation}
+    \textbf{Out-of-sample testing:}
+    \begin{enumerate}
+        \item Split data: training set (fit model) and test set (evaluate)
+        \item Generate forecasts for test period
+        \item Compare forecasts to actual values
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \textbf{Metrics (from Chapter 1):}
+    \begin{itemize}
+        \item MAE $= \frac{1}{n}\sum|e_t|$
+        \item RMSE $= \sqrt{\frac{1}{n}\sum e_t^2}$
+        \item MAPE $= \frac{100}{n}\sum\left|\frac{e_t}{X_t}\right|$
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Rolling/expanding window:}
+    \begin{itemize}
+        \item Re-estimate model as new data arrives
+        \item More realistic assessment of forecast performance
+    \end{itemize}
+\end{frame}
+
+%=============================================================================
+% SECTION 9: PRACTICAL IMPLEMENTATION
+%=============================================================================
+\section{Practical Implementation}
+
+\begin{frame}[fragile]{Python Implementation: Fitting ARMA}
+    \textbf{Using statsmodels:}
+
+    \vspace{0.2cm}
+    \texttt{\small from statsmodels.tsa.arima.model import ARIMA}
+
+    \vspace{0.2cm}
+    \texttt{\small \# Fit ARMA(2,1) --- note: ARIMA(p,d,q) with d=0}
+
+    \texttt{\small model = ARIMA(data, order=(2, 0, 1))}
+
+    \texttt{\small results = model.fit()}
+
+    \vspace{0.2cm}
+    \texttt{\small \# Summary}
+
+    \texttt{\small print(results.summary())}
+
+    \vspace{0.2cm}
+    \texttt{\small \# Forecasting}
+
+    \texttt{\small forecast = results.get\_forecast(steps=10)}
+
+    \texttt{\small print(forecast.predicted\_mean)}
+
+    \texttt{\small print(forecast.conf\_int())}
+
+    \vspace{0.3cm}
+    \textbf{Note:} ARIMA with $d=0$ is equivalent to ARMA
+\end{frame}
+
+\begin{frame}[fragile]{Python: Model Selection with pmdarima}
+    \textbf{Automatic ARIMA selection:}
+
+    \vspace{0.2cm}
+    \texttt{\small import pmdarima as pm}
+
+    \vspace{0.2cm}
+    \texttt{\small \# Auto ARIMA with AIC criterion}
+
+    \texttt{\small model = pm.auto\_arima(data,}
+
+    \texttt{\small \hspace{2cm} start\_p=0, max\_p=5,}
+
+    \texttt{\small \hspace{2cm} start\_q=0, max\_q=5,}
+
+    \texttt{\small \hspace{2cm} d=0,  \# No differencing for stationary data}
+
+    \texttt{\small \hspace{2cm} seasonal=False,}
+
+    \texttt{\small \hspace{2cm} information\_criterion='aic',}
+
+    \texttt{\small \hspace{2cm} trace=True)}
+
+    \vspace{0.2cm}
+    \texttt{\small print(model.summary())}
+
+    \vspace{0.3cm}
+    \textbf{Output:} Best model order and fitted parameters
+\end{frame}
+
+\begin{frame}{Workflow Summary}
+    \begin{enumerate}
+        \item \textbf{Data preparation}
+        \begin{itemize}
+            \item Check for missing values, outliers
+            \item Transform if necessary (log, differencing)
+        \end{itemize}
+
+        \item \textbf{Stationarity check}
+        \begin{itemize}
+            \item Visual inspection: time plot, ACF
+            \item Formal tests: ADF, KPSS
+            \item Difference if non-stationary
+        \end{itemize}
+
+        \item \textbf{Model identification}
+        \begin{itemize}
+            \item ACF/PACF patterns
+            \item Information criteria grid search
+        \end{itemize}
+
+        \item \textbf{Estimation and diagnostics}
+        \begin{itemize}
+            \item Fit model, check significance
+            \item Residual analysis, Ljung-Box test
+        \end{itemize}
+
+        \item \textbf{Forecasting}
+        \begin{itemize}
+            \item Point forecasts with confidence intervals
+            \item Out-of-sample validation
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+%=============================================================================
+% SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Key Takeaways}
+    \begin{enumerate}
+        \item \textbf{AR(p) models:} Current value depends on $p$ past values
+        \begin{itemize}
+            \item Stationarity: roots of $\phi(z)$ outside unit circle
+            \item PACF cuts off at lag $p$
+        \end{itemize}
+
+        \item \textbf{MA(q) models:} Current value depends on $q$ past shocks
+        \begin{itemize}
+            \item Always stationary; invertibility: roots of $\theta(z)$ outside unit circle
+            \item ACF cuts off at lag $q$
+        \end{itemize}
+
+        \item \textbf{ARMA(p,q):} Combines AR and MA for flexible modeling
+        \begin{itemize}
+            \item Both ACF and PACF decay
+        \end{itemize}
+
+        \item \textbf{Box-Jenkins:} Identify $\to$ Estimate $\to$ Diagnose $\to$ Forecast
+
+        \item \textbf{Diagnostics:} Residuals must be white noise
+
+        \item \textbf{Forecasts:} Converge to mean; uncertainty increases with horizon
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Next Chapter Preview}
+    \textbf{Chapter 3: ARIMA and Seasonal Models}
+
+    \vspace{0.5cm}
+    \begin{itemize}
+        \item ARIMA(p,d,q): Integrated models for non-stationary data
+        \item Seasonal ARIMA: SARIMA(p,d,q)(P,D,Q)$_s$
+        \item Seasonal differencing
+        \item Real-world applications with seasonal patterns
+    \end{itemize}
+
+    \vspace{0.5cm}
+    \textbf{Reading:}
+    \begin{itemize}
+        \item Hyndman \& Athanasopoulos, \textit{Forecasting: Principles and Practice}, Ch. 9
+        \item Box, Jenkins, Reinsel \& Ljung, \textit{Time Series Analysis}, Ch. 3-4
+    \end{itemize}
+\end{frame}
+
+\end{document}
