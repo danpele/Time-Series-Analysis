@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Series Analysis - Course Website</title>
+
+    <!-- MathJax for beautiful math rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --main-blue: #1A3A6E;
+            --accent-blue: #2A528C;
+            --ida-red: #DC3545;
+            --forest: #2E7D32;
+            --dark-gray: #333;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--main-blue) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--dark-gray);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: var(--main-blue);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            color: var(--main-blue);
+            border-bottom: 3px solid var(--ida-red);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Course Info */
+        .course-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--main-blue);
+        }
+
+        .info-card h3 {
+            color: var(--main-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Chapter Cards */
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chapter-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .chapter-header {
+            background: var(--main-blue);
+            color: white;
+            padding: 1rem;
+        }
+
+        .chapter-header h3 {
+            margin: 0;
+        }
+
+        .chapter-body {
+            padding: 1.5rem;
+        }
+
+        .chapter-body ul {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-body li {
+            padding: 0.3rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .chapter-body li::before {
+            content: ">";
+            color: var(--ida-red);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .chapter-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--main-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-blue);
+        }
+
+        .btn-secondary {
+            background: var(--forest);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1b5e20;
+        }
+
+        .btn-outline {
+            border: 2px solid var(--main-blue);
+            color: var(--main-blue);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: var(--main-blue);
+            color: white;
+        }
+
+        /* Quiz Section */
+        .quiz-container {
+            background: var(--light-gray);
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--main-blue);
+        }
+
+        .quiz-question h4 {
+            color: var(--main-blue);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-options {
+            list-style: none;
+        }
+
+        .quiz-options li {
+            padding: 0.5rem;
+            margin: 0.3rem 0;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .quiz-options li:hover {
+            background: #e3f2fd;
+        }
+
+        .quiz-options input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        .answer-reveal {
+            display: none;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+        }
+
+        .answer-correct {
+            background: #c8e6c9;
+            border-left: 4px solid var(--forest);
+        }
+
+        .answer-incorrect {
+            background: #ffcdd2;
+            border-left: 4px solid var(--ida-red);
+        }
+
+        /* Resources */
+        .resources-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: var(--dark-gray);
+            transition: background 0.3s;
+        }
+
+        .resource-item:hover {
+            background: var(--light-gray);
+        }
+
+        .resource-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--main-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-gray);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .chapter-links {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Time Series Analysis and Forecasting</h1>
+        <p>Master Program in Statistics and Data Science | Academic Year 2025-2026</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#chapters">Chapters</a></li>
+            <li><a href="#quizzes">Quizzes</a></li>
+            <li><a href="#resources">Resources</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="home">
+            <h2>Course Overview</h2>
+            <div class="course-info">
+                <div class="info-card">
+                    <h3>Instructor</h3>
+                    <p>Department of Statistics and Econometrics</p>
+                    <p>Bucharest University of Economic Studies</p>
+                </div>
+                <div class="info-card">
+                    <h3>Schedule</h3>
+                    <p><strong>Lectures:</strong> 2 hours/week</p>
+                    <p><strong>Seminars:</strong> 2 hours/week</p>
+                </div>
+                <div class="info-card">
+                    <h3>Prerequisites</h3>
+                    <p>Statistics, Probability Theory</p>
+                    <p>Linear Algebra, Python Programming</p>
+                </div>
+                <div class="info-card">
+                    <h3>Assessment</h3>
+                    <p>Final Exam: 60%</p>
+                    <p>Projects & Assignments: 40%</p>
+                </div>
+            </div>
+
+            <h3>Learning Objectives</h3>
+            <p>By the end of this course, you will be able to:</p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>Understand the fundamental concepts of time series analysis</li>
+                <li>Apply decomposition and exponential smoothing methods</li>
+                <li>Build and evaluate ARIMA and GARCH models</li>
+                <li>Implement time series forecasting in Python</li>
+                <li>Analyze real-world financial and economic data</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem;">Key Formulas</h3>
+            <div class="course-info" style="margin-top: 1rem;">
+                <div class="info-card">
+                    <h3>Decomposition</h3>
+                    <p><strong>Additive:</strong> $X_t = T_t + S_t + \varepsilon_t$</p>
+                    <p><strong>Multiplicative:</strong> $X_t = T_t \times S_t \times \varepsilon_t$</p>
+                </div>
+                <div class="info-card">
+                    <h3>Exponential Smoothing</h3>
+                    <p><strong>SES:</strong> $\hat{X}_{t+1} = \alpha X_t + (1-\alpha)\hat{X}_t$</p>
+                    <p>where $\alpha \in (0,1)$</p>
+                </div>
+                <div class="info-card">
+                    <h3>Stationarity</h3>
+                    <p>$\mathbb{E}[X_t] = \mu$ (constant)</p>
+                    <p>$\text{Var}(X_t) = \sigma^2$ (constant)</p>
+                    <p>$\text{Cov}(X_t, X_{t+h}) = \gamma(h)$</p>
+                </div>
+                <div class="info-card">
+                    <h3>Random Walk</h3>
+                    <p>$X_t = X_{t-1} + \varepsilon_t$</p>
+                    <p>$\text{Var}(X_t) = t\sigma^2$ (non-stationary!)</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="chapters">
+            <h2>Course Chapters</h2>
+            <div class="chapters-grid">
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Chapter 1: Introduction to Time Series</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Time Series Definition & Types</li>
+                            <li>Decomposition Methods</li>
+                            <li>Exponential Smoothing (SES, Holt, HW)</li>
+                            <li>Forecast Evaluation</li>
+                            <li>Stationarity & Unit Root Tests</li>
+                            <li>ACF and PACF</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <a href="chapter1_intro_timeseries.pdf" class="btn btn-primary">Lecture Slides</a>
+                            <a href="chapter1_seminar.pdf" class="btn btn-secondary">Seminar</a>
+                            <a href="chapter1_lecture_notebook.ipynb" class="btn btn-outline">Notebook</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Chapter 2: ARMA Models</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Autoregressive (AR) Models</li>
+                            <li>Moving Average (MA) Models</li>
+                            <li>ARMA Model Identification</li>
+                            <li>Parameter Estimation</li>
+                            <li>Model Diagnostics</li>
+                            <li>Forecasting with ARMA</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <span class="btn btn-outline" style="opacity: 0.5; cursor: not-allowed;">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Chapter 3: ARIMA & Seasonal Models</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Integration and Differencing</li>
+                            <li>ARIMA(p,d,q) Models</li>
+                            <li>Seasonal ARIMA (SARIMA)</li>
+                            <li>Box-Jenkins Methodology</li>
+                            <li>Model Selection (AIC, BIC)</li>
+                            <li>Automatic ARIMA</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <span class="btn btn-outline" style="opacity: 0.5; cursor: not-allowed;">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Chapter 4: Volatility Models</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Stylized Facts of Financial Data</li>
+                            <li>ARCH Models</li>
+                            <li>GARCH and Extensions</li>
+                            <li>EGARCH, GJR-GARCH</li>
+                            <li>Value at Risk (VaR)</li>
+                            <li>Volatility Forecasting</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <span class="btn btn-outline" style="opacity: 0.5; cursor: not-allowed;">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quizzes">
+            <h2>Interactive Quizzes</h2>
+            <div class="quiz-container">
+                <h3 style="margin-bottom: 1.5rem;">Chapter 1 Quiz: Test Your Knowledge (20 Questions)</h3>
+
+                <!-- Question 1 -->
+                <div class="quiz-question" id="q1">
+                    <h4>Question 1: Time Series Basics</h4>
+                    <p>Which of the following is NOT a characteristic of time series data?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(1, 'A')"><input type="radio" name="q1"> A) Observations are ordered in time</li>
+                        <li onclick="checkAnswer(1, 'B')"><input type="radio" name="q1"> B) Consecutive observations are typically correlated</li>
+                        <li onclick="checkAnswer(1, 'C')"><input type="radio" name="q1"> C) Observations are independent and identically distributed</li>
+                        <li onclick="checkAnswer(1, 'D')"><input type="radio" name="q1"> D) The data has a natural temporal ordering</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer1-correct">
+                        <strong>Correct!</strong> Time series observations are typically DEPENDENT (autocorrelated), not i.i.d.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer1-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. Time series observations are typically dependent, not independent.
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question" id="q2">
+                    <h4>Question 2: Data Types</h4>
+                    <p>Which type of data has multiple units observed over multiple time periods?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(2, 'A')"><input type="radio" name="q2"> A) Cross-sectional data</li>
+                        <li onclick="checkAnswer(2, 'B')"><input type="radio" name="q2"> B) Time series data</li>
+                        <li onclick="checkAnswer(2, 'C')"><input type="radio" name="q2"> C) Panel data</li>
+                        <li onclick="checkAnswer(2, 'D')"><input type="radio" name="q2"> D) Pooled data</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer2-correct">
+                        <strong>Correct!</strong> Panel data (longitudinal data) has both cross-sectional and time dimensions.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer2-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. Panel data combines multiple units across multiple time periods.
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question" id="q3">
+                    <h4>Question 3: Decomposition</h4>
+                    <p>When should you use multiplicative decomposition instead of additive?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(3, 'A')"><input type="radio" name="q3"> A) When the seasonal pattern has constant amplitude</li>
+                        <li onclick="checkAnswer(3, 'B')"><input type="radio" name="q3"> B) When the variance is stable over time</li>
+                        <li onclick="checkAnswer(3, 'C')"><input type="radio" name="q3"> C) When seasonal fluctuations grow with the level</li>
+                        <li onclick="checkAnswer(3, 'D')"><input type="radio" name="q3"> D) When there is no trend component</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer3-correct">
+                        <strong>Correct!</strong> In multiplicative decomposition $X_t = T_t \times S_t \times \varepsilon_t$, the seasonal effect scales with the level.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer3-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. Use multiplicative when seasonal peaks grow with the series level.
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="quiz-question" id="q4">
+                    <h4>Question 4: Seasonal Component</h4>
+                    <p>In multiplicative decomposition, if $S_t = 1.15$ for July, this means:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(4, 'A')"><input type="radio" name="q4"> A) July values are 1.15 units above average</li>
+                        <li onclick="checkAnswer(4, 'B')"><input type="radio" name="q4"> B) July values are 15% above average</li>
+                        <li onclick="checkAnswer(4, 'C')"><input type="radio" name="q4"> C) July values are 115% of the trend</li>
+                        <li onclick="checkAnswer(4, 'D')"><input type="radio" name="q4"> D) Both B and C are correct</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer4-correct">
+                        <strong>Correct!</strong> In multiplicative models, $S_t = 1.15$ means 15% above average, or equivalently, 115% of the trend value.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer4-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is D. $S_t = 1.15$ means both 15% above average AND 115% of trend.
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="quiz-question" id="q5">
+                    <h4>Question 5: Moving Average</h4>
+                    <p>What is the main purpose of using a centered moving average in decomposition?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(5, 'A')"><input type="radio" name="q5"> A) To forecast future values</li>
+                        <li onclick="checkAnswer(5, 'B')"><input type="radio" name="q5"> B) To estimate the trend component</li>
+                        <li onclick="checkAnswer(5, 'C')"><input type="radio" name="q5"> C) To remove outliers</li>
+                        <li onclick="checkAnswer(5, 'D')"><input type="radio" name="q5"> D) To test for stationarity</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer5-correct">
+                        <strong>Correct!</strong> Moving averages smooth out seasonal and random fluctuations to reveal the underlying trend.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer5-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. Moving averages are used to estimate trend by smoothing.
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="quiz-question" id="q6">
+                    <h4>Question 6: Simple Exponential Smoothing</h4>
+                    <p>In SES with $\alpha = 0.1$, what happens?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(6, 'A')"><input type="radio" name="q6"> A) Forecasts react quickly to recent changes</li>
+                        <li onclick="checkAnswer(6, 'B')"><input type="radio" name="q6"> B) Forecasts are smooth and stable</li>
+                        <li onclick="checkAnswer(6, 'C')"><input type="radio" name="q6"> C) Only the most recent observation matters</li>
+                        <li onclick="checkAnswer(6, 'D')"><input type="radio" name="q6"> D) The model captures seasonality</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer6-correct">
+                        <strong>Correct!</strong> Low $\alpha$ means more weight on historical data, producing smoother, more stable forecasts.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer6-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. Low $\alpha$ = smooth forecasts, high $\alpha$ = reactive forecasts.
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="quiz-question" id="q7">
+                    <h4>Question 7: Holt's Method</h4>
+                    <p>Holt's linear trend method extends SES by adding:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(7, 'A')"><input type="radio" name="q7"> A) A seasonal component</li>
+                        <li onclick="checkAnswer(7, 'B')"><input type="radio" name="q7"> B) A trend component</li>
+                        <li onclick="checkAnswer(7, 'C')"><input type="radio" name="q7"> C) A cyclical component</li>
+                        <li onclick="checkAnswer(7, 'D')"><input type="radio" name="q7"> D) An error correction term</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer7-correct">
+                        <strong>Correct!</strong> Holt's method adds a trend equation: $b_t = \beta^*(\ell_t - \ell_{t-1}) + (1-\beta^*)b_{t-1}$
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer7-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. Holt adds trend; Holt-Winters adds both trend and seasonality.
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="quiz-question" id="q8">
+                    <h4>Question 8: Holt-Winters</h4>
+                    <p>For monthly data with trend and seasonality, which method is most appropriate?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(8, 'A')"><input type="radio" name="q8"> A) Simple Exponential Smoothing</li>
+                        <li onclick="checkAnswer(8, 'B')"><input type="radio" name="q8"> B) Holt's Linear Method</li>
+                        <li onclick="checkAnswer(8, 'C')"><input type="radio" name="q8"> C) Holt-Winters Method</li>
+                        <li onclick="checkAnswer(8, 'D')"><input type="radio" name="q8"> D) Moving Average</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer8-correct">
+                        <strong>Correct!</strong> Holt-Winters captures level, trend, AND seasonality with three smoothing equations.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer8-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. Only Holt-Winters handles both trend and seasonality.
+                    </div>
+                </div>
+
+                <!-- Question 9 -->
+                <div class="quiz-question" id="q9">
+                    <h4>Question 9: Forecast Metrics</h4>
+                    <p>Which metric is scale-independent and useful for comparing forecasts across different series?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(9, 'A')"><input type="radio" name="q9"> A) Mean Absolute Error (MAE)</li>
+                        <li onclick="checkAnswer(9, 'B')"><input type="radio" name="q9"> B) Root Mean Squared Error (RMSE)</li>
+                        <li onclick="checkAnswer(9, 'C')"><input type="radio" name="q9"> C) Mean Absolute Percentage Error (MAPE)</li>
+                        <li onclick="checkAnswer(9, 'D')"><input type="radio" name="q9"> D) Mean Squared Error (MSE)</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer9-correct">
+                        <strong>Correct!</strong> MAPE $= \frac{100}{n}\sum\left|\frac{e_t}{X_t}\right|$ expresses errors as percentages, making it scale-independent.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer9-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. MAPE is in percentage units, while MAE/RMSE/MSE depend on the scale.
+                    </div>
+                </div>
+
+                <!-- Question 10 -->
+                <div class="quiz-question" id="q10">
+                    <h4>Question 10: Train/Test Split</h4>
+                    <p>What is the purpose of the validation set in time series modeling?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(10, 'A')"><input type="radio" name="q10"> A) To estimate model parameters</li>
+                        <li onclick="checkAnswer(10, 'B')"><input type="radio" name="q10"> B) To tune hyperparameters and compare models</li>
+                        <li onclick="checkAnswer(10, 'C')"><input type="radio" name="q10"> C) To report final model performance</li>
+                        <li onclick="checkAnswer(10, 'D')"><input type="radio" name="q10"> D) To detect outliers</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer10-correct">
+                        <strong>Correct!</strong> Validation set is for model selection and hyperparameter tuning. Test set is for final evaluation only!
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer10-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. Training = fit parameters, Validation = tune/compare, Test = final evaluation.
+                    </div>
+                </div>
+
+                <!-- Question 11 -->
+                <div class="quiz-question" id="q11">
+                    <h4>Question 11: Residual Diagnostics</h4>
+                    <p>Good forecast residuals should have which property?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(11, 'A')"><input type="radio" name="q11"> A) Strong autocorrelation</li>
+                        <li onclick="checkAnswer(11, 'B')"><input type="radio" name="q11"> B) Increasing variance over time</li>
+                        <li onclick="checkAnswer(11, 'C')"><input type="radio" name="q11"> C) Zero mean and no autocorrelation</li>
+                        <li onclick="checkAnswer(11, 'D')"><input type="radio" name="q11"> D) A clear trend pattern</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer11-correct">
+                        <strong>Correct!</strong> Good residuals should be white noise: $\mathbb{E}[e_t] = 0$ and $\text{Cov}(e_t, e_{t-k}) = 0$ for $k \neq 0$.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer11-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. Residuals should resemble white noise (no patterns left to model).
+                    </div>
+                </div>
+
+                <!-- Question 12 -->
+                <div class="quiz-question" id="q12">
+                    <h4>Question 12: Weak Stationarity</h4>
+                    <p>Which condition is NOT required for weak stationarity?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(12, 'A')"><input type="radio" name="q12"> A) Constant mean: $\mathbb{E}[X_t] = \mu$</li>
+                        <li onclick="checkAnswer(12, 'B')"><input type="radio" name="q12"> B) Constant variance: $\text{Var}(X_t) = \sigma^2$</li>
+                        <li onclick="checkAnswer(12, 'C')"><input type="radio" name="q12"> C) Normal distribution</li>
+                        <li onclick="checkAnswer(12, 'D')"><input type="radio" name="q12"> D) Covariance depends only on lag</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer12-correct">
+                        <strong>Correct!</strong> Weak stationarity only requires constant mean, constant variance, and lag-dependent covariance. No distributional assumption!
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer12-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. Normality is NOT required for weak stationarity.
+                    </div>
+                </div>
+
+                <!-- Question 13 -->
+                <div class="quiz-question" id="q13">
+                    <h4>Question 13: Random Walk</h4>
+                    <p>For a random walk $X_t = X_{t-1} + \varepsilon_t$ with $X_0 = 100$ and $\sigma^2 = 4$, what is $\text{Var}(X_{25})$?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(13, 'A')"><input type="radio" name="q13"> A) 4</li>
+                        <li onclick="checkAnswer(13, 'B')"><input type="radio" name="q13"> B) 25</li>
+                        <li onclick="checkAnswer(13, 'C')"><input type="radio" name="q13"> C) 100</li>
+                        <li onclick="checkAnswer(13, 'D')"><input type="radio" name="q13"> D) 625</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer13-correct">
+                        <strong>Correct!</strong> $\text{Var}(X_t) = t \cdot \sigma^2 = 25 \times 4 = 100$
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer13-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. For random walk: $\text{Var}(X_t) = t \cdot \sigma^2 = 25 \times 4 = 100$.
+                    </div>
+                </div>
+
+                <!-- Question 14 -->
+                <div class="quiz-question" id="q14">
+                    <h4>Question 14: White Noise</h4>
+                    <p>Which statement about white noise is FALSE?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(14, 'A')"><input type="radio" name="q14"> A) White noise has zero mean</li>
+                        <li onclick="checkAnswer(14, 'B')"><input type="radio" name="q14"> B) White noise has constant variance</li>
+                        <li onclick="checkAnswer(14, 'C')"><input type="radio" name="q14"> C) White noise must be normally distributed</li>
+                        <li onclick="checkAnswer(14, 'D')"><input type="radio" name="q14"> D) White noise has no autocorrelation</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer14-correct">
+                        <strong>Correct!</strong> White noise only requires zero mean, constant variance, and no autocorrelation. Gaussian white noise is a special case.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer14-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is C. White noise does NOT require normality.
+                    </div>
+                </div>
+
+                <!-- Question 15 -->
+                <div class="quiz-question" id="q15">
+                    <h4>Question 15: ACF Patterns</h4>
+                    <p>For an AR(1) process with $\phi = 0.8$, the ACF:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(15, 'A')"><input type="radio" name="q15"> A) Cuts off after lag 1</li>
+                        <li onclick="checkAnswer(15, 'B')"><input type="radio" name="q15"> B) Decays exponentially</li>
+                        <li onclick="checkAnswer(15, 'C')"><input type="radio" name="q15"> C) Oscillates around zero</li>
+                        <li onclick="checkAnswer(15, 'D')"><input type="radio" name="q15"> D) Is zero for all lags</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer15-correct">
+                        <strong>Correct!</strong> For AR(1): $\rho(h) = \phi^h = 0.8^h$, which decays exponentially toward zero.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer15-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. AR processes have exponentially decaying ACF; MA processes cut off.
+                    </div>
+                </div>
+
+                <!-- Question 16 -->
+                <div class="quiz-question" id="q16">
+                    <h4>Question 16: PACF Interpretation</h4>
+                    <p>The PACF of an MA(1) process:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(16, 'A')"><input type="radio" name="q16"> A) Cuts off after lag 1</li>
+                        <li onclick="checkAnswer(16, 'B')"><input type="radio" name="q16"> B) Decays exponentially</li>
+                        <li onclick="checkAnswer(16, 'C')"><input type="radio" name="q16"> C) Is zero for all lags</li>
+                        <li onclick="checkAnswer(16, 'D')"><input type="radio" name="q16"> D) Shows a seasonal pattern</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer16-correct">
+                        <strong>Correct!</strong> For MA processes, PACF decays; ACF cuts off. For AR processes, it's the opposite.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer16-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. MA: ACF cuts off, PACF decays. AR: ACF decays, PACF cuts off.
+                    </div>
+                </div>
+
+                <!-- Question 17 -->
+                <div class="quiz-question" id="q17">
+                    <h4>Question 17: Differencing</h4>
+                    <p>If $X_t$ is a random walk, then $\Delta X_t = X_t - X_{t-1}$ is:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(17, 'A')"><input type="radio" name="q17"> A) Still a random walk</li>
+                        <li onclick="checkAnswer(17, 'B')"><input type="radio" name="q17"> B) White noise (stationary)</li>
+                        <li onclick="checkAnswer(17, 'C')"><input type="radio" name="q17"> C) An AR(1) process</li>
+                        <li onclick="checkAnswer(17, 'D')"><input type="radio" name="q17"> D) A trending series</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer17-correct">
+                        <strong>Correct!</strong> If $X_t = X_{t-1} + \varepsilon_t$, then $\Delta X_t = \varepsilon_t$, which is white noise!
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer17-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. Differencing a random walk gives white noise.
+                    </div>
+                </div>
+
+                <!-- Question 18 -->
+                <div class="quiz-question" id="q18">
+                    <h4>Question 18: ADF Test</h4>
+                    <p>In the ADF test, the null hypothesis is:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(18, 'A')"><input type="radio" name="q18"> A) The series is stationary</li>
+                        <li onclick="checkAnswer(18, 'B')"><input type="radio" name="q18"> B) The series has a unit root</li>
+                        <li onclick="checkAnswer(18, 'C')"><input type="radio" name="q18"> C) The series is white noise</li>
+                        <li onclick="checkAnswer(18, 'D')"><input type="radio" name="q18"> D) The series has no trend</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer18-correct">
+                        <strong>Correct!</strong> ADF: $H_0$: unit root (non-stationary). Reject $H_0$ $\Rightarrow$ stationary.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer18-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. ADF tests for unit root; KPSS tests for stationarity.
+                    </div>
+                </div>
+
+                <!-- Question 19 -->
+                <div class="quiz-question" id="q19">
+                    <h4>Question 19: KPSS Test</h4>
+                    <p>If KPSS rejects $H_0$, we conclude:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(19, 'A')"><input type="radio" name="q19"> A) The series is stationary</li>
+                        <li onclick="checkAnswer(19, 'B')"><input type="radio" name="q19"> B) The series is non-stationary</li>
+                        <li onclick="checkAnswer(19, 'C')"><input type="radio" name="q19"> C) The series is white noise</li>
+                        <li onclick="checkAnswer(19, 'D')"><input type="radio" name="q19"> D) We need more data</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer19-correct">
+                        <strong>Correct!</strong> KPSS: $H_0$: stationary. Reject $H_0$ $\Rightarrow$ evidence of non-stationarity.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer19-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. KPSS has opposite hypotheses to ADF.
+                    </div>
+                </div>
+
+                <!-- Question 20 -->
+                <div class="quiz-question" id="q20">
+                    <h4>Question 20: Deterministic vs Stochastic Trend</h4>
+                    <p>How should you remove a stochastic trend (unit root)?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer(20, 'A')"><input type="radio" name="q20"> A) Fit a linear regression on time</li>
+                        <li onclick="checkAnswer(20, 'B')"><input type="radio" name="q20"> B) Apply differencing</li>
+                        <li onclick="checkAnswer(20, 'C')"><input type="radio" name="q20"> C) Use a moving average</li>
+                        <li onclick="checkAnswer(20, 'D')"><input type="radio" name="q20"> D) Apply seasonal adjustment</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer20-correct">
+                        <strong>Correct!</strong> Stochastic trend $\Rightarrow$ differencing. Deterministic trend $\Rightarrow$ regression.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer20-incorrect">
+                        <strong>Incorrect.</strong> The correct answer is B. Use differencing for stochastic trends, regression for deterministic trends.
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; text-align: center;">
+                    <p id="score-display" style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: bold;"></p>
+                    <button onclick="calculateScore()" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1rem; cursor: pointer; border: none; margin-right: 1rem;">Check Score</button>
+                    <button onclick="resetQuiz()" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1rem; cursor: pointer; border: none;">Reset Quiz</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources">
+            <h2>Resources & Downloads</h2>
+            <div class="resources-list">
+                <a href="chapter1_intro_timeseries.pdf" class="resource-item">
+                    <div class="resource-icon">PDF</div>
+                    <div>
+                        <strong>Chapter 1 Lecture Slides</strong>
+                        <p style="font-size: 0.9rem; color: #666;">Introduction to Time Series (83 slides)</p>
+                    </div>
+                </a>
+                <a href="chapter1_seminar.pdf" class="resource-item">
+                    <div class="resource-icon">PDF</div>
+                    <div>
+                        <strong>Chapter 1 Seminar Slides</strong>
+                        <p style="font-size: 0.9rem; color: #666;">Quizzes & Exercises (34 slides)</p>
+                    </div>
+                </a>
+                <a href="chapter1_lecture_notebook.ipynb" class="resource-item">
+                    <div class="resource-icon">NB</div>
+                    <div>
+                        <strong>Lecture Jupyter Notebook</strong>
+                        <p style="font-size: 0.9rem; color: #666;">Python code demonstrations</p>
+                    </div>
+                </a>
+                <a href="chapter1_seminar_notebook.ipynb" class="resource-item">
+                    <div class="resource-icon">NB</div>
+                    <div>
+                        <strong>Seminar Jupyter Notebook</strong>
+                        <p style="font-size: 0.9rem; color: #666;">Exercises with solutions</p>
+                    </div>
+                </a>
+                <a href="generate_timeseries_charts.py" class="resource-item">
+                    <div class="resource-icon">PY</div>
+                    <div>
+                        <strong>Chart Generation Script</strong>
+                        <p style="font-size: 0.9rem; color: #666;">Python script for all figures</p>
+                    </div>
+                </a>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Recommended Textbooks</h3>
+            <ul style="margin-left: 2rem;">
+                <li>Hyndman, R.J. & Athanasopoulos, G. (2021). <em>Forecasting: Principles and Practice</em>, 3rd ed. OTexts.</li>
+                <li>Hamilton, J.D. (1994). <em>Time Series Analysis</em>. Princeton University Press.</li>
+                <li>Tsay, R.S. (2010). <em>Analysis of Financial Time Series</em>, 3rd ed. Wiley.</li>
+                <li>Shumway, R.H. & Stoffer, D.S. (2017). <em>Time Series Analysis and Its Applications</em>, 4th ed. Springer.</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Python Libraries Used</h3>
+            <ul style="margin-left: 2rem;">
+                <li><code>statsmodels</code> - Time series analysis and econometrics</li>
+                <li><code>pandas</code> - Data manipulation and analysis</li>
+                <li><code>numpy</code> - Numerical computing</li>
+                <li><code>matplotlib</code> - Data visualization</li>
+                <li><code>yfinance</code> - Yahoo Finance data download</li>
+                <li><code>scipy</code> - Scientific computing</li>
+            </ul>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Information</h2>
+            <div class="course-info">
+                <div class="info-card">
+                    <h3>Office Hours</h3>
+                    <p>By appointment</p>
+                </div>
+                <div class="info-card">
+                    <h3>Email</h3>
+                    <p>See university portal</p>
+                </div>
+                <div class="info-card">
+                    <h3>Location</h3>
+                    <p>Bucharest University of Economic Studies</p>
+                    <p>Department of Statistics and Econometrics</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Time Series Analysis and Forecasting | Master Program in Statistics and Data Science</p>
+        <p>Academic Year 2025-2026</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">All materials generated using Python and LaTeX</p>
+    </footer>
+
+    <script>
+        const correctAnswers = {
+            1: 'C',   // Time series NOT i.i.d.
+            2: 'C',   // Panel data
+            3: 'C',   // Multiplicative when seasonal grows
+            4: 'D',   // S=1.15 means both 15% above and 115% of trend
+            5: 'B',   // Moving average for trend
+            6: 'B',   // Low alpha = smooth
+            7: 'B',   // Holt adds trend
+            8: 'C',   // Holt-Winters for trend+seasonal
+            9: 'C',   // MAPE is scale-independent
+            10: 'B',  // Validation for tuning
+            11: 'C',  // Good residuals = white noise
+            12: 'C',  // Normality NOT required for stationarity
+            13: 'C',  // Var(X_25) = 25*4 = 100
+            14: 'C',  // White noise doesn't need normality
+            15: 'B',  // AR(1) ACF decays
+            16: 'B',  // MA(1) PACF decays
+            17: 'B',  // Differenced RW = white noise
+            18: 'B',  // ADF H0 = unit root
+            19: 'B',  // KPSS reject = non-stationary
+            20: 'B'   // Stochastic trend = differencing
+        };
+
+        let userAnswers = {};
+
+        function checkAnswer(questionNum, selectedAnswer) {
+            const correctDiv = document.getElementById(`answer${questionNum}-correct`);
+            const incorrectDiv = document.getElementById(`answer${questionNum}-incorrect`);
+
+            // Store user answer
+            userAnswers[questionNum] = selectedAnswer;
+
+            // Hide both first
+            correctDiv.style.display = 'none';
+            incorrectDiv.style.display = 'none';
+
+            if (selectedAnswer === correctAnswers[questionNum]) {
+                correctDiv.style.display = 'block';
+            } else {
+                incorrectDiv.style.display = 'block';
+            }
+        }
+
+        function calculateScore() {
+            let score = 0;
+            let answered = 0;
+
+            for (let i = 1; i <= 20; i++) {
+                if (userAnswers[i]) {
+                    answered++;
+                    if (userAnswers[i] === correctAnswers[i]) {
+                        score++;
+                    }
+                }
+            }
+
+            const percentage = answered > 0 ? Math.round((score / answered) * 100) : 0;
+            const totalPercentage = Math.round((score / 20) * 100);
+
+            let message = `Score: ${score}/20 (${totalPercentage}%)`;
+            if (answered < 20) {
+                message += ` - ${20 - answered} questions unanswered`;
+            }
+
+            if (totalPercentage >= 90) {
+                message += ' - Excellent!';
+            } else if (totalPercentage >= 70) {
+                message += ' - Good job!';
+            } else if (totalPercentage >= 50) {
+                message += ' - Keep studying!';
+            } else {
+                message += ' - Review the material.';
+            }
+
+            document.getElementById('score-display').textContent = message;
+        }
+
+        function resetQuiz() {
+            for (let i = 1; i <= 20; i++) {
+                const correctDiv = document.getElementById(`answer${i}-correct`);
+                const incorrectDiv = document.getElementById(`answer${i}-incorrect`);
+                if (correctDiv) correctDiv.style.display = 'none';
+                if (incorrectDiv) incorrectDiv.style.display = 'none';
+            }
+            // Uncheck all radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            // Reset user answers
+            userAnswers = {};
+            document.getElementById('score-display').textContent = '';
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
