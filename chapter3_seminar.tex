@@ -1,0 +1,604 @@
+% Chapter 3: Seminar - ARIMA Models
+% Quizzes, Practice Problems, and Discussion
+% Bachelor program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Ensure content fits on slides
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% THEME AND STYLE CONFIGURATION
+%=============================================================================
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+% IDA-Inspired Color Palette
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{42, 82, 140}
+\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=MainBlue}
+\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+            \usebeamerfont{author in head/foot}\insertshortauthor
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+            \usebeamerfont{title in head/foot}\insertshorttitle
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+        \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+%=============================================================================
+% PACKAGES
+%=============================================================================
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\graphicspath{{logos/}{charts/}}
+
+%=============================================================================
+% CUSTOM COMMANDS
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\R}{\mathbb{R}}
+
+%=============================================================================
+% TITLE INFORMATION
+%=============================================================================
+\title[Chapter 3: Seminar]{Chapter 3: Seminar --- ARIMA Models}
+\subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
+\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
+\institute{Bucharest University of Economic Studies}
+\date{Academic Year 2025--2026}
+
+\begin{document}
+
+%=============================================================================
+% TITLE SLIDE
+%=============================================================================
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
+            \includegraphics[height=1.1cm]{ase_logo.png}
+        };
+        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
+            \includegraphics[height=1.1cm]{ai4efin_logo.png}
+        };
+        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
+            \includegraphics[height=1.1cm]{msca_logo.png}
+        };
+    \end{tikzpicture}
+    \vspace{1.2cm}
+    \titlepage
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south west] at ([xshift=1cm, yshift=0.8cm]current page.south west) {
+            \includegraphics[height=0.9cm]{ida_logo.png}
+        };
+        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
+            \includegraphics[height=0.9cm]{brc_logo.png}
+        };
+        \node[anchor=south east] at ([xshift=-1cm, yshift=0.8cm]current page.south east) {
+            \includegraphics[height=0.9cm]{acad_logo.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Seminar Outline}
+    \tableofcontents
+\end{frame}
+
+%=============================================================================
+% SECTION 1: REVIEW QUIZ
+%=============================================================================
+\section{Review Quiz}
+
+\begin{frame}{Quiz 1: Integration Order}
+    \begin{alertblock}{Question}
+        A time series $Y_t$ requires two differences to become stationary. What is its order of integration?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item $I(0)$
+        \item $I(1)$
+        \item $I(2)$
+        \item Cannot be determined
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        By definition, $Y_t \sim I(d)$ means $d$ differences are needed to achieve stationarity. Since two differences are required, $Y_t \sim I(2)$.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 2: Random Walk Properties}
+    \begin{alertblock}{Question}
+        For a random walk $Y_t = Y_{t-1} + \varepsilon_t$ with $\Var(\varepsilon_t) = \sigma^2$, what is $\Var(Y_t)$?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item $\sigma^2$
+        \item $t \cdot \sigma^2$
+        \item $\sigma^2 / t$
+        \item $\sigma^2 / (1-\phi^2)$
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Since $Y_t = \sum_{i=1}^{t} \varepsilon_i$ (assuming $Y_0 = 0$), we have $\Var(Y_t) = t \cdot \sigma^2$. The variance grows linearly with time -- a key feature of non-stationarity.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 3: ADF Test Hypotheses}
+    \begin{alertblock}{Question}
+        In the Augmented Dickey-Fuller test, what is the null hypothesis?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item The series is stationary
+        \item The series has a unit root
+        \item The series has no autocorrelation
+        \item The series is normally distributed
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        The ADF test has $H_0$: unit root (non-stationary) vs $H_1$: stationary. We reject $H_0$ if the test statistic is sufficiently negative (below critical value).
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 4: ARIMA Notation}
+    \begin{alertblock}{Question}
+        What does ARIMA(2,1,1) mean?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item AR(2) on differenced data with MA(1) errors
+        \item AR(1) with 2 differences and MA(1)
+        \item MA(2) with 1 difference and AR(1)
+        \item 2 lags, 1 trend, 1 seasonal component
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: A}
+        ARIMA($p$,$d$,$q$) means: $p$=AR order, $d$=differencing order, $q$=MA order. So ARIMA(2,1,1) has AR(2) and MA(1) components applied to the first-differenced series.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 5: Difference Operator}
+    \begin{alertblock}{Question}
+        What is $(1-L)^2 Y_t$ expanded?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item $Y_t - Y_{t-1}$
+        \item $Y_t - 2Y_{t-1} + Y_{t-2}$
+        \item $Y_t + 2Y_{t-1} + Y_{t-2}$
+        \item $Y_t - Y_{t-2}$
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        $(1-L)^2 = 1 - 2L + L^2$, so $(1-L)^2 Y_t = Y_t - 2Y_{t-1} + Y_{t-2}$. This is the second difference of $Y_t$.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 6: KPSS vs ADF}
+    \begin{alertblock}{Question}
+        How does the KPSS test differ from the ADF test?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item KPSS tests for seasonality, ADF tests for trends
+        \item KPSS has stationarity as null, ADF has unit root as null
+        \item KPSS is more powerful than ADF
+        \item There is no difference
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        The key difference is reversed hypotheses. KPSS: $H_0$ = stationary. ADF: $H_0$ = unit root. Using both tests together provides stronger evidence.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 7: Overdifferencing}
+    \begin{alertblock}{Question}
+        If $Y_t \sim I(1)$ and we compute $\Delta^2 Y_t$, what happens?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item We get a better stationary series
+        \item We introduce artificial negative autocorrelation
+        \item The variance decreases
+        \item Nothing changes
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Overdifferencing creates an MA component at the invertibility boundary. If $\Delta Y_t = \varepsilon_t$, then $\Delta^2 Y_t = \varepsilon_t - \varepsilon_{t-1}$, which is MA(1) with $\theta = -1$ (non-invertible).
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 8: Forecast Variance}
+    \begin{alertblock}{Question}
+        For an ARIMA(0,1,0) model (random walk), how does forecast variance behave as horizon $h$ increases?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Stays constant
+        \item Decreases to zero
+        \item Grows linearly with $h$
+        \item Converges to a finite limit
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        For a random walk, $\Var(Y_{T+h} - \hat{Y}_{T+h|T}) = h \sigma^2$. The forecast uncertainty grows without bound -- a key characteristic of I(1) processes.
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 2: PRACTICE PROBLEMS
+%=============================================================================
+\section{Practice Problems}
+
+\begin{frame}{Problem 1: Unit Root Testing}
+    \begin{block}{Exercise}
+        You have quarterly GDP data for 80 quarters. The ADF test (with constant and trend) gives a test statistic of $-2.85$. The 5\% critical value is $-3.41$.
+
+        \vspace{0.3cm}
+        \begin{enumerate}
+            \item What is your conclusion about stationarity?
+            \item What would you do next?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        \begin{enumerate}
+            \item Since $-2.85 > -3.41$, we \textbf{fail to reject} $H_0$. The data appears to have a unit root (non-stationary).
+            \item Take the first difference $\Delta Y_t$ and repeat the ADF test on the differenced series to confirm it is now stationary.
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 2: Model Identification}
+    \begin{block}{Exercise}
+        After differencing a time series once, the ACF shows:
+        \begin{itemize}
+            \item Significant spike at lag 1 ($\rho_1 = 0.4$)
+            \item All other lags insignificant
+        \end{itemize}
+        The PACF shows gradual decay.
+
+        What ARIMA model is suggested?
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        \begin{itemize}
+            \item ACF cuts off after lag 1 $\Rightarrow$ MA(1) component
+            \item PACF decays $\Rightarrow$ Confirms MA structure
+            \item Since we differenced once: $d = 1$
+        \end{itemize}
+        \textbf{Suggested model: ARIMA(0,1,1) or IMA(1,1)}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 3: ARIMA Equation}
+    \begin{block}{Exercise}
+        Write out the full equation for ARIMA(1,1,1):
+        $$(1-\phi_1 L)(1-L)Y_t = c + (1+\theta_1 L)\varepsilon_t$$
+
+        Expand this completely in terms of $Y_t$, $Y_{t-1}$, $Y_{t-2}$, etc.
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        Expanding $(1-\phi_1 L)(1-L) = 1 - L - \phi_1 L + \phi_1 L^2 = 1 - (1+\phi_1)L + \phi_1 L^2$:
+
+        $$Y_t - (1+\phi_1)Y_{t-1} + \phi_1 Y_{t-2} = c + \varepsilon_t + \theta_1 \varepsilon_{t-1}$$
+
+        Or equivalently:
+        $$Y_t = c + (1+\phi_1)Y_{t-1} - \phi_1 Y_{t-2} + \varepsilon_t + \theta_1 \varepsilon_{t-1}$$
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 4: Forecast Calculation}
+    \begin{block}{Exercise}
+        Given ARIMA(0,1,1): $\Delta Y_t = \varepsilon_t + 0.3\varepsilon_{t-1}$
+
+        At time $T$: $Y_T = 100$, $\hat{\varepsilon}_T = 2$, $\sigma^2 = 4$
+
+        Calculate:
+        \begin{enumerate}
+            \item $\hat{Y}_{T+1|T}$ (one-step forecast)
+            \item $\hat{Y}_{T+2|T}$ (two-step forecast)
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        \begin{enumerate}
+            \item $\hat{Y}_{T+1|T} = Y_T + 0.3\hat{\varepsilon}_T = 100 + 0.3(2) = \mathbf{100.6}$
+            \item $\hat{Y}_{T+2|T} = \hat{Y}_{T+1|T} + 0.3 \cdot 0 = 100.6 + 0 = \mathbf{100.6}$
+
+            (Future shocks $\varepsilon_{T+1}, \varepsilon_{T+2}$ are forecast as 0)
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 5: Confidence Intervals}
+    \begin{block}{Exercise}
+        Continuing from Problem 4, calculate the 95\% forecast intervals for $\hat{Y}_{T+1|T}$ and $\hat{Y}_{T+2|T}$.
+
+        Recall: $\sigma^2 = 4$, $\theta_1 = 0.3$
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        For IMA(1,1), the MA($\infty$) weights are $\psi_0 = 1$, $\psi_j = 1 + \theta_1$ for $j \geq 1$.
+
+        \textbf{1-step:} $\Var(e_{T+1}) = \sigma^2 \psi_0^2 = 4$, so $SE = 2$
+
+        $100.6 \pm 1.96(2) = \mathbf{[96.68, 104.52]}$
+
+        \textbf{2-step:} $\Var(e_{T+2}) = \sigma^2(\psi_0^2 + \psi_1^2) = 4(1 + 1.3^2) = 10.76$, $SE = 3.28$
+
+        $100.6 \pm 1.96(3.28) = \mathbf{[94.17, 107.03]}$
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: WORKED EXAMPLES
+%=============================================================================
+\section{Worked Examples}
+
+\begin{frame}{Example: Testing for Unit Root in Stock Prices}
+    \begin{block}{Scenario}
+        You have daily closing prices for a stock over 500 days. You want to determine if prices follow a random walk.
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Step-by-step Approach}
+        \begin{enumerate}
+            \item \textbf{Visual inspection}: Plot prices -- likely shows trend
+            \item \textbf{ADF test on prices}: Expect to fail to reject $H_0$ (unit root)
+            \item \textbf{Take log returns}: $r_t = \ln(P_t/P_{t-1}) = \Delta \ln(P_t)$
+            \item \textbf{ADF test on returns}: Should reject $H_0$ (stationary)
+            \item \textbf{Conclusion}: Log prices are $I(1)$, returns are $I(0)$
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Example: Box-Jenkins for Inflation Data}
+    \begin{block}{Scenario}
+        Monthly inflation rates for 10 years. Build an ARIMA model.
+    \end{block}
+
+    \begin{exampleblock}{Workflow}
+        \begin{enumerate}
+            \item \textbf{Plot \& test}: ADF suggests borderline -- try both $d=0$ and $d=1$
+            \item \textbf{If $d=0$}: Fit ARMA models, compare AIC
+            \item \textbf{If $d=1$}: Examine ACF/PACF of $\Delta Y_t$
+                \begin{itemize}
+                    \item ACF: spike at lag 1, then cuts off
+                    \item PACF: decays
+                    \item $\Rightarrow$ Try ARIMA(0,1,1)
+                \end{itemize}
+            \item \textbf{Estimate}: Fit ARIMA(0,1,1), check coefficients
+            \item \textbf{Diagnose}: Ljung-Box on residuals (want $p > 0.05$)
+            \item \textbf{Compare}: AIC of ARIMA(0,1,1) vs ARMA(1,1) on levels
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Interpreting Python Output}
+    \begin{block}{statsmodels ARIMA Output}
+        \small
+        \begin{verbatim}
+                            ARIMA Model Results
+==============================================================
+Dep. Variable:           D.y   No. Observations:    99
+Model:             ARIMA(1,1,1)   AIC                 285.32
+                                  BIC                 295.63
+==============================================================
+                 coef    std err     z     P>|z|
+--------------------------------------------------------------
+const          0.0521    0.048    1.085   0.278
+ar.L1          0.4532    0.102    4.443   0.000
+ma.L1         -0.2891    0.118   -2.450   0.014
+sigma2         1.2340    0.176    7.011   0.000
+        \end{verbatim}
+    \end{block}
+
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}
+            \item AR coefficient (0.45) is significant, MA coefficient (-0.29) is significant
+            \item Constant (0.052) not significant -- could set $c=0$
+            \item Check: $|\phi_1| < 1$ (stationary), $|\theta_1| < 1$ (invertible) -- OK!
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: DISCUSSION TOPICS
+%=============================================================================
+\section{Discussion Topics}
+
+\begin{frame}{Discussion: Deterministic vs Stochastic Trends}
+    \begin{block}{Key Question}
+        Why is it important to distinguish between deterministic and stochastic trends?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Discussion Points}
+        \begin{itemize}
+            \item \textbf{Wrong treatment consequences}:
+                \begin{itemize}
+                    \item Detrending a unit root $\Rightarrow$ spurious stationarity
+                    \item Differencing a trend-stationary $\Rightarrow$ overdifferencing
+                \end{itemize}
+            \item \textbf{Economic interpretation}:
+                \begin{itemize}
+                    \item Deterministic trend: shocks are temporary
+                    \item Stochastic trend: shocks have permanent effects
+                \end{itemize}
+            \item \textbf{Policy implications}:
+                \begin{itemize}
+                    \item Does a recession permanently lower GDP, or does the economy return to trend?
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Discussion: Model Selection Criteria}
+    \begin{block}{Key Question}
+        When should you use AIC vs BIC for ARIMA model selection?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Considerations}
+        \begin{itemize}
+            \item \textbf{AIC}: Minimizes prediction error, may overfit
+                \begin{itemize}
+                    \item Better for forecasting
+                    \item Tends to select larger models
+                \end{itemize}
+            \item \textbf{BIC}: Consistent model selection, more parsimonious
+                \begin{itemize}
+                    \item Better for identifying ``true'' model
+                    \item Penalizes complexity more heavily
+                \end{itemize}
+            \item \textbf{Practical advice}: Report both, prefer BIC if they disagree substantially
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Discussion: Limitations of ARIMA}
+    \begin{block}{Key Question}
+        What are the main limitations of ARIMA models?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Discussion Points}
+        \begin{itemize}
+            \item \textbf{Linearity}: Cannot capture nonlinear dynamics
+            \item \textbf{Constant variance}: Assumes homoskedasticity (no GARCH effects)
+            \item \textbf{No structural breaks}: Parameters assumed constant
+            \item \textbf{Univariate}: Ignores relationships with other variables
+            \item \textbf{Symmetric}: Treats positive and negative shocks equally
+            \item \textbf{Long-horizon forecasts}: Uncertainty grows rapidly
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Extensions}
+        These limitations motivate GARCH (volatility), VAR (multivariate), regime-switching models, etc.
+    \end{alertblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Key Points from Today's Seminar}
+    \begin{block}{What We Covered}
+        \begin{enumerate}
+            \item \textbf{Integration and differencing}: $I(d)$ processes require $d$ differences
+            \item \textbf{Unit root testing}: ADF tests $H_0$: unit root; KPSS tests $H_0$: stationary
+            \item \textbf{ARIMA(p,d,q)}: Combines ARMA with differencing
+            \item \textbf{Model identification}: Use ACF/PACF patterns and information criteria
+            \item \textbf{Forecasting}: Point forecasts and growing confidence intervals
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Next Seminar}
+        Hands-on Python exercises with real economic data:
+        \begin{itemize}
+            \item Unit root testing with \texttt{statsmodels}
+            \item Auto-ARIMA with \texttt{pmdarima}
+            \item Forecasting and model diagnostics
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\end{document}
