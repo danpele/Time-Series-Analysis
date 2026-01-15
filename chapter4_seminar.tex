@@ -1,0 +1,658 @@
+% Chapter 4: Seminar - SARIMA Models
+% Quizzes, Practice Problems, and Discussion
+% Bachelor program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Ensure content fits on slides
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% THEME AND STYLE CONFIGURATION
+%=============================================================================
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+% IDA-Inspired Color Palette
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{42, 82, 140}
+\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=MainBlue}
+\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+            \usebeamerfont{author in head/foot}\insertshortauthor
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+            \usebeamerfont{title in head/foot}\insertshorttitle
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+        \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+%=============================================================================
+% PACKAGES
+%=============================================================================
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false, pdfborder={0 0 0}}
+\graphicspath{{logos/}{charts/}}
+
+%=============================================================================
+% CUSTOM COMMANDS
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\R}{\mathbb{R}}
+
+%=============================================================================
+% TITLE INFORMATION
+%=============================================================================
+\title[Chapter 4: Seminar]{Chapter 4: Seminar --- SARIMA Models}
+\subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
+\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
+\institute{Bucharest University of Economic Studies}
+\date{Academic Year 2025--2026}
+
+\begin{document}
+
+%=============================================================================
+% TITLE SLIDE
+%=============================================================================
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
+            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
+        };
+        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
+            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
+        };
+        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
+            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
+        };
+    \end{tikzpicture}
+    \vfill
+    \begin{center}
+        {\Huge\textbf{\textcolor{MainBlue}{Chapter 4: SARIMA Models}}}\\[0.5cm]
+        {\Large\textcolor{MainBlue}{Seminar}}
+    \end{center}
+    \vfill
+
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south west] at ([xshift=1cm, yshift=0.8cm]current page.south west) {
+            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
+        };
+        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
+            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
+        };
+        \node[anchor=south east] at ([xshift=-1cm, yshift=0.8cm]current page.south east) {
+            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Seminar Outline}
+    \tableofcontents
+\end{frame}
+
+%=============================================================================
+% SECTION 1: REVIEW QUIZ
+%=============================================================================
+\section{Review Quiz}
+
+\begin{frame}{Quiz 1: Seasonal Differencing}
+    \begin{alertblock}{Question}
+        For monthly data with annual seasonality, what does the operator $(1-L^{12})$ do?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Takes 12 consecutive differences
+        \item Computes $Y_t - Y_{t-12}$
+        \item Averages over 12 months
+        \item Removes the first 12 observations
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        The seasonal differencing operator $(1-L^{12})Y_t = Y_t - Y_{t-12}$ compares each observation with the same month in the previous year, removing annual seasonal patterns.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 2: SARIMA Notation}
+    \begin{alertblock}{Question}
+        What does SARIMA$(1,1,1) \times (1,1,1)_{12}$ represent?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item 12 different ARIMA models
+        \item ARIMA with 12 AR and 12 MA terms
+        \item ARIMA(1,1,1) with seasonal ARIMA(1,1,1) at period 12
+        \item A model requiring 12 years of data
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        SARIMA$(p,d,q) \times (P,D,Q)_s$ combines regular ARIMA$(p,d,q)$ with seasonal ARIMA$(P,D,Q)$ at seasonal period $s$. Here we have both regular and seasonal AR(1), I(1), and MA(1) components with $s=12$.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 3: The Airline Model}
+    \begin{alertblock}{Question}
+        The ``airline model'' refers to SARIMA$(0,1,1) \times (0,1,1)_{12}$. How many parameters does it have (excluding variance)?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item 2 parameters
+        \item 4 parameters
+        \item 6 parameters
+        \item 12 parameters
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: A}
+        The airline model has only 2 parameters: $\theta_1$ (regular MA coefficient) and $\Theta_1$ (seasonal MA coefficient). Despite its simplicity, it captures many seasonal patterns remarkably well.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 4: ACF of Seasonal Data}
+    \begin{alertblock}{Question}
+        For monthly data with strong seasonality, where would you expect to see significant ACF spikes?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Only at lag 1
+        \item Only at lag 12
+        \item At lags 12, 24, 36, ...
+        \item Randomly distributed
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        Seasonal data shows significant autocorrelation at the seasonal frequency and its multiples. For monthly data with annual seasonality, expect spikes at lags 12, 24, 36, etc., reflecting correlation between same months across years.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 5: Multiplicative Structure}
+    \begin{alertblock}{Question}
+        In SARIMA, what does ``multiplicative structure'' mean?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item The seasonal amplitude grows proportionally
+        \item Regular and seasonal polynomials are multiplied
+        \item We multiply the data by seasonal factors
+        \item The model is estimated using multiplication
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Multiplicative structure means the AR polynomials $\phi(L) \times \Phi(L^s)$ and MA polynomials $\theta(L) \times \Theta(L^s)$ are multiplied together, creating cross-terms that capture interactions between regular and seasonal dynamics.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 6: Seasonal vs Regular Differencing}
+    \begin{alertblock}{Question}
+        When would you apply both regular ($d=1$) and seasonal ($D=1$) differencing?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item When data has only a trend
+        \item When data has only seasonality
+        \item When data has both trend and seasonal non-stationarity
+        \item Never -- they cancel each other
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        Both types of differencing are needed when the series exhibits both a stochastic trend (regular unit root) and stochastic seasonality (seasonal unit root). For example, airline passenger data needs $(1-L)(1-L^{12})Y_t$ to achieve stationarity.
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 2: PRACTICE PROBLEMS
+%=============================================================================
+\section{Practice Problems}
+
+\begin{frame}{Problem 1: Expanding the Seasonal Difference}
+    \begin{block}{Exercise}
+        Expand $(1-L)(1-L^{12})Y_t$ fully. What observations are involved?
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        $(1-L)(1-L^{12}) = 1 - L - L^{12} + L^{13}$
+
+        \vspace{0.2cm}
+        Therefore:
+        $(1-L)(1-L^{12})Y_t = Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13}$
+
+        \vspace{0.2cm}
+        \textbf{Interpretation}: This is the difference of differences:
+        \begin{itemize}
+            \item First seasonal difference: $Y_t - Y_{t-12}$ (this year vs last year)
+            \item Then regular difference: $(Y_t - Y_{t-12}) - (Y_{t-1} - Y_{t-13})$
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 2: Airline Model Expansion}
+    \begin{block}{Exercise}
+        Write out the full equation for the airline model SARIMA$(0,1,1) \times (0,1,1)_{12}$:
+        $(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
+    \end{block}
+
+    \vspace{0.2cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        Expand the MA side:
+        $(1+\theta_1 L)(1+\Theta_1 L^{12}) = 1 + \theta_1 L + \Theta_1 L^{12} + \theta_1 \Theta_1 L^{13}$
+
+        \vspace{0.2cm}
+        Full model:
+        $Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13} = \varepsilon_t + \theta_1 \varepsilon_{t-1} + \Theta_1 \varepsilon_{t-12} + \theta_1 \Theta_1 \varepsilon_{t-13}$
+
+        \vspace{0.2cm}
+        \textbf{Note}: The cross-term $\theta_1 \Theta_1 L^{13}$ is the multiplicative interaction between regular and seasonal MA components.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 3: Parameter Count}
+    \begin{block}{Exercise}
+        How many parameters (excluding $\sigma^2$) are in SARIMA$(2,1,1) \times (1,0,1)_4$?
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        \begin{itemize}
+            \item Regular AR($p=2$): $\phi_1, \phi_2$ $\Rightarrow$ 2 parameters
+            \item Regular MA($q=1$): $\theta_1$ $\Rightarrow$ 1 parameter
+            \item Seasonal AR($P=1$): $\Phi_1$ $\Rightarrow$ 1 parameter
+            \item Seasonal MA($Q=1$): $\Theta_1$ $\Rightarrow$ 1 parameter
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Total: 5 parameters}
+
+        \vspace{0.2cm}
+        Note: The differencing orders ($d=1$, $D=0$) don't add parameters -- they're transformations applied to the data.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 4: SARIMA Forecasting}
+    \begin{block}{Exercise}
+        Given the airline model with $\theta_1 = -0.4$ and $\Theta_1 = -0.6$, and:
+        \begin{itemize}
+            \item $Y_T = 500$, $Y_{T-1} = 495$, $Y_{T-11} = 480$, $Y_{T-12} = 470$
+            \item $\varepsilon_T = 5$, $\varepsilon_{T-11} = -3$, $\varepsilon_{T-12} = 2$
+        \end{itemize}
+        Forecast $Y_{T+1}$.
+    \end{block}
+
+    \pause
+    \begin{exampleblock}{Solution}
+        From the model: $Y_{T+1} = Y_T + Y_{T-11} - Y_{T-12} + \varepsilon_{T+1} + \theta_1 \varepsilon_T + \Theta_1 \varepsilon_{T-11} + \theta_1 \Theta_1 \varepsilon_{T-12}$
+
+        Setting $\E[\varepsilon_{T+1}] = 0$:
+
+        $\hat{Y}_{T+1} = 500 + 480 - 470 + 0 + (-0.4)(5) + (-0.6)(-3) + (-0.4)(-0.6)(2)$
+
+        $= 510 - 2 + 1.8 + 0.48 = \mathbf{510.28}$
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 5: Identifying Seasonal Period}
+    \begin{block}{Exercise}
+        Match each data type with its typical seasonal period $s$:
+        \begin{enumerate}
+            \item Quarterly GDP data
+            \item Monthly retail sales
+            \item Weekly restaurant reservations
+            \item Daily electricity demand
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        \begin{enumerate}
+            \item Quarterly GDP: $s = 4$ (annual cycle over 4 quarters)
+            \item Monthly retail sales: $s = 12$ (annual cycle over 12 months)
+            \item Weekly restaurant reservations: $s = 7$ (weekly cycle) or $s = 52$ (annual)
+            \item Daily electricity demand: $s = 7$ (weekly pattern) or $s = 365$ (annual)
+        \end{enumerate}
+
+        \textbf{Note}: Some series have multiple seasonal patterns (e.g., daily data may have weekly AND annual cycles).
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: WORKED EXAMPLES
+%=============================================================================
+\section{Worked Examples}
+
+\begin{frame}{Example: Monthly Retail Sales Analysis}
+    \begin{block}{Scenario}
+        You have 5 years of monthly retail sales data showing clear December peaks and January troughs. Build an appropriate SARIMA model.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Step-by-step Approach}
+        \begin{enumerate}
+            \item \textbf{Visual inspection}: Plot shows upward trend + strong December spikes
+            \item \textbf{Seasonal period}: Monthly data with annual pattern $\Rightarrow s = 12$
+            \item \textbf{Transformation}: Consider $\log(Y_t)$ if seasonal amplitude grows with level
+            \item \textbf{Differencing}: Try $(1-L)(1-L^{12})Y_t$ -- check ACF/PACF
+            \item \textbf{Model selection}: Start with airline model, compare via AIC
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Example: ACF/PACF Interpretation for Seasonal Data}
+    \begin{block}{Observed Patterns (after differencing)}
+        \begin{itemize}
+            \item ACF: Significant at lags 1, 12; cuts off after lag 1 and lag 12
+            \item PACF: Significant at lags 1, 12, 13; decays at multiples of 12
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Interpretation}
+        \textbf{Regular component}: ACF cuts off at 1 $\Rightarrow$ MA(1)
+
+        \textbf{Seasonal component}: ACF significant only at lag 12 $\Rightarrow$ seasonal MA(1)
+
+        \textbf{Suggested model}: SARIMA$(0,d,1) \times (0,D,1)_{12}$ -- the airline model!
+
+        \vspace{0.2cm}
+        \textbf{Alternative check}: If PACF showed cutoff at seasonal lags instead of ACF, consider seasonal AR terms.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Python Implementation}
+    \begin{block}{Fitting SARIMA in Python}
+        \small
+        \begin{verbatim}
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+import pmdarima as pm
+
+# Manual fit
+model = SARIMAX(y, order=(0,1,1), seasonal_order=(0,1,1,12))
+results = model.fit()
+print(results.summary())
+
+# Automatic selection
+auto_model = pm.auto_arima(y, seasonal=True, m=12,
+                           start_p=0, max_p=2,
+                           start_q=0, max_q=2,
+                           d=1, D=1,
+                           trace=True)
+        \end{verbatim}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Interpreting SARIMA Output}
+    \begin{block}{Sample statsmodels Output}
+        \footnotesize
+        \begin{verbatim}
+                         SARIMAX Results
+==============================================================
+Model:            SARIMAX(0,1,1)x(0,1,1,12)   AIC:    1348.52
+                                               BIC:    1358.21
+==============================================================
+                 coef    std err      z     P>|z|
+--------------------------------------------------------------
+ma.L1         -0.4018      0.072   -5.58    0.000
+ma.S.L12      -0.5521      0.081   -6.82    0.000
+sigma2      1254.3201    142.856    8.78    0.000
+        \end{verbatim}
+    \end{block}
+
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}
+            \item $\hat{\theta}_1 = -0.40$: Negative MA means positive shocks reduce next period's value
+            \item $\hat{\Theta}_1 = -0.55$: Same-season correlation is captured
+            \item Both coefficients significant $(p < 0.001)$; $|\theta|, |\Theta| < 1$ -- invertible
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: DISCUSSION TOPICS
+%=============================================================================
+\section{Discussion Topics}
+
+\begin{frame}{Discussion: Deterministic vs Stochastic Seasonality}
+    \begin{block}{Key Question}
+        When should you use seasonal dummies vs SARIMA for seasonal data?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Considerations}
+        \textbf{Seasonal dummies} (deterministic):
+        \begin{itemize}
+            \item Fixed, repeating pattern each year
+            \item Same December effect every year
+            \item Appropriate when seasonality is stable
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{SARIMA} (stochastic):
+        \begin{itemize}
+            \item Evolving seasonal pattern
+            \item This year's December depends on last year's December
+            \item Better when seasonal amplitude varies
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Discussion: Log Transformation}
+    \begin{block}{Key Question}
+        When should you take logarithms before fitting SARIMA?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Guidelines}
+        \textbf{Use log transformation when}:
+        \begin{itemize}
+            \item Seasonal fluctuations grow with the level (multiplicative seasonality)
+            \item Variance increases over time
+            \item Data is strictly positive (prices, sales, counts)
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Avoid log when}:
+        \begin{itemize}
+            \item Seasonal pattern is additive (constant amplitude)
+            \item Data contains zeros or negatives
+            \item Already on a rate/ratio scale
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Tip}: Compare AIC of models with and without log transformation.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Discussion: Multiple Seasonalities}
+    \begin{block}{Challenge}
+        Daily sales data may have both weekly (7-day) and annual (365-day) seasonal patterns. How do you handle this?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Approaches}
+        \begin{enumerate}
+            \item \textbf{Nested SARIMA}: Model at shorter frequency, include longer as exogenous
+            \item \textbf{TBATS/BATS models}: Explicitly handle multiple seasonalities
+            \item \textbf{Fourier terms}: Add sin/cos terms for each seasonal frequency
+            \item \textbf{Prophet/similar}: Modern tools designed for multiple seasonalities
+        \end{enumerate}
+
+        \vspace{0.2cm}
+        \textbf{Note}: Standard SARIMA handles only one seasonal period. For complex seasonality, consider specialized methods.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Discussion: Forecasting Seasonal Data}
+    \begin{block}{Key Question}
+        What are the unique challenges of forecasting seasonal time series?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Challenges and Solutions}
+        \begin{itemize}
+            \item \textbf{Horizon matters}: 12-month forecast means predicting a full cycle
+            \item \textbf{Uncertainty grows}: Seasonal forecasts compound regular uncertainty
+            \item \textbf{Turning points}: Capturing when seasons peak/trough
+            \item \textbf{Structural breaks}: COVID-19 disrupted many seasonal patterns
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Best practices}:
+        \begin{itemize}
+            \item Use rolling-origin cross-validation
+            \item Compare against seasonal naive benchmark
+            \item Report forecast intervals, especially at seasonal horizons
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: EXERCISES
+%=============================================================================
+\section{Exercises for Self-Study}
+
+\begin{frame}{Take-Home Exercises}
+    {\small
+    \begin{enumerate}
+        \item \textbf{Theoretical}: Show that $(1-L)(1-L^4)$ can be written as $(1 - L - L^4 + L^5)$ and explain what this transformation does to quarterly data with annual seasonality.
+
+        \vspace{0.2cm}
+        \item \textbf{Computation}: For SARIMA$(1,0,0) \times (1,0,0)_4$ with $\phi_1 = 0.5$ and $\Phi_1 = 0.8$, write out the full AR polynomial and identify all non-zero coefficients.
+
+        \vspace{0.2cm}
+        \item \textbf{Applied}: Download monthly airline passenger data and:
+            \begin{itemize}
+                \item Plot the series and identify trend/seasonality
+                \item Apply appropriate transformations
+                \item Fit the airline model and interpret coefficients
+                \item Generate 24-month forecasts with confidence intervals
+            \end{itemize}
+
+        \vspace{0.2cm}
+        \item \textbf{Comparison}: Fit both SARIMA$(0,1,1) \times (0,1,1)_{12}$ and SARIMA$(1,1,0) \times (1,1,0)_{12}$ to the airline data. Compare using AIC, BIC, and residual diagnostics. Which is preferred?
+    \end{enumerate}
+    }
+\end{frame}
+
+\begin{frame}{Exercise Solutions Hints}
+    {\small
+    \begin{block}{Hints}
+        \begin{enumerate}
+            \item Expand $(1-L)(1-L^4) = 1 \cdot 1 - 1 \cdot L^4 - L \cdot 1 + L \cdot L^4 = 1 - L - L^4 + L^5$
+
+            \vspace{0.1cm}
+            \item AR polynomial: $(1 - \phi_1 L)(1 - \Phi_1 L^4) = 1 - 0.5L - 0.8L^4 + 0.4L^5$
+
+            \vspace{0.1cm}
+            \item For airline data:
+                \begin{itemize}
+                    \item Use log transformation (multiplicative seasonality)
+                    \item Both $d=1$ and $D=1$ needed
+                    \item Typical estimates: $\theta_1 \approx -0.4$, $\Theta_1 \approx -0.6$
+                \end{itemize}
+
+            \vspace{0.1cm}
+            \item The MA-based airline model typically fits better than pure AR seasonal model for this data (lower AIC).
+        \end{enumerate}
+    \end{block}
+    }
+\end{frame}
+
+%=============================================================================
+% SUMMARY
+%=============================================================================
+\begin{frame}{Key Takeaways from This Seminar}
+    \begin{block}{Main Points}
+        \begin{enumerate}
+            \item Seasonal differencing $(1-L^s)$ removes stochastic seasonality
+            \item SARIMA notation: $(p,d,q) \times (P,D,Q)_s$ separates regular and seasonal
+            \item The airline model is surprisingly effective for many datasets
+            \item Multiplicative structure creates interaction terms
+            \item ACF/PACF show patterns at both regular and seasonal lags
+            \item Log transformation often needed for multiplicative seasonality
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{Next Steps}
+        Chapter 5 will cover multivariate time series: VAR models, Granger causality, and cointegration.
+    \end{alertblock}
+\end{frame}
+
+\end{document}

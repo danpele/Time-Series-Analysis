@@ -1,0 +1,806 @@
+% Chapter 4: SARIMA Models for Seasonal Time Series
+% Comprehensive Beamer Presentation
+% Bachelor program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Ensure content fits on slides
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% THEME AND STYLE CONFIGURATION
+%=============================================================================
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+% IDA-Inspired Color Palette
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{42, 82, 140}
+\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=MainBlue}
+\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+            \usebeamerfont{author in head/foot}\insertshortauthor
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+            \usebeamerfont{title in head/foot}\insertshorttitle
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+        \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+%=============================================================================
+% PACKAGES
+%=============================================================================
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false, pdfborder={0 0 0}}
+\graphicspath{{logos/}{charts/}}
+
+%=============================================================================
+% THEOREM ENVIRONMENTS
+%=============================================================================
+\theoremstyle{definition}
+\setbeamertemplate{theorems}[numbered]
+\newtheorem{defn}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{rmk}{Remark}
+
+%=============================================================================
+% CUSTOM COMMANDS
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\B}{\mathbf{B}}
+
+%=============================================================================
+% TITLE INFORMATION
+%=============================================================================
+\title[Chapter 4: SARIMA Models]{Chapter 4: SARIMA Models for Seasonal Time Series}
+\subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
+\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
+\institute{Bucharest University of Economic Studies}
+\date{Academic Year 2025--2026}
+
+\begin{document}
+
+%=============================================================================
+% TITLE SLIDE
+%=============================================================================
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
+            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
+        };
+        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
+            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
+        };
+        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
+            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
+        };
+    \end{tikzpicture}
+    \vfill
+    \begin{center}
+        {\Huge\textbf{\textcolor{MainBlue}{Chapter 4: SARIMA Models}}}\\[0.5cm]
+        {\Large\textcolor{MainBlue}{Seasonal Time Series}}
+    \end{center}
+    \vfill
+
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south west] at ([xshift=1cm, yshift=0.8cm]current page.south west) {
+            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
+        };
+        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
+            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
+        };
+        \node[anchor=south east] at ([xshift=-1cm, yshift=0.8cm]current page.south east) {
+            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+%=============================================================================
+% TABLE OF CONTENTS
+%=============================================================================
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+%=============================================================================
+% SECTION 1: SEASONALITY IN TIME SERIES
+%=============================================================================
+\section{Seasonality in Time Series}
+
+\begin{frame}{What is Seasonality?}
+    \begin{defn}[Seasonality]
+        A time series exhibits \textbf{seasonality} when it shows regular, periodic fluctuations that repeat over a fixed period $s$ (the seasonal period).
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Common Seasonal Periods}
+        \begin{itemize}
+            \item Monthly data: $s = 12$ (annual cycle)
+            \item Quarterly data: $s = 4$ (annual cycle)
+            \item Weekly data: $s = 52$ (annual) or $s = 7$ (weekly pattern)
+            \item Daily data: $s = 7$ (weekly pattern)
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Examples of Seasonal Data}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Economic Series}
+                \begin{itemize}
+                    \item Retail sales (holiday peaks)
+                    \item Tourism (summer/winter)
+                    \item Agricultural production
+                    \item Energy consumption
+                    \item Employment (hiring cycles)
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Other Domains}
+                \begin{itemize}
+                    \item Weather/temperature
+                    \item Website traffic
+                    \item Hospital admissions
+                    \item Transportation usage
+                    \item Electricity demand
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Why It Matters}
+        Ignoring seasonality leads to biased forecasts and invalid inference!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Deterministic vs Stochastic Seasonality}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Deterministic Seasonality}
+                Fixed seasonal pattern:
+                $$Y_t = \sum_{j=1}^{s} \gamma_j D_{jt} + \varepsilon_t$$
+                where $D_{jt}$ are seasonal dummies.
+
+                \vspace{0.2cm}
+                \textbf{Properties:}
+                \begin{itemize}
+                    \item Pattern is constant over time
+                    \item Can be removed by regression
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Stochastic Seasonality}
+                Evolving seasonal pattern:
+                $$\Delta_s Y_t = Y_t - Y_{t-s}$$
+                exhibits dependence structure.
+
+                \vspace{0.2cm}
+                \textbf{Properties:}
+                \begin{itemize}
+                    \item Pattern evolves over time
+                    \item Requires seasonal differencing
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Detecting Seasonality}
+    {\small
+    \begin{block}{Visual Methods}
+        \begin{itemize}
+            \item Time series plot -- look for repeating patterns
+            \item Seasonal subseries plot -- compare same seasons across years
+            \item ACF plot -- spikes at seasonal lags ($s, 2s, 3s, \ldots$)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Statistical Tests}
+        \begin{itemize}
+            \item Seasonal unit root tests (HEGY, CH, OCSB)
+            \item F-test for seasonal dummies
+            \item Kruskal-Wallis test (nonparametric)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{ACF Signature}
+        Strong seasonality: ACF shows significant spikes at lags $s, 2s, 3s, \ldots$
+    \end{exampleblock}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 2: SEASONAL DIFFERENCING
+%=============================================================================
+\section{Seasonal Differencing}
+
+\begin{frame}{The Seasonal Difference Operator}
+    \begin{defn}[Seasonal Difference]
+        The \textbf{seasonal difference operator} $\Delta_s$ is defined as:
+        $$\Delta_s Y_t = (1 - L^s) Y_t = Y_t - Y_{t-s}$$
+        where $L^s Y_t = Y_{t-s}$ is the seasonal lag operator.
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Examples}
+        \begin{itemize}
+            \item Monthly data ($s=12$): $\Delta_{12} Y_t = Y_t - Y_{t-12}$
+
+            Compares each month to the same month last year
+            \item Quarterly data ($s=4$): $\Delta_4 Y_t = Y_t - Y_{t-4}$
+
+            Compares each quarter to the same quarter last year
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Combining Regular and Seasonal Differencing}
+    \begin{block}{Full Differencing}
+        For series with both trend and seasonality:
+        $$\Delta \Delta_s Y_t = (1-L)(1-L^s) Y_t$$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Expansion}
+        $(1-L)(1-L^s) Y_t = Y_t - Y_{t-1} - Y_{t-s} + Y_{t-s-1}$
+
+        For monthly data ($s=12$):
+        $$\Delta \Delta_{12} Y_t = Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13}$$
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Order of Differencing}
+        \begin{itemize}
+            \item $d$: number of regular differences (trend removal)
+            \item $D$: number of seasonal differences (seasonal trend removal)
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Seasonal Integration}
+    \begin{defn}[Seasonally Integrated Process]
+        A series $Y_t$ is \textbf{seasonally integrated} of order $(d, D)_s$, written $Y_t \sim I(d, D)_s$, if:
+        $$(1-L)^d (1-L^s)^D Y_t$$
+        is stationary.
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Common Cases}
+        \begin{itemize}
+            \item $I(1,0)_{12}$: Regular unit root only (monthly)
+            \item $I(0,1)_{12}$: Seasonal unit root only
+            \item $I(1,1)_{12}$: Both regular and seasonal unit roots
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: SARIMA MODEL DEFINITION
+%=============================================================================
+\section{The SARIMA Model}
+
+\begin{frame}{SARIMA Model Definition}
+    \begin{defn}[SARIMA$(p,d,q)\times(P,D,Q)_s$]
+        The \textbf{Seasonal ARIMA} model is:
+        $$\phi(L)\Phi(L^s)(1-L)^d(1-L^s)^D Y_t = c + \theta(L)\Theta(L^s)\varepsilon_t$$
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    {\small
+    \begin{block}{Components}
+        \begin{itemize}
+            \item $\phi(L) = 1 - \phi_1 L - \cdots - \phi_p L^p$: Non-seasonal AR
+            \item $\Phi(L^s) = 1 - \Phi_1 L^s - \cdots - \Phi_P L^{Ps}$: Seasonal AR
+            \item $\theta(L) = 1 + \theta_1 L + \cdots + \theta_q L^q$: Non-seasonal MA
+            \item $\Theta(L^s) = 1 + \Theta_1 L^s + \cdots + \Theta_Q L^{Qs}$: Seasonal MA
+            \item $(1-L)^d$: Regular differencing
+            \item $(1-L^s)^D$: Seasonal differencing
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{SARIMA Notation}
+    \begin{block}{Full Specification}
+        SARIMA$(p,d,q)\times(P,D,Q)_s$ has 7 parameters to specify:
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Parameter} & \textbf{Meaning} \\
+            \midrule
+            $p$ & Non-seasonal AR order \\
+            $d$ & Non-seasonal differencing order \\
+            $q$ & Non-seasonal MA order \\
+            $P$ & Seasonal AR order \\
+            $D$ & Seasonal differencing order \\
+            $Q$ & Seasonal MA order \\
+            $s$ & Seasonal period \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Example}
+        SARIMA$(1,1,1)\times(1,1,1)_{12}$: Monthly data with AR(1), MA(1), seasonal AR(1), seasonal MA(1), regular and seasonal differencing.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Common SARIMA Models}
+    {\small
+    \begin{block}{Airline Model: SARIMA$(0,1,1)\times(0,1,1)_s$}
+        $$(1-L)(1-L^s)Y_t = (1+\theta L)(1+\Theta L^s)\varepsilon_t$$
+        Classic model for many economic series (Box \& Jenkins, 1970).
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{SARIMA$(1,0,0)\times(1,0,0)_s$}
+        $$(1-\phi L)(1-\Phi L^s)Y_t = \varepsilon_t$$
+        Pure seasonal and non-seasonal autoregressive model.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{SARIMA$(0,1,1)\times(0,1,0)_s$}
+        $$(1-L)(1-L^s)Y_t = (1+\theta L)\varepsilon_t$$
+        Random walk with seasonal differencing and MA(1) errors.
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{The Multiplicative Structure}
+    \begin{block}{Why Multiplicative?}
+        The seasonal and non-seasonal parts \textbf{multiply}:
+        $$\phi(L)\Phi(L^s) \quad \text{and} \quad \theta(L)\Theta(L^s)$$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Example: SARIMA$(1,0,0)\times(1,0,0)_{12}$}
+        $(1-\phi L)(1-\Phi L^{12})Y_t = \varepsilon_t$
+
+        Expanding:
+        $Y_t - \phi Y_{t-1} - \Phi Y_{t-12} + \phi\Phi Y_{t-13} = \varepsilon_t$
+
+        The cross-term $\phi\Phi Y_{t-13}$ captures interaction!
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Interpretation}
+        Multiplicative structure allows parsimonious modeling of complex seasonal patterns with few parameters.
+    \end{alertblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: SEASONAL ACF AND PACF
+%=============================================================================
+\section{Seasonal ACF and PACF Patterns}
+
+\begin{frame}{ACF/PACF for Seasonal Models}
+    \begin{block}{Key Insight}
+        Seasonal models show patterns at both:
+        \begin{itemize}
+            \item Non-seasonal lags: $1, 2, 3, \ldots$
+            \item Seasonal lags: $s, 2s, 3s, \ldots$
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Model} & \textbf{ACF} & \textbf{PACF} \\
+            \midrule
+            SAR($P$) & Decays at $s, 2s, \ldots$ & Cuts off after $Ps$ \\
+            SMA($Q$) & Cuts off after $Qs$ & Decays at $s, 2s, \ldots$ \\
+            SARMA & Decays at seasonal lags & Decays at seasonal lags \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Example: Airline Model ACF/PACF}
+    \begin{block}{SARIMA$(0,1,1)\times(0,1,1)_{12}$}
+        After differencing $W_t = (1-L)(1-L^{12})Y_t$:
+        $$W_t = (1+\theta L)(1+\Theta L^{12})\varepsilon_t$$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    {\small
+    \begin{exampleblock}{Expected ACF Pattern}
+        \begin{itemize}
+            \item Spike at lag 1 (from $\theta$)
+            \item Spike at lag 12 (from $\Theta$)
+            \item Spike at lag 13 (from $\theta \cdot \Theta$ interaction)
+            \item All other lags near zero
+        \end{itemize}
+    \end{exampleblock}
+
+    \begin{exampleblock}{Expected PACF Pattern}
+        \begin{itemize}
+            \item Exponential decay at lags $1, 2, 3, \ldots$
+            \item Exponential decay at lags $12, 24, 36, \ldots$
+        \end{itemize}
+    \end{exampleblock}
+    }
+\end{frame}
+
+\begin{frame}{Model Identification Guidelines}
+    {\small
+    \begin{block}{Step-by-Step Process}
+        \begin{enumerate}
+            \item Examine ACF for slow decay at seasonal lags $\Rightarrow$ seasonal differencing
+            \item After differencing, check ACF/PACF patterns
+            \item Non-seasonal behavior at lags $1, 2, \ldots, s-1$
+            \item Seasonal behavior at lags $s, 2s, 3s, \ldots$
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Practical Tips}
+        \begin{itemize}
+            \item Start with $d \leq 1$ and $D \leq 1$
+            \item Usually $P, Q \leq 2$ is sufficient
+            \item Use information criteria (AIC, BIC) for final selection
+            \item Auto-SARIMA algorithms can help
+        \end{itemize}
+    \end{alertblock}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 5: ESTIMATION AND DIAGNOSTICS
+%=============================================================================
+\section{Estimation and Diagnostics}
+
+\begin{frame}{Estimation Methods}
+    \begin{block}{Maximum Likelihood Estimation}
+        Standard approach for SARIMA:
+        \begin{itemize}
+            \item Conditional MLE (conditional on initial values)
+            \item Exact MLE (via Kalman filter)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Computational Considerations}
+        \begin{itemize}
+            \item More parameters than ARIMA $\Rightarrow$ more data needed
+            \item Seasonal parameters estimated from lags $s, 2s, \ldots$
+            \item Need sufficient seasonal cycles (at least 3-4 years of monthly data)
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Stationarity and Invertibility}
+    \begin{block}{Stationarity Conditions}
+        Both non-seasonal and seasonal AR polynomials must have roots outside the unit circle:
+        \begin{itemize}
+            \item $\phi(z) = 0 \Rightarrow |z| > 1$
+            \item $\Phi(z^s) = 0 \Rightarrow |z| > 1$
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Invertibility Conditions}
+        Both non-seasonal and seasonal MA polynomials must have roots outside the unit circle:
+        \begin{itemize}
+            \item $\theta(z) = 0 \Rightarrow |z| > 1$
+            \item $\Theta(z^s) = 0 \Rightarrow |z| > 1$
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Diagnostic Checking}
+    \begin{block}{Residual Analysis}
+        After fitting SARIMA, check that residuals are white noise:
+        \begin{enumerate}
+            \item Plot residuals over time (no patterns)
+            \item ACF of residuals (no significant spikes)
+            \item Ljung-Box test at multiple lags including seasonal
+            \item Normality tests (Q-Q plot, Jarque-Bera)
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Important}
+        Check ACF at \textbf{both} non-seasonal and seasonal lags!
+
+        Significant ACF at lag 12 suggests inadequate seasonal modeling.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Model Selection Criteria}
+    \begin{block}{Information Criteria}
+        Compare competing SARIMA models using:
+        \begin{itemize}
+            \item AIC = $-2\ln(L) + 2k$
+            \item BIC = $-2\ln(L) + k\ln(n)$
+            \item AICc = AIC + $\frac{2k(k+1)}{n-k-1}$ (corrected for small samples)
+        \end{itemize}
+        where $k = p + q + P + Q + 1$ (plus 1 for variance).
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Auto-SARIMA}
+        Python's \texttt{pmdarima.auto\_arima()} with \texttt{seasonal=True} automatically searches for optimal $(p,d,q)\times(P,D,Q)_s$.
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 6: FORECASTING
+%=============================================================================
+\section{Forecasting with SARIMA}
+
+\begin{frame}{Point Forecasts}
+    \begin{block}{Forecast Computation}
+        SARIMA forecasts are computed recursively:
+        \begin{itemize}
+            \item Replace future $\varepsilon_{T+h}$ with 0
+            \item Replace future $Y_{T+h}$ with forecasts $\hat{Y}_{T+h|T}$
+            \item Use known past values $Y_T, Y_{T-1}, \ldots$
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Seasonal Pattern in Forecasts}
+        SARIMA forecasts naturally capture seasonality:
+        \begin{itemize}
+            \item Short-term: influenced by recent values
+            \item Long-term: revert to seasonal pattern
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Forecast Intervals}
+    \begin{block}{Uncertainty Quantification}
+        $(1-\alpha)$\% prediction interval:
+        $$\hat{Y}_{T+h|T} \pm z_{\alpha/2} \sqrt{\Var(e_{T+h})}$$
+
+        Variance computed from MA($\infty$) representation.
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Key Properties}
+        \begin{itemize}
+            \item Intervals widen with forecast horizon
+            \item For $I(1,1)_s$ series: intervals grow without bound
+            \item Seasonal pattern visible in point forecasts
+            \item Uncertainty captures both trend and seasonal variation
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Long-Horizon Forecasts}
+    \begin{block}{Behavior as $h \to \infty$}
+        \begin{itemize}
+            \item Point forecasts converge to deterministic seasonal pattern
+            \item If drift present: linear trend + seasonal pattern
+            \item Forecast intervals continue to widen
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Practical Implication}
+        \begin{itemize}
+            \item Short-term: SARIMA captures both level and season
+            \item Medium-term: Good seasonal forecasts, growing uncertainty
+            \item Long-term: Mainly reflects seasonal pattern, wide intervals
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 7: REAL DATA APPLICATION
+%=============================================================================
+\section{Real Data Application: Airline Passengers}
+
+\begin{frame}{Airline Passengers Data}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch4_airline_data.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small
+    \begin{itemize}
+        \item Classic dataset: Monthly international airline passengers (1949-1960)
+        \item Clear upward trend and growing seasonal amplitude
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Seasonal Decomposition}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth, height=0.6\textheight, keepaspectratio]{charts/ch4_decomposition.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Trend: Strong upward growth
+        \item Seasonality: Summer peaks (vacation travel)
+        \item Residual: Random variation after removing trend and season
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{ACF/PACF Analysis}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch4_acf_pacf.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item After $\Delta\Delta_{12}$ differencing: spikes at lags 1 and 12
+        \item Suggests SARIMA$(0,1,1)\times(0,1,1)_{12}$ (Airline model)
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{SARIMA Forecast Results}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch4_sarima_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small
+    \begin{itemize}
+        \item SARIMA captures both trend and seasonal pattern
+        \item Forecasts show appropriate seasonal peaks and troughs
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Model Diagnostics}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.72\textwidth, height=0.6\textheight, keepaspectratio]{charts/ch4_diagnostics.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Residuals appear random; ACF within bounds at all lags
+        \item Model adequately captures seasonal structure
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Python Implementation}
+    {\small
+    \begin{block}{Fitting SARIMA in Python}
+        \begin{verbatim}
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+# Fit SARIMA(0,1,1)(0,1,1)[12]
+model = SARIMAX(y, order=(0,1,1),
+                seasonal_order=(0,1,1,12))
+results = model.fit()
+print(results.summary())
+
+# Forecast
+forecast = results.get_forecast(steps=24)
+        \end{verbatim}
+    \end{block}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 8: SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Key Takeaways}
+    {\small
+    \begin{block}{Main Points}
+        \begin{enumerate}
+            \item \textbf{Seasonality} is common in economic and business data
+            \item \textbf{Seasonal differencing} $(1-L^s)$ removes stochastic seasonality
+            \item \textbf{SARIMA}$(p,d,q)\times(P,D,Q)_s$ extends ARIMA for seasonal data
+            \item \textbf{Multiplicative structure} captures seasonal-trend interactions
+            \item \textbf{ACF/PACF} show patterns at both regular and seasonal lags
+            \item \textbf{Model selection}: Use AIC/BIC or auto-SARIMA algorithms
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Next Steps}
+        Chapter 5 will cover multivariate time series: VAR models, Granger causality, and cointegration.
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{References}
+    \begin{thebibliography}{9}
+        \bibitem{boxjenkins} Box, G.E.P., Jenkins, G.M., Reinsel, G.C., \& Ljung, G.M. (2015). \textit{Time Series Analysis: Forecasting and Control}. 5th ed. Wiley.
+
+        \bibitem{hyndman} Hyndman, R.J. \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}. 3rd ed. OTexts.
+
+        \bibitem{hamilton} Hamilton, J.D. (1994). \textit{Time Series Analysis}. Princeton University Press.
+
+        \bibitem{brockwell} Brockwell, P.J. \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}. 3rd ed. Springer.
+    \end{thebibliography}
+\end{frame}
+
+\end{document}
