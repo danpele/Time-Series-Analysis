@@ -1383,6 +1383,95 @@ def plot_forecast_error_decomposition():
     save_chart(fig, 'forecast_error_decomposition')
 
 # =============================================================================
+# 26. TRAIN/TEST/VALIDATION FORECAST USE CASE
+# =============================================================================
+def plot_forecast_use_case():
+    """Show practical train/test/validation forecast with confidence intervals"""
+    np.random.seed(42)
+
+    # Generate realistic-looking ARMA data
+    n_total = 200
+    n_train = 140
+    n_val = 30
+    n_test = 30
+
+    # Generate ARMA(1,1) process
+    ar = np.array([1, -0.7])
+    ma = np.array([1, 0.3])
+    data = ArmaProcess(ar, ma).generate_sample(nsample=n_total)
+    data = data + 50 + np.linspace(0, 10, n_total)  # Add trend and level
+
+    # Split data
+    train = data[:n_train]
+    val_actual = data[n_train:n_train+n_val]
+    test_actual = data[n_train+n_val:]
+
+    # Fit model on training data
+    model = ARIMA(train, order=(1, 0, 1))
+    fitted = model.fit()
+
+    # Generate forecasts for validation period
+    val_forecast = fitted.get_forecast(steps=n_val)
+    val_mean = val_forecast.predicted_mean
+    val_ci = val_forecast.conf_int()
+
+    # Refit on train+val and forecast test
+    train_val = data[:n_train+n_val]
+    model2 = ARIMA(train_val, order=(1, 0, 1))
+    fitted2 = model2.fit()
+    test_forecast = fitted2.get_forecast(steps=n_test)
+    test_mean = test_forecast.predicted_mean
+    test_ci = test_forecast.conf_int()
+
+    fig, ax = plt.subplots(figsize=(14, 6))
+
+    # Plot training data
+    ax.plot(range(n_train), train, color=BLUE, linewidth=1.5, label='Training Data')
+
+    # Plot validation actual and forecast
+    val_idx = range(n_train, n_train+n_val)
+    ax.plot(val_idx, val_actual, color=GREEN, linewidth=1.5, label='Validation (Actual)')
+    ax.plot(val_idx, val_mean, '--', color=GREEN, linewidth=2, alpha=0.8, label='Validation Forecast')
+    if hasattr(val_ci, 'iloc'):
+        ax.fill_between(val_idx, val_ci.iloc[:, 0], val_ci.iloc[:, 1],
+                        color=GREEN, alpha=0.15)
+    else:
+        ax.fill_between(val_idx, val_ci[:, 0], val_ci[:, 1],
+                        color=GREEN, alpha=0.15)
+
+    # Plot test actual and forecast
+    test_idx = range(n_train+n_val, n_total)
+    ax.plot(test_idx, test_actual, color=RED, linewidth=1.5, label='Test (Actual)')
+    ax.plot(test_idx, test_mean, '--', color=RED, linewidth=2, alpha=0.8, label='Test Forecast')
+    if hasattr(test_ci, 'iloc'):
+        ax.fill_between(test_idx, test_ci.iloc[:, 0], test_ci.iloc[:, 1],
+                        color=RED, alpha=0.15, label='95% CI')
+    else:
+        ax.fill_between(test_idx, test_ci[:, 0], test_ci[:, 1],
+                        color=RED, alpha=0.15, label='95% CI')
+
+    # Vertical lines for splits
+    ax.axvline(x=n_train-0.5, color='gray', linestyle='--', linewidth=2, alpha=0.7)
+    ax.axvline(x=n_train+n_val-0.5, color='gray', linestyle='--', linewidth=2, alpha=0.7)
+
+    # Add region labels
+    ax.text(n_train/2, ax.get_ylim()[1]*0.95, 'TRAINING\n(70%)',
+           ha='center', va='top', fontsize=12, color=BLUE, fontweight='bold')
+    ax.text(n_train + n_val/2, ax.get_ylim()[1]*0.95, 'VALIDATION\n(15%)',
+           ha='center', va='top', fontsize=12, color=GREEN, fontweight='bold')
+    ax.text(n_train + n_val + n_test/2, ax.get_ylim()[1]*0.95, 'TEST\n(15%)',
+           ha='center', va='top', fontsize=12, color=RED, fontweight='bold')
+
+    ax.set_xlabel('Time', fontsize=12)
+    ax.set_ylabel('Value', fontsize=12)
+    ax.set_title('ARMA Forecasting: Train/Validation/Test Split with 95% Confidence Intervals',
+                fontweight='bold', fontsize=14)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4, frameon=False)
+
+    plt.tight_layout()
+    save_chart(fig, 'forecast_train_val_test')
+
+# =============================================================================
 # MAIN EXECUTION
 # =============================================================================
 if __name__ == '__main__':
@@ -1417,6 +1506,7 @@ if __name__ == '__main__':
     plot_arma_simulation_steps()
     plot_parsimony()
     plot_forecast_error_decomposition()
+    plot_forecast_use_case()
 
     print("=" * 50)
     print("All charts generated successfully!")
