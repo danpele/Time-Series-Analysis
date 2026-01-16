@@ -260,4 +260,153 @@ plt.savefig('charts/ch3_diagnostics.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Created: ch3_diagnostics.pdf")
 
+# Chart 7: Random Walk Simulation
+np.random.seed(123)
+n_sim = 200
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Simulate multiple random walks
+for i in range(5):
+    rw = np.cumsum(np.random.normal(0, 1, n_sim))
+    axes[0].plot(rw, linewidth=1, alpha=0.8)
+axes[0].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+axes[0].set_title('Random Walk: $Y_t = Y_{t-1} + \\varepsilon_t$', fontweight='bold')
+axes[0].set_xlabel('Time')
+axes[0].set_ylabel('$Y_t$')
+
+# Random walk with drift
+for i in range(5):
+    rw_drift = 0.1 * np.arange(n_sim) + np.cumsum(np.random.normal(0, 1, n_sim))
+    axes[1].plot(rw_drift, linewidth=1, alpha=0.8)
+axes[1].set_title('Random Walk with Drift: $Y_t = \\mu + Y_{t-1} + \\varepsilon_t$', fontweight='bold')
+axes[1].set_xlabel('Time')
+axes[1].set_ylabel('$Y_t$')
+
+plt.tight_layout()
+plt.savefig('charts/ch3_random_walk.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_random_walk.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Created: ch3_random_walk.pdf")
+
+# Chart 8: Deterministic Trend vs Stochastic Trend
+np.random.seed(42)
+n_sim = 150
+t = np.arange(n_sim)
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Deterministic trend
+det_trend = 2 + 0.1 * t + np.random.normal(0, 2, n_sim)
+axes[0].plot(det_trend, color=BLUE, linewidth=1.5, label='$Y_t = \\alpha + \\beta t + \\varepsilon_t$')
+axes[0].plot(2 + 0.1 * t, color=RED, linewidth=2, linestyle='--', label='Trend line')
+axes[0].set_title('Deterministic Trend (Trend-Stationary)', fontweight='bold')
+axes[0].set_xlabel('Time')
+axes[0].set_ylabel('$Y_t$')
+axes[0].legend(loc='upper left', frameon=False)
+
+# Stochastic trend (random walk with drift)
+stoch_trend = np.cumsum(0.1 + np.random.normal(0, 2, n_sim))
+axes[1].plot(stoch_trend, color=GREEN, linewidth=1.5, label='$Y_t = Y_{t-1} + \\mu + \\varepsilon_t$')
+axes[1].set_title('Stochastic Trend (Unit Root)', fontweight='bold')
+axes[1].set_xlabel('Time')
+axes[1].set_ylabel('$Y_t$')
+axes[1].legend(loc='upper left', frameon=False)
+
+plt.tight_layout()
+plt.savefig('charts/ch3_trend_comparison.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_trend_comparison.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Created: ch3_trend_comparison.pdf")
+
+# Chart 9: Variance Growth of Random Walk
+np.random.seed(42)
+n_paths = 1000
+n_time = 100
+
+# Simulate many random walks
+all_paths = np.cumsum(np.random.normal(0, 1, (n_paths, n_time)), axis=1)
+
+# Calculate variance at each time point
+variances = np.var(all_paths, axis=0)
+theoretical_var = np.arange(1, n_time + 1)  # Var(Y_t) = t * sigma^2
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Show fan chart of paths
+percentiles = [5, 25, 50, 75, 95]
+for p in percentiles:
+    axes[0].plot(np.percentile(all_paths, p, axis=0), linewidth=1, alpha=0.7)
+axes[0].fill_between(range(n_time),
+                      np.percentile(all_paths, 5, axis=0),
+                      np.percentile(all_paths, 95, axis=0),
+                      alpha=0.2, color=BLUE)
+axes[0].set_title('Random Walk Paths: Variance Grows Over Time', fontweight='bold')
+axes[0].set_xlabel('Time $t$')
+axes[0].set_ylabel('$Y_t$')
+axes[0].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+
+# Variance plot
+axes[1].plot(variances, color=BLUE, linewidth=2, label='Sample Variance')
+axes[1].plot(theoretical_var, color=RED, linewidth=2, linestyle='--', label='Theoretical: $Var(Y_t) = t\\sigma^2$')
+axes[1].set_title('Variance of Random Walk Grows Linearly', fontweight='bold')
+axes[1].set_xlabel('Time $t$')
+axes[1].set_ylabel('$Var(Y_t)$')
+axes[1].legend(loc='upper left', frameon=False)
+
+plt.tight_layout()
+plt.savefig('charts/ch3_variance_growth.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_variance_growth.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Created: ch3_variance_growth.pdf")
+
+# Chart 10: ACF of Non-Stationary vs Stationary
+np.random.seed(42)
+n_sim = 200
+
+# Random walk
+rw = np.cumsum(np.random.normal(0, 1, n_sim))
+# White noise
+wn = np.random.normal(0, 1, n_sim)
+
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# Random walk series
+axes[0, 0].plot(rw, color=BLUE, linewidth=1)
+axes[0, 0].set_title('Random Walk (Non-Stationary)', fontweight='bold')
+axes[0, 0].set_xlabel('Time')
+axes[0, 0].set_ylabel('$Y_t$')
+
+# ACF of random walk - slow decay
+acf_rw = acf(rw, nlags=30)
+axes[0, 1].bar(range(len(acf_rw)), acf_rw, color=BLUE, width=0.4)
+axes[0, 1].axhline(y=0, color='black', linewidth=0.5)
+axes[0, 1].axhline(y=1.96/np.sqrt(n_sim), color=RED, linestyle='--', alpha=0.7)
+axes[0, 1].axhline(y=-1.96/np.sqrt(n_sim), color=RED, linestyle='--', alpha=0.7)
+axes[0, 1].set_title('ACF: Slow Decay → Unit Root', fontweight='bold')
+axes[0, 1].set_xlabel('Lag')
+axes[0, 1].set_ylabel('ACF')
+
+# Differenced (white noise)
+axes[1, 0].plot(np.diff(rw), color=GREEN, linewidth=1)
+axes[1, 0].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+axes[1, 0].set_title('First Difference $\\Delta Y_t$ (Stationary)', fontweight='bold')
+axes[1, 0].set_xlabel('Time')
+axes[1, 0].set_ylabel('$\\Delta Y_t$')
+
+# ACF of differenced - cuts off
+acf_diff = acf(np.diff(rw), nlags=30)
+axes[1, 1].bar(range(len(acf_diff)), acf_diff, color=GREEN, width=0.4)
+axes[1, 1].axhline(y=0, color='black', linewidth=0.5)
+axes[1, 1].axhline(y=1.96/np.sqrt(n_sim), color=RED, linestyle='--', alpha=0.7)
+axes[1, 1].axhline(y=-1.96/np.sqrt(n_sim), color=RED, linestyle='--', alpha=0.7)
+axes[1, 1].set_title('ACF: Cuts Off → Stationary', fontweight='bold')
+axes[1, 1].set_xlabel('Lag')
+axes[1, 1].set_ylabel('ACF')
+
+plt.tight_layout()
+plt.savefig('charts/ch3_acf_nonstationary.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_acf_nonstationary.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Created: ch3_acf_nonstationary.pdf")
+
 print("\nAll Chapter 3 charts generated successfully!")
