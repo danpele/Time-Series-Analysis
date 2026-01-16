@@ -12,9 +12,10 @@ warnings.filterwarnings('ignore')
 
 # Set style
 plt.rcParams['figure.figsize'] = (12, 5)
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['savefig.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
@@ -75,7 +76,7 @@ axes[1].axhline(y=gdp_growth.mean(), color=RED, linestyle='--', alpha=0.7, label
 axes[1].set_title('GDP Growth Rate (Stationary)', fontweight='bold')
 axes[1].set_xlabel('Date')
 axes[1].set_ylabel('Growth Rate (%)')
-axes[1].legend(loc='lower right')
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch3_differencing.pdf', dpi=300, bbox_inches='tight')
@@ -167,7 +168,7 @@ ax.axvline(x=train.index[-1], color='gray', linestyle=':', alpha=0.7, linewidth=
 ax.set_title('US GDP: ARIMA(1,1,1) Forecast vs Actual', fontweight='bold', fontsize=14)
 ax.set_xlabel('Date')
 ax.set_ylabel('Billions of 2017 Dollars')
-ax.legend(loc='upper left')
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4, frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch3_arima_forecast.pdf', dpi=300, bbox_inches='tight')
@@ -233,7 +234,7 @@ axes[0, 1].plot(x_range, stats.norm.pdf(x_range, resid.mean(), resid.std()),
 axes[0, 1].set_title('Residual Distribution', fontweight='bold')
 axes[0, 1].set_xlabel('Residual')
 axes[0, 1].set_ylabel('Density')
-axes[0, 1].legend()
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # ACF of residuals
 acf_resid = acf(resid.dropna(), nlags=20)

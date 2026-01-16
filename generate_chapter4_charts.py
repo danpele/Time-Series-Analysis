@@ -13,9 +13,10 @@ warnings.filterwarnings('ignore')
 
 # Set style
 plt.rcParams['figure.figsize'] = (12, 5)
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['savefig.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
@@ -158,7 +159,7 @@ ax.axvline(x=train.index[-1], color='gray', linestyle=':', alpha=0.7, linewidth=
 ax.set_title('Airline Passengers: SARIMA$(0,1,1)\\times(0,1,1)_{12}$ Forecast', fontweight='bold', fontsize=14)
 ax.set_xlabel('Date')
 ax.set_ylabel('Passengers (thousands)')
-ax.legend(loc='upper left')
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=4, frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch4_sarima_forecast.pdf', dpi=300, bbox_inches='tight')
@@ -188,7 +189,7 @@ axes[0, 1].plot(x_range, stats.norm.pdf(x_range, resid_clean.mean(), resid_clean
 axes[0, 1].set_title('Residual Distribution', fontweight='bold')
 axes[0, 1].set_xlabel('Residual')
 axes[0, 1].set_ylabel('Density')
-axes[0, 1].legend()
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # ACF of residuals
 acf_resid = acf(resid_clean, nlags=36)
@@ -247,7 +248,7 @@ axes[1].axhline(y=-1.96/np.sqrt(len(passengers)), color=RED, linestyle='--', alp
 axes[1].set_title('ACF Slow Decay at Seasonal Lags → Needs Differencing', fontweight='bold')
 axes[1].set_xlabel('Lag')
 axes[1].set_ylabel('ACF')
-axes[1].legend()
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
 axes[1].set_xticks(seasonal_lags[:len([x for x in seasonal_lags if x < len(acf_seasonal)])])
 
 plt.tight_layout()
@@ -275,7 +276,7 @@ for i in range(12):
 ax.set_title('Seasonal Subseries Plot: Each Month Across Years', fontweight='bold', fontsize=14)
 ax.set_xlabel('Year')
 ax.set_ylabel('Passengers (thousands)')
-ax.legend(loc='upper left', ncol=6, fontsize=8)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=6, fontsize=8, frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch4_seasonal_subseries.pdf', dpi=300, bbox_inches='tight')
@@ -302,7 +303,7 @@ ax.set_ylabel('Passengers (thousands)')
 # Add mean line
 means = [np.mean(d) for d in month_data]
 ax.plot(range(1, 13), means, 'o--', color=RED, linewidth=2, markersize=8, label='Monthly Mean')
-ax.legend()
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch4_seasonal_boxplot.pdf', dpi=300, bbox_inches='tight')
