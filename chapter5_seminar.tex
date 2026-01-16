@@ -1,0 +1,834 @@
+% Chapter 5: Seminar - VAR Models and Granger Causality
+% Quizzes, Practice Problems, and Discussion
+% Bachelor program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Ensure content fits on slides
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% THEME AND STYLE CONFIGURATION
+%=============================================================================
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+% IDA-Inspired Color Palette
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{42, 82, 140}
+\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=MainBlue}
+\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+            \usebeamerfont{author in head/foot}\insertshortauthor
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+            \usebeamerfont{title in head/foot}\insertshorttitle
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+        \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+%=============================================================================
+% PACKAGES
+%=============================================================================
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false, pdfborder={0 0 0}}
+\graphicspath{{logos/}{charts/}}
+
+%=============================================================================
+% CUSTOM COMMANDS
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bA}{\mathbf{A}}
+\newcommand{\bepsilon}{\boldsymbol{\varepsilon}}
+
+%=============================================================================
+% TITLE INFORMATION
+%=============================================================================
+\title[Chapter 5: Seminar]{Chapter 5: Seminar --- VAR \& Granger Causality}
+\subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
+\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
+\institute{Bucharest University of Economic Studies}
+\date{Academic Year 2025--2026}
+
+\begin{document}
+
+%=============================================================================
+% TITLE SLIDE
+%=============================================================================
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
+            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
+        };
+        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
+            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
+        };
+        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
+            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
+        };
+    \end{tikzpicture}
+    \vfill
+    \begin{center}
+        {\Huge\textbf{\textcolor{MainBlue}{Chapter 5: VAR \& Granger Causality}}}\\[0.5cm]
+        {\Large\textcolor{MainBlue}{Seminar}}
+    \end{center}
+    \vfill
+
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south west] at ([xshift=1cm, yshift=0.8cm]current page.south west) {
+            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
+        };
+        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
+            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
+        };
+        \node[anchor=south east] at ([xshift=-1cm, yshift=0.8cm]current page.south east) {
+            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Seminar Outline}
+    \tableofcontents
+\end{frame}
+
+%=============================================================================
+% SECTION 1: REVIEW QUIZ
+%=============================================================================
+\section{Review Quiz}
+
+\begin{frame}{Quiz 1: VAR Definition}
+    \begin{alertblock}{Question}
+        In a VAR(2) model with 3 variables, how many coefficient matrices $\bA_i$ are there?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item 2
+        \item 3
+        \item 6
+        \item 9
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: A}
+        VAR($p$) has $p$ coefficient matrices. VAR(2) has $\bA_1$ and $\bA_2$, regardless of the number of variables. Each matrix is $K \times K$ (here $3 \times 3$).
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 2: Number of Parameters}
+    \begin{alertblock}{Question}
+        A VAR(2) with $K=3$ variables (including constants) has how many parameters to estimate per equation?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item 3
+        \item 6
+        \item 7
+        \item 9
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        Each equation has: 1 constant + $K \times p$ = $1 + 3 \times 2 = 7$ parameters. The equation for $Y_{1t}$ includes a constant, plus coefficients on $Y_{1,t-1}, Y_{2,t-1}, Y_{3,t-1}, Y_{1,t-2}, Y_{2,t-2}, Y_{3,t-2}$.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 3: Granger Causality}
+    \begin{alertblock}{Question}
+        ``$X$ Granger-causes $Y$'' means:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item $X$ is the economic cause of $Y$
+        \item Past $X$ helps predict future $Y$
+        \item $X$ and $Y$ are contemporaneously correlated
+        \item $X$ always increases when $Y$ increases
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Granger causality is about \textbf{predictive content}: past values of $X$ contain useful information for forecasting $Y$, beyond what past $Y$ alone provides. It does NOT imply economic causation.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 4: Granger Causality Test}
+    \begin{alertblock}{Question}
+        To test if $Y_2$ Granger-causes $Y_1$ in a VAR(p), we test:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item All coefficients in the $Y_1$ equation equal zero
+        \item Coefficients on lagged $Y_2$ in the $Y_1$ equation equal zero
+        \item Coefficients on lagged $Y_1$ in the $Y_2$ equation equal zero
+        \item The error covariance equals zero
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        $H_0$: $Y_2$ does NOT Granger-cause $Y_1$ means the coefficients $a_{12}^{(1)} = a_{12}^{(2)} = \cdots = a_{12}^{(p)} = 0$ in the $Y_1$ equation.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 5: VAR Stability}
+    \begin{alertblock}{Question}
+        A VAR(1) model is stable (stationary) if:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item All diagonal elements of $\bA_1$ are less than 1
+        \item The determinant of $\bA_1$ is less than 1
+        \item All eigenvalues of $\bA_1$ are less than 1 in absolute value
+        \item The trace of $\bA_1$ equals zero
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        Stability requires all eigenvalues of the coefficient matrix to lie inside the unit circle, i.e., $|\lambda_i| < 1$ for all $i$. This ensures shocks die out over time.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 6: Impulse Response Functions}
+    \begin{alertblock}{Question}
+        An impulse response function shows:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item The correlation between two variables
+        \item The effect of a shock to one variable on all variables over time
+        \item The forecast accuracy of the model
+        \item The p-values of coefficient tests
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        IRFs trace the dynamic response of each variable to a one-time shock to another variable, showing how the effect propagates and eventually dies out (in a stable system).
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 7: Lag Order Selection}
+    \begin{alertblock}{Question}
+        Which criterion typically selects the most parsimonious VAR model?
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item AIC (Akaike Information Criterion)
+        \item BIC (Bayesian Information Criterion)
+        \item FPE (Final Prediction Error)
+        \item Adjusted $R^2$
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        BIC penalizes model complexity more heavily than AIC ($k\ln n$ vs $2k$), typically selecting fewer lags. For forecasting, AIC may be preferred; for inference, BIC's parsimony helps avoid overfitting.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 8: Granger Causality Interpretation}
+    \begin{alertblock}{Question}
+        ``$X$ Granger-causes $Y$'' means:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item $X$ is the true cause of $Y$
+        \item Past values of $X$ help predict $Y$ beyond $Y$'s own past
+        \item $X$ and $Y$ are correlated
+        \item $Y$ depends only on $X$
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Granger causality is about \textbf{predictive} content, not true causation. $X$ Granger-causes $Y$ if lagged $X$ terms are jointly significant in the equation for $Y$, after controlling for lagged $Y$.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 9: Forecast Error Variance Decomposition}
+    \begin{alertblock}{Question}
+        FEVD (Forecast Error Variance Decomposition) tells us:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item The correlation between variables
+        \item What proportion of forecast error variance comes from each shock
+        \item The optimal forecast horizon
+        \item Which variables to include in the model
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        FEVD decomposes the variance of the $h$-step forecast error into contributions from each structural shock. It answers: ``How much of the uncertainty in forecasting $Y$ is due to shocks to $Y$ vs shocks to $X$?''
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 10: Structural vs Reduced Form VAR}
+    \begin{alertblock}{Question}
+        The difference between structural VAR (SVAR) and reduced-form VAR is:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item SVAR has more variables
+        \item SVAR allows contemporaneous effects between variables
+        \item SVAR uses different estimation methods
+        \item There is no difference
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Reduced-form VAR: shocks are correlated, no contemporaneous effects in equations. SVAR: imposes identifying restrictions to recover structural shocks with economic interpretation (e.g., monetary policy shock).
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 11: Cholesky Decomposition}
+    \begin{alertblock}{Question}
+        Cholesky ordering in IRF analysis assumes:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item All variables are equally important
+        \item Variables ordered first affect later variables contemporaneously, not vice versa
+        \item Shocks are uncorrelated
+        \item No restrictions are needed
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Cholesky imposes a recursive structure: variables ordered first can affect later ones within the same period, but not the reverse. The ordering matters and should be justified by economic theory.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 12: VAR Residual Diagnostics}
+    \begin{alertblock}{Question}
+        In a well-specified VAR, residuals should be:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Autocorrelated but homoskedastic
+        \item White noise (no autocorrelation)
+        \item Normally distributed only
+        \item Correlated across equations
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Residuals should be white noise: no autocorrelation at any lag. Use Portmanteau test or LM test for residual autocorrelation. Note: cross-equation correlation is allowed (captured by $\Sigma_u$).
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 13: Cointegration and VAR}
+    \begin{alertblock}{Question}
+        If variables are I(1) and cointegrated, you should use:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item VAR in levels
+        \item VAR in first differences
+        \item Vector Error Correction Model (VECM)
+        \item Univariate ARIMA models
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: C}
+        With cointegration, VAR in differences loses long-run information, while VAR in levels may be inefficient. VECM incorporates both short-run dynamics and long-run equilibrium relationships through the error correction term.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 14: Instantaneous Causality}
+    \begin{alertblock}{Question}
+        Instantaneous causality differs from Granger causality because it tests:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Lagged relationships only
+        \item Contemporaneous correlation of residuals
+        \item Long-run relationships
+        \item Model stability
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \pause
+    \begin{exampleblock}{Answer: B}
+        Instantaneous causality tests whether shocks to $X$ and $Y$ are correlated within the same period (correlation of VAR residuals). Granger causality tests whether \textit{lagged} values help predict.
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% TRUE/FALSE QUESTIONS
+%=============================================================================
+\section{True/False Questions}
+
+\begin{frame}{True/False Questions}
+    Determine if each statement is True or False:
+
+    \vspace{0.3cm}
+    \begin{enumerate}
+        \item VAR models treat all variables as endogenous.
+        \item Granger causality proves true economic causation.
+        \item A stable VAR always has eigenvalues inside the unit circle.
+        \item FEVD results depend on the ordering of variables.
+        \item VAR can be estimated by OLS equation by equation.
+        \item Impulse responses eventually die out in a stable VAR.
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \textit{Answers on next slide...}
+\end{frame}
+
+\begin{frame}{True/False: Solutions}
+    \begin{enumerate}
+        \item VAR models treat all variables as endogenous. \hfill \textcolor{Forest}{\textbf{TRUE}}
+
+        {\small \textcolor{MediumGray}{Each variable is regressed on lags of all variables, including itself.}}
+
+        \vspace{0.15cm}
+        \item Granger causality proves true economic causation. \hfill \textcolor{Crimson}{\textbf{FALSE}}
+
+        {\small \textcolor{MediumGray}{It only shows predictive content, not structural causation.}}
+
+        \vspace{0.15cm}
+        \item A stable VAR always has eigenvalues inside the unit circle. \hfill \textcolor{Forest}{\textbf{TRUE}}
+
+        {\small \textcolor{MediumGray}{Stability condition: all eigenvalues of companion matrix satisfy $|\lambda_i| < 1$.}}
+
+        \vspace{0.15cm}
+        \item FEVD results depend on the ordering of variables. \hfill \textcolor{Forest}{\textbf{TRUE}}
+
+        {\small \textcolor{MediumGray}{Under Cholesky identification, different orderings give different results.}}
+
+        \vspace{0.15cm}
+        \item VAR can be estimated by OLS equation by equation. \hfill \textcolor{Forest}{\textbf{TRUE}}
+
+        {\small \textcolor{MediumGray}{With same regressors in each equation, OLS = GLS = ML (under normality).}}
+
+        \vspace{0.15cm}
+        \item Impulse responses eventually die out in a stable VAR. \hfill \textcolor{Forest}{\textbf{TRUE}}
+
+        {\small \textcolor{MediumGray}{Stability ensures shocks have transitory effects; IRFs $\to 0$ as $h \to \infty$.}}
+    \end{enumerate}
+\end{frame}
+
+%=============================================================================
+% SECTION 2: PRACTICE PROBLEMS
+%=============================================================================
+\section{Practice Problems}
+
+\begin{frame}{Problem 1: Writing VAR Equations}
+    \begin{block}{Exercise}
+        Write out the two equations for a bivariate VAR(1) model with variables $Y_t$ (GDP growth) and $X_t$ (inflation).
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        \begin{align*}
+            Y_t &= c_1 + a_{11} Y_{t-1} + a_{12} X_{t-1} + \varepsilon_{1t} \\[0.2cm]
+            X_t &= c_2 + a_{21} Y_{t-1} + a_{22} X_{t-1} + \varepsilon_{2t}
+        \end{align*}
+
+        \textbf{Interpretation}:
+        \begin{itemize}
+            \item $a_{12}$: Effect of past inflation on current GDP growth
+            \item $a_{21}$: Effect of past GDP growth on current inflation
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 2: Parameter Count}
+    \begin{block}{Exercise}
+        How many total parameters need to be estimated in a VAR(3) with $K=4$ variables (including constants)?
+    \end{block}
+
+    \vspace{0.3cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        Per equation: $1 + K \times p = 1 + 4 \times 3 = 13$ parameters
+
+        \vspace{0.2cm}
+        Total for $K=4$ equations: $4 \times 13 = \mathbf{52}$ parameters
+
+        \vspace{0.2cm}
+        Plus covariance matrix $\boldsymbol{\Sigma}$: $K(K+1)/2 = 4 \times 5 / 2 = 10$ unique elements
+
+        \vspace{0.2cm}
+        \textbf{Grand total: 62 parameters}
+
+        \vspace{0.2cm}
+        \textit{This is why VARs can be ``over-parameterized'' with limited data!}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 3: Granger Causality Interpretation}
+    \begin{block}{Exercise}
+        A Granger causality test yields:
+        \begin{itemize}
+            \item $H_0$: Money does not Granger-cause GDP. $p$-value = 0.02
+            \item $H_0$: GDP does not Granger-cause Money. $p$-value = 0.35
+        \end{itemize}
+        Interpret these results.
+    \end{block}
+
+    \vspace{0.2cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        \begin{itemize}
+            \item \textbf{Reject} $H_0$ at 5\%: Money \textbf{Granger-causes} GDP
+            \item \textbf{Fail to reject} $H_0$: GDP does \textbf{not} Granger-cause Money
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Conclusion}: Unidirectional causality: Money $\rightarrow$ GDP
+
+        \vspace{0.2cm}
+        \textit{Interpretation}: Past money supply helps predict GDP growth. This is consistent with monetarist views, but remember: Granger causality $\neq$ structural causality!
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 4: Stability Check}
+    \begin{block}{Exercise}
+        For VAR(1) with $\bA_1 = \begin{pmatrix} 0.7 & 0.2 \\ 0.1 & 0.5 \end{pmatrix}$, check stability.
+    \end{block}
+
+    \vspace{0.2cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        Find eigenvalues: $\det(\bA_1 - \lambda \mathbf{I}) = 0$
+
+        $(0.7 - \lambda)(0.5 - \lambda) - (0.2)(0.1) = 0$
+
+        $\lambda^2 - 1.2\lambda + 0.33 = 0$
+
+        $\lambda = \frac{1.2 \pm \sqrt{1.44 - 1.32}}{2} = \frac{1.2 \pm 0.346}{2}$
+
+        $\lambda_1 = 0.773, \quad \lambda_2 = 0.427$
+
+        \vspace{0.2cm}
+        Both $|\lambda_i| < 1$ $\Rightarrow$ \textbf{Stable!}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 5: IRF Computation}
+    \begin{block}{Exercise}
+        For VAR(1) with $\bA = \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix}$, compute $\boldsymbol{\Phi}_2$ (response at $h=2$).
+    \end{block}
+
+    \vspace{0.2cm}
+    \pause
+    \begin{exampleblock}{Solution}
+        $\boldsymbol{\Phi}_2 = \bA^2 = \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix} \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix}$
+
+        \vspace{0.2cm}
+        $= \begin{pmatrix} 0.25 + 0 & 0.10 + 0.12 \\ 0 + 0 & 0 + 0.36 \end{pmatrix} = \begin{pmatrix} 0.25 & 0.22 \\ 0 & 0.36 \end{pmatrix}$
+
+        \vspace{0.2cm}
+        \textbf{Interpretation}: A unit shock to $Y_2$ at $t$ increases $Y_1$ by 0.22 at $t+2$.
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: WORKED EXAMPLES
+%=============================================================================
+\section{Worked Examples}
+
+\begin{frame}{Example: Stock Returns and Trading Volume}
+    \begin{block}{Scenario}
+        You have daily data on stock returns ($R_t$) and trading volume ($V_t$). You want to test for Granger causality in both directions.
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Typical Findings in Finance Literature}
+        \begin{itemize}
+            \item Returns often Granger-cause volume (price changes trigger trading)
+            \item Volume sometimes Granger-causes returns (volume as leading indicator)
+            \item Results: Often \textbf{bidirectional} causality $R \leftrightarrow V$
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Practical Issue}
+        Stock returns are typically stationary, but volume may need transformation (log or difference).
+    \end{block}
+\end{frame}
+
+\begin{frame}{Example: Interest Rates and Inflation}
+    \begin{block}{Taylor Rule Context}
+        Central banks set interest rates ($i_t$) in response to inflation ($\pi_t$):
+        $$i_t = r^* + \pi^* + 1.5(\pi_t - \pi^*) + 0.5(y_t - y^*)$$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{VAR Analysis}
+        \begin{itemize}
+            \item Does inflation Granger-cause interest rates? (Should, if central bank reacts)
+            \item Do interest rates Granger-cause inflation? (Monetary policy transmission)
+        \end{itemize}
+
+        \vspace{0.2cm}
+        Expected: Bidirectional causality with:
+        \begin{itemize}
+            \item Quick response: $\pi \rightarrow i$ (policy reaction)
+            \item Delayed response: $i \rightarrow \pi$ (policy takes effect)
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Python VAR Analysis}
+    {\small
+    \begin{block}{Step-by-Step Code}
+        \begin{verbatim}
+import pandas as pd
+from statsmodels.tsa.api import VAR
+from statsmodels.tsa.stattools import grangercausalitytests
+
+# Load data (GDP growth, unemployment)
+data = pd.DataFrame({'gdp': gdp_growth, 'unemp': unemp_rate})
+
+# Check stationarity first!
+# Then fit VAR with optimal lag
+model = VAR(data)
+results = model.fit(maxlags=8, ic='aic')
+print(f"Selected lag order: {results.k_ar}")
+
+# Granger causality tests
+print("GDP -> Unemployment:")
+grangercausalitytests(data[['unemp', 'gdp']], maxlag=4)
+print("\nUnemployment -> GDP:")
+grangercausalitytests(data[['gdp', 'unemp']], maxlag=4)
+        \end{verbatim}
+    \end{block}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 4: DISCUSSION TOPICS
+%=============================================================================
+\section{Discussion Topics}
+
+\begin{frame}{Discussion: Granger Causality vs True Causality}
+    \begin{block}{Key Question}
+        If $X$ Granger-causes $Y$, does that mean $X$ actually causes $Y$?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Discussion Points}
+        \begin{itemize}
+            \item \textbf{Omitted variable bias}: $Z$ might cause both $X$ and $Y$
+                \begin{itemize}
+                    \item Example: Weather affects both ice cream sales and drownings
+                \end{itemize}
+            \item \textbf{Anticipation effects}: Markets anticipate future events
+                \begin{itemize}
+                    \item Stock prices ``Granger-cause'' earnings announcements
+                \end{itemize}
+            \item \textbf{Aggregation issues}: Timing of data collection matters
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Conclusion}: Granger causality is about \textbf{prediction}, not \textbf{mechanism}. For structural causality, need theory + identification strategy.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Discussion: Variable Ordering in IRFs}
+    \begin{block}{Key Question}
+        Why does the ordering of variables matter for orthogonalized IRFs?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Explanation}
+        Cholesky decomposition assumes:
+        \begin{itemize}
+            \item First variable: Affects all others contemporaneously
+            \item Second variable: Affected by first, affects remaining
+            \item Last variable: Affected by all, affects none contemporaneously
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Economic reasoning needed}: Order from ``most exogenous'' to ``most endogenous''
+
+        \vspace{0.2cm}
+        Example ordering for monetary policy VAR:
+        \begin{enumerate}
+            \item Oil prices (exogenous)
+            \item GDP (slow to respond)
+            \item Inflation
+            \item Interest rates (policy responds to all)
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: EXERCISES
+%=============================================================================
+\section{Exercises for Self-Study}
+
+\begin{frame}{Take-Home Exercises}
+    {\small
+    \begin{enumerate}
+        \item \textbf{Theoretical}: Show that a VAR(1) can be written as a VAR($\infty$) MA representation: $\bY_t = \sum_{i=0}^{\infty} \bA^i \bepsilon_{t-i}$ when stable.
+
+        \vspace{0.2cm}
+        \item \textbf{Computation}: For VAR(1) with $\bA = \begin{pmatrix} 0.8 & -0.1 \\ 0.3 & 0.4 \end{pmatrix}$:
+            \begin{itemize}
+                \item Check stability
+                \item Compute IRFs for $h = 0, 1, 2, 3$
+                \item Plot the response of $Y_1$ to a shock in $Y_2$
+            \end{itemize}
+
+        \vspace{0.2cm}
+        \item \textbf{Applied}: Download US GDP growth and unemployment data:
+            \begin{itemize}
+                \item Test both series for stationarity
+                \item Estimate a VAR model (select optimal lag)
+                \item Test Granger causality in both directions
+                \item Compute and interpret IRFs
+            \end{itemize}
+
+        \vspace{0.2cm}
+        \item \textbf{Critical Thinking}: Why might stock prices ``Granger-cause'' GDP even though GDP is determined by real factors?
+    \end{enumerate}
+    }
+\end{frame}
+
+\begin{frame}{Exercise Solutions Hints}
+    {\small
+    \begin{block}{Hints}
+        \begin{enumerate}
+            \item Use recursive substitution: $\bY_t = \bA\bY_{t-1} + \bepsilon_t = \bA(\bA\bY_{t-2} + \bepsilon_{t-1}) + \bepsilon_t = \ldots$
+
+            \vspace{0.1cm}
+            \item Eigenvalues of $\begin{pmatrix} 0.8 & -0.1 \\ 0.3 & 0.4 \end{pmatrix}$:
+                \begin{itemize}
+                    \item Characteristic equation: $\lambda^2 - 1.2\lambda + 0.35 = 0$
+                    \item $\lambda_1 \approx 0.85$, $\lambda_2 \approx 0.41$ (both $< 1$, stable)
+                \end{itemize}
+
+            \vspace{0.1cm}
+            \item For GDP/Unemployment:
+                \begin{itemize}
+                    \item GDP growth is usually I(0), unemployment may be I(1)
+                    \item Use unemployment rate changes if needed
+                    \item Expect GDP growth $\rightarrow$ unemployment (Okun's Law)
+                \end{itemize}
+
+            \vspace{0.1cm}
+            \item Stock prices anticipate future economic conditions---they reflect expectations about future GDP, so they ``lead'' GDP in the data even though causation runs the other way.
+        \end{enumerate}
+    \end{block}
+    }
+\end{frame}
+
+%=============================================================================
+% SUMMARY
+%=============================================================================
+\begin{frame}{Key Takeaways from This Seminar}
+    \begin{block}{Main Points}
+        \begin{enumerate}
+            \item VAR models capture \textbf{interdependencies} between multiple time series
+            \item Parameter count grows quickly: $K^2 p + K$ per system
+            \item \textbf{Granger causality} tests predictive content, not true causation
+            \item Test statistic is F-test on coefficient restrictions
+            \item \textbf{IRFs} show dynamic propagation of shocks
+            \item Variable ordering matters for orthogonalized IRFs
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{alertblock}{Key Practical Points}
+        \begin{itemize}
+            \item Always check stationarity before estimating VAR
+            \item Use information criteria for lag selection
+            \item Report Granger tests in both directions
+            \item Be careful interpreting as ``true'' causality
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\end{document}
