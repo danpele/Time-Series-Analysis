@@ -345,64 +345,150 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Statistical Tests for Seasonality}
+\begin{frame}{F-test for Seasonal Dummies}
+    \begin{block}{Model with Seasonal Dummies}
+        $$Y_t = \alpha + \sum_{j=1}^{s-1} \gamma_j D_{jt} + \varepsilon_t$$
+        where $D_{jt} = 1$ if observation $t$ is in season $j$, 0 otherwise.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{F-statistic}
+        Test $H_0: \gamma_1 = \gamma_2 = \cdots = \gamma_{s-1} = 0$ (no seasonality)
+        $$F = \frac{(SSR_R - SSR_U)/(s-1)}{SSR_U/(n-s)} \sim F_{s-1, n-s}$$
+        where $SSR_R$ = restricted sum of squares, $SSR_U$ = unrestricted.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Decision Rule}
+        Reject $H_0$ if $F > F_{\alpha, s-1, n-s}$ (critical value) or if p-value $< \alpha$.
+
+        Rejection $\Rightarrow$ significant deterministic seasonality present.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Kruskal-Wallis Test for Seasonality}
+    \begin{block}{Setup}
+        Nonparametric test comparing $s$ seasonal groups. Let $n_j$ = observations in season $j$, $N$ = total observations, $R_j$ = sum of ranks in season $j$.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Test Statistic}
+        $$H = \frac{12}{N(N+1)} \sum_{j=1}^{s} \frac{R_j^2}{n_j} - 3(N+1)$$
+
+        Under $H_0$ (no seasonal differences): $H \sim \chi^2_{s-1}$ (approximately)
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Decision Rule}
+        Reject $H_0$ if $H > \chi^2_{\alpha, s-1}$ or if p-value $< \alpha$.
+
+        \textbf{Advantage}: No normality assumption; robust to outliers.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{HEGY Test: Setup (Quarterly Data)}
     {\small
-    \begin{block}{F-test for Seasonal Dummies}
-        Model: $Y_t = \alpha + \sum_{j=1}^{s-1} \gamma_j D_{jt} + \varepsilon_t$
-
-        Test $H_0: \gamma_1 = \gamma_2 = \cdots = \gamma_{s-1} = 0$ using F-statistic
+    \begin{block}{Auxiliary Regression}
+        For quarterly data ($s=4$), define transformed variables:
+        \begin{align*}
+            y_{1t} &= (1+L)(1+L^2)Y_t = Y_t + Y_{t-1} + Y_{t-2} + Y_{t-3} \\
+            y_{2t} &= -(1-L)(1+L^2)Y_t = -Y_t + Y_{t-1} - Y_{t-2} + Y_{t-3} \\
+            y_{3t} &= -(1-L^2)Y_t = -Y_t + Y_{t-2}
+        \end{align*}
     \end{block}
 
     \vspace{0.2cm}
 
-    \begin{block}{Kruskal-Wallis Test (Nonparametric)}
-        \begin{itemize}
-            \item Compares distributions across seasons
-            \item $H_0$: All seasonal distributions are identical
-            \item Robust to outliers and non-normality
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{block}{Friedman Test}
-        \begin{itemize}
-            \item Nonparametric alternative for repeated measures
-            \item Tests if rankings differ systematically across seasons
-        \end{itemize}
+    \begin{block}{Test Regression}
+        $$(1-L^4)Y_t = \pi_1 y_{1,t-1} + \pi_2 y_{2,t-1} + \pi_3 y_{3,t-2} + \pi_4 y_{3,t-1} + \varepsilon_t$$
+        Include deterministic terms (constant, trend, seasonal dummies) as needed.
     \end{block}
     }
 \end{frame}
 
-\begin{frame}{Seasonal Unit Root Tests}
+\begin{frame}{HEGY Test: Hypotheses and Decision Rules}
     {\small
-    \begin{block}{HEGY Test (Hylleberg, Engle, Granger, Yoo)}
-        Tests for unit roots at \textbf{different frequencies}:
+    \begin{block}{Unit Root Hypotheses}
         \begin{itemize}
-            \item Zero frequency (trend unit root)
-            \item Seasonal frequencies (various harmonics)
-        \end{itemize}
-        Provides separate decisions for each frequency.
-    \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{block}{Canova-Hansen (CH) Test}
-        \begin{itemize}
-            \item $H_0$: Deterministic seasonality (stationary)
-            \item $H_1$: Stochastic seasonality (unit root)
+            \item $H_0^{(1)}: \pi_1 = 0$ $\Rightarrow$ unit root at zero frequency (regular unit root)
+            \item $H_0^{(2)}: \pi_2 = 0$ $\Rightarrow$ unit root at $\pi$ frequency (semi-annual)
+            \item $H_0^{(3)}: \pi_3 = \pi_4 = 0$ $\Rightarrow$ unit roots at $\pm\pi/2$ frequencies (annual)
         \end{itemize}
     \end{block}
 
     \vspace{0.2cm}
 
-    \begin{alertblock}{Practical Guidance}
+    \begin{block}{Test Statistics}
         \begin{itemize}
-            \item If HEGY rejects seasonal unit root $\Rightarrow$ use seasonal dummies
-            \item If HEGY fails to reject $\Rightarrow$ apply seasonal differencing $(1-L^s)$
+            \item $t_1 = \hat{\pi}_1 / SE(\hat{\pi}_1)$ for $H_0^{(1)}$ (use HEGY critical values)
+            \item $t_2 = \hat{\pi}_2 / SE(\hat{\pi}_2)$ for $H_0^{(2)}$
+            \item $F_{34}$ for joint test of $H_0^{(3)}$
         \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Decision Rule}
+        Use HEGY critical values (not standard $t$ or $F$). If $H_0^{(1)}$ not rejected $\Rightarrow d=1$. If $H_0^{(2)}$ or $H_0^{(3)}$ not rejected $\Rightarrow D=1$.
     \end{alertblock}
     }
+\end{frame}
+
+\begin{frame}{Canova-Hansen Test}
+    {\small
+    \begin{block}{Key Difference from HEGY}
+        \begin{itemize}
+            \item HEGY: $H_0$ = unit root (stochastic seasonality)
+            \item CH: $H_0$ = \textbf{no} unit root (deterministic seasonality)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Test Statistic}
+        Based on cumulative sum of residuals from regression with seasonal dummies:
+        $$L_s = \frac{1}{T^2} \sum_{t=1}^{T} \left( \sum_{i=1}^{t} \hat{f}_i \right)' \hat{\Omega}^{-1} \left( \sum_{i=1}^{t} \hat{f}_i \right)$$
+        where $\hat{f}_t$ are residuals projected onto seasonal frequencies.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Decision Rule}
+        Reject $H_0$ if $L_s > $ critical value $\Rightarrow$ seasonal unit root present.
+
+        \textbf{Use}: When you suspect stable (deterministic) seasonality but want to confirm.
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Summary: Which Test to Use?}
+    \begin{center}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Test} & \textbf{$H_0$} & \textbf{When to Use} \\
+        \midrule
+        F-test & No seasonality & Detect if any seasonality exists \\
+        Kruskal-Wallis & No seasonal diff. & Non-normal data, outliers \\
+        HEGY & Seasonal unit root & Determine $d$ and $D$ \\
+        Canova-Hansen & Deterministic season. & Confirm stable seasonality \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Practical Workflow}
+        \begin{enumerate}
+            \item F-test or Kruskal-Wallis: Is seasonality present?
+            \item If yes $\Rightarrow$ HEGY: Is it stochastic (unit root)?
+            \item HEGY rejects $\Rightarrow$ use seasonal dummies
+            \item HEGY fails to reject $\Rightarrow$ use $(1-L^s)$ differencing
+        \end{enumerate}
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}[fragile]{Testing for Seasonality in Python}
