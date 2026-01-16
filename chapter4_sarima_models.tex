@@ -236,12 +236,13 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Detecting Seasonality}
+\begin{frame}{Detecting Seasonality: Overview}
     {\small
     \begin{block}{Visual Methods}
         \begin{itemize}
             \item Time series plot -- look for repeating patterns
             \item Seasonal subseries plot -- compare same seasons across years
+            \item Seasonal box plot -- distribution by season
             \item ACF plot -- spikes at seasonal lags ($s, 2s, 3s, \ldots$)
         \end{itemize}
     \end{block}
@@ -258,8 +259,174 @@
 
     \vspace{0.2cm}
 
-    \begin{exampleblock}{ACF Signature}
-        Strong seasonality: ACF shows significant spikes at lags $s, 2s, 3s, \ldots$
+    \begin{alertblock}{Key Principle}
+        Always use \textbf{multiple methods} to confirm seasonality before modeling!
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Visual Method 1: ACF for Seasonality Detection}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch4_acf_seasonality.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item \textbf{Left}: ACF of original series shows spikes at lags 12, 24, 36 (seasonal lags)
+        \item \textbf{Right}: Slow decay at seasonal lags $\Rightarrow$ indicates \textbf{seasonal unit root}
+        \item When ACF decays slowly at seasonal lags, apply seasonal differencing $(1-L^s)$
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Visual Method 2: Seasonal Subseries Plot}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch4_seasonal_subseries.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Each line shows one month's values across all years
+        \item Reveals: (1) Seasonal pattern (summer months higher), (2) Trend within each month
+        \item If lines are roughly parallel $\Rightarrow$ additive seasonality
+        \item If lines diverge (spread increases) $\Rightarrow$ multiplicative seasonality
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Visual Method 3: Seasonal Box Plot}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch4_seasonal_boxplot.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Shows distribution of values for each month (season)
+        \item Clear pattern: July-August peaks (summer travel), lower in winter
+        \item Increasing variance by month $\Rightarrow$ suggests log transformation
+        \item Red line shows monthly means -- reveals the seasonal shape
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Additive vs Multiplicative Seasonality}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Additive Model}
+                $$Y_t = T_t + S_t + \varepsilon_t$$
+                \begin{itemize}
+                    \item Seasonal amplitude is \textbf{constant}
+                    \item Use when variance is stable
+                    \item Difference: $Y_t - Y_{t-s}$
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Multiplicative Model}
+                $$Y_t = T_t \times S_t \times \varepsilon_t$$
+                \begin{itemize}
+                    \item Seasonal amplitude \textbf{grows with level}
+                    \item Use when variance increases
+                    \item Log transform: $\log(Y_t)$
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.4cm}
+
+    \begin{exampleblock}{Airline Data}
+        Seasonal amplitude grows over time $\Rightarrow$ \textbf{multiplicative}
+
+        Solution: Model $\log(Y_t)$ instead of $Y_t$
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Statistical Tests for Seasonality}
+    {\small
+    \begin{block}{F-test for Seasonal Dummies}
+        Model: $Y_t = \alpha + \sum_{j=1}^{s-1} \gamma_j D_{jt} + \varepsilon_t$
+
+        Test $H_0: \gamma_1 = \gamma_2 = \cdots = \gamma_{s-1} = 0$ using F-statistic
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Kruskal-Wallis Test (Nonparametric)}
+        \begin{itemize}
+            \item Compares distributions across seasons
+            \item $H_0$: All seasonal distributions are identical
+            \item Robust to outliers and non-normality
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Friedman Test}
+        \begin{itemize}
+            \item Nonparametric alternative for repeated measures
+            \item Tests if rankings differ systematically across seasons
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Seasonal Unit Root Tests}
+    {\small
+    \begin{block}{HEGY Test (Hylleberg, Engle, Granger, Yoo)}
+        Tests for unit roots at \textbf{different frequencies}:
+        \begin{itemize}
+            \item Zero frequency (trend unit root)
+            \item Seasonal frequencies (various harmonics)
+        \end{itemize}
+        Provides separate decisions for each frequency.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Canova-Hansen (CH) Test}
+        \begin{itemize}
+            \item $H_0$: Deterministic seasonality (stationary)
+            \item $H_1$: Stochastic seasonality (unit root)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Practical Guidance}
+        \begin{itemize}
+            \item If HEGY rejects seasonal unit root $\Rightarrow$ use seasonal dummies
+            \item If HEGY fails to reject $\Rightarrow$ apply seasonal differencing $(1-L^s)$
+        \end{itemize}
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Testing for Seasonality in Python}
+    {\small
+    \begin{block}{Visual and Statistical Tests}
+        \begin{verbatim}
+import numpy as np
+from scipy import stats
+from statsmodels.tsa.stattools import acf
+
+# Kruskal-Wallis test for seasonality
+groups = [y[y.index.month == m] for m in range(1, 13)]
+stat, pvalue = stats.kruskal(*groups)
+print(f"Kruskal-Wallis: stat={stat:.2f}, p={pvalue:.4f}")
+
+# Check ACF at seasonal lags
+acf_vals = acf(y, nlags=36)
+seasonal_acf = [acf_vals[12], acf_vals[24], acf_vals[36]]
+print(f"ACF at lags 12,24,36: {seasonal_acf}")
+        \end{verbatim}
+    \end{block}
+
+    \begin{exampleblock}{Rule of Thumb}
+        If $|\rho_{12}| > 2/\sqrt{n}$ (outside 95\% CI), seasonality is significant.
     \end{exampleblock}
     }
 \end{frame}
@@ -331,6 +498,68 @@
             \item $I(1,1)_{12}$: Both regular and seasonal unit roots
         \end{itemize}
     \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Effect of Differencing: Time Series View}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.6\textheight, keepaspectratio]{charts/ch4_differencing_effect.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Regular differencing $\Delta Y_t$ removes trend but seasonality remains
+        \item Seasonal differencing $\Delta_{12} Y_t$ removes seasonality but trend remains
+        \item Both needed: $\Delta\Delta_{12} Y_t$ appears stationary
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Effect of Differencing: ACF View}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.6\textheight, keepaspectratio]{charts/ch4_acf_differencing.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Original: slow decay (non-stationary)
+        \item After $\Delta$: seasonal spikes at 12, 24 remain
+        \item After $\Delta_{12}$: decay at low lags remains
+        \item After both: ACF cuts off quickly $\Rightarrow$ ready for SARIMA modeling
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Deciding the Order of Differencing}
+    {\small
+    \begin{block}{Step-by-Step Procedure}
+        \begin{enumerate}
+            \item Plot the series -- does it have trend? Seasonality?
+            \item Check ACF -- slow decay at lags 1,2,3... $\Rightarrow$ need $d \geq 1$
+            \item Check ACF at seasonal lags -- slow decay at $s, 2s, 3s$ $\Rightarrow$ need $D \geq 1$
+            \item Apply differencing and repeat until ACF cuts off
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Common Pitfalls}
+        \begin{itemize}
+            \item \textbf{Over-differencing}: Introduces artificial patterns; ACF shows negative spike at lag 1 or $s$
+            \item \textbf{Under-differencing}: ACF remains slowly decaying
+            \item Rule: Rarely need $d > 1$ or $D > 1$
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Airline Data Decision}
+        ACF shows: (1) slow decay $\Rightarrow d=1$, (2) spikes at 12, 24 $\Rightarrow D=1$
+
+        Result: Apply $(1-L)(1-L^{12})$ before modeling
+    \end{exampleblock}
+    }
 \end{frame}
 
 %=============================================================================
