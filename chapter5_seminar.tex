@@ -658,35 +658,130 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}[fragile]{Example: Python VAR Analysis}
+\begin{frame}{Python VAR Analysis: Key Functions}
     {\small
-    \begin{block}{Step-by-Step Code}
-        \begin{verbatim}
-import pandas as pd
-from statsmodels.tsa.api import VAR
-from statsmodels.tsa.stattools import grangercausalitytests
-
-# Load data (GDP growth, unemployment)
-data = pd.DataFrame({'gdp': gdp_growth, 'unemp': unemp_rate})
-
-# Check stationarity first!
-# Then fit VAR with optimal lag
-model = VAR(data)
-results = model.fit(maxlags=8, ic='aic')
-print(f"Selected lag order: {results.k_ar}")
-
-# Granger causality tests
-print("GDP -> Unemployment:")
-grangercausalitytests(data[['unemp', 'gdp']], maxlag=4)
-print("\nUnemployment -> GDP:")
-grangercausalitytests(data[['gdp', 'unemp']], maxlag=4)
-        \end{verbatim}
+    \begin{block}{Essential Libraries and Functions}
+        \begin{itemize}
+            \item \texttt{from statsmodels.tsa.api import VAR}
+            \item \texttt{from statsmodels.tsa.stattools import grangercausalitytests}
+        \end{itemize}
     \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Workflow}
+        \begin{enumerate}
+            \item Create DataFrame: \texttt{data = pd.DataFrame(\{'gdp': ..., 'unemp': ...\})}
+            \item Fit VAR: \texttt{model = VAR(data); results = model.fit(maxlags=8, ic='aic')}
+            \item Get IRF: \texttt{irf = results.irf(periods=20)}
+            \item Get FEVD: \texttt{fevd = results.fevd(periods=20)}
+            \item Granger tests: \texttt{grangercausalitytests(data[['y', 'x']], maxlag=4)}
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Note}
+        Complete working examples are provided in the Jupyter notebooks.
+    \end{alertblock}
     }
 \end{frame}
 
 %=============================================================================
-% SECTION 4: DISCUSSION TOPICS
+% SECTION 4: REAL DATA ANALYSIS
+%=============================================================================
+\section{Real Data Analysis}
+
+\begin{frame}{Case Study: GDP and Unemployment}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_gdp_unemployment.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item \textbf{Top}: US Real GDP growth rate (quarterly)
+        \item \textbf{Bottom}: US Unemployment rate
+        \item Clear negative relationship (Okun's Law)
+        \item VAR model can capture dynamic interactions between these variables
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Cross-Correlation Analysis}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_cross_correlation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Cross-correlation measures lead-lag relationships
+        \item Negative correlation at lag 0: contemporaneous inverse relationship
+        \item Asymmetric pattern suggests unemployment responds to GDP with lag
+        \item Helps inform VAR lag order selection
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{VAR Estimation Results}
+    {\small
+    \begin{block}{Model: VAR(2) for GDP Growth and Unemployment}
+        \begin{center}
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Equation} & \textbf{Variable} & \textbf{Coef.} & \textbf{Std. Error} & \textbf{t-stat} \\
+            \midrule
+            \multirow{4}{*}{$\Delta GDP_t$} & $\Delta GDP_{t-1}$ & $0.312$ & $0.087$ & $3.59$ \\
+            & $\Delta GDP_{t-2}$ & $0.145$ & $0.082$ & $1.77$ \\
+            & $U_{t-1}$ & $-0.421$ & $0.156$ & $-2.70$ \\
+            & $U_{t-2}$ & $0.198$ & $0.148$ & $1.34$ \\
+            \midrule
+            \multirow{4}{*}{$U_t$} & $\Delta GDP_{t-1}$ & $-0.087$ & $0.032$ & $-2.72$ \\
+            & $\Delta GDP_{t-2}$ & $-0.045$ & $0.030$ & $-1.50$ \\
+            & $U_{t-1}$ & $1.456$ & $0.058$ & $25.1$ \\
+            & $U_{t-2}$ & $-0.521$ & $0.055$ & $-9.47$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Impulse Response Functions}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_irf.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item IRFs show dynamic response to one-unit shocks
+        \item GDP shock: temporary positive effect on GDP, negative on unemployment
+        \item Unemployment shock: negative effect on GDP, persistent on unemployment
+        \item 95\% confidence bands show uncertainty in responses
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Forecast Error Variance Decomposition}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_fevd.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item FEVD shows proportion of variance explained by each shock
+        \item GDP variance: mostly explained by own shocks, some by unemployment
+        \item Unemployment variance: highly persistent (own shocks dominant)
+        \item Provides insight into relative importance of different shocks
+    \end{itemize}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 5: DISCUSSION TOPICS
 %=============================================================================
 \section{Discussion Topics}
 
