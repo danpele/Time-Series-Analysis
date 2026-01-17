@@ -151,7 +151,117 @@
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
-    \tableofcontents
+    \vspace{-0.3cm}
+    {\small
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \tableofcontents[sections={1-5}, hideallsubsections]
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \tableofcontents[sections={6-9}, hideallsubsections]
+        \end{column}
+    \end{columns}
+    }
+\end{frame}
+
+%=============================================================================
+% MOTIVATION
+%=============================================================================
+\begin{frame}{Motivating Example: Seasonality Is Everywhere}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch4_motivation_seasonal.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Retail sales exhibit clear \textbf{annual patterns}: December peaks, January troughs
+        \item Standard ARIMA models cannot capture these \textbf{repeating seasonal cycles}
+        \item Ignoring seasonality leads to systematic forecast errors
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Understanding Seasonal Components}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch4_motivation_decomposition.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Seasonal time series = \textbf{Trend} + \textbf{Seasonal Pattern} + \textbf{Residuals}
+        \item Decomposition helps visualize each component separately
+        \item SARIMA models capture both trend dynamics and seasonal behavior
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Real-World Application: Monthly Patterns}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch4_motivation_monthly.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Energy demand shows strong \textbf{monthly seasonality} (heating/cooling cycles)
+        \item Pattern repeats predictably each year with slight variations
+        \item Utility companies use SARIMA forecasts for capacity planning
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Why Do We Need SARIMA?}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch4_motivation_why_sarima.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item \textbf{Left}: Seasonal ACF shows spikes at lags 12, 24, 36... (annual pattern)
+        \item \textbf{Right}: ARIMA residuals still show seasonal autocorrelation --- model is incomplete
+        \item SARIMA adds \textbf{seasonal AR and MA terms} to capture these patterns
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{What We'll Learn Today}
+    {\small
+    \hfill\begin{minipage}{0.9\textwidth}
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{block}{Concepts}
+                    \begin{itemize}\setlength{\itemsep}{1pt}
+                        \item Identifying seasonal patterns
+                        \item Seasonal differencing operator
+                        \item SARIMA$(p,d,q)(P,D,Q)_s$ notation
+                        \item The famous ``Airline Model''
+                        \item Model selection for seasonal data
+                    \end{itemize}
+                \end{block}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{block}{Skills}
+                    \begin{itemize}\setlength{\itemsep}{1pt}
+                        \item Diagnose seasonality from ACF/PACF
+                        \item Determine seasonal period $s$
+                        \item Choose $(P, D, Q)$ seasonal orders
+                        \item Implement SARIMA in Python/R
+                        \item Forecast seasonal time series
+                    \end{itemize}
+                \end{block}
+            \end{column}
+        \end{columns}
+    \end{minipage}
+    }
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Key Insight}
+        SARIMA = ARIMA applied at \textbf{two frequencies}: the regular (short-term) and seasonal (long-term) levels
+    \end{alertblock}
 \end{frame}
 
 %=============================================================================
@@ -177,36 +287,37 @@
 \end{frame}
 
 \begin{frame}{Examples of Seasonal Data}
-    {\small
-    \hspace{0.5cm}
-    \begin{columns}[T]
-        \begin{column}{0.45\textwidth}
-            \begin{block}{Economic Series}
-                \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Retail sales (holiday peaks)
-                    \item Tourism (summer/winter)
-                    \item Agricultural production
-                    \item Energy consumption
-                    \item Employment (hiring cycles)
-                \end{itemize}
-            \end{block}
-        \end{column}
-        \begin{column}{0.45\textwidth}
-            \begin{block}{Other Domains}
-                \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Weather/temperature
-                    \item Website traffic
-                    \item Hospital admissions
-                    \item Transportation usage
-                    \item Electricity demand
-                \end{itemize}
-            \end{block}
-        \end{column}
-    \end{columns}
-    }
-    \begin{alertblock}{Why It Matters}
-        Ignoring seasonality leads to biased forecasts and invalid inference!
-    \end{alertblock}
+	{\small
+		\hfill\begin{minipage}{0.9\textwidth}
+			\begin{columns}[T]
+				\begin{column}{0.48\textwidth}
+					\begin{block}{Economic Series}
+						\begin{itemize}\setlength{\itemsep}{0pt}
+							\item Retail sales (holiday peaks)
+							\item Tourism (summer/winter)
+							\item Agricultural production
+							\item Energy consumption
+							\item Employment (hiring cycles)
+						\end{itemize}
+					\end{block}
+				\end{column}
+				\begin{column}{0.48\textwidth}
+					\begin{block}{Other Domains}
+						\begin{itemize}\setlength{\itemsep}{0pt}
+							\item Weather/temperature
+							\item Website traffic
+							\item Hospital admissions
+							\item Transportation usage
+							\item Electricity demand
+						\end{itemize}
+					\end{block}
+				\end{column}
+			\end{columns}
+		\end{minipage}
+	}
+	\begin{alertblock}{Why It Matters}
+		Ignoring seasonality leads to biased forecasts and invalid inference!
+	\end{alertblock}
 \end{frame}
 
 \begin{frame}{Example: Airline Passengers Data}
@@ -241,9 +352,9 @@
 
 \begin{frame}{Deterministic vs Stochastic Seasonality}
     {\small
-    \hspace{0.5cm}
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{columns}[T]
-        \begin{column}{0.45\textwidth}
+        \begin{column}{0.48\textwidth}
             \begin{block}{Deterministic Seasonality}
                 Fixed seasonal pattern:
                 $Y_t = \sum_{j=1}^{s} \gamma_j D_{jt} + \varepsilon_t$
@@ -256,7 +367,7 @@
                 \end{itemize}
             \end{block}
         \end{column}
-        \begin{column}{0.45\textwidth}
+        \begin{column}{0.48\textwidth}
             \begin{block}{Stochastic Seasonality}
                 Evolving seasonal pattern:
                 $\Delta_s Y_t = Y_t - Y_{t-s}$
@@ -270,11 +381,13 @@
             \end{block}
         \end{column}
     \end{columns}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Detecting Seasonality}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Visual Methods}
         \begin{itemize}
             \item Time series plot -- look for repeating patterns
@@ -298,6 +411,7 @@
     \begin{exampleblock}{ACF Signature}
         Strong seasonality: ACF shows significant spikes at lags $s, 2s, 3s, \ldots$
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -318,6 +432,7 @@
 
 \begin{frame}{F-test for Seasonal Dummies: Intuition}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{What Does This Test Do?}
         Tests whether the \textbf{mean values differ significantly across seasons}.
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -339,6 +454,7 @@
     \begin{alertblock}{Key Idea}
         If adding seasonal dummies \textbf{significantly reduces} prediction errors, then seasonality is present.
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -365,6 +481,7 @@
 
 \begin{frame}{Kruskal-Wallis Test: Intuition}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{What Does This Test Do?}
         A \textbf{nonparametric} test that checks if observations from different seasons come from the same distribution.
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -388,11 +505,13 @@
     \begin{alertblock}{Limitation}
         Less powerful than F-test when data IS normally distributed.
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Kruskal-Wallis Test: Formula and Example}
     {\footnotesize
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Test Statistic}
         $H = \frac{12}{N(N+1)} \sum_{j=1}^{s} \frac{R_j^2}{n_j} - 3(N+1)$ \quad where $N$ = total obs., $n_j$ = obs. in season $j$, $R_j$ = sum of ranks.
     \end{block}
@@ -406,11 +525,13 @@
     \begin{alertblock}{In Python}
         \texttt{scipy.stats.kruskal(q1, q2, q3, q4)}
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{HEGY Test: What Problem Does It Solve?}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{The Key Question}
         Given a seasonal time series, we need to know:
         \begin{enumerate}\setlength{\itemsep}{0pt}
@@ -427,11 +548,13 @@
     \begin{alertblock}{HEGY Tests Multiple Frequencies}
         Quarterly: tests at 0, $\pi$, $\pm\pi/2$. Monthly: tests at 0, $\pi$, $\pm\pi/6$, $\pm\pi/3$, $\pm\pi/2$, $\pm 2\pi/3$, $\pm 5\pi/6$.
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{HEGY Test: The Regression Formula (Quarterly)}
     {\footnotesize
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{HEGY Auxiliary Regression}
         For quarterly data ($s=4$), estimate:
         $$\Delta_4 y_t = \pi_1 z_{1,t-1} + \pi_2 z_{2,t-1} + \pi_3 z_{3,t-2} + \pi_4 z_{4,t-2} + \sum_{j=1}^{k} \phi_j \Delta_4 y_{t-j} + \varepsilon_t$$
@@ -450,11 +573,13 @@
     \begin{alertblock}{Hypotheses}
         $H_0: \pi_1=0$ (freq.\ 0), $H_0: \pi_2=0$ (freq.\ $\pi$), $H_0: \pi_3=\pi_4=0$ (freq.\ $\pm\pi/2$)
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{HEGY Test: Decision Rules with Examples}
     {\footnotesize
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{HEGY Critical Values (5\%, n=100, with constant)}
         \begin{tabular}{lccc}
             \toprule
@@ -476,11 +601,13 @@
         \end{itemize}
         \textbf{Conclusion}: Use SARIMA with $d=1, D=1$
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Canova-Hansen Test: The Opposite of HEGY}
     {\footnotesize
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{HEGY vs Canova-Hansen: Different Null Hypotheses!}
         \begin{center}
         \begin{tabular}{lcc}
@@ -504,11 +631,13 @@
             \item Use \textbf{both} tests for robust conclusions!
         \end{itemize}
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Canova-Hansen Test: Formula}
     {\footnotesize
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Test Procedure}
         1. Regress $y_t$ on seasonal dummies: $y_t = \sum_{j=1}^{s} \gamma_j D_{jt} + u_t$
 
@@ -524,11 +653,13 @@
     \begin{alertblock}{Decision}
         Reject $H_0$ (stationarity) if $LM > $ critical value $\Rightarrow$ seasonal differencing needed.
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Summary: Choosing the Right Seasonality Test}
     {\footnotesize
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{center}
     \begin{tabular}{p{2cm}p{2.5cm}p{2.5cm}p{3cm}}
         \toprule
@@ -541,15 +672,14 @@
         \bottomrule
     \end{tabular}
     \end{center}
-    }
 
     \vspace{0.1cm}
 
-    {\footnotesize
     \begin{alertblock}{Key Insight}
         F-test/Kruskal-Wallis: ``\textit{Is there seasonality?}'' \\
         HEGY/Canova-Hansen: ``\textit{What type?}'' (deterministic vs stochastic)
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -711,6 +841,7 @@
 
 \begin{frame}{Common SARIMA Models}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Airline Model: SARIMA$(0,1,1)\times(0,1,1)_s$}
         $(1-L)(1-L^s)Y_t = (1+\theta L)(1+\Theta L^s)\varepsilon_t$ -- Classic model (Box \& Jenkins, 1970)
     \end{block}
@@ -722,6 +853,7 @@
     \begin{block}{SARIMA$(0,1,1)\times(0,1,0)_s$}
         $(1-L)(1-L^s)Y_t = (1+\theta L)\varepsilon_t$ -- Random walk + seasonal diff + MA(1)
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
@@ -809,6 +941,7 @@
 
 \begin{frame}{Model Identification Guidelines}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Step-by-Step Process}
         \begin{enumerate}
             \item Examine ACF for slow decay at seasonal lags $\Rightarrow$ seasonal differencing
@@ -828,6 +961,7 @@
             \item Auto-SARIMA algorithms can help
         \end{itemize}
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -1084,6 +1218,7 @@
 
 \begin{frame}{Key Takeaways}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Main Points}
         \begin{enumerate}
             \item \textbf{Seasonality} is common in economic and business data
@@ -1100,7 +1235,243 @@
     \begin{alertblock}{Next Steps}
         Chapter 5 will cover multivariate time series: VAR models, Granger causality, and cointegration.
     \end{alertblock}
+    \end{minipage}
     }
+\end{frame}
+
+%=============================================================================
+% SECTION 9: QUIZ
+%=============================================================================
+\section{Quiz}
+
+\begin{frame}{Quiz Question 1}
+    \begin{block}{Question}
+        For monthly data with annual seasonality, what is the seasonal period $s$?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item $s = 4$
+        \item $s = 7$
+        \item $s = 12$
+        \item $s = 52$
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 1: Answer}
+    \begin{exampleblock}{Correct Answer: (C)}
+        $s = 12$ (12 months per year)
+    \end{exampleblock}
+
+    \begin{block}{Common Seasonal Periods}
+        \begin{center}
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Data Frequency} & \textbf{Seasonality} & \textbf{$s$} \\
+            \midrule
+            Quarterly & Annual & 4 \\
+            Monthly & Annual & 12 \\
+            Weekly & Annual & 52 \\
+            Daily & Weekly & 7 \\
+            Hourly & Daily & 24 \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+
+    {\footnotesize
+    \begin{alertblock}{Note}
+        Some series have multiple seasonalities (e.g., daily data: weekly $s=7$ AND annual $s=365$).
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Quiz Question 2}
+    \begin{block}{Question}
+        What does the seasonal difference operator $(1 - L^{12})$ do to a monthly series?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item Computes $Y_t - Y_{t-1}$ (month-to-month change)
+        \item Computes $Y_t - Y_{t-12}$ (year-over-year change)
+        \item Computes the 12-month moving average
+        \item Removes the trend component only
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 2: Answer}
+    \begin{exampleblock}{Correct Answer: (B)}
+        Computes $Y_t - Y_{t-12}$ (year-over-year change)
+    \end{exampleblock}
+
+    \begin{block}{Explanation}
+        The seasonal difference operator:
+        $$(1 - L^{12})Y_t = Y_t - L^{12}Y_t = Y_t - Y_{t-12}$$
+
+        \textbf{Example}: For January 2024 data:
+        $$\Delta_{12} Y_{\text{Jan 2024}} = Y_{\text{Jan 2024}} - Y_{\text{Jan 2023}}$$
+    \end{block}
+
+    \begin{exampleblock}{Why It Works}
+        If $Y_t$ has a seasonal pattern that repeats every 12 months, then $Y_t \approx Y_{t-12}$, so:
+        $$\Delta_{12} Y_t = Y_t - Y_{t-12} \approx 0 + \text{noise}$$
+        The seasonal pattern is removed!
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz Question 3}
+    \begin{block}{Question}
+        In SARIMA$(1,1,1)\times(1,1,1)_{12}$ notation, what does the $(1,1,1)_{12}$ part represent?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item AR(1), differencing once, MA(1) at the regular level
+        \item Seasonal AR(1), seasonal differencing once, seasonal MA(1)
+        \item 12 AR terms, 12 differences, 12 MA terms
+        \item The model has 12 parameters in total
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 3: Answer}
+    \begin{exampleblock}{Correct Answer: (B)}
+        Seasonal AR(1), seasonal differencing once, seasonal MA(1)
+    \end{exampleblock}
+
+    \begin{block}{SARIMA Notation Breakdown}
+        SARIMA$(p,d,q)\times(P,D,Q)_s$:
+
+        \vspace{0.2cm}
+        \begin{tabular}{ll}
+            $(p,d,q)$ & Non-seasonal: AR($p$), $d$ differences, MA($q$) \\
+            $(P,D,Q)_s$ & Seasonal: SAR($P$), $D$ seasonal diffs, SMA($Q$) \\
+        \end{tabular}
+
+        \vspace{0.3cm}
+        For $(1,1,1)\times(1,1,1)_{12}$:
+        \begin{itemize}
+            \item Non-seasonal: AR(1), one regular difference, MA(1)
+            \item Seasonal: SAR(1) at lag 12, one $\Delta_{12}$, SMA(1) at lag 12
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Quiz Question 4}
+    \begin{block}{Question}
+        The ``Airline Model'' is SARIMA$(0,1,1)\times(0,1,1)_{12}$. How many parameters need to be estimated (excluding variance)?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item 1
+        \item 2
+        \item 4
+        \item 12
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 4: Answer}
+    \begin{exampleblock}{Correct Answer: (B)}
+        2 parameters
+    \end{exampleblock}
+
+    \begin{block}{Model Structure}
+        SARIMA$(0,1,1)\times(0,1,1)_{12}$:
+        $$(1-L)(1-L^{12})Y_t = (1 + \theta_1 L)(1 + \Theta_1 L^{12})\varepsilon_t$$
+
+        Parameters:
+        \begin{itemize}
+            \item $\theta_1$: non-seasonal MA coefficient
+            \item $\Theta_1$: seasonal MA coefficient
+        \end{itemize}
+
+        Total: \textbf{2 parameters} (plus $\sigma^2$)
+    \end{block}
+
+    {\footnotesize
+    \begin{alertblock}{Why ``Airline Model''?}
+        Box \& Jenkins (1970) used this model to forecast international airline passengers. It's remarkably effective for many seasonal economic series!
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Quiz Question 5}
+    \begin{block}{Question}
+        You observe significant ACF spikes at lags 12, 24, and 36 in a monthly series. What does this suggest?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item The series has a unit root
+        \item The series has annual seasonality that needs seasonal differencing
+        \item The series follows an AR(36) process
+        \item The series is already stationary
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 5: Answer}
+    \begin{exampleblock}{Correct Answer: (B)}
+        The series has annual seasonality that needs seasonal differencing
+    \end{exampleblock}
+
+    \begin{block}{Interpretation}
+        ACF spikes at lags $s, 2s, 3s, \ldots$ (here 12, 24, 36) indicate:
+        \begin{itemize}
+            \item Strong correlation between $Y_t$ and $Y_{t-12}$, $Y_{t-24}$, etc.
+            \item The series ``remembers'' its value from the same month last year
+            \item This is the signature of \textbf{stochastic seasonality}
+        \end{itemize}
+    \end{block}
+
+    \begin{exampleblock}{Solution}
+        Apply seasonal differencing: $W_t = (1 - L^{12})Y_t = Y_t - Y_{t-12}$
+
+        After differencing, the ACF at seasonal lags should be reduced.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz Question 6}
+    \begin{block}{Question}
+        After applying $(1-L)(1-L^{12})$ to a monthly series, the ACF shows a significant spike only at lag 1 and lag 12. What SARIMA model is suggested?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item SARIMA$(1,1,0)\times(1,1,0)_{12}$
+        \item SARIMA$(0,1,1)\times(0,1,1)_{12}$
+        \item SARIMA$(1,1,1)\times(1,1,1)_{12}$
+        \item SARIMA$(0,1,0)\times(0,1,0)_{12}$
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 6: Answer}
+    \begin{exampleblock}{Correct Answer: (B)}
+        SARIMA$(0,1,1)\times(0,1,1)_{12}$ (The Airline Model)
+    \end{exampleblock}
+
+    \begin{block}{ACF/PACF Identification Rules}
+        For MA processes, ACF \textbf{cuts off} after lag $q$:
+
+        \vspace{0.2cm}
+        \begin{tabular}{ll}
+            \textbf{Pattern} & \textbf{Suggests} \\
+            \hline
+            ACF spike at lag 1 only & MA(1) for non-seasonal part \\
+            ACF spike at lag 12 only & SMA(1) for seasonal part \\
+        \end{tabular}
+
+        \vspace{0.2cm}
+        Combined: MA(1) $\times$ SMA(1) = $(0,d,1)\times(0,D,1)_{12}$
+
+        With $d=1$ and $D=1$ (already differenced): $(0,1,1)\times(0,1,1)_{12}$
+    \end{block}
 \end{frame}
 
 \begin{frame}{References}

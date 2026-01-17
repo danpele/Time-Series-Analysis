@@ -163,8 +163,17 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        The seasonal differencing operator $(1-L^{12})Y_t = Y_t - Y_{t-12}$ compares each observation with the same month in the previous year, removing annual seasonal patterns.
+    \begin{exampleblock}{Answer: B -- Computes $Y_t - Y_{t-12}$}
+        \textbf{Seasonal difference operator}:
+        \[
+        (1-L^{12})Y_t = Y_t - L^{12}Y_t = Y_t - Y_{t-12}
+        \]
+
+        \textbf{Example} (January sales): $Y_{Jan2025} - Y_{Jan2024}$
+
+        \textbf{Effect}: Removes stable annual seasonal pattern
+
+        \textbf{Note}: $(1-L^s)$ for any seasonal period $s$ (quarterly: $s=4$, weekly: $s=52$)
     \end{exampleblock}
 \end{frame}
 
@@ -184,8 +193,15 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: C}
-        SARIMA$(p,d,q) \times (P,D,Q)_s$ combines regular ARIMA$(p,d,q)$ with seasonal ARIMA$(P,D,Q)$ at seasonal period $s$. Here we have both regular and seasonal AR(1), I(1), and MA(1) components with $s=12$.
+    \begin{exampleblock}{Answer: C -- ARIMA(1,1,1) with seasonal ARIMA(1,1,1) at period 12}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.5\textheight, keepaspectratio]{charts/sem4_sarima_notation.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        $(1-\phi_1 L)(1-\Phi_1 L^{12})(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
+        }
     \end{exampleblock}
 \end{frame}
 
@@ -205,8 +221,15 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: A}
-        The airline model has only 2 parameters: $\theta_1$ (regular MA coefficient) and $\Theta_1$ (seasonal MA coefficient). Despite its simplicity, it captures many seasonal patterns remarkably well.
+    \begin{exampleblock}{Answer: A -- 2 parameters ($\theta_1$ and $\Theta_1$)}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.5\textheight, keepaspectratio]{charts/sem4_airline_model.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Airline model}: $(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$ -- remarkably fits many seasonal series!
+        }
     \end{exampleblock}
 \end{frame}
 
@@ -226,8 +249,19 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: C}
-        Seasonal data shows significant autocorrelation at the seasonal frequency and its multiples. For monthly data with annual seasonality, expect spikes at lags 12, 24, 36, etc., reflecting correlation between same months across years.
+    \begin{exampleblock}{Answer: C -- At lags 12, 24, 36, ...}
+        \textbf{Intuition}: January 2024 is similar to January 2023, 2022, etc.
+
+        \textbf{ACF pattern for seasonal data}:
+        \begin{itemize}
+            \item Spikes at lag $s$: $\rho_{12} \neq 0$
+            \item Spikes at lag $2s$: $\rho_{24} \neq 0$
+            \item Spikes at lag $3s$: $\rho_{36} \neq 0$
+        \end{itemize}
+
+        \textbf{Diagnostic}: If ACF decays slowly at seasonal lags $\Rightarrow$ seasonal unit root ($D=1$)
+
+        If ACF cuts off after lag $s$ $\Rightarrow$ seasonal MA ($Q=1$)
     \end{exampleblock}
 \end{frame}
 
@@ -247,8 +281,18 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        Multiplicative structure means the AR polynomials $\phi(L) \times \Phi(L^s)$ and MA polynomials $\theta(L) \times \Theta(L^s)$ are multiplied together, creating cross-terms that capture interactions between regular and seasonal dynamics.
+    \begin{exampleblock}{Answer: B -- Regular and seasonal polynomials are multiplied}
+        \textbf{Multiplicative SARIMA}:
+        \[
+        \underbrace{\phi(L)\Phi(L^s)}_{\text{AR}} \cdot \underbrace{(1-L)^d(1-L^s)^D}_{\text{Diff}} Y_t = \underbrace{\theta(L)\Theta(L^s)}_{\text{MA}} \varepsilon_t
+        \]
+
+        \textbf{Example}: $\phi(L)\Phi(L^{12}) = (1-\phi_1 L)(1-\Phi_1 L^{12})$
+        \[
+        = 1 - \phi_1 L - \Phi_1 L^{12} + \phi_1\Phi_1 L^{13}
+        \]
+
+        \textbf{Cross-term} $\phi_1\Phi_1 L^{13}$: Captures interaction between short and long dynamics
     \end{exampleblock}
 \end{frame}
 
@@ -268,8 +312,19 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: C}
-        Both types of differencing are needed when the series exhibits both a stochastic trend (regular unit root) and stochastic seasonality (seasonal unit root). For example, airline passenger data needs $(1-L)(1-L^{12})Y_t$ to achieve stationarity.
+    \begin{exampleblock}{Answer: C -- Both trend and seasonal non-stationarity}
+        \textbf{Combined differencing}:
+        \[
+        W_t = (1-L)(1-L^{12})Y_t = Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13}
+        \]
+
+        \textbf{When needed}:
+        \begin{itemize}
+            \item ACF decays slowly at lags 1, 2, 3, ... $\Rightarrow$ need $d=1$
+            \item ACF decays slowly at lags 12, 24, 36, ... $\Rightarrow$ need $D=1$
+        \end{itemize}
+
+        \textbf{Classic example}: Airline passengers, retail sales, energy demand
     \end{exampleblock}
 \end{frame}
 
@@ -289,8 +344,16 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: C}
-        Slow decay of ACF at seasonal lags ($s, 2s, 3s, \ldots$) indicates a seasonal unit root. This requires seasonal differencing $(1-L^{12})$ to achieve stationarity. Fast cutoff at seasonal lags would suggest a stationary seasonal pattern.
+    \begin{exampleblock}{Answer: C -- Seasonal unit root requiring $D=1$}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.9\textwidth, height=0.48\textheight, keepaspectratio]{charts/sem4_seasonal_acf.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Left}: Stationary seasonal (fast decay at seasonal lags) \quad
+        \textbf{Right}: Seasonal unit root (slow decay $\Rightarrow D=1$ needed)
+        }
     \end{exampleblock}
 \end{frame}
 
@@ -310,8 +373,15 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        When seasonal peaks and troughs grow with the level, we have multiplicative seasonality: $Y_t = T_t \times S_t \times \varepsilon_t$. Taking logarithms converts this to additive: $\log Y_t = \log T_t + \log S_t + \log \varepsilon_t$, making standard SARIMA applicable.
+    \begin{exampleblock}{Answer: B -- Multiplicative seasonality, use $\log$ transformation}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.5\textheight, keepaspectratio]{charts/sem4_mult_add.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Multiplicative}: Diverging subseries lines $\Rightarrow$ Use log transformation!
+        }
     \end{exampleblock}
 \end{frame}
 
@@ -331,8 +401,17 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        In a seasonal subseries plot, each line shows one month across all years. If the lines diverge (fan out), the spread between high and low months is increasing, indicating multiplicative seasonality. Parallel lines indicate additive seasonality.
+    \begin{exampleblock}{Answer: B -- Lines diverge (spread increases over time)}
+        \textbf{Seasonal subseries plot}: Groups data by month, plots each month's values across years
+
+        \textbf{Interpretation}:
+        \begin{itemize}
+            \item \textbf{Parallel lines}: Constant seasonal amplitude $\Rightarrow$ Additive
+            \item \textbf{Diverging lines}: Growing amplitude $\Rightarrow$ Multiplicative
+            \item \textbf{Horizontal lines}: No trend within months
+        \end{itemize}
+
+        \textbf{Action}: If multiplicative, apply $\log$ before fitting SARIMA
     \end{exampleblock}
 \end{frame}
 
@@ -352,8 +431,18 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: C}
-        Both the regular MA polynomial $\theta(L) = 1 + \theta_1 L$ and seasonal MA polynomial $\Theta(L^s) = 1 + \Theta_1 L^{12}$ must have roots outside the unit circle. This requires $|\theta_1| < 1$ AND $|\Theta_1| < 1$ for invertibility.
+    \begin{exampleblock}{Answer: C -- Both $|\theta_1| < 1$ and $|\Theta_1| < 1$}
+        \textbf{Invertibility condition}: All MA roots must be outside unit circle
+
+        \textbf{Multiplicative MA}: $(1+\theta_1 L)(1+\Theta_1 L^{12})$
+
+        \textbf{Roots}:
+        \begin{itemize}
+            \item Regular: $z = -1/\theta_1$ must satisfy $|z| > 1 \Leftrightarrow |\theta_1| < 1$
+            \item Seasonal: $z^{12} = -1/\Theta_1$ must satisfy $|z| > 1 \Leftrightarrow |\Theta_1| < 1$
+        \end{itemize}
+
+        \textbf{Both} conditions required for overall invertibility!
     \end{exampleblock}
 \end{frame}
 
@@ -373,8 +462,21 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        The HEGY (Hylleberg-Engle-Granger-Yoo) test examines unit roots at different frequencies: zero frequency (trend unit root) and seasonal frequencies. It helps determine whether to use deterministic seasonality (dummies) or stochastic seasonality (seasonal differencing).
+    \begin{exampleblock}{Answer: B -- Test for unit roots at different frequencies}
+        \textbf{HEGY test} (Hylleberg-Engle-Granger-Yoo, 1990):
+
+        Tests for unit roots at:
+        \begin{itemize}
+            \item Zero frequency ($\omega = 0$): trend unit root $\Rightarrow d = 1$
+            \item Nyquist frequency ($\omega = \pi$): biannual cycle
+            \item Seasonal frequencies: annual cycles $\Rightarrow D = 1$
+        \end{itemize}
+
+        \textbf{Decision}:
+        \begin{itemize}
+            \item Reject at all frequencies $\Rightarrow$ use seasonal dummies
+            \item Don't reject seasonal $\Rightarrow$ use seasonal differencing
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
@@ -394,8 +496,23 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: A}
-        ACF cutting off at lag 12 (not at lag 1) with decaying PACF at seasonal lags suggests only a seasonal MA(1) component with no regular MA. The model is SARIMA$(0,1,0) \times (0,1,1)_{12}$.
+    \begin{exampleblock}{Answer: A -- SARIMA$(0,1,0) \times (0,1,1)_{12}$}
+        \textbf{Pattern analysis}:
+        \begin{center}
+        \begin{tabular}{lcc}
+            & \textbf{ACF} & \textbf{PACF} \\
+            Regular lags & No spikes & No spikes \\
+            Seasonal lags & Cuts off at $s$ & Decays
+        \end{tabular}
+        \end{center}
+
+        \textbf{Interpretation}:
+        \begin{itemize}
+            \item No regular MA needed ($q = 0$)
+            \item Seasonal MA(1) indicated ($Q = 1$)
+        \end{itemize}
+
+        \textbf{Model}: $(1-L)(1-L^{12})Y_t = (1 + \Theta_1 L^{12})\varepsilon_t$
     \end{exampleblock}
 \end{frame}
 
@@ -415,8 +532,18 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        A large negative ACF at lag 1 (close to $-0.5$) or at lag $s$ after differencing is a classic sign of over-differencing. This introduces artificial negative autocorrelation. Solution: reduce $d$ or $D$ by one.
+    \begin{exampleblock}{Answer: B -- The series has been over-differenced}
+        \textbf{Over-differencing signature}:
+        \begin{itemize}
+            \item ACF at lag 1 $\approx -0.5$ $\Rightarrow$ over-differenced at $d$
+            \item ACF at lag $s$ $\approx -0.5$ $\Rightarrow$ over-differenced at $D$
+        \end{itemize}
+
+        \textbf{Why?} If $\Delta Y_t = \varepsilon_t$, then $\Delta^2 Y_t = \varepsilon_t - \varepsilon_{t-1}$
+
+        This is MA(1) with $\theta = -1$, giving $\rho_1 = \frac{-1}{1+1} = -0.5$
+
+        \textbf{Fix}: Reduce $d$ or $D$ by one and re-examine ACF/PACF
     \end{exampleblock}
 \end{frame}
 
@@ -436,8 +563,17 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        With seasonal differencing ($D \geq 1$), the series has a seasonal unit root, meaning it's seasonally integrated. Like regular unit roots, this causes forecast uncertainty to grow without bound as the horizon increases.
+    \begin{exampleblock}{Answer: B -- They grow without bound}
+        \textbf{Unit root property}: Any unit root (regular or seasonal) causes unbounded forecast variance
+
+        \textbf{For SARIMA with $D=1$}:
+        \[
+        \Var(\hat{Y}_{T+h} - Y_{T+h}) \to \infty \text{ as } h \to \infty
+        \]
+
+        \textbf{Intuition}: Seasonal shocks accumulate over time
+
+        \textbf{Practical implication}: Long-range forecasts for seasonal integrated series have very wide confidence intervals
     \end{exampleblock}
 \end{frame}
 
@@ -457,8 +593,20 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        The seasonal period should match the repeating pattern's frequency. Weekly patterns in daily data repeat every 7 days, so $s = 7$. Always choose $s$ based on the dominant seasonal cycle in your data.
+    \begin{exampleblock}{Answer: B -- $s = 7$ (weekly)}
+        \textbf{Seasonal period selection}:
+        \begin{center}
+        \begin{tabular}{lll}
+            \textbf{Data} & \textbf{Pattern} & \textbf{Period $s$} \\
+            Daily & Weekly & 7 \\
+            Daily & Annual & 365 (or 252 for trading) \\
+            Monthly & Annual & 12 \\
+            Quarterly & Annual & 4 \\
+            Hourly & Daily & 24
+        \end{tabular}
+        \end{center}
+
+        \textbf{Rule}: $s$ = number of observations per cycle of the dominant pattern
     \end{exampleblock}
 \end{frame}
 
@@ -478,8 +626,16 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: C}
-        The seasonal AR coefficient $\Phi_1$ measures the dependence on the observation from one seasonal cycle ago. With $\Phi_1 = 0.8$, about 80\% of January's value (for example) is explained by last January's value, capturing persistence in seasonal patterns.
+    \begin{exampleblock}{Answer: C -- 80\% explained by same period last year}
+        \textbf{SAR(1) equation}: $(1 - \Phi_1 L^{12})Y_t = \varepsilon_t$
+
+        Rearranged: $Y_t = \Phi_1 Y_{t-12} + \varepsilon_t$
+
+        \textbf{With $\Phi_1 = 0.8$}: $Y_{Jan2024} = 0.8 \cdot Y_{Jan2023} + \varepsilon_t$
+
+        \textbf{Interpretation}: Strong seasonal persistence --- each month's value is 80\% determined by the same month in the previous year
+
+        \textbf{Stationarity}: Requires $|\Phi_1| < 1$ (here satisfied: $|0.8| < 1$)
     \end{exampleblock}
 \end{frame}
 
@@ -499,8 +655,19 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        When $|\Phi_1| = 1$, the process has a seasonal unit root, meaning it's seasonally integrated (requires seasonal differencing). This is analogous to a regular unit root ($\phi = 1$) but at the seasonal frequency. The solution is to apply $(1-L^s)$ differencing.
+    \begin{exampleblock}{Answer: B -- Has a seasonal unit root}
+        \textbf{Model}: $(1 - L^{12})Y_t = \varepsilon_t$ when $\Phi_1 = 1$
+
+        This implies: $Y_t = Y_{t-12} + \varepsilon_t$ (seasonal random walk)
+
+        \textbf{Properties}:
+        \begin{itemize}
+            \item Variance grows with time (non-stationary)
+            \item Each month follows its own random walk
+            \item Need $D = 1$ to make stationary
+        \end{itemize}
+
+        \textbf{Analogy}: Like regular RW but at seasonal frequency
     \end{exampleblock}
 \end{frame}
 
@@ -520,8 +687,19 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: C}
-        An AIC difference of 5 is meaningful---Model A provides a better fit even after penalizing for its extra parameters. However, we should also check residual diagnostics and consider if the simpler model (B) is ``good enough'' for practical purposes.
+    \begin{exampleblock}{Answer: C -- AIC difference of 5 suggests Model A is substantially better}
+        \textbf{AIC interpretation}: Lower AIC = better balance of fit and complexity
+
+        \textbf{Rule of thumb} (Burnham \& Anderson):
+        \begin{itemize}
+            \item $\Delta$AIC $< 2$: Models are essentially equivalent
+            \item $\Delta$AIC $2-10$: Some evidence for better model
+            \item $\Delta$AIC $> 10$: Strong evidence for better model
+        \end{itemize}
+
+        \textbf{Here}: $\Delta$AIC $= 5$ suggests Model A meaningfully better
+
+        \textbf{Always}: Also check residual diagnostics and forecast performance!
     \end{exampleblock}
 \end{frame}
 
@@ -541,8 +719,17 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        Significant residual ACF at seasonal lags (12, 24, ...) indicates the SARIMA model hasn't fully captured the seasonal structure. Consider increasing $P$ or $Q$ in the seasonal component, or checking if $D$ is appropriate.
+    \begin{exampleblock}{Answer: B -- The seasonal component is inadequate}
+        \textbf{Residual diagnostics}: Good residuals should be white noise (no significant ACF)
+
+        \textbf{Seasonal ACF in residuals} means:
+        \begin{itemize}
+            \item Model hasn't fully captured seasonal structure
+            \item Consider increasing $P$ or $Q$
+            \item Verify $D$ is correct (not over/under-differenced)
+        \end{itemize}
+
+        \textbf{Action}: Try SARIMA with higher seasonal order, check Ljung-Box at seasonal lags
     \end{exampleblock}
 \end{frame}
 
@@ -562,8 +749,17 @@
 
     \vspace{0.5cm}
     \pause
-    \begin{exampleblock}{Answer: B}
-        For SARIMA with $d=D=1$, the 13-month forecast heavily depends on the value from 12 months ago (same month last year) plus recent shocks. The seasonal structure ensures forecasts capture both trend and seasonal patterns, with seasonal memory being particularly important for seasonal-horizon forecasts.
+    \begin{exampleblock}{Answer: B -- The observation from the same month last year}
+        \textbf{Airline model forecast structure}: $(1-L)(1-L^{12})Y_t = (1+\theta L)(1+\Theta L^{12})\varepsilon_t$
+
+        \textbf{For 13-month ahead forecast}:
+        \begin{itemize}
+            \item Most influential: $Y_{T-11}$ (same month last year)
+            \item Also influenced by $Y_T$ (most recent) and $Y_{T-12}$
+            \item MA shocks decay quickly, seasonal structure persists
+        \end{itemize}
+
+        \textbf{Intuition}: ``Next January looks like last January, adjusted for recent trend''
     \end{exampleblock}
 \end{frame}
 

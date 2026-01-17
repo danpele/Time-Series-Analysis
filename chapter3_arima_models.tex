@@ -152,7 +152,85 @@
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
-    \tableofcontents
+    \vspace{-0.3cm}
+    {\small
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \tableofcontents[sections={1-6}, hideallsubsections]
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \tableofcontents[sections={7-11}, hideallsubsections]
+        \end{column}
+    \end{columns}
+    }
+\end{frame}
+
+%=============================================================================
+% MOTIVATION
+%=============================================================================
+\begin{frame}{Motivating Example: Non-Stationary Data Is Everywhere}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch3_motivation_nonstationary.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Stock prices, GDP, exchange rates all exhibit \textbf{trends} or \textbf{wandering behavior}
+        \item The sample mean (red line) is meaningless for a random walk
+        \item Standard ARMA models \textbf{cannot} handle these series directly
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Real-World Applications}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.92\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch3_motivation_realworld.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{alertblock}{The Challenge}
+        Financial and economic data are typically \textbf{integrated} (I(1) or near unit root):
+        \begin{itemize}
+            \item Stock prices: random walk in logs
+            \item Exchange rates: random walk
+            \item Interest rates: highly persistent (near unit root)
+        \end{itemize}
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{The Solution: Differencing}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch3_motivation_differencing.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{exampleblock}{Key Insight}
+        \textbf{Differencing} transforms a non-stationary series into a stationary one:
+        $\Delta Y_t = Y_t - Y_{t-1}$. The ACF changes from slow decay to quick decay!
+    \end{exampleblock}
+    }
+\end{frame}
+
+\begin{frame}{What We'll Learn Today}
+    \begin{block}{Core Concepts}
+        \begin{enumerate}
+            \item \textbf{Non-Stationarity}: Why it matters and how to detect it
+            \item \textbf{Unit Root Tests}: ADF, PP, KPSS tests
+            \item \textbf{Differencing}: The key transformation
+            \item \textbf{ARIMA Models}: Combining differencing with ARMA
+            \item \textbf{Box-Jenkins Methodology}: Identify $\to$ Estimate $\to$ Diagnose
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{By the End of This Lecture}
+        You will be able to model and forecast non-stationary time series like stock prices, GDP, and exchange rates using ARIMA models.
+    \end{exampleblock}
 \end{frame}
 
 %=============================================================================
@@ -162,6 +240,7 @@
 
 \begin{frame}{Why Non-Stationarity Matters}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{alertblock}{The Problem}
         Many economic and financial time series are \textbf{non-stationary}:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -180,6 +259,7 @@
             \item Statistical inference becomes invalid
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
@@ -246,6 +326,7 @@
 
 \begin{frame}{The Random Walk Process}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Random Walk]
         A \textbf{random walk} is defined as:
         $$Y_t = Y_{t-1} + \varepsilon_t, \quad \varepsilon_t \sim WN(0, \sigma^2)$$
@@ -262,11 +343,13 @@
             \item ACF: $\rho_k = \sqrt{\frac{t-k}{t}} \to 1$ as $t \to \infty$
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Random Walk with Drift}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Random Walk with Drift]
         A random walk with drift includes a constant term:
         $$Y_t = \mu + Y_{t-1} + \varepsilon_t$$
@@ -283,6 +366,7 @@
             \item Still non-stationary despite having a ``trend''
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
@@ -318,6 +402,7 @@
 
 \begin{frame}{Integrated Processes}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Integrated Process of Order $d$]
         A time series $\{Y_t\}$ is \textbf{integrated of order $d$}, written $Y_t \sim I(d)$, if:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -336,6 +421,7 @@
             \item $I(2)$: Second difference is stationary (less common)
         \end{itemize}
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -346,6 +432,7 @@
 
 \begin{frame}{The Difference Operator}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[First Difference]
         The \textbf{first difference operator} $\Delta$ is defined as:
         $\Delta Y_t = Y_t - Y_{t-1} = (1-L)Y_t$, where $L$ is the lag operator ($LY_t = Y_{t-1}$).
@@ -366,11 +453,13 @@
     \begin{alertblock}{Key Result}
         If $Y_t \sim I(d)$, then $\Delta^d Y_t \sim I(0)$ (stationary).
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Example: Differencing a Random Walk}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{exampleblock}{Random Walk to White Noise}
         Let $Y_t = Y_{t-1} + \varepsilon_t$ (random walk). Taking the first difference:
         $$\Delta Y_t = Y_t - Y_{t-1} = \varepsilon_t$$
@@ -386,6 +475,7 @@
             \item The ``changes'' in a random walk are stationary
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
@@ -420,6 +510,7 @@
 
 \begin{frame}{Overdifferencing}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{alertblock}{Warning: Overdifferencing}
         Differencing more than necessary introduces problems:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -436,6 +527,7 @@
         $$\Delta^2 Y_t = \Delta Y_t - \Delta Y_{t-1} = \varepsilon_t - \varepsilon_{t-1}$$
         This is an MA(1) with $\theta = 1$ (non-invertible boundary)!
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -446,6 +538,7 @@
 
 \begin{frame}{Definition of ARIMA}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[ARIMA(p,d,q)]
         A time series $\{Y_t\}$ follows an \textbf{ARIMA(p,d,q)} process if:
         $$\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$$
@@ -457,6 +550,7 @@
             \item $\varepsilon_t \sim WN(0, \sigma^2)$
         \end{itemize}
     \end{defn}
+    \end{minipage}
     }
 \end{frame}
 
@@ -489,6 +583,7 @@
 
 \begin{frame}{ARIMA(1,1,0) Example}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{exampleblock}{ARI(1,1) Model}
         $$\Delta Y_t = c + \phi_1 \Delta Y_{t-1} + \varepsilon_t$$
         Equivalently: $(1-\phi_1 L)(1-L)Y_t = c + \varepsilon_t$
@@ -504,11 +599,13 @@
             \item Common model for many economic time series
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{ARIMA(0,1,1) Example}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{exampleblock}{IMA(1,1) Model}
         $$\Delta Y_t = c + \varepsilon_t + \theta_1 \varepsilon_{t-1}$$
         Equivalently: $(1-L)Y_t = c + (1+\theta_1 L)\varepsilon_t$
@@ -521,11 +618,13 @@
         $$\hat{Y}_{t+1} = \alpha Y_t + (1-\alpha)\hat{Y}_t$$
         where $\alpha = 1 + \theta_1$ (for $-1 < \theta_1 < 0$).
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{The Role of the Constant in ARIMA}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Constant Term in ARIMA(p,d,q)}
         When $d > 0$, the constant $c$ has a different interpretation:
         $\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$
@@ -540,6 +639,7 @@
             \item Often $c=0$ is assumed when $d \geq 1$
         \end{itemize}
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -550,6 +650,7 @@
 
 \begin{frame}{Testing for Unit Roots}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Why Test?}
         Before fitting an ARIMA model, we need to determine:
         \begin{enumerate}\setlength{\itemsep}{0pt}
@@ -567,11 +668,13 @@
             \item \textbf{KPSS} (stationarity test -- reversed null hypothesis)
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{The Dickey-Fuller Test}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Setup}
         Consider the AR(1) model: $Y_t = \phi Y_{t-1} + \varepsilon_t$. Subtract $Y_{t-1}$:
         $\Delta Y_t = (\phi - 1)Y_{t-1} + \varepsilon_t = \gamma Y_{t-1} + \varepsilon_t$, where $\gamma = \phi - 1$.
@@ -591,11 +694,13 @@
     \begin{alertblock}{Key Issue}
         Under $H_0$, the $t$-statistic does \textbf{not} follow a standard $t$-distribution! Must use Dickey-Fuller critical values.
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Dickey-Fuller Test Variants}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Three Specifications}
         \begin{enumerate}\setlength{\itemsep}{0pt}
             \item \textbf{No constant, no trend}: $\Delta Y_t = \gamma Y_{t-1} + \varepsilon_t$
@@ -613,6 +718,7 @@
             \item Excluding necessary terms leads to incorrect inference
         \end{itemize}
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -671,6 +777,7 @@
 
 \begin{frame}{The Phillips-Perron (PP) Test}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Motivation}
         Like ADF, tests $H_0$: Unit root vs $H_1$: Stationary, but uses a \textbf{non-parametric correction} for serial correlation instead of adding lagged differences.
     \end{block}
@@ -687,12 +794,14 @@
             \item No need to select lag length (uses bandwidth instead)
         \end{itemize}
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{The KPSS Test}
     \vspace{-0.2cm}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Reversed Hypotheses}
         Unlike ADF: $H_0$: Stationary \quad vs \quad $H_1$: Unit root
     \end{block}
@@ -713,6 +822,7 @@
             \item Both reject or neither $\Rightarrow$ Inconclusive
         \end{itemize}
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -739,6 +849,7 @@
 
 \begin{frame}{Step 1: Determining $d$}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Procedure}
         \begin{enumerate}\setlength{\itemsep}{0pt}
             \item Plot the time series -- look for trends, changing variance
@@ -758,6 +869,7 @@
             \item Watch for overdifferencing (ACF with $\rho_1 \approx -0.5$)
         \end{itemize}
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -796,6 +908,7 @@
 
 \begin{frame}{Auto-ARIMA Algorithms}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Automated Model Selection}
         Modern software can automatically select $(p,d,q)$:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -820,6 +933,7 @@
     \begin{alertblock}{Caution}
         Automated selection is helpful but not infallible. Always check diagnostics!
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -830,6 +944,7 @@
 
 \begin{frame}{Estimation Methods}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Maximum Likelihood Estimation (MLE)}
         The standard approach for ARIMA:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -849,11 +964,13 @@
             \item Difference diminishes as sample size grows
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Parameter Constraints}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{alertblock}{Stationarity and Invertibility}
         The estimated ARIMA model should satisfy:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -872,6 +989,7 @@
             \item Warning if near-unit-root detected
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
@@ -882,6 +1000,7 @@
 
 \begin{frame}{Residual Analysis}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{What to Check}
         If the model is correct, residuals $\hat{\varepsilon}_t$ should be white noise:
         \begin{enumerate}\setlength{\itemsep}{0pt}
@@ -902,11 +1021,13 @@
             \item \textbf{Residual vs fitted}: Checks for heteroskedasticity
         \end{itemize}
     \end{block}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{The Ljung-Box Test}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Ljung-Box Q Statistic]
         $Q(m) = n(n+2) \sum_{k=1}^{m} \frac{\hat{\rho}_k^2}{n-k}$. Under $H_0$ (no autocorrelation): $Q(m) \sim \chi^2(m-p-q)$
     \end{defn}
@@ -926,6 +1047,7 @@
     \begin{alertblock}{If Test Fails}
         Consider adding AR or MA terms, or check for structural breaks.
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -936,6 +1058,7 @@
 
 \begin{frame}{Point Forecasts}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Minimum MSE Forecast}
         The optimal $h$-step ahead forecast is the conditional expectation:
         $\hat{Y}_{T+h|T} = \E[Y_{T+h} | Y_T, Y_{T-1}, \ldots]$
@@ -950,11 +1073,13 @@
 
         For $h > 1$: replace unknown $\varepsilon_{T+j}$ with 0, unknown $Y_{T+j}$ with $\hat{Y}_{T+j|T}$
     \end{exampleblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Forecast Intervals}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Forecast Uncertainty}
         The $h$-step forecast error variance: $\Var(e_{T+h}) = \sigma^2 \sum_{j=0}^{h-1} \psi_j^2$, where $\psi_j$ are MA($\infty$) coefficients.
     \end{block}
@@ -970,11 +1095,13 @@
     \begin{alertblock}{Key Property for I(1) Series}
         For integrated processes, forecast variance grows without bound as $h \to \infty$. Intervals widen over time!
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
 \begin{frame}{Long-Run Forecasts for ARIMA}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Behavior as $h \to \infty$}
         For ARIMA(p,1,q) with drift $c$:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -994,6 +1121,7 @@
     \begin{alertblock}{Practical Implication}
         ARIMA forecasts are most reliable for short horizons. Long-term forecasts have very wide uncertainty bands.
     \end{alertblock}
+    \end{minipage}
     }
 \end{frame}
 
@@ -1119,6 +1247,7 @@ print(model.summary())
 
 \begin{frame}{Key Takeaways}
     {\small
+    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Main Points}
         \begin{enumerate}\setlength{\itemsep}{0pt}
             \item \textbf{Non-stationarity} is common in economic data -- must be addressed
@@ -1134,6 +1263,207 @@ print(model.summary())
 
     \begin{alertblock}{Next Steps}
         Chapter 4 will extend ARIMA to handle seasonality: SARIMA models.
+    \end{alertblock}
+    \end{minipage}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 11: QUIZ
+%=============================================================================
+\section{Quiz}
+
+\begin{frame}{Quiz Question 1}
+    \begin{block}{Question}
+        A time series $Y_t$ follows a random walk: $Y_t = Y_{t-1} + \varepsilon_t$. What is $\Var(Y_t)$?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item $\sigma^2$ (constant)
+        \item $t \cdot \sigma^2$ (grows linearly with time)
+        \item $\sigma^2 / t$ (decreases with time)
+        \item $\sigma^{2t}$ (grows exponentially)
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 1: Answer}
+    \begin{exampleblock}{Correct Answer: (B)}
+        $\Var(Y_t) = t \cdot \sigma^2$ (grows linearly with time)
+    \end{exampleblock}
+
+    \begin{block}{Proof}
+        Starting from $Y_0 = 0$:
+        $$Y_t = Y_0 + \varepsilon_1 + \varepsilon_2 + \cdots + \varepsilon_t = \sum_{i=1}^{t} \varepsilon_i$$
+
+        Since $\varepsilon_i$ are i.i.d. with variance $\sigma^2$:
+        $$\Var(Y_t) = \Var\left(\sum_{i=1}^{t} \varepsilon_i\right) = \sum_{i=1}^{t} \Var(\varepsilon_i) = t \cdot \sigma^2$$
+    \end{block}
+
+    {\footnotesize
+    \begin{alertblock}{Implication}
+        This is why random walks are non-stationary: variance $\to \infty$ as $t \to \infty$.
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Quiz Question 2}
+    \begin{block}{Question}
+        If a series $Y_t$ is I(2), how many times must you difference it to achieve stationarity?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item 0 times (already stationary)
+        \item 1 time
+        \item 2 times
+        \item Cannot be made stationary by differencing
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 2: Answer}
+    \begin{exampleblock}{Correct Answer: (C)}
+        2 times
+    \end{exampleblock}
+
+    \begin{block}{Explanation}
+        I($d$) means ``integrated of order $d$'' --- requires $d$ differences for stationarity.
+
+        \vspace{0.2cm}
+        \textbf{Example}: If $Y_t \sim$ I(2):
+        \begin{align*}
+            W_t &= \Delta Y_t = Y_t - Y_{t-1} \quad \text{(still non-stationary, I(1))} \\
+            Z_t &= \Delta W_t = \Delta^2 Y_t = Y_t - 2Y_{t-1} + Y_{t-2} \quad \text{(stationary, I(0))}
+        \end{align*}
+    \end{block}
+
+    {\footnotesize
+    \begin{alertblock}{Practical Note}
+        I(2) is rare in practice. Most economic series are I(0) or I(1). If you need $d > 2$, recheck your data!
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Quiz Question 3}
+    \begin{block}{Question}
+        You run an ADF test and get a test statistic of $-2.1$ with critical values: $-3.43$ (1\%), $-2.86$ (5\%), $-2.57$ (10\%). What do you conclude?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item Reject $H_0$: series is stationary at all levels
+        \item Reject $H_0$: series is stationary at 10\% level only
+        \item Fail to reject $H_0$: series likely has a unit root
+        \item The test is inconclusive
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 3: Answer}
+    \begin{exampleblock}{Correct Answer: (C)}
+        Fail to reject $H_0$: series likely has a unit root
+    \end{exampleblock}
+
+    \begin{block}{Explanation}
+        ADF test: $H_0$: unit root (non-stationary) vs $H_1$: stationary
+
+        \vspace{0.2cm}
+        Test statistic: $-2.1$
+
+        Compare with critical values:
+        \begin{itemize}
+            \item $-2.1 > -2.57$ (10\% CV) $\Rightarrow$ Cannot reject at 10\%
+            \item $-2.1 > -2.86$ (5\% CV) $\Rightarrow$ Cannot reject at 5\%
+            \item $-2.1 > -3.43$ (1\% CV) $\Rightarrow$ Cannot reject at 1\%
+        \end{itemize}
+
+        \textbf{Rule}: Reject $H_0$ only if test stat $<$ critical value (more negative)
+    \end{block}
+
+    {\footnotesize
+    \begin{alertblock}{Action}
+        Since we cannot reject $H_0$, consider differencing the series.
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Quiz Question 4}
+    \begin{block}{Question}
+        For an ARIMA(1,1,0) model, what is the ACF pattern of the \textbf{differenced} series $\Delta Y_t$?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item Cuts off after lag 1
+        \item Decays exponentially
+        \item Alternates in sign
+        \item Is zero at all lags
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 4: Answer}
+    \begin{exampleblock}{Correct Answer: (B)}
+        Decays exponentially
+    \end{exampleblock}
+
+    \begin{block}{Explanation}
+        ARIMA(1,1,0) means: $\Delta Y_t$ follows AR(1)
+        $$\Delta Y_t = \phi_1 \Delta Y_{t-1} + \varepsilon_t$$
+
+        For AR(1), the ACF is:
+        $$\rho_k = \phi_1^k$$
+
+        This decays exponentially (geometric decay).
+    \end{block}
+
+    \begin{exampleblock}{Visual Pattern}
+        \begin{center}
+        \begin{tabular}{c|cccccc}
+            Lag $k$ & 1 & 2 & 3 & 4 & 5 & $\cdots$ \\
+            \hline
+            $\rho_k$ (if $\phi_1=0.7$) & 0.70 & 0.49 & 0.34 & 0.24 & 0.17 & $\cdots$
+        \end{tabular}
+        \end{center}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz Question 5}
+    \begin{block}{Question}
+        What happens to ARIMA forecast confidence intervals as the horizon $h$ increases for an I(1) series?
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[(A)]
+        \item They stay constant
+        \item They narrow (more precision)
+        \item They widen without bound
+        \item They widen but converge to a limit
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Question 5: Answer}
+    \begin{exampleblock}{Correct Answer: (C)}
+        They widen without bound
+    \end{exampleblock}
+
+    \begin{block}{Mathematical Proof}
+        For a random walk $Y_t = Y_{t-1} + \varepsilon_t$:
+
+        The $h$-step forecast error variance is:
+        $$\Var(Y_{T+h} - \hat{Y}_{T+h|T}) = h \cdot \sigma^2$$
+
+        95\% CI width: $\pm 1.96 \sqrt{h \cdot \sigma^2} = \pm 1.96 \sigma \sqrt{h}$
+
+        As $h \to \infty$, width $\to \infty$.
+    \end{block}
+
+    {\footnotesize
+    \begin{alertblock}{Contrast with Stationary Series}
+        For I(0) series (e.g., ARMA), CIs converge to the unconditional variance---they widen but have a \textbf{limit}.
     \end{alertblock}
     }
 \end{frame}
