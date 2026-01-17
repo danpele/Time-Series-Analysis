@@ -15,7 +15,10 @@ plt.style.use('seaborn-v0_8-whitegrid')
 plt.rcParams['font.size'] = 10
 plt.rcParams['axes.titlesize'] = 12
 plt.rcParams['axes.labelsize'] = 10
-plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
 
 # Create charts directory if needed
 os.makedirs('charts', exist_ok=True)
