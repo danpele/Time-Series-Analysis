@@ -250,7 +250,7 @@ fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
 
 axes[0].plot(combined.index, combined['GDP_Growth'], color=COLORS['blue'], linewidth=1.5)
 axes[0].axhline(y=0, color='black', linestyle='--', alpha=0.3)
-axes[0].set_title(f'US Real GDP Growth Rate ({data_source})', fontweight='bold')
+axes[0].set_title('US Real GDP Growth Rate', fontweight='bold')
 axes[0].set_ylabel('Growth Rate (%)')
 axes[0].fill_between(combined.index, 0, combined['GDP_Growth'],
                      where=combined['GDP_Growth'] < 0, color=COLORS['red'], alpha=0.3)
