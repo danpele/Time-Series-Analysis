@@ -109,7 +109,7 @@ axes[0].axhline(y=0, color='black', linewidth=0.5)
 axes[0].set_title('AR(1) ACF: Exponential Decay', fontweight='bold')
 axes[0].set_xlabel('Lag')
 axes[0].set_ylabel('ACF')
-axes[0].legend(loc='upper right', frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
 
 # PACF - should cut off after lag 1
 sample_pacf = compute_pacf(y_ar1, nlags)
@@ -169,7 +169,7 @@ axes[0].axhline(y=0, color='black', linewidth=0.5)
 axes[0].set_title('MA(1) ACF: Cuts Off After Lag 1', fontweight='bold')
 axes[0].set_xlabel('Lag')
 axes[0].set_ylabel('ACF')
-axes[0].legend(loc='upper right', frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
 
 # PACF - should decay
 sample_pacf = compute_pacf(y_ma1, nlags)
@@ -278,7 +278,7 @@ ax.set_ylim(-1.5, 1.5)
 ax.set_xlabel('$\\phi_1$', fontsize=14)
 ax.set_ylabel('$\\phi_2$', fontsize=14)
 ax.set_title('Stationarity Region for AR(2)', fontweight='bold', fontsize=14)
-ax.legend(loc='lower right', frameon=False)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False)
 ax.axhline(y=0, color='gray', linewidth=0.5)
 ax.axvline(x=0, color='gray', linewidth=0.5)
 
@@ -312,7 +312,7 @@ axes[0, 1].plot(x, stats.norm.pdf(x, 0, 1), color=RED, linewidth=2, label='N(0,1
 axes[0, 1].set_title('Residual Distribution', fontweight='bold')
 axes[0, 1].set_xlabel('Residual')
 axes[0, 1].set_ylabel('Density')
-axes[0, 1].legend(frameon=False)
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # ACF of residuals
 acf_resid = compute_acf(residuals, 20)

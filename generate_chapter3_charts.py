@@ -302,7 +302,7 @@ axes[0].plot(2 + 0.1 * t, color=RED, linewidth=2, linestyle='--', label='Trend l
 axes[0].set_title('Deterministic Trend (Trend-Stationary)', fontweight='bold')
 axes[0].set_xlabel('Time')
 axes[0].set_ylabel('$Y_t$')
-axes[0].legend(loc='upper left', frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
 
 # Stochastic trend (random walk with drift)
 stoch_trend = np.cumsum(0.1 + np.random.normal(0, 2, n_sim))
@@ -310,7 +310,7 @@ axes[1].plot(stoch_trend, color=GREEN, linewidth=1.5, label='$Y_t = Y_{t-1} + \\
 axes[1].set_title('Stochastic Trend (Unit Root)', fontweight='bold')
 axes[1].set_xlabel('Time')
 axes[1].set_ylabel('$Y_t$')
-axes[1].legend(loc='upper left', frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch3_trend_comparison.pdf', dpi=300, bbox_inches='tight')
@@ -351,7 +351,7 @@ axes[1].plot(theoretical_var, color=RED, linewidth=2, linestyle='--', label='The
 axes[1].set_title('Variance of Random Walk Grows Linearly', fontweight='bold')
 axes[1].set_xlabel('Time $t$')
 axes[1].set_ylabel('$Var(Y_t)$')
-axes[1].legend(loc='upper left', frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch3_variance_growth.pdf', dpi=300, bbox_inches='tight')

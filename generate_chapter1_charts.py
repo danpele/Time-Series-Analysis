@@ -221,7 +221,7 @@ axes[0, 0].axhline(y=50, color=RED, linestyle='--', linewidth=2, label='Mean')
 axes[0, 0].fill_between(range(n), 40, 60, alpha=0.1, color=BLUE)
 axes[0, 0].set_title('Stationary: Constant Mean & Variance', fontweight='bold')
 axes[0, 0].set_ylabel('$Y_t$')
-axes[0, 0].legend(loc='upper right', frameon=False)
+axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Non-stationary: Changing mean (trend)
 trend = 20 + 0.3 * np.arange(n) + np.random.normal(0, 3, n)
@@ -229,7 +229,7 @@ axes[0, 1].plot(trend, color=GREEN, linewidth=1)
 axes[0, 1].plot(20 + 0.3 * np.arange(n), color=RED, linestyle='--', linewidth=2, label='Changing Mean')
 axes[0, 1].set_title('Non-Stationary: Trend (Changing Mean)', fontweight='bold')
 axes[0, 1].set_ylabel('$Y_t$')
-axes[0, 1].legend(loc='upper left', frameon=False)
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Non-stationary: Changing variance (heteroscedasticity)
 hetero = np.array([np.random.normal(50, 2 + 0.1*i) for i in range(n)])
@@ -269,7 +269,7 @@ axes[0].plot(forecast, color=RED, linewidth=1.5, linestyle='--', label='Forecast
 axes[0].set_title('Actual vs Forecast', fontweight='bold')
 axes[0].set_xlabel('Time')
 axes[0].set_ylabel('Value')
-axes[0].legend(loc='upper left', frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
 
 # Residuals
 residuals = actual - forecast
@@ -280,7 +280,7 @@ axes[1].axhline(y=np.mean(residuals), color=RED, linestyle='--', linewidth=2,
 axes[1].set_title('Forecast Errors (Residuals)', fontweight='bold')
 axes[1].set_xlabel('Time')
 axes[1].set_ylabel('Error')
-axes[1].legend(loc='upper right', frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch1_forecast_eval.pdf', dpi=300, bbox_inches='tight')
@@ -309,7 +309,7 @@ axes[0, 1].plot(x, stats.norm.pdf(x), color=RED, linewidth=2, label='N(0,1)')
 axes[0, 1].set_title('White Noise Distribution', fontweight='bold')
 axes[0, 1].set_xlabel('Value')
 axes[0, 1].set_ylabel('Density')
-axes[0, 1].legend(frameon=False)
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Random walk series
 axes[1, 0].plot(rw, color=GREEN, linewidth=1)

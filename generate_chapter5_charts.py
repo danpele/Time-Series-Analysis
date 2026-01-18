@@ -222,15 +222,16 @@ try:
     gdp = pdr.get_data_fred('A191RL1Q225SBEA', start='1990-01-01', end='2024-12-31')  # Real GDP growth
     unemp = pdr.get_data_fred('UNRATE', start='1990-01-01', end='2024-12-31')  # Unemployment rate
 
-    # Resample unemployment to quarterly
-    unemp_q = unemp.resample('QE').mean()
+    # Resample unemployment to quarterly (use QS to match GDP's quarter-start dates)
+    unemp_q = unemp.resample('QS').mean()
 
-    # Align dates
-    combined = pd.concat([gdp, unemp_q], axis=1).dropna()
+    # Align dates by merging on index
+    combined = gdp.join(unemp_q, how='inner')
     combined.columns = ['GDP_Growth', 'Unemployment']
 
     data_source = "FRED"
-except:
+except Exception as e:
+    print(f"Error fetching FRED data: {e}")
     # Simulate realistic data
     np.random.seed(123)
     n = 140
