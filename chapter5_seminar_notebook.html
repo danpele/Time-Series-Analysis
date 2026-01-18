@@ -8994,8 +8994,8 @@ a.anchor-link {
 <span class="nb">print</span><span class="p">(</span><span class="s2">"Lag Order Selection:"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">lag_order</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
 
-<span class="c1"># Use BIC-selected lag</span>
-<span class="n">optimal_lag</span> <span class="o">=</span> <span class="n">lag_order</span><span class="o">.</span><span class="n">bic</span>
+<span class="c1"># Use BIC-selected lag, but ensure at least 1</span>
+<span class="n">optimal_lag</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag_order</span><span class="o">.</span><span class="n">bic</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Using lag order: </span><span class="si">{</span><span class="n">optimal_lag</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -9126,14 +9126,15 @@ a.anchor-link {
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-python"><pre><span></span><span class="c1"># Generate forecasts</span>
 <span class="n">forecast_steps</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># 2 years</span>
-<span class="n">forecast</span> <span class="o">=</span> <span class="n">macro_results</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">macro_data</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="n">optimal_lag</span><span class="p">:],</span> <span class="n">steps</span><span class="o">=</span><span class="n">forecast_steps</span><span class="p">)</span>
+<span class="n">lag_order_used</span> <span class="o">=</span> <span class="n">macro_results</span><span class="o">.</span><span class="n">k_ar</span>  <span class="c1"># Get actual lag order from fitted model</span>
+<span class="n">forecast</span> <span class="o">=</span> <span class="n">macro_results</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">macro_data</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="n">lag_order_used</span><span class="p">:],</span> <span class="n">steps</span><span class="o">=</span><span class="n">forecast_steps</span><span class="p">)</span>
 
 <span class="c1"># Create forecast dates</span>
 <span class="n">forecast_dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">macro_data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">DateOffset</span><span class="p">(</span><span class="n">months</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> 
                                <span class="n">periods</span><span class="o">=</span><span class="n">forecast_steps</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">'QE'</span><span class="p">)</span>
 
 <span class="c1"># Get forecast intervals</span>
-<span class="n">forecast_interval</span> <span class="o">=</span> <span class="n">macro_results</span><span class="o">.</span><span class="n">forecast_interval</span><span class="p">(</span><span class="n">macro_data</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="n">optimal_lag</span><span class="p">:],</span> 
+<span class="n">forecast_interval</span> <span class="o">=</span> <span class="n">macro_results</span><span class="o">.</span><span class="n">forecast_interval</span><span class="p">(</span><span class="n">macro_data</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="n">lag_order_used</span><span class="p">:],</span> 
                                                      <span class="n">steps</span><span class="o">=</span><span class="n">forecast_steps</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
