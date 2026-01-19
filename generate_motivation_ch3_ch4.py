@@ -9,13 +9,18 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Set style
-plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.figsize'] = (10, 6)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['font.size'] = 10
 plt.rcParams['axes.labelsize'] = 11
 plt.rcParams['axes.titlesize'] = 12
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
+plt.rcParams['axes.grid'] = False
+plt.rcParams['axes.spines.top'] = False
+plt.rcParams['axes.spines.right'] = False
 
 # Color palette
 MAIN_BLUE = '#1a3a6e'
@@ -54,7 +59,7 @@ def create_ch3_motivation_nonstationary():
     ax1.set_xlabel('Time')
     ax1.set_ylabel('Price')
     ax1.axhline(y=np.mean(rw), color=CRIMSON, linestyle='--', label='Sample Mean')
-    ax1.legend(fontsize=8)
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Trending series (GDP-like)
     ax2 = axes[0, 1]
@@ -341,7 +346,7 @@ def create_ch4_motivation_monthly_pattern():
     ax1.set_ylabel('Seasonal Factor')
     ax1.set_title('Monthly Seasonal Pattern (Tourism)', fontweight='bold')
     ax1.set_ylim(0.7, 1.3)
-    ax1.legend()
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Year-over-year comparison
     ax2 = axes[1]
@@ -361,7 +366,7 @@ def create_ch4_motivation_monthly_pattern():
     ax2.set_xticklabels(months, rotation=45)
     ax2.set_ylabel('Value')
     ax2.set_title('Same Pattern Repeats Each Year', fontweight='bold')
-    ax2.legend(loc='upper left', fontsize=8)
+    ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.25), ncol=4, frameon=False)
 
     fig.suptitle('Understanding Seasonal Patterns', fontweight='bold', fontsize=13, y=1.02)
     plt.tight_layout()

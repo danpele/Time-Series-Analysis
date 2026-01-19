@@ -10,7 +10,6 @@ from scipy import stats
 import os
 
 # Set style for transparent backgrounds
-plt.style.use('seaborn-v0_8-whitegrid')
 plt.rcParams['font.size'] = 10
 plt.rcParams['axes.titlesize'] = 12
 plt.rcParams['axes.labelsize'] = 10
@@ -18,6 +17,9 @@ plt.rcParams['figure.facecolor'] = 'none'
 plt.rcParams['axes.facecolor'] = 'none'
 plt.rcParams['savefig.facecolor'] = 'none'
 plt.rcParams['savefig.transparent'] = True
+plt.rcParams['axes.grid'] = False
+plt.rcParams['axes.spines.top'] = False
+plt.rcParams['axes.spines.right'] = False
 
 # Output directory
 output_dir = 'charts'
