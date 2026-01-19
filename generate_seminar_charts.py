@@ -57,7 +57,7 @@ def ch1_acf_decay():
     axes[0].set_ylabel('ACF')
     axes[0].set_title('Stationary: Fast Decay\n(AR(1) with φ=0.7)', fontweight='bold')
     axes[0].set_ylim(-0.2, 1.1)
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Plot non-stationary
     axes[1].bar(lags, acf_nonstationary, color=RED, alpha=0.7, width=0.6)
@@ -68,7 +68,7 @@ def ch1_acf_decay():
     axes[1].set_ylabel('ACF')
     axes[1].set_title('Non-Stationary: Slow Decay\n(Random Walk)', fontweight='bold')
     axes[1].set_ylim(-0.2, 1.1)
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/sem1_acf_decay.pdf', bbox_inches='tight', dpi=150)
@@ -114,7 +114,7 @@ def ch1_forecast_intervals():
     ax.set_ylabel('Value')
     ax.set_title('Forecast Intervals Widen with Horizon\n(Random Walk: Var = h·σ²)',
                 fontweight='bold')
-    ax.legend(loc='upper left')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/sem1_forecast_intervals.pdf', bbox_inches='tight', dpi=150)
@@ -215,7 +215,7 @@ def ch3_random_walk_variance():
     ax.set_xlabel('Time (t)')
     ax.set_ylabel('$Y_t$')
     ax.set_title('Random Walk Paths\n$Y_t = Y_{t-1} + \\varepsilon_t$', fontweight='bold')
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Variance plot
     ax = axes[1]
@@ -227,7 +227,7 @@ def ch3_random_walk_variance():
     ax.set_xlabel('Time (t)')
     ax.set_ylabel('Variance')
     ax.set_title('Variance Grows Linearly\nNon-stationary!', fontweight='bold')
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/sem3_rw_variance.pdf', bbox_inches='tight', dpi=150)
@@ -332,7 +332,7 @@ def ch3_overdifferencing():
     axes[2].set_title('Second Difference: Overdifferenced!\nACF at lag 1 ≈ -0.5',
                      fontweight='bold', color=RED)
     axes[2].set_ylim(-0.6, 1.1)
-    axes[2].legend()
+    axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/sem3_overdifferencing.pdf', bbox_inches='tight', dpi=150)
@@ -426,7 +426,7 @@ def ch4_multiplicative_additive():
     axes[0, 0].set_xlabel('Month')
     axes[0, 0].set_ylabel('Value')
     axes[0, 0].set_title('Additive Seasonality\n$Y_t = T_t + S_t + \\varepsilon_t$', fontweight='bold')
-    axes[0, 0].legend()
+    axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0, 0].annotate('Constant\namplitude', xy=(40, trend[40]+12), fontsize=9,
                        ha='center', color=GREEN)
 
@@ -441,7 +441,7 @@ def ch4_multiplicative_additive():
     axes[0, 1].set_ylabel('Value')
     axes[0, 1].set_title('Multiplicative Seasonality\n$Y_t = T_t \\times S_t \\times \\varepsilon_t$',
                         fontweight='bold')
-    axes[0, 1].legend()
+    axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0, 1].annotate('Growing\namplitude', xy=(40, upper[40]), fontsize=9,
                        ha='center', color=ORANGE)
 
@@ -648,7 +648,7 @@ def ch5_fevd_example():
                 fontweight='bold')
     ax.set_xticks(x)
     ax.set_xticklabels([f'h={h}' for h in horizons])
-    ax.legend(loc='upper right')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
     ax.set_ylim(0, 105)
 
     # Add percentage labels

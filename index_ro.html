@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analiza Seriilor de Timp - Website Curs</title>
+
+    <!-- MathJax for beautiful math rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --main-blue: #1A3A6E;
+            --accent-blue: #2A528C;
+            --ida-red: #DC3545;
+            --forest: #2E7D32;
+            --dark-gray: #333;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--main-blue) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--dark-gray);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: var(--main-blue);
+        }
+
+        /* Language Switcher */
+        .lang-switcher {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            padding-left: 2rem;
+        }
+
+        .lang-btn {
+            padding: 0.4rem 0.8rem;
+            border: 2px solid white;
+            border-radius: 4px;
+            background: transparent;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .lang-btn:hover {
+            background: white;
+            color: var(--dark-gray);
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: var(--main-blue);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            color: var(--main-blue);
+            border-bottom: 3px solid var(--ida-red);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Course Info */
+        .course-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--main-blue);
+        }
+
+        .info-card h3 {
+            color: var(--main-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Chapter Cards */
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chapter-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .chapter-header {
+            background: var(--main-blue);
+            color: white;
+            padding: 1rem;
+        }
+
+        .chapter-header h3 {
+            margin: 0;
+        }
+
+        .chapter-body {
+            padding: 1.5rem;
+        }
+
+        .chapter-body ul {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-body li {
+            padding: 0.3rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .chapter-body li::before {
+            content: ">";
+            color: var(--ida-red);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .chapter-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--main-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-blue);
+        }
+
+        .btn-secondary {
+            background: var(--forest);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1b5e20;
+        }
+
+        .btn-outline {
+            border: 2px solid var(--main-blue);
+            color: var(--main-blue);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: var(--main-blue);
+            color: white;
+        }
+
+        .btn-colab {
+            background: #F9AB00;
+            color: #333;
+        }
+
+        .btn-colab:hover {
+            background: #E09600;
+        }
+
+        .colab-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #F9AB00;
+            color: #333;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            margin-left: 0.5rem;
+            transition: background 0.3s;
+        }
+
+        .colab-badge:hover {
+            background: #E09600;
+        }
+
+        .colab-badge img {
+            height: 16px;
+        }
+
+        /* Quiz Section */
+        .quiz-container {
+            background: var(--light-gray);
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--main-blue);
+        }
+
+        .quiz-question h4 {
+            color: var(--main-blue);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-options {
+            list-style: none;
+        }
+
+        .quiz-options li {
+            padding: 0.5rem;
+            margin: 0.3rem 0;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .quiz-options li:hover {
+            background: #e3f2fd;
+        }
+
+        .quiz-options input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        .answer-reveal {
+            display: none;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+        }
+
+        .answer-correct {
+            background: #c8e6c9;
+            border-left: 4px solid var(--forest);
+        }
+
+        .answer-incorrect {
+            background: #ffcdd2;
+            border-left: 4px solid var(--ida-red);
+        }
+
+        /* Resources */
+        .resources-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: var(--dark-gray);
+            transition: background 0.3s;
+        }
+
+        .resource-item:hover {
+            background: var(--light-gray);
+        }
+
+        .resource-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--main-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-gray);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .chapter-links {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <a href="https://www.ase.ro" target="_blank"><img src="logos/ase_logo.png" alt="ASE Logo" style="height: 60px; background: white; padding: 5px; border-radius: 4px;"></a>
+            <div style="text-align: center; flex: 1;">
+                <h1>Analiza Seriilor de Timp</h1>
+                <p>Program de licenta | Facultatea de Cibernetica, Statistica și Informatica Economica | Academia de Studii Economice din Bucuresti</p>
+            </div>
+            <a href="https://www.theida.net/" target="_blank"><img src="logos/ida_logo.png" alt="IDA Logo" style="height: 60px; background: white; padding: 5px; border-radius: 4px;"></a>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#home">Acasă</a></li>
+            <li><a href="#chapters">Capitole</a></li>
+            <li><a href="#quizzes">Teste</a></li>
+            <li><a href="#resources">Resurse</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="lang-switcher">
+                <a href="index.html" class="lang-btn">EN</a>
+                <a href="index_ro.html" class="lang-btn active">RO</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="home">
+            <h2>Prezentare Generala</h2>
+            <div class="course-info">
+                <div class="info-card">
+                    <h3>Curs</h3>
+                    <p>Analiza și Prognoza Seriilor de Timp</p>
+                    <p>Academia de Studii Economice din Bucuresti</p>
+                </div>
+                <div class="info-card">
+                    <h3>Orar</h3>
+                    <p><strong>Cursuri:</strong> 2 ore/saptamana</p>
+                    <p><strong>Seminarii:</strong> 2 ore/saptamana</p>
+                </div>
+                <div class="info-card">
+                    <h3>Cerinte Preliminare</h3>
+                    <p>Statistica, Teoria Probabilitatilor</p>
+                    <p>Algebra Liniara, Programare Python</p>
+                </div>
+                <div class="info-card">
+                    <h3>Evaluare</h3>
+                    <p>Examen Final: 60%</p>
+                    <p>Proiecte și Teme: 40%</p>
+                </div>
+            </div>
+
+            <h3>Obiective de Invatare</h3>
+            <p>La sfarsitul acestui curs, veti putea:</p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>Intelege conceptele fundamentale ale analizei seriilor de timp</li>
+                <li>Aplica metode de descompunere și netezire exponentiala</li>
+                <li>Construi și evalua modele ARIMA și GARCH</li>
+                <li>Implementa prognoza seriilor de timp în Python</li>
+                <li>Analiza date financiare și economice reale</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem;">Formule Cheie</h3>
+            <div class="course-info" style="margin-top: 1rem;">
+                <div class="info-card">
+                    <h3>Descompunere</h3>
+                    <p><strong>Aditiva:</strong> $X_t = T_t + S_t + \varepsilon_t$</p>
+                    <p><strong>Multiplicativa:</strong> $X_t = T_t \times S_t \times \varepsilon_t$</p>
+                </div>
+                <div class="info-card">
+                    <h3>Netezire Exponențială</h3>
+                    <p><strong>SES:</strong> $\hat{X}_{t+1} = \alpha X_t + (1-\alpha)\hat{X}_t$</p>
+                    <p>unde $\alpha \in (0,1)$</p>
+                </div>
+                <div class="info-card">
+                    <h3>Stationaritate</h3>
+                    <p>$\mathbb{E}[X_t] = \mu$ (constantă)</p>
+                    <p>$\text{Var}(X_t) = \sigma^2$ (constantă)</p>
+                    <p>$\text{Cov}(X_t, X_{t+h}) = \gamma(h)$</p>
+                </div>
+                <div class="info-card">
+                    <h3>Mers Aleatoriu</h3>
+                    <p>$X_t = X_{t-1} + \varepsilon_t$</p>
+                    <p>$\text{Var}(X_t) = t\sigma^2$ (nestaționară!)</p>
+                </div>
+                <div class="info-card">
+                    <h3>Model AR(1)</h3>
+                    <p>$X_t = c + \phi X_{t-1} + \varepsilon_t$</p>
+                    <p>Stationara daca $|\phi| < 1$</p>
+                </div>
+                <div class="info-card">
+                    <h3>Model MA(1)</h3>
+                    <p>$X_t = \mu + \varepsilon_t + \theta\varepsilon_{t-1}$</p>
+                    <p>Intotdeauna staționară</p>
+                </div>
+                <div class="info-card">
+                    <h3>ARMA(p,q)</h3>
+                    <p>$\phi(L)X_t = \theta(L)\varepsilon_t$</p>
+                    <p>AR + MA combinat</p>
+                </div>
+                <div class="info-card">
+                    <h3>Selecția Modelului</h3>
+                    <p>AIC $= -2\log L + 2k$</p>
+                    <p>BIC $= -2\log L + k\log n$</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="chapters">
+            <h2>Capitolele Cursului</h2>
+            <div class="chapters-grid">
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Capitolul 1: Introducere în Serii de Timp</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Definiție și Tipuri de Serii de Timp</li>
+                            <li>Metode de Descompunere</li>
+                            <li>Netezire Exponențială (SES, Holt, HW)</li>
+                            <li>Evaluarea Prognozei</li>
+                            <li>Staționaritate și Teste Rădăcină Unitară</li>
+                            <li>ACF și PACF</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <a href="chapter1_intro_timeseries.pdf" class="btn btn-primary">Prezentări Curs</a>
+                            <a href="chapter1_seminar.pdf" class="btn btn-secondary">Seminar</a>
+                            <a href="chapter1_lecture_notebook.html" class="btn btn-outline">Notebook Curs</a>
+                            <a href="chapter1_seminar_notebook.html" class="btn btn-outline">Notebook Seminar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Capitolul 2: Modele ARMA</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Modele Autoregresive (AR)</li>
+                            <li>Modele de Medie Mobilă (MA)</li>
+                            <li>Identificarea Modelului ARMA</li>
+                            <li>Estimarea Parametrilor</li>
+                            <li>Diagnosticarea Modelului</li>
+                            <li>Prognoză cu ARMA</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <a href="chapter2_arma_models.pdf" class="btn btn-primary">Prezentări Curs</a>
+                            <a href="chapter2_seminar.pdf" class="btn btn-secondary">Seminar</a>
+                            <a href="chapter2_lecture_notebook.html" class="btn btn-outline">Notebook Curs</a>
+                            <a href="chapter2_seminar_notebook.html" class="btn btn-outline">Notebook Seminar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Capitolul 3: Modele ARIMA</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Ne-staționaritate și Rădăcini Unitare</li>
+                            <li>Diferențiere și Integrare</li>
+                            <li>Modele ARIMA(p,d,q)</li>
+                            <li>Teste Rădăcină Unitară (ADF, KPSS)</li>
+                            <li>Metodologia Box-Jenkins</li>
+                            <li>Prognoză cu ARIMA</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <a href="chapter3_arima_models.pdf" class="btn btn-primary">Prezentări Curs</a>
+                            <a href="chapter3_seminar.pdf" class="btn btn-secondary">Seminar</a>
+                            <a href="chapter3_lecture_notebook.html" class="btn btn-outline">Notebook Curs</a>
+                            <a href="chapter3_seminar_notebook.html" class="btn btn-outline">Notebook Seminar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Capitolul 4: Modele SARIMA</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Sezonalitate în Serii de Timp</li>
+                            <li>Descompunere Sezonieră</li>
+                            <li>Diferențiere Sezonieră</li>
+                            <li>SARIMA$(p,d,q) \times (P,D,Q)_s$</li>
+                            <li>Modelul Airline</li>
+                            <li>Prognoză Sezonieră</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <a href="chapter4_sarima_models.pdf" class="btn btn-primary">Prezentări Curs</a>
+                            <a href="chapter4_seminar.pdf" class="btn btn-secondary">Seminar</a>
+                            <a href="chapter4_lecture_notebook.html" class="btn btn-outline">Notebook Curs</a>
+                            <a href="chapter4_seminar_notebook.html" class="btn btn-outline">Notebook Seminar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter-card">
+                    <div class="chapter-header">
+                        <h3>Capitolul 5: Modele VAR și Cauzalitate Granger</h3>
+                    </div>
+                    <div class="chapter-body">
+                        <ul>
+                            <li>Vectori Autoregresivi (VAR)</li>
+                            <li>Testarea Cauzalității Granger</li>
+                            <li>Funcții de Răspuns la Impuls</li>
+                            <li>Descompunerea Varianței Erorii de Prognoză</li>
+                            <li>VAR Structural (SVAR)</li>
+                            <li>Cointegrare și VECM</li>
+                        </ul>
+                        <div class="chapter-links">
+                            <a href="chapter5_var_granger.pdf" class="btn btn-primary">Prezentări Curs</a>
+                            <a href="chapter5_seminar.pdf" class="btn btn-secondary">Seminar</a>
+                            <a href="chapter5_lecture_notebook.html" class="btn btn-outline">Notebook Curs</a>
+                            <a href="chapter5_seminar_notebook.html" class="btn btn-outline">Notebook Seminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quizzes">
+            <h2>Teste Interactive</h2>
+
+            <!-- Chapter Selector Tabs -->
+            <div class="chapter-tabs" style="margin-bottom: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; padding: 1rem; background: var(--light-gray); border-radius: 8px;">
+                <button class="tab-btn active" onclick="showChapter(1)" id="tab-ch1" style="padding: 1rem 2rem; font-size: 1.1rem; cursor: pointer; border: 3px solid var(--main-blue); background: var(--main-blue); color: white; border-radius: 8px; font-weight: bold; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">Capitolul 1</button>
+                <button class="tab-btn" onclick="showChapter(2)" id="tab-ch2" style="padding: 1rem 2rem; font-size: 1.1rem; cursor: pointer; border: 3px solid var(--main-blue); background: white; color: var(--main-blue); border-radius: 8px; font-weight: bold; transition: all 0.3s;">Capitolul 2</button>
+                <button class="tab-btn" onclick="showChapter(3)" id="tab-ch3" style="padding: 1rem 2rem; font-size: 1.1rem; cursor: pointer; border: 3px solid var(--main-blue); background: white; color: var(--main-blue); border-radius: 8px; font-weight: bold; transition: all 0.3s;">Capitolul 3</button>
+                <button class="tab-btn" onclick="showChapter(4)" id="tab-ch4" style="padding: 1rem 2rem; font-size: 1.1rem; cursor: pointer; border: 3px solid var(--main-blue); background: white; color: var(--main-blue); border-radius: 8px; font-weight: bold; transition: all 0.3s;">Capitolul 4</button>
+                <button class="tab-btn" onclick="showChapter(5)" id="tab-ch5" style="padding: 1rem 2rem; font-size: 1.1rem; cursor: pointer; border: 3px solid var(--main-blue); background: white; color: var(--main-blue); border-radius: 8px; font-weight: bold; transition: all 0.3s;">Capitolul 5</button>
+            </div>
+            <p style="text-align: center; color: #666; margin-bottom: 1.5rem;"><em>Click pe un tab de capitol pentru a schimba între teste</em></p>
+
+            <!-- Chapter 1 Quizzes -->
+            <div class="quiz-container" id="chapter1-quizzes">
+                <h3 style="margin-bottom: 1.5rem;">Capitolul 1: Introducere în Serii de Timp</h3>
+
+                <!-- Question 1 -->
+                <div class="quiz-question" id="q1">
+                    <h4>Întrebarea 1: Bazele Seriilor de Timp</h4>
+                    <p>Care dîntre următoarele NU este o caracteristică a datelor de tip serie de timp?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 1, 'A')"><input type="radio" name="q1"> A) Observațiile sunt ordonate în timp</li>
+                        <li onclick="checkAnswer('ch1', 1, 'B')"><input type="radio" name="q1"> B) Observațiile consecutive sunt de obicei corelate</li>
+                        <li onclick="checkAnswer('ch1', 1, 'C')"><input type="radio" name="q1"> C) Observațiile sunt independente și identic distribuite</li>
+                        <li onclick="checkAnswer('ch1', 1, 'D')"><input type="radio" name="q1"> D) Datele au o ordonare temporală naturală</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer1-correct">
+                        <strong>Corect!</strong> Observațiile seriilor de timp sunt de obicei DEPENDENTE (autocorelate), nu i.i.d.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer1-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Observațiile seriilor de timp sunt de obicei dependente, nu independente.
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-question" id="q2">
+                    <h4>Întrebarea 2: Tipuri de Date</h4>
+                    <p>Ce tip de date are mai multe unitati observate pe mai multe perioade de timp?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 2, 'A')"><input type="radio" name="q2"> A) Date transversale</li>
+                        <li onclick="checkAnswer('ch1', 2, 'B')"><input type="radio" name="q2"> B) Date de tip serie de timp</li>
+                        <li onclick="checkAnswer('ch1', 2, 'C')"><input type="radio" name="q2"> C) Date panel</li>
+                        <li onclick="checkAnswer('ch1', 2, 'D')"><input type="radio" name="q2"> D) Date agregate</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer2-correct">
+                        <strong>Corect!</strong> Datele panel (date longitudinale) au atat dimensiune transversala cat și temporală.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer2-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Datele panel combina mai multe unitati pe mai multe perioade de timp.
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-question" id="q3">
+                    <h4>Întrebarea 3: Descompunere</h4>
+                    <p>Cand ar trebui sa folositi descompunerea multiplicativa în loc de cea aditiva?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 3, 'A')"><input type="radio" name="q3"> A) Cand modelul sezonier are amplitudine constantă</li>
+                        <li onclick="checkAnswer('ch1', 3, 'B')"><input type="radio" name="q3"> B) Cand varianță este stabila în timp</li>
+                        <li onclick="checkAnswer('ch1', 3, 'C')"><input type="radio" name="q3"> C) Cand fluctuatiile sezoniere cresc odata cu nivelul</li>
+                        <li onclick="checkAnswer('ch1', 3, 'D')"><input type="radio" name="q3"> D) Cand nu exista componenta de trend</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer3-correct">
+                        <strong>Corect!</strong> In descompunerea multiplicativa $X_t = T_t \times S_t \times \varepsilon_t$, efectul sezonier se scaleaza cu nivelul.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer3-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Folositi multiplicativa cand varfurile sezoniere cresc cu nivelul seriei.
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="quiz-question" id="q4">
+                    <h4>Întrebarea 4: Componenta Sezoniera</h4>
+                    <p>In descompunerea multiplicativa, daca $S_t = 1.15$ pentru iulie, aceasta inseamna:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 4, 'A')"><input type="radio" name="q4"> A) Valorile din iulie sunt cu 1.15 unitati peste medie</li>
+                        <li onclick="checkAnswer('ch1', 4, 'B')"><input type="radio" name="q4"> B) Valorile din iulie sunt cu 15% peste medie</li>
+                        <li onclick="checkAnswer('ch1', 4, 'C')"><input type="radio" name="q4"> C) Valorile din iulie sunt 115% din trend</li>
+                        <li onclick="checkAnswer('ch1', 4, 'D')"><input type="radio" name="q4"> D) Atat B cat și C sunt corecte</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer4-correct">
+                        <strong>Corect!</strong> In modelele multiplicative, $S_t = 1.15$ inseamna 15% peste medie, sau echivalent, 115% din valoarea trendului.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer4-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este D. $S_t = 1.15$ inseamna atat 15% peste medie CAT SI 115% din trend.
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="quiz-question" id="q5">
+                    <h4>Întrebarea 5: Media Mobila</h4>
+                    <p>Care este scopul principal al folosirii mediei mobile centrate în descompunere?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 5, 'A')"><input type="radio" name="q5"> A) Pentru a prognoza valori viitoare</li>
+                        <li onclick="checkAnswer('ch1', 5, 'B')"><input type="radio" name="q5"> B) Pentru a estima componenta de trend</li>
+                        <li onclick="checkAnswer('ch1', 5, 'C')"><input type="radio" name="q5"> C) Pentru a elimina valorile extreme</li>
+                        <li onclick="checkAnswer('ch1', 5, 'D')"><input type="radio" name="q5"> D) Pentru a testa stationaritatea</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer5-correct">
+                        <strong>Corect!</strong> Mediile mobile netezesc fluctuatiile sezoniere și aleatorii pentru a revela trendul subiacent.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer5-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Mediile mobile sunt folosite pentru a estima trendul prin netezire.
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="quiz-question" id="q6">
+                    <h4>Întrebarea 6: Netezire Exponențială Simpla</h4>
+                    <p>In SES cu $\alpha = 0.1$, ce se intampla?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 6, 'A')"><input type="radio" name="q6"> A) Prognozele reactioneaza rapid la schimbari recente</li>
+                        <li onclick="checkAnswer('ch1', 6, 'B')"><input type="radio" name="q6"> B) Prognozele sunt netede și stabile</li>
+                        <li onclick="checkAnswer('ch1', 6, 'C')"><input type="radio" name="q6"> C) Doar cea mai recenta observatie conteaza</li>
+                        <li onclick="checkAnswer('ch1', 6, 'D')"><input type="radio" name="q6"> D) Modelul capteaza sezonalitatea</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer6-correct">
+                        <strong>Corect!</strong> $\alpha$ mic inseamna mai multa pondere pe datele istorice, producand prognoze mai netede și mai stabile.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer6-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. $\alpha$ mic = prognoze netede, $\alpha$ mare = prognoze reactive.
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="quiz-question" id="q7">
+                    <h4>Întrebarea 7: Metoda Holt</h4>
+                    <p>Metoda Holt cu trend liniar extinde SES prin adaugarea:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 7, 'A')"><input type="radio" name="q7"> A) O componenta sezoniera</li>
+                        <li onclick="checkAnswer('ch1', 7, 'B')"><input type="radio" name="q7"> B) O componenta de trend</li>
+                        <li onclick="checkAnswer('ch1', 7, 'C')"><input type="radio" name="q7"> C) O componenta ciclica</li>
+                        <li onclick="checkAnswer('ch1', 7, 'D')"><input type="radio" name="q7"> D) Un termen de corectie a erorii</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer7-correct">
+                        <strong>Corect!</strong> Metoda Holt adauga o ecuație de trend: $b_t = \beta^*(\ell_t - \ell_{t-1}) + (1-\beta^*)b_{t-1}$
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer7-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Holt adauga trend; Holt-Winters adauga atat trend cat și sezonalitate.
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="quiz-question" id="q8">
+                    <h4>Întrebarea 8: Holt-Winters</h4>
+                    <p>Pentru date lunare cu trend și sezonalitate, care metoda este cea mai potrivita?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 8, 'A')"><input type="radio" name="q8"> A) Netezire Exponențială Simpla</li>
+                        <li onclick="checkAnswer('ch1', 8, 'B')"><input type="radio" name="q8"> B) Metoda Liniara Holt</li>
+                        <li onclick="checkAnswer('ch1', 8, 'C')"><input type="radio" name="q8"> C) Metoda Holt-Winters</li>
+                        <li onclick="checkAnswer('ch1', 8, 'D')"><input type="radio" name="q8"> D) Media Mobila</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer8-correct">
+                        <strong>Corect!</strong> Holt-Winters capteaza nivel, trend SI sezonalitate cu trei ecuatii de netezire.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer8-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Doar Holt-Winters gestioneaza atat trend cat și sezonalitate.
+                    </div>
+                </div>
+
+                <!-- Question 9 -->
+                <div class="quiz-question" id="q9">
+                    <h4>Întrebarea 9: Metrici de Prognoza</h4>
+                    <p>Care metrica este independență de scala și utila pentru compararea prognozelor între serii diferite?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 9, 'A')"><input type="radio" name="q9"> A) Eroarea Medie Absoluta (MAE)</li>
+                        <li onclick="checkAnswer('ch1', 9, 'B')"><input type="radio" name="q9"> B) Rădăcină Erorii Medii Patratice (RMSE)</li>
+                        <li onclick="checkAnswer('ch1', 9, 'C')"><input type="radio" name="q9"> C) Eroarea Medie Absoluta Procentuala (MAPE)</li>
+                        <li onclick="checkAnswer('ch1', 9, 'D')"><input type="radio" name="q9"> D) Eroarea Medie Patratica (MSE)</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer9-correct">
+                        <strong>Corect!</strong> MAPE $= \frac{100}{n}\sum\left|\frac{e_t}{X_t}\right|$ exprima erorile ca procente, facand-o independență de scala.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer9-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. MAPE este în unitati procentuale, în timp ce MAE/RMSE/MSE depind de scala.
+                    </div>
+                </div>
+
+                <!-- Question 10 -->
+                <div class="quiz-question" id="q10">
+                    <h4>Întrebarea 10: Impartirea Train/Test</h4>
+                    <p>Care este scopul setului de validare în modelarea seriilor de timp?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 10, 'A')"><input type="radio" name="q10"> A) Pentru a estima parametrii modelului</li>
+                        <li onclick="checkAnswer('ch1', 10, 'B')"><input type="radio" name="q10"> B) Pentru a regla hiperparametrii și compara modele</li>
+                        <li onclick="checkAnswer('ch1', 10, 'C')"><input type="radio" name="q10"> C) Pentru a raporta performanta finala a modelului</li>
+                        <li onclick="checkAnswer('ch1', 10, 'D')"><input type="radio" name="q10"> D) Pentru a detecta valori extreme</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer10-correct">
+                        <strong>Corect!</strong> Setul de validare este pentru selecția modelului și reglarea hiperparametrilor. Setul de test este doar pentru evaluare finala!
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer10-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Antrenare = ajustare parametri, Validare = reglare/comparare, Test = evaluare finala.
+                    </div>
+                </div>
+
+                <!-- Question 11 -->
+                <div class="quiz-question" id="q11">
+                    <h4>Întrebarea 11: Diagnosticarea Reziduurilor</h4>
+                    <p>Reziduurile unei prognoze bune ar trebui sa aiba ce proprietate?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 11, 'A')"><input type="radio" name="q11"> A) Autocorelație puternica</li>
+                        <li onclick="checkAnswer('ch1', 11, 'B')"><input type="radio" name="q11"> B) Varianță crescatoare în timp</li>
+                        <li onclick="checkAnswer('ch1', 11, 'C')"><input type="radio" name="q11"> C) Medie zero și fara autocorelație</li>
+                        <li onclick="checkAnswer('ch1', 11, 'D')"><input type="radio" name="q11"> D) Un model clar de trend</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer11-correct">
+                        <strong>Corect!</strong> Reziduurile bune ar trebui sa fie zgomot alb: $\mathbb{E}[e_t] = 0$ și $\text{Cov}(e_t, e_{t-k}) = 0$ pentru $k \neq 0$.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer11-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Reziduurile ar trebui sa semene cu zgomot alb (fara modele ramase de modelat).
+                    </div>
+                </div>
+
+                <!-- Question 12 -->
+                <div class="quiz-question" id="q12">
+                    <h4>Întrebarea 12: Stationaritate Slaba</h4>
+                    <p>Care condiție NU este necesara pentru stationaritatea slaba?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 12, 'A')"><input type="radio" name="q12"> A) Medie constantă: $\mathbb{E}[X_t] = \mu$</li>
+                        <li onclick="checkAnswer('ch1', 12, 'B')"><input type="radio" name="q12"> B) Varianță constantă: $\text{Var}(X_t) = \sigma^2$</li>
+                        <li onclick="checkAnswer('ch1', 12, 'C')"><input type="radio" name="q12"> C) Distribuție normala</li>
+                        <li onclick="checkAnswer('ch1', 12, 'D')"><input type="radio" name="q12"> D) Covarianță depinde doar de lag</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer12-correct">
+                        <strong>Corect!</strong> Stationaritatea slaba necesita doar medie constantă, varianță constantă și covarianță dependență de lag. Fara presupunere distributionala!
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer12-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Normalitatea NU este necesara pentru stationaritatea slaba.
+                    </div>
+                </div>
+
+                <!-- Question 13 -->
+                <div class="quiz-question" id="q13">
+                    <h4>Întrebarea 13: Mers Aleatoriu</h4>
+                    <p>Pentru un mers aleatoriu $X_t = X_{t-1} + \varepsilon_t$ cu $X_0 = 100$ și $\sigma^2 = 4$, cat este $\text{Var}(X_{25})$?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 13, 'A')"><input type="radio" name="q13"> A) 4</li>
+                        <li onclick="checkAnswer('ch1', 13, 'B')"><input type="radio" name="q13"> B) 25</li>
+                        <li onclick="checkAnswer('ch1', 13, 'C')"><input type="radio" name="q13"> C) 100</li>
+                        <li onclick="checkAnswer('ch1', 13, 'D')"><input type="radio" name="q13"> D) 625</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer13-correct">
+                        <strong>Corect!</strong> $\text{Var}(X_t) = t \cdot \sigma^2 = 25 \times 4 = 100$
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer13-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Pentru mers aleatoriu: $\text{Var}(X_t) = t \cdot \sigma^2 = 25 \times 4 = 100$.
+                    </div>
+                </div>
+
+                <!-- Question 14 -->
+                <div class="quiz-question" id="q14">
+                    <h4>Întrebarea 14: Zgomot Alb</h4>
+                    <p>Care afirmație despre zgomotul alb este FALSA?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 14, 'A')"><input type="radio" name="q14"> A) Zgomotul alb are medie zero</li>
+                        <li onclick="checkAnswer('ch1', 14, 'B')"><input type="radio" name="q14"> B) Zgomotul alb are varianță constantă</li>
+                        <li onclick="checkAnswer('ch1', 14, 'C')"><input type="radio" name="q14"> C) Zgomotul alb trebuie sa fie distribuit normal</li>
+                        <li onclick="checkAnswer('ch1', 14, 'D')"><input type="radio" name="q14"> D) Zgomotul alb nu are autocorelație</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer14-correct">
+                        <strong>Corect!</strong> Zgomotul alb necesita doar medie zero, varianță constantă și fara autocorelație. Zgomotul alb Gaussian este un caz special.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer14-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Zgomotul alb NU necesita normalitate.
+                    </div>
+                </div>
+
+                <!-- Question 15 -->
+                <div class="quiz-question" id="q15">
+                    <h4>Întrebarea 15: Modele ACF</h4>
+                    <p>Pentru un proces AR(1) cu $\phi = 0.8$, ACF:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 15, 'A')"><input type="radio" name="q15"> A) Se opreste dupa lag 1</li>
+                        <li onclick="checkAnswer('ch1', 15, 'B')"><input type="radio" name="q15"> B) Scade exponential</li>
+                        <li onclick="checkAnswer('ch1', 15, 'C')"><input type="radio" name="q15"> C) Oscileaza în jurul lui zero</li>
+                        <li onclick="checkAnswer('ch1', 15, 'D')"><input type="radio" name="q15"> D) Este zero pentru toate lag-urile</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer15-correct">
+                        <strong>Corect!</strong> Pentru AR(1): $\rho(h) = \phi^h = 0.8^h$, care scade exponential spre zero.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer15-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Procesele AR au ACF care scade exponential; procesele MA se opresc brusc.
+                    </div>
+                </div>
+
+                <!-- Question 16 -->
+                <div class="quiz-question" id="q16">
+                    <h4>Întrebarea 16: Interpretarea PACF</h4>
+                    <p>PACF al unui proces MA(1):</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 16, 'A')"><input type="radio" name="q16"> A) Se opreste dupa lag 1</li>
+                        <li onclick="checkAnswer('ch1', 16, 'B')"><input type="radio" name="q16"> B) Scade exponential</li>
+                        <li onclick="checkAnswer('ch1', 16, 'C')"><input type="radio" name="q16"> C) Este zero pentru toate lag-urile</li>
+                        <li onclick="checkAnswer('ch1', 16, 'D')"><input type="radio" name="q16"> D) Arata un model sezonier</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer16-correct">
+                        <strong>Corect!</strong> Pentru procesele MA, PACF scade; ACF se opreste. Pentru procesele AR, este invers.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer16-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. MA: ACF se opreste, PACF scade. AR: ACF scade, PACF se opreste.
+                    </div>
+                </div>
+
+                <!-- Question 17 -->
+                <div class="quiz-question" id="q17">
+                    <h4>Întrebarea 17: Diferentiere</h4>
+                    <p>Daca $X_t$ este un mers aleatoriu, atunci $\Delta X_t = X_t - X_{t-1}$ este:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 17, 'A')"><input type="radio" name="q17"> A) Tot un mers aleatoriu</li>
+                        <li onclick="checkAnswer('ch1', 17, 'B')"><input type="radio" name="q17"> B) Zgomot alb (staționară)</li>
+                        <li onclick="checkAnswer('ch1', 17, 'C')"><input type="radio" name="q17"> C) Un proces AR(1)</li>
+                        <li onclick="checkAnswer('ch1', 17, 'D')"><input type="radio" name="q17"> D) O serie cu trend</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer17-correct">
+                        <strong>Corect!</strong> Daca $X_t = X_{t-1} + \varepsilon_t$, atunci $\Delta X_t = \varepsilon_t$, care este zgomot alb!
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer17-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Diferentierea unui mers aleatoriu da zgomot alb.
+                    </div>
+                </div>
+
+                <!-- Question 18 -->
+                <div class="quiz-question" id="q18">
+                    <h4>Întrebarea 18: Testul ADF</h4>
+                    <p>In testul ADF, ipoteza nula este:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 18, 'A')"><input type="radio" name="q18"> A) Seria este staționară</li>
+                        <li onclick="checkAnswer('ch1', 18, 'B')"><input type="radio" name="q18"> B) Seria are rădăcină unitara</li>
+                        <li onclick="checkAnswer('ch1', 18, 'C')"><input type="radio" name="q18"> C) Seria este zgomot alb</li>
+                        <li onclick="checkAnswer('ch1', 18, 'D')"><input type="radio" name="q18"> D) Seria nu are trend</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer18-correct">
+                        <strong>Corect!</strong> ADF: $H_0$: rădăcină unitara (nestaționară). Respinge $H_0$ $\Rightarrow$ staționară.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer18-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. ADF testeaza rădăcină unitara; KPSS testeaza stationaritatea.
+                    </div>
+                </div>
+
+                <!-- Question 19 -->
+                <div class="quiz-question" id="q19">
+                    <h4>Întrebarea 19: Testul KPSS</h4>
+                    <p>Daca KPSS respinge $H_0$, concluzionam:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 19, 'A')"><input type="radio" name="q19"> A) Seria este staționară</li>
+                        <li onclick="checkAnswer('ch1', 19, 'B')"><input type="radio" name="q19"> B) Seria este nestaționară</li>
+                        <li onclick="checkAnswer('ch1', 19, 'C')"><input type="radio" name="q19"> C) Seria este zgomot alb</li>
+                        <li onclick="checkAnswer('ch1', 19, 'D')"><input type="radio" name="q19"> D) Avem nevoie de mai multe date</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer19-correct">
+                        <strong>Corect!</strong> KPSS: $H_0$: staționară. Respinge $H_0$ $\Rightarrow$ dovada de nestationaritate.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer19-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. KPSS are ipoteze opuse fata de ADF.
+                    </div>
+                </div>
+
+                <!-- Question 20 -->
+                <div class="quiz-question" id="q20">
+                    <h4>Întrebarea 20: Trend Determinist vs Stocastic</h4>
+                    <p>Cum ar trebui sa eliminati un trend stocastic (rădăcină unitara)?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch1', 20, 'A')"><input type="radio" name="q20"> A) Ajustati o regresie liniara pe timp</li>
+                        <li onclick="checkAnswer('ch1', 20, 'B')"><input type="radio" name="q20"> B) Aplicati diferentierea</li>
+                        <li onclick="checkAnswer('ch1', 20, 'C')"><input type="radio" name="q20"> C) Folositi o medie mobila</li>
+                        <li onclick="checkAnswer('ch1', 20, 'D')"><input type="radio" name="q20"> D) Aplicati ajustare sezoniera</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="answer20-correct">
+                        <strong>Corect!</strong> Trend stocastic $\Rightarrow$ diferentiere. Trend determinist $\Rightarrow$ regresie.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="answer20-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Folositi diferentierea pentru trenduri stocastice, regresie pentru trenduri deterministe.
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; text-align: center;">
+                    <p id="score-display-ch1" style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: bold;"></p>
+                    <button onclick="calculateScore(1)" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1rem; cursor: pointer; border: none; margin-right: 1rem;">Verifica Scorul</button>
+                    <button onclick="resetQuiz(1)" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1rem; cursor: pointer; border: none;">Reseteaza Testul</button>
+                </div>
+            </div>
+
+            <!-- Chapter 2 Quizzes -->
+            <div class="quiz-container" id="chapter2-quizzes" style="display: none;">
+                <h3 style="margin-bottom: 1.5rem;">Capitolul 2: Modele ARMA</h3>
+
+                <!-- Ch2 Question 1 -->
+                <div class="quiz-question" id="ch2q1">
+                    <h4>Întrebarea 1: Stationaritate AR</h4>
+                    <p>Pentru ce valoare a lui $\phi$ este procesul AR(1) $X_t = c + \phi X_{t-1} + \varepsilon_t$ stationar?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 1, 'A')"><input type="radio" name="ch2q1"> A) $\phi = 1.2$</li>
+                        <li onclick="checkAnswer('ch2', 1, 'B')"><input type="radio" name="ch2q1"> B) $\phi = 1.0$</li>
+                        <li onclick="checkAnswer('ch2', 1, 'C')"><input type="radio" name="ch2q1"> C) $\phi = -0.8$</li>
+                        <li onclick="checkAnswer('ch2', 1, 'D')"><input type="radio" name="ch2q1"> D) $\phi = -1.5$</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer1-correct">
+                        <strong>Corect!</strong> AR(1) este stationar daca și numai daca $|\phi| < 1$. Doar $|-0.8| = 0.8 < 1$.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer1-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. AR(1) necesita $|\phi| < 1$ pentru stationaritate.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 2 -->
+                <div class="quiz-question" id="ch2q2">
+                    <h4>Întrebarea 2: Recunoasterea Modelelor ACF/PACF</h4>
+                    <p>Observati: ACF are un varf la lag 1, apoi se opreste. PACF scade treptat. Ce model este sugerat?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 2, 'A')"><input type="radio" name="ch2q2"> A) AR(1)</li>
+                        <li onclick="checkAnswer('ch2', 2, 'B')"><input type="radio" name="ch2q2"> B) MA(1)</li>
+                        <li onclick="checkAnswer('ch2', 2, 'C')"><input type="radio" name="ch2q2"> C) ARMA(1,1)</li>
+                        <li onclick="checkAnswer('ch2', 2, 'D')"><input type="radio" name="ch2q2"> D) Zgomot alb</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer2-correct">
+                        <strong>Corect!</strong> ACF se opreste → proces MA; PACF scade → confirma MA(1).
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer2-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. MA: ACF se opreste, PACF scade. AR: ACF scade, PACF se opreste.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 3 -->
+                <div class="quiz-question" id="ch2q3">
+                    <h4>Întrebarea 3: Inversabilitate MA</h4>
+                    <p>Este procesul MA(1) $X_t = \varepsilon_t + 1.5\varepsilon_{t-1}$ inversabil?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 3, 'A')"><input type="radio" name="ch2q3"> A) Da, procesele MA sunt intotdeauna inversabile</li>
+                        <li onclick="checkAnswer('ch2', 3, 'B')"><input type="radio" name="ch2q3"> B) Da, deoarece $\theta = 1.5 > 0$</li>
+                        <li onclick="checkAnswer('ch2', 3, 'C')"><input type="radio" name="ch2q3"> C) Nu, deoarece $|\theta| = 1.5 > 1$</li>
+                        <li onclick="checkAnswer('ch2', 3, 'D')"><input type="radio" name="ch2q3"> D) Nu, procesele MA nu sunt niciodata inversabile</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer3-correct">
+                        <strong>Corect!</strong> Inversabilitatea necesita $|\theta| < 1$. Aici $|\theta| = 1.5 > 1$, deci NU este inversabil.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer3-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Condiția de inversabilitate pentru MA(1): $|\theta| < 1$.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 4 -->
+                <div class="quiz-question" id="ch2q4">
+                    <h4>Întrebarea 4: Reprezentarea ARMA</h4>
+                    <p>Forma compacta $\phi(L)X_t = \theta(L)\varepsilon_t$ reprezinta ce model?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 4, 'A')"><input type="radio" name="ch2q4"> A) Model AR pur</li>
+                        <li onclick="checkAnswer('ch2', 4, 'B')"><input type="radio" name="ch2q4"> B) Model MA pur</li>
+                        <li onclick="checkAnswer('ch2', 4, 'C')"><input type="radio" name="ch2q4"> C) Model ARMA</li>
+                        <li onclick="checkAnswer('ch2', 4, 'D')"><input type="radio" name="ch2q4"> D) Niciunul de mai sus</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer4-correct">
+                        <strong>Corect!</strong> $\phi(L)$ este polinomul AR, $\theta(L)$ este polinomul MA → ARMA(p,q).
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer4-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Aceasta notatie combina AR și MA în ARMA.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 5 -->
+                <div class="quiz-question" id="ch2q5">
+                    <h4>Întrebarea 5: Operatorul de Lag</h4>
+                    <p>Ce este $(1-L)^2 X_t$?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 5, 'A')"><input type="radio" name="ch2q5"> A) $X_t - X_{t-1}$</li>
+                        <li onclick="checkAnswer('ch2', 5, 'B')"><input type="radio" name="ch2q5"> B) $X_t - 2X_{t-1} + X_{t-2}$</li>
+                        <li onclick="checkAnswer('ch2', 5, 'C')"><input type="radio" name="ch2q5"> C) $X_t + X_{t-1} + X_{t-2}$</li>
+                        <li onclick="checkAnswer('ch2', 5, 'D')"><input type="radio" name="ch2q5"> D) $X_t - X_{t-2}$</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer5-correct">
+                        <strong>Corect!</strong> $(1-L)^2 = 1 - 2L + L^2$, deci $(1-L)^2 X_t = X_t - 2X_{t-1} + X_{t-2}$ (a doua diferență).
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer5-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Expandati $(1-L)^2 = 1 - 2L + L^2$.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 6 -->
+                <div class="quiz-question" id="ch2q6">
+                    <h4>Întrebarea 6: Criterii Informationale</h4>
+                    <p>Comparand ARMA(1,1) vs ARMA(2,1) folosind BIC, care afirmație este corecta?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 6, 'A')"><input type="radio" name="ch2q6"> A) BIC mai mic inseamna intotdeauna prognoze mai bune</li>
+                        <li onclick="checkAnswer('ch2', 6, 'B')"><input type="radio" name="ch2q6"> B) BIC penalizeaza complexitatea mai putin decat AIC</li>
+                        <li onclick="checkAnswer('ch2', 6, 'C')"><input type="radio" name="ch2q6"> C) Modelul cu BIC mai mic este preferat</li>
+                        <li onclick="checkAnswer('ch2', 6, 'D')"><input type="radio" name="ch2q6"> D) BIC poate compara doar modele cu acelasi numar de parametri</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer6-correct">
+                        <strong>Corect!</strong> BIC mai mic indica un compromis mai bun între ajustare și complexitate. BIC penalizeaza complexitatea MAI MULT decat AIC.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer6-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. BIC echilibreaza ajustarea și complexitatea; mai mic este mai bun.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 7 -->
+                <div class="quiz-question" id="ch2q7">
+                    <h4>Întrebarea 7: Testul Ljung-Box</h4>
+                    <p>Dupa ajustarea unui model ARMA, rulati testul Ljung-Box pe reziduuri și obtineti p-valoare = 0.03. Ce inseamna aceasta?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 7, 'A')"><input type="radio" name="ch2q7"> A) Modelul este adecvat, reziduurile sunt zgomot alb</li>
+                        <li onclick="checkAnswer('ch2', 7, 'B')"><input type="radio" name="ch2q7"> B) Modelul este inadecvat, reziduurile au autocorelație</li>
+                        <li onclick="checkAnswer('ch2', 7, 'C')"><input type="radio" name="ch2q7"> C) Trebuie sa crestem dimensiunea esantionului</li>
+                        <li onclick="checkAnswer('ch2', 7, 'D')"><input type="radio" name="ch2q7"> D) Testul este neconcludent</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer7-correct">
+                        <strong>Corect!</strong> p-valoare < 0.05 respinge $H_0$ (zgomot alb), indicand autocorelație remanenta → model inadecvat.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer7-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Respingerea lui $H_0$ inseamna ca reziduurile NU sunt zgomot alb.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 8 -->
+                <div class="quiz-question" id="ch2q8">
+                    <h4>Întrebarea 8: Proprietati ale Prognozei</h4>
+                    <p>Pentru un model AR(1) stationar, ce se intampla cu prognozele pe masura ce orizontul $h \to \infty$?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 8, 'A')"><input type="radio" name="ch2q8"> A) Prognozele cresc fara limita</li>
+                        <li onclick="checkAnswer('ch2', 8, 'B')"><input type="radio" name="ch2q8"> B) Prognozele oscileaza la infinit</li>
+                        <li onclick="checkAnswer('ch2', 8, 'C')"><input type="radio" name="ch2q8"> C) Prognozele converg la media neconditionata $\mu$</li>
+                        <li onclick="checkAnswer('ch2', 8, 'D')"><input type="radio" name="ch2q8"> D) Prognozele devin mai precise</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer8-correct">
+                        <strong>Corect!</strong> $\hat{X}_{n+h|n} = \mu + \phi^h(X_n - \mu) \to \mu$ cand $h \to \infty$ (deoarece $|\phi|<1$). Aceasta este reversie la medie.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer8-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Prognozele AR staționare revin la media neconditionata.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 9 -->
+                <div class="quiz-question" id="ch2q9">
+                    <h4>Întrebarea 9: Varianță AR(1)</h4>
+                    <p>Pentru procesul AR(1) $X_t = \phi X_{t-1} + \varepsilon_t$ cu $\text{Var}(\varepsilon_t) = \sigma^2$, cat este $\text{Var}(X_t)$?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 9, 'A')"><input type="radio" name="ch2q9"> A) $\sigma^2$</li>
+                        <li onclick="checkAnswer('ch2', 9, 'B')"><input type="radio" name="ch2q9"> B) $\sigma^2 / (1 - \phi)$</li>
+                        <li onclick="checkAnswer('ch2', 9, 'C')"><input type="radio" name="ch2q9"> C) $\sigma^2 / (1 - \phi^2)$</li>
+                        <li onclick="checkAnswer('ch2', 9, 'D')"><input type="radio" name="ch2q9"> D) $\sigma^2 (1 + \phi^2)$</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer9-correct">
+                        <strong>Corect!</strong> Pentru AR(1) stationar: $\gamma(0) = \text{Var}(X_t) = \sigma^2 / (1 - \phi^2)$.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer9-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Folositi $\gamma(0) = \phi^2 \gamma(0) + \sigma^2$ și rezolvati.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 10 -->
+                <div class="quiz-question" id="ch2q10">
+                    <h4>Întrebarea 10: Autocorelația MA(1)</h4>
+                    <p>Pentru un proces MA(1) $X_t = \varepsilon_t + \theta \varepsilon_{t-1}$, cat este $\rho(2)$?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 10, 'A')"><input type="radio" name="ch2q10"> A) $\theta / (1 + \theta^2)$</li>
+                        <li onclick="checkAnswer('ch2', 10, 'B')"><input type="radio" name="ch2q10"> B) $\theta^2 / (1 + \theta^2)$</li>
+                        <li onclick="checkAnswer('ch2', 10, 'C')"><input type="radio" name="ch2q10"> C) $\theta^2$</li>
+                        <li onclick="checkAnswer('ch2', 10, 'D')"><input type="radio" name="ch2q10"> D) 0</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer10-correct">
+                        <strong>Corect!</strong> MA(q) are $\rho(h) = 0$ pentru $h > q$. Deoarece MA(1) are $q=1$, $\rho(2) = 0$.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer10-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este D. ACF-ul MA(1) se opreste dupa lag 1.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 11 -->
+                <div class="quiz-question" id="ch2q11">
+                    <h4>Întrebarea 11: Media AR(1)</h4>
+                    <p>Pentru procesul AR(1) $X_t = c + \phi X_{t-1} + \varepsilon_t$ cu $c = 2$ și $\phi = 0.6$, cat este $E[X_t]$?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 11, 'A')"><input type="radio" name="ch2q11"> A) 2</li>
+                        <li onclick="checkAnswer('ch2', 11, 'B')"><input type="radio" name="ch2q11"> B) 3.33</li>
+                        <li onclick="checkAnswer('ch2', 11, 'C')"><input type="radio" name="ch2q11"> C) 5</li>
+                        <li onclick="checkAnswer('ch2', 11, 'D')"><input type="radio" name="ch2q11"> D) 0.8</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer11-correct">
+                        <strong>Corect!</strong> $\mu = c / (1 - \phi) = 2 / (1 - 0.6) = 2 / 0.4 = 5$.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer11-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Folositi formula $\mu = c / (1 - \phi)$.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 12 -->
+                <div class="quiz-question" id="ch2q12">
+                    <h4>Întrebarea 12: Teorema lui Wold</h4>
+                    <p>Conform teoremei de descompunere a lui Wold, orice proces stationar poate fi scris ca:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 12, 'A')"><input type="radio" name="ch2q12"> A) Un proces AR finit</li>
+                        <li onclick="checkAnswer('ch2', 12, 'B')"><input type="radio" name="ch2q12"> B) Un proces MA infinit plus o componenta determinista</li>
+                        <li onclick="checkAnswer('ch2', 12, 'C')"><input type="radio" name="ch2q12"> C) Un mers aleatoriu</li>
+                        <li onclick="checkAnswer('ch2', 12, 'D')"><input type="radio" name="ch2q12"> D) Doar zgomot alb</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer12-correct">
+                        <strong>Corect!</strong> Wold: $X_t = \sum_{j=0}^{\infty} \psi_j \varepsilon_{t-j} + D_t$ unde $D_t$ este determinista.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer12-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Teorema lui Wold da o reprezentare MA($\infty$).
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 13 -->
+                <div class="quiz-question" id="ch2q13">
+                    <h4>Întrebarea 13: Stationaritate AR(2)</h4>
+                    <p>Pentru AR(2): $X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + \varepsilon_t$, ce condiții asigura stationaritatea?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 13, 'A')"><input type="radio" name="ch2q13"> A) $|\phi_1| < 1$ și $|\phi_2| < 1$</li>
+                        <li onclick="checkAnswer('ch2', 13, 'B')"><input type="radio" name="ch2q13"> B) $\phi_1 + \phi_2 < 1$, $\phi_2 - \phi_1 < 1$, $|\phi_2| < 1$</li>
+                        <li onclick="checkAnswer('ch2', 13, 'C')"><input type="radio" name="ch2q13"> C) $\phi_1^2 + \phi_2^2 < 1$</li>
+                        <li onclick="checkAnswer('ch2', 13, 'D')"><input type="radio" name="ch2q13"> D) $|\phi_1 + \phi_2| < 1$</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer13-correct">
+                        <strong>Corect!</strong> Stationaritatea AR(2) necesita toate cele trei condiții din B (triunghiul de stationaritate).
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer13-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Acestea definesc regiunea de stationaritate AR(2).
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 14 -->
+                <div class="quiz-question" id="ch2q14">
+                    <h4>Întrebarea 14: Ecuatiile Yule-Walker</h4>
+                    <p>Ecuatiile Yule-Walker sunt folosite pentru a:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 14, 'A')"><input type="radio" name="ch2q14"> A) Testa stationaritatea</li>
+                        <li onclick="checkAnswer('ch2', 14, 'B')"><input type="radio" name="ch2q14"> B) Estima parametrii AR din autocorelații</li>
+                        <li onclick="checkAnswer('ch2', 14, 'C')"><input type="radio" name="ch2q14"> C) Estima parametrii MA</li>
+                        <li onclick="checkAnswer('ch2', 14, 'D')"><input type="radio" name="ch2q14"> D) Calcula prognoze</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer14-correct">
+                        <strong>Corect!</strong> Yule-Walker: $\boldsymbol{\phi} = \mathbf{R}^{-1} \boldsymbol{\rho}$ leaga parametrii AR de ACF.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer14-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Yule-Walker ofera estimare AR prin metoda momentelor.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 15 -->
+                <div class="quiz-question" id="ch2q15">
+                    <h4>Întrebarea 15: Interpretarea PACF</h4>
+                    <p>PACF la lag $k$ masoara:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 15, 'A')"><input type="radio" name="ch2q15"> A) Corelația totala între $X_t$ și $X_{t-k}$</li>
+                        <li onclick="checkAnswer('ch2', 15, 'B')"><input type="radio" name="ch2q15"> B) Corelația între $X_t$ și $X_{t-k}$ dupa eliminarea efectelor lag-urilor intermediare</li>
+                        <li onclick="checkAnswer('ch2', 15, 'C')"><input type="radio" name="ch2q15"> C) Coeficientul MA la lag $k$</li>
+                        <li onclick="checkAnswer('ch2', 15, 'D')"><input type="radio" name="ch2q15"> D) Varianță la lag $k$</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer15-correct">
+                        <strong>Corect!</strong> PACF masoara corelația directa dupa controlarea pentru $X_{t-1}, ..., X_{t-k+1}$.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer15-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. PACF elimina corelatiile indirecte prin lag-urile intermediare.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 16 -->
+                <div class="quiz-question" id="ch2q16">
+                    <h4>Întrebarea 16: Principiul Parsimoniei</h4>
+                    <p>Principiul parsimoniei în modelarea ARMA sugereaza:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 16, 'A')"><input type="radio" name="ch2q16"> A) Folositi intotdeauna modelul de ordin cel mai mare</li>
+                        <li onclick="checkAnswer('ch2', 16, 'B')"><input type="radio" name="ch2q16"> B) Alegeți cel mai simplu model adecvat</li>
+                        <li onclick="checkAnswer('ch2', 16, 'C')"><input type="radio" name="ch2q16"> C) Folositi doar modele AR</li>
+                        <li onclick="checkAnswer('ch2', 16, 'D')"><input type="radio" name="ch2q16"> D) Includeti intotdeauna termeni sezonieri</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer16-correct">
+                        <strong>Corect!</strong> Parsimonie: preferati modele mai simple pentru a evita supra-ajustarea și a imbunatati generalizarea.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer16-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Modelele mai simple prognozeaza adesea mai bine.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 17 -->
+                <div class="quiz-question" id="ch2q17">
+                    <h4>Întrebarea 17: Rădăcini Caracteristice</h4>
+                    <p>Pentru AR(1) cu $\phi = 0.9$, rădăcină caracteristică este:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 17, 'A')"><input type="radio" name="ch2q17"> A) 0.9</li>
+                        <li onclick="checkAnswer('ch2', 17, 'B')"><input type="radio" name="ch2q17"> B) 1/0.9 ≈ 1.11</li>
+                        <li onclick="checkAnswer('ch2', 17, 'C')"><input type="radio" name="ch2q17"> C) -0.9</li>
+                        <li onclick="checkAnswer('ch2', 17, 'D')"><input type="radio" name="ch2q17"> D) 0.81</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer17-correct">
+                        <strong>Corect!</strong> Ecuația caracteristică: $1 - 0.9z = 0 \Rightarrow z = 1/0.9 \approx 1.11 > 1$ (staționară).
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer17-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Rădăcină = $1/\phi$, trebuie sa fie în afara cercului unitate.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 18 -->
+                <div class="quiz-question" id="ch2q18">
+                    <h4>Întrebarea 18: Metode de Estimare</h4>
+                    <p>Ce metoda de estimare este în general preferata pentru modelele ARMA?</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 18, 'A')"><input type="radio" name="ch2q18"> A) Metoda Celor Mai Mici Patrate (OLS)</li>
+                        <li onclick="checkAnswer('ch2', 18, 'B')"><input type="radio" name="ch2q18"> B) Estimarea prin Maxima Verosimilitate (MLE)</li>
+                        <li onclick="checkAnswer('ch2', 18, 'C')"><input type="radio" name="ch2q18"> C) Doar metoda momentelor</li>
+                        <li onclick="checkAnswer('ch2', 18, 'D')"><input type="radio" name="ch2q18"> D) Medierea simpla</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer18-correct">
+                        <strong>Corect!</strong> MLE este eficienta și gestioneaza corect atat componentele AR cat și MA.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer18-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. MLE este standardul pentru estimarea ARMA.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 19 -->
+                <div class="quiz-question" id="ch2q19">
+                    <h4>Întrebarea 19: Varianță Erorii de Prognoza</h4>
+                    <p>Pentru un model ARMA stationar, pe masura ce orizontul de prognoza creste, varianță erorii de prognoza:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 19, 'A')"><input type="radio" name="ch2q19"> A) Scade la zero</li>
+                        <li onclick="checkAnswer('ch2', 19, 'B')"><input type="radio" name="ch2q19"> B) Creste fara limita</li>
+                        <li onclick="checkAnswer('ch2', 19, 'C')"><input type="radio" name="ch2q19"> C) Converge la varianță neconditionata</li>
+                        <li onclick="checkAnswer('ch2', 19, 'D')"><input type="radio" name="ch2q19"> D) Ramane constantă</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer19-correct">
+                        <strong>Corect!</strong> Cand $h \to \infty$, varianță erorii de prognoza $\to \gamma(0)$ (varianță neconditionata).
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer19-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este C. Incertitudinea prognozei pe termen lung egaleaza varianță procesului.
+                    </div>
+                </div>
+
+                <!-- Ch2 Question 20 -->
+                <div class="quiz-question" id="ch2q20">
+                    <h4>Întrebarea 20: Metodologia Box-Jenkins</h4>
+                    <p>Ordinea corecta a pasilor în metodologia Box-Jenkins este:</p>
+                    <ul class="quiz-options">
+                        <li onclick="checkAnswer('ch2', 20, 'A')"><input type="radio" name="ch2q20"> A) Estimare → Identificare → Diagnosticare</li>
+                        <li onclick="checkAnswer('ch2', 20, 'B')"><input type="radio" name="ch2q20"> B) Identificare → Estimare → Diagnosticare</li>
+                        <li onclick="checkAnswer('ch2', 20, 'C')"><input type="radio" name="ch2q20"> C) Diagnosticare → Identificare → Estimare</li>
+                        <li onclick="checkAnswer('ch2', 20, 'D')"><input type="radio" name="ch2q20"> D) Estimare → Diagnosticare → Identificare</li>
+                    </ul>
+                    <div class="answer-reveal answer-correct" id="ch2answer20-correct">
+                        <strong>Corect!</strong> Box-Jenkins: (1) Identificati ordinul modelului via ACF/PACF, (2) Estimati parametrii, (3) Diagnosticati reziduurile.
+                    </div>
+                    <div class="answer-reveal answer-incorrect" id="ch2answer20-incorrect">
+                        <strong>Incorect.</strong> Răspunsul corect este B. Identificarea vine prima, apoi estimarea, apoi diagnosticarea.
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; text-align: center;">
+                    <p id="score-display-ch2" style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: bold;"></p>
+                    <button onclick="calculateScore(2)" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1rem; cursor: pointer; border: none; margin-right: 1rem;">Verifica Scorul</button>
+                    <button onclick="resetQuiz(2)" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1rem; cursor: pointer; border: none;">Reseteaza Testul</button>
+                </div>
+            </div>
+
+            <!-- Chapter 3-5 quizzes will continue în part 2 -->
+            <div class="quiz-container" id="chapter3-quizzes" style="display: none;">
+                <h3 style="margin-bottom: 1.5rem;">Capitolul 3: Modele ARIMA</h3>
+                <p>Se incarca...</p>
+            </div>
+
+            <div class="quiz-container" id="chapter4-quizzes" style="display: none;">
+                <h3 style="margin-bottom: 1.5rem;">Capitolul 4: Modele SARIMA</h3>
+                <p>Se incarca...</p>
+            </div>
+
+            <div class="quiz-container" id="chapter5-quizzes" style="display: none;">
+                <h3 style="margin-bottom: 1.5rem;">Capitolul 5: Modele VAR și Cauzalitate Granger</h3>
+                <p>Se incarca...</p>
+            </div>
+        </section>
+
+        <section id="resources">
+            <h2>Resurse</h2>
+
+            <h3 style="margin-bottom: 1rem;">Manuale Recomandate</h3>
+            <ul style="margin-left: 2rem; margin-bottom: 2rem;">
+                <li>Hyndman, R.J. & Athanasopoulos, G. (2021). <em>Forecasting: Principles and Practice</em>, 3rd ed. <a href="https://otexts.com/fpp3/" target="_blank" style="color: var(--main-blue);">OTexts (gratuit online)</a></li>
+                <li>Hamilton, J.D. (1994). <em>Time Series Analysis</em>. Princeton University Press.</li>
+                <li>Tsay, R.S. (2010). <em>Analysis of Financial Time Series</em>, 3rd ed. Wiley.</li>
+                <li>Shumway, R.H. & Stoffer, D.S. (2017). <em>Time Series Analysis and Its Applications</em>, 4th ed. Springer.</li>
+            </ul>
+
+            <h3 style="margin-bottom: 1rem;">Resurse Online</h3>
+            <div class="resources-list" style="display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center;">
+                <a href="https://quantlet.com/" target="_blank" class="resource-item" style="text-decoration: none; display: flex; align-items: center; gap: 1rem; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s;">
+                    <img src="logos/ql_logo.png" alt="Quantlet Logo" style="height: 50px; border-radius: 8px;">
+                    <div>
+                        <strong style="color: var(--main-blue);">Quantlet</strong>
+                        <p style="font-size: 0.9rem; color: #666; margin: 0;">Depozit de cod pentru finante cantitative</p>
+                    </div>
+                </a>
+                <a href="https://www.quantinar.com" target="_blank" class="resource-item" style="text-decoration: none; display: flex; align-items: center; gap: 1rem; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s;">
+                    <img src="https://www.quantinar.com/quantinar/images/logos/navbar_logo.png" alt="Quantinar Logo" style="height: 50px;">
+                    <div>
+                        <strong style="color: var(--main-blue);">Quantinar</strong>
+                        <p style="font-size: 0.9rem; color: #666; margin: 0;">Platforma de invatare pentru metode cantitative</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Informații de Contact</h2>
+            <div class="course-info">
+                <div class="info-card">
+                    <h3>Profesor</h3>
+                    <p><strong>Prof. dr. Daniel Traian Pele</strong></p>
+                    <p>Departamentul de Statistica și Econometrie</p>
+                </div>
+                <div class="info-card">
+                    <h3>Email</h3>
+                    <p><a href="mailto:danpele@ase.ro" style="color: var(--main-blue);">danpele@ase.ro</a></p>
+                </div>
+                <div class="info-card">
+                    <h3>Program de Consultații</h3>
+                    <p>La programare</p>
+                </div>
+                <div class="info-card">
+                    <h3>Locație</h3>
+                    <p>Academia de Studii Economice din Bucuresti</p>
+                    <p>Facultatea de Cibernetica, Statistica și Informatica Economica</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div style="display: flex; justify-content: center; gap: 2rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <a href="https://www.ase.ro" target="_blank"><img src="logos/ase_logo.png" alt="ASE Logo" style="height: 50px; background: white; padding: 5px; border-radius: 4px;"></a>
+            <a href="https://www.theida.net/" target="_blank"><img src="logos/ida_logo.png" alt="IDA Logo" style="height: 50px; background: white; padding: 5px; border-radius: 4px;"></a>
+            <a href="https://ai4efin.ase.ro" target="_blank"><img src="logos/ai4efin_logo.png" alt="AI4EFIN Logo" style="height: 50px; background: white; padding: 5px; border-radius: 4px;"></a>
+            <a href="https://www.digital-finance-msca.com/" target="_blank"><img src="logos/msca_logo.png" alt="MSCA Logo" style="height: 50px; background: white; padding: 5px; border-radius: 4px;"></a>
+            <a href="https://blockchain-research-center.com/" target="_blank"><img src="logos/brc_logo.png" alt="BRC Logo" style="height: 50px; background: white; padding: 5px; border-radius: 4px;"></a>
+            <a href="https://ipe.ro/new/" target="_blank"><img src="logos/acad_logo.png" alt="Academy Logo" style="height: 50px; background: white; padding: 5px; border-radius: 4px;"></a>
+        </div>
+        <p>Analiza Seriilor de Timp | Facultatea de Cibernetica, Statistica și Informatica Economica | Academia de Studii Economice din Bucuresti</p>
+        <p>Profesor: <strong>Prof. dr. Daniel Traian Pele</strong> | <a href="mailto:danpele@ase.ro" style="color: #ccc;">danpele@ase.ro</a></p>
+        <p>An Universitar 2025-2026</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">Toate materialele generate folosind Python și LaTeX</p>
+    </footer>
+
+    <script>
+        // Chapter 1 answers (20 questions)
+        const ch1Answers = {
+            1: 'C', 2: 'C', 3: 'C', 4: 'D', 5: 'B',
+            6: 'B', 7: 'B', 8: 'C', 9: 'C', 10: 'B',
+            11: 'C', 12: 'C', 13: 'C', 14: 'C', 15: 'B',
+            16: 'B', 17: 'B', 18: 'B', 19: 'B', 20: 'B'
+        };
+
+        // Chapter 2 answers (20 questions)
+        const ch2Answers = {
+            1: 'C', 2: 'B', 3: 'C', 4: 'C', 5: 'B',
+            6: 'C', 7: 'B', 8: 'C', 9: 'C', 10: 'D',
+            11: 'C', 12: 'B', 13: 'B', 14: 'B', 15: 'B',
+            16: 'B', 17: 'B', 18: 'B', 19: 'C', 20: 'B'
+        };
+
+        // Chapter 3 answers
+        const ch3Answers = {
+            1: 'C', 2: 'B', 3: 'B', 4: 'A', 5: 'B',
+            6: 'B', 7: 'B', 8: 'C', 9: 'C', 10: 'B',
+            11: 'B', 12: 'B', 13: 'B', 14: 'B', 15: 'B',
+            16: 'B', 17: 'B', 18: 'B', 19: 'D', 20: 'C'
+        };
+
+        const ch4Answers = {
+            1: 'B', 2: 'B', 3: 'A', 4: 'B', 5: 'B',
+            6: 'C', 7: 'B', 8: 'B', 9: 'B', 10: 'B'
+        };
+
+        const ch5Answers = {
+            1: 'A', 2: 'C', 3: 'B', 4: 'B', 5: 'C',
+            6: 'B', 7: 'B', 8: 'B', 9: 'B', 10: 'C',
+            11: 'B', 12: 'B', 13: 'B', 14: 'A', 15: 'B',
+            16: 'C', 17: 'B', 18: 'B', 19: 'B', 20: 'B'
+        };
+
+        let userAnswersCh1 = {};
+        let userAnswersCh2 = {};
+        let userAnswersCh3 = {};
+        let userAnswersCh4 = {};
+        let userAnswersCh5 = {};
+
+        function showChapter(chapter) {
+            document.getElementById('chapter1-quizzes').style.display = chapter === 1 ? 'block' : 'none';
+            document.getElementById('chapter2-quizzes').style.display = chapter === 2 ? 'block' : 'none';
+            document.getElementById('chapter3-quizzes').style.display = chapter === 3 ? 'block' : 'none';
+            document.getElementById('chapter4-quizzes').style.display = chapter === 4 ? 'block' : 'none';
+            document.getElementById('chapter5-quizzes').style.display = chapter === 5 ? 'block' : 'none';
+
+            document.getElementById('tab-ch1').style.background = chapter === 1 ? 'var(--main-blue)' : 'white';
+            document.getElementById('tab-ch1').style.color = chapter === 1 ? 'white' : 'var(--main-blue)';
+            document.getElementById('tab-ch2').style.background = chapter === 2 ? 'var(--main-blue)' : 'white';
+            document.getElementById('tab-ch2').style.color = chapter === 2 ? 'white' : 'var(--main-blue)';
+            document.getElementById('tab-ch3').style.background = chapter === 3 ? 'var(--main-blue)' : 'white';
+            document.getElementById('tab-ch3').style.color = chapter === 3 ? 'white' : 'var(--main-blue)';
+            document.getElementById('tab-ch4').style.background = chapter === 4 ? 'var(--main-blue)' : 'white';
+            document.getElementById('tab-ch4').style.color = chapter === 4 ? 'white' : 'var(--main-blue)';
+            document.getElementById('tab-ch5').style.background = chapter === 5 ? 'var(--main-blue)' : 'white';
+            document.getElementById('tab-ch5').style.color = chapter === 5 ? 'white' : 'var(--main-blue)';
+        }
+
+        function checkAnswer(chapter, questionNum, selectedAnswer) {
+            let correctAnswers, userAnswers, prefix;
+
+            if (chapter === 'ch5') {
+                correctAnswers = ch5Answers;
+                userAnswers = userAnswersCh5;
+                prefix = 'ch5';
+            } else if (chapter === 'ch4') {
+                correctAnswers = ch4Answers;
+                userAnswers = userAnswersCh4;
+                prefix = 'ch4';
+            } else if (chapter === 'ch3') {
+                correctAnswers = ch3Answers;
+                userAnswers = userAnswersCh3;
+                prefix = 'ch3';
+            } else if (chapter === 'ch2') {
+                correctAnswers = ch2Answers;
+                userAnswers = userAnswersCh2;
+                prefix = 'ch2';
+            } else {
+                correctAnswers = ch1Answers;
+                userAnswers = userAnswersCh1;
+                prefix = '';
+            }
+
+            const correctDiv = document.getElementById(`${prefix}answer${questionNum}-correct`);
+            const incorrectDiv = document.getElementById(`${prefix}answer${questionNum}-incorrect`);
+
+            userAnswers[questionNum] = selectedAnswer;
+
+            if (correctDiv) correctDiv.style.display = 'none';
+            if (incorrectDiv) incorrectDiv.style.display = 'none';
+
+            if (selectedAnswer === correctAnswers[questionNum]) {
+                if (correctDiv) correctDiv.style.display = 'block';
+            } else {
+                if (incorrectDiv) incorrectDiv.style.display = 'block';
+            }
+        }
+
+        function calculateScore(chapter) {
+            let score = 0;
+            let answered = 0;
+            let total, correctAnswers, userAnswers, displayId;
+
+            if (chapter === 5) {
+                total = 20;
+                correctAnswers = ch5Answers;
+                userAnswers = userAnswersCh5;
+                displayId = 'score-display-ch5';
+            } else if (chapter === 4) {
+                total = 10;
+                correctAnswers = ch4Answers;
+                userAnswers = userAnswersCh4;
+                displayId = 'score-display-ch4';
+            } else if (chapter === 3) {
+                total = 20;
+                correctAnswers = ch3Answers;
+                userAnswers = userAnswersCh3;
+                displayId = 'score-display-ch3';
+            } else if (chapter === 2) {
+                total = 20;
+                correctAnswers = ch2Answers;
+                userAnswers = userAnswersCh2;
+                displayId = 'score-display-ch2';
+            } else {
+                total = 20;
+                correctAnswers = ch1Answers;
+                userAnswers = userAnswersCh1;
+                displayId = 'score-display-ch1';
+            }
+
+            for (let i = 1; i <= total; i++) {
+                if (userAnswers[i]) {
+                    answered++;
+                    if (userAnswers[i] === correctAnswers[i]) {
+                        score++;
+                    }
+                }
+            }
+
+            const totalPercentage = Math.round((score / total) * 100);
+
+            let message = `Scor: ${score}/${total} (${totalPercentage}%)`;
+            if (answered < total) {
+                message += ` - ${total - answered} întrebari fara răspuns`;
+            }
+
+            if (totalPercentage >= 90) {
+                message += ' - Excelent!';
+            } else if (totalPercentage >= 70) {
+                message += ' - Bine lucrat!';
+            } else if (totalPercentage >= 50) {
+                message += ' - Continua sa inveti!';
+            } else {
+                message += ' - Revizuieste materialul.';
+            }
+
+            document.getElementById(displayId).textContent = message;
+        }
+
+        function resetQuiz(chapter) {
+            let total, prefix, displayId, container;
+
+            if (chapter === 5) {
+                total = 20;
+                prefix = 'ch5';
+                displayId = 'score-display-ch5';
+                container = 'chapter5-quizzes';
+                userAnswersCh5 = {};
+            } else if (chapter === 4) {
+                total = 10;
+                prefix = 'ch4';
+                displayId = 'score-display-ch4';
+                container = 'chapter4-quizzes';
+                userAnswersCh4 = {};
+            } else if (chapter === 3) {
+                total = 20;
+                prefix = 'ch3';
+                displayId = 'score-display-ch3';
+                container = 'chapter3-quizzes';
+                userAnswersCh3 = {};
+            } else if (chapter === 2) {
+                total = 20;
+                prefix = 'ch2';
+                displayId = 'score-display-ch2';
+                container = 'chapter2-quizzes';
+                userAnswersCh2 = {};
+            } else {
+                total = 20;
+                prefix = '';
+                displayId = 'score-display-ch1';
+                container = 'chapter1-quizzes';
+                userAnswersCh1 = {};
+            }
+
+            for (let i = 1; i <= total; i++) {
+                const correctDiv = document.getElementById(`${prefix}answer${i}-correct`);
+                const incorrectDiv = document.getElementById(`${prefix}answer${i}-incorrect`);
+                if (correctDiv) correctDiv.style.display = 'none';
+                if (incorrectDiv) incorrectDiv.style.display = 'none';
+            }
+
+            document.querySelectorAll(`#${container} input[type="radio"]`).forEach(radio => {
+                radio.checked = false;
+            });
+
+            document.getElementById(displayId).textContent = '';
+        }
+
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

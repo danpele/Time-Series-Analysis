@@ -53,7 +53,7 @@ def ch1_white_noise():
     axes[0, 0].set_xlabel('Time')
     axes[0, 0].set_ylabel('Value')
     axes[0, 0].set_title('White Noise: $\\varepsilon_t \\sim WN(0, \\sigma^2)$', fontweight='bold')
-    axes[0, 0].legend()
+    axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Histogram
     axes[0, 1].hist(wn, bins=30, color=BLUE, alpha=0.7, edgecolor='black', density=True)
@@ -63,7 +63,7 @@ def ch1_white_noise():
     axes[0, 1].set_xlabel('Value')
     axes[0, 1].set_ylabel('Density')
     axes[0, 1].set_title('Distribution\n(Normality NOT required)', fontweight='bold')
-    axes[0, 1].legend(fontsize=8)
+    axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # ACF
     from numpy.fft import fft, ifft
@@ -83,7 +83,7 @@ def ch1_white_noise():
     axes[1, 0].set_xlabel('Lag')
     axes[1, 0].set_ylabel('ACF')
     axes[1, 0].set_title('ACF: No Autocorrelation\n$Cov(\\varepsilon_t, \\varepsilon_s) = 0$ for $t \\neq s$', fontweight='bold')
-    axes[1, 0].legend()
+    axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Properties summary
     axes[1, 1].axis('off')
@@ -151,7 +151,7 @@ def ch1_holt_method():
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
     axes[0].set_title('Simple Exponential Smoothing\nFlat Forecast (no trend)', fontweight='bold')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Plot Holt
     axes[1].plot(t, y, 'o', color=BLUE, alpha=0.5, markersize=4, label='Data')
@@ -162,7 +162,7 @@ def ch1_holt_method():
     axes[1].set_xlabel('Time')
     axes[1].set_ylabel('Value')
     axes[1].set_title("Holt's Method\nTrend-Following Forecast", fontweight='bold')
-    axes[1].legend(fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/sem1_holt_method.pdf', bbox_inches='tight', dpi=150)
@@ -383,7 +383,7 @@ def ch2_stationarity_region():
                 fontweight='bold')
     ax.legend(loc='upper right', fontsize=9)
     ax.set_aspect('equal')
-    ax.grid(True, alpha=0.3)
+    
 
     # Add conditions
     ax.text(-2.3, -1.3, 'Conditions:\n$\\phi_2 + \\phi_1 < 1$\n$\\phi_2 - \\phi_1 < 1$\n$|\\phi_2| < 1$',
@@ -483,7 +483,7 @@ def ch2_information_criteria():
     ax.set_xlabel('Model Order (p)')
     ax.set_ylabel('Information Criterion (lower = better)')
     ax.set_title('AIC vs BIC for Model Selection', fontweight='bold')
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     ax.annotate(f'AIC selects p={p_values[np.argmin(aic_norm)]}',
                xy=(p_values[np.argmin(aic_norm)], aic_norm.min()),
                xytext=(4, aic_norm.min()+5), color=BLUE, fontsize=10)
@@ -507,7 +507,7 @@ def ch2_information_criteria():
     ax.set_xlabel('Sample Size (n)')
     ax.set_ylabel('Penalty Term')
     ax.set_title('Penalty Comparison (k=5 parameters)', fontweight='bold')
-    ax.legend(loc='lower right')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
     ax.axvline(x=np.exp(2), color='gray', linestyle=':', alpha=0.7)
     ax.annotate(f'n = e² ≈ 7.4\n(equal penalties)', xy=(np.exp(2), 10), fontsize=9)
 
@@ -542,7 +542,7 @@ def ch3_trend_vs_difference():
     axes[0, 0].plot(trend_det, color=RED, linewidth=2, linestyle='--', label='Deterministic trend')
     axes[0, 0].set_title('Trend Stationary\n$Y_t = \\alpha + \\beta t + \\varepsilon_t$', fontweight='bold')
     axes[0, 0].set_xlabel('Time')
-    axes[0, 0].legend()
+    axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0, 0].annotate('Detrend by\nregression', xy=(80, trend_det[80]), fontsize=9,
                        xytext=(60, trend_det[60]+15),
                        arrowprops=dict(arrowstyle='->', color=GREEN))
@@ -552,7 +552,7 @@ def ch3_trend_vs_difference():
     axes[0, 1].plot(t * drift, color=RED, linewidth=2, linestyle='--', label='Expected path')
     axes[0, 1].set_title('Difference Stationary\n$Y_t = Y_{t-1} + \\mu + \\varepsilon_t$', fontweight='bold')
     axes[0, 1].set_xlabel('Time')
-    axes[0, 1].legend()
+    axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0, 1].annotate('Apply\ndifferencing', xy=(80, y_diff[80]), fontsize=9,
                        xytext=(60, y_diff[60]+10),
                        arrowprops=dict(arrowstyle='->', color=GREEN))
@@ -572,7 +572,7 @@ def ch3_trend_vs_difference():
     axes[1, 1].set_title('After Differencing: Stationary!', fontweight='bold', color=GREEN)
     axes[1, 1].set_xlabel('Time')
     axes[1, 1].set_ylabel('$\\Delta Y_t$')
-    axes[1, 1].legend()
+    axes[1, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/sem3_trend_vs_diff.pdf', bbox_inches='tight', dpi=150)
@@ -891,7 +891,7 @@ def ch5_var_diagnostics():
     axes[0, 1].set_title('Good: ACF within bounds', fontweight='bold', color=GREEN)
     axes[0, 1].set_xlabel('Lag')
     axes[0, 1].set_ylabel('ACF')
-    axes[0, 1].legend()
+    axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Bad residuals plot
     axes[1, 0].plot(resid_bad, color=RED, linewidth=0.8)
@@ -908,7 +908,7 @@ def ch5_var_diagnostics():
     axes[1, 1].set_title('Bad: ACF exceeds bounds!', fontweight='bold', color=RED)
     axes[1, 1].set_xlabel('Lag')
     axes[1, 1].set_ylabel('ACF')
-    axes[1, 1].legend()
+    axes[1, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[1, 1].annotate('Model misspecified!\nIncrease lag order', xy=(10, acf_bad[10]),
                        xytext=(12, 0.5), fontsize=9, color=RED,
                        arrowprops=dict(arrowstyle='->', color=RED))

@@ -183,7 +183,7 @@ def ch2_information_criteria():
     ax.set_xlabel('Model Order (p)')
     ax.set_ylabel('Information Criterion')
     ax.set_title('AIC vs BIC: Lower is Better')
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     ax.set_xticks(orders)
 
     plt.tight_layout()
@@ -209,7 +209,7 @@ def ch2_ljung_box():
     axes[0].set_title('Good Model: Residuals ≈ White Noise', fontsize=10, color='green')
     axes[0].set_xlabel('Lag')
     axes[0].set_ylabel('ACF of Residuals')
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0].set_ylim(-0.5, 0.5)
 
     # Bad fit: significant autocorrelation
@@ -221,7 +221,7 @@ def ch2_ljung_box():
     axes[1].axhline(y=0, color='black', linewidth=0.5)
     axes[1].set_title('Poor Model: Significant Autocorrelation', fontsize=10, color='red')
     axes[1].set_xlabel('Lag')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[1].set_ylim(-0.5, 0.5)
 
     plt.tight_layout()
@@ -316,7 +316,7 @@ def ch3_quiz1_rw_variance():
     axes[1].set_xlabel('Time (t)')
     axes[1].set_ylabel('Variance')
     axes[1].set_title('Variance Grows Linearly with Time')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
     save_fig('ch3_quiz1_rw_variance')
@@ -427,7 +427,7 @@ def ch3_quiz4_acf_decay():
     axes[1].set_xlabel('Lag k')
     axes[1].set_ylabel(r'$\rho_k$ (log scale)')
     axes[1].set_title('Log Scale: Linear = Exponential Decay')
-    axes[1].grid(True, alpha=0.3)
+    
 
     plt.tight_layout()
     save_fig('ch3_quiz4_acf_decay')
@@ -480,7 +480,7 @@ def ch3_quiz5_forecast_ci():
     axes[1].set_xlabel('Forecast Horizon h')
     axes[1].set_ylabel('95% CI Width')
     axes[1].set_title('CI Width: I(1) vs I(0)')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
     save_fig('ch3_quiz5_forecast_ci')
@@ -568,7 +568,7 @@ def ch4_quiz2_seasonal_diff():
     axes[2].plot(y[24:36], 'g-^', label='Year 3', markersize=4)
     axes[2].set_title('Same Month, Different Years')
     axes[2].set_xlabel('Month of Year')
-    axes[2].legend(fontsize=8)
+    axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch4_quiz2_seasonal_diff')
@@ -653,8 +653,7 @@ def ch5_quiz1_var_stability():
     ax.set_xlabel('Real Part')
     ax.set_ylabel('Imaginary Part')
     ax.set_title('VAR(1) Stability: Both Eigenvalues Inside Unit Circle')
-    ax.legend(loc='upper right')
-    ax.grid(True, alpha=0.3)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=False)
 
     plt.tight_layout()
     save_fig('ch5_quiz1_var_stability')
@@ -682,7 +681,7 @@ def ch5_quiz2_granger_causality():
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
     axes[0].set_title('X Granger-causes Y')
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
 
     # Diagram
     axes[1].axis('off')
@@ -787,7 +786,7 @@ def ch5_quiz5_fevd():
     ax.set_title('FEVD: Decomposition of Forecast Uncertainty')
     ax.set_xticks(x)
     ax.set_xticklabels(horizons)
-    ax.legend(loc='upper right')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
     ax.set_ylim(0, 1.1)
 
     plt.tight_layout()

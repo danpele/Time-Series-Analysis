@@ -116,7 +116,7 @@ def ch1_motivation_forecast():
     axes[0].set_title('Forecasting Future Values', fontsize=11, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Business decision making
     categories = ['Inventory\nPlanning', 'Budget\nAllocation', 'Risk\nManagement', 'Resource\nScheduling']

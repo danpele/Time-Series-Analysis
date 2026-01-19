@@ -219,7 +219,7 @@ def ch1_quiz5_forecast_errors():
     axes[0].set_title('Good Forecast: Small Errors', fontsize=10)
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     mae_good = np.mean(np.abs(errors_good))
     rmse_good = np.sqrt(np.mean(errors_good**2))
@@ -235,7 +235,7 @@ def ch1_quiz5_forecast_errors():
     axes[1].fill_between(t, actual, forecast_bad, alpha=0.3, color='red')
     axes[1].set_title('Poor Forecast: Large Errors', fontsize=10)
     axes[1].set_xlabel('Time')
-    axes[1].legend(fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     mae_bad = np.mean(np.abs(errors_bad))
     rmse_bad = np.sqrt(np.mean(errors_bad**2))
@@ -265,7 +265,7 @@ def ch1_quiz6_decomposition():
     axes[0].set_title('Additive Decomposition', fontsize=10)
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
     axes[0].text(24, 5, 'Constant\nSeasonal\nAmplitude', ha='center', fontsize=9,
                  bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
 
@@ -278,7 +278,7 @@ def ch1_quiz6_decomposition():
     axes[1].plot(t, trend, 'r--', linewidth=2, label='Trend', alpha=0.7)
     axes[1].set_title('Multiplicative Decomposition', fontsize=10)
     axes[1].set_xlabel('Time')
-    axes[1].legend(fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
     axes[1].text(24, 8, 'Seasonal\nAmplitude\nGrows', ha='center', fontsize=9,
                  bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8))
 

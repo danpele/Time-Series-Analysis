@@ -146,7 +146,7 @@ def ch1_def_weak_stationarity():
     axes[0].set_title('Weakly Stationary: Constant mean and autocovariance')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('$X_t$')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Show autocovariance depends only on lag
     lags = np.arange(0, 20)
@@ -219,7 +219,7 @@ def ch1_def_lag_operator():
     ax.set_xlabel('Time $t$')
     ax.set_ylabel('Value')
     ax.set_title('Lag Operator: $L X_t = X_{t-1}$, shifts series back by one period')
-    ax.legend(fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False)
 
     plt.tight_layout()
     save_fig('ch1_def_lag_operator')
@@ -246,7 +246,7 @@ def ch1_def_moving_average():
     ax.set_xlabel('Time')
     ax.set_ylabel('Value')
     ax.set_title('Centered Moving Average: $\\hat{m}_t = \\frac{1}{2q+1}\\sum_{j=-q}^{q} X_{t+j}$')
-    ax.legend(fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False)
 
     plt.tight_layout()
     save_fig('ch1_def_moving_average')
@@ -310,7 +310,7 @@ def ch1_def_ets():
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
     axes[0].set_title('Exponential Smoothing')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Forecast
     n_fore = 10
@@ -322,7 +322,7 @@ def ch1_def_ets():
     axes[1].axvline(x=n-0.5, color='gray', linestyle=':', alpha=0.7)
     axes[1].set_xlabel('Time')
     axes[1].set_title('ETS Forecast')
-    axes[1].legend(fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch1_def_ets')
@@ -533,7 +533,7 @@ def ch2_def_invertibility():
     axes[1].set_xlabel('Lag $j$')
     axes[1].set_ylabel('$|\\pi_j|$')
     axes[1].set_title('AR($\\infty$) weights: $X_t = \\sum \\pi_j X_{t-j} + \\varepsilon_t$')
-    axes[1].legend(fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
     axes[1].set_ylim(0, 5)
 
     plt.tight_layout()
@@ -654,7 +654,7 @@ def ch3_def_random_walk():
     axes[0].set_title('Random Walk: $Y_t = Y_{t-1} + \\varepsilon_t$')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('$Y_t$')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Variance grows with time
     np.random.seed(42)
@@ -671,7 +671,7 @@ def ch3_def_random_walk():
     axes[1].set_title('Variance grows linearly with time')
     axes[1].set_xlabel('Time $t$')
     axes[1].set_ylabel('Variance')
-    axes[1].legend(fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch3_def_random_walk')
@@ -701,7 +701,7 @@ def ch3_def_random_walk_drift():
     ax.set_title('Random Walk: With and Without Drift')
     ax.set_xlabel('Time')
     ax.set_ylabel('$Y_t$')
-    ax.legend(fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch3_def_random_walk_drift')
@@ -1025,7 +1025,7 @@ def ch5_def_ccf():
     axes[0].plot(y, 'r-', linewidth=1, alpha=0.7, label='$Y_t$')
     axes[0].set_title('Two Related Time Series')
     axes[0].set_xlabel('Time')
-    axes[0].legend(fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Cross-correlation using numpy correlate for simplicity
     from scipy import signal
