@@ -1,0 +1,792 @@
+% Chapter 6: Cointegration and VECM
+% Long-Run Relationships in Non-Stationary Time Series
+% Bachelor program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Ensure content fits on slides
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% THEME AND STYLE CONFIGURATION
+%=============================================================================
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+% IDA-Inspired Color Palette
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{42, 82, 140}
+\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=MainBlue}
+\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+            \usebeamerfont{author in head/foot}\insertshortauthor
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+            \usebeamerfont{title in head/foot}\insertshorttitle
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+        \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+%=============================================================================
+% PACKAGES
+%=============================================================================
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false, pdfborder={0 0 0}}
+\graphicspath{{logos/}{charts/}}
+
+%=============================================================================
+% THEOREM ENVIRONMENTS
+%=============================================================================
+\theoremstyle{definition}
+\setbeamertemplate{theorems}[numbered]
+\newtheorem{defn}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+
+%=============================================================================
+% CUSTOM COMMANDS
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bA}{\mathbf{A}}
+\newcommand{\bB}{\mathbf{B}}
+\newcommand{\bepsilon}{\boldsymbol{\varepsilon}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\bbeta}{\boldsymbol{\beta}}
+\newcommand{\bPi}{\boldsymbol{\Pi}}
+\newcommand{\bGamma}{\boldsymbol{\Gamma}}
+
+%=============================================================================
+% TITLE INFORMATION
+%=============================================================================
+\title[Chapter 6: Cointegration \& VECM]{Chapter 6: Cointegration and VECM}
+\subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
+\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
+\institute{Bucharest University of Economic Studies}
+\date{Academic Year 2025--2026}
+
+\begin{document}
+
+%=============================================================================
+% TITLE SLIDE
+%=============================================================================
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.north west) rectangle ([yshift=-0.15cm]current page.north east);
+        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
+            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
+        };
+        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
+            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
+        };
+        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
+            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
+        };
+    \end{tikzpicture}
+    \vfill
+    \begin{center}
+        {\Large\textcolor{MediumGray}{Time Series Analysis and Forecasting}}\\[0.3cm]
+        {\Huge\textbf{\textcolor{MainBlue}{Chapter 6: Cointegration \& VECM}}}\\[0.5cm]
+        {\Large\textcolor{IDAred}{Long-Run Equilibrium Relationships}}
+    \end{center}
+    \vfill
+
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.south west) rectangle ([yshift=0.15cm]current page.south east);
+        \node[anchor=south west] at ([xshift=0.5cm, yshift=0.8cm]current page.south west) {
+            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
+        };
+        \node[anchor=south] at ([xshift=-3cm, yshift=0.8cm]current page.south) {
+            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
+        };
+        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
+            \href{https://quantinar.com}{\includegraphics[height=0.9cm]{qr_logo.png}}
+        };
+        \node[anchor=south] at ([xshift=3cm, yshift=0.8cm]current page.south) {
+            \href{https://quantlet.com}{\includegraphics[height=0.9cm]{ql_logo.png}}
+        };
+        \node[anchor=south east] at ([xshift=-0.5cm, yshift=0.8cm]current page.south east) {
+            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Lecture Outline}
+    \vspace{-0.3cm}
+    {\small
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \tableofcontents[sections={1-4}, hideallsubsections]
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \tableofcontents[sections={5-8}, hideallsubsections]
+        \end{column}
+    \end{columns}
+    }
+\end{frame}
+
+%=============================================================================
+\section{Introduction}
+%=============================================================================
+
+\begin{frame}{Why Cointegration?}
+    \begin{block}{The Problem with Non-Stationary Data}
+        \begin{itemize}
+            \item Many economic/financial time series are \textbf{non-stationary} (I(1))
+            \item Standard regression with I(1) variables leads to \textbf{spurious regression}
+            \item Differencing removes non-stationarity but loses \textbf{long-run information}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Key Insight}
+        Some non-stationary series may share a common stochastic trend---they move together in the long run. This is \textbf{cointegration}.
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Economic Examples}
+        \begin{itemize}
+            \item Consumption and Income (permanent income hypothesis)
+            \item Short-term and long-term interest rates (term structure)
+            \item Spot and futures prices (arbitrage relationship)
+            \item Exchange rates and price levels (PPP)
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Spurious Regression Problem}
+    \begin{block}{Granger \& Newbold (1974)}
+        Regressing one random walk on another independent random walk:
+        $$Y_t = \alpha + \beta X_t + u_t$$
+        where $Y_t$ and $X_t$ are independent I(1) processes.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Symptoms of Spurious Regression}
+        \begin{itemize}
+            \item High $R^2$ (often $> 0.9$) even though variables are unrelated
+            \item Highly significant $t$-statistics
+            \item Very low Durbin-Watson statistic ($DW \approx 0$)
+            \item Residuals are non-stationary (have unit root)
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    {\footnotesize
+    \begin{exampleblock}{Rule of Thumb}
+        If $R^2 > DW$, suspect spurious regression!
+    \end{exampleblock}
+    }
+\end{frame}
+
+%=============================================================================
+\section{Cointegration Concept}
+%=============================================================================
+
+\begin{frame}{Definition of Cointegration}
+    \begin{defn}[Cointegration (Engle \& Granger, 1987)]
+        Variables $Y_{1t}, Y_{2t}, \ldots, Y_{kt}$ are \textbf{cointegrated of order $(d,b)$}, written $CI(d,b)$, if:
+        \begin{enumerate}
+            \item All variables are integrated of order $d$: $Y_{it} \sim I(d)$
+            \item There exists a linear combination $\bbeta' \bY_t = \beta_1 Y_{1t} + \cdots + \beta_k Y_{kt}$ that is integrated of order $(d-b)$, where $b > 0$
+        \end{enumerate}
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Most Common Case: $CI(1,1)$}
+        \begin{itemize}
+            \item Variables are $I(1)$ (have unit roots)
+            \item Linear combination is $I(0)$ (stationary)
+            \item Vector $\bbeta = (\beta_1, \ldots, \beta_k)'$ is the \textbf{cointegrating vector}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    {\footnotesize
+    The cointegrating vector is unique only up to scalar multiplication. Usually normalized: $\beta_1 = 1$.
+    }
+\end{frame}
+
+\begin{frame}{Intuition: Common Stochastic Trends}
+    \begin{block}{Why Does Cointegration Occur?}
+        Cointegrated variables share \textbf{common stochastic trends}:
+        $$Y_{1t} = \gamma_1 \tau_t + S_{1t}, \qquad Y_{2t} = \gamma_2 \tau_t + S_{2t}$$
+        where $\tau_t$ is a common random walk and $S_{it}$ are stationary components.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Linear Combination Eliminates the Trend}
+        $$\gamma_2 Y_{1t} - \gamma_1 Y_{2t} = \gamma_2 S_{1t} - \gamma_1 S_{2t} \sim I(0)$$
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Economic Interpretation}
+        \begin{itemize}
+            \item Cointegration represents a \textbf{long-run equilibrium relationship}
+            \item Variables may deviate in the short run
+            \item But they are ``pulled back'' to equilibrium over time
+            \item The cointegrating vector defines the equilibrium
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Cointegrating Rank}
+    \begin{block}{How Many Cointegrating Relationships?}
+        For $k$ variables that are $I(1)$:
+        \begin{itemize}
+            \item Maximum possible cointegrating relationships: $r = k - 1$
+            \item If $r = 0$: No cointegration (variables drift apart)
+            \item If $r = k$: All variables are $I(0)$ (contradiction)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Example: 3 Variables}
+        \begin{itemize}
+            \item $r = 0$: No cointegration
+            \item $r = 1$: One cointegrating relationship
+            \item $r = 2$: Two cointegrating relationships (only 1 common trend)
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    {\footnotesize
+    The number of common stochastic trends = $k - r$
+    }
+\end{frame}
+
+%=============================================================================
+\section{Engle-Granger Method}
+%=============================================================================
+
+\begin{frame}{Engle-Granger Two-Step Method}
+    \begin{block}{Step 1: Estimate Cointegrating Regression}
+        Run OLS regression (assuming $Y_t$ is the dependent variable):
+        $$Y_t = \alpha + \beta X_t + e_t$$
+        Save the residuals: $\hat{e}_t = Y_t - \hat{\alpha} - \hat{\beta} X_t$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Step 2: Test Residuals for Stationarity}
+        Test if $\hat{e}_t$ is $I(0)$ using ADF test:
+        $$\Delta \hat{e}_t = \rho \hat{e}_{t-1} + \sum_{j=1}^{p} \gamma_j \Delta \hat{e}_{t-j} + v_t$$
+
+        \begin{itemize}
+            \item $H_0$: $\rho = 0$ (residuals have unit root $\Rightarrow$ no cointegration)
+            \item $H_1$: $\rho < 0$ (residuals are stationary $\Rightarrow$ cointegration)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Important}
+        Use \textbf{Engle-Granger critical values}, not standard ADF critical values! (More negative because residuals are estimated)
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Engle-Granger Critical Values}
+    \begin{block}{Critical Values for Cointegration Test}
+        {\small
+        \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Number of Variables} & \textbf{1\%} & \textbf{5\%} & \textbf{10\%} \\
+            \midrule
+            2 & $-3.90$ & $-3.34$ & $-3.04$ \\
+            3 & $-4.29$ & $-3.74$ & $-3.45$ \\
+            4 & $-4.64$ & $-4.10$ & $-3.81$ \\
+            5 & $-4.96$ & $-4.42$ & $-4.13$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+        }
+        {\footnotesize Based on MacKinnon (1991) response surface estimates, $T = 100$}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Limitations of Engle-Granger}
+        \begin{itemize}
+            \item Only tests for \textbf{one} cointegrating relationship
+            \item Results depend on which variable is chosen as dependent
+            \item Small sample bias in estimated cointegrating vector
+            \item Cannot test hypotheses on the cointegrating vector
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+%=============================================================================
+\section{Johansen Method}
+%=============================================================================
+
+\begin{frame}{Johansen Cointegration Test}
+    \begin{block}{Advantages over Engle-Granger}
+        \begin{itemize}
+            \item Tests for \textbf{multiple} cointegrating relationships
+            \item Maximum likelihood estimation (more efficient)
+            \item Can test restrictions on cointegrating vectors
+            \item Does not require choosing a dependent variable
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Starting Point: VAR in Levels}
+        $$\bY_t = \mathbf{c} + \bA_1 \bY_{t-1} + \bA_2 \bY_{t-2} + \cdots + \bA_p \bY_{t-p} + \bepsilon_t$$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    Rewrite in \textbf{Vector Error Correction} form...
+\end{frame}
+
+\begin{frame}{VECM Representation}
+    \begin{block}{Vector Error Correction Model}
+        $$\Delta \bY_t = \mathbf{c} + \bPi \bY_{t-1} + \sum_{j=1}^{p-1} \bGamma_j \Delta \bY_{t-j} + \bepsilon_t$$
+
+        where:
+        \begin{itemize}
+            \item $\bPi = \bA_1 + \bA_2 + \cdots + \bA_p - \mathbf{I}$ (long-run impact matrix)
+            \item $\bGamma_j = -(\bA_{j+1} + \cdots + \bA_p)$ (short-run dynamics)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Key Insight: Rank of $\bPi$}
+        The \textbf{rank of $\bPi$} determines cointegration:
+        \begin{itemize}
+            \item $\text{rank}(\bPi) = 0$: No cointegration (VAR in differences)
+            \item $\text{rank}(\bPi) = k$: All variables are $I(0)$ (VAR in levels)
+            \item $0 < \text{rank}(\bPi) = r < k$: Cointegration with $r$ cointegrating vectors
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Decomposition of $\bPi$}
+    \begin{block}{When $\text{rank}(\bPi) = r < k$}
+        The matrix $\bPi$ can be decomposed as:
+        $$\bPi = \balpha \bbeta'$$
+        where:
+        \begin{itemize}
+            \item $\bbeta$ is $k \times r$ matrix of \textbf{cointegrating vectors}
+            \item $\balpha$ is $k \times r$ matrix of \textbf{adjustment coefficients}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}
+            \item $\bbeta' \bY_{t-1}$ = deviations from long-run equilibrium (error correction terms)
+            \item $\balpha$ = speed of adjustment to equilibrium
+            \item Each row of $\balpha$ shows how each variable responds to disequilibrium
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    {\footnotesize
+    VECM: $\Delta \bY_t = \mathbf{c} + \balpha(\bbeta' \bY_{t-1}) + \sum_{j=1}^{p-1} \bGamma_j \Delta \bY_{t-j} + \bepsilon_t$
+    }
+\end{frame}
+
+\begin{frame}{Johansen Test Statistics}
+    \begin{block}{Two Test Statistics}
+        Based on eigenvalues $\hat{\lambda}_1 > \hat{\lambda}_2 > \cdots > \hat{\lambda}_k$ of a certain matrix:
+
+        \vspace{0.2cm}
+
+        \textbf{Trace Test:}
+        $$\lambda_{\text{trace}}(r) = -T \sum_{i=r+1}^{k} \ln(1 - \hat{\lambda}_i)$$
+        Tests $H_0$: rank $\leq r$ vs $H_1$: rank $> r$
+
+        \vspace{0.2cm}
+
+        \textbf{Maximum Eigenvalue Test:}
+        $$\lambda_{\max}(r, r+1) = -T \ln(1 - \hat{\lambda}_{r+1})$$
+        Tests $H_0$: rank $= r$ vs $H_1$: rank $= r + 1$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    {\footnotesize
+    Critical values from Johansen \& Juselius (1990), depend on:
+    \begin{itemize}
+        \item Number of variables $k$
+        \item Deterministic components (constant, trend)
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Testing Procedure}
+    \begin{block}{Sequential Testing (Trace Test)}
+        \begin{enumerate}
+            \item Test $H_0$: $r = 0$ vs $H_1$: $r > 0$
+            \begin{itemize}
+                \item If not rejected: No cointegration. Stop.
+                \item If rejected: At least one cointegrating vector. Continue.
+            \end{itemize}
+            \item Test $H_0$: $r \leq 1$ vs $H_1$: $r > 1$
+            \begin{itemize}
+                \item If not rejected: $r = 1$. Stop.
+                \item If rejected: At least two cointegrating vectors. Continue.
+            \end{itemize}
+            \item Continue until $H_0$ is not rejected...
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Deterministic Components}
+        Choose specification carefully:
+        \begin{itemize}
+            \item No constant, no trend (rarely used)
+            \item Constant in cointegrating relation only
+            \item Constant in both (most common)
+            \item Constant + trend in cointegrating relation
+            \item Constant + trend in both
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+%=============================================================================
+\section{VECM Estimation}
+%=============================================================================
+
+\begin{frame}{VECM Structure}
+    \begin{block}{Full VECM Specification}
+        For $k = 2$ variables with $r = 1$ cointegrating relation:
+        \begin{align*}
+            \Delta Y_{1t} &= c_1 + \alpha_1 (Y_{1,t-1} - \beta Y_{2,t-1}) + \gamma_{11} \Delta Y_{1,t-1} + \gamma_{12} \Delta Y_{2,t-1} + \varepsilon_{1t} \\
+            \Delta Y_{2t} &= c_2 + \alpha_2 (Y_{1,t-1} - \beta Y_{2,t-1}) + \gamma_{21} \Delta Y_{1,t-1} + \gamma_{22} \Delta Y_{2,t-1} + \varepsilon_{2t}
+        \end{align*}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Components}
+        \begin{itemize}
+            \item $(Y_{1,t-1} - \beta Y_{2,t-1})$ = error correction term (deviation from equilibrium)
+            \item $\alpha_1, \alpha_2$ = adjustment speeds (should have opposite signs)
+            \item $\gamma_{ij}$ = short-run dynamics
+            \item $\varepsilon_{it}$ = innovations
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Interpreting Adjustment Coefficients}
+    \begin{block}{The $\alpha$ Coefficients}
+        If the cointegrating relation is $Y_1 - \beta Y_2 = 0$ (equilibrium):
+
+        \vspace{0.2cm}
+
+        \begin{itemize}
+            \item $\alpha_1 < 0$: $Y_1$ adjusts downward when above equilibrium
+            \item $\alpha_2 > 0$: $Y_2$ adjusts upward when $Y_1$ is above equilibrium
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Weak Exogeneity}
+        If $\alpha_i = 0$, variable $Y_i$ does \textbf{not} respond to disequilibrium.
+        \begin{itemize}
+            \item $Y_i$ is \textbf{weakly exogenous} for the long-run parameters
+            \item The other variable does all the adjusting
+            \item Can simplify estimation (single-equation approach)
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    {\footnotesize
+    Test weak exogeneity: $H_0: \alpha_i = 0$ using likelihood ratio test.
+    }
+\end{frame}
+
+\begin{frame}{VECM vs VAR in Differences}
+    \begin{block}{When Variables are Cointegrated}
+        \begin{center}
+        \begin{tabular}{lcc}
+            \toprule
+            & \textbf{VAR in Differences} & \textbf{VECM} \\
+            \midrule
+            Long-run info & Lost & Preserved \\
+            Short-run dynamics & Yes & Yes \\
+            Error correction & No & Yes \\
+            Forecasting & Poor (long-run) & Better \\
+            IRF interpretation & Short-run only & Both \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Granger Representation Theorem}
+        If variables are cointegrated, there \textbf{must} exist an error correction representation. Ignoring cointegration = model misspecification!
+    \end{alertblock}
+\end{frame}
+
+%=============================================================================
+\section{Practical Considerations}
+%=============================================================================
+
+\begin{frame}{Practical Workflow}
+    \begin{block}{Step-by-Step Procedure}
+        \begin{enumerate}
+            \item \textbf{Unit Root Tests}: Verify all variables are $I(1)$
+            \begin{itemize}
+                \item ADF, KPSS on levels and first differences
+            \end{itemize}
+            \item \textbf{Lag Length Selection}: Choose $p$ for VAR in levels
+            \begin{itemize}
+                \item Use AIC, BIC, or sequential LR tests
+            \end{itemize}
+            \item \textbf{Cointegration Test}: Johansen trace/max-eigenvalue tests
+            \begin{itemize}
+                \item Determine cointegrating rank $r$
+            \end{itemize}
+            \item \textbf{Estimate VECM}: If $0 < r < k$
+            \begin{itemize}
+                \item Estimate $\balpha$, $\bbeta$, $\bGamma_j$
+            \end{itemize}
+            \item \textbf{Diagnostics}: Check residuals for autocorrelation, normality
+            \item \textbf{Analysis}: IRF, FEVD, hypothesis tests
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Common Pitfalls}
+    \begin{alertblock}{Things to Watch Out For}
+        \begin{itemize}
+            \item \textbf{Structural breaks}: Can cause spurious unit roots or cointegration
+            \item \textbf{Near-unit-root processes}: Tests have low power
+            \item \textbf{Too many lags}: Over-parameterization, loss of efficiency
+            \item \textbf{Too few lags}: Residual autocorrelation, biased estimates
+            \item \textbf{Wrong deterministic specification}: Affects critical values
+            \item \textbf{Small samples}: Johansen test oversized in small samples
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Recommendation}
+        Always check:
+        \begin{itemize}
+            \item Residual diagnostics (Portmanteau test, normality)
+            \item Stability of estimated cointegrating relationship over time
+            \item Sensitivity to lag length and deterministic specification
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+\section{Example: Interest Rates}
+%=============================================================================
+
+\begin{frame}{Example: Short and Long Interest Rates}
+    \begin{block}{Economic Theory}
+        Expectations hypothesis of term structure:
+        $$R_t^{(n)} = \frac{1}{n} \sum_{i=0}^{n-1} E_t[r_{t+i}] + \text{term premium}$$
+
+        If term premium is constant, short rate $r_t$ and long rate $R_t$ should be cointegrated with vector $(1, -1)$.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Empirical Approach}
+        \begin{enumerate}
+            \item Test both rates for unit roots (expect $I(1)$)
+            \item Test for cointegration (expect $r = 1$)
+            \item Estimate VECM
+            \item Test restriction $\beta = 1$ (spread is stationary)
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Interest Rate VECM Results}
+    \begin{block}{Typical Findings}
+        \begin{itemize}
+            \item Both rates are $I(1)$
+            \item One cointegrating relationship found
+            \item Cointegrating vector close to $(1, -1)$: spread is stationary
+            \item Short rate adjusts to long rate (not vice versa)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{VECM Equations (stylized)}
+        \begin{align*}
+            \Delta r_t &= 0.02 - 0.15(r_{t-1} - R_{t-1}) + \text{lags} + \varepsilon_{1t} \\
+            \Delta R_t &= 0.01 - 0.02(r_{t-1} - R_{t-1}) + \text{lags} + \varepsilon_{2t}
+        \end{align*}
+
+        \begin{itemize}
+            \item Short rate adjusts faster ($\alpha_1 = -0.15$)
+            \item Long rate nearly weakly exogenous ($\alpha_2 \approx 0$)
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+\section{Summary}
+%=============================================================================
+
+\begin{frame}{Key Takeaways}
+    \begin{block}{Main Concepts}
+        \begin{itemize}
+            \item \textbf{Cointegration}: $I(1)$ variables with stationary linear combination
+            \item \textbf{Spurious regression}: High $R^2$ with unrelated $I(1)$ variables
+            \item \textbf{Error correction}: Adjustment toward long-run equilibrium
+            \item \textbf{VECM}: VAR with error correction terms for cointegrated systems
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Testing Methods}
+        \begin{itemize}
+            \item \textbf{Engle-Granger}: Simple, but only one cointegrating vector
+            \item \textbf{Johansen}: Multiple vectors, more powerful, MLE-based
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Remember}
+        Cointegration tests have low power in small samples. Economic theory should guide specification. Always check diagnostics!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{What's Next?}
+    \begin{block}{Extensions and Related Topics}
+        \begin{itemize}
+            \item \textbf{Structural VECM}: Identifying structural shocks
+            \item \textbf{Threshold cointegration}: Nonlinear adjustment
+            \item \textbf{Panel cointegration}: Multiple cross-sections
+            \item \textbf{Fractional cointegration}: Long memory
+            \item \textbf{Time-varying cointegration}: Regime changes
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \Large\textcolor{MainBlue}{Questions?}
+    \end{center}
+\end{frame}
+
+%=============================================================================
+\section{Quiz}
+%=============================================================================
+
+\begin{frame}{Quick Quiz}
+    \begin{enumerate}
+        \item What does it mean for two $I(1)$ variables to be cointegrated?
+
+        \vspace{0.3cm}
+
+        \item What is the ``spurious regression'' problem?
+
+        \vspace{0.3cm}
+
+        \item In a VECM, what do the $\alpha$ coefficients represent?
+
+        \vspace{0.3cm}
+
+        \item What is the main advantage of Johansen over Engle-Granger?
+
+        \vspace{0.3cm}
+
+        \item If $\alpha_i = 0$ for variable $Y_i$, what does this imply?
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz Answers}
+    {\small
+    \begin{enumerate}
+        \item \textbf{Cointegration}: A linear combination of the variables is $I(0)$ (stationary). They share a common stochastic trend.
+
+        \vspace{0.2cm}
+
+        \item \textbf{Spurious regression}: Regressing one $I(1)$ variable on another unrelated $I(1)$ variable gives high $R^2$ and significant coefficients even though there's no true relationship.
+
+        \vspace{0.2cm}
+
+        \item \textbf{$\alpha$ coefficients}: Speed of adjustment---how quickly each variable responds to deviations from long-run equilibrium.
+
+        \vspace{0.2cm}
+
+        \item \textbf{Johansen advantage}: Can test for multiple cointegrating relationships, uses MLE (more efficient), doesn't require choosing dependent variable.
+
+        \vspace{0.2cm}
+
+        \item \textbf{$\alpha_i = 0$}: Variable $Y_i$ is weakly exogenous---it doesn't respond to disequilibrium. Other variables do all the adjusting.
+    \end{enumerate}
+    }
+\end{frame}
+
+\end{document}
