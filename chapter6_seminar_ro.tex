@@ -1,4 +1,4 @@
-% Capitolul 6: Seminar - Cointegrare și VECM
+% Capitolul 6: Seminar - Modele VAR și Cauzalitate Granger
 % Teste, Probleme Practice și Discuții
 % Program de licență, Academia de Studii Economice din București
 
@@ -84,15 +84,11 @@
 \newcommand{\bepsilon}{\boldsymbol{\varepsilon}}
 \newcommand{\bvarepsilon}{\boldsymbol{\varepsilon}}
 \newcommand{\bc}{\mathbf{c}}
-\newcommand{\bPi}{\boldsymbol{\Pi}}
-\newcommand{\balpha}{\boldsymbol{\alpha}}
-\newcommand{\bbeta}{\boldsymbol{\beta}}
-\newcommand{\bGamma}{\boldsymbol{\Gamma}}
 
 %=============================================================================
 % TITLE INFORMATION
 %=============================================================================
-\title[Capitolul 6: Seminar]{Capitolul 6: Seminar --- Cointegrare \& VECM}
+\title[Capitolul 6: Seminar]{Capitolul 6: Seminar --- VAR \& Cauzalitate Granger}
 \subtitle{Program de licență, Facultatea de Cibernetică, Statistică și Informatică Economică, Academia de Studii Economice din București}
 \author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
 \institute{Academia de Studii Economice din București}
@@ -119,7 +115,7 @@
     \vfill
     \begin{center}
         {\Large\textcolor{MediumGray}{Analiza și Prognoza Seriilor de Timp}}\\[0.3cm]
-        {\Huge\textbf{\textcolor{MainBlue}{Capitolul 6: Cointegrare \& VECM}}}\\[0.5cm]
+        {\Huge\textbf{\textcolor{MainBlue}{Capitolul 6: VAR \& Cauzalitate Granger}}}\\[0.5cm]
         {\Large\textcolor{IDAred}{Seminar}}
     \end{center}
     \vfill
@@ -156,18 +152,18 @@
 %=============================================================================
 \section{Test de Recapitulare}
 
-\begin{frame}{Test 1: Definiția Cointegrării}
+\begin{frame}{Test 1: Definiția VAR}
     \begin{alertblock}{Întrebare}
-        Două variabile I(1), $X_t$ și $Y_t$, sunt cointegrate dacă:
+        Într-un model VAR(2) cu 3 variabile, câte matrice de coeficienți $\bA_i$ există?
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Ambele sunt staționare
-        \item Suma lor este I(2)
-        \item O combinație liniară a lor este I(0)
-        \item Au aceeași medie
+        \item 2
+        \item 3
+        \item 6
+        \item 9
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -175,29 +171,31 @@
 \end{frame}
 
 \begin{frame}{Test 1: Răspuns}
-    \begin{exampleblock}{Răspuns: C -- O combinație liniară este I(0)}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.5\textheight, keepaspectratio]{charts/ch6_quiz1_cointegration.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Cheie}: $Y_t - \beta X_t \sim I(0)$ înseamnă că seriile au un trend stochastic comun. Combinația liniară (spread-ul) este staționară chiar dacă ambele serii sunt nestaționare.
-        }
+    \begin{exampleblock}{Răspuns: A -- 2 matrice de coeficienți}
+        \textbf{Modelul VAR($p$)}: $\bY_t = \bc + \bA_1\bY_{t-1} + \bA_2\bY_{t-2} + \cdots + \bA_p\bY_{t-p} + \bvarepsilon_t$
+
+        \vspace{0.3cm}
+        \textbf{VAR(2) cu $K=3$}:
+        \[
+        \begin{pmatrix} Y_{1t} \\ Y_{2t} \\ Y_{3t} \end{pmatrix} = \bc + \underbrace{\bA_1}_{3\times 3}\begin{pmatrix} Y_{1,t-1} \\ Y_{2,t-1} \\ Y_{3,t-1} \end{pmatrix} + \underbrace{\bA_2}_{3\times 3}\begin{pmatrix} Y_{1,t-2} \\ Y_{2,t-2} \\ Y_{3,t-2} \end{pmatrix} + \bvarepsilon_t
+        \]
+
+        \textbf{Cheie}: $p$ = numărul de lag-uri = numărul de matrice
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 2: Regresia Falsă}
+\begin{frame}{Test 2: Numărul de Parametri}
     \begin{alertblock}{Întrebare}
-        Când regresăm un mers aleator pe alt mers aleator independent, de obicei obținem:
+        Un VAR(2) cu $K=3$ variabile (incluzând constantele) are câți parametri de estimat per ecuație?
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item $R^2$ mic și coeficienți nesemnificativi
-        \item $R^2$ mare și coeficienți semnificativi (fals!)
-        \item Coeficienți zero
-        \item Rezultate nedefinite
+        \item 3
+        \item 6
+        \item 7
+        \item 9
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -205,29 +203,29 @@
 \end{frame}
 
 \begin{frame}{Test 2: Răspuns}
-    \begin{exampleblock}{Răspuns: B -- $R^2$ mare și coeficienți semnificativi (fals!)}
+    \begin{exampleblock}{Răspuns: C -- 7 parametri per ecuație}
         \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.5\textheight, keepaspectratio]{charts/ch6_quiz2_spurious.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{charts/sem5_var_parameters.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
-        \textbf{Granger-Newbold (1974)}: Regresarea seriilor I(1) nerelaționate dă rezultate înșelătoare. Regulă: Dacă $R^2 > DW$, suspectați regresie falsă!
+        \textbf{Formula}: Per ecuație = $1 + K \times p = 1 + 3 \times 2 = 7$. \textbf{Total}: $K(1 + Kp) = 3(1 + 6) = 21$ parametri
         }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 3: Testul Engle-Granger}
+\begin{frame}{Test 3: Cauzalitate Granger}
     \begin{alertblock}{Întrebare}
-        În metoda Engle-Granger în doi pași, ce testăm în pasul 2?
+        ``$X$ cauzează Granger $Y$'' înseamnă:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Dacă variabilele originale sunt staționare
-        \item Dacă reziduurile regresiei au rădăcină unitară
-        \item Dacă coeficienții sunt semnificativi
-        \item Dacă $R^2$ este suficient de mare
+        \item $X$ este cauza economică a lui $Y$
+        \item Trecutul lui $X$ ajută la predicția lui $Y$
+        \item $X$ și $Y$ sunt corelate contemporan
+        \item $X$ crește întotdeauna când $Y$ crește
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -235,33 +233,29 @@
 \end{frame}
 
 \begin{frame}{Test 3: Răspuns}
-    \begin{exampleblock}{Răspuns: B -- Dacă reziduurile au rădăcină unitară}
-        \textbf{Pasul 1}: Rulăm OLS: $Y_t = \alpha + \beta X_t + e_t$, salvăm reziduurile $\hat{e}_t$
-
-        \vspace{0.2cm}
-        \textbf{Pasul 2}: Test ADF pe reziduuri: $\Delta \hat{e}_t = \rho \hat{e}_{t-1} + \ldots$
-        \begin{itemize}
-            \item $H_0$: $\rho = 0$ (rădăcină unitară $\Rightarrow$ fără cointegrare)
-            \item $H_1$: $\rho < 0$ (staționar $\Rightarrow$ cointegrare!)
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Important}: Folosiți valorile critice Engle-Granger, nu ADF standard!
+    \begin{exampleblock}{Răspuns: B -- Trecutul lui $X$ ajută la predicția lui $Y$}
+        \begin{center}
+            \includegraphics[width=0.9\textwidth, height=0.55\textheight, keepaspectratio]{charts/sem5_granger_diagram.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Cheie}: Relație predictivă, NU cauzalitate adevărată!
+        }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 4: Avantajul Testului Johansen}
+\begin{frame}{Test 4: Testul de Cauzalitate Granger}
     \begin{alertblock}{Întrebare}
-        Principalul avantaj al testului Johansen față de Engle-Granger este:
+        Pentru a testa dacă $Y_2$ cauzează Granger $Y_1$ într-un VAR(p), testăm:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Este mai simplu de calculat
-        \item Poate detecta relații de cointegrare multiple
-        \item Nu necesită date
-        \item Găsește întotdeauna cointegrare
+        \item Toți coeficienții din ecuația lui $Y_1$ sunt egali cu zero
+        \item Coeficienții pe $Y_2$ întârziat din ecuația lui $Y_1$ sunt egali cu zero
+        \item Coeficienții pe $Y_1$ întârziat din ecuația lui $Y_2$ sunt egali cu zero
+        \item Covarianța erorilor este egală cu zero
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -269,34 +263,36 @@
 \end{frame}
 
 \begin{frame}{Test 4: Răspuns}
-    \begin{exampleblock}{Răspuns: B -- Poate detecta relații de cointegrare multiple}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{charts/ch6_quiz4_johansen.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Avantaje Johansen}:
+    \begin{exampleblock}{Răspuns: B -- Coeficienții pe $Y_2$ întârziat din ecuația lui $Y_1$ = 0}
+        \textbf{Ipoteza nulă}: $H_0: a_{12}^{(1)} = a_{12}^{(2)} = \cdots = a_{12}^{(p)} = 0$
+
+        \vspace{0.2cm}
+        \textbf{Statistica de test}: Test Wald sau F cu $p$ restricții
+
+        \vspace{0.2cm}
+        \textbf{Interpretare}:
         \begin{itemize}
-            \item Testează pentru $r = 0, 1, 2, \ldots, k-1$ vectori de cointegrare
-            \item Verosimilitate maximă (mai eficient)
-            \item Nu necesită alegerea variabilei dependente
+            \item Respingem $H_0$: $Y_2$ cauzează Granger $Y_1$
+            \item Nu respingem: Fără evidență de relație predictivă
         \end{itemize}
-        }
+
+        \vspace{0.2cm}
+        \textbf{Notă}: Testați $Y_1 \to Y_2$ separat (coeficienți diferiți în ecuația lui $Y_2$)
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 5: Rangul Matricei $\bPi$}
+\begin{frame}{Test 5: Stabilitatea VAR}
     \begin{alertblock}{Întrebare}
-        Într-un VECM cu $k=3$ variabile, dacă $\text{rang}(\bPi) = 2$, aceasta înseamnă:
+        Un model VAR(1) este stabil (staționar) dacă:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Fără cointegrare
-        \item O relație de cointegrare
-        \item Două relații de cointegrare
-        \item Toate variabilele sunt staționare
+        \item Toate elementele diagonale ale lui $\bA_1$ sunt mai mici decât 1
+        \item Determinantul lui $\bA_1$ este mai mic decât 1
+        \item Toate valorile proprii ale lui $\bA_1$ sunt mai mici decât 1 în valoare absolută
+        \item Urma lui $\bA_1$ este egală cu zero
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -304,35 +300,29 @@
 \end{frame}
 
 \begin{frame}{Test 5: Răspuns}
-    \begin{exampleblock}{Răspuns: C -- Două relații de cointegrare}
-        \textbf{Interpretarea rangului} pentru $k$ variabile:
-        \begin{itemize}
-            \item $\text{rang}(\bPi) = 0$: Fără cointegrare (folosiți VAR în diferențe)
-            \item $0 < \text{rang}(\bPi) = r < k$: $r$ vectori de cointegrare (folosiți VECM)
-            \item $\text{rang}(\bPi) = k$: Toate variabilele sunt I(0) (folosiți VAR în niveluri)
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Cu $k=3$ și $r=2$}:
-        \begin{itemize}
-            \item Două relații de echilibru
-            \item Doar $k - r = 1$ trend stochastic comun
-        \end{itemize}
+    \begin{exampleblock}{Răspuns: C -- Toate valorile proprii ale lui $\bA_1$ în interiorul cercului unitate}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_var_stability.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Stabil}: Toate $|\lambda_i| < 1$ (în interiorul cercului unitate) $\Rightarrow$ șocurile dispar în timp
+        }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 6: Structura VECM}
+\begin{frame}{Test 6: Funcții de Răspuns la Impuls}
     \begin{alertblock}{Întrebare}
-        În ecuația VECM $\Delta \bY_t = \bc + \balpha\bbeta'\bY_{t-1} + \ldots$, ce reprezintă $\balpha$?
+        O funcție de răspuns la impuls arată:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Vectorii de cointegrare
-        \item Coeficienții de ajustare (încărcare)
-        \item Dinamica pe termen scurt
-        \item Varianța erorilor
+        \item Corelația între două variabile
+        \item Efectul unui șoc la o variabilă asupra tuturor variabilelor în timp
+        \item Acuratețea prognozei modelului
+        \item Valorile-p ale testelor de coeficienți
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -340,33 +330,29 @@
 \end{frame}
 
 \begin{frame}{Test 6: Răspuns}
-    \begin{exampleblock}{Răspuns: B -- Coeficienții de ajustare (încărcare)}
+    \begin{exampleblock}{Răspuns: B -- Efectul șocului asupra tuturor variabilelor în timp}
         \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{charts/ch6_quiz6_adjustment.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_irf_example.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
-        \textbf{$\bPi = \balpha\bbeta'$}:
-        \begin{itemize}
-            \item $\bbeta$ = vectorii de cointegrare (definesc echilibrul)
-            \item $\balpha$ = vitezele de ajustare (cât de repede corectează fiecare variabilă)
-        \end{itemize}
+        \textbf{IRF}$_{ij}(h)$: Răspunsul variabilei $i$ la orizontul $h$ la șocul în variabila $j$
         }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 7: Termenul de Corecție a Erorilor}
+\begin{frame}{Test 7: Selectarea Ordinului Lag}
     \begin{alertblock}{Întrebare}
-        Dacă $Y_t - \beta X_t$ este relația de cointegrare și acest termen este pozitiv, ce se întâmplă?
+        Care criteriu selectează de obicei cel mai parsimonios model VAR?
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item $Y$ este deasupra echilibrului; $Y$ ar trebui să scadă (dacă $\alpha < 0$)
-        \item $Y$ este sub echilibru; $Y$ ar trebui să crească
-        \item Nimic, corecția erorilor nu afectează nivelurile
-        \item Ambele variabile cresc
+        \item AIC (Criteriul Informațional Akaike)
+        \item BIC (Criteriul Informațional Bayesian)
+        \item FPE (Eroarea Finală de Predicție)
+        \item $R^2$ ajustat
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -374,33 +360,37 @@
 \end{frame}
 
 \begin{frame}{Test 7: Răspuns}
-    \begin{exampleblock}{Răspuns: A -- $Y$ deasupra echilibrului; scade dacă $\alpha < 0$}
-        \textbf{Mecanismul de corecție a erorilor}:
-        $$\Delta Y_t = \alpha(Y_{t-1} - \beta X_{t-1}) + \ldots$$
-
+    \begin{exampleblock}{Răspuns: B -- BIC (Criteriul Informațional Bayesian)}
+        \textbf{Comparația penalizărilor} (pentru $k$ parametri, $n$ observații):
         \begin{itemize}
-            \item Dacă $Y_{t-1} - \beta X_{t-1} > 0$: $Y$ este ``prea sus''
-            \item Cu $\alpha < 0$: $\Delta Y_t < 0$ (Y scade spre echilibru)
-            \item Aceasta este ``corecția erorilor'' care trage $Y$ înapoi
+            \item AIC: $-2\ln L + 2k$
+            \item BIC: $-2\ln L + k\ln n$
         \end{itemize}
 
+        Deoarece $\ln n > 2$ pentru $n > 8$, BIC penalizează complexitatea mai puternic
+
         \vspace{0.2cm}
-        \textbf{Convenție de semn}: $\alpha$ ar trebui să fie negativ pentru ca variabila dependentă să se miște înapoi spre echilibru.
+        \textbf{Îndrumări practice}:
+        \begin{itemize}
+            \item Prognoză: AIC poate performa mai bine
+            \item Inferență/parsimonie: BIC preferat
+            \item Eșantioane mari: BIC consistent, AIC tinde să supraajusteze
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 8: Exogenitate Slabă}
+\begin{frame}{Test 8: Interpretarea Cauzalității Granger}
     \begin{alertblock}{Întrebare}
-        Dacă $\alpha_2 = 0$ într-un VECM bivariat, aceasta înseamnă:
+        ``$X$ cauzează Granger $Y$'' înseamnă:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Nu există cointegrare
-        \item Variabila 2 nu se ajustează la dezechilibru (slab exogenă)
-        \item Variabila 1 nu se ajustează
-        \item Ambele variabile sunt staționare
+        \item $X$ este cauza adevărată a lui $Y$
+        \item Valorile trecute ale lui $X$ ajută la predicția lui $Y$ dincolo de trecutul propriu al lui $Y$
+        \item $X$ și $Y$ sunt corelate
+        \item $Y$ depinde doar de $X$
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -408,34 +398,23 @@
 \end{frame}
 
 \begin{frame}{Test 8: Răspuns}
-    \begin{exampleblock}{Răspuns: B -- Variabila 2 este slab exogenă}
-        \textbf{Exogenitate slabă}: Variabila nu răspunde la dezechilibru.
-
-        \vspace{0.2cm}
-        \textbf{Exemplu: Ratele dobânzii}
-        \begin{itemize}
-            \item Rata pe termen lung ($R_t$) adesea slab exogenă ($\alpha_R \approx 0$)
-            \item Rata pe termen scurt ($r_t$) se ajustează la spread ($\alpha_r < 0$)
-            \item Interpretare: Banca centrală ajustează rata scurtă pentru a menține structura termenelor
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Implicație}: Putem estima o singură ecuație pentru variabila care se ajustează.
+    \begin{exampleblock}{Răspuns: B}
+        Cauzalitatea Granger se referă la conținutul \textbf{predictiv}, nu la cauzalitatea adevărată. $X$ cauzează Granger $Y$ dacă termenii lui $X$ întârziați sunt semnificativi conjunct în ecuația lui $Y$, după controlul pentru $Y$ întârziat.
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 9: Testul Trace}
+\begin{frame}{Test 9: Descompunerea Varianței Erorii de Prognoză}
     \begin{alertblock}{Întrebare}
-        Testul trace Johansen cu $H_0: r \leq 1$ vs $H_1: r > 1$ testează dacă:
+        FEVD (Descompunerea Varianței Erorii de Prognoză) ne spune:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Există exact un vector de cointegrare
-        \item Există cel mult un vector de cointegrare
-        \item Există mai mult de un vector de cointegrare
-        \item Toate valorile proprii sunt zero
+        \item Corelația între variabile
+        \item Ce proporție din varianța erorii de prognoză vine din fiecare șoc
+        \item Orizontul optim de prognoză
+        \item Ce variabile să includem în model
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -443,34 +422,29 @@
 \end{frame}
 
 \begin{frame}{Test 9: Răspuns}
-    \begin{exampleblock}{Răspuns: B/C -- $H_0$: cel mult 1; $H_1$: mai mult de 1}
-        \textbf{Procedura de testare secvențială}:
-        \begin{enumerate}
-            \item Testăm $H_0: r = 0$ vs $H_1: r > 0$
-            \item Dacă respingem, testăm $H_0: r \leq 1$ vs $H_1: r > 1$
-            \item Continuăm până nu mai respingem...
-        \end{enumerate}
-
-        \vspace{0.2cm}
-        \textbf{Statistica trace}:
-        $$\lambda_{\text{trace}}(r) = -T \sum_{i=r+1}^{k} \ln(1 - \hat{\lambda}_i)$$
-
-        Respingem $H_0$ dacă statistica trace $>$ valoarea critică.
+    \begin{exampleblock}{Răspuns: B -- Proporția varianței erorii de prognoză din fiecare șoc}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_fevd_example.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{FEVD}: Arată cât din incertitudinea prognozei vine din fiecare șoc la diferite orizonturi
+        }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 10: VECM vs VAR în Diferențe}
+\begin{frame}{Test 10: VAR Structural vs Forma Redusă}
     \begin{alertblock}{Întrebare}
-        Dacă variabilele sunt cointegrate, folosirea VAR în diferențe prime în loc de VECM:
+        Diferența dintre VAR structural (SVAR) și VAR forma redusă este:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Dă rezultate identice
-        \item Este mai eficientă
-        \item Pierde informația pe termen lung (model greșit specificat)
-        \item Este abordarea preferată
+        \item SVAR are mai multe variabile
+        \item SVAR permite efecte contemporane între variabile
+        \item SVAR folosește metode de estimare diferite
+        \item Nu există diferență
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -478,24 +452,116 @@
 \end{frame}
 
 \begin{frame}{Test 10: Răspuns}
-    \begin{exampleblock}{Răspuns: C -- Pierde informația pe termen lung}
-        \textbf{Teorema Reprezentării Granger}: Dacă există cointegrare, reprezentarea VECM există și trebuie folosită.
+    \begin{exampleblock}{Răspuns: B}
+        VAR forma redusă: șocurile sunt corelate, fără efecte contemporane în ecuații. SVAR: impune restricții de identificare pentru a recupera șocuri structurale cu interpretare economică (de ex., șoc de politică monetară).
+    \end{exampleblock}
+\end{frame}
 
-        \vspace{0.2cm}
+\begin{frame}{Test 11: Descompunerea Cholesky}
+    \begin{alertblock}{Întrebare}
+        Ordonarea Cholesky în analiza IRF presupune:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Toate variabilele sunt la fel de importante
+        \item Variabilele ordonate primele afectează contemporan variabilele de mai târziu, nu invers
+        \item Șocurile sunt necorelate
+        \item Nu sunt necesare restricții
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Răspunsul pe slide-ul următor...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Test 11: Răspuns}
+    \begin{exampleblock}{Răspuns: B -- Variabilele ordonate primele afectează contemporan pe cele de mai târziu}
         \begin{center}
-        \begin{tabular}{lcc}
-            \toprule
-            & \textbf{VAR($\Delta$)} & \textbf{VECM} \\
-            \midrule
-            Echilibru pe termen lung & Pierdut & Păstrat \\
-            Corecția erorilor & Nu & Da \\
-            Prognoze (termen lung) & Slabe & Mai bune \\
-            \bottomrule
-        \end{tabular}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_cholesky_ordering.pdf}
         \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Cholesky}: Structură recursivă. Ordonarea contează -- justificați prin teoria economică (cel mai exogen primul)!
+        }
+    \end{exampleblock}
+\end{frame}
 
-        \vspace{0.2cm}
-        \textbf{Concluzie}: Diferențierea elimină relația pe termen lung pe care o reprezintă cointegrarea!
+\begin{frame}{Test 12: Diagnosticele Reziduurilor VAR}
+    \begin{alertblock}{Întrebare}
+        Într-un VAR bine specificat, reziduurile ar trebui să fie:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Autocorelate dar homoscedastice
+        \item Zgomot alb (fără autocorelație)
+        \item Doar distribuite normal
+        \item Corelate între ecuații
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Răspunsul pe slide-ul următor...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Test 12: Răspuns}
+    \begin{exampleblock}{Răspuns: B -- Zgomot alb (fără autocorelație)}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_var_diagnostics.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Diagnostice}: Reziduurile ar trebui să fie zgomot alb. Folosiți testul Portmanteau/LM. Corelația între ecuații este permisă ($\Sigma_u$).
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Test 13: Cointegrare și VAR}
+    \begin{alertblock}{Întrebare}
+        Dacă variabilele sunt I(1) și cointegrate, ar trebui să folosiți:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item VAR în niveluri
+        \item VAR în prime diferențe
+        \item Model cu Corecție a Erorilor Vectoriale (VECM)
+        \item Modele ARIMA univariate
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Răspunsul pe slide-ul următor...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Test 13: Răspuns}
+    \begin{exampleblock}{Răspuns: C}
+        Cu cointegrare, VAR în diferențe pierde informația pe termen lung, în timp ce VAR în niveluri poate fi ineficient. VECM încorporează atât dinamica pe termen scurt cât și relațiile de echilibru pe termen lung prin termenul de corecție a erorilor.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Test 14: Cauzalitate Instantanee}
+    \begin{alertblock}{Întrebare}
+        Cauzalitatea instantanee diferă de cauzalitatea Granger deoarece testează:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Doar relații întârziate
+        \item Corelația contemporană a reziduurilor
+        \item Relații pe termen lung
+        \item Stabilitatea modelului
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Răspunsul pe slide-ul următor...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Test 14: Răspuns}
+    \begin{exampleblock}{Răspuns: B}
+        Cauzalitatea instantanee testează dacă șocurile la $X$ și $Y$ sunt corelate în aceeași perioadă (corelația reziduurilor VAR). Cauzalitatea Granger testează dacă valorile \textit{întârziate} ajută la predicție.
     \end{exampleblock}
 \end{frame}
 
@@ -509,12 +575,12 @@
 
     \vspace{0.3cm}
     \begin{enumerate}
-        \item Cointegrarea necesită ca toate variabilele să fie I(1).
-        \item Vectorul de cointegrare este unic.
-        \item Regresia falsă are statistică Durbin-Watson mică.
-        \item În VECM, ambii coeficienți $\alpha$ trebuie să fie nenuli.
-        \item Testul Johansen necesită alegerea unei variabile dependente.
-        \item Numărul de trenduri comune = $k - r$.
+        \item Modelele VAR tratează toate variabilele ca endogene.
+        \item Cauzalitatea Granger dovedește cauzalitatea economică adevărată.
+        \item Un VAR stabil are întotdeauna valorile proprii în interiorul cercului unitate.
+        \item Rezultatele FEVD depind de ordonarea variabilelor.
+        \item VAR poate fi estimat prin OLS ecuație cu ecuație.
+        \item Răspunsurile la impuls dispar în cele din urmă într-un VAR stabil.
     \end{enumerate}
 
     \vspace{0.3cm}
@@ -524,29 +590,29 @@
 \begin{frame}{Adevărat/Fals: Soluții}
     {\small
     \begin{enumerate}\setlength{\itemsep}{1pt}
-        \item Cointegrarea necesită ca toate variabilele să fie I(1). \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
+        \item Modelele VAR tratează toate variabilele ca endogene. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
 
-        {\footnotesize \textcolor{MediumGray}{Cazul standard CI(1,1): toate variabilele I(1), combinația liniară I(0).}}
+        {\footnotesize \textcolor{MediumGray}{Fiecare variabilă este regresată pe lag-urile tuturor variabilelor, inclusiv pe ea însăși.}}
 
-        \item Vectorul de cointegrare este unic. \hfill \textcolor{Crimson}{\textbf{FALS}}
+        \item Cauzalitatea Granger dovedește cauzalitatea economică adevărată. \hfill \textcolor{Crimson}{\textbf{FALS}}
 
-        {\footnotesize \textcolor{MediumGray}{Unic doar până la înmulțirea cu un scalar. De obicei normalizat ($\beta_1 = 1$).}}
+        {\footnotesize \textcolor{MediumGray}{Arată doar conținut predictiv, nu cauzalitate structurală.}}
 
-        \item Regresia falsă are statistică Durbin-Watson mică. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
+        \item Un VAR stabil are întotdeauna valorile proprii în interiorul cercului unitate. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
 
-        {\footnotesize \textcolor{MediumGray}{$DW \approx 0$ indică reziduuri puternic autocorelate (nestaționare).}}
+        {\footnotesize \textcolor{MediumGray}{Condiția de stabilitate: toate valorile proprii ale matricei companion satisfac $|\lambda_i| < 1$.}}
 
-        \item În VECM, ambii coeficienți $\alpha$ trebuie să fie nenuli. \hfill \textcolor{Crimson}{\textbf{FALS}}
+        \item Rezultatele FEVD depind de ordonarea variabilelor. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
 
-        {\footnotesize \textcolor{MediumGray}{Unul poate fi zero (exogenitate slabă). Cel puțin unul trebuie să fie nenul.}}
+        {\footnotesize \textcolor{MediumGray}{Sub identificarea Cholesky, ordonări diferite dau rezultate diferite.}}
 
-        \item Testul Johansen necesită alegerea unei variabile dependente. \hfill \textcolor{Crimson}{\textbf{FALS}}
+        \item VAR poate fi estimat prin OLS ecuație cu ecuație. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
 
-        {\footnotesize \textcolor{MediumGray}{Asta e pentru Engle-Granger. Johansen tratează toate variabilele simetric.}}
+        {\footnotesize \textcolor{MediumGray}{Cu aceiași regresori în fiecare ecuație, OLS = GLS = ML (sub normalitate).}}
 
-        \item Numărul de trenduri comune = $k - r$. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
+        \item Răspunsurile la impuls dispar în cele din urmă într-un VAR stabil. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
 
-        {\footnotesize \textcolor{MediumGray}{$k$ variabile, $r$ relații de cointegrare $\Rightarrow$ $k-r$ trenduri stochastice comune.}}
+        {\footnotesize \textcolor{MediumGray}{Stabilitatea asigură că șocurile au efecte tranzitorii; IRF $\to 0$ când $h \to \infty$.}}
     \end{enumerate}
     }
 \end{frame}
@@ -556,12 +622,9 @@
 %=============================================================================
 \section{Probleme Practice}
 
-\begin{frame}{Problema 1: Identificarea Cointegrării}
+\begin{frame}{Problema 1: Scrierea Ecuațiilor VAR}
     \begin{block}{Exercițiu}
-        Aveți date trimestriale pentru consum ($C_t$) și venit ($Y_t$). Testele ADF arată că ambele sunt I(1). Regresia $C_t = 0.85 Y_t + e_t$ dă reziduuri cu statistica ADF $= -3.92$. Valoarea critică Engle-Granger la 5\% pentru 2 variabile este $-3.34$.
-
-        \vspace{0.2cm}
-        Sunt $C_t$ și $Y_t$ cointegrate?
+        Scrieți cele două ecuații pentru un model VAR(1) bivariat cu variabilele $Y_t$ (creșterea PIB) și $X_t$ (inflația).
     \end{block}
 
     \vspace{0.5cm}
@@ -569,33 +632,23 @@
 \end{frame}
 
 \begin{frame}{Problema 1: Soluție}
-    \begin{exampleblock}{Soluție: Da, sunt cointegrate}
-        \textbf{Test}: $H_0$: Fără cointegrare (reziduurile au rădăcină unitară)
+    \begin{exampleblock}{Soluție}
+        \begin{align*}
+            Y_t &= c_1 + a_{11} Y_{t-1} + a_{12} X_{t-1} + \varepsilon_{1t} \\[0.2cm]
+            X_t &= c_2 + a_{21} Y_{t-1} + a_{22} X_{t-1} + \varepsilon_{2t}
+        \end{align*}
 
-        \vspace{0.2cm}
-        \textbf{Statistica ADF}: $-3.92$
-
-        \textbf{Valoarea critică (5\%)}: $-3.34$
-
-        \vspace{0.2cm}
-        Deoarece $-3.92 < -3.34$, \textbf{respingem} $H_0$ la nivelul de 5\%.
-
-        \vspace{0.2cm}
-        \textbf{Concluzie}: Reziduurile sunt staționare $\Rightarrow$ Există cointegrare!
-
-        \vspace{0.2cm}
-        \textbf{Interpretare}: Consumul și venitul au un trend comun. Vectorul de cointegrare este aproximativ $(1, -0.85)$, consistent cu ipoteza venitului permanent.
+        \textbf{Interpretare}:
+        \begin{itemize}
+            \item $a_{12}$: Efectul inflației trecute asupra creșterii PIB curente
+            \item $a_{21}$: Efectul creșterii PIB trecute asupra inflației curente
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Problema 2: Interpretarea VECM}
+\begin{frame}{Problema 2: Numărarea Parametrilor}
     \begin{block}{Exercițiu}
-        Un VECM pentru rata pe termen scurt ($r_t$) și rata pe termen lung ($R_t$) dă:
-        \begin{align*}
-            \Delta r_t &= 0.01 - 0.25(r_{t-1} - R_{t-1}) + \ldots \\
-            \Delta R_t &= 0.005 - 0.02(r_{t-1} - R_{t-1}) + \ldots
-        \end{align*}
-        Interpretați coeficienții de ajustare.
+        Câți parametri totali trebuie estimați într-un VAR(3) cu $K=4$ variabile (incluzând constantele)?
     \end{block}
 
     \vspace{0.5cm}
@@ -604,44 +657,30 @@
 
 \begin{frame}{Problema 2: Soluție}
     \begin{exampleblock}{Soluție}
-        \textbf{Termenul de corecție a erorilor}: $(r_{t-1} - R_{t-1})$ = spread-ul
+        Per ecuație: $1 + K \times p = 1 + 4 \times 3 = 13$ parametri
 
         \vspace{0.2cm}
-        \textbf{Rata pe termen scurt} ($\alpha_r = -0.25$):
-        \begin{itemize}
-            \item Când spread-ul este pozitiv (scurt $>$ lung), rata scurtă scade
-            \item 25\% din dezechilibru este corectat per perioadă
-            \item Rata scurtă se ajustează activ
-        \end{itemize}
+        Total pentru $K=4$ ecuații: $4 \times 13 = \mathbf{52}$ parametri
 
         \vspace{0.2cm}
-        \textbf{Rata pe termen lung} ($\alpha_R = -0.02$):
-        \begin{itemize}
-            \item Coeficient de ajustare foarte mic
-            \item Rata lungă este aproape slab exogenă
-            \item Condusă mai mult de așteptări, nu de corecția erorilor
-        \end{itemize}
+        Plus matricea de covarianță $\boldsymbol{\Sigma}$: $K(K+1)/2 = 4 \times 5 / 2 = 10$ elemente unice
 
         \vspace{0.2cm}
-        \textbf{Interpretare economică}: Banca centrală (rata scurtă) se ajustează pentru a menține curba randamentelor.
+        \textbf{Total general: 62 parametri}
+
+        \vspace{0.2cm}
+        \textit{Acesta este motivul pentru care VAR-urile pot fi ``supraparametrizate'' cu date limitate!}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Problema 3: Rezultatele Testului Johansen}
+\begin{frame}{Problema 3: Interpretarea Cauzalității Granger}
     \begin{block}{Exercițiu}
-        Testul trace Johansen pentru 3 variabile dă:
-        \begin{center}
-        \begin{tabular}{lcc}
-            \toprule
-            $H_0$ & Stat. Trace & VC 5\% \\
-            \midrule
-            $r = 0$ & 45.2 & 29.8 \\
-            $r \leq 1$ & 18.1 & 15.5 \\
-            $r \leq 2$ & 3.2 & 3.8 \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-        Care este rangul de cointegrare?
+        Un test de cauzalitate Granger dă:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: Banii nu cauzează Granger PIB. valoare-p = 0.02
+            \item $H_0$: PIB nu cauzează Granger Banii. valoare-p = 0.35
+        \end{itemize}
+        Interpretați aceste rezultate.
     \end{block}
 
     \vspace{0.5cm}
@@ -649,24 +688,64 @@
 \end{frame}
 
 \begin{frame}{Problema 3: Soluție}
-    \begin{exampleblock}{Soluție: Rangul = 2}
-        \textbf{Testare secvențială}:
-        \begin{enumerate}
-            \item $H_0: r = 0$: $45.2 > 29.8$ $\Rightarrow$ \textbf{Respingem} (cel puțin 1)
-            \item $H_0: r \leq 1$: $18.1 > 15.5$ $\Rightarrow$ \textbf{Respingem} (cel puțin 2)
-            \item $H_0: r \leq 2$: $3.2 < 3.8$ $\Rightarrow$ \textbf{Nu respingem}
-        \end{enumerate}
-
-        \vspace{0.2cm}
-        \textbf{Concluzie}: $r = 2$ relații de cointegrare
-
-        \vspace{0.2cm}
-        \textbf{Implicații}:
-        \begin{itemize}
-            \item Două relații de echilibru între 3 variabile
-            \item Doar $3 - 2 = 1$ trend stochastic comun
-            \item Folosiți VECM cu 2 termeni de corecție a erorilor
+    \begin{exampleblock}{Soluție}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textbf{Respingem} $H_0$ la 5\%: Banii \textbf{cauzează Granger} PIB
+            \item \textbf{Nu respingem} $H_0$: PIB \textbf{nu} cauzează Granger Banii
         \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{Concluzie}: Cauzalitate unidirecțională: Bani $\rightarrow$ PIB
+
+        \vspace{0.3cm}
+        \textit{Interpretare}: Masa monetară trecută ajută la predicția creșterii PIB. Aceasta este consistentă cu punctele de vedere monetariste, dar amintiți-vă: cauzalitate Granger $\neq$ cauzalitate structurală!
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problema 4: Verificarea Stabilității}
+    \begin{block}{Exercițiu}
+        Pentru VAR(1) cu $\bA_1 = \begin{pmatrix} 0.7 & 0.2 \\ 0.1 & 0.5 \end{pmatrix}$, verificați stabilitatea.
+    \end{block}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Răspunsul pe slide-ul următor...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Problema 4: Soluție}
+    \begin{exampleblock}{Soluție}
+        Găsiți valorile proprii: $\det(\bA_1 - \lambda \mathbf{I}) = 0$
+
+        $(0.7 - \lambda)(0.5 - \lambda) - (0.2)(0.1) = 0$
+
+        $\lambda^2 - 1.2\lambda + 0.33 = 0$
+
+        $\lambda = \frac{1.2 \pm \sqrt{1.44 - 1.32}}{2} = \frac{1.2 \pm 0.346}{2}$
+
+        $\lambda_1 = 0.773, \quad \lambda_2 = 0.427$
+
+        \vspace{0.3cm}
+        Ambele $|\lambda_i| < 1$ $\Rightarrow$ \textbf{Stabil!}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problema 5: Calculul IRF}
+    \begin{block}{Exercițiu}
+        Pentru VAR(1) cu $\bA = \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix}$, calculați $\boldsymbol{\Phi}_2$ (răspunsul la $h=2$).
+    \end{block}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Răspunsul pe slide-ul următor...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Problema 5: Soluție}
+    \begin{exampleblock}{Soluție}
+        $\boldsymbol{\Phi}_2 = \bA^2 = \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix} \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix}$
+
+        \vspace{0.3cm}
+        $= \begin{pmatrix} 0.25 + 0 & 0.10 + 0.12 \\ 0 + 0 & 0 + 0.36 \end{pmatrix} = \begin{pmatrix} 0.25 & 0.22 \\ 0 & 0.36 \end{pmatrix}$
+
+        \vspace{0.3cm}
+        \textbf{Interpretare}: Un șoc unitar la $Y_2$ la $t$ crește $Y_1$ cu 0.22 la $t+2$.
     \end{exampleblock}
 \end{frame}
 
@@ -675,85 +754,56 @@
 %=============================================================================
 \section{Exemple Rezolvate}
 
-\begin{frame}{Exemplu: Structura la Termen a Ratelor Dobânzii}
+\begin{frame}{Exemplu: Randamente de Acțiuni și Volum de Tranzacționare}
     {\small
-    \begin{block}{Teoria Economică}
-        Ipoteza așteptărilor: $R_t^{(n)} = \frac{1}{n}\sum_{i=0}^{n-1} E_t[r_{t+i}] + \text{primă}$
-
-        Dacă prima este constantă $\Rightarrow$ spread-ul $(R_t - r_t)$ ar trebui să fie staționar.
+    \begin{block}{Scenariu}
+        Date zilnice despre randamentele acțiunilor ($R_t$) și volumul de tranzacționare ($V_t$). Testați cauzalitatea Granger în ambele direcții.
     \end{block}
-    \begin{exampleblock}{Constatări Tipice}
+    \begin{exampleblock}{Constatări Tipice în Literatura Financiară}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ambele rate sunt I(1) (confirmat de ADF)
-            \item Testul Johansen: $r = 1$ vector de cointegrare
-            \item Vector de cointegrare $\approx (1, -1)$: spread-ul este staționar
-            \item Rata scurtă se ajustează ($\alpha_r < 0$), rata lungă slab exogenă
+            \item Randamentele adesea cauzează Granger volumul (modificările de preț declanșează tranzacționare)
+            \item Volumul uneori cauzează Granger randamentele (volumul ca indicator anticipator)
+            \item Rezultate: Adesea cauzalitate \textbf{bidirecțională} $R \leftrightarrow V$
         \end{itemize}
     \end{exampleblock}
-    \begin{block}{Implicație de Politică}
-        Banca centrală controlează rata scurtă; rata lungă este condusă de așteptări.
+    \begin{block}{Problemă Practică}
+        Randamentele acțiunilor sunt de obicei staționare, dar volumul poate necesita transformare (log sau diferențiere).
     \end{block}
     }
 \end{frame}
 
-\begin{frame}{Exemplu: Paritatea Puterii de Cumpărare (PPP)}
+\begin{frame}{Exemplu: Rate de Dobândă și Inflație}
     {\small
-    \begin{block}{Teoria PPP}
-        $e_t = p_t - p_t^*$ (log curs de schimb = diferențialul de prețuri)
-
-        Cursul real de schimb: $q_t = e_t - p_t + p_t^*$ ar trebui să fie staționar (PPP pe termen lung)
+    \begin{block}{Contextul Regulii Taylor}
+        Băncile centrale stabilesc ratele de dobândă ($i_t$) ca răspuns la inflație ($\pi_t$):
+        $i_t = r^* + \pi^* + 1.5(\pi_t - \pi^*) + 0.5(y_t - y^*)$
     \end{block}
-    \begin{exampleblock}{Provocări Empirice}
+    \begin{exampleblock}{Întrebări de Analiză VAR}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Teste rădăcină unitară: $e_t$, $p_t$, $p_t^*$ toate I(1)
-            \item Teste de cointegrare: Rezultate mixte în funcție de eșantion
-            \item Timp de înjumătățire al deviațiilor PPP: 3-5 ani (ajustare lentă)
-            \item Exogenitate slabă: Cursul de schimb adesea nu se ajustează
+            \item Inflația cauzează Granger ratele de dobândă? (Reacția băncii centrale)
+            \item Ratele de dobândă cauzează Granger inflația? (Transmisia politicii monetare)
         \end{itemize}
     \end{exampleblock}
-    \begin{alertblock}{Puzzle-ul PPP}
-        Cursul real de schimb este foarte persistent---revenirea lentă la medie este greu de explicat cu modelele standard.
-    \end{alertblock}
-    }
-\end{frame}
-
-\begin{frame}{Exemplu: Strategia Pairs Trading}
-    {\small
-    \begin{block}{Ideea}
-        Găsiți acțiuni cointegrate $\Rightarrow$ tranzacționați spread-ul staționar
+    \begin{block}{Rezultate Așteptate}
+        Cauzalitate bidirecțională: $\pi \to i$ rapid (reacția politicii), $i \to \pi$ întârziat (efectul politicii)
     \end{block}
-    \begin{exampleblock}{Pași de Implementare}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{Identificați perechile}: Testați cointegrarea (ex., Coca-Cola \& Pepsi)
-            \item \textbf{Estimați spread-ul}: $z_t = P_A - \beta P_B$
-            \item \textbf{Reguli de tranzacționare}:
-            \begin{itemize}
-                \item $z_t > \mu + 2\sigma$: Vindeți A, Cumpărați B (spread prea larg)
-                \item $z_t < \mu - 2\sigma$: Cumpărați A, Vindeți B (spread prea îngust)
-                \item Ieșiți când $z_t \approx \mu$
-            \end{itemize}
-        \end{enumerate}
-    \end{exampleblock}
-    \begin{alertblock}{Riscuri}
-        Cointegrarea se poate rupe; spread-ul poate să nu revină; costuri de tranzacție.
-    \end{alertblock}
     }
 \end{frame}
 
-\begin{frame}{Analiza Cointegrării în Python: Funcții Cheie}
+\begin{frame}{Analiza VAR în Python: Funcții Cheie}
     {\footnotesize
     \begin{block}{Biblioteci Esențiale}
-        \texttt{from statsmodels.tsa.stattools import coint, adfuller} \\
-        \texttt{from statsmodels.tsa.vector\_ar.vecm import coint\_johansen, VECM}
+        \texttt{from statsmodels.tsa.api import VAR} \\
+        \texttt{from statsmodels.tsa.stattools import grangercausalitytests}
     \end{block}
 
     \begin{block}{Flux de Lucru}
         \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item Teste rădăcină unitară: \texttt{adfuller(serie)}
-            \item Engle-Granger: \texttt{coint(y, x)} returnează stat. test \& p-value
-            \item Johansen: \texttt{coint\_johansen(data, det\_order, k\_ar\_diff)}
-            \item Estimare VECM: \texttt{model = VECM(data, k\_ar\_diff=2, coint\_rank=1)}
-            \item Rezultate: \texttt{results = model.fit()}
+            \item Creați DataFrame: \texttt{data = pd.DataFrame(\{'pib': ..., 'somaj': ...\})}
+            \item Ajustați VAR: \texttt{model = VAR(data); results = model.fit(maxlags=8, ic='aic')}
+            \item Obțineți IRF: \texttt{irf = results.irf(periods=20)}
+            \item Obțineți FEVD: \texttt{fevd = results.fevd(periods=20)}
+            \item Teste Granger: \texttt{grangercausalitytests(data[['y', 'x']], maxlag=4)}
         \end{enumerate}
     \end{block}
 
@@ -764,47 +814,147 @@
 \end{frame}
 
 %=============================================================================
-% SECTION 4: DISCUSSION TOPICS
+% SECTION 4: REAL DATA ANALYSIS
+%=============================================================================
+\section{Analiză pe Date Reale}
+
+\begin{frame}{Studiu de Caz: PIB și Șomaj}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_gdp_unemployment.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item \textbf{Sus}: Rata de creștere a PIB Real SUA (trimestrial)
+        \item \textbf{Jos}: Rata șomajului SUA
+        \item Relație negativă clară (Legea lui Okun)
+        \item Modelul VAR poate captura interacțiunile dinamice dintre aceste variabile
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Analiza Corelației Încrucișate}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_cross_correlation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Corelația încrucișată măsoară relațiile de anticipare-întârziere
+        \item Corelație negativă la lag 0: relație inversă contemporană
+        \item Model asimetric sugerează că șomajul răspunde la PIB cu întârziere
+        \item Ajută la informarea selectării ordinului lag VAR
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Vizual: Funcția de Corelație Încrucișată}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch5_def_ccf.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\small CCF măsoară corelația dintre două serii la lag-uri diferite, relevând relații de anticipare-întârziere.}
+\end{frame}
+
+\begin{frame}{Rezultate Estimare VAR}
+    {\small
+    \begin{block}{Model: VAR(2) pentru Creșterea PIB și Șomaj}
+        \begin{center}
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Ecuație} & \textbf{Variabilă} & \textbf{Coef.} & \textbf{Eroare Std.} & \textbf{t-stat} \\
+            \midrule
+            \multirow{4}{*}{$\Delta PIB_t$} & $\Delta PIB_{t-1}$ & $0.312$ & $0.087$ & $3.59$ \\
+            & $\Delta PIB_{t-2}$ & $0.145$ & $0.082$ & $1.77$ \\
+            & $U_{t-1}$ & $-0.421$ & $0.156$ & $-2.70$ \\
+            & $U_{t-2}$ & $0.198$ & $0.148$ & $1.34$ \\
+            \midrule
+            \multirow{4}{*}{$U_t$} & $\Delta PIB_{t-1}$ & $-0.087$ & $0.032$ & $-2.72$ \\
+            & $\Delta PIB_{t-2}$ & $-0.045$ & $0.030$ & $-1.50$ \\
+            & $U_{t-1}$ & $1.456$ & $0.058$ & $25.1$ \\
+            & $U_{t-2}$ & $-0.521$ & $0.055$ & $-9.47$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Funcții de Răspuns la Impuls}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_irf.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item IRF arată răspunsul dinamic la șocuri de o unitate
+        \item Șocul PIB: efect pozitiv temporar asupra PIB, negativ asupra șomajului
+        \item Șocul șomajului: efect negativ asupra PIB, persistent asupra șomajului
+        \item Benzile de încredere de 95\% arată incertitudinea în răspunsuri
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Descompunerea Varianței Erorii de Prognoză}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_fevd.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item FEVD arată proporția varianței explicată de fiecare șoc
+        \item Varianța PIB: explicată în mare parte de șocurile proprii, parțial de șomaj
+        \item Varianța șomajului: foarte persistentă (șocurile proprii dominante)
+        \item Oferă perspectivă asupra importanței relative a diferitelor șocuri
+    \end{itemize}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 5: DISCUSSION TOPICS
 %=============================================================================
 \section{Subiecte de Discuție}
 
-\begin{frame}{Discuție: Cointegrare vs Corelație}
+\begin{frame}{Discuție: Cauzalitate Granger vs Cauzalitate Adevărată}
     {\small
     \begin{alertblock}{Întrebare Cheie}
-        Două serii sunt puternic corelate. Sunt ele cointegrate?
+        Dacă $X$ cauzează Granger $Y$, înseamnă aceasta că $X$ cauzează de fapt $Y$? \textbf{NU!}
     \end{alertblock}
-    \begin{block}{Răspuns: Nu neapărat!}
+    \begin{block}{De Ce Poate Eșua Cauzalitatea Granger}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Corelație}: Măsoară co-mișcarea (poate fi falsă pentru I(1))
-            \item \textbf{Cointegrare}: Necesită combinație liniară staționară
+            \item \textbf{Omiterea variabilelor}: $Z$ ar putea cauza atât $X$ cât și $Y$ (de ex., vremea $\to$ înghețată \& înecuri)
+            \item \textbf{Efecte de anticipare}: Piețele anticipează evenimente viitoare (prețuri acțiuni $\to$ câștiguri)
+            \item \textbf{Probleme de agregare}: Momentul colectării datelor contează
         \end{itemize}
     \end{block}
-    \begin{exampleblock}{Exemplu}
-        Două mersuri aleatoare independente pot avea corelație $> 0.9$ pur întâmplător (corelație falsă). Dar NU sunt cointegrate---spread-ul lor este tot I(1).
-
-        \vspace{0.2cm}
-        \textbf{Cointegrarea} implică o relație de echilibru pe termen lung semnificativă.
+    \begin{exampleblock}{Concluzie}
+        Cauzalitatea Granger se referă la \textbf{predicție}, nu la \textbf{mecanism}. Pentru cauzalitate structurală, este nevoie de teorie + strategie de identificare.
     \end{exampleblock}
     }
 \end{frame}
 
-\begin{frame}{Discuție: Alegerea Componentelor Deterministe}
+\begin{frame}{Discuție: Ordonarea Variabilelor în IRF}
     {\small
     \begin{alertblock}{Întrebare Cheie}
-        Testul Johansen are 5 cazuri pentru componentele deterministe. Pe care să îl alegem?
+        De ce contează ordonarea variabilelor pentru IRF ortogonalizate?
     \end{alertblock}
-    \begin{block}{Ghid}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{Fără constantă, fără trend}: Rar folosit (necesită date cu medie zero)
-            \item \textbf{Constantă doar în EC}: Serii în nivel, fără drift
-            \item \textbf{Constantă nerestricționată}: Cel mai comun pentru date economice
-            \item \textbf{Trend în EC}: Seriile au trenduri deterministe
-            \item \textbf{Trend nerestricționat}: Diferențe cu trend (necomun)
-        \end{enumerate}
+    \begin{block}{Descompunerea Cholesky Presupune}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Prima variabilă: Afectează toate celelalte contemporan
+            \item A doua variabilă: Afectată de prima, afectează restul
+            \item Ultima variabilă: Afectată de toate, nu afectează niciuna contemporan
+        \end{itemize}
     \end{block}
-    \begin{exampleblock}{Sfat Practic}
-        Începeți cu Cazul 3 (constantă nerestricționată). Verificați sensibilitatea la specificație. Folosiți raționament economic: au nivelurile trenduri?
+    \begin{exampleblock}{Exemplu: Ordonarea VAR pentru Politică Monetară}
+        1. Prețuri petrol (exogen) $\to$ 2. PIB (lent) $\to$ 3. Inflație $\to$ 4. Rate dobândă (rapid)
     \end{exampleblock}
+    \begin{block}{Regulă}
+        Ordonați de la ``cel mai exogen'' la ``cel mai endogen'' --- justificați prin teoria economică!
+    \end{block}
     }
 \end{frame}
 
@@ -813,54 +963,48 @@
 %=============================================================================
 \section{Exerciții pentru Studiu Individual}
 
-\begin{frame}{Exerciții de Făcut Acasă}
+\begin{frame}{Exerciții pentru Acasă}
     {\footnotesize
     \begin{enumerate}\setlength{\itemsep}{2pt}
-        \item \textbf{Teoretic}: Arătați că dacă $Y_t$ și $X_t$ sunt ambele mersuri aleatoare cu aceeași inovație, ele sunt cointegrate.
+        \item \textbf{Teoretic}: Arătați că un VAR(1) poate fi scris ca MA($\infty$): $\bY_t = \sum_{i=0}^{\infty} \bA^i \bepsilon_{t-i}$ când este stabil.
 
-        \item \textbf{Calcul}: Având estimările VECM:
-            \begin{align*}
-                \Delta Y_t &= 0.5 - 0.3(Y_{t-1} - 2X_{t-1}) + 0.2\Delta Y_{t-1} \\
-                \Delta X_t &= 0.1 + 0.1(Y_{t-1} - 2X_{t-1}) + 0.4\Delta X_{t-1}
-            \end{align*}
+        \item \textbf{Calcul}: Pentru VAR(1) cu $\bA = \begin{pmatrix} 0.8 & -0.1 \\ 0.3 & 0.4 \end{pmatrix}$:
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Care este vectorul de cointegrare?
-                \item Care variabilă se ajustează mai rapid?
-                \item Care este relația de echilibru pe termen lung?
+                \item Verificați stabilitatea; Calculați IRF pentru $h = 0, 1, 2, 3$
+                \item Reprezentați grafic răspunsul lui $Y_1$ la un șoc în $Y_2$
             \end{itemize}
 
-        \item \textbf{Aplicat}: Descărcați ratele trezoreriei la 10 ani și 3 luni:
+        \item \textbf{Aplicat}: Descărcați date despre creșterea PIB SUA și șomaj:
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Testați pentru rădăcini unitare; Testați pentru cointegrare
-                \item Estimați VECM; Interpretați coeficienții de ajustare
+                \item Testați staționaritatea; Estimați VAR (selectați lag-ul optim)
+                \item Testați cauzalitatea Granger; Calculați și interpretați IRF
             \end{itemize}
 
-        \item \textbf{Gândire Critică}: De ce ar putea PPP să fie valabilă pe termen lung dar nu pe termen scurt?
+        \item \textbf{Gândire Critică}: De ce ar putea prețurile acțiunilor să ``cauzeze Granger'' PIB-ul chiar dacă PIB-ul este determinat de factori reali?
     \end{enumerate}
     }
 \end{frame}
 
-\begin{frame}{Indicii pentru Soluțiile Exercițiilor}
+\begin{frame}{Indicii pentru Soluții}
     {\footnotesize
     \begin{block}{Indicii}
         \begin{enumerate}\setlength{\itemsep}{1pt}
-            \item Dacă $Y_t = Y_{t-1} + \varepsilon_t$ și $X_t = X_{t-1} + \varepsilon_t$ (același șoc), atunci $Y_t - X_t = Y_0 - X_0$ este constantă (staționară).
+            \item Folosiți substituția recursivă: $\bY_t = \bA\bY_{t-1} + \bepsilon_t = \bA(\bA\bY_{t-2} + \bepsilon_{t-1}) + \bepsilon_t = \ldots$
 
-            \item Din VECM:
+            \item Valorile proprii ale lui $\begin{pmatrix} 0.8 & -0.1 \\ 0.3 & 0.4 \end{pmatrix}$:
                 \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Vector de cointegrare: $(1, -2)$ (normalizat pe $Y$)
-                    \item $Y$ se ajustează mai rapid: $|\alpha_Y| = 0.3 > |\alpha_X| = 0.1$
-                    \item Termen lung: $Y = 2X$ (când termenul EC = 0)
+                    \item Ecuația caracteristică: $\lambda^2 - 1.2\lambda + 0.35 = 0$
+                    \item $\lambda_1 \approx 0.85$, $\lambda_2 \approx 0.41$ (ambele $< 1$, stabil)
                 \end{itemize}
 
-            \item Pentru ratele dobânzii:
+            \item Pentru PIB/Șomaj:
                 \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Ambele sunt de obicei I(1); spread-ul de obicei staționar
-                    \item Așteptați un vector de cointegrare cu $(1, -1)$
-                    \item Rata scurtă se ajustează de obicei; rata lungă adesea slab exogenă
+                    \item Creșterea PIB este de obicei I(0), șomajul poate fi I(1)
+                    \item Folosiți modificările ratei șomajului dacă e necesar
+                    \item Așteptați creștere PIB $\rightarrow$ șomaj (Legea lui Okun)
                 \end{itemize}
 
-            \item Deviații PPP: Costurile de transport, bunurile netranzacționate, prețurile rigide, tarifele, segmentarea pieței toate încetinesc ajustarea dar nu previn convergența pe termen lung.
+            \item Prețurile acțiunilor anticipează condițiile economice viitoare---ele reflectă așteptările despre PIB viitor, deci ``anticipează'' PIB-ul în date chiar dacă cauzalitatea merge în direcția opusă.
         \end{enumerate}
     \end{block}
     }
@@ -873,21 +1017,22 @@
     {\footnotesize
     \begin{block}{Puncte Principale}
         \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{Cointegrarea}: Variabile I(1) cu combinație liniară staționară
-            \item \textbf{Regresia falsă}: $R^2$ mare fără cointegrare este lipsit de sens
-            \item \textbf{Engle-Granger}: Simplu, dar doar un vector de cointegrare
-            \item \textbf{Johansen}: Vectori multipli, MLE, mai puternic
+            \item Modelele VAR captează \textbf{interdependențele} între serii de timp multiple
+            \item Numărul de parametri crește rapid: $K^2 p + K$ per sistem
+            \item \textbf{Cauzalitatea Granger} testează conținutul predictiv, nu cauzalitatea adevărată
+            \item \textbf{IRF} arată propagarea dinamică a șocurilor; ordonarea contează
         \end{enumerate}
     \end{block}
-    \begin{block}{Perspective VECM}
+    \begin{block}{Puncte Practice}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\bbeta$ definește echilibrul; $\balpha$ determină viteza de ajustare
-            \item Exogenitate slabă ($\alpha = 0$): Variabila nu răspunde la dezechilibru
-            \item Folosiți întotdeauna VECM (nu VAR în diferențe) când există cointegrare
+            \item Verificați întotdeauna staționaritatea înainte de a estima VAR
+            \item Folosiți criterii informaționale (AIC/BIC) pentru selectarea lag-ului
+            \item Raportați testele Granger în ambele direcții
+            \item Justificați ordonarea variabilelor prin teoria economică
         \end{itemize}
     \end{block}
     \begin{alertblock}{Amintiți-vă}
-        Cointegrarea este despre \textbf{echilibrul pe termen lung}, nu doar corelație!
+        Cauzalitatea Granger se referă la \textbf{predicție}, nu la \textbf{mecanism}!
     \end{alertblock}
     }
 \end{frame}

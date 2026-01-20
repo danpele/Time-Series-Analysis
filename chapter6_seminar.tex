@@ -1,4 +1,4 @@
-% Chapter 6: Seminar - Cointegration and VECM
+% Chapter 6: Seminar - VAR Models and Granger Causality
 % Quizzes, Practice Problems, and Discussion
 % Bachelor program, Bucharest University of Economic Studies
 
@@ -82,15 +82,11 @@
 \newcommand{\bepsilon}{\boldsymbol{\varepsilon}}
 \newcommand{\bvarepsilon}{\boldsymbol{\varepsilon}}
 \newcommand{\bc}{\mathbf{c}}
-\newcommand{\bPi}{\boldsymbol{\Pi}}
-\newcommand{\balpha}{\boldsymbol{\alpha}}
-\newcommand{\bbeta}{\boldsymbol{\beta}}
-\newcommand{\bGamma}{\boldsymbol{\Gamma}}
 
 %=============================================================================
 % TITLE INFORMATION
 %=============================================================================
-\title[Chapter 6: Seminar]{Chapter 6: Seminar --- Cointegration \& VECM}
+\title[Chapter 6: Seminar]{Chapter 6: Seminar --- VAR \& Granger Causality}
 \subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
 \author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
 \institute{Bucharest University of Economic Studies}
@@ -117,7 +113,7 @@
     \vfill
     \begin{center}
         {\Large\textcolor{MediumGray}{Time Series Analysis and Forecasting}}\\[0.3cm]
-        {\Huge\textbf{\textcolor{MainBlue}{Chapter 6: Cointegration \& VECM}}}\\[0.5cm]
+        {\Huge\textbf{\textcolor{MainBlue}{Chapter 6: VAR \& Granger Causality}}}\\[0.5cm]
         {\Large\textcolor{IDAred}{Seminar}}
     \end{center}
     \vfill
@@ -154,18 +150,18 @@
 %=============================================================================
 \section{Review Quiz}
 
-\begin{frame}{Quiz 1: Cointegration Definition}
+\begin{frame}{Quiz 1: VAR Definition}
     \begin{alertblock}{Question}
-        Two I(1) variables $X_t$ and $Y_t$ are cointegrated if:
+        In a VAR(2) model with 3 variables, how many coefficient matrices $\bA_i$ are there?
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item They are both stationary
-        \item Their sum is I(2)
-        \item A linear combination of them is I(0)
-        \item They have the same mean
+        \item 2
+        \item 3
+        \item 6
+        \item 9
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -173,29 +169,31 @@
 \end{frame}
 
 \begin{frame}{Quiz 1: Answer}
-    \begin{exampleblock}{Answer: C -- A linear combination is I(0)}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.5\textheight, keepaspectratio]{charts/ch6_quiz1_cointegration.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Key}: $Y_t - \beta X_t \sim I(0)$ means they share a common stochastic trend. The linear combination (spread) is stationary even though both series are non-stationary.
-        }
+    \begin{exampleblock}{Answer: A -- 2 coefficient matrices}
+        \textbf{VAR($p$) model}: $\bY_t = \bc + \bA_1\bY_{t-1} + \bA_2\bY_{t-2} + \cdots + \bA_p\bY_{t-p} + \bvarepsilon_t$
+
+        \vspace{0.3cm}
+        \textbf{VAR(2) with $K=3$}:
+        \[
+        \begin{pmatrix} Y_{1t} \\ Y_{2t} \\ Y_{3t} \end{pmatrix} = \bc + \underbrace{\bA_1}_{3\times 3}\begin{pmatrix} Y_{1,t-1} \\ Y_{2,t-1} \\ Y_{3,t-1} \end{pmatrix} + \underbrace{\bA_2}_{3\times 3}\begin{pmatrix} Y_{1,t-2} \\ Y_{2,t-2} \\ Y_{3,t-2} \end{pmatrix} + \bvarepsilon_t
+        \]
+
+        \textbf{Key}: $p$ = number of lags = number of matrices
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 2: Spurious Regression}
+\begin{frame}{Quiz 2: Number of Parameters}
     \begin{alertblock}{Question}
-        When regressing one independent random walk on another, you typically get:
+        A VAR(2) with $K=3$ variables (including constants) has how many parameters to estimate per equation?
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Low $R^2$ and insignificant coefficients
-        \item High $R^2$ and significant coefficients (spurious!)
-        \item Zero coefficients
-        \item Undefined results
+        \item 3
+        \item 6
+        \item 7
+        \item 9
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -203,29 +201,29 @@
 \end{frame}
 
 \begin{frame}{Quiz 2: Answer}
-    \begin{exampleblock}{Answer: B -- High $R^2$ and significant coefficients (spurious!)}
+    \begin{exampleblock}{Answer: C -- 7 parameters per equation}
         \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.5\textheight, keepaspectratio]{charts/ch6_quiz2_spurious.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{charts/sem5_var_parameters.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
-        \textbf{Granger-Newbold (1974)}: Regressing unrelated I(1) series gives misleading results. Rule of thumb: If $R^2 > DW$, suspect spurious regression!
+        \textbf{Formula}: Per equation = $1 + K \times p = 1 + 3 \times 2 = 7$. \textbf{Total}: $K(1 + Kp) = 3(1 + 6) = 21$ parameters
         }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 3: Engle-Granger Test}
+\begin{frame}{Quiz 3: Granger Causality}
     \begin{alertblock}{Question}
-        In the Engle-Granger two-step method, what do you test in step 2?
+        ``$X$ Granger-causes $Y$'' means:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Whether the original variables are stationary
-        \item Whether the regression residuals have a unit root
-        \item Whether the coefficients are significant
-        \item Whether the $R^2$ is high enough
+        \item $X$ is the economic cause of $Y$
+        \item Past $X$ helps predict future $Y$
+        \item $X$ and $Y$ are contemporaneously correlated
+        \item $X$ always increases when $Y$ increases
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -233,33 +231,29 @@
 \end{frame}
 
 \begin{frame}{Quiz 3: Answer}
-    \begin{exampleblock}{Answer: B -- Whether residuals have unit root}
-        \textbf{Step 1}: Run OLS: $Y_t = \alpha + \beta X_t + e_t$, save residuals $\hat{e}_t$
-
-        \vspace{0.2cm}
-        \textbf{Step 2}: ADF test on residuals: $\Delta \hat{e}_t = \rho \hat{e}_{t-1} + \ldots$
-        \begin{itemize}
-            \item $H_0$: $\rho = 0$ (unit root $\Rightarrow$ no cointegration)
-            \item $H_1$: $\rho < 0$ (stationary $\Rightarrow$ cointegration!)
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Important}: Use Engle-Granger critical values, not standard ADF!
+    \begin{exampleblock}{Answer: B -- Past $X$ helps predict future $Y$}
+        \begin{center}
+            \includegraphics[width=0.9\textwidth, height=0.55\textheight, keepaspectratio]{charts/sem5_granger_diagram.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Key}: Predictive relationship, NOT true causation!
+        }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 4: Johansen Test Advantage}
+\begin{frame}{Quiz 4: Granger Causality Test}
     \begin{alertblock}{Question}
-        The main advantage of Johansen over Engle-Granger is:
+        To test if $Y_2$ Granger-causes $Y_1$ in a VAR(p), we test:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item It's simpler to compute
-        \item It can detect multiple cointegrating relationships
-        \item It doesn't require data
-        \item It always finds cointegration
+        \item All coefficients in the $Y_1$ equation equal zero
+        \item Coefficients on lagged $Y_2$ in the $Y_1$ equation equal zero
+        \item Coefficients on lagged $Y_1$ in the $Y_2$ equation equal zero
+        \item The error covariance equals zero
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -267,34 +261,36 @@
 \end{frame}
 
 \begin{frame}{Quiz 4: Answer}
-    \begin{exampleblock}{Answer: B -- Can detect multiple cointegrating relationships}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{charts/ch6_quiz4_johansen.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Johansen advantages}:
+    \begin{exampleblock}{Answer: B -- Coefficients on lagged $Y_2$ in $Y_1$ equation = 0}
+        \textbf{Null hypothesis}: $H_0: a_{12}^{(1)} = a_{12}^{(2)} = \cdots = a_{12}^{(p)} = 0$
+
+        \vspace{0.2cm}
+        \textbf{Test statistic}: Wald or F-test with $p$ restrictions
+
+        \vspace{0.2cm}
+        \textbf{Interpretation}:
         \begin{itemize}
-            \item Tests for $r = 0, 1, 2, \ldots, k-1$ cointegrating vectors
-            \item Maximum likelihood (more efficient)
-            \item No need to choose dependent variable
+            \item Reject $H_0$: $Y_2$ Granger-causes $Y_1$
+            \item Don't reject: No evidence of predictive relationship
         \end{itemize}
-        }
+
+        \vspace{0.2cm}
+        \textbf{Note}: Test $Y_1 \to Y_2$ separately (different coefficients in $Y_2$ equation)
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 5: Rank of $\bPi$}
+\begin{frame}{Quiz 5: VAR Stability}
     \begin{alertblock}{Question}
-        In a VECM with $k=3$ variables, if $\text{rank}(\bPi) = 2$, this means:
+        A VAR(1) model is stable (stationary) if:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item No cointegration
-        \item One cointegrating relationship
-        \item Two cointegrating relationships
-        \item All variables are stationary
+        \item All diagonal elements of $\bA_1$ are less than 1
+        \item The determinant of $\bA_1$ is less than 1
+        \item All eigenvalues of $\bA_1$ are less than 1 in absolute value
+        \item The trace of $\bA_1$ equals zero
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -302,35 +298,29 @@
 \end{frame}
 
 \begin{frame}{Quiz 5: Answer}
-    \begin{exampleblock}{Answer: C -- Two cointegrating relationships}
-        \textbf{Rank interpretation} for $k$ variables:
-        \begin{itemize}
-            \item $\text{rank}(\bPi) = 0$: No cointegration (use VAR in differences)
-            \item $0 < \text{rank}(\bPi) = r < k$: $r$ cointegrating vectors (use VECM)
-            \item $\text{rank}(\bPi) = k$: All variables are I(0) (use VAR in levels)
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{With $k=3$ and $r=2$}:
-        \begin{itemize}
-            \item Two equilibrium relationships
-            \item Only $k - r = 1$ common stochastic trend
-        \end{itemize}
+    \begin{exampleblock}{Answer: C -- All eigenvalues of $\bA_1$ inside unit circle}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_var_stability.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Stable}: All $|\lambda_i| < 1$ (inside unit circle) $\Rightarrow$ shocks die out over time
+        }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 6: VECM Structure}
+\begin{frame}{Quiz 6: Impulse Response Functions}
     \begin{alertblock}{Question}
-        In the VECM equation $\Delta \bY_t = \bc + \balpha\bbeta'\bY_{t-1} + \ldots$, what does $\balpha$ represent?
+        An impulse response function shows:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item The cointegrating vectors
-        \item The adjustment (loading) coefficients
-        \item The short-run dynamics
-        \item The error variance
+        \item The correlation between two variables
+        \item The effect of a shock to one variable on all variables over time
+        \item The forecast accuracy of the model
+        \item The p-values of coefficient tests
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -338,33 +328,29 @@
 \end{frame}
 
 \begin{frame}{Quiz 6: Answer}
-    \begin{exampleblock}{Answer: B -- The adjustment (loading) coefficients}
+    \begin{exampleblock}{Answer: B -- Effect of shock on all variables over time}
         \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{charts/ch6_quiz6_adjustment.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_irf_example.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
-        \textbf{$\bPi = \balpha\bbeta'$}:
-        \begin{itemize}
-            \item $\bbeta$ = cointegrating vectors (define equilibrium)
-            \item $\balpha$ = adjustment speeds (how fast each variable corrects)
-        \end{itemize}
+        \textbf{IRF}$_{ij}(h)$: Response of variable $i$ at horizon $h$ to shock in variable $j$
         }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 7: Error Correction Term}
+\begin{frame}{Quiz 7: Lag Order Selection}
     \begin{alertblock}{Question}
-        If $Y_t - \beta X_t$ is the cointegrating relation and this term is positive, what happens?
+        Which criterion typically selects the most parsimonious VAR model?
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item $Y$ is above equilibrium; $Y$ should decrease (if $\alpha < 0$)
-        \item $Y$ is below equilibrium; $Y$ should increase
-        \item Nothing, error correction doesn't affect levels
-        \item Both variables increase
+        \item AIC (Akaike Information Criterion)
+        \item BIC (Bayesian Information Criterion)
+        \item FPE (Final Prediction Error)
+        \item Adjusted $R^2$
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -372,33 +358,37 @@
 \end{frame}
 
 \begin{frame}{Quiz 7: Answer}
-    \begin{exampleblock}{Answer: A -- $Y$ above equilibrium; decreases if $\alpha < 0$}
-        \textbf{Error correction mechanism}:
-        $$\Delta Y_t = \alpha(Y_{t-1} - \beta X_{t-1}) + \ldots$$
-
+    \begin{exampleblock}{Answer: B -- BIC (Bayesian Information Criterion)}
+        \textbf{Penalty comparison} (for $k$ parameters, $n$ observations):
         \begin{itemize}
-            \item If $Y_{t-1} - \beta X_{t-1} > 0$: $Y$ is ``too high''
-            \item With $\alpha < 0$: $\Delta Y_t < 0$ (Y decreases toward equilibrium)
-            \item This is the ``error correction'' pulling $Y$ back
+            \item AIC: $-2\ln L + 2k$
+            \item BIC: $-2\ln L + k\ln n$
         \end{itemize}
 
+        Since $\ln n > 2$ for $n > 8$, BIC penalizes complexity more heavily
+
         \vspace{0.2cm}
-        \textbf{Sign convention}: $\alpha$ should be negative for the dependent variable to move back toward equilibrium.
+        \textbf{Practical guidance}:
+        \begin{itemize}
+            \item Forecasting: AIC may perform better
+            \item Inference/parsimony: BIC preferred
+            \item Large samples: BIC consistent, AIC tends to overfit
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 8: Weak Exogeneity}
+\begin{frame}{Quiz 8: Granger Causality Interpretation}
     \begin{alertblock}{Question}
-        If $\alpha_2 = 0$ in a bivariate VECM, this means:
+        ``$X$ Granger-causes $Y$'' means:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item There is no cointegration
-        \item Variable 2 does not adjust to disequilibrium (weakly exogenous)
-        \item Variable 1 does not adjust
-        \item Both variables are stationary
+        \item $X$ is the true cause of $Y$
+        \item Past values of $X$ help predict $Y$ beyond $Y$'s own past
+        \item $X$ and $Y$ are correlated
+        \item $Y$ depends only on $X$
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -406,34 +396,23 @@
 \end{frame}
 
 \begin{frame}{Quiz 8: Answer}
-    \begin{exampleblock}{Answer: B -- Variable 2 is weakly exogenous}
-        \textbf{Weak exogeneity}: Variable doesn't respond to disequilibrium.
-
-        \vspace{0.2cm}
-        \textbf{Example: Interest rates}
-        \begin{itemize}
-            \item Long rate ($R_t$) often weakly exogenous ($\alpha_R \approx 0$)
-            \item Short rate ($r_t$) adjusts to spread ($\alpha_r < 0$)
-            \item Interpretation: Central bank adjusts short rate to maintain term structure
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Implication}: Can estimate single equation for the adjusting variable.
+    \begin{exampleblock}{Answer: B}
+        Granger causality is about \textbf{predictive} content, not true causation. $X$ Granger-causes $Y$ if lagged $X$ terms are jointly significant in the equation for $Y$, after controlling for lagged $Y$.
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 9: Trace Test}
+\begin{frame}{Quiz 9: Forecast Error Variance Decomposition}
     \begin{alertblock}{Question}
-        The Johansen trace test with $H_0: r \leq 1$ vs $H_1: r > 1$ tests whether:
+        FEVD (Forecast Error Variance Decomposition) tells us:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item There is exactly one cointegrating vector
-        \item There are at most one cointegrating vectors
-        \item There are more than one cointegrating vectors
-        \item All eigenvalues are zero
+        \item The correlation between variables
+        \item What proportion of forecast error variance comes from each shock
+        \item The optimal forecast horizon
+        \item Which variables to include in the model
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -441,34 +420,29 @@
 \end{frame}
 
 \begin{frame}{Quiz 9: Answer}
-    \begin{exampleblock}{Answer: B/C -- $H_0$: at most 1; $H_1$: more than 1}
-        \textbf{Sequential testing procedure}:
-        \begin{enumerate}
-            \item Test $H_0: r = 0$ vs $H_1: r > 0$
-            \item If rejected, test $H_0: r \leq 1$ vs $H_1: r > 1$
-            \item Continue until fail to reject...
-        \end{enumerate}
-
-        \vspace{0.2cm}
-        \textbf{Trace statistic}:
-        $$\lambda_{\text{trace}}(r) = -T \sum_{i=r+1}^{k} \ln(1 - \hat{\lambda}_i)$$
-
-        Reject $H_0$ if trace statistic $>$ critical value.
+    \begin{exampleblock}{Answer: B -- Proportion of forecast error variance from each shock}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_fevd_example.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{FEVD}: Shows how much forecast uncertainty comes from each shock at different horizons
+        }
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Quiz 10: VECM vs VAR in Differences}
+\begin{frame}{Quiz 10: Structural vs Reduced Form VAR}
     \begin{alertblock}{Question}
-        If variables are cointegrated, using VAR in first differences instead of VECM:
+        The difference between structural VAR (SVAR) and reduced-form VAR is:
     \end{alertblock}
 
     \vspace{0.3cm}
 
     \begin{enumerate}[A)]
-        \item Gives identical results
-        \item Is more efficient
-        \item Loses long-run information (misspecified)
-        \item Is the preferred approach
+        \item SVAR has more variables
+        \item SVAR allows contemporaneous effects between variables
+        \item SVAR uses different estimation methods
+        \item There is no difference
     \end{enumerate}
 
     \vspace{0.5cm}
@@ -476,24 +450,116 @@
 \end{frame}
 
 \begin{frame}{Quiz 10: Answer}
-    \begin{exampleblock}{Answer: C -- Loses long-run information}
-        \textbf{Granger Representation Theorem}: If cointegrated, VECM representation exists and should be used.
+    \begin{exampleblock}{Answer: B}
+        Reduced-form VAR: shocks are correlated, no contemporaneous effects in equations. SVAR: imposes identifying restrictions to recover structural shocks with economic interpretation (e.g., monetary policy shock).
+    \end{exampleblock}
+\end{frame}
 
-        \vspace{0.2cm}
+\begin{frame}{Quiz 11: Cholesky Decomposition}
+    \begin{alertblock}{Question}
+        Cholesky ordering in IRF analysis assumes:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item All variables are equally important
+        \item Variables ordered first affect later variables contemporaneously, not vice versa
+        \item Shocks are uncorrelated
+        \item No restrictions are needed
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Quiz 11: Answer}
+    \begin{exampleblock}{Answer: B -- Variables ordered first affect later ones contemporaneously}
         \begin{center}
-        \begin{tabular}{lcc}
-            \toprule
-            & \textbf{VAR($\Delta$)} & \textbf{VECM} \\
-            \midrule
-            Long-run equilibrium & Lost & Preserved \\
-            Error correction & No & Yes \\
-            Forecasts (long-run) & Poor & Better \\
-            \bottomrule
-        \end{tabular}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_cholesky_ordering.pdf}
         \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Cholesky}: Recursive structure. Ordering matters -- justify by economic theory (most exogenous first)!
+        }
+    \end{exampleblock}
+\end{frame}
 
-        \vspace{0.2cm}
-        \textbf{Bottom line}: Differencing removes the long-run relationship that cointegration represents!
+\begin{frame}{Quiz 12: VAR Residual Diagnostics}
+    \begin{alertblock}{Question}
+        In a well-specified VAR, residuals should be:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Autocorrelated but homoskedastic
+        \item White noise (no autocorrelation)
+        \item Normally distributed only
+        \item Correlated across equations
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Quiz 12: Answer}
+    \begin{exampleblock}{Answer: B -- White noise (no autocorrelation)}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{charts/sem5_var_diagnostics.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Diagnostics}: Residuals should be white noise. Use Portmanteau/LM test. Cross-equation correlation allowed ($\Sigma_u$).
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 13: Cointegration and VAR}
+    \begin{alertblock}{Question}
+        If variables are I(1) and cointegrated, you should use:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item VAR in levels
+        \item VAR in first differences
+        \item Vector Error Correction Model (VECM)
+        \item Univariate ARIMA models
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Quiz 13: Answer}
+    \begin{exampleblock}{Answer: C}
+        With cointegration, VAR in differences loses long-run information, while VAR in levels may be inefficient. VECM incorporates both short-run dynamics and long-run equilibrium relationships through the error correction term.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Quiz 14: Instantaneous Causality}
+    \begin{alertblock}{Question}
+        Instantaneous causality differs from Granger causality because it tests:
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}[A)]
+        \item Lagged relationships only
+        \item Contemporaneous correlation of residuals
+        \item Long-run relationships
+        \item Model stability
+    \end{enumerate}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Quiz 14: Answer}
+    \begin{exampleblock}{Answer: B}
+        Instantaneous causality tests whether shocks to $X$ and $Y$ are correlated within the same period (correlation of VAR residuals). Granger causality tests whether \textit{lagged} values help predict.
     \end{exampleblock}
 \end{frame}
 
@@ -507,12 +573,12 @@
 
     \vspace{0.3cm}
     \begin{enumerate}
-        \item Cointegration requires all variables to be I(1).
-        \item The cointegrating vector is unique.
-        \item Spurious regression has low Durbin-Watson statistic.
-        \item In VECM, both $\alpha$ coefficients must be non-zero.
-        \item Johansen test requires choosing a dependent variable.
-        \item The number of common trends = $k - r$.
+        \item VAR models treat all variables as endogenous.
+        \item Granger causality proves true economic causation.
+        \item A stable VAR always has eigenvalues inside the unit circle.
+        \item FEVD results depend on the ordering of variables.
+        \item VAR can be estimated by OLS equation by equation.
+        \item Impulse responses eventually die out in a stable VAR.
     \end{enumerate}
 
     \vspace{0.3cm}
@@ -522,29 +588,29 @@
 \begin{frame}{True/False: Solutions}
     {\small
     \begin{enumerate}\setlength{\itemsep}{1pt}
-        \item Cointegration requires all variables to be I(1). \hfill \textcolor{Forest}{\textbf{TRUE}}
+        \item VAR models treat all variables as endogenous. \hfill \textcolor{Forest}{\textbf{TRUE}}
 
-        {\footnotesize \textcolor{MediumGray}{Standard CI(1,1) case: all variables I(1), linear combination I(0).}}
+        {\footnotesize \textcolor{MediumGray}{Each variable is regressed on lags of all variables, including itself.}}
 
-        \item The cointegrating vector is unique. \hfill \textcolor{Crimson}{\textbf{FALSE}}
+        \item Granger causality proves true economic causation. \hfill \textcolor{Crimson}{\textbf{FALSE}}
 
-        {\footnotesize \textcolor{MediumGray}{Unique only up to scalar multiplication. Usually normalized ($\beta_1 = 1$).}}
+        {\footnotesize \textcolor{MediumGray}{It only shows predictive content, not structural causation.}}
 
-        \item Spurious regression has low Durbin-Watson statistic. \hfill \textcolor{Forest}{\textbf{TRUE}}
+        \item A stable VAR always has eigenvalues inside the unit circle. \hfill \textcolor{Forest}{\textbf{TRUE}}
 
-        {\footnotesize \textcolor{MediumGray}{$DW \approx 0$ indicates highly autocorrelated residuals (non-stationary).}}
+        {\footnotesize \textcolor{MediumGray}{Stability condition: all eigenvalues of companion matrix satisfy $|\lambda_i| < 1$.}}
 
-        \item In VECM, both $\alpha$ coefficients must be non-zero. \hfill \textcolor{Crimson}{\textbf{FALSE}}
+        \item FEVD results depend on the ordering of variables. \hfill \textcolor{Forest}{\textbf{TRUE}}
 
-        {\footnotesize \textcolor{MediumGray}{One can be zero (weak exogeneity). At least one must be non-zero.}}
+        {\footnotesize \textcolor{MediumGray}{Under Cholesky identification, different orderings give different results.}}
 
-        \item Johansen test requires choosing a dependent variable. \hfill \textcolor{Crimson}{\textbf{FALSE}}
+        \item VAR can be estimated by OLS equation by equation. \hfill \textcolor{Forest}{\textbf{TRUE}}
 
-        {\footnotesize \textcolor{MediumGray}{That's Engle-Granger. Johansen treats all variables symmetrically.}}
+        {\footnotesize \textcolor{MediumGray}{With same regressors in each equation, OLS = GLS = ML (under normality).}}
 
-        \item The number of common trends = $k - r$. \hfill \textcolor{Forest}{\textbf{TRUE}}
+        \item Impulse responses eventually die out in a stable VAR. \hfill \textcolor{Forest}{\textbf{TRUE}}
 
-        {\footnotesize \textcolor{MediumGray}{$k$ variables, $r$ cointegrating relations $\Rightarrow$ $k-r$ common stochastic trends.}}
+        {\footnotesize \textcolor{MediumGray}{Stability ensures shocks have transitory effects; IRFs $\to 0$ as $h \to \infty$.}}
     \end{enumerate}
     }
 \end{frame}
@@ -554,12 +620,9 @@
 %=============================================================================
 \section{Practice Problems}
 
-\begin{frame}{Problem 1: Cointegration Identification}
+\begin{frame}{Problem 1: Writing VAR Equations}
     \begin{block}{Exercise}
-        You have quarterly data on consumption ($C_t$) and income ($Y_t$). ADF tests show both are I(1). The regression $C_t = 0.85 Y_t + e_t$ gives residuals with ADF statistic $= -3.92$. The 5\% Engle-Granger critical value for 2 variables is $-3.34$.
-
-        \vspace{0.2cm}
-        Are $C_t$ and $Y_t$ cointegrated?
+        Write out the two equations for a bivariate VAR(1) model with variables $Y_t$ (GDP growth) and $X_t$ (inflation).
     \end{block}
 
     \vspace{0.5cm}
@@ -567,33 +630,23 @@
 \end{frame}
 
 \begin{frame}{Problem 1: Solution}
-    \begin{exampleblock}{Solution: Yes, they are cointegrated}
-        \textbf{Test}: $H_0$: No cointegration (residuals have unit root)
+    \begin{exampleblock}{Solution}
+        \begin{align*}
+            Y_t &= c_1 + a_{11} Y_{t-1} + a_{12} X_{t-1} + \varepsilon_{1t} \\[0.2cm]
+            X_t &= c_2 + a_{21} Y_{t-1} + a_{22} X_{t-1} + \varepsilon_{2t}
+        \end{align*}
 
-        \vspace{0.2cm}
-        \textbf{ADF statistic}: $-3.92$
-
-        \textbf{Critical value (5\%)}: $-3.34$
-
-        \vspace{0.2cm}
-        Since $-3.92 < -3.34$, we \textbf{reject} $H_0$ at 5\% level.
-
-        \vspace{0.2cm}
-        \textbf{Conclusion}: Residuals are stationary $\Rightarrow$ Cointegration exists!
-
-        \vspace{0.2cm}
-        \textbf{Interpretation}: Consumption and income share a common trend. The cointegrating vector is approximately $(1, -0.85)$, consistent with permanent income hypothesis.
+        \textbf{Interpretation}:
+        \begin{itemize}
+            \item $a_{12}$: Effect of past inflation on current GDP growth
+            \item $a_{21}$: Effect of past GDP growth on current inflation
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Problem 2: VECM Interpretation}
+\begin{frame}{Problem 2: Parameter Count}
     \begin{block}{Exercise}
-        A VECM for short rate ($r_t$) and long rate ($R_t$) gives:
-        \begin{align*}
-            \Delta r_t &= 0.01 - 0.25(r_{t-1} - R_{t-1}) + \ldots \\
-            \Delta R_t &= 0.005 - 0.02(r_{t-1} - R_{t-1}) + \ldots
-        \end{align*}
-        Interpret the adjustment coefficients.
+        How many total parameters need to be estimated in a VAR(3) with $K=4$ variables (including constants)?
     \end{block}
 
     \vspace{0.5cm}
@@ -602,44 +655,30 @@
 
 \begin{frame}{Problem 2: Solution}
     \begin{exampleblock}{Solution}
-        \textbf{Error correction term}: $(r_{t-1} - R_{t-1})$ = spread
+        Per equation: $1 + K \times p = 1 + 4 \times 3 = 13$ parameters
 
         \vspace{0.2cm}
-        \textbf{Short rate} ($\alpha_r = -0.25$):
-        \begin{itemize}
-            \item When spread is positive (short $>$ long), short rate decreases
-            \item 25\% of disequilibrium corrected per period
-            \item Short rate actively adjusts
-        \end{itemize}
+        Total for $K=4$ equations: $4 \times 13 = \mathbf{52}$ parameters
 
         \vspace{0.2cm}
-        \textbf{Long rate} ($\alpha_R = -0.02$):
-        \begin{itemize}
-            \item Very small adjustment coefficient
-            \item Long rate is nearly weakly exogenous
-            \item Mostly driven by expectations, not error correction
-        \end{itemize}
+        Plus covariance matrix $\boldsymbol{\Sigma}$: $K(K+1)/2 = 4 \times 5 / 2 = 10$ unique elements
 
         \vspace{0.2cm}
-        \textbf{Economic interpretation}: Central bank (short rate) adjusts to maintain yield curve.
+        \textbf{Grand total: 62 parameters}
+
+        \vspace{0.2cm}
+        \textit{This is why VARs can be ``over-parameterized'' with limited data!}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Problem 3: Johansen Test Results}
+\begin{frame}{Problem 3: Granger Causality Interpretation}
     \begin{block}{Exercise}
-        Johansen trace test for 3 variables gives:
-        \begin{center}
-        \begin{tabular}{lcc}
-            \toprule
-            $H_0$ & Trace Stat & 5\% CV \\
-            \midrule
-            $r = 0$ & 45.2 & 29.8 \\
-            $r \leq 1$ & 18.1 & 15.5 \\
-            $r \leq 2$ & 3.2 & 3.8 \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-        What is the cointegrating rank?
+        A Granger causality test yields:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: Money does not Granger-cause GDP. $p$-value = 0.02
+            \item $H_0$: GDP does not Granger-cause Money. $p$-value = 0.35
+        \end{itemize}
+        Interpret these results.
     \end{block}
 
     \vspace{0.5cm}
@@ -647,32 +686,23 @@
 \end{frame}
 
 \begin{frame}{Problem 3: Solution}
-    \begin{exampleblock}{Solution: Rank = 2}
-        \textbf{Sequential testing}:
-        \begin{enumerate}
-            \item $H_0: r = 0$: $45.2 > 29.8$ $\Rightarrow$ \textbf{Reject} (at least 1)
-            \item $H_0: r \leq 1$: $18.1 > 15.5$ $\Rightarrow$ \textbf{Reject} (at least 2)
-            \item $H_0: r \leq 2$: $3.2 < 3.8$ $\Rightarrow$ \textbf{Fail to reject}
-        \end{enumerate}
-
-        \vspace{0.2cm}
-        \textbf{Conclusion}: $r = 2$ cointegrating relationships
-
-        \vspace{0.2cm}
-        \textbf{Implications}:
-        \begin{itemize}
-            \item Two equilibrium relationships among 3 variables
-            \item Only $3 - 2 = 1$ common stochastic trend
-            \item Use VECM with 2 error correction terms
+    \begin{exampleblock}{Solution}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textbf{Reject} $H_0$ at 5\%: Money \textbf{Granger-causes} GDP
+            \item \textbf{Fail to reject} $H_0$: GDP does \textbf{not} Granger-cause Money
         \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{Conclusion}: Unidirectional causality: Money $\rightarrow$ GDP
+
+        \vspace{0.3cm}
+        \textit{Interpretation}: Past money supply helps predict GDP growth. This is consistent with monetarist views, but remember: Granger causality $\neq$ structural causality!
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Problem 4: Testing Weak Exogeneity}
+\begin{frame}{Problem 4: Stability Check}
     \begin{block}{Exercise}
-        In a VECM for prices ($P$) and exchange rate ($E$), you estimate $\alpha_P = -0.15$ (s.e. = 0.04) and $\alpha_E = 0.02$ (s.e. = 0.03).
-
-        Test whether the exchange rate is weakly exogenous at 5\%.
+        For VAR(1) with $\bA_1 = \begin{pmatrix} 0.7 & 0.2 \\ 0.1 & 0.5 \end{pmatrix}$, check stability.
     \end{block}
 
     \vspace{0.5cm}
@@ -680,22 +710,40 @@
 \end{frame}
 
 \begin{frame}{Problem 4: Solution}
-    \begin{exampleblock}{Solution: Exchange rate is weakly exogenous}
-        \textbf{Test}: $H_0: \alpha_E = 0$ (weak exogeneity)
+    \begin{exampleblock}{Solution}
+        Find eigenvalues: $\det(\bA_1 - \lambda \mathbf{I}) = 0$
 
-        \vspace{0.2cm}
-        \textbf{t-statistic}: $t = \frac{0.02}{0.03} = 0.67$
+        $(0.7 - \lambda)(0.5 - \lambda) - (0.2)(0.1) = 0$
 
-        \textbf{Critical value (5\%, two-tailed)}: $\pm 1.96$
+        $\lambda^2 - 1.2\lambda + 0.33 = 0$
 
-        \vspace{0.2cm}
-        Since $|0.67| < 1.96$, \textbf{fail to reject} $H_0$.
+        $\lambda = \frac{1.2 \pm \sqrt{1.44 - 1.32}}{2} = \frac{1.2 \pm 0.346}{2}$
 
-        \vspace{0.2cm}
-        \textbf{Conclusion}: Exchange rate does not respond to PPP disequilibrium.
+        $\lambda_1 = 0.773, \quad \lambda_2 = 0.427$
 
-        \vspace{0.2cm}
-        \textbf{Implication}: Prices do all the adjusting to restore PPP equilibrium. Can estimate single-equation model for prices.
+        \vspace{0.3cm}
+        Both $|\lambda_i| < 1$ $\Rightarrow$ \textbf{Stable!}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problem 5: IRF Computation}
+    \begin{block}{Exercise}
+        For VAR(1) with $\bA = \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix}$, compute $\boldsymbol{\Phi}_2$ (response at $h=2$).
+    \end{block}
+
+    \vspace{0.5cm}
+    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+\end{frame}
+
+\begin{frame}{Problem 5: Solution}
+    \begin{exampleblock}{Solution}
+        $\boldsymbol{\Phi}_2 = \bA^2 = \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix} \begin{pmatrix} 0.5 & 0.2 \\ 0 & 0.6 \end{pmatrix}$
+
+        \vspace{0.3cm}
+        $= \begin{pmatrix} 0.25 + 0 & 0.10 + 0.12 \\ 0 + 0 & 0 + 0.36 \end{pmatrix} = \begin{pmatrix} 0.25 & 0.22 \\ 0 & 0.36 \end{pmatrix}$
+
+        \vspace{0.3cm}
+        \textbf{Interpretation}: A unit shock to $Y_2$ at $t$ increases $Y_1$ by 0.22 at $t+2$.
     \end{exampleblock}
 \end{frame}
 
@@ -704,85 +752,56 @@
 %=============================================================================
 \section{Worked Examples}
 
-\begin{frame}{Example: Term Structure of Interest Rates}
+\begin{frame}{Example: Stock Returns and Trading Volume}
     {\small
-    \begin{block}{Economic Theory}
-        Expectations hypothesis: $R_t^{(n)} = \frac{1}{n}\sum_{i=0}^{n-1} E_t[r_{t+i}] + \text{premium}$
-
-        If premium is constant $\Rightarrow$ spread $(R_t - r_t)$ should be stationary.
+    \begin{block}{Scenario}
+        Daily data on stock returns ($R_t$) and trading volume ($V_t$). Test Granger causality both directions.
     \end{block}
-    \begin{exampleblock}{Typical Findings}
+    \begin{exampleblock}{Typical Findings in Finance Literature}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Both rates are I(1) (confirmed by ADF)
-            \item Johansen test: $r = 1$ cointegrating vector
-            \item Cointegrating vector $\approx (1, -1)$: spread is stationary
-            \item Short rate adjusts ($\alpha_r < 0$), long rate weakly exogenous
+            \item Returns often Granger-cause volume (price changes trigger trading)
+            \item Volume sometimes Granger-causes returns (volume as leading indicator)
+            \item Results: Often \textbf{bidirectional} causality $R \leftrightarrow V$
         \end{itemize}
     \end{exampleblock}
-    \begin{block}{Policy Implication}
-        Central bank controls short rate; long rate driven by expectations.
+    \begin{block}{Practical Issue}
+        Stock returns are typically stationary, but volume may need transformation (log or difference).
     \end{block}
     }
 \end{frame}
 
-\begin{frame}{Example: Purchasing Power Parity}
+\begin{frame}{Example: Interest Rates and Inflation}
     {\small
-    \begin{block}{PPP Theory}
-        $e_t = p_t - p_t^*$ (log exchange rate = price differential)
-
-        Real exchange rate: $q_t = e_t - p_t + p_t^*$ should be stationary (long-run PPP)
+    \begin{block}{Taylor Rule Context}
+        Central banks set interest rates ($i_t$) in response to inflation ($\pi_t$):
+        $i_t = r^* + \pi^* + 1.5(\pi_t - \pi^*) + 0.5(y_t - y^*)$
     \end{block}
-    \begin{exampleblock}{Empirical Challenges}
+    \begin{exampleblock}{VAR Analysis Questions}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Unit root tests: $e_t$, $p_t$, $p_t^*$ all I(1)
-            \item Cointegration tests: Mixed results depending on sample
-            \item Half-life of PPP deviations: 3-5 years (slow adjustment)
-            \item Weak exogeneity: Exchange rate often doesn't adjust
+            \item Does inflation Granger-cause interest rates? (Central bank reaction)
+            \item Do interest rates Granger-cause inflation? (Monetary policy transmission)
         \end{itemize}
     \end{exampleblock}
-    \begin{alertblock}{PPP Puzzle}
-        Real exchange rate is highly persistent---slow mean reversion is hard to explain with standard models.
-    \end{alertblock}
-    }
-\end{frame}
-
-\begin{frame}{Example: Pairs Trading Strategy}
-    {\small
-    \begin{block}{Idea}
-        Find cointegrated stocks $\Rightarrow$ trade the stationary spread
+    \begin{block}{Expected Results}
+        Bidirectional causality: Quick $\pi \to i$ (policy reaction), Delayed $i \to \pi$ (policy effect)
     \end{block}
-    \begin{exampleblock}{Implementation Steps}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{Identify pairs}: Test cointegration (e.g., Coca-Cola \& Pepsi)
-            \item \textbf{Estimate spread}: $z_t = P_A - \beta P_B$
-            \item \textbf{Trading rules}:
-            \begin{itemize}
-                \item $z_t > \mu + 2\sigma$: Sell A, Buy B (spread too wide)
-                \item $z_t < \mu - 2\sigma$: Buy A, Sell B (spread too narrow)
-                \item Exit when $z_t \approx \mu$
-            \end{itemize}
-        \end{enumerate}
-    \end{exampleblock}
-    \begin{alertblock}{Risks}
-        Cointegration can break down; spread may not revert; transaction costs.
-    \end{alertblock}
     }
 \end{frame}
 
-\begin{frame}{Python Cointegration Analysis: Key Functions}
+\begin{frame}{Python VAR Analysis: Key Functions}
     {\footnotesize
     \begin{block}{Essential Libraries}
-        \texttt{from statsmodels.tsa.stattools import coint, adfuller} \\
-        \texttt{from statsmodels.tsa.vector\_ar.vecm import coint\_johansen, VECM}
+        \texttt{from statsmodels.tsa.api import VAR} \\
+        \texttt{from statsmodels.tsa.stattools import grangercausalitytests}
     \end{block}
 
     \begin{block}{Workflow}
         \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item Unit root tests: \texttt{adfuller(series)}
-            \item Engle-Granger: \texttt{coint(y, x)} returns test stat \& p-value
-            \item Johansen: \texttt{coint\_johansen(data, det\_order, k\_ar\_diff)}
-            \item Fit VECM: \texttt{model = VECM(data, k\_ar\_diff=2, coint\_rank=1)}
-            \item Results: \texttt{results = model.fit()}
+            \item Create DataFrame: \texttt{data = pd.DataFrame(\{'gdp': ..., 'unemp': ...\})}
+            \item Fit VAR: \texttt{model = VAR(data); results = model.fit(maxlags=8, ic='aic')}
+            \item Get IRF: \texttt{irf = results.irf(periods=20)}
+            \item Get FEVD: \texttt{fevd = results.fevd(periods=20)}
+            \item Granger tests: \texttt{grangercausalitytests(data[['y', 'x']], maxlag=4)}
         \end{enumerate}
     \end{block}
 
@@ -793,47 +812,147 @@
 \end{frame}
 
 %=============================================================================
-% SECTION 4: DISCUSSION TOPICS
+% SECTION 4: REAL DATA ANALYSIS
+%=============================================================================
+\section{Real Data Analysis}
+
+\begin{frame}{Case Study: GDP and Unemployment}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_gdp_unemployment.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item \textbf{Top}: US Real GDP growth rate (quarterly)
+        \item \textbf{Bottom}: US Unemployment rate
+        \item Clear negative relationship (Okun's Law)
+        \item VAR model can capture dynamic interactions between these variables
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Cross-Correlation Analysis}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_cross_correlation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item Cross-correlation measures lead-lag relationships
+        \item Negative correlation at lag 0: contemporaneous inverse relationship
+        \item Asymmetric pattern suggests unemployment responds to GDP with lag
+        \item Helps inform VAR lag order selection
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Visual: Cross-Correlation Function}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch5_def_ccf.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\small The CCF measures correlation between two series at different lags, revealing lead-lag relationships.}
+\end{frame}
+
+\begin{frame}{VAR Estimation Results}
+    {\small
+    \begin{block}{Model: VAR(2) for GDP Growth and Unemployment}
+        \begin{center}
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Equation} & \textbf{Variable} & \textbf{Coef.} & \textbf{Std. Error} & \textbf{t-stat} \\
+            \midrule
+            \multirow{4}{*}{$\Delta GDP_t$} & $\Delta GDP_{t-1}$ & $0.312$ & $0.087$ & $3.59$ \\
+            & $\Delta GDP_{t-2}$ & $0.145$ & $0.082$ & $1.77$ \\
+            & $U_{t-1}$ & $-0.421$ & $0.156$ & $-2.70$ \\
+            & $U_{t-2}$ & $0.198$ & $0.148$ & $1.34$ \\
+            \midrule
+            \multirow{4}{*}{$U_t$} & $\Delta GDP_{t-1}$ & $-0.087$ & $0.032$ & $-2.72$ \\
+            & $\Delta GDP_{t-2}$ & $-0.045$ & $0.030$ & $-1.50$ \\
+            & $U_{t-1}$ & $1.456$ & $0.058$ & $25.1$ \\
+            & $U_{t-2}$ & $-0.521$ & $0.055$ & $-9.47$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Impulse Response Functions}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_irf.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item IRFs show dynamic response to one-unit shocks
+        \item GDP shock: temporary positive effect on GDP, negative on unemployment
+        \item Unemployment shock: negative effect on GDP, persistent on unemployment
+        \item 95\% confidence bands show uncertainty in responses
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Forecast Error Variance Decomposition}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_fevd.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}
+        \item FEVD shows proportion of variance explained by each shock
+        \item GDP variance: mostly explained by own shocks, some by unemployment
+        \item Unemployment variance: highly persistent (own shocks dominant)
+        \item Provides insight into relative importance of different shocks
+    \end{itemize}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 5: DISCUSSION TOPICS
 %=============================================================================
 \section{Discussion Topics}
 
-\begin{frame}{Discussion: Cointegration vs Correlation}
+\begin{frame}{Discussion: Granger Causality vs True Causality}
     {\small
     \begin{alertblock}{Key Question}
-        Two series are highly correlated. Are they cointegrated?
+        If $X$ Granger-causes $Y$, does that mean $X$ actually causes $Y$? \textbf{NO!}
     \end{alertblock}
-    \begin{block}{Answer: Not necessarily!}
+    \begin{block}{Why Granger Causality Can Fail}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Correlation}: Measures co-movement (can be spurious for I(1))
-            \item \textbf{Cointegration}: Requires stationary linear combination
+            \item \textbf{Omitted variable bias}: $Z$ might cause both $X$ and $Y$ (e.g., weather $\to$ ice cream \& drownings)
+            \item \textbf{Anticipation effects}: Markets anticipate future events (stock prices $\to$ earnings)
+            \item \textbf{Aggregation issues}: Timing of data collection matters
         \end{itemize}
     \end{block}
-    \begin{exampleblock}{Example}
-        Two independent random walks can have correlation $> 0.9$ purely by chance (spurious correlation). But they're NOT cointegrated---their spread is also I(1).
-
-        \vspace{0.2cm}
-        \textbf{Cointegration} implies a meaningful long-run equilibrium relationship.
+    \begin{exampleblock}{Conclusion}
+        Granger causality is about \textbf{prediction}, not \textbf{mechanism}. For structural causality, need theory + identification strategy.
     \end{exampleblock}
     }
 \end{frame}
 
-\begin{frame}{Discussion: Choosing Deterministic Components}
+\begin{frame}{Discussion: Variable Ordering in IRFs}
     {\small
     \begin{alertblock}{Key Question}
-        Johansen test has 5 cases for deterministics. Which to choose?
+        Why does variable ordering matter for orthogonalized IRFs?
     \end{alertblock}
-    \begin{block}{Guidelines}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{No constant, no trend}: Rarely used (requires mean-zero data)
-            \item \textbf{Constant in CE only}: Level series, no drift
-            \item \textbf{Constant unrestricted}: Most common for economic data
-            \item \textbf{Trend in CE}: Series have deterministic trends
-            \item \textbf{Trend unrestricted}: Trending differences (uncommon)
-        \end{enumerate}
+    \begin{block}{Cholesky Decomposition Assumes}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item First variable: Affects all others contemporaneously
+            \item Second variable: Affected by first, affects remaining
+            \item Last variable: Affected by all, affects none contemporaneously
+        \end{itemize}
     \end{block}
-    \begin{exampleblock}{Practical Advice}
-        Start with Case 3 (constant unrestricted). Check sensitivity to specification. Use economic reasoning: do levels have trends?
+    \begin{exampleblock}{Example: Monetary Policy VAR Ordering}
+        1. Oil prices (exogenous) $\to$ 2. GDP (slow) $\to$ 3. Inflation $\to$ 4. Interest rates (fast)
     \end{exampleblock}
+    \begin{block}{Rule}
+        Order from ``most exogenous'' to ``most endogenous'' --- justify with economic theory!
+    \end{block}
     }
 \end{frame}
 
@@ -845,26 +964,21 @@
 \begin{frame}{Take-Home Exercises}
     {\footnotesize
     \begin{enumerate}\setlength{\itemsep}{2pt}
-        \item \textbf{Theoretical}: Show that if $Y_t$ and $X_t$ are both random walks with the same innovation, they are cointegrated.
+        \item \textbf{Theoretical}: Show that a VAR(1) can be written as MA($\infty$): $\bY_t = \sum_{i=0}^{\infty} \bA^i \bepsilon_{t-i}$ when stable.
 
-        \item \textbf{Computation}: Given VECM estimates:
-            \begin{align*}
-                \Delta Y_t &= 0.5 - 0.3(Y_{t-1} - 2X_{t-1}) + 0.2\Delta Y_{t-1} \\
-                \Delta X_t &= 0.1 + 0.1(Y_{t-1} - 2X_{t-1}) + 0.4\Delta X_{t-1}
-            \end{align*}
+        \item \textbf{Computation}: For VAR(1) with $\bA = \begin{pmatrix} 0.8 & -0.1 \\ 0.3 & 0.4 \end{pmatrix}$:
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item What is the cointegrating vector?
-                \item Which variable adjusts more quickly?
-                \item What is the long-run equilibrium relationship?
+                \item Check stability; Compute IRFs for $h = 0, 1, 2, 3$
+                \item Plot the response of $Y_1$ to a shock in $Y_2$
             \end{itemize}
 
-        \item \textbf{Applied}: Download 10-year and 3-month Treasury rates:
+        \item \textbf{Applied}: Download US GDP growth and unemployment data:
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Test for unit roots; Test for cointegration (Engle-Granger and Johansen)
-                \item Estimate VECM; Interpret adjustment coefficients
+                \item Test stationarity; Estimate VAR (select optimal lag)
+                \item Test Granger causality; Compute and interpret IRFs
             \end{itemize}
 
-        \item \textbf{Critical Thinking}: Why might PPP hold in the long run but not short run?
+        \item \textbf{Critical Thinking}: Why might stock prices ``Granger-cause'' GDP even though GDP is determined by real factors?
     \end{enumerate}
     }
 \end{frame}
@@ -873,23 +987,22 @@
     {\footnotesize
     \begin{block}{Hints}
         \begin{enumerate}\setlength{\itemsep}{1pt}
-            \item If $Y_t = Y_{t-1} + \varepsilon_t$ and $X_t = X_{t-1} + \varepsilon_t$ (same shock), then $Y_t - X_t = Y_0 - X_0$ is constant (stationary).
+            \item Use recursive substitution: $\bY_t = \bA\bY_{t-1} + \bepsilon_t = \bA(\bA\bY_{t-2} + \bepsilon_{t-1}) + \bepsilon_t = \ldots$
 
-            \item From the VECM:
+            \item Eigenvalues of $\begin{pmatrix} 0.8 & -0.1 \\ 0.3 & 0.4 \end{pmatrix}$:
                 \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Cointegrating vector: $(1, -2)$ (normalized on $Y$)
-                    \item $Y$ adjusts faster: $|\alpha_Y| = 0.3 > |\alpha_X| = 0.1$
-                    \item Long-run: $Y = 2X$ (when EC term = 0)
+                    \item Characteristic equation: $\lambda^2 - 1.2\lambda + 0.35 = 0$
+                    \item $\lambda_1 \approx 0.85$, $\lambda_2 \approx 0.41$ (both $< 1$, stable)
                 \end{itemize}
 
-            \item For interest rates:
+            \item For GDP/Unemployment:
                 \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Both typically I(1); spread usually stationary
-                    \item Expect one cointegrating vector with $(1, -1)$
-                    \item Short rate typically adjusts; long rate often weakly exogenous
+                    \item GDP growth is usually I(0), unemployment may be I(1)
+                    \item Use unemployment rate changes if needed
+                    \item Expect GDP growth $\rightarrow$ unemployment (Okun's Law)
                 \end{itemize}
 
-            \item PPP deviations: Transportation costs, non-traded goods, sticky prices, tariffs, market segmentation all slow adjustment but don't prevent long-run convergence.
+            \item Stock prices anticipate future economic conditions---they reflect expectations about future GDP, so they ``lead'' GDP in the data even though causation runs the other way.
         \end{enumerate}
     \end{block}
     }
@@ -902,21 +1015,22 @@
     {\footnotesize
     \begin{block}{Main Points}
         \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{Cointegration}: I(1) variables with stationary linear combination
-            \item \textbf{Spurious regression}: High $R^2$ without cointegration is meaningless
-            \item \textbf{Engle-Granger}: Simple, but only one cointegrating vector
-            \item \textbf{Johansen}: Multiple vectors, MLE, more powerful
+            \item VAR models capture \textbf{interdependencies} between multiple time series
+            \item Parameter count grows quickly: $K^2 p + K$ per system
+            \item \textbf{Granger causality} tests predictive content, not true causation
+            \item \textbf{IRFs} show dynamic propagation of shocks; ordering matters
         \end{enumerate}
     \end{block}
-    \begin{block}{VECM Insights}
+    \begin{block}{Practical Points}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\bbeta$ defines equilibrium; $\balpha$ determines adjustment speed
-            \item Weak exogeneity ($\alpha = 0$): Variable doesn't respond to disequilibrium
-            \item Always use VECM (not VAR in differences) when cointegrated
+            \item Always check stationarity before estimating VAR
+            \item Use information criteria (AIC/BIC) for lag selection
+            \item Report Granger tests in both directions
+            \item Justify variable ordering with economic theory
         \end{itemize}
     \end{block}
     \begin{alertblock}{Remember}
-        Cointegration is about \textbf{long-run equilibrium}, not just correlation!
+        Granger causality is about \textbf{prediction}, not \textbf{mechanism}!
     \end{alertblock}
     }
 \end{frame}
