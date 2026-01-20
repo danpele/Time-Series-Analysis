@@ -160,6 +160,31 @@
 \end{frame}
 
 %=============================================================================
+% LEARNING OBJECTIVES
+%=============================================================================
+\begin{frame}{Obiective de Învățare}
+    \begin{block}{La finalul acestui capitol, veți fi capabili să:}
+        \begin{enumerate}
+            \item Înțelegeți \textbf{volatility clustering} și faptele stilizate ale randamentelor financiare
+            \item Estimați și interpretați modele \textbf{ARCH} și \textbf{GARCH}
+            \item Aplicați modele asimetrice (\textbf{EGARCH}, \textbf{GJR-GARCH}) pentru efectul de levier
+            \item Efectuați diagnosticarea și selectarea modelelor
+            \item Prognozați volatilitatea și calculați \textbf{Value at Risk (VaR)}
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Competențe Practice}
+        \begin{itemize}
+            \item Implementare Python cu pachetul \texttt{arch}
+            \item Interpretarea parametrilor și a persistenței volatilității
+            \item Calculul VaR pentru managementul riscului
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+%=============================================================================
 % SECTION 1: INTRODUCTION TO VOLATILITY
 %=============================================================================
 \section{Introducere în Modelarea Volatilității}
@@ -712,6 +737,93 @@
     \end{columns}
 \end{frame}
 
+\begin{frame}{Value at Risk --- Exemplu Numeric}
+    \begin{exampleblock}{Calculul VaR pentru un Portofoliu}
+        \textbf{Date:} Portofoliu de \textbf{1.000.000 EUR}, volatilitate prognozată $\hat{\sigma}_{T+1} = 1.5\%$
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{VaR cu Distribuție Normală}
+        \begin{center}
+            \begin{tabular}{lccc}
+                \toprule
+                \textbf{Nivel} & $\bm{z_\alpha}$ & \textbf{VaR (\%)} & \textbf{VaR (EUR)} \\
+                \midrule
+                95\% (1 zi) & 1.645 & 2.47\% & 24.675 \\
+                99\% (1 zi) & 2.326 & 3.49\% & 34.890 \\
+                99\% (10 zile) & $2.326 \cdot \sqrt{10}$ & 11.03\% & 110.314 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{block}
+
+    \begin{alertblock}{Scalare pentru Perioade Mai Lungi}
+        \[
+            \text{VaR}_{h\text{ zile}} = \text{VaR}_{1\text{ zi}} \cdot \sqrt{h}
+        \]
+        Această regulă presupune randamente i.i.d. --- o aproximare pentru orizonturi scurte.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Value at Risk --- Distribuție Student-t}
+    \begin{block}{De ce Student-t?}
+        \begin{itemize}
+            \item Distribuția normală \textbf{subestimează} riscul de coadă
+            \item Randamentele financiare au \textbf{cozi groase} (kurtosis $> 3$)
+            \item Student-t cu $\nu$ grade de libertate capturează mai bine extremele
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Comparație VaR 99\% (1 zi) pentru $\sigma = 1.5\%$, Portofoliu = 1M EUR}
+        \begin{center}
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Distribuție} & \textbf{Cuantilă} & \textbf{VaR (EUR)} \\
+                \midrule
+                Normal & 2.326 & 34.890 \\
+                Student-t ($\nu = 10$) & 2.764 & 41.460 \\
+                Student-t ($\nu = 6$) & 3.143 & 47.145 \\
+                Student-t ($\nu = 4$) & 3.747 & 56.205 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{exampleblock}
+
+    \begin{alertblock}{Observație}
+        Cu $\nu = 6$ (tipic pentru acțiuni), VaR este cu \textbf{35\% mai mare} decât cel normal!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{VaR --- Exemplu Complet cu GARCH}
+    \begin{block}{Procedura de Calcul VaR}
+        \begin{enumerate}
+            \item Estimează modelul GARCH(1,1) cu distribuție Student-t
+            \item Obține prognoza volatilității: $\hat{\sigma}_{T+1}$
+            \item Calculează VaR: $\text{VaR}_\alpha = t_\alpha(\nu) \cdot \hat{\sigma}_{T+1} \cdot \sqrt{\frac{\nu-2}{\nu}}$
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Exemplu: S\&P 500}
+        \begin{itemize}
+            \item Parametri estimați: $\alpha = 0.088$, $\beta = 0.900$, $\nu = 6.4$
+            \item Volatilitate prognozată: $\hat{\sigma}_{T+1} = 1.2\%$
+            \item Portofoliu: 10.000.000 EUR
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{VaR 99\% (1 zi):}
+        \[
+            \text{VaR} = 3.05 \times 0.012 \times 10.000.000 = \textbf{366.000 EUR}
+        \]
+    \end{exampleblock}
+\end{frame}
+
 %=============================================================================
 % SECTION 7: PYTHON IMPLEMENTATION
 %=============================================================================
@@ -855,6 +967,43 @@ VaR_95 = 1.645 * sigma_forecast  # pentru alpha = 5%
     \begin{block}{Leverage Effect Confirmat}
         EGARCH: $\gamma = -0.12$ (semnificativ negativ) $\Rightarrow$ șocurile negative amplifică volatilitatea mai mult decât cele pozitive
     \end{block}
+\end{frame}
+
+%=============================================================================
+% KEY FORMULAS
+%=============================================================================
+\begin{frame}{Formule Cheie}
+    \begin{block}{Modele de Volatilitate}
+        \begin{itemize}
+            \item \textbf{ARCH(q):} $\sigma_t^2 = \omega + \sum_{i=1}^{q} \alpha_i \varepsilon_{t-i}^2$
+            \item \textbf{GARCH(1,1):} $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$
+            \item \textbf{EGARCH:} $\ln(\sigma_t^2) = \omega + \alpha(|z_{t-1}| - \E[|z|]) + \gamma z_{t-1} + \beta \ln(\sigma_{t-1}^2)$
+            \item \textbf{GJR-GARCH:} $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \gamma \varepsilon_{t-1}^2 I_{t-1} + \beta \sigma_{t-1}^2$
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Proprietăți și Măsuri}
+        \begin{columns}[T]
+            \begin{column}{0.5\textwidth}
+                \begin{itemize}
+                    \item \textbf{Varianță necondiționată:} $\bar{\sigma}^2 = \dfrac{\omega}{1-\alpha-\beta}$
+                    \item \textbf{Half-life:} $HL = \dfrac{\ln(0.5)}{\ln(\alpha+\beta)}$
+                \end{itemize}
+            \end{column}
+            \begin{column}{0.5\textwidth}
+                \begin{itemize}
+                    \item \textbf{VaR:} $\text{VaR}_\alpha = z_\alpha \cdot \sigma_{T+1}$
+                    \item \textbf{Stationaritate:} $\alpha + \beta < 1$
+                \end{itemize}
+            \end{column}
+        \end{columns}
+    \end{block}
+
+    \begin{alertblock}{Test ARCH-LM}
+        $LM = T \cdot R^2 \sim \chi^2(q)$ unde $R^2$ provine din regresia $\hat{\varepsilon}_t^2$ pe lag-urile sale
+    \end{alertblock}
 \end{frame}
 
 %=============================================================================
