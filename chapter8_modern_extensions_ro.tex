@@ -261,6 +261,17 @@
     \end{exampleblock}
 \end{frame}
 
+\begin{frame}{Comparație ACF: Memorie Scurtă vs Lungă}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.75\textheight, keepaspectratio]{charts/ch8_acf_comparison.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    \textbf{Stânga}: AR(1) --- autocorelații care scad exponențial (memorie scurtă)\\
+    \textbf{Dreapta}: ARFIMA cu $d=0.35$ --- autocorelații care scad hiperbolic (memorie lungă)
+    }
+\end{frame}
+
 \begin{frame}{Modelul ARFIMA(p,d,q)}
     \begin{defn}[ARFIMA]
         Un proces $\{Y_t\}$ urmează un model \textbf{ARFIMA(p,d,q)} dacă:
@@ -314,6 +325,28 @@
     \end{block}
 \end{frame}
 
+\begin{frame}{Efectul Parametrului $d$ asupra ACF}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.75\textheight, keepaspectratio]{charts/ch8_arfima_d_effect.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    Cu cât $d$ este mai mare, cu atât autocorelațiile scad mai lent. Pentru $d \to 0.5$, autocorrelațiile rămân semnificative chiar și la lag-uri foarte mari.
+    }
+\end{frame}
+
+\begin{frame}{Exponentul Hurst: Interpretare Vizuală}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch8_hurst_interpretation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \textbf{H $<$ 0.5}: Serie care revine frecvent la medie (mean-reverting)\\
+    \textbf{H = 0.5}: Mers aleator, imprevizibil\\
+    \textbf{H $>$ 0.5}: Serie persistentă, tendințele continuă
+    }
+\end{frame}
+
 \begin{frame}{Estimarea Parametrului $d$}
     \begin{block}{Metode de Estimare}
         \begin{enumerate}
@@ -352,6 +385,16 @@
     \begin{alertblock}{Notă}
         Estimarea ARFIMA necesită pachete specializate. În practică, se folosește adesea \texttt{arch} sau \texttt{fracdiff} în Python.
     \end{alertblock}
+\end{frame}
+
+\begin{frame}{Exemplu Real: Memorie Lungă în Volatilitate}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.72\textheight, keepaspectratio]{charts/ch8_volatility_long_memory.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    \textbf{Fapt Stilizat}: Randamentele financiare au memorie scurtă, dar volatilitatea (|randamente|) are memorie lungă! Aceasta este baza modelelor FIGARCH.
+    }
 \end{frame}
 
 %=============================================================================
@@ -403,6 +446,16 @@
     \end{alertblock}
 \end{frame}
 
+\begin{frame}{Feature Engineering: Ilustrare}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.75\textheight, keepaspectratio]{charts/ch8_feature_engineering.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    Transformăm seria temporală în features: lag-uri, statistici rolling, iar modelul RF învață relațiile dintre acestea și valorile viitoare.
+    }
+\end{frame}
+
 \begin{frame}{Random Forest: Implementare Python}
     \begin{block}{Cod Python}
         {\footnotesize
@@ -440,6 +493,16 @@
 
     {\footnotesize
     \texttt{rf.feature\_importances\_} sau \texttt{permutation\_importance(rf, X\_test, y\_test)}
+    }
+\end{frame}
+
+\begin{frame}{Random Forest: Exemplu de Prognoză}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.72\textheight, keepaspectratio]{charts/ch8_rf_prediction.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    Modelul Random Forest antrenat pe date istorice (albastru) produce prognoze (roșu punctat) care urmăresc bine valorile reale din perioada de test (verde).
     }
 \end{frame}
 
@@ -521,6 +584,16 @@
         \end{align*}
         }
     \end{block}
+\end{frame}
+
+\begin{frame}{Arhitectura Celulei LSTM}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.75\textheight, keepaspectratio]{charts/ch8_lstm_architecture.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    Porțile (forget, input, output) controlează ce informație este uitată, adăugată și transmisă. \textbf{Cell state} permite gradienților să ``curgă'' fără degradare.
+    }
 \end{frame}
 
 \begin{frame}{Avantajele LSTM pentru Serii de Timp}
@@ -628,40 +701,10 @@
 
 \begin{frame}{Time Series Cross-Validation}
     \begin{center}
-    \begin{tikzpicture}[scale=0.7, transform shape]
-        % Fold 1
-        \fill[MainBlue!60] (0,4) rectangle (4,4.5);
-        \fill[IDAred!60] (4,4) rectangle (5,4.5);
-        \node[left] at (0,4.25) {Fold 1};
-
-        % Fold 2
-        \fill[MainBlue!60] (0,3) rectangle (5,3.5);
-        \fill[IDAred!60] (5,3) rectangle (6,3.5);
-        \node[left] at (0,3.25) {Fold 2};
-
-        % Fold 3
-        \fill[MainBlue!60] (0,2) rectangle (6,2.5);
-        \fill[IDAred!60] (6,2) rectangle (7,2.5);
-        \node[left] at (0,2.25) {Fold 3};
-
-        % Fold 4
-        \fill[MainBlue!60] (0,1) rectangle (7,1.5);
-        \fill[IDAred!60] (7,1) rectangle (8,1.5);
-        \node[left] at (0,1.25) {Fold 4};
-
-        % Legend
-        \fill[MainBlue!60] (2,0) rectangle (2.5,0.3);
-        \node[right] at (2.5,0.15) {Train};
-        \fill[IDAred!60] (5,0) rectangle (5.5,0.3);
-        \node[right] at (5.5,0.15) {Test};
-
-        % Arrow
-        \draw[->, thick] (0,-0.5) -- (9,-0.5);
-        \node[below] at (4.5,-0.5) {Timp};
-    \end{tikzpicture}
+        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{charts/ch8_timeseries_cv.pdf}
     \end{center}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
     \begin{block}{Implementare Python}
         {\footnotesize
@@ -670,6 +713,10 @@
         \texttt{tscv = TimeSeriesSplit(n\_splits=5)}
         }
     \end{block}
+
+    {\footnotesize
+    \textbf{Important}: Setul de antrenare crește progresiv, iar testul este întotdeauna în viitor. Astfel evităm data leakage.
+    }
 \end{frame}
 
 \begin{frame}{Ghid de Selecție a Modelului}
@@ -697,6 +744,16 @@
         \draw[arrow] (interp) -- node[above right] {Nu} (lstm);
     \end{tikzpicture}
     \end{center}
+    }
+\end{frame}
+
+\begin{frame}{Comparație Modele: Acuratețe vs Cost Computațional}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.72\textheight, keepaspectratio]{charts/ch8_model_comparison.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    \textbf{Trade-off}: Modelele ML pot avea acuratețe ușor mai bună, dar costul computațional crește semnificativ. Pentru date puține sau interpretabilitate, ARIMA/ARFIMA rămân alegeri excelente.
     }
 \end{frame}
 
