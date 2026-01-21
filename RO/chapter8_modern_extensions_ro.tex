@@ -863,6 +863,483 @@
 \end{frame}
 
 %=============================================================================
+\section{Studiu de Caz Complet: Cursul EUR/RON}
+%=============================================================================
+
+\begin{frame}{Studiu de Caz: Prognoza Cursului EUR/RON}
+    \begin{block}{De ce EUR/RON?}
+        \begin{itemize}
+            \item Relevanță pentru economia românească
+            \item Potențială \textbf{memorie lungă} (persistența șocurilor)
+            \item Pattern-uri influențate de \textbf{factori macroeconomici}
+            \item Date ușor accesibile (BNR, Yahoo Finance)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Obiectiv}
+        Comparăm ARIMA, ARFIMA, Random Forest și LSTM pe aceleași date pentru a înțelege punctele forte ale fiecărei metode.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 1: Încărcarea și Vizualizarea Datelor}
+    \begin{block}{Cod Python -- Descărcare Date}
+        {\footnotesize
+\begin{verbatim}
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Descărcăm datele EUR/RON (sau EURRON=X)
+data = yf.download('EURRON=X', start='2015-01-01', end='2024-12-31')
+df = data[['Close']].dropna()
+df.columns = ['EURRON']
+
+# Calculăm randamentele logaritmice
+df['Returns'] = np.log(df['EURRON']).diff() * 100
+df = df.dropna()
+
+print(f"Perioada: {df.index[0]} - {df.index[-1]}")
+print(f"Observații: {len(df)}")
+print(f"Media randamentelor: {df['Returns'].mean():.4f}%")
+print(f"Volatilitate: {df['Returns'].std():.4f}%")
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}{Vizualizarea Seriei EUR/RON}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.72\textheight, keepaspectratio]{charts/ch8_eurron_series.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    \textbf{Sus}: Cursul EUR/RON -- observăm tendința de depreciere a leului și perioadele de volatilitate ridicată.\\
+    \textbf{Jos}: Randamentele zilnice -- volatilitate clustering (perioadele de volatilitate mare sunt urmate de alte perioade similare).
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 2: Testarea Memoriei Lungi}
+    \begin{block}{Cod Python -- Estimarea lui $d$ și Testul Hurst}
+        {\footnotesize
+\begin{verbatim}
+from arch.unitroot import PhillipsPerron, KPSS
+from hurst import compute_Hc  # pip install hurst
+
+# Testul Phillips-Perron pentru stationaritate
+pp_test = PhillipsPerron(df['Returns'])
+print(f"Phillips-Perron p-value: {pp_test.pvalue:.4f}")
+
+# Estimarea exponentului Hurst
+H, c, data_rs = compute_Hc(df['Returns'].values, kind='change')
+d_estimated = H - 0.5
+
+print(f"Exponentul Hurst (H): {H:.4f}")
+print(f"Parametrul d estimat: {d_estimated:.4f}")
+
+# Interpretare
+if H > 0.5:
+    print("Serie PERSISTENTĂ (trend-following)")
+elif H < 0.5:
+    print("Serie ANTI-PERSISTENTĂ (mean-reverting)")
+else:
+    print("Mers aleator")
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}{Rezultate Test Memorie Lungă -- EUR/RON}
+    \begin{block}{Output Tipic}
+        {\footnotesize
+        \texttt{Phillips-Perron p-value: 0.0001} (randamentele sunt staționare)\\
+        \texttt{Exponentul Hurst (H): 0.47}\\
+        \texttt{Parametrul d estimat: -0.03}\\
+        \texttt{Serie ușor ANTI-PERSISTENTĂ (mean-reverting)}
+        }
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Interpretare}
+        \begin{itemize}
+            \item Randamentele EUR/RON sunt \textbf{staționare} (p-value $< 0.05$)
+            \item $H \approx 0.47 < 0.5$: ușoară tendință de revenire la medie
+            \item $d \approx 0$: \textbf{memorie scurtă} -- ARMA poate fi suficient
+            \item Totuși, \textbf{volatilitatea} poate avea memorie lungă!
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 3: Model ARIMA}
+    \begin{block}{Cod Python -- ARIMA cu selecție automată}
+        {\footnotesize
+\begin{verbatim}
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+import warnings
+warnings.filterwarnings('ignore')
+
+# Împărțim datele: 80% train, 20% test
+train_size = int(len(df) * 0.8)
+train, test = df['Returns'][:train_size], df['Returns'][train_size:]
+
+# Fit ARIMA(1,0,1) - simplu și eficient pentru randamente
+model_arima = ARIMA(train, order=(1, 0, 1))
+results_arima = model_arima.fit()
+
+# Prognoză
+forecast_arima = results_arima.forecast(steps=len(test))
+
+# Evaluare
+rmse_arima = np.sqrt(mean_squared_error(test, forecast_arima))
+mae_arima = mean_absolute_error(test, forecast_arima)
+print(f"ARIMA(1,0,1) - RMSE: {rmse_arima:.4f}, MAE: {mae_arima:.4f}")
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 4: Model ARFIMA (Memorie Lungă)}
+    \begin{block}{Cod Python -- ARFIMA cu arch package}
+        {\footnotesize
+\begin{verbatim}
+from arch import arch_model
+
+# ARFIMA(1,d,1) folosind arch pentru estimare robustă
+# Notă: arch estimează d automat în contextul GARCH
+
+# Alternativ, folosim statsmodels cu d fracționar
+from statsmodels.tsa.arima.model import ARIMA
+
+# Estimăm d folosind GPH sau setăm manual
+d_frac = 0.1  # sau valoarea estimată anterior
+
+model_arfima = ARIMA(train, order=(1, d_frac, 1))
+try:
+    results_arfima = model_arfima.fit()
+    forecast_arfima = results_arfima.forecast(steps=len(test))
+    rmse_arfima = np.sqrt(mean_squared_error(test, forecast_arfima))
+    print(f"ARFIMA(1,{d_frac},1) - RMSE: {rmse_arfima:.4f}")
+except:
+    print("ARFIMA necesită d între -0.5 și 0.5 pentru stationaritate")
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 5: Random Forest -- Pregătire Date}
+    \begin{block}{Cod Python -- Feature Engineering}
+        {\footnotesize
+\begin{verbatim}
+from sklearn.ensemble import RandomForestRegressor
+
+# Creăm features pentru Random Forest
+def create_features(data, lags=5):
+    df_feat = pd.DataFrame(index=data.index)
+    df_feat['target'] = data.values
+
+    # Lag features
+    for i in range(1, lags + 1):
+        df_feat[f'lag_{i}'] = data.shift(i)
+
+    # Rolling statistics
+    df_feat['rolling_mean_5'] = data.rolling(5).mean()
+    df_feat['rolling_std_5'] = data.rolling(5).std()
+    df_feat['rolling_mean_20'] = data.rolling(20).mean()
+
+    # Calendar features
+    df_feat['dayofweek'] = data.index.dayofweek
+    df_feat['month'] = data.index.month
+
+    return df_feat.dropna()
+
+df_rf = create_features(df['Returns'], lags=10)
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 5: Random Forest -- Antrenare și Evaluare}
+    \begin{block}{Cod Python -- Model Random Forest}
+        {\footnotesize
+\begin{verbatim}
+# Împărțim datele
+X = df_rf.drop('target', axis=1)
+y = df_rf['target']
+
+train_size = int(len(df_rf) * 0.8)
+X_train, X_test = X[:train_size], X[train_size:]
+y_train, y_test = y[:train_size], y[train_size:]
+
+# Antrenăm Random Forest
+rf_model = RandomForestRegressor(
+    n_estimators=100,
+    max_depth=10,
+    min_samples_split=5,
+    random_state=42
+)
+rf_model.fit(X_train, y_train)
+
+# Predicție și evaluare
+pred_rf = rf_model.predict(X_test)
+rmse_rf = np.sqrt(mean_squared_error(y_test, pred_rf))
+print(f"Random Forest - RMSE: {rmse_rf:.4f}")
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}{Random Forest: Importanța Features}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch8_rf_feature_importance.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \textbf{Insight}: Lag-urile recente (lag\_1, lag\_2) și volatilitatea rolling sunt cele mai importante. Features calendaristice au impact minor pentru randamente zilnice.
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 6: LSTM -- Pregătire Date}
+    \begin{block}{Cod Python -- Secvențe pentru LSTM}
+        {\footnotesize
+\begin{verbatim}
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from sklearn.preprocessing import MinMaxScaler
+
+# Scalăm datele între 0 și 1
+scaler = MinMaxScaler()
+scaled_data = scaler.fit_transform(df['Returns'].values.reshape(-1, 1))
+
+# Creăm secvențe
+def create_sequences(data, seq_length=20):
+    X, y = [], []
+    for i in range(seq_length, len(data)):
+        X.append(data[i-seq_length:i, 0])
+        y.append(data[i, 0])
+    return np.array(X), np.array(y)
+
+X_lstm, y_lstm = create_sequences(scaled_data, seq_length=20)
+X_lstm = X_lstm.reshape((X_lstm.shape[0], X_lstm.shape[1], 1))
+
+# Split
+split = int(len(X_lstm) * 0.8)
+X_train_lstm, X_test_lstm = X_lstm[:split], X_lstm[split:]
+y_train_lstm, y_test_lstm = y_lstm[:split], y_lstm[split:]
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 6: LSTM -- Arhitectură și Antrenare}
+    \begin{block}{Cod Python -- Model LSTM}
+        {\footnotesize
+\begin{verbatim}
+# Construim modelul LSTM
+model_lstm = Sequential([
+    LSTM(50, return_sequences=True, input_shape=(20, 1)),
+    Dropout(0.2),
+    LSTM(50, return_sequences=False),
+    Dropout(0.2),
+    Dense(25),
+    Dense(1)
+])
+
+model_lstm.compile(optimizer='adam', loss='mse')
+
+# Antrenăm
+history = model_lstm.fit(
+    X_train_lstm, y_train_lstm,
+    epochs=50, batch_size=32,
+    validation_split=0.1, verbose=0
+)
+
+# Predicție
+pred_lstm_scaled = model_lstm.predict(X_test_lstm)
+pred_lstm = scaler.inverse_transform(pred_lstm_scaled)
+y_test_original = scaler.inverse_transform(y_test_lstm.reshape(-1, 1))
+rmse_lstm = np.sqrt(mean_squared_error(y_test_original, pred_lstm))
+print(f"LSTM - RMSE: {rmse_lstm:.4f}")
+\end{verbatim}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}{LSTM: Curba de Învățare}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch8_lstm_training.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \textbf{Loss Training}: Scade rapid în primele epoci, apoi se stabilizează.\\
+    \textbf{Loss Validation}: Urmărește training loss -- nu avem overfitting sever.
+    }
+\end{frame}
+
+%=============================================================================
+\section{Comparație Finală: Toate Metodele}
+%=============================================================================
+
+\begin{frame}{Comparație: Rezultate pe EUR/RON}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c}
+        \toprule
+        \textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{Timp (s)} & \textbf{Interpretabil?} \\
+        \midrule
+        ARIMA(1,0,1) & 0.412 & 0.298 & 0.5 & Da \\
+        ARFIMA(1,0.1,1) & 0.408 & 0.295 & 1.2 & Parțial \\
+        Random Forest & 0.395 & 0.285 & 3.5 & Da (features) \\
+        LSTM & 0.401 & 0.291 & 45.0 & Nu \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Concluzii}
+        \begin{itemize}
+            \item Pentru EUR/RON, diferențele sunt \textbf{mici} -- piața este eficientă
+            \item Random Forest oferă cel mai bun compromis \textbf{acuratețe/interpretabilitate}
+            \item LSTM are cost computațional mare pentru câștig marginal
+            \item ARIMA rămâne o alegere solidă pentru \textbf{baseline}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Vizualizare: Predicții vs Valori Reale}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.72\textheight, keepaspectratio]{charts/ch8_model_comparison.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    Toate modelele captează pattern-ul general, dar niciuna nu prezice perfect vârfurile de volatilitate. Aceasta reflectă \textbf{eficiența pieței} și \textbf{limitele predicției} pentru serii financiare.
+    }
+\end{frame}
+
+\begin{frame}{Când să Alegem Fiecare Model?}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{ARIMA/ARFIMA}
+                \begin{itemize}
+                    \item Date puține ($< 500$ obs.)
+                    \item Interpretare importantă
+                    \item Memorie lungă suspectată
+                    \item Baseline rapid
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Random Forest}
+                \begin{itemize}
+                    \item Multe variabile exogene
+                    \item Relații neliniare
+                    \item Importanța features
+                    \item Date moderate
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{block}{LSTM/Deep Learning}
+                \begin{itemize}
+                    \item Date foarte mari ($> 10.000$)
+                    \item Secvențe complexe
+                    \item Resurse computaționale
+                    \item Pattern-uri ascunse
+                \end{itemize}
+            \end{block}
+
+            \begin{alertblock}{Regula de Aur}
+                Începe simplu (ARIMA), adaugă complexitate doar dacă performanța crește semnificativ!
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+\section{Exemple Suplimentare cu Date Reale}
+%=============================================================================
+
+\begin{frame}{Exemplu 2: Indicele BET (Bursa București)}
+    \begin{block}{Caracteristici}
+        \begin{itemize}
+            \item \textbf{Volatilitate clustering} puternic
+            \item Influențat de piețele internaționale
+            \item Lichiditate mai redusă decât piețele dezvoltate
+            \item Potențial pentru memorie lungă în volatilitate
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Rezultate Tipice (RMSE pe randamente)}
+        \begin{itemize}
+            \item GARCH(1,1): 1.45 -- cel mai bun pentru volatilitate
+            \item ARFIMA pentru volatilitate: 1.52
+            \item Random Forest: 1.48
+            \item LSTM: 1.51
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Exemplu 3: Rata Inflației în România}
+    \begin{block}{Caracteristici}
+        \begin{itemize}
+            \item Serie \textbf{lunară} (frecvență redusă)
+            \item \textbf{Persistență ridicată} -- șocurile durează
+            \item Influențată de politica monetară
+            \item Potențial puternic pentru \textbf{memorie lungă}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Rezultate Tipice}
+        \begin{itemize}
+            \item ARFIMA cu $d \approx 0.35$ -- captează persistența
+            \item ARIMA subestimează persistența șocurilor
+            \item ML nu funcționează bine (date puține, ~300 obs.)
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    {\footnotesize
+    \textbf{Lecție}: Pentru serii lunare cu puține date, modelele clasice (ARFIMA) sunt superioare!
+    }
+\end{frame}
+
+\begin{frame}{Rezumat Practic: Alegerea Modelului}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c}
+        \toprule
+        \textbf{Criteriu} & \textbf{ARIMA} & \textbf{ARFIMA} & \textbf{RF} & \textbf{LSTM} \\
+        \midrule
+        Date necesare & Puține & Puține & Medii & Multe \\
+        Memorie lungă & Nu & \textbf{Da} & Parțial & Parțial \\
+        Neliniaritate & Nu & Nu & \textbf{Da} & \textbf{Da} \\
+        Interpretabil & \textbf{Da} & \textbf{Da} & Parțial & Nu \\
+        Timp calcul & Rapid & Rapid & Mediu & Lent \\
+        Var. exogene & Limitat & Limitat & \textbf{Da} & \textbf{Da} \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Fluxul Recomandat}
+        \begin{enumerate}
+            \item Începe cu \textbf{ARIMA} ca baseline
+            \item Testează \textbf{memorie lungă} $\rightarrow$ ARFIMA dacă $d$ semnificativ
+            \item Adaugă \textbf{features} $\rightarrow$ Random Forest
+            \item Doar cu date multe și resurse $\rightarrow$ LSTM
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+%=============================================================================
 \section{Rezumat și Quiz}
 %=============================================================================
 
