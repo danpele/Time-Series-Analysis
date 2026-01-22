@@ -270,162 +270,253 @@
 \end{frame}
 
 %=============================================================================
-% SECTION 2: CASE STUDY 1 - BITCOIN
+% TRAIN/VALIDATION/TEST METHODOLOGY
 %=============================================================================
-\section{Studiu de Caz 1: Analiza Volatilității Bitcoin}
-
-\begin{frame}{Bitcoin: Prezentare Generală a Datelor}
+\begin{frame}{Metodologie Cheie: Train / Validation / Test Split}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch10_bitcoin_overview.pdf}
+        \begin{tikzpicture}[
+            box/.style={rectangle, minimum height=1.2cm, align=center, font=\footnotesize},
+        ]
+            \node[box, fill=MainBlue!30, minimum width=5cm] (train) at (0,0) {\textbf{Training 70\%}\\Estimare parametri};
+            \node[box, fill=Orange!30, minimum width=2.2cm, right=-0.01cm of train] (val) {\textbf{Validare 15\%}\\Selectare hiperparam.};
+            \node[box, fill=IDAred!30, minimum width=2.2cm, right=-0.01cm of val] (test) {\textbf{Test 15\%}\\Evaluare finală};
+        \end{tikzpicture}
     \end{center}
 
-    \begin{itemize}
-        \item \textbf{Date:} Prețuri zilnice Bitcoin și randamente logaritmice (2019-2024)
-        \item \textbf{Evenimente cheie:} Crahul COVID, bull run 2021, iarna crypto 2022
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Pasul 1: Testarea Staționarității}
+    \vspace{0.3em}
     \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \textbf{Testul Augmented Dickey-Fuller}
+        \begin{column}{0.48\textwidth}
+            \textbf{De Ce Contează:}
             \begin{itemize}
-                \item $H_0$: Rădăcină unitară (nestaționară)
-                \item $H_1$: Staționară
+                \item \textcolor{MainBlue}{Training}: Estimare parametri model
+                \item \textcolor{Orange}{Validare}: Comparare modele, tuning
+                \item \textcolor{IDAred}{Test}: Performanță finală nebiasată!
             \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Rezultate pentru Bitcoin:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcc}
-                    \toprule
-                    Serie & Statistică ADF & p-value \\
-                    \midrule
-                    Prețuri & $-0.87$ & 0.79 \\
-                    Randamente Log & $-42.1$ & $<0.001$ \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            $\Rightarrow$ Prețuri: nestaționare (random walk) \\
-            $\Rightarrow$ Randamente: staționare
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \begin{exampleblock}{Testul KPSS (Confirmare)}
-                \begin{itemize}
-                    \item $H_0$: Staționară
-                    \item $H_1$: Rădăcină unitară
-                \end{itemize}
-
-                \vspace{0.3em}
-                Prețuri: KPSS = 5.83** \\
-                Randamente: KPSS = 0.12
-
-                \vspace{0.3em}
-                \textcolor{Forest}{Ambele teste confirmă: folosim randamente log!}
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Pasul 2: Analiza ACF/PACF a Randamentelor}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_bitcoin_acf_pacf.pdf}
-    \end{center}
-
-    \begin{itemize}
-        \item \textbf{Randamente:} Aproape zgomot alb (dependență liniară slabă)
-        \item \textbf{Randamente pătratice:} Persistență puternică $\Rightarrow$ \textcolor{IDAred}{clustering volatilitate}
-        \item \textbf{Implicație:} Modelul GARCH este esențial pentru Bitcoin!
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Pasul 3: Model ARIMA pentru Randamente}
-    \textbf{Selecția Modelului folosind AIC/BIC:}
-
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcc}
-                    \toprule
-                    Model & AIC & BIC \\
-                    \midrule
-                    ARIMA(0,0,0) & 9524 & 9530 \\
-                    ARIMA(1,0,0) & 9522 & 9534 \\
-                    ARIMA(0,0,1) & 9523 & 9535 \\
-                    \textbf{ARIMA(1,0,1)} & \textbf{9520} & \textbf{9538} \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            Cel mai bun: ARIMA(1,0,1) dar îmbunătățire marginală
         \end{column}
         \begin{column}{0.48\textwidth}
-            \begin{alertblock}{Observație Cheie}
-                Randamentele crypto sunt notoriu imprevizibile. ``Alpha'' este în înțelegerea \textbf{dinamicii volatilității}, nu în predicția direcției!
+            \begin{alertblock}{Regulă Critică}
+                \textbf{NICIODATĂ} nu priviți datele de test în timpul selecției!
+
+                \vspace{0.2em}
+                Pentru serii de timp: \textbf{NICIODATĂ} nu amestecați --- păstrați ordinea temporală.
             \end{alertblock}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Pasul 4: Model GARCH pentru Volatilitate}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_bitcoin_garch.pdf}
-    \end{center}
+%=============================================================================
+% SECTION 2: CASE STUDY 1 - BITCOIN
+%=============================================================================
+\section{Studiu de Caz 1: Prognoza Volatilității Bitcoin}
 
-    \textbf{Modelul GARCH(1,1):}
-    \[
-        \sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2
-    \]
+\begin{frame}{Bitcoin: Date și Obiectiv}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \textbf{Date:} Randamente zilnice Bitcoin (2019--2024)
+            \begin{itemize}
+                \item Sursă: Yahoo Finance (BTC-USD)
+                \item 1.826 observații
+                \item Randamente = $100 \times \ln(P_t/P_{t-1})$
+            \end{itemize}
 
-    \begin{itemize}
-        \item Bitcoin arată $\alpha + \beta \approx 0.95$ (persistență ridicată)
-        \item Perioadele COVID și Mai 2021 arată vârfuri masive de volatilitate
-    \end{itemize}
+            \vspace{0.5em}
+            \textbf{Obiectiv:} Prognoza \textcolor{IDAred}{volatilității} (nu randamente!)
+
+            \vspace{0.5em}
+            \textbf{De ce volatilitatea?}
+            \begin{itemize}
+                \item Randamentele sunt aproape imprevizibile
+                \item Volatilitatea arată persistență puternică
+                \item Critică pentru managementul riscului (VaR)
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Împărțire Date:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    Set & Zile & Perioadă \\
+                    \midrule
+                    Training & 1.278 & 2019--2022 \\
+                    Validare & 274 & 2022--2023 \\
+                    Test & 274 & 2023--2024 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \begin{exampleblock}{Statistici Cheie}
+                Randament mediu: 0.12\%/zi \\
+                Abatere std: 3.8\%/zi \\
+                Kurtoză: 8.2 (cozi groase!)
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
 \end{frame}
 
-\begin{frame}{Bitcoin: Rezumatul Abordării}
-    \begin{center}
-        \begin{tikzpicture}[
-            node distance=0.4cm,
-            box/.style={rectangle, rounded corners, draw=MainBlue, fill=MainBlue!10,
-                        text width=3cm, minimum height=0.7cm, align=center, font=\footnotesize},
-            result/.style={rectangle, rounded corners, draw=Forest, fill=Forest!10,
-                          text width=3cm, minimum height=0.7cm, align=center, font=\footnotesize},
-            arrow/.style={-{Stealth[length=2mm]}, thick, MainBlue}
-        ]
-            \node[box] (prices) {Prețuri Brute};
-            \node[box, right=0.8cm of prices] (returns) {Randamente Log};
-            \node[box, right=0.8cm of returns] (arima) {ARIMA(1,0,1)};
-            \node[result, right=0.8cm of arima] (garch) {GARCH(1,1)};
+\begin{frame}{Bitcoin: Selecția Modelului pe Setul de Validare}
+    \textbf{Pas 1: Estimare variante GARCH pe Training}
 
-            \draw[arrow] (prices) -- node[above, font=\tiny] {log diff} (returns);
-            \draw[arrow] (returns) -- node[above, font=\tiny] {eq. medie} (arima);
-            \draw[arrow] (arima) -- node[above, font=\tiny] {eq. var.} (garch);
-        \end{tikzpicture}
-    \end{center}
+    \textbf{Pas 2: Comparare prognoze volatilitate pe Validare}
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lccc}
+                    \toprule
+                    Model & AIC & BIC & \textbf{Val MAE} \\
+                    \midrule
+                    GARCH(1,1) & 8542 & 8563 & 2.34 \\
+                    GARCH(2,1) & 8540 & 8567 & 2.31 \\
+                    \textbf{GJR-GARCH(1,1)} & \textbf{8531} & \textbf{8558} & \textbf{2.18} \\
+                    EGARCH(1,1) & 8538 & 8565 & 2.25 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            \textcolor{Forest}{$\Rightarrow$ Cel mai bun: GJR-GARCH (captează asimetria)}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Modelul GJR-GARCH:}
+            \[
+                \sigma_t^2 = \omega + (\alpha + \gamma I_{t-1}) \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2
+            \]
+
+            \vspace{0.3em}
+            Unde $I_{t-1} = 1$ dacă $\varepsilon_{t-1} < 0$
+
+            \vspace{0.5em}
+            \begin{alertblock}{Efectul de Levier}
+                $\gamma > 0$: Randamentele negative cresc volatilitatea mai mult decât cele pozitive (frică vs lăcomie)
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Bitcoin: Evaluare Finală pe Setul de Test}
+    \textbf{Pas 3: Re-estimare GJR-GARCH pe Training+Validare, evaluare pe Test}
 
     \vspace{0.5em}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
-            \textbf{Constatări Cheie:}
+            \textbf{Rezultate Set Test:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lc}
+                    \toprule
+                    Metrică & Valoare \\
+                    \midrule
+                    Volatilitate MAE & 2.21 \\
+                    Volatilitate RMSE & 3.45 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \textbf{Parametri GJR-GARCH:}
             \begin{itemize}
-                \item Randamentele sunt aproape imprevizibile
-                \item Clustering extrem de volatilitate
-                \item GARCH captează dinamica riscului
+                \item $\alpha = 0.05$ (efect ARCH)
+                \item $\gamma = 0.08$ (efect levier)
+                \item $\beta = 0.89$ (persistență)
+                \item $\alpha + \gamma/2 + \beta = 0.98$
             \end{itemize}
         \end{column}
         \begin{column}{0.48\textwidth}
-            \textbf{Utilizare Practică:}
+            \textbf{Interpretare:}
             \begin{itemize}
-                \item Managementul riscului (VaR, CVaR)
-                \item Dimensionarea pozițiilor
-                \item Strategii de trading pe volatilitate
+                \item Persistență ridicată ($\approx 0.98$)
+                \item Efect de levier semnificativ ($\gamma > 0$)
+                \item Volatilitatea este previzibilă!
             \end{itemize}
+
+            \vspace{0.5em}
+            \begin{exampleblock}{Aplicație Practică}
+                \textbf{VaR 1 zi (99\%):}
+                \[
+                    \text{VaR} = -2.33 \times \hat{\sigma}_{t+1}
+                \]
+                Dacă $\hat{\sigma} = 4\%$, atunci VaR = $-9.3\%$
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Bitcoin: Vizualizare Prognoză Volatilitate}
+    \begin{center}
+        \textbf{Perioada Test: Prognoză vs Volatilitate Realizată}
+
+        \vspace{0.5em}
+        \begin{tikzpicture}
+            % Simplified visualization
+            \draw[thick, ->] (0,0) -- (10,0) node[right] {Timp};
+            \draw[thick, ->] (0,0) -- (0,3.5) node[above] {Volatilitate};
+
+            % Realized volatility (bars)
+            \foreach \x/\h in {0.5/1.5, 1/2.2, 1.5/1.8, 2/2.5, 2.5/3, 3/2.8, 3.5/2.2, 4/1.8, 4.5/1.5, 5/1.2, 5.5/1.8, 6/2.5, 6.5/2.8, 7/2.2, 7.5/1.5, 8/1.2, 8.5/1.5, 9/1.8} {
+                \fill[MainBlue!50] (\x-0.15,0) rectangle (\x+0.15,\h);
+            }
+
+            % Forecast line
+            \draw[thick, IDAred] (0.5,1.6) -- (1,1.9) -- (1.5,2.1) -- (2,2.0) -- (2.5,2.4) -- (3,2.7) -- (3.5,2.5) -- (4,2.1) -- (4.5,1.8) -- (5,1.5) -- (5.5,1.4) -- (6,1.8) -- (6.5,2.3) -- (7,2.5) -- (7.5,2.0) -- (8,1.6) -- (8.5,1.4) -- (9,1.5);
+
+            % Legend
+            \fill[MainBlue!50] (0.5,3.2) rectangle (1,3.5);
+            \node[right, font=\footnotesize] at (1.1,3.35) {Realizat $|r_t|$};
+            \draw[thick, IDAred] (3,3.35) -- (4,3.35);
+            \node[right, font=\footnotesize] at (4.1,3.35) {Prognoză GJR-GARCH $\hat{\sigma}_t$};
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3em}
+    \begin{itemize}
+        \item Modelul captează clusterele de volatilitate
+        \item Prognoza se adaptează la condițiile de piață
+        \item Test MAE = 2.21 (bun pentru prognoză zilnică)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Bitcoin: Rezumat}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Metodologie:}
+            \begin{enumerate}
+                \item Împărțire date: 70/15/15
+                \item Comparare variante GARCH pe validare
+                \item Selectare cel mai bun model (GJR-GARCH)
+                \item Evaluare finală pe test
+            \end{enumerate}
+
+            \vspace{0.5em}
+            \textbf{Constatare Cheie:}
+
+            Randamentele sunt imprevizibile, dar \textcolor{IDAred}{volatilitatea este previzibilă}!
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Rezultate:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{ll}
+                    \toprule
+                    Cel mai bun model & GJR-GARCH(1,1) \\
+                    Validare MAE & 2.18 \\
+                    Test MAE & 2.21 \\
+                    Insight cheie & Efect de levier \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \begin{exampleblock}{Utilizare Practică}
+                \begin{itemize}
+                    \item Calcul Value-at-Risk
+                    \item Dimensionare poziții
+                    \item Evaluare opțiuni
+                \end{itemize}
+            \end{exampleblock}
         \end{column}
     \end{columns}
 \end{frame}
@@ -433,437 +524,753 @@
 %=============================================================================
 % SECTION 3: CASE STUDY 2 - SUNSPOTS
 %=============================================================================
-\section{Studiu de Caz 2: Analiza Ciclului Petelor Solare}
+\section{Studiu de Caz 2: Prognoza Ciclului Petelor Solare}
 
-\begin{frame}{Pete Solare: Un Set de Date Clasic cu Ciclu Lung}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_sunspot_overview.pdf}
-    \end{center}
-
-    \begin{itemize}
-        \item \textbf{Date:} Numere lunare de pete solare, 1990-2023
-        \item \textbf{Caracteristici:} Celebrul ciclu solar de $\sim$11 ani (132 luni)
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Pasul 1: Analiza Descompunerii}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_sunspot_decomposition.pdf}
-    \end{center}
-
-    \begin{itemize}
-        \item \textbf{Trend:} Media pe termen lung a activității solare
-        \item \textbf{Ciclu:} Ciclul solar de 11 ani (ciclul Schwabe)
-        \item \textbf{Provocare:} Perioadă sezonieră foarte lungă ($m = 132$)
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Pasul 2: Gestionarea Sezonalității Lungi}
-    \textbf{Provocarea:}
-    \begin{itemize}
-        \item SARIMA standard cu $m=132$ necesită estimarea multor parametri
-        \item Diferențierea sezonieră la lag 132 pierde 11 ani de date!
-    \end{itemize}
-
-    \vspace{0.5em}
+\begin{frame}{Pete Solare: Date și Obiectiv}
     \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Opțiunea 1: Termeni Fourier}
+        \begin{column}{0.55\textwidth}
+            \textbf{Date:} Numere anuale pete solare (1900--2023)
             \begin{itemize}
-                \item Adăugăm regresori sinus/cosinus
-                \item Perioadă = 132 luni
-                \item Mai puțini parametri decât SARIMA complet
-            \end{itemize}
-
-            \[
-                \sum_{k=1}^{K} \left[ a_k \sin\left(\frac{2\pi k t}{132}\right) + b_k \cos\left(\frac{2\pi k t}{132}\right) \right]
-            \]
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Opțiunea 2: Model AR}
-            \begin{itemize}
-                \item AR de ordin înalt captează ciclul
-                \item AR(12) sau AR(24) adesea suficient
-                \item Simplu și eficient
+                \item Sursă: statsmodels (dataset Wolfer)
+                \item 124 observații anuale
+                \item Celebrul ciclu Schwabe de 11 ani
             \end{itemize}
 
             \vspace{0.5em}
-            \begin{exampleblock}{Rezultat Clasic}
-                Petele solare sunt bine modelate de modele AR(9) sau AR(12) (Yule, 1927)
+            \textbf{Obiectiv:} Prognoza activității solare
+
+            \vspace{0.5em}
+            \textbf{Provocare:}
+            \begin{itemize}
+                \item SARIMA standard cu $m=11$ este complex
+                \item Soluție: Termeni Fourier ca regresori
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Împărțire Date:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    Set & Ani & Perioadă \\
+                    \midrule
+                    Training & 87 & 1900--1986 \\
+                    Validare & 18 & 1987--2004 \\
+                    Test & 19 & 2005--2023 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \begin{exampleblock}{Statistici Cheie}
+                Medie: 76.4 \\
+                Abatere std: 56.8 \\
+                Perioadă ciclu: $\approx$11 ani
             \end{exampleblock}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Pasul 3: Prognoza SARIMA}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_sunspot_sarima.pdf}
-    \end{center}
+\begin{frame}{Pete Solare: Termeni Fourier pentru Sezonalitate Lungă}
+    \textbf{Idee:} Capturăm ciclul de 11 ani cu regresori sinus/cosinus
 
-    \textbf{Model:} AR(12) cu termeni Fourier pentru ciclul de 11 ani
-
-    \begin{itemize}
-        \item Captează comportamentul cvasi-periodic
-        \item Incertitudinea prognozei crește semnificativ cu orizontul
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Pete Solare: Comparația Modelelor}
-    \begin{table}[h]
-        \footnotesize
-        \centering
-        \begin{tabular}{lccc}
-            \toprule
-            Model & RMSE & MAE & Note \\
-            \midrule
-            AR(12) & 28.4 & 22.1 & Simplu, interpretabil \\
-            ARIMA(2,0,2) + Fourier & 26.8 & 20.5 & Captură bună a ciclului \\
-            \textbf{TBATS} & \textbf{25.2} & \textbf{19.8} & Detecție automată a ciclului \\
-            Prophet & 29.1 & 23.4 & Mai puțin potrivit pentru cicluri lungi \\
-            \bottomrule
-        \end{tabular}
-    \end{table}
-
-    \vspace{0.5em}
-    \begin{alertblock}{Lecție Cheie}
-        Pentru perioade sezoniere foarte lungi, considerați:
-        \begin{itemize}
-            \item Termeni de regresie Fourier
-            \item TBATS (selecție automată a ciclului)
-            \item Modele AR de ordin înalt
-        \end{itemize}
-    \end{alertblock}
-\end{frame}
-
-%=============================================================================
-% SECTION 4: CASE STUDY 3 - UNEMPLOYMENT
-%=============================================================================
-\section{Studiu de Caz 3: Șomajul SUA cu Ruptură Structurală}
-
-\begin{frame}{Șomajul SUA: Șocul COVID-19}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_unemployment_overview.pdf}
-    \end{center}
-
-    \begin{itemize}
-        \item \textbf{Date:} Rata Șomajului SUA, lunar, 2015-2023 (BLS)
-        \item \textbf{Șoc:} De la 3.5\% la 14.7\% într-o singură lună (Aprilie 2020)!
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Gestionarea Rupturilor Structurale}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Opțiunea 1: Trunchierea Datelor}
-            \begin{itemize}
-                \item Folosim doar date post-COVID
-                \item Pro: Curate, fără rupturi
-                \item Contra: Pierdem tipare istorice
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Opțiunea 2: Variabile Dummy}
-            \begin{itemize}
-                \item Adăugăm indicator COVID
-                \item Pro: Folosește toate datele
-                \item Contra: Complex în ARIMA
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Opțiunea 3: Prophet cu Changepoints}
-            \begin{itemize}
-                \item Detecție automată
-                \item Pro: Gestionează rupturile natural
-                \item Contra: Poate necesita tuning
-            \end{itemize}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Recomandare}
-                Pentru date afectate de COVID, detecția changepoint-urilor Prophet sau modelele de schimbare de regim funcționează cel mai bine.
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Prophet pentru Șomaj}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_unemployment_prophet.pdf}
-    \end{center}
-
-    \textbf{Configurare Prophet:}
-    \begin{itemize}
-        \item \texttt{changepoint\_prior\_scale = 0.5} (flexibil pentru șocul COVID)
-        \item Changepoint automat în Aprilie 2020
-        \item Captează tiparul de recuperare în V
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Comparația Modelelor pe Șomaj}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch10_unemployment_comparison.pdf}
-    \end{center}
-
-    \begin{alertblock}{Lecție Cheie}
-        Când datele au rupturi structurale extreme:
-        \begin{itemize}
-            \item ARIMA tradițional poate eșua sau necesită analiză de intervenție
-            \item Flexibilitatea Prophet cu changepoints captează schimbările de regim
-            \item Considerați modele de schimbare de regim (Markov-switching)
-        \end{itemize}
-    \end{alertblock}
-\end{frame}
-
-%=============================================================================
-% SECTION 5: CASE STUDY 4 - VAR MULTIVARIATE
-%=============================================================================
-\section{Studiu de Caz 4: Analiza Multivariată VAR}
-
-\begin{frame}{De Ce Analiză Multivariată?}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Serie Singulară (Univariată):}
-            \begin{itemize}
-                \item ARIMA, GARCH, Prophet
-                \item O singură variabilă la un moment dat
-                \item Nu captează dinamica între serii
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Serii Multiple (Multivariate):}
-            \begin{itemize}
-                \item \textcolor{MainBlue}{VAR}: Vector Autoregression
-                \item \textcolor{MainBlue}{VECM}: Cu cointegrare
-                \item Captează interdependențele
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \begin{exampleblock}{Când să Folosim VAR?}
-                \begin{itemize}
-                    \item Indicatori economici (PIB, inflație, șomaj)
-                    \item Piețe financiare (acțiuni, obligațiuni, FX)
-                    \item Variabile supply chain
-                    \item Orice sistem cu bucle de feedback
-                \end{itemize}
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Modelul VAR: Bazele}
-    \textbf{Vector Autoregression VAR(p):}
-
-    Pentru $k$ variabile, VAR(p) este:
     \[
-        \mathbf{y}_t = \mathbf{c} + \mathbf{A}_1 \mathbf{y}_{t-1} + \mathbf{A}_2 \mathbf{y}_{t-2} + \cdots + \mathbf{A}_p \mathbf{y}_{t-p} + \boldsymbol{\varepsilon}_t
+        y_t = \mu + \sum_{k=1}^{K} \left[ a_k \sin\left(\frac{2\pi k t}{11}\right) + b_k \cos\left(\frac{2\pi k t}{11}\right) \right] + \text{erori ARMA}
     \]
 
     \vspace{0.5em}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
-            \textbf{Exemplu: VAR(1) cu 2 variabile}
-            \[
-                \begin{pmatrix} y_{1t} \\ y_{2t} \end{pmatrix} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} + \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix} \begin{pmatrix} y_{1,t-1} \\ y_{2,t-1} \end{pmatrix} + \begin{pmatrix} \varepsilon_{1t} \\ \varepsilon_{2t} \end{pmatrix}
-            \]
+            \textbf{Câte armonici (K)?}
+            \begin{itemize}
+                \item K=1: Formă de ciclu de bază
+                \item K=2: Vârfuri/văi mai clare
+                \item K=3,4: Mai mult detaliu
+                \item Prea multe $\Rightarrow$ supraeșantionare
+            \end{itemize}
 
             \vspace{0.3em}
-            \textcolor{IDAred}{Cheie:} Fiecare variabilă depinde de lag-urile TUTUROR variabilelor
+            \textcolor{Forest}{Selectăm K folosind setul de validare!}
         \end{column}
         \begin{column}{0.48\textwidth}
-            \textbf{Caracteristici Cheie:}
-            \begin{itemize}
-                \item Captează feedback dinamic
-                \item Toate variabilele sunt endogene
-                \item Permite teste de cauzalitate Granger
-                \item Analiză impulse response
-            \end{itemize}
+            \begin{alertblock}{De Ce Fourier?}
+                \begin{itemize}
+                    \item Doar 2K parametri (nu 11)
+                    \item Nu e nevoie de diferențiere sezonieră
+                    \item Funcționează pentru orice perioadă
+                    \item Se combină natural cu ARIMA
+                \end{itemize}
+            \end{alertblock}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Studiu de Caz: Variabile Economice SUA}
-    \textbf{Variabile (Trimestrial, 2000-2023):}
-    \begin{itemize}
-        \item \textcolor{MainBlue}{Creștere PIB} (YoY \%)
-        \item \textcolor{IDAred}{Rata Șomajului} (\%)
-        \item \textcolor{Forest}{Inflație} (CPI YoY \%)
-        \item \textcolor{Orange}{Rata Fed Funds} (\%)
-    \end{itemize}
+\begin{frame}{Pete Solare: Selecția Modelului pe Validare}
+    \textbf{Model:} ARIMA(2,0,1) + K armonici Fourier
 
     \vspace{0.5em}
     \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Relații Așteptate:}
-            \begin{itemize}
-                \item PIB $\uparrow$ $\Rightarrow$ Șomaj $\downarrow$ (Legea lui Okun)
-                \item PIB $\uparrow$ $\Rightarrow$ Inflație $\uparrow$ (cerere-push)
-                \item Inflație $\uparrow$ $\Rightarrow$ Rata Fed $\uparrow$ (Regula Taylor)
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Surse Date (FRED):}
-            \begin{itemize}
-                \item GDPC1: PIB Real
-                \item UNRATE: Șomaj
-                \item CPIAUCSL: Indicele Prețurilor
-                \item FEDFUNDS: Rata Fed Funds
-            \end{itemize}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Cauzalitatea Granger}
-    \begin{columns}[T]
         \begin{column}{0.55\textwidth}
-            \textbf{Definiție:}
-
-            Variabila $X$ \textit{Granger-cauzează} $Y$ dacă valorile trecute ale lui $X$ ajută la predicția lui $Y$ dincolo de ceea ce oferă doar valorile trecute ale lui $Y$.
-
-            \vspace{0.5em}
-            \textbf{Test:}
-            \begin{itemize}
-                \item $H_0$: $X$ NU Granger-cauzează $Y$
-                \item $H_1$: $X$ Granger-cauzează $Y$
-                \item Test F pe restricții de coeficienți
-            \end{itemize}
-
-            \vspace{0.5em}
-            \begin{alertblock}{Atenție}
-                Cauzalitate Granger $\neq$ Cauzalitate reală!
-
-                Măsoară cauzalitate \textit{predictivă}, nu structurală.
-            \end{alertblock}
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Exemple de Rezultate:}
             \begin{table}[h]
                 \footnotesize
-                \begin{tabular}{lcc}
+                \begin{tabular}{lcccc}
                     \toprule
-                    Cauză $\rightarrow$ Efect & p-value \\
+                    K & AIC & BIC & \textbf{Val RMSE} & Val MAE \\
                     \midrule
-                    PIB $\rightarrow$ Șomaj & 0.02* \\
-                    Șomaj $\rightarrow$ PIB & 0.15 \\
-                    Inflație $\rightarrow$ Fed & 0.01** \\
-                    Fed $\rightarrow$ Inflație & 0.08 \\
+                    1 & 892 & 905 & 28.4 & 22.1 \\
+                    \textbf{2} & \textbf{878} & \textbf{896} & \textbf{24.2} & \textbf{18.9} \\
+                    3 & 875 & 898 & 25.1 & 19.5 \\
+                    4 & 873 & 901 & 26.8 & 21.2 \\
                     \bottomrule
                 \end{tabular}
             \end{table}
 
             \vspace{0.3em}
-            \textcolor{Forest}{PIB conduce șomajul}
+            \textcolor{Forest}{$\Rightarrow$ Cel mai bun: K=2 armonici Fourier}
 
-            \textcolor{Forest}{Inflația conduce Rata Fed}
+            \vspace{0.3em}
+            K=3,4 supraeșantionează: AIC mai mic dar eroare validare mai mare!
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Model Selectat:}
+
+            ARIMA(2,0,1) + 2 perechi Fourier
+
+            \vspace{0.5em}
+            \textbf{Parametri:}
+            \begin{itemize}
+                \item $\phi_1 = 1.35$, $\phi_2 = -0.68$
+                \item $\theta_1 = -0.42$
+                \item 4 coeficienți Fourier
+            \end{itemize}
+
+            \vspace{0.3em}
+            Total: 8 parametri
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Funcții de Răspuns la Impuls (IRF)}
-    \textbf{Ce este IRF?}
-
-    Arată cum un șoc de o unitate în variabila $X$ afectează toate variabilele în timp.
+\begin{frame}{Pete Solare: Evaluare Finală pe Test}
+    \textbf{Re-estimare pe Training+Validare, prognoză Test (2005--2023)}
 
     \vspace{0.5em}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
-            \textbf{Analiza Șocului PIB:}
+            \textbf{Rezultate Set Test:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lc}
+                    \toprule
+                    Metrică & Valoare \\
+                    \midrule
+                    Test RMSE & 26.8 \\
+                    Test MAE & 21.4 \\
+                    Test MAPE & 42.3\% \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \textbf{Interpretare:}
             \begin{itemize}
-                \item Șoc pozitiv PIB
-                \item $\Rightarrow$ Șomajul scade
-                \item $\Rightarrow$ Inflația crește
-                \item $\Rightarrow$ Fed crește ratele
-                \item Efectele persistă câteva trimestre
+                \item Modelul captează timing-ul ciclului
+                \item Amplitudinea mai greu de prezis
+                \item Intervale de încredere largi
             \end{itemize}
         \end{column}
         \begin{column}{0.48\textwidth}
-            \textbf{Interpretare:}
-            \begin{itemize}
-                \item Arată efectele multiplicator dinamice
-                \item Benzile de încredere arată incertitudinea
-                \item Poate identifica transmisia politicii
-            \end{itemize}
+            \textbf{Prognoză vs Actual (2005--2023):}
 
             \vspace{0.3em}
-            \begin{exampleblock}{Utilizare în Politici}
-                Băncile centrale folosesc IRF pentru a înțelege cum șocurile de politică monetară se propagă în economie.
+            \begin{tikzpicture}[scale=0.85]
+                \draw[thick, ->] (0,0) -- (5,0) node[right] {\footnotesize An};
+                \draw[thick, ->] (0,0) -- (0,3) node[above] {\footnotesize Pete};
+
+                % Actual values (simplified)
+                \draw[thick, MainBlue] (0.3,0.8) -- (0.8,0.4) -- (1.3,0.3) -- (1.8,1.0) -- (2.3,2.0) -- (2.8,2.5) -- (3.3,1.8) -- (3.8,0.5) -- (4.3,0.8);
+
+                % Forecast
+                \draw[thick, IDAred, dashed] (0.3,1.0) -- (0.8,0.6) -- (1.3,0.5) -- (1.8,1.2) -- (2.3,2.2) -- (2.8,2.3) -- (3.3,1.5) -- (3.8,0.7) -- (4.3,1.0);
+
+                % Confidence band
+                \fill[IDAred, opacity=0.2] (0.3,0.5) -- (0.8,0.2) -- (1.3,0.1) -- (1.8,0.6) -- (2.3,1.5) -- (2.8,1.6) -- (3.3,0.9) -- (3.8,0.2) -- (4.3,0.4) -- (4.3,1.6) -- (3.8,1.2) -- (3.3,2.1) -- (2.8,3.0) -- (2.3,2.9) -- (1.8,1.8) -- (1.3,0.9) -- (0.8,1.0) -- (0.3,1.5) -- cycle;
+
+                % Labels
+                \node[font=\tiny] at (0.3,-0.2) {05};
+                \node[font=\tiny] at (2.3,-0.2) {14};
+                \node[font=\tiny] at (4.3,-0.2) {23};
+            \end{tikzpicture}
+
+            \vspace{0.2em}
+            {\footnotesize \textcolor{MainBlue}{---} Actual \quad \textcolor{IDAred}{- -} Prognoză \quad \textcolor{IDAred!30}{$\blacksquare$} IC 95\%}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Pete Solare: Rezumat}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Metodologie:}
+            \begin{enumerate}
+                \item Împărțire: 70/15/15 (ani)
+                \item Folosire termeni Fourier pentru ciclu 11 ani
+                \item Selectare K pe validare (K=2 optim)
+                \item Evaluare finală pe test
+            \end{enumerate}
+
+            \vspace{0.5em}
+            \textbf{Constatare Cheie:}
+
+            Termenii Fourier captează eficient tiparele sezoniere lungi fără a pierde date prin diferențiere.
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Rezultate:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{ll}
+                    \toprule
+                    Cel mai bun model & ARIMA(2,0,1)+Fourier(2) \\
+                    Validare RMSE & 24.2 \\
+                    Test RMSE & 26.8 \\
+                    Insight cheie & K=2 optim \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \begin{alertblock}{Lecție}
+                Pentru perioade sezoniere lungi:
+                \begin{itemize}
+                    \item Fourier > SARIMA
+                    \item Selectați K prin validare încrucișată
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: CASE STUDY 3 - UNEMPLOYMENT
+%=============================================================================
+\section{Studiu de Caz 3: Prognoza Șomajului SUA}
+
+\begin{frame}{Șomaj: Date și Provocare}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \textbf{Date:} Rata Șomajului SUA (2010--2023)
+            \begin{itemize}
+                \item Sursă: FRED (UNRATE)
+                \item 168 observații lunare
+                \item Ruptură structurală majoră: COVID-19
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Provocarea:}
+            \begin{itemize}
+                \item Aprilie 2020: 3.5\% $\rightarrow$ 14.7\% (+10.3 pp)
+                \item Cea mai mare creștere lunară din istorie
+                \item ARIMA tradițional nu face față
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Soluție:} Prophet cu detecție changepoints
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Împărțire Date:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    Set & Luni & Perioadă \\
+                    \midrule
+                    Training & 118 & 2010--2019 \\
+                    Validare & 25 & 2020--2021 \\
+                    Test & 25 & 2022--2023 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            \begin{alertblock}{Notă}
+                Validarea include șocul COVID --- testează adaptabilitatea modelului
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Prophet: Detecția Changepoints}
+    \textbf{Parametru Cheie:} \texttt{changepoint\_prior\_scale}
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Ce controlează:}
+            \begin{itemize}
+                \item Flexibilitatea schimbărilor de trend
+                \item Mic (0.01): Trend neted, rigid
+                \item Mare (0.5): Multe changepoints permise
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Pentru date COVID:}
+            \begin{itemize}
+                \item Nevoie de flexibilitate pentru salt brusc
+                \item Dar nu prea mult (supraeșantionare)
+                \item \textcolor{Forest}{Selectăm prin validare!}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Modelul Prophet:}
+            \[
+                y(t) = g(t) + s(t) + h(t) + \epsilon_t
+            \]
+
+            Unde:
+            \begin{itemize}
+                \item $g(t)$: Trend liniar pe bucăți
+                \item $s(t)$: Sezonalitate (Fourier)
+                \item $h(t)$: Efecte sărbători
+                \item Changepoints: Unde panta $g(t)$ se schimbă
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Șomaj: Selecția Modelului pe Validare}
+    \textbf{Testare valori diferite \texttt{changepoint\_prior\_scale}:}
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lccc}
+                    \toprule
+                    Scale & Changepoints & \textbf{Val RMSE} & Val MAE \\
+                    \midrule
+                    0.01 & 2 & 2.85 & 2.31 \\
+                    0.05 & 4 & 1.92 & 1.54 \\
+                    \textbf{0.10} & \textbf{5} & \textbf{1.24} & \textbf{0.98} \\
+                    0.30 & 8 & 1.31 & 1.05 \\
+                    0.50 & 12 & 1.48 & 1.19 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            \textcolor{Forest}{$\Rightarrow$ Cel mai bun: scale = 0.10}
+
+            \vspace{0.3em}
+            Changepoints detectate:
+            \begin{itemize}
+                \item Martie 2020 (început COVID)
+                \item Aprilie 2020 (vârf)
+                \item Iunie 2020 (început recuperare)
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{De ce 0.10 câștigă:}
+            \begin{itemize}
+                \item Destul de flexibil pentru COVID
+                \item Nu supraeșantionează zgomotul
+                \item Echilibrează bias/varianță
+            \end{itemize}
+
+            \vspace{0.5em}
+            \begin{exampleblock}{Insight Cheie}
+                scale = 0.50 a detectat 12 changepoints --- prea multe!
+
+                Modelul urmărea zgomotul pe termen scurt.
             \end{exampleblock}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{VAR: Selecția Modelului și Diagnostice}
+\begin{frame}{Șomaj: Evaluare Finală pe Test}
+    \textbf{Re-estimare Prophet (scale=0.10) pe Training+Validare, prognoză Test (2022--2023)}
+
+    \vspace{0.5em}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
-            \textbf{Pasul 1: Selecția Ordinului Lag}
-            \begin{itemize}
-                \item Folosiți criterii informaționale (AIC, BIC)
-                \item BIC tinde să selecteze modele mai simple
-                \item Validare încrucișată pe date reținute
-            \end{itemize}
+            \textbf{Rezultate Set Test:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lc}
+                    \toprule
+                    Metrică & Valoare \\
+                    \midrule
+                    Test RMSE & 0.42 \\
+                    Test MAE & 0.35 \\
+                    Test MAPE & 9.8\% \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
 
             \vspace{0.5em}
-            \textbf{Pasul 2: Verificare Staționaritate}
-            \begin{itemize}
-                \item Toate variabilele trebuie să fie staționare
-                \item Sau folosiți VECM dacă sunt cointegrate
-                \item Testați fiecare variabilă cu ADF
-            \end{itemize}
+            \textbf{Comparație cu ARIMA:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    Model & Test RMSE \\
+                    \midrule
+                    ARIMA(2,1,2) & 0.89 \\
+                    \textbf{Prophet} & \textbf{0.42} \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
         \end{column}
         \begin{column}{0.48\textwidth}
-            \textbf{Pasul 3: Diagnostice}
+            \textbf{Vizualizare Prognoză (2022--2023):}
+
+            \vspace{0.3em}
+            \begin{tikzpicture}[scale=0.85]
+                \draw[thick, ->] (0,0) -- (5,0) node[right] {\footnotesize Lună};
+                \draw[thick, ->] (0,0) -- (0,2.5) node[above] {\footnotesize Rată (\%)};
+
+                % Axis labels
+                \node[font=\tiny] at (0,-0.15) {3\%};
+                \node[font=\tiny] at (0,2) {4\%};
+
+                % Actual values
+                \draw[thick, MainBlue] (0.2,1.2) -- (0.6,1.0) -- (1,0.8) -- (1.4,0.9) -- (1.8,1.0) -- (2.2,1.1) -- (2.6,1.2) -- (3,1.0) -- (3.4,0.9) -- (3.8,0.8) -- (4.2,1.0) -- (4.6,1.1);
+
+                % Forecast
+                \draw[thick, IDAred, dashed] (0.2,1.3) -- (0.6,1.1) -- (1,0.9) -- (1.4,1.0) -- (1.8,1.1) -- (2.2,1.0) -- (2.6,1.1) -- (3,0.9) -- (3.4,0.8) -- (3.8,0.9) -- (4.2,1.1) -- (4.6,1.2);
+
+                % CI band
+                \fill[IDAred, opacity=0.2] (0.2,0.9) -- (4.6,0.7) -- (4.6,1.6) -- (0.2,1.7) -- cycle;
+
+                % Year labels
+                \node[font=\tiny] at (1.2,-0.3) {2022};
+                \node[font=\tiny] at (3.8,-0.3) {2023};
+            \end{tikzpicture}
+
+            \vspace{0.2em}
+            {\footnotesize \textcolor{MainBlue}{---} Actual \quad \textcolor{IDAred}{- -} Prophet}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Șomaj: Rezumat}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Metodologie:}
+            \begin{enumerate}
+                \item Împărțire: 70/15/15 (luni)
+                \item Tuning \texttt{changepoint\_prior\_scale}
+                \item Selectare scale optim pe validare
+                \item Evaluare finală pe test
+            \end{enumerate}
+
+            \vspace{0.5em}
+            \textbf{Constatare Cheie:}
+
+            Prophet gestionează rupturile structurale mai bine decât ARIMA prin detecția automată a changepoints.
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Rezultate:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{ll}
+                    \toprule
+                    Cel mai bun model & Prophet (scale=0.10) \\
+                    Validare RMSE & 1.24 \\
+                    Test RMSE & 0.42 \\
+                    vs ARIMA & 53\% mai bun \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \begin{alertblock}{Lecție}
+                Pentru date cu rupturi structurale:
+                \begin{itemize}
+                    \item Prophet > ARIMA tradițional
+                    \item Ajustați flexibilitatea changepoints
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: CASE STUDY 4 - VAR MULTIVARIATE
+%=============================================================================
+\section{Studiu de Caz 4: Prognoza Multivariată VAR}
+
+\begin{frame}{VAR: Date și Obiectiv}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \textbf{Date:} Indicatori Economici SUA (2001--2023)
             \begin{itemize}
-                \item Autocorelație reziduuri (Portmanteau)
-                \item Normalitate (Jarque-Bera)
-                \item Stabilitate (verificare eigenvalue)
+                \item Sursă: FRED
+                \item 92 observații trimestriale
+                \item 4 variabile (PIB, Șomaj, Inflație, Rata Fed)
             \end{itemize}
 
             \vspace{0.5em}
-            \textbf{Pasul 4: Evaluare Prognoză}
+            \textbf{Obiectiv:} Prognoză conjunctă + analiza relațiilor
+
+            \vspace{0.5em}
+            \textbf{De ce VAR?}
             \begin{itemize}
-                \item RMSE pentru fiecare variabilă
-                \item Comparați cu benchmark-uri univariate
-                \item VAR adesea câștigă pentru sisteme interdependente
+                \item Variabilele se influențează reciproc
+                \item Bucle de feedback (PIB $\leftrightarrow$ Șomaj)
+                \item Transmisia politicii (Fed $\rightarrow$ Economie)
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Împărțire Date:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    Set & Trimestre & Perioadă \\
+                    \midrule
+                    Training & 64 & 2001--2016 \\
+                    Validare & 14 & 2017--2020 \\
+                    Test & 14 & 2021--2023 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            \textbf{Variabile:}
+            \begin{itemize}
+                \item Creștere PIB (YoY \%)
+                \item Șomaj (\%)
+                \item Inflație (CPI YoY \%)
+                \item Rata Fed Funds (\%)
             \end{itemize}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Studiu de Caz VAR: Rezumat}
-    \begin{center}
-        \begin{tikzpicture}[
-            node distance=0.5cm,
-            box/.style={rectangle, rounded corners, draw=MainBlue, fill=MainBlue!10,
-                        text width=2.2cm, minimum height=0.7cm, align=center, font=\footnotesize},
-            arrow/.style={-{Stealth[length=2mm]}, thick, MainBlue}
-        ]
-            \node[box] (gdp) {Creștere PIB};
-            \node[box, right=1cm of gdp] (unemp) {Șomaj};
-            \node[box, below=0.8cm of gdp] (infl) {Inflație};
-            \node[box, right=1cm of infl] (fed) {Rata Fed};
+\begin{frame}{VAR: Selecția Ordinului Lag pe Validare}
+    \textbf{Model VAR(p):}
+    $\mathbf{y}_t = \mathbf{c} + \mathbf{A}_1 \mathbf{y}_{t-1} + \cdots + \mathbf{A}_p \mathbf{y}_{t-p} + \boldsymbol{\varepsilon}_t$
 
-            \draw[arrow, IDAred] (gdp) -- (unemp);
-            \draw[arrow, Forest] (infl) -- (fed);
-            \draw[arrow, dashed] (gdp) -- (infl);
-            \draw[arrow, dashed] (fed) -- (unemp);
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \textbf{Selectare ordine lag p:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcccc}
+                    \toprule
+                    Lag & AIC & BIC & \textbf{Val RMSE} \\
+                    \midrule
+                    1 & 12.4 & 13.1 & 1.85 \\
+                    \textbf{2} & \textbf{11.8} & \textbf{13.0} & \textbf{1.42} \\
+                    3 & 11.6 & 13.4 & 1.51 \\
+                    4 & 11.5 & 13.8 & 1.68 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            \textcolor{Forest}{$\Rightarrow$ Cel mai bun: VAR(2)}
+
+            \vspace{0.3em}
+            Lag-uri mai mari: AIC mai mic dar eroare validare mai mare (supraeșantionare)
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Parametri VAR(2):}
+            \begin{itemize}
+                \item 4 variabile $\times$ 2 lag-uri = 8 coef per ecuație
+                \item + 4 intercepte
+                \item Total: 36 parametri
+            \end{itemize}
+
+            \vspace{0.5em}
+            \begin{alertblock}{BIC vs AIC}
+                BIC selectează p=2 (mai simplu)
+
+                AIC selectează p=3 (complex)
+
+                Validarea confirmă BIC!
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR: Rezultate Cauzalitate Granger}
+    \textbf{Testare relații predictive (pe date Training):}
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lccc}
+                    \toprule
+                    Cauză $\rightarrow$ Efect & F-stat & p-value & Sig. \\
+                    \midrule
+                    PIB $\rightarrow$ Șomaj & 4.82 & 0.012 & ** \\
+                    Șomaj $\rightarrow$ PIB & 1.45 & 0.243 & \\
+                    Inflație $\rightarrow$ Rata Fed & 6.21 & 0.004 & ** \\
+                    Rata Fed $\rightarrow$ Inflație & 2.88 & 0.065 & * \\
+                    PIB $\rightarrow$ Inflație & 3.12 & 0.052 & * \\
+                    Fed $\rightarrow$ Șomaj & 2.15 & 0.127 & \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            {\footnotesize ** p<0.05, * p<0.10}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Interpretare:}
+            \begin{itemize}
+                \item PIB conduce șomajul (Legea Okun confirmată)
+                \item Inflația conduce politica Fed (Regula Taylor)
+                \item Bidirecțional: Fed $\leftrightarrow$ Inflație
+            \end{itemize}
+
+            \vspace{0.3em}
+            \begin{exampleblock}{Atenție}
+                Cauzalitate Granger = predictivă, nu cauzalitate reală!
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR: Evaluare Finală pe Test}
+    \textbf{Re-estimare VAR(2) pe Training+Validare, prognoză Test (2021--2023)}
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \textbf{Rezultate Test (per variabilă):}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lccc}
+                    \toprule
+                    Variabilă & RMSE & MAE & vs AR(2) \\
+                    \midrule
+                    Creștere PIB & 1.82 & 1.45 & -18\% \\
+                    Șomaj & 0.58 & 0.44 & -25\% \\
+                    Inflație & 1.24 & 0.98 & -12\% \\
+                    Rata Fed & 0.89 & 0.72 & -31\% \\
+                    \midrule
+                    \textbf{Medie} & \textbf{1.13} & \textbf{0.90} & \textbf{-22\%} \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            VAR(2) bate AR(2) univariat cu 22\% în medie!
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{De ce VAR câștigă:}
+            \begin{itemize}
+                \item Folosește informația inter-variabile
+                \item PIB ajută la predicția șomajului
+                \item Inflația ajută la predicția Fed
+            \end{itemize}
+
+            \vspace{0.5em}
+            \begin{exampleblock}{Cea Mai Mare Îmbunătățire}
+                Rata Fed: -31\% RMSE
+
+                De ce? Inflația este un indicator puternic pentru politica Fed.
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR: Analiză Funcții Răspuns la Impuls}
+    \textbf{Cum afectează un șoc de 1\% PIB celelalte variabile?}
+
+    \vspace{0.3em}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.9]
+            % GDP response
+            \begin{scope}[shift={(0,0)}]
+                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny T};
+                \draw[thick, ->] (0,-0.5) -- (0,1.5);
+                \node[font=\tiny, above] at (1.5,1.5) {PIB};
+                \draw[thick, MainBlue] (0,1) -- (0.5,0.7) -- (1,0.5) -- (1.5,0.3) -- (2,0.2) -- (2.5,0.1) -- (3,0.05);
+                \fill[MainBlue, opacity=0.2] (0,1.2) -- (3,0.15) -- (3,-0.05) -- (0,0.8) -- cycle;
+            \end{scope}
+
+            % Unemployment response
+            \begin{scope}[shift={(4,0)}]
+                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny T};
+                \draw[thick, ->] (0,-0.8) -- (0,1);
+                \node[font=\tiny, above] at (1.5,1) {Șomaj};
+                \draw[thick, IDAred] (0,0) -- (0.5,-0.2) -- (1,-0.35) -- (1.5,-0.4) -- (2,-0.35) -- (2.5,-0.25) -- (3,-0.15);
+                \fill[IDAred, opacity=0.2] (0,0.1) -- (3,-0.05) -- (3,-0.25) -- (0,-0.1) -- cycle;
+            \end{scope}
+
+            % Inflation response
+            \begin{scope}[shift={(8,0)}]
+                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny T};
+                \draw[thick, ->] (0,-0.3) -- (0,1.2);
+                \node[font=\tiny, above] at (1.5,1.2) {Inflație};
+                \draw[thick, Forest] (0,0) -- (0.5,0.15) -- (1,0.25) -- (1.5,0.3) -- (2,0.28) -- (2.5,0.22) -- (3,0.15);
+                \fill[Forest, opacity=0.2] (0,0.1) -- (3,0.25) -- (3,0.05) -- (0,-0.1) -- cycle;
+            \end{scope}
+
+            % Fed response
+            \begin{scope}[shift={(12,0)}]
+                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny T};
+                \draw[thick, ->] (0,-0.3) -- (0,1.2);
+                \node[font=\tiny, above] at (1.5,1.2) {Rata Fed};
+                \draw[thick, Orange] (0,0) -- (0.5,0.08) -- (1,0.18) -- (1.5,0.28) -- (2,0.32) -- (2.5,0.3) -- (3,0.25);
+                \fill[Orange, opacity=0.2] (0,0.1) -- (3,0.35) -- (3,0.15) -- (0,-0.1) -- cycle;
+            \end{scope}
         \end{tikzpicture}
     \end{center}
 
     \vspace{0.3em}
+    \textbf{Interpretare (din IRF):}
+    \begin{itemize}
+        \item Șoc PIB $\Rightarrow$ Șomajul scade 4-6 trimestre (Legea Okun)
+        \item Șoc PIB $\Rightarrow$ Inflația crește, vârf la T3-T4 (cerere-push)
+        \item Șoc PIB $\Rightarrow$ Rata Fed crește cu întârziere (răspuns politică)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{VAR: Rezumat}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
-            \textbf{Constatări Cheie:}
-            \begin{itemize}
-                \item PIB Granger-cauzează șomajul
-                \item Inflația Granger-cauzează politica Fed
-                \item VAR captează aceste dinamici
-            \end{itemize}
+            \textbf{Metodologie:}
+            \begin{enumerate}
+                \item Împărțire: 70/15/15 (trimestre)
+                \item Selectare ordine lag pe validare (p=2)
+                \item Testare cauzalitate Granger
+                \item Analiză IRF
+                \item Prognoză finală pe test
+            \end{enumerate}
+
+            \vspace{0.5em}
+            \textbf{Constatare Cheie:}
+
+            VAR captează interdependențele economice pe care modelele univariate le pierd.
         \end{column}
         \begin{column}{0.48\textwidth}
-            \textbf{Aplicații Practice:}
-            \begin{itemize}
-                \item Prognoză economică
-                \item Analiză de politici
-                \item Managementul riscului în portofolii
-            \end{itemize}
+            \textbf{Rezultate:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{ll}
+                    \toprule
+                    Cel mai bun model & VAR(2) \\
+                    Validare RMSE & 1.42 \\
+                    Test RMSE & 1.13 \\
+                    vs Univariat & 22\% mai bun \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.5em}
+            \begin{exampleblock}{Aplicații}
+                \begin{itemize}
+                    \item Prognoză macroeconomică
+                    \item Analiză impact politici
+                    \item Risc portofoliu (multi-activ)
+                \end{itemize}
+            \end{exampleblock}
         \end{column}
     \end{columns}
 \end{frame}
