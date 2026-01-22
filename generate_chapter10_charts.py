@@ -22,8 +22,8 @@ ORANGE = '#E67E22'
 GRAY = '#666666'
 BITCOIN_ORANGE = '#F7931A'
 
-# Chart style
-plt.rcParams['figure.figsize'] = (14, 6)
+# Chart style - CONSISTENT WITH OTHER CHAPTERS
+plt.rcParams['figure.figsize'] = (12, 5)
 plt.rcParams['font.size'] = 11
 plt.rcParams['axes.facecolor'] = 'none'
 plt.rcParams['figure.facecolor'] = 'none'
@@ -569,7 +569,7 @@ def generate_unemployment_prophet():
                     alpha=0.7, linewidth=2, label='Changepoint (COVID)')
     axes[1].set_title('Trend Component with Structural Break', fontweight='bold')
     axes[1].set_ylabel('Trend (%)')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=1)
 
     # Seasonality (small effect)
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -639,7 +639,7 @@ def generate_unemployment_comparison():
     axes[1].set_ylabel('Error')
     axes[1].set_xticks(x)
     axes[1].set_xticklabels(models)
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
 
     # Add value labels
     for bar in bars1:
