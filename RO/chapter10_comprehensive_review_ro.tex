@@ -439,7 +439,7 @@
 
 \begin{frame}{Bitcoin: Evaluarea Finală pe Setul de Test}
     \begin{block}{Procedură}
-        Reestimăm GARCH(1,1) pe Antrenament + Validare, evaluăm pe \textbf{setul de test păstrat}.
+        Reestimăm GARCH(1,1) pe Antrenament + Validare, evaluăm pe \textbf{setul de test păstrat} folosind \textbf{prognoze rolling one-step-ahead}.
     \end{block}
 
     \vspace{0.2cm}
@@ -468,8 +468,8 @@
             \toprule
             \textbf{Metrică} & \textbf{Valoare} \\
             \midrule
-            Volatilitate MAE & 2,64 \\
-            Volatilitate RMSE & 2,82 \\
+            Volatilitate MAE & 1,88 \\
+            Volatilitate RMSE & 2,21 \\
             \bottomrule
         \end{tabular}
         \end{center}
@@ -480,6 +480,46 @@
             Persistență înaltă ($\alpha + \beta \approx 1$) confirmă clustering-ul volatilității.
         \end{alertblock}
     \end{columns}
+\end{frame}
+
+\begin{frame}{Prognoza GARCH: Rolling vs Multi-Step}
+    \begin{alertblock}{De ce Prognoze Rolling One-Step-Ahead?}
+        Prognozele GARCH multi-step converg la \textbf{varianța necondiționată}:
+        \begin{equation}
+            \lim_{h \to \infty} \E[\sigma_{t+h}^2 | \mathcal{F}_t] = \bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}
+        \end{equation}
+        Aceasta produce o prognoză \textbf{linie dreaptă}---inutilă pentru managementul dinamic al riscului!
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Prognoză Multi-Step}
+            \begin{itemize}
+                \item O singură estimare model
+                \item Prognoză $h$ pași înainte
+                \item Converge la $\bar{\sigma}^2$
+                \item \textcolor{Crimson}{Apare ca linie dreaptă}
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Rolling One-Step-Ahead}
+            \begin{itemize}
+                \item Re-estimare la fiecare $t$
+                \item Prognoză doar 1 pas înainte
+                \item Captează dinamica volatilității
+                \item \textcolor{Forest}{Prognoze dinamice}
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Prognozele rolling sunt practica standard în managementul riscului financiar (VaR, ES).}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Bitcoin: Concluzii Cheie}
@@ -1151,7 +1191,7 @@
         \toprule
         \textbf{Studiu de Caz} & \textbf{Provocare} & \textbf{Model} & \textbf{Caracteristică} & \textbf{Test RMSE} \\
         \midrule
-        Bitcoin & Clustering volatilitate & GARCH(1,1) & dinamica $\sigma_t^2$ & 2,82 \\
+        Bitcoin & Clustering volatilitate & GARCH(1,1) & Prognoze rolling & 2,21 \\
         Pete solare & Sezonalitate lungă & ARIMA + Fourier & Termeni Sin/Cos & 48,51 \\
         Șomaj & Ruptură structurală & Prophet & Changepoints & 0,42 \\
         Economic & Serii multiple & VAR(2) & Dinamică încrucișată & 1,32 (med) \\

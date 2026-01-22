@@ -444,7 +444,7 @@
 
 \begin{frame}{Bitcoin: Final Test Set Evaluation}
     \begin{block}{Procedure}
-        Refit GARCH(1,1) on Training + Validation, evaluate on \textbf{held-out test set}.
+        Refit GARCH(1,1) on Training + Validation, evaluate on \textbf{held-out test set} using \textbf{rolling one-step-ahead forecasts}.
     \end{block}
 
     \vspace{0.2cm}
@@ -473,8 +473,8 @@
             \toprule
             \textbf{Metric} & \textbf{Value} \\
             \midrule
-            Volatility MAE & 2.64 \\
-            Volatility RMSE & 2.82 \\
+            Volatility MAE & 1.88 \\
+            Volatility RMSE & 2.21 \\
             \bottomrule
         \end{tabular}
         \end{center}
@@ -485,6 +485,46 @@
             High persistence ($\alpha + \beta \approx 1$) confirms volatility clustering.
         \end{alertblock}
     \end{columns}
+\end{frame}
+
+\begin{frame}{GARCH Forecasting: Rolling vs Multi-Step}
+    \begin{alertblock}{Why Rolling One-Step-Ahead Forecasts?}
+        Multi-step GARCH forecasts converge to the \textbf{unconditional variance}:
+        \begin{equation}
+            \lim_{h \to \infty} \E[\sigma_{t+h}^2 | \mathcal{F}_t] = \bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}
+        \end{equation}
+        This produces a \textbf{flat line} forecast---not useful for dynamic risk management!
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Multi-Step Forecast}
+            \begin{itemize}
+                \item Single model fit
+                \item Forecast $h$ steps ahead
+                \item Converges to $\bar{\sigma}^2$
+                \item \textcolor{Crimson}{Appears as flat line}
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Rolling One-Step-Ahead}
+            \begin{itemize}
+                \item Re-estimate at each $t$
+                \item Forecast only 1 step ahead
+                \item Captures volatility dynamics
+                \item \textcolor{Forest}{Dynamic forecasts}
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Rolling forecasts are standard practice in financial risk management (VaR, ES).}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Bitcoin: Key Findings}
@@ -1160,7 +1200,7 @@
         \toprule
         \textbf{Case Study} & \textbf{Challenge} & \textbf{Model} & \textbf{Key Feature} & \textbf{Test RMSE} \\
         \midrule
-        Bitcoin & Volatility clustering & GARCH(1,1) & $\sigma_t^2$ dynamics & 2.82 \\
+        Bitcoin & Volatility clustering & GARCH(1,1) & Rolling forecasts & 2.21 \\
         Sunspots & Long seasonality & ARIMA + Fourier & Sin/Cos terms & 48.51 \\
         Unemployment & Structural break & Prophet & Changepoints & 0.42 \\
         Economic & Multiple series & VAR(2) & Cross-dynamics & 1.32 (avg) \\
