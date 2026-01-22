@@ -334,6 +334,18 @@
     \end{columns}
 \end{frame}
 
+\begin{frame}{Bitcoin: Volatility Clustering}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth]{../charts/btc_returns.pdf}
+    \end{center}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Observation}
+        Large returns (positive or negative) tend to be followed by large returns, and small returns by small returns. This is \textbf{volatility clustering}---the key phenomenon that GARCH models capture.
+    \end{exampleblock}
+\end{frame}
+
 \begin{frame}{GARCH Model Specification}
     \begin{defn}[GARCH(p,q) Model]
         Let $r_t$ denote returns. The GARCH(p,q) model is:
@@ -488,43 +500,49 @@
 \end{frame}
 
 \begin{frame}{GARCH Forecasting: Rolling vs Multi-Step}
-    \begin{alertblock}{Why Rolling One-Step-Ahead Forecasts?}
-        Multi-step GARCH forecasts converge to the \textbf{unconditional variance}:
-        \begin{equation}
-            \lim_{h \to \infty} \E[\sigma_{t+h}^2 | \mathcal{F}_t] = \bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}
-        \end{equation}
-        This produces a \textbf{flat line} forecast---not useful for dynamic risk management!
-    \end{alertblock}
-
-    \vspace{0.3cm}
-
     \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{block}{Multi-Step Forecast}
+        \column{0.55\textwidth}
+        \begin{alertblock}{Why Rolling One-Step-Ahead?}
+            Multi-step GARCH forecasts converge to the \textbf{unconditional variance}:
+            \begin{equation}
+                \lim_{h \to \infty} \E[\sigma_{t+h}^2 | \mathcal{F}_t] = \bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}
+            \end{equation}
+            This produces a \textbf{flat line}!
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Multi-Step}
             \begin{itemize}
-                \item Single model fit
-                \item Forecast $h$ steps ahead
                 \item Converges to $\bar{\sigma}^2$
-                \item \textcolor{Crimson}{Appears as flat line}
+                \item \textcolor{Crimson}{Flat line forecast}
             \end{itemize}
         \end{block}
 
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Rolling One-Step-Ahead}
+        \begin{exampleblock}{Rolling 1-Step}
             \begin{itemize}
                 \item Re-estimate at each $t$
-                \item Forecast only 1 step ahead
-                \item Captures volatility dynamics
                 \item \textcolor{Forest}{Dynamic forecasts}
             \end{itemize}
         \end{exampleblock}
+
+        \column{0.45\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/rolling_vs_multistep.pdf}
+        \end{center}
     \end{columns}
+\end{frame}
+
+\begin{frame}{Bitcoin: GARCH Volatility Forecast (Test Set)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth]{../charts/garch_forecast.pdf}
+    \end{center}
 
     \vspace{0.2cm}
 
-    \begin{center}
-        \textit{Rolling forecasts are standard practice in financial risk management (VaR, ES).}
-    \end{center}
+    \begin{exampleblock}{Result}
+        Rolling one-step-ahead GARCH(1,1) forecasts capture the \textbf{dynamic volatility patterns}. The forecast (red line) tracks the realized volatility (blue area), demonstrating the predictability of variance.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Bitcoin: Key Findings}
@@ -575,47 +593,27 @@
 %=============================================================================
 \section{Case Study 2: Sunspot Cycles (Fourier)}
 
-\begin{frame}{Sunspots: Problem Statement}
-    \begin{block}{Research Question}
-        How do we model \textbf{long seasonal cycles} that exceed SARIMA's capacity?
-    \end{block}
+\begin{frame}{Sunspots: The 11-Year Solar Cycle}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth]{../charts/sunspots.pdf}
+    \end{center}
 
     \vspace{0.2cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \textbf{Data Characteristics}
-        \begin{itemize}
-            \item Source: Statsmodels (Wolfer)
-            \item Period: 1900 -- 2008
-            \item Frequency: Annual
-            \item Observations: 109 years
-        \end{itemize}
-
-        \vspace{0.3cm}
-
-        \textbf{Known Feature}
-        \begin{itemize}
-            \item \textbf{Schwabe cycle}: $\approx$ 11 years
-            \item Irregular amplitude
-            \item Non-negative values
-        \end{itemize}
+        \begin{block}{Data}
+            \begin{itemize}
+                \item Source: Statsmodels (Wolfer)
+                \item Period: 1900 -- 2008
+                \item Observations: 109 years
+            \end{itemize}
+        \end{block}
 
         \column{0.5\textwidth}
-        \begin{alertblock}{The Challenge}
-            Standard SARIMA$(p,d,q)(P,D,Q)_s$ requires:
-            \begin{itemize}
-                \item $s = 11$ for annual data
-                \item $(P + D + Q) \times 11$ seasonal lags
-                \item \textbf{Too many parameters!}
-            \end{itemize}
+        \begin{alertblock}{Challenge}
+            SARIMA with $s=11$ needs too many parameters. \textbf{Solution}: Fourier terms.
         \end{alertblock}
-
-        \vspace{0.2cm}
-
-        \begin{exampleblock}{Solution}
-            Use \textbf{Fourier terms} as exogenous regressors in ARIMA.
-        \end{exampleblock}
     \end{columns}
 \end{frame}
 
@@ -754,45 +752,26 @@
 %=============================================================================
 \section{Case Study 3: Unemployment (Prophet)}
 
-\begin{frame}{Unemployment: Structural Breaks}
-    \begin{block}{Research Question}
-        How do we model time series with \textbf{sudden structural changes}?
-    \end{block}
+\begin{frame}{Unemployment: COVID-19 Structural Break}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth]{../charts/unemployment.pdf}
+    \end{center}
 
     \vspace{0.2cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \textbf{Data Characteristics}
-        \begin{itemize}
-            \item Source: FRED (UNRATE)
-            \item Period: 2010 -- 2025
-            \item Frequency: Monthly
-            \item Observations: $\approx 180$ months
-        \end{itemize}
-
-        \vspace{0.2cm}
-
-        \textbf{Key Statistics}
-        \begin{itemize}
-            \item Pre-COVID minimum: 3.5\%
-            \item COVID peak (Apr 2020): \textbf{14.8\%}
-            \item Change: +10.3 pp in one month
-        \end{itemize}
+        \begin{block}{Key Statistics}
+            \begin{itemize}
+                \item Pre-COVID min: 3.5\%
+                \item COVID peak: \textbf{14.8\%}
+                \item Change: +10.3 pp in one month
+            \end{itemize}
+        \end{block}
 
         \column{0.5\textwidth}
-        \begin{alertblock}{The Challenge}
-            \begin{itemize}
-                \item April 2020: Largest monthly increase in US history
-                \item Traditional ARIMA treats this as outlier
-                \item Need model that \textbf{adapts} to structural breaks
-            \end{itemize}
-        \end{alertblock}
-
-        \vspace{0.2cm}
-
         \begin{exampleblock}{Solution}
-            \textbf{Prophet} with automatic changepoint detection.
+            \textbf{Prophet} with automatic changepoint detection adapts to structural breaks.
         \end{exampleblock}
     \end{columns}
 \end{frame}
@@ -937,45 +916,26 @@
 %=============================================================================
 \section{Case Study 4: Multivariate Analysis (VAR)}
 
-\begin{frame}{VAR: Motivation}
-    \begin{block}{Research Question}
-        How do we model \textbf{dynamic interdependencies} between multiple economic variables?
-    \end{block}
+\begin{frame}{VAR: Multivariate Economic Data}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth]{../charts/economic_vars.pdf}
+    \end{center}
 
-    \vspace{0.2cm}
+    \vspace{0.1cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \textbf{Variables (FRED)}
-        \begin{itemize}
-            \item GDP Growth (YoY \%)
-            \item Unemployment Rate (\%)
-            \item Inflation (CPI YoY \%)
-            \item Federal Funds Rate (\%)
-        \end{itemize}
-
-        \vspace{0.2cm}
-
-        \textbf{Data}
-        \begin{itemize}
-            \item Period: 2000 -- 2025
-            \item Frequency: Quarterly
-            \item Observations: $\approx 100$ quarters
-        \end{itemize}
-
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Economic Relationships}
+        \begin{block}{Economic Relationships}
             \begin{itemize}
                 \item \textbf{Okun's Law}: GDP $\leftrightarrow$ Unemployment
-                \item \textbf{Phillips Curve}: Unemployment $\leftrightarrow$ Inflation
+                \item \textbf{Phillips Curve}: Unemp $\leftrightarrow$ Inflation
                 \item \textbf{Taylor Rule}: Inflation $\rightarrow$ Fed Rate
             \end{itemize}
-        \end{exampleblock}
+        \end{block}
 
-        \vspace{0.2cm}
-
+        \column{0.5\textwidth}
         \begin{alertblock}{Why VAR?}
-            Each variable may be \textbf{both cause and effect} of others.
+            Each variable may be \textbf{both cause and effect} of others. Gray: 2008 crisis. Red: COVID.
         \end{alertblock}
     \end{columns}
 \end{frame}
