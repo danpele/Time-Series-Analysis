@@ -545,7 +545,7 @@
     \begin{flushright}\textit{Answer on next slide...}\end{flushright}
 \end{frame}
 
-\begin{frame}{Problem 1: Solution}
+\begin{frame}[fragile]{Problem 1: Solution}
     \begin{exampleblock}{Solution: 6 parameters}
         \textbf{Each harmonic} requires 2 parameters (sine and cosine coefficients):
         $$s(t) = \sum_{k=1}^{K} \left[ a_k \cos\left(\frac{2\pi k t}{m}\right) + b_k \sin\left(\frac{2\pi k t}{m}\right) \right]$$
@@ -583,7 +583,7 @@
     \begin{flushright}\textit{Answer on next slide...}\end{flushright}
 \end{frame}
 
-\begin{frame}{Problem 2: Solution}
+\begin{frame}[fragile]{Problem 2: Solution}
     \begin{exampleblock}{Solution: Multiplicative seasonality}
         \textbf{Analysis}: Check if seasonal amplitude is proportional to level.
 
@@ -625,7 +625,7 @@
     \begin{flushright}\textit{Answer on next slide...}\end{flushright}
 \end{frame}
 
-\begin{frame}{Problem 3: Solution}
+\begin{frame}[fragile]{Problem 3: Solution}
     \begin{exampleblock}{Solution}
         \textbf{Box-Cox $\lambda = 0.5$}:
         \begin{itemize}
@@ -671,28 +671,20 @@
 
 \begin{frame}{Problem 4: Solution}
     \begin{exampleblock}{Solution}
-        {\footnotesize
-\begin{verbatim}
-import pandas as pd
-from prophet import Prophet
-
-# Create holidays dataframe
-holidays = pd.DataFrame({
-    'holiday': ['valentines', 'valentines',
-                'easter', 'easter',
-                'christmas', 'christmas'],
-    'ds': pd.to_datetime(['2024-02-14', '2025-02-14',
-                          '2024-03-31', '2025-04-20',  # Easter dates
-                          '2024-12-25', '2025-12-25']),
-    'lower_window': [0, 0, 0, 0, 0, 0],
-    'upper_window': [0, 0, 0, 0, 0, 0]
-})
-
-# Fit model with holidays
-model = Prophet(holidays=holidays)
-model.fit(df)
-\end{verbatim}
+        {\scriptsize\ttfamily
+        import pandas as pd\\
+        from prophet import Prophet\\[0.3em]
+        holidays = pd.DataFrame(\{\\
+        \quad 'holiday': ['valentines', 'valentines', 'easter', 'easter', 'christmas', 'christmas'],\\
+        \quad 'ds': pd.to\_datetime(['2024-02-14', '2025-02-14', '2024-03-31', '2025-04-20', ...]),\\
+        \quad 'lower\_window': [0, 0, 0, 0, 0, 0],\\
+        \quad 'upper\_window': [0, 0, 0, 0, 0, 0]\\
+        \})\\[0.3em]
+        model = Prophet(holidays=holidays)\\
+        model.fit(df)
         }
+
+        \vspace{0.2cm}
         \textbf{Note}: Use \texttt{lower\_window=-1, upper\_window=1} to capture effects on adjacent days.
     \end{exampleblock}
 \end{frame}
@@ -713,16 +705,14 @@ model.fit(df)
         \end{itemize}
     \end{block}
     \begin{exampleblock}{Prophet Configuration}
-        {\footnotesize
-\begin{verbatim}
-model = Prophet(
-    seasonality_mode='multiplicative',  # Seasonal amplitude grows
-    changepoint_prior_scale=0.5,        # More flexible trend
-    yearly_seasonality=True,
-    weekly_seasonality=False            # Monthly data
-)
-model.add_country_holidays(country_name='US')
-\end{verbatim}
+        {\scriptsize\ttfamily
+        model = Prophet(\\
+        \quad seasonality\_mode='multiplicative',\\
+        \quad changepoint\_prior\_scale=0.5,\\
+        \quad yearly\_seasonality=True,\\
+        \quad weekly\_seasonality=False\\
+        )\\
+        model.add\_country\_holidays(country\_name='US')
         }
     \end{exampleblock}
     \begin{alertblock}{Key Decision}
@@ -742,20 +732,12 @@ model.add_country_holidays(country_name='US')
         \end{itemize}
     \end{block}
     \begin{exampleblock}{TBATS in R}
-        {\footnotesize
-\begin{verbatim}
-library(forecast)
-
-# Specify multiple seasonal periods
-energy_msts <- msts(energy_data,
-                    seasonal.periods = c(24, 168, 8760))
-
-# Fit TBATS - automatic selection of Fourier terms
-fit <- tbats(energy_msts)
-
-# Forecast next week
-fc <- forecast(fit, h = 168)
-\end{verbatim}
+        {\scriptsize\ttfamily
+        library(forecast)\\[0.3em]
+        energy\_msts <- msts(energy\_data,\\
+        \quad seasonal.periods = c(24, 168, 8760))\\[0.3em]
+        fit <- tbats(energy\_msts)\\[0.3em]
+        fc <- forecast(fit, h = 168)
         }
     \end{exampleblock}
     \begin{alertblock}{Note}
@@ -770,14 +752,13 @@ fc <- forecast(fit, h = 168)
         Compare Prophet, TBATS, and SARIMA on 2 years of daily sales data.
     \end{block}
     \begin{exampleblock}{Prophet Cross-Validation}
-\begin{verbatim}
-from prophet.diagnostics import cross_validation, performance_metrics
-
-df_cv = cross_validation(model, initial='365 days',
-                         period='90 days', horizon='30 days')
-metrics = performance_metrics(df_cv)
-print(f"MAPE: {metrics['mape'].mean():.2%}")
-\end{verbatim}
+        {\scriptsize\ttfamily
+        from prophet.diagnostics import cross\_validation, performance\_metrics\\[0.3em]
+        df\_cv = cross\_validation(model, initial='365 days',\\
+        \quad period='90 days', horizon='30 days')\\
+        metrics = performance\_metrics(df\_cv)\\
+        print(f"MAPE: \{metrics['mape'].mean():.2\%\}")
+        }
     \end{exampleblock}
     \begin{block}{Typical Results}
         \begin{center}
@@ -865,12 +846,11 @@ print(f"MAPE: {metrics['mape'].mean():.2%}")
         \end{enumerate}
     \end{block}
     \begin{exampleblock}{Prophet Approach}
-\begin{verbatim}
-model = Prophet(changepoints=['2020-03-15', '2021-06-01'])
-# Or add regressor:
-df['covid'] = (df['ds'] >= '2020-03-15') & (df['ds'] < '2021-06-01')
-model.add_regressor('covid')
-\end{verbatim}
+        {\scriptsize\ttfamily
+        model = Prophet(changepoints=['2020-03-15', '2021-06-01'])\\
+        df['covid'] = (df['ds'] >= '2020-03-15') \& (df['ds'] < '2021-06-01')\\
+        model.add\_regressor('covid')
+        }
     \end{exampleblock}
     }
 \end{frame}

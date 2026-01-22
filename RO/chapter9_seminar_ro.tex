@@ -71,7 +71,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \hypersetup{colorlinks=false, pdfborder={0 0 0}}
-\graphicspath{{logos/}{charts/}}
+\graphicspath{{../logos/}{../charts/}}
 
 %=============================================================================
 % CUSTOM COMMANDS
@@ -673,28 +673,19 @@
 
 \begin{frame}{Problemă 4: Soluție}
     \begin{exampleblock}{Soluție}
-        {\footnotesize
-\begin{verbatim}
-import pandas as pd
-from prophet import Prophet
-
-# Crearea dataframe-ului de sărbători
-holidays = pd.DataFrame({
-    'holiday': ['valentines', 'valentines',
-                'paste', 'paste',
-                'craciun', 'craciun'],
-    'ds': pd.to_datetime(['2024-02-14', '2025-02-14',
-                          '2024-05-05', '2025-04-20',  # datele Paștelui
-                          '2024-12-25', '2025-12-25']),
-    'lower_window': [0, 0, 0, 0, 0, 0],
-    'upper_window': [0, 0, 0, 0, 0, 0]
-})
-
-# Ajustare model cu sărbători
-model = Prophet(holidays=holidays)
-model.fit(df)
-\end{verbatim}
+        {\scriptsize\ttfamily
+        import pandas as pd\\
+        from prophet import Prophet\\[0.2em]
+        holidays = pd.DataFrame(\{\\
+        \quad 'holiday': ['valentines', 'paste', 'craciun'],\\
+        \quad 'ds': pd.to\_datetime([...]),\\
+        \quad 'lower\_window': [0, 0, 0],\\
+        \quad 'upper\_window': [0, 0, 0]\\
+        \})\\[0.2em]
+        model = Prophet(holidays=holidays)\\
+        model.fit(df)
         }
+        \vspace{0.2cm}
         \textbf{Notă}: Folosiți \texttt{lower\_window=-1, upper\_window=1} pentru a captura efecte pe zile adiacente.
     \end{exampleblock}
 \end{frame}
@@ -715,20 +706,16 @@ model.fit(df)
         \end{itemize}
     \end{block}
     \begin{exampleblock}{Configurare Prophet}
-        {\footnotesize
-\begin{verbatim}
-model = Prophet(
-    seasonality_mode='multiplicative',  # Amplitudine sezonieră crește
-    changepoint_prior_scale=0.5,        # Trend mai flexibil
-    yearly_seasonality=True,
-    weekly_seasonality=False            # Date lunare
-)
-model.add_country_holidays(country_name='RO')
-\end{verbatim}
+        {\scriptsize\ttfamily
+        model = Prophet(\\
+        \quad seasonality\_mode='multiplicative',\\
+        \quad changepoint\_prior\_scale=0.5,\\
+        \quad yearly\_seasonality=True)\\
+        model.add\_country\_holidays(country\_name='RO')
         }
     \end{exampleblock}
     \begin{alertblock}{Decizie Cheie}
-        Am folosit sezonalitate multiplicativă deoarece efectul decembrie este proporțional cu nivelul de bază al vânzărilor.
+        Sezonalitate multiplicativă: efectul decembrie este proporțional cu nivelul de bază.
     \end{alertblock}
     }
 \end{frame}
@@ -744,20 +731,12 @@ model.add_country_holidays(country_name='RO')
         \end{itemize}
     \end{block}
     \begin{exampleblock}{TBATS în R}
-        {\footnotesize
-\begin{verbatim}
-library(forecast)
-
-# Specificarea perioadelor sezoniere multiple
-energy_msts <- msts(energy_data,
-                    seasonal.periods = c(24, 168, 8760))
-
-# Ajustare TBATS - selecție automată a termenilor Fourier
-fit <- tbats(energy_msts)
-
-# Prognoză săptămâna următoare
-fc <- forecast(fit, h = 168)
-\end{verbatim}
+        {\scriptsize\ttfamily
+        library(forecast)\\[0.2em]
+        energy\_msts <- msts(energy\_data,\\
+        \quad seasonal.periods = c(24, 168, 8760))\\[0.2em]
+        fit <- tbats(energy\_msts)\\
+        fc <- forecast(fit, h = 168)
         }
     \end{exampleblock}
     \begin{alertblock}{Notă}
@@ -772,14 +751,12 @@ fc <- forecast(fit, h = 168)
         Comparați Prophet, TBATS și SARIMA pe 2 ani de date zilnice de vânzări.
     \end{block}
     \begin{exampleblock}{Validare Încrucișată Prophet}
-\begin{verbatim}
-from prophet.diagnostics import cross_validation, performance_metrics
-
-df_cv = cross_validation(model, initial='365 days',
-                         period='90 days', horizon='30 days')
-metrics = performance_metrics(df_cv)
-print(f"MAPE: {metrics['mape'].mean():.2%}")
-\end{verbatim}
+        {\scriptsize\ttfamily
+        from prophet.diagnostics import cross\_validation\\
+        df\_cv = cross\_validation(model, initial='365 days',\\
+        \quad period='90 days', horizon='30 days')\\
+        metrics = performance\_metrics(df\_cv)
+        }
     \end{exampleblock}
     \begin{block}{Rezultate Tipice}
         \begin{center}
@@ -867,12 +844,11 @@ print(f"MAPE: {metrics['mape'].mean():.2%}")
         \end{enumerate}
     \end{block}
     \begin{exampleblock}{Abordare Prophet}
-\begin{verbatim}
-model = Prophet(changepoints=['2020-03-15', '2021-06-01'])
-# Sau adăugați regresor:
-df['covid'] = (df['ds'] >= '2020-03-15') & (df['ds'] < '2021-06-01')
-model.add_regressor('covid')
-\end{verbatim}
+        {\footnotesize\ttfamily
+        model = Prophet(changepoints=[...])\\
+        df['covid'] = (df['ds'] >= '2020-03-15') \& ...\\
+        model.add\_regressor('covid')
+        }
     \end{exampleblock}
     }
 \end{frame}
