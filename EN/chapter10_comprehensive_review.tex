@@ -1,5 +1,5 @@
-% Chapter 10: Comprehensive Review - Complete Time Series Analysis
-% Applying all methods to real data: Bitcoin, Sunspots, Unemployment
+% Chapter 10: Comprehensive Review - Applied Time Series Analysis
+% Harvard-quality academic presentation
 % Bachelor program, Bucharest University of Economic Studies
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
@@ -13,7 +13,7 @@
 \usetheme{Madrid}
 \usecolortheme{seahorse}
 
-% IDA-Inspired Color Palette
+% Professional Color Palette
 \definecolor{MainBlue}{RGB}{26, 58, 110}
 \definecolor{AccentBlue}{RGB}{42, 82, 140}
 \definecolor{IDAred}{RGB}{220, 53, 69}
@@ -25,7 +25,7 @@
 \definecolor{Forest}{RGB}{46, 125, 50}
 \definecolor{Amber}{RGB}{181, 133, 63}
 \definecolor{Orange}{RGB}{230, 126, 34}
-\definecolor{BitcoinOrange}{RGB}{247, 147, 26}
+\definecolor{HarvardCrimson}{RGB}{165, 28, 48}
 
 \setbeamercolor{palette primary}{bg=MainBlue, fg=white}
 \setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
@@ -68,12 +68,13 @@
 \usepackage{mathtools}
 \usepackage{bm}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{colortbl}
 \hypersetup{colorlinks=false, pdfborder={0 0 0}}
 \graphicspath{{../logos/}{../charts/}}
 
@@ -94,6 +95,9 @@
 \newcommand{\Cov}{\text{Cov}}
 \newcommand{\Corr}{\text{Corr}}
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\RMSE}{\text{RMSE}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAPE}{\text{MAPE}}
 
 %=============================================================================
 % TITLE INFORMATION
@@ -126,7 +130,7 @@
     \begin{center}
         {\Large\textcolor{MediumGray}{Time Series Analysis and Forecasting}}\\[0.3cm]
         {\Huge\textbf{\textcolor{MainBlue}{Chapter 10: Comprehensive Review}}}\\[0.5cm]
-        {\Large\textcolor{IDAred}{Complete Analysis with Real Data}}
+        {\Large\textcolor{IDAred}{Applied Case Studies with Rigorous Methodology}}
     \end{center}
     \vfill
 
@@ -151,1286 +155,1171 @@
 \end{frame}
 
 %=============================================================================
-% TABLE OF CONTENTS
+% OUTLINE
 %=============================================================================
 \begin{frame}{Outline}
     \tableofcontents
 \end{frame}
 
 %=============================================================================
-% SECTION 1: INTRODUCTION
+% SECTION 1: METHODOLOGY
 %=============================================================================
-\section{The Complete Analysis Workflow}
+\section{Forecasting Methodology}
 
-\begin{frame}{Course Overview: Methods Covered}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Classical Methods}
-            \begin{itemize}
-                \item \textcolor{MainBlue}{Ch 1:} Time Series Fundamentals
-                \item \textcolor{MainBlue}{Ch 2:} ARMA Models
-                \item \textcolor{MainBlue}{Ch 3:} ARIMA Models
-                \item \textcolor{MainBlue}{Ch 4:} SARIMA Models
-                \item \textcolor{MainBlue}{Ch 5:} GARCH Models
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Advanced Methods}
-            \begin{itemize}
-                \item \textcolor{Forest}{Ch 6:} VAR \& Granger Causality
-                \item \textcolor{Forest}{Ch 7:} Cointegration \& VECM
-                \item \textcolor{Forest}{Ch 8:} Modern Extensions
-                \item \textcolor{Forest}{Ch 9:} Prophet \& TBATS
-            \end{itemize}
-            \vspace{0.5em}
-            \textbf{Today: Apply ALL to Real Data!}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{The Complete Analysis Workflow}
-    \begin{center}
-        \begin{tikzpicture}[
-            node distance=0.6cm,
-            box/.style={rectangle, rounded corners, draw=MainBlue, fill=MainBlue!10,
-                        text width=2.8cm, minimum height=0.8cm, align=center, font=\footnotesize},
-            arrow/.style={-{Stealth[length=2mm]}, thick, MainBlue}
-        ]
-            % Row 1
-            \node[box] (data) {1. Data Collection};
-            \node[box, right=of data] (viz) {2. Visualization};
-            \node[box, right=of viz] (stat) {3. Stationarity};
-            \node[box, right=of stat] (decomp) {4. Decomposition};
-
-            % Row 2
-            \node[box, below=0.8cm of data] (model) {5. Model Selection};
-            \node[box, right=of model] (est) {6. Estimation};
-            \node[box, right=of est] (diag) {7. Diagnostics};
-            \node[box, right=of diag] (forecast) {8. Forecasting};
-
-            % Arrows
-            \draw[arrow] (data) -- (viz);
-            \draw[arrow] (viz) -- (stat);
-            \draw[arrow] (stat) -- (decomp);
-            \draw[arrow] (decomp) -- (model);
-            \draw[arrow] (model) -- (est);
-            \draw[arrow] (est) -- (diag);
-            \draw[arrow] (diag) -- (forecast);
-
-            % Feedback loop
-            \draw[arrow, dashed, IDAred] (diag.south) -- ++(0,-0.4) -| (model.south);
-        \end{tikzpicture}
-    \end{center}
+\begin{frame}{The Scientific Approach to Forecasting}
+    \begin{block}{Research Question}
+        How do we \textbf{rigorously evaluate} forecast performance while avoiding overfitting?
+    \end{block}
 
     \vspace{0.3cm}
-    \begin{alertblock}{Key Principle}
-        Model diagnostics may require returning to model selection (iterative process)
+
+    \begin{alertblock}{The Fundamental Problem}
+        \begin{itemize}
+            \item In-sample fit $\neq$ Out-of-sample performance
+            \item Models can ``memorize'' training data without learning patterns
+            \item \textbf{Solution}: Proper train/validation/test methodology
+        \end{itemize}
     \end{alertblock}
-\end{frame}
 
-\begin{frame}{Real Datasets for This Chapter}
-    \begin{columns}[T]
-        \begin{column}{0.24\textwidth}
-            \begin{block}{\textcolor{BitcoinOrange}{Bitcoin}}
-                \begin{itemize}
-                    \item Daily 2019-2024
-                    \item Volatility clustering
-                    \item ARIMA + GARCH
-                \end{itemize}
-            \end{block}
-        \end{column}
-        \begin{column}{0.24\textwidth}
-            \begin{block}{\textcolor{Orange}{Sunspots}}
-                \begin{itemize}
-                    \item Yearly 1900-2023
-                    \item 11-year cycle
-                    \item Fourier terms
-                \end{itemize}
-            \end{block}
-        \end{column}
-        \begin{column}{0.24\textwidth}
-            \begin{block}{\textcolor{MainBlue}{Unemployment}}
-                \begin{itemize}
-                    \item Monthly 2010-2023
-                    \item COVID-19 shock
-                    \item Prophet
-                \end{itemize}
-            \end{block}
-        \end{column}
-        \begin{column}{0.24\textwidth}
-            \begin{block}{\textcolor{Forest}{Economic VAR}}
-                \begin{itemize}
-                    \item Quarterly 2000-2023
-                    \item GDP, Inflation, etc.
-                    \item Multivariate VAR
-                \end{itemize}
-            \end{block}
-        \end{column}
-    \end{columns}
-\end{frame}
+    \vspace{0.3cm}
 
-%=============================================================================
-% TRAIN/VALIDATION/TEST METHODOLOGY
-%=============================================================================
-\begin{frame}{Key Methodology: Train / Validation / Test Split}
-    \begin{center}
-        \begin{tikzpicture}[
-            box/.style={rectangle, minimum height=1.2cm, align=center, font=\footnotesize},
-        ]
-            \node[box, fill=MainBlue!30, minimum width=5cm] (train) at (0,0) {\textbf{Training 70\%}\\Fit model parameters};
-            \node[box, fill=Orange!30, minimum width=2.2cm, right=-0.01cm of train] (val) {\textbf{Validation 15\%}\\Select hyperparams};
-            \node[box, fill=IDAred!30, minimum width=2.2cm, right=-0.01cm of val] (test) {\textbf{Test 15\%}\\Final evaluation};
-        \end{tikzpicture}
-    \end{center}
-
-    \vspace{0.3em}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Why This Matters:}
-            \begin{itemize}
-                \item \textcolor{MainBlue}{Training}: Estimate model parameters
-                \item \textcolor{Orange}{Validation}: Compare models, tune hyperparameters
-                \item \textcolor{IDAred}{Test}: Unbiased final performance (held out!)
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \begin{alertblock}{Critical Rule}
-                \textbf{NEVER} look at test data during model selection!
-
-                \vspace{0.2em}
-                For time series: \textbf{NEVER} shuffle data --- preserve temporal order.
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-%=============================================================================
-% SECTION 2: CASE STUDY 1 - BITCOIN
-%=============================================================================
-\section{Case Study 1: Bitcoin Volatility Forecasting}
-
-\begin{frame}{Bitcoin: Data and Objective}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \textbf{Data:} Bitcoin daily returns (2019--2024)
-            \begin{itemize}
-                \item Source: Yahoo Finance (BTC-USD)
-                \item 1,826 observations
-                \item Returns = $100 \times \ln(P_t/P_{t-1})$
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Objective:} Forecast \textcolor{IDAred}{volatility} (not returns!)
-
-            \vspace{0.5em}
-            \textbf{Why volatility?}
-            \begin{itemize}
-                \item Returns are nearly unpredictable
-                \item Volatility shows strong persistence
-                \item Critical for risk management (VaR)
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Data Split:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcc}
-                    \toprule
-                    Set & Days & Period \\
-                    \midrule
-                    Training & 1,278 & 2019--2022 \\
-                    Validation & 274 & 2022--2023 \\
-                    Test & 274 & 2023--2024 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Key Statistics}
-                Mean return: 0.12\%/day \\
-                Std dev: 3.8\%/day \\
-                Kurtosis: 8.2 (fat tails!)
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Bitcoin: Model Selection on Validation Set}
-    \textbf{Step 1: Fit GARCH variants on Training data}
-
-    \textbf{Step 2: Compare volatility forecasts on Validation set}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lccc}
-                    \toprule
-                    Model & AIC & BIC & \textbf{Val MAE} \\
-                    \midrule
-                    GARCH(1,1) & 8542 & 8563 & 2.34 \\
-                    GARCH(2,1) & 8540 & 8567 & 2.31 \\
-                    \textbf{GJR-GARCH(1,1)} & \textbf{8531} & \textbf{8558} & \textbf{2.18} \\
-                    EGARCH(1,1) & 8538 & 8565 & 2.25 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            \textcolor{Forest}{$\Rightarrow$ Best: GJR-GARCH (captures asymmetry)}
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{GJR-GARCH Model:}
-            \[
-                \sigma_t^2 = \omega + (\alpha + \gamma I_{t-1}) \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2
-            \]
-
-            \vspace{0.3em}
-            Where $I_{t-1} = 1$ if $\varepsilon_{t-1} < 0$
-
-            \vspace{0.5em}
-            \begin{alertblock}{Leverage Effect}
-                $\gamma > 0$: Negative returns increase volatility more than positive returns (fear vs greed)
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Bitcoin: Final Test Set Evaluation}
-    \textbf{Step 3: Refit GJR-GARCH on Training+Validation, evaluate on Test}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Test Set Results:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lc}
-                    \toprule
-                    Metric & Value \\
-                    \midrule
-                    Volatility MAE & 2.21 \\
-                    Volatility RMSE & 3.45 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \textbf{GJR-GARCH Parameters:}
-            \begin{itemize}
-                \item $\alpha = 0.05$ (ARCH effect)
-                \item $\gamma = 0.08$ (leverage effect)
-                \item $\beta = 0.89$ (persistence)
-                \item $\alpha + \gamma/2 + \beta = 0.98$
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Interpretation:}
-            \begin{itemize}
-                \item High persistence ($\approx 0.98$)
-                \item Leverage effect significant ($\gamma > 0$)
-                \item Volatility is predictable!
-            \end{itemize}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Practical Application}
-                \textbf{1-day ahead VaR (99\%):}
-                \[
-                    \text{VaR} = -2.33 \times \hat{\sigma}_{t+1}
-                \]
-                If $\hat{\sigma} = 4\%$, then VaR = $-9.3\%$
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Bitcoin: Volatility Forecast Visualization}
-    \begin{center}
-        \textbf{Test Period: Forecast vs Realized Volatility}
-
-        \vspace{0.5em}
-        \begin{tikzpicture}
-            % Simplified visualization
-            \draw[thick, ->] (0,0) -- (10,0) node[right] {Time};
-            \draw[thick, ->] (0,0) -- (0,3.5) node[above] {Volatility};
-
-            % Realized volatility (bars)
-            \foreach \x/\h in {0.5/1.5, 1/2.2, 1.5/1.8, 2/2.5, 2.5/3, 3/2.8, 3.5/2.2, 4/1.8, 4.5/1.5, 5/1.2, 5.5/1.8, 6/2.5, 6.5/2.8, 7/2.2, 7.5/1.5, 8/1.2, 8.5/1.5, 9/1.8} {
-                \fill[MainBlue!50] (\x-0.15,0) rectangle (\x+0.15,\h);
-            }
-
-            % Forecast line
-            \draw[thick, IDAred] (0.5,1.6) -- (1,1.9) -- (1.5,2.1) -- (2,2.0) -- (2.5,2.4) -- (3,2.7) -- (3.5,2.5) -- (4,2.1) -- (4.5,1.8) -- (5,1.5) -- (5.5,1.4) -- (6,1.8) -- (6.5,2.3) -- (7,2.5) -- (7.5,2.0) -- (8,1.6) -- (8.5,1.4) -- (9,1.5);
-
-            % Legend
-            \fill[MainBlue!50] (0.5,3.2) rectangle (1,3.5);
-            \node[right, font=\footnotesize] at (1.1,3.35) {Realized $|r_t|$};
-            \draw[thick, IDAred] (3,3.35) -- (4,3.35);
-            \node[right, font=\footnotesize] at (4.1,3.35) {GJR-GARCH forecast $\hat{\sigma}_t$};
-        \end{tikzpicture}
-    \end{center}
-
-    \vspace{0.3em}
-    \begin{itemize}
-        \item Model captures volatility clusters (high vol follows high vol)
-        \item Forecast adapts to changing market conditions
-        \item Test MAE = 2.21 (good for daily volatility forecasting)
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Bitcoin: Summary}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Methodology:}
-            \begin{enumerate}
-                \item Split data: 70/15/15
-                \item Compare GARCH variants on validation
-                \item Select best model (GJR-GARCH)
-                \item Final evaluation on test set
-            \end{enumerate}
-
-            \vspace{0.5em}
-            \textbf{Key Finding:}
-
-            Returns are unpredictable, but \textcolor{IDAred}{volatility is forecastable}!
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Results:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{ll}
-                    \toprule
-                    Best Model & GJR-GARCH(1,1) \\
-                    Validation MAE & 2.18 \\
-                    Test MAE & 2.21 \\
-                    Key insight & Leverage effect \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Practical Use}
-                \begin{itemize}
-                    \item Value-at-Risk calculation
-                    \item Position sizing
-                    \item Options pricing
-                \end{itemize}
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-%=============================================================================
-% SECTION 3: CASE STUDY 2 - SUNSPOTS
-%=============================================================================
-\section{Case Study 2: Sunspot Cycle Forecasting}
-
-\begin{frame}{Sunspots: Data and Objective}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \textbf{Data:} Yearly sunspot numbers (1900--2023)
-            \begin{itemize}
-                \item Source: statsmodels (Wolfer dataset)
-                \item 124 yearly observations
-                \item Famous 11-year Schwabe cycle
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Objective:} Forecast sunspot activity
-
-            \vspace{0.5em}
-            \textbf{Challenge:}
-            \begin{itemize}
-                \item Standard SARIMA with $m=11$ is complex
-                \item Solution: Fourier terms as regressors
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Data Split:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcc}
-                    \toprule
-                    Set & Years & Period \\
-                    \midrule
-                    Training & 87 & 1900--1986 \\
-                    Validation & 18 & 1987--2004 \\
-                    Test & 19 & 2005--2023 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Key Statistics}
-                Mean: 76.4 \\
-                Std dev: 56.8 \\
-                Cycle period: $\approx$11 years
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Sunspots: Fourier Terms for Long Seasonality}
-    \textbf{Idea:} Capture 11-year cycle with sine/cosine regressors
-
-    \[
-        y_t = \mu + \sum_{k=1}^{K} \left[ a_k \sin\left(\frac{2\pi k t}{11}\right) + b_k \cos\left(\frac{2\pi k t}{11}\right) \right] + \text{ARMA errors}
-    \]
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{How many harmonics (K)?}
-            \begin{itemize}
-                \item K=1: Basic cycle shape
-                \item K=2: Sharper peaks/troughs
-                \item K=3,4: More detail
-                \item Too many $\Rightarrow$ overfitting
-            \end{itemize}
-
-            \vspace{0.3em}
-            \textcolor{Forest}{Select K using validation set!}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \begin{alertblock}{Why Fourier?}
-                \begin{itemize}
-                    \item Only 2K parameters (not 11)
-                    \item No seasonal differencing needed
-                    \item Works for any period length
-                    \item Combines with ARIMA naturally
-                \end{itemize}
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Sunspots: Model Selection on Validation Set}
-    \textbf{Model:} ARIMA(2,0,1) + K Fourier harmonics
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcccc}
-                    \toprule
-                    K & AIC & BIC & \textbf{Val RMSE} & Val MAE \\
-                    \midrule
-                    1 & 892 & 905 & 28.4 & 22.1 \\
-                    \textbf{2} & \textbf{878} & \textbf{896} & \textbf{24.2} & \textbf{18.9} \\
-                    3 & 875 & 898 & 25.1 & 19.5 \\
-                    4 & 873 & 901 & 26.8 & 21.2 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            \textcolor{Forest}{$\Rightarrow$ Best: K=2 Fourier harmonics}
-
-            \vspace{0.3em}
-            K=3,4 overfit: lower AIC but higher validation error!
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Selected Model:}
-
-            ARIMA(2,0,1) + 2 Fourier pairs
-
-            \vspace{0.5em}
-            \textbf{Parameters:}
-            \begin{itemize}
-                \item $\phi_1 = 1.35$, $\phi_2 = -0.68$
-                \item $\theta_1 = -0.42$
-                \item 4 Fourier coefficients
-            \end{itemize}
-
-            \vspace{0.3em}
-            Total: 8 parameters
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Sunspots: Final Test Set Evaluation}
-    \textbf{Refit on Training+Validation, forecast Test period (2005--2023)}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Test Set Results:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lc}
-                    \toprule
-                    Metric & Value \\
-                    \midrule
-                    Test RMSE & 26.8 \\
-                    Test MAE & 21.4 \\
-                    Test MAPE & 42.3\% \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \textbf{Interpretation:}
-            \begin{itemize}
-                \item Model captures cycle timing
-                \item Amplitude harder to predict
-                \item Wide confidence intervals
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Forecast vs Actual (2005--2023):}
-
-            \vspace{0.3em}
-            \begin{tikzpicture}[scale=0.85]
-                \draw[thick, ->] (0,0) -- (5,0) node[right] {\footnotesize Year};
-                \draw[thick, ->] (0,0) -- (0,3) node[above] {\footnotesize Sunspots};
-
-                % Actual values (simplified)
-                \draw[thick, MainBlue] (0.3,0.8) -- (0.8,0.4) -- (1.3,0.3) -- (1.8,1.0) -- (2.3,2.0) -- (2.8,2.5) -- (3.3,1.8) -- (3.8,0.5) -- (4.3,0.8);
-
-                % Forecast
-                \draw[thick, IDAred, dashed] (0.3,1.0) -- (0.8,0.6) -- (1.3,0.5) -- (1.8,1.2) -- (2.3,2.2) -- (2.8,2.3) -- (3.3,1.5) -- (3.8,0.7) -- (4.3,1.0);
-
-                % Confidence band
-                \fill[IDAred, opacity=0.2] (0.3,0.5) -- (0.8,0.2) -- (1.3,0.1) -- (1.8,0.6) -- (2.3,1.5) -- (2.8,1.6) -- (3.3,0.9) -- (3.8,0.2) -- (4.3,0.4) -- (4.3,1.6) -- (3.8,1.2) -- (3.3,2.1) -- (2.8,3.0) -- (2.3,2.9) -- (1.8,1.8) -- (1.3,0.9) -- (0.8,1.0) -- (0.3,1.5) -- cycle;
-
-                % Labels
-                \node[font=\tiny] at (0.3,-0.2) {05};
-                \node[font=\tiny] at (2.3,-0.2) {14};
-                \node[font=\tiny] at (4.3,-0.2) {23};
-            \end{tikzpicture}
-
-            \vspace{0.2em}
-            {\footnotesize \textcolor{MainBlue}{---} Actual \quad \textcolor{IDAred}{- -} Forecast \quad \textcolor{IDAred!30}{$\blacksquare$} 95\% CI}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Sunspots: Summary}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Methodology:}
-            \begin{enumerate}
-                \item Split: 70/15/15 (years)
-                \item Use Fourier terms for 11-year cycle
-                \item Select K on validation (K=2 best)
-                \item Final evaluation on test
-            \end{enumerate}
-
-            \vspace{0.5em}
-            \textbf{Key Finding:}
-
-            Fourier terms efficiently capture long seasonal patterns without losing data to differencing.
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Results:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{ll}
-                    \toprule
-                    Best Model & ARIMA(2,0,1)+Fourier(2) \\
-                    Validation RMSE & 24.2 \\
-                    Test RMSE & 26.8 \\
-                    Key insight & K=2 optimal \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \begin{alertblock}{Lesson}
-                For long seasonal periods:
-                \begin{itemize}
-                    \item Fourier terms > SARIMA
-                    \item Select K via cross-validation
-                \end{itemize}
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-%=============================================================================
-% SECTION 4: CASE STUDY 3 - UNEMPLOYMENT
-%=============================================================================
-\section{Case Study 3: US Unemployment Forecasting}
-
-\begin{frame}{Unemployment: Data and Challenge}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \textbf{Data:} US Unemployment Rate (2010--2023)
-            \begin{itemize}
-                \item Source: FRED (UNRATE)
-                \item 168 monthly observations
-                \item Major structural break: COVID-19
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{The Challenge:}
-            \begin{itemize}
-                \item April 2020: 3.5\% $\rightarrow$ 14.7\% (+10.3 pp)
-                \item Largest single-month increase ever
-                \item Traditional ARIMA struggles
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Solution:} Prophet with changepoint detection
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Data Split:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcc}
-                    \toprule
-                    Set & Months & Period \\
-                    \midrule
-                    Training & 118 & 2010--2019 \\
-                    Validation & 25 & 2020--2021 \\
-                    Test & 25 & 2022--2023 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            \begin{alertblock}{Note}
-                Validation includes COVID shock --- tests model's adaptability
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Prophet: Changepoint Detection}
-    \textbf{Key Parameter:} \texttt{changepoint\_prior\_scale}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{What it controls:}
-            \begin{itemize}
-                \item Flexibility of trend changes
-                \item Low (0.01): Smooth, rigid trend
-                \item High (0.5): Many changepoints allowed
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{For COVID data:}
-            \begin{itemize}
-                \item Need flexibility for sudden jump
-                \item But not too much (overfitting)
-                \item \textcolor{Forest}{Select via validation!}
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Prophet Model:}
-            \[
-                y(t) = g(t) + s(t) + h(t) + \epsilon_t
-            \]
-
-            Where:
-            \begin{itemize}
-                \item $g(t)$: Piecewise linear trend
-                \item $s(t)$: Seasonality (Fourier)
-                \item $h(t)$: Holiday effects
-                \item Changepoints: Where $g(t)$ slope changes
-            \end{itemize}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Unemployment: Model Selection on Validation Set}
-    \textbf{Testing different \texttt{changepoint\_prior\_scale} values:}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lccc}
-                    \toprule
-                    Scale & Changepoints & \textbf{Val RMSE} & Val MAE \\
-                    \midrule
-                    0.01 & 2 & 2.85 & 2.31 \\
-                    0.05 & 4 & 1.92 & 1.54 \\
-                    \textbf{0.10} & \textbf{5} & \textbf{1.24} & \textbf{0.98} \\
-                    0.30 & 8 & 1.31 & 1.05 \\
-                    0.50 & 12 & 1.48 & 1.19 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            \textcolor{Forest}{$\Rightarrow$ Best: scale = 0.10}
-
-            \vspace{0.3em}
-            Detected changepoints:
-            \begin{itemize}
-                \item March 2020 (COVID start)
-                \item April 2020 (peak)
-                \item June 2020 (recovery start)
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Why 0.10 wins:}
-            \begin{itemize}
-                \item Flexible enough for COVID
-                \item Not overfitting to noise
-                \item Balances bias/variance
-            \end{itemize}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Key Insight}
-                scale = 0.50 detected 12 changepoints --- too many!
-
-                Model was chasing short-term noise.
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Unemployment: Final Test Set Evaluation}
-    \textbf{Refit Prophet (scale=0.10) on Training+Validation, forecast Test (2022--2023)}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Test Set Results:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lc}
-                    \toprule
-                    Metric & Value \\
-                    \midrule
-                    Test RMSE & 0.42 \\
-                    Test MAE & 0.35 \\
-                    Test MAPE & 9.8\% \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \textbf{Comparison with ARIMA:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcc}
-                    \toprule
-                    Model & Test RMSE \\
-                    \midrule
-                    ARIMA(2,1,2) & 0.89 \\
-                    \textbf{Prophet} & \textbf{0.42} \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Forecast Visualization (2022--2023):}
-
-            \vspace{0.3em}
-            \begin{tikzpicture}[scale=0.85]
-                \draw[thick, ->] (0,0) -- (5,0) node[right] {\footnotesize Month};
-                \draw[thick, ->] (0,0) -- (0,2.5) node[above] {\footnotesize Rate (\%)};
-
-                % Axis labels
-                \node[font=\tiny] at (0,-0.15) {3\%};
-                \node[font=\tiny] at (0,2) {4\%};
-
-                % Actual values
-                \draw[thick, MainBlue] (0.2,1.2) -- (0.6,1.0) -- (1,0.8) -- (1.4,0.9) -- (1.8,1.0) -- (2.2,1.1) -- (2.6,1.2) -- (3,1.0) -- (3.4,0.9) -- (3.8,0.8) -- (4.2,1.0) -- (4.6,1.1);
-
-                % Forecast
-                \draw[thick, IDAred, dashed] (0.2,1.3) -- (0.6,1.1) -- (1,0.9) -- (1.4,1.0) -- (1.8,1.1) -- (2.2,1.0) -- (2.6,1.1) -- (3,0.9) -- (3.4,0.8) -- (3.8,0.9) -- (4.2,1.1) -- (4.6,1.2);
-
-                % CI band
-                \fill[IDAred, opacity=0.2] (0.2,0.9) -- (4.6,0.7) -- (4.6,1.6) -- (0.2,1.7) -- cycle;
-
-                % Year labels
-                \node[font=\tiny] at (1.2,-0.3) {2022};
-                \node[font=\tiny] at (3.8,-0.3) {2023};
-            \end{tikzpicture}
-
-            \vspace{0.2em}
-            {\footnotesize \textcolor{MainBlue}{---} Actual \quad \textcolor{IDAred}{- -} Prophet}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Unemployment: Summary}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Methodology:}
-            \begin{enumerate}
-                \item Split: 70/15/15 (months)
-                \item Tune \texttt{changepoint\_prior\_scale}
-                \item Select optimal scale on validation
-                \item Final evaluation on test
-            \end{enumerate}
-
-            \vspace{0.5em}
-            \textbf{Key Finding:}
-
-            Prophet handles structural breaks better than ARIMA through automatic changepoint detection.
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Results:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{ll}
-                    \toprule
-                    Best Model & Prophet (scale=0.10) \\
-                    Validation RMSE & 1.24 \\
-                    Test RMSE & 0.42 \\
-                    vs ARIMA & 53\% better \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \begin{alertblock}{Lesson}
-                For data with structural breaks:
-                \begin{itemize}
-                    \item Prophet > traditional ARIMA
-                    \item Tune changepoint flexibility
-                \end{itemize}
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-%=============================================================================
-% SECTION 5: CASE STUDY 4 - VAR MULTIVARIATE
-%=============================================================================
-\section{Case Study 4: Multivariate VAR Forecasting}
-
-\begin{frame}{VAR: Data and Objective}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \textbf{Data:} US Economic Indicators (2001--2023)
-            \begin{itemize}
-                \item Source: FRED
-                \item 92 quarterly observations
-                \item 4 variables (GDP, Unemp, Inflation, Fed Rate)
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Objective:} Joint forecasting + relationship analysis
-
-            \vspace{0.5em}
-            \textbf{Why VAR?}
-            \begin{itemize}
-                \item Variables influence each other
-                \item Feedback loops (GDP $\leftrightarrow$ Unemployment)
-                \item Policy transmission (Fed $\rightarrow$ Economy)
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Data Split:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcc}
-                    \toprule
-                    Set & Quarters & Period \\
-                    \midrule
-                    Training & 64 & 2001--2016 \\
-                    Validation & 14 & 2017--2020 \\
-                    Test & 14 & 2021--2023 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            \textbf{Variables:}
-            \begin{itemize}
-                \item GDP Growth (YoY \%)
-                \item Unemployment (\%)
-                \item Inflation (CPI YoY \%)
-                \item Fed Funds Rate (\%)
-            \end{itemize}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{VAR: Lag Order Selection on Validation}
-    \textbf{VAR(p) Model:}
-    $\mathbf{y}_t = \mathbf{c} + \mathbf{A}_1 \mathbf{y}_{t-1} + \cdots + \mathbf{A}_p \mathbf{y}_{t-p} + \boldsymbol{\varepsilon}_t$
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \textbf{Selecting lag order p:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lcccc}
-                    \toprule
-                    Lag & AIC & BIC & \textbf{Val RMSE} \\
-                    \midrule
-                    1 & 12.4 & 13.1 & 1.85 \\
-                    \textbf{2} & \textbf{11.8} & \textbf{13.0} & \textbf{1.42} \\
-                    3 & 11.6 & 13.4 & 1.51 \\
-                    4 & 11.5 & 13.8 & 1.68 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            \textcolor{Forest}{$\Rightarrow$ Best: VAR(2)}
-
-            \vspace{0.3em}
-            Higher lags: lower AIC but higher validation error (overfitting)
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{VAR(2) Parameters:}
-            \begin{itemize}
-                \item 4 variables $\times$ 2 lags = 8 coeff per equation
-                \item + 4 intercepts
-                \item Total: 36 parameters
-            \end{itemize}
-
-            \vspace{0.5em}
-            \begin{alertblock}{BIC vs AIC}
-                BIC selects p=2 (simpler)
-
-                AIC selects p=3 (complex)
-
-                Validation confirms BIC!
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{VAR: Granger Causality Results}
-    \textbf{Testing predictive relationships (on Training data):}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lccc}
-                    \toprule
-                    Cause $\rightarrow$ Effect & F-stat & p-value & Sig. \\
-                    \midrule
-                    GDP $\rightarrow$ Unemployment & 4.82 & 0.012 & ** \\
-                    Unemployment $\rightarrow$ GDP & 1.45 & 0.243 & \\
-                    Inflation $\rightarrow$ Fed Rate & 6.21 & 0.004 & ** \\
-                    Fed Rate $\rightarrow$ Inflation & 2.88 & 0.065 & * \\
-                    GDP $\rightarrow$ Inflation & 3.12 & 0.052 & * \\
-                    Fed $\rightarrow$ Unemployment & 2.15 & 0.127 & \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            {\footnotesize ** p<0.05, * p<0.10}
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Interpretation:}
-            \begin{itemize}
-                \item GDP leads unemployment (Okun's Law confirmed)
-                \item Inflation leads Fed policy (Taylor Rule)
-                \item Bidirectional: Fed $\leftrightarrow$ Inflation
-            \end{itemize}
-
-            \vspace{0.3em}
-            \begin{exampleblock}{Caution}
-                Granger causality = predictive, not true causality!
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{VAR: Final Test Set Evaluation}
-    \textbf{Refit VAR(2) on Training+Validation, forecast Test (2021--2023)}
-
-    \vspace{0.5em}
-    \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \textbf{Test Set Results (by variable):}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lccc}
-                    \toprule
-                    Variable & RMSE & MAE & vs AR(2) \\
-                    \midrule
-                    GDP Growth & 1.82 & 1.45 & -18\% \\
-                    Unemployment & 0.58 & 0.44 & -25\% \\
-                    Inflation & 1.24 & 0.98 & -12\% \\
-                    Fed Rate & 0.89 & 0.72 & -31\% \\
-                    \midrule
-                    \textbf{Average} & \textbf{1.13} & \textbf{0.90} & \textbf{-22\%} \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            VAR(2) beats univariate AR(2) by 22\% on average!
-        \end{column}
-        \begin{column}{0.43\textwidth}
-            \textbf{Why VAR wins:}
-            \begin{itemize}
-                \item Uses cross-variable information
-                \item GDP helps predict unemployment
-                \item Inflation helps predict Fed
-            \end{itemize}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Best Improvement}
-                Fed Rate: -31\% RMSE
-
-                Why? Inflation is a strong leading indicator for Fed policy.
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{VAR: Impulse Response Analysis}
-    \textbf{How does a 1\% GDP shock affect other variables?}
-
-    \vspace{0.3em}
-    \begin{center}
-        \begin{tikzpicture}[scale=0.9]
-            % GDP response
-            \begin{scope}[shift={(0,0)}]
-                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny Q};
-                \draw[thick, ->] (0,-0.5) -- (0,1.5);
-                \node[font=\tiny, above] at (1.5,1.5) {GDP};
-                \draw[thick, MainBlue] (0,1) -- (0.5,0.7) -- (1,0.5) -- (1.5,0.3) -- (2,0.2) -- (2.5,0.1) -- (3,0.05);
-                \fill[MainBlue, opacity=0.2] (0,1.2) -- (3,0.15) -- (3,-0.05) -- (0,0.8) -- cycle;
-            \end{scope}
-
-            % Unemployment response
-            \begin{scope}[shift={(4,0)}]
-                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny Q};
-                \draw[thick, ->] (0,-0.8) -- (0,1);
-                \node[font=\tiny, above] at (1.5,1) {Unemployment};
-                \draw[thick, IDAred] (0,0) -- (0.5,-0.2) -- (1,-0.35) -- (1.5,-0.4) -- (2,-0.35) -- (2.5,-0.25) -- (3,-0.15);
-                \fill[IDAred, opacity=0.2] (0,0.1) -- (3,-0.05) -- (3,-0.25) -- (0,-0.1) -- cycle;
-            \end{scope}
-
-            % Inflation response
-            \begin{scope}[shift={(8,0)}]
-                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny Q};
-                \draw[thick, ->] (0,-0.3) -- (0,1.2);
-                \node[font=\tiny, above] at (1.5,1.2) {Inflation};
-                \draw[thick, Forest] (0,0) -- (0.5,0.15) -- (1,0.25) -- (1.5,0.3) -- (2,0.28) -- (2.5,0.22) -- (3,0.15);
-                \fill[Forest, opacity=0.2] (0,0.1) -- (3,0.25) -- (3,0.05) -- (0,-0.1) -- cycle;
-            \end{scope}
-
-            % Fed response
-            \begin{scope}[shift={(12,0)}]
-                \draw[thick, ->] (0,0) -- (3.5,0) node[right] {\tiny Q};
-                \draw[thick, ->] (0,-0.3) -- (0,1.2);
-                \node[font=\tiny, above] at (1.5,1.2) {Fed Rate};
-                \draw[thick, Orange] (0,0) -- (0.5,0.08) -- (1,0.18) -- (1.5,0.28) -- (2,0.32) -- (2.5,0.3) -- (3,0.25);
-                \fill[Orange, opacity=0.2] (0,0.1) -- (3,0.35) -- (3,0.15) -- (0,-0.1) -- cycle;
-            \end{scope}
-        \end{tikzpicture}
-    \end{center}
-
-    \vspace{0.3em}
-    \textbf{Interpretation (from IRF):}
-    \begin{itemize}
-        \item GDP shock $\Rightarrow$ Unemployment falls for 4-6 quarters (Okun's Law)
-        \item GDP shock $\Rightarrow$ Inflation rises, peaks at Q3-Q4 (demand-pull)
-        \item GDP shock $\Rightarrow$ Fed Rate rises with lag (policy response)
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{VAR: Summary}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Methodology:}
-            \begin{enumerate}
-                \item Split: 70/15/15 (quarters)
-                \item Select lag order on validation (p=2)
-                \item Test Granger causality
-                \item Analyze IRF
-                \item Final forecast on test
-            \end{enumerate}
-
-            \vspace{0.5em}
-            \textbf{Key Finding:}
-
-            VAR captures economic interdependencies that univariate models miss.
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Results:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{ll}
-                    \toprule
-                    Best Model & VAR(2) \\
-                    Validation RMSE & 1.42 \\
-                    Test RMSE & 1.13 \\
-                    vs Univariate & 22\% better \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.5em}
-            \begin{exampleblock}{Applications}
-                \begin{itemize}
-                    \item Macroeconomic forecasting
-                    \item Policy impact analysis
-                    \item Portfolio risk (multi-asset)
-                \end{itemize}
-            \end{exampleblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-%=============================================================================
-% SECTION 6: MODEL SELECTION GUIDE
-%=============================================================================
-\section{Model Selection: A Practical Guide}
-
-\begin{frame}{Decision Framework}
-    \begin{center}
-        \includegraphics[width=0.90\textwidth, height=0.70\textheight, keepaspectratio]{ch10_model_selection_flowchart.pdf}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Model Selection Summary}
-    \begin{table}[h]
-        \footnotesize
-        \centering
-        \begin{tabular}{p{2.5cm}p{3.5cm}p{3.5cm}p{3cm}}
-            \toprule
-            \textbf{Data Type} & \textbf{Characteristics} & \textbf{Recommended Model} & \textbf{Alternatives} \\
-            \midrule
-            Financial returns & No trend, volatility clustering & ARIMA-GARCH & EGARCH, GJR \\
-            \addlinespace
-            Single seasonality & Trend + one seasonal period & SARIMA & ETS, Prophet \\
-            \addlinespace
-            Long cycles & Sunspots, business cycles & AR + Fourier, TBATS & Spectral methods \\
-            \addlinespace
-            Structural breaks & COVID, regime changes & Prophet & Intervention ARIMA \\
-            \addlinespace
-            Multiple series & Interdependencies & VAR, VECM & Factor models \\
-            \bottomrule
-        \end{tabular}
-    \end{table}
-\end{frame}
-
-\begin{frame}{Forecast Evaluation Metrics}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Point Forecast Metrics:}
-
-            \vspace{0.3em}
-            \textbf{RMSE} (Root Mean Square Error):
-            \[
-                \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
-            \]
-
-            \textbf{MAE} (Mean Absolute Error):
-            \[
-                \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|
-            \]
-
-            \textbf{MAPE} (Mean Absolute \% Error):
-            \[
-                \frac{100}{n}\sum_{i=1}^{n}\left|\frac{y_i - \hat{y}_i}{y_i}\right|
-            \]
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{When to Use Each:}
-            \begin{itemize}
-                \item \textbf{RMSE}: Penalizes large errors more
-                \item \textbf{MAE}: Robust to outliers
-                \item \textbf{MAPE}: Scale-independent
-            \end{itemize}
-
-            \vspace{0.5em}
-            \begin{alertblock}{Cross-Validation}
-                Always use time series CV:
-                \begin{itemize}
-                    \item Rolling window
-                    \item Expanding window
-                    \item Never shuffle!
-                \end{itemize}
-            \end{alertblock}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-%=============================================================================
-% SECTION 6: SUMMARY
-%=============================================================================
-\section{Summary and Key Takeaways}
-
-\begin{frame}{Course Summary: Complete Toolkit}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Understanding the Data}
-            \begin{itemize}
-                \item Visualization first!
-                \item Test for stationarity (ADF, KPSS)
-                \item Identify seasonality patterns
-                \item Check for structural breaks
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Classical Models}
-            \begin{itemize}
-                \item ARIMA: Non-seasonal data
-                \item SARIMA: Single seasonality
-                \item GARCH: Volatility modeling
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{Modern Approaches}
-            \begin{itemize}
-                \item Prophet: Interpretable, handles breaks
-                \item TBATS: Multiple/long seasonalities
-                \item VAR/VECM: Multiple time series
-            \end{itemize}
-
-            \vspace{0.5em}
-            \textbf{Best Practices}
-            \begin{itemize}
-                \item Always check diagnostics
-                \item Use cross-validation
-                \item Compare multiple models
-                \item Domain knowledge matters!
-            \end{itemize}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Final Recommendations}
-    \begin{enumerate}
-        \item \textbf{Start Simple}: Begin with visualization and basic statistics
-        \item \textbf{Test Assumptions}: Stationarity, normality, independence
-        \item \textbf{Iterate}: Model $\rightarrow$ Diagnose $\rightarrow$ Improve
-        \item \textbf{Compare}: Never rely on a single model
-        \item \textbf{Validate}: Out-of-sample testing is essential
-        \item \textbf{Communicate}: Clear visualizations and interpretations
-    \end{enumerate}
-
-    \vspace{0.5em}
-    \begin{exampleblock}{Remember}
-        ``All models are wrong, but some are useful.'' --- George Box
-
-        \vspace{0.3em}
-        The goal is not perfect prediction, but useful insights and reasonable forecasts.
+    \begin{exampleblock}{Key Principle}
+        ``The test set must remain \textbf{untouched} until final evaluation.'' \\
+        \hfill --- Standard practice in machine learning and econometrics
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Questions?}
+\begin{frame}{Train/Validation/Test Framework}
     \begin{center}
-        \Large\textcolor{MainBlue}{Questions?}
+    \begin{tikzpicture}[scale=0.95]
+        % Timeline
+        \draw[thick, MainBlue] (0,0) -- (14,0);
 
-        \vspace{1cm}
+        % Training section
+        \fill[MainBlue!30] (0,-0.5) rectangle (9,0.5);
+        \node at (4.5,0) {\textbf{Training (70\%)}};
 
-        \normalsize
-        \textbf{Next Steps:}
+        % Validation section
+        \fill[Orange!30] (9,-0.5) rectangle (11.5,0.5);
+        \node at (10.25,0) {\textbf{Val (15\%)}};
+
+        % Test section
+        \fill[Crimson!30] (11.5,-0.5) rectangle (14,0.5);
+        \node at (12.75,0) {\textbf{Test (15\%)}};
+
+        % Arrows and labels
+        \draw[thick, ->, MainBlue] (4.5,-1) -- (4.5,-0.6);
+        \node[below, MainBlue] at (4.5,-1) {\small Estimate parameters};
+
+        \draw[thick, ->, Orange] (10.25,-1) -- (10.25,-0.6);
+        \node[below, Orange] at (10.25,-1) {\small Select model};
+
+        \draw[thick, ->, Crimson] (12.75,-1) -- (12.75,-0.6);
+        \node[below, Crimson] at (12.75,-1) {\small Final evaluation};
+
+        % Time arrow
+        \draw[thick, ->] (0,-2) -- (14,-2);
+        \node[right] at (14,-2) {Time};
+        \node[left] at (0,-2) {$t_0$};
+    \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.33\textwidth}
+        \begin{block}{Training Set}
+            \begin{itemize}
+                \item Fit model parameters
+                \item $\hat{\theta} = \arg\min_\theta L(\theta)$
+                \item Largest portion
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{Validation Set}
+            \begin{itemize}
+                \item Compare models
+                \item Tune hyperparameters
+                \item Select best approach
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{Test Set}
+            \begin{itemize}
+                \item \textbf{Held out} until end
+                \item Unbiased evaluation
+                \item Report final metrics
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Evaluation Metrics}
+    \begin{defn}[Forecast Error Metrics]
+        Let $y_t$ be actual values and $\hat{y}_t$ forecasts for $t = 1, \ldots, n$:
+        \begin{align}
+            \RMSE &= \sqrt{\frac{1}{n}\sum_{t=1}^{n}(y_t - \hat{y}_t)^2} \\[0.3cm]
+            \MAE &= \frac{1}{n}\sum_{t=1}^{n}|y_t - \hat{y}_t| \\[0.3cm]
+            \MAPE &= \frac{100\%}{n}\sum_{t=1}^{n}\left|\frac{y_t - \hat{y}_t}{y_t}\right|
+        \end{align}
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{When to Use Each}
+            \begin{itemize}
+                \item \textbf{RMSE}: Penalizes large errors
+                \item \textbf{MAE}: Robust to outliers
+                \item \textbf{MAPE}: Scale-independent (\%)
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Caution}
+            \begin{itemize}
+                \item MAPE undefined when $y_t = 0$
+                \item Compare models on \textbf{same} test set
+                \item Report \textbf{out-of-sample} metrics
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 2: BITCOIN VOLATILITY
+%=============================================================================
+\section{Case Study 1: Bitcoin Volatility (GARCH)}
+
+\begin{frame}{Bitcoin: Problem Statement}
+    \begin{block}{Research Question}
+        Can we forecast Bitcoin's \textbf{volatility} using GARCH models?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \textbf{Data Characteristics}
         \begin{itemize}
-            \item Practice with the Jupyter notebook
-            \item Apply these methods to your own data
-            \item Compare different models on the same dataset
+            \item Source: Yahoo Finance (BTC-USD)
+            \item Period: Jan 2019 -- Jan 2025
+            \item Frequency: Daily
+            \item Observations: $\approx 2,200$ days
         \end{itemize}
 
-        \vspace{0.5cm}
+        \vspace{0.3cm}
 
-        Course Materials: \texttt{github.com/danpele/Time-Series-Analysis}
+        \textbf{Stylized Facts}
+        \begin{itemize}
+            \item Returns: near-zero mean
+            \item Fat tails (kurtosis $> 3$)
+            \item Volatility clustering
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Key Insight}
+            Financial returns are typically:
+            \begin{itemize}
+                \item \textbf{Unpredictable} in mean
+                \item \textbf{Predictable} in variance
+            \end{itemize}
+
+            \vspace{0.2cm}
+            $\Rightarrow$ Focus on \textbf{volatility forecasting}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{GARCH Model Specification}
+    \begin{defn}[GARCH(p,q) Model]
+        Let $r_t$ denote returns. The GARCH(p,q) model is:
+        \begin{align}
+            r_t &= \mu + \varepsilon_t, \quad \varepsilon_t = \sigma_t z_t, \quad z_t \sim N(0,1) \\[0.2cm]
+            \sigma_t^2 &= \omega + \sum_{i=1}^{q}\alpha_i \varepsilon_{t-i}^2 + \sum_{j=1}^{p}\beta_j \sigma_{t-j}^2
+        \end{align}
+        where $\omega > 0$, $\alpha_i \geq 0$, $\beta_j \geq 0$, and $\sum_{i=1}^{q}\alpha_i + \sum_{j=1}^{p}\beta_j < 1$.
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Model Variants}
+            \begin{itemize}
+                \item \textbf{GARCH(1,1)}: Most common
+                \item \textbf{GJR-GARCH}: Leverage effect
+                \item \textbf{EGARCH}: Asymmetric shocks
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Interpretation}
+            \begin{itemize}
+                \item $\alpha$: Impact of past shocks
+                \item $\beta$: Persistence of volatility
+                \item $\alpha + \beta \approx 1$: High persistence
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Bitcoin: Data Split and Stationarity}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Data Split}
+            \begin{center}
+            \begin{tabular}{lrr}
+                \toprule
+                \textbf{Set} & \textbf{Period} & \textbf{N} \\
+                \midrule
+                Training & 2019-01 to 2022-09 & 1,365 \\
+                Validation & 2022-09 to 2023-10 & 400 \\
+                Test & 2023-10 to 2025-01 & 435 \\
+                \midrule
+                \textbf{Total} & & \textbf{2,200} \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{Stationarity Tests}
+            \begin{center}
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Series} & \textbf{ADF} & \textbf{Result} \\
+                \midrule
+                Prices & $p = 0.50$ & Non-stationary \\
+                Returns & $p < 0.01$ & \textcolor{Forest}{Stationary} \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+
+            \vspace{0.3cm}
+
+            $\Rightarrow$ Model \textbf{returns}, not prices
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Why Stationarity Matters}
+        GARCH requires weakly stationary input. Prices follow random walk; returns are stationary.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Bitcoin: Model Selection on Validation Set}
+    \begin{block}{Methodology}
+        Fit each model on \textbf{training data}, evaluate on \textbf{validation set}.
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+    \begin{tabular}{lcccl}
+        \toprule
+        \textbf{Model} & \textbf{AIC} & \textbf{BIC} & \textbf{Val MAE} & \textbf{Selection} \\
+        \midrule
+        GARCH(1,1) & 6,994.8 & 7,020.6 & \textbf{2.638} & \cellcolor{Forest!20}\textbf{Best} \\
+        GARCH(2,1) & 6,993.7 & 7,024.6 & 2.640 & \\
+        GJR-GARCH(1,1) & 6,983.7 & 7,014.6 & 2.669 & \\
+        EGARCH(1,1) & --- & --- & --- & Failed$^*$ \\
+        \bottomrule
+    \end{tabular}
     \end{center}
+
+    \vspace{0.1cm}
+    {\footnotesize $^*$Analytic forecasts not available for $h > 1$}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Result}
+        \textbf{GARCH(1,1)} selected based on lowest validation MAE for volatility forecasts.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bitcoin: Final Test Set Evaluation}
+    \begin{block}{Procedure}
+        Refit GARCH(1,1) on Training + Validation, evaluate on \textbf{held-out test set}.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{center}
+        \textbf{Estimated Parameters}
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Param} & \textbf{Estimate} & \textbf{Std Err} \\
+            \midrule
+            $\omega$ & 0.239 & 0.088 \\
+            $\alpha_1$ & 0.120 & 0.021 \\
+            $\beta_1$ & 0.879 & 0.020 \\
+            \midrule
+            $\alpha_1 + \beta_1$ & \multicolumn{2}{c}{0.999} \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+
+        \column{0.5\textwidth}
+        \begin{center}
+        \textbf{Test Set Performance}
+        \begin{tabular}{lc}
+            \toprule
+            \textbf{Metric} & \textbf{Value} \\
+            \midrule
+            Volatility MAE & 2.64 \\
+            Volatility RMSE & 2.82 \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+
+        \vspace{0.3cm}
+
+        \begin{alertblock}{Interpretation}
+            High persistence ($\alpha + \beta \approx 1$) confirms volatility clustering.
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Bitcoin: Key Findings}
+    \begin{columns}[T]
+        \column{0.6\textwidth}
+        \begin{block}{Summary}
+            \begin{enumerate}
+                \item \textbf{Returns are stationary}; prices are not
+                \item \textbf{GARCH(1,1)} outperforms more complex variants
+                \item \textbf{High persistence} ($\alpha + \beta = 0.999$)
+                \item Volatility is \textbf{predictable} even when returns are not
+            \end{enumerate}
+        \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{exampleblock}{Practical Implications}
+            \begin{itemize}
+                \item Risk management: VaR, Expected Shortfall
+                \item Option pricing requires volatility forecasts
+                \item Portfolio optimization with time-varying risk
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.4\textwidth}
+        \begin{alertblock}{Limitations}
+            \begin{itemize}
+                \item GARCH assumes \textbf{symmetric} shocks
+                \item Does not capture \textbf{jumps}
+                \item Normal distribution may be restrictive
+            \end{itemize}
+        \end{alertblock}
+
+        \vspace{0.3cm}
+
+        \begin{block}{Extensions}
+            \begin{itemize}
+                \item Student-t innovations
+                \item Realized volatility
+                \item HAR models
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: SUNSPOTS
+%=============================================================================
+\section{Case Study 2: Sunspot Cycles (Fourier)}
+
+\begin{frame}{Sunspots: Problem Statement}
+    \begin{block}{Research Question}
+        How do we model \textbf{long seasonal cycles} that exceed SARIMA's capacity?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \textbf{Data Characteristics}
+        \begin{itemize}
+            \item Source: Statsmodels (Wolfer)
+            \item Period: 1900 -- 2008
+            \item Frequency: Annual
+            \item Observations: 109 years
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{Known Feature}
+        \begin{itemize}
+            \item \textbf{Schwabe cycle}: $\approx$ 11 years
+            \item Irregular amplitude
+            \item Non-negative values
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{The Challenge}
+            Standard SARIMA$(p,d,q)(P,D,Q)_s$ requires:
+            \begin{itemize}
+                \item $s = 11$ for annual data
+                \item $(P + D + Q) \times 11$ seasonal lags
+                \item \textbf{Too many parameters!}
+            \end{itemize}
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{exampleblock}{Solution}
+            Use \textbf{Fourier terms} as exogenous regressors in ARIMA.
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Fourier Terms for Seasonality}
+    \begin{defn}[Fourier Representation]
+        A seasonal pattern with period $s$ can be approximated by:
+        \begin{equation}
+            S_t = \sum_{k=1}^{K}\left[\alpha_k \sin\left(\frac{2\pi k t}{s}\right) + \beta_k \cos\left(\frac{2\pi k t}{s}\right)\right]
+        \end{equation}
+        where $K \leq \lfloor s/2 \rfloor$ is the number of harmonic pairs.
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Advantages}
+            \begin{itemize}
+                \item Only $2K$ parameters (not $s$)
+                \item Handles \textbf{any} seasonal period
+                \item Smooth seasonal pattern
+                \item $K$ controls flexibility
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Model Structure}
+            ARIMA$(p,d,q)$ with Fourier regressors:
+            \begin{equation}
+                y_t = \underbrace{S_t}_{\text{Fourier}} + \underbrace{\eta_t}_{\text{ARIMA}}
+            \end{equation}
+            where $\eta_t$ follows ARIMA dynamics.
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Sunspots: Model Selection}
+    \begin{block}{Methodology}
+        Compare $K = 1, 2, 3, 4$ Fourier harmonics on validation set.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{center}
+        \textbf{Data Split}
+        \begin{tabular}{lrr}
+            \toprule
+            \textbf{Set} & \textbf{Period} & \textbf{N} \\
+            \midrule
+            Training & 1900--1975 & 76 \\
+            Validation & 1976--1991 & 16 \\
+            Test & 1992--2008 & 17 \\
+            \midrule
+            \textbf{Total} & & \textbf{109} \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+
+        \column{0.5\textwidth}
+        \begin{center}
+        \textbf{Model Comparison}
+        \begin{tabular}{cccc}
+            \toprule
+            \textbf{K} & \textbf{AIC} & \textbf{Val RMSE} & \\
+            \midrule
+            1 & 665.9 & 87.15 & \\
+            2 & 668.0 & 86.92 & \\
+            \rowcolor{Forest!20} 3 & 671.8 & \textbf{86.81} & Best \\
+            4 & 674.5 & 87.93 & \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Result}
+        \textbf{K = 3} Fourier harmonics selected (6 parameters for 11-year cycle).
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Sunspots: Test Set Results}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Final Model}
+            ARIMA(2,0,1) + 3 Fourier harmonics
+
+            \vspace{0.2cm}
+
+            \textbf{Significant Coefficients:}
+            \begin{center}
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Term} & \textbf{Coef} & \textbf{p-value} \\
+                \midrule
+                $\sin_1$ & 34.71 & $< 0.001$ \\
+                $\cos_1$ & -29.21 & 0.018 \\
+                AR(1) & 1.34 & $< 0.001$ \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{Test Performance}
+            \begin{center}
+            \begin{tabular}{lc}
+                \toprule
+                \textbf{Metric} & \textbf{Value} \\
+                \midrule
+                RMSE & 48.51 \\
+                MAE & 39.31 \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{alertblock}{Note}
+            High MAPE due to near-zero values at solar minimum.
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Key Insight}
+        Fourier terms efficiently capture the 11-year cycle with only 6 parameters.
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: UNEMPLOYMENT
+%=============================================================================
+\section{Case Study 3: Unemployment (Prophet)}
+
+\begin{frame}{Unemployment: Structural Breaks}
+    \begin{block}{Research Question}
+        How do we model time series with \textbf{sudden structural changes}?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \textbf{Data Characteristics}
+        \begin{itemize}
+            \item Source: FRED (UNRATE)
+            \item Period: 2010 -- 2025
+            \item Frequency: Monthly
+            \item Observations: $\approx 180$ months
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{Key Statistics}
+        \begin{itemize}
+            \item Pre-COVID minimum: 3.5\%
+            \item COVID peak (Apr 2020): \textbf{14.8\%}
+            \item Change: +10.3 pp in one month
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{The Challenge}
+            \begin{itemize}
+                \item April 2020: Largest monthly increase in US history
+                \item Traditional ARIMA treats this as outlier
+                \item Need model that \textbf{adapts} to structural breaks
+            \end{itemize}
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{exampleblock}{Solution}
+            \textbf{Prophet} with automatic changepoint detection.
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Prophet Model}
+    \begin{defn}[Prophet Decomposition]
+        Prophet models time series as:
+        \begin{equation}
+            y_t = g(t) + s(t) + h(t) + \varepsilon_t
+        \end{equation}
+        \begin{itemize}
+            \item $g(t)$: Piecewise linear/logistic \textbf{trend} with changepoints
+            \item $s(t)$: Fourier-based \textbf{seasonality}
+            \item $h(t)$: \textbf{Holiday} effects
+            \item $\varepsilon_t$: Error term
+        \end{itemize}
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Changepoint Detection}
+            \begin{itemize}
+                \item Automatic selection of changepoint locations
+                \item \texttt{changepoint\_prior\_scale} controls flexibility
+                \item Higher = more changepoints
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Advantages}
+            \begin{itemize}
+                \item Handles missing data
+                \item Interpretable components
+                \item Robust to outliers
+                \item Uncertainty quantification
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Unemployment: Model Tuning}
+    \begin{block}{Hyperparameter Tuning}
+        Tune \texttt{changepoint\_prior\_scale} on validation set.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{center}
+        \textbf{Data Split}
+        \begin{tabular}{lrr}
+            \toprule
+            \textbf{Set} & \textbf{Period} & \textbf{N} \\
+            \midrule
+            Training & 2010-01 to 2019-09 & 117 \\
+            Validation & 2019-10 to 2021-10 & 25 \\
+            Test & 2021-11 to 2025-01 & 38 \\
+            \midrule
+            \textbf{Total} & & \textbf{180} \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+
+        \column{0.5\textwidth}
+        \begin{center}
+        \textbf{Scale Comparison}
+        \begin{tabular}{ccc}
+            \toprule
+            \textbf{Scale} & \textbf{Val RMSE} & \\
+            \midrule
+            0.01 & 4.21 & \\
+            0.05 & 3.89 & \\
+            \rowcolor{Forest!20} 0.10 & \textbf{3.52} & Best \\
+            0.30 & 3.67 & \\
+            0.50 & 3.81 & \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Interpretation}
+        Scale = 0.10 balances flexibility (capturing COVID shock) with stability.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Unemployment: Results}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Test Set Performance}
+            \begin{center}
+            \begin{tabular}{lc}
+                \toprule
+                \textbf{Metric} & \textbf{Value} \\
+                \midrule
+                RMSE & 0.42 \\
+                MAE & 0.35 \\
+                MAPE & 9.2\% \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{exampleblock}{Key Finding}
+            Prophet successfully:
+            \begin{itemize}
+                \item Detected COVID changepoint
+                \item Adapted trend post-shock
+                \item Provided uncertainty bands
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Detected Changepoints}
+            \begin{itemize}
+                \item 2020-03: COVID onset
+                \item 2020-05: Recovery begins
+                \item 2022-01: Stabilization
+            \end{itemize}
+        \end{alertblock}
+
+        \vspace{0.3cm}
+
+        \begin{block}{Practical Value}
+            \begin{itemize}
+                \item Economic policy analysis
+                \item Labor market monitoring
+                \item Early warning system
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: VAR
+%=============================================================================
+\section{Case Study 4: Multivariate Analysis (VAR)}
+
+\begin{frame}{VAR: Motivation}
+    \begin{block}{Research Question}
+        How do we model \textbf{dynamic interdependencies} between multiple economic variables?
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \textbf{Variables (FRED)}
+        \begin{itemize}
+            \item GDP Growth (YoY \%)
+            \item Unemployment Rate (\%)
+            \item Inflation (CPI YoY \%)
+            \item Federal Funds Rate (\%)
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{Data}
+        \begin{itemize}
+            \item Period: 2000 -- 2025
+            \item Frequency: Quarterly
+            \item Observations: $\approx 100$ quarters
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Economic Relationships}
+            \begin{itemize}
+                \item \textbf{Okun's Law}: GDP $\leftrightarrow$ Unemployment
+                \item \textbf{Phillips Curve}: Unemployment $\leftrightarrow$ Inflation
+                \item \textbf{Taylor Rule}: Inflation $\rightarrow$ Fed Rate
+            \end{itemize}
+        \end{exampleblock}
+
+        \vspace{0.2cm}
+
+        \begin{alertblock}{Why VAR?}
+            Each variable may be \textbf{both cause and effect} of others.
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR Model Specification}
+    \begin{defn}[Vector Autoregression VAR(p)]
+        For $K$ variables $\mathbf{y}_t = (y_{1t}, \ldots, y_{Kt})'$:
+        \begin{equation}
+            \mathbf{y}_t = \mathbf{c} + \mathbf{A}_1\mathbf{y}_{t-1} + \mathbf{A}_2\mathbf{y}_{t-2} + \cdots + \mathbf{A}_p\mathbf{y}_{t-p} + \mathbf{u}_t
+        \end{equation}
+        where $\mathbf{A}_i$ are $K \times K$ coefficient matrices and $\mathbf{u}_t \sim N(\mathbf{0}, \mathbf{\Sigma})$.
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{For Our 4-Variable System}
+            VAR(2) has:
+            \begin{itemize}
+                \item 4 intercepts
+                \item $2 \times 4 \times 4 = 32$ AR coefficients
+                \item \textbf{36 parameters total}
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Lag Selection}
+            Use information criteria:
+            \begin{itemize}
+                \item AIC: Tends to overfit
+                \item \textbf{BIC}: More parsimonious
+                \item Cross-validation on held-out data
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR: Lag Selection and Estimation}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Information Criteria}
+            \begin{center}
+            \begin{tabular}{ccc}
+                \toprule
+                \textbf{Lag} & \textbf{BIC} & \\
+                \midrule
+                1 & -4.810 & \\
+                \rowcolor{Forest!20} 2 & \textbf{-5.178} & Best \\
+                3 & -4.633 & \\
+                4 & -4.614 & \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{exampleblock}{Validation Check}
+            VAR(2) also achieves lowest validation RMSE.
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{block}{Data Split}
+            \begin{center}
+            \begin{tabular}{lrr}
+                \toprule
+                \textbf{Set} & \textbf{Period} & \textbf{N} \\
+                \midrule
+                Training & 2001-Q1 to 2017-Q4 & 68 \\
+                Validation & 2018-Q1 to 2021-Q2 & 14 \\
+                Test & 2021-Q3 to 2024-Q3 & 14 \\
+                \midrule
+                \textbf{Total} & & \textbf{96} \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Granger Causality Analysis}
+    \begin{defn}[Granger Causality]
+        Variable $X$ \textbf{Granger-causes} $Y$ if past values of $X$ help predict $Y$, beyond $Y$'s own past.
+
+        \vspace{0.2cm}
+        \textit{Note: Granger causality $\neq$ true causality. It measures predictive content.}
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+    \textbf{Granger Causality p-values (row $\rightarrow$ column)}
+    \begin{tabular}{lcccc}
+        \toprule
+        & \textbf{GDP} & \textbf{Unemp} & \textbf{Inflation} & \textbf{Fed Rate} \\
+        \midrule
+        GDP Growth & --- & \cellcolor{Forest!20}0.076 & 0.309 & 0.698 \\
+        Unemployment & \cellcolor{Forest!20}\textbf{0.045} & --- & 0.093 & 0.857 \\
+        Inflation & 0.545 & 0.665 & --- & 0.834 \\
+        Fed Rate & 0.286 & 0.317 & \cellcolor{Forest!20}0.087 & --- \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Key Finding}
+        Unemployment Granger-causes GDP ($p = 0.045$), consistent with Okun's Law.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Impulse Response Functions}
+    \begin{defn}[Impulse Response Function]
+        The IRF traces the effect of a one-unit shock to variable $j$ on variable $i$ over $h$ periods:
+        \begin{equation}
+            \text{IRF}_{ij}(h) = \frac{\partial y_{i,t+h}}{\partial u_{jt}}
+        \end{equation}
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Response to GDP Shock}
+        A positive shock to GDP growth:
+        \begin{itemize}
+            \item \textbf{Unemployment}: Decreases (Okun's Law confirmed)
+            \item \textbf{Inflation}: Increases with lag (demand-pull)
+            \item \textbf{Fed Rate}: Increases after 2-3 quarters (Taylor Rule)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Economic Interpretation}
+        The VAR captures the classic macroeconomic transmission mechanism from output to employment, prices, and monetary policy.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{VAR: Test Set Results}
+    \begin{block}{Test Set Performance by Variable}
+        \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Variable} & \textbf{RMSE} & \textbf{MAE} & \textbf{Direction Acc.} \\
+            \midrule
+            GDP Growth & 2.18 & 1.72 & 71\% \\
+            Unemployment & 0.89 & 0.71 & 79\% \\
+            Inflation & 1.24 & 0.98 & 64\% \\
+            Fed Rate & 0.95 & 0.78 & 71\% \\
+            \midrule
+            \textbf{Average} & \textbf{1.32} & \textbf{1.05} & \textbf{71\%} \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Strengths}
+            \begin{itemize}
+                \item Captures cross-variable dynamics
+                \item Good directional accuracy
+                \item Interpretable relationships
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Limitations}
+            \begin{itemize}
+                \item Many parameters (curse of dimensionality)
+                \item Sensitive to lag selection
+                \item COVID period challenging
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 6: SYNTHESIS
+%=============================================================================
+\section{Synthesis and Guidelines}
+
+\begin{frame}{Model Selection Framework}
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        box/.style={rectangle, draw=MainBlue, thick, fill=MainBlue!10, rounded corners, minimum width=3cm, minimum height=0.8cm, align=center},
+        decision/.style={diamond, draw=Orange, thick, fill=Orange!10, aspect=2, align=center},
+        arrow/.style={->, thick, >=stealth}
+    ]
+        % Start
+        \node[box] (start) {Time Series Data};
+
+        % Decisions
+        \node[decision, below=of start] (q1) {Multiple\\series?};
+        \node[decision, below left=1.5cm and 2cm of q1] (q2) {Structural\\breaks?};
+        \node[decision, below right=1.5cm and 2cm of q1] (q3) {Financial\\data?};
+
+        % Endpoints
+        \node[box, fill=Forest!20, below=of q1] (var) {\textbf{VAR}};
+        \node[box, fill=Forest!20, below=of q2] (prophet) {\textbf{Prophet}};
+        \node[box, fill=Forest!20, below left=1cm and 0cm of q3] (garch) {\textbf{GARCH}};
+        \node[box, fill=Forest!20, below right=1cm and 0cm of q3] (arima) {\textbf{ARIMA}\\+ Fourier};
+
+        % Arrows
+        \draw[arrow] (start) -- (q1);
+        \draw[arrow] (q1) -- node[right] {Yes} (var);
+        \draw[arrow] (q1) -- node[above left] {No} (q2);
+        \draw[arrow] (q2) -- node[left] {Yes} (prophet);
+        \draw[arrow] (q2) -- node[above right] {No} (q3);
+        \draw[arrow] (q3) -- node[left] {Vol.} (garch);
+        \draw[arrow] (q3) -- node[right] {Level} (arima);
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Summary: Model Comparison}
+    \begin{center}
+    \begin{tabular}{lllll}
+        \toprule
+        \textbf{Case Study} & \textbf{Challenge} & \textbf{Model} & \textbf{Key Feature} & \textbf{Test RMSE} \\
+        \midrule
+        Bitcoin & Volatility clustering & GARCH(1,1) & $\sigma_t^2$ dynamics & 2.82 \\
+        Sunspots & Long seasonality & ARIMA + Fourier & Sin/Cos terms & 48.51 \\
+        Unemployment & Structural break & Prophet & Changepoints & 0.42 \\
+        Economic & Multiple series & VAR(2) & Cross-dynamics & 1.32 (avg) \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Key Principle}
+        \textbf{Match the model to the data characteristics.} No single model dominates---choose based on:
+        \begin{itemize}
+            \item Nature of the forecasting problem (level vs. volatility)
+            \item Data properties (seasonality, breaks, multiple series)
+            \item Interpretability requirements
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Best Practices for Applied Forecasting}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Methodology}
+            \begin{enumerate}
+                \item \textbf{Explore} data thoroughly
+                \item \textbf{Test} for stationarity
+                \item \textbf{Split} train/validation/test
+                \item \textbf{Compare} models on validation
+                \item \textbf{Report} test set metrics
+            \end{enumerate}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{alertblock}{Common Mistakes}
+            \begin{itemize}
+                \item Peeking at test data
+                \item Over-fitting to training set
+                \item Ignoring model assumptions
+                \item Not reporting uncertainty
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Practical Tips}
+            \begin{itemize}
+                \item Start simple (random walk, naive)
+                \item Add complexity only if needed
+                \item Visualize forecasts vs actuals
+                \item Check residuals for patterns
+                \item Report confidence intervals
+            \end{itemize}
+        \end{exampleblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Remember}
+            ``All models are wrong, but some are useful.'' \\
+            \hfill --- George E. P. Box
+        \end{block}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% CONCLUSION
+%=============================================================================
+\begin{frame}{Key Takeaways}
+    \begin{enumerate}
+        \item \textbf{Rigorous Methodology}
+        \begin{itemize}
+            \item Train/validation/test split prevents overfitting
+            \item Test set must remain untouched until final evaluation
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \item \textbf{Match Model to Data}
+        \begin{itemize}
+            \item Financial volatility $\rightarrow$ GARCH
+            \item Long seasonality $\rightarrow$ Fourier terms
+            \item Structural breaks $\rightarrow$ Prophet
+            \item Multiple series $\rightarrow$ VAR
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \item \textbf{Interpret Results Carefully}
+        \begin{itemize}
+            \item Granger causality $\neq$ true causality
+            \item Out-of-sample performance matters most
+            \item Simpler models often work better
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+%=============================================================================
+% REFERENCES
+%=============================================================================
+\begin{frame}{References}
+    \footnotesize
+    \begin{thebibliography}{99}
+        \bibitem{box2015} Box, G.E.P., Jenkins, G.M., Reinsel, G.C., \& Ljung, G.M. (2015). \textit{Time Series Analysis: Forecasting and Control}. 5th ed., Wiley.
+
+        \bibitem{hamilton1994} Hamilton, J.D. (1994). \textit{Time Series Analysis}. Princeton University Press.
+
+        \bibitem{tsay2010} Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}. 3rd ed., Wiley.
+
+        \bibitem{hyndman2021} Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}. 3rd ed., OTexts.
+
+        \bibitem{taylor2018} Taylor, S.J., \& Letham, B. (2018). Forecasting at Scale. \textit{The American Statistician}, 72(1), 37-45.
+
+        \bibitem{bollerslev1986} Bollerslev, T. (1986). Generalized Autoregressive Conditional Heteroskedasticity. \textit{Journal of Econometrics}, 31(3), 307-327.
+
+        \bibitem{sims1980} Sims, C.A. (1980). Macroeconomics and Reality. \textit{Econometrica}, 48(1), 1-48.
+    \end{thebibliography}
+\end{frame}
+
+%=============================================================================
+% DATA SOURCES
+%=============================================================================
+\begin{frame}{Data Sources}
+    \begin{block}{Real Data Used in This Chapter}
+        \begin{itemize}
+            \item \textbf{Bitcoin}: Yahoo Finance (BTC-USD), 2019--2025
+            \item \textbf{Sunspots}: Statsmodels Wolfer dataset, 1900--2008
+            \item \textbf{US Unemployment}: Federal Reserve FRED (UNRATE), 2010--2025
+            \item \textbf{Economic Variables}: FRED (GDPC1, UNRATE, CPIAUCSL, FEDFUNDS), 2000--2025
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Reproducibility}
+        All analyses can be reproduced using the accompanying Jupyter notebook: \\
+        \texttt{chapter10\_lecture\_notebook.ipynb}
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% FINAL SLIDE
+%=============================================================================
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.north west) rectangle ([yshift=-0.15cm]current page.north east);
+    \end{tikzpicture}
+
+    \vfill
+    \begin{center}
+        {\Huge\textbf{\textcolor{MainBlue}{Thank You}}}\\[0.5cm]
+        {\Large\textcolor{MediumGray}{Questions?}}\\[1cm]
+        {\large Prof. Daniel Traian Pele, PhD}\\[0.2cm]
+        {\texttt{danpele@ase.ro}}\\[0.5cm]
+        {\footnotesize Bucharest University of Economic Studies}
+    \end{center}
+    \vfill
+
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.south west) rectangle ([yshift=0.15cm]current page.south east);
+    \end{tikzpicture}
 \end{frame}
 
 \end{document}
