@@ -1,5 +1,5 @@
 % Chapter 10: Comprehensive Review - Complete Time Series Analysis
-% Applying all methods to real data
+% Applying all methods to real data: Bitcoin, Sunspots, Unemployment
 % Bachelor program, Bucharest University of Economic Studies
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
@@ -25,6 +25,7 @@
 \definecolor{Forest}{RGB}{46, 125, 50}
 \definecolor{Amber}{RGB}{181, 133, 63}
 \definecolor{Orange}{RGB}{230, 126, 34}
+\definecolor{BitcoinOrange}{RGB}{247, 147, 26}
 
 \setbeamercolor{palette primary}{bg=MainBlue, fg=white}
 \setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
@@ -202,31 +203,31 @@
 \begin{frame}{Real Datasets for This Chapter}
     \begin{columns}[T]
         \begin{column}{0.32\textwidth}
-            \begin{block}{S\&P 500 Returns}
+            \begin{block}{\textcolor{BitcoinOrange}{Bitcoin} Returns}
                 \begin{itemize}
-                    \item Daily financial data
+                    \item Daily crypto data
                     \item 2019-2024
-                    \item Volatility clustering
+                    \item Extreme volatility
                     \item ARIMA + GARCH
                 \end{itemize}
             \end{block}
         \end{column}
         \begin{column}{0.32\textwidth}
-            \begin{block}{Air Passengers}
+            \begin{block}{\textcolor{Orange}{Sunspot} Numbers}
                 \begin{itemize}
-                    \item Monthly 1949-1960
-                    \item Classic dataset
-                    \item Trend + seasonality
-                    \item SARIMA vs Prophet
+                    \item Monthly 1990-2023
+                    \item Classic 11-year cycle
+                    \item Long-period seasonality
+                    \item SARIMA analysis
                 \end{itemize}
             \end{block}
         \end{column}
         \begin{column}{0.32\textwidth}
-            \begin{block}{US Retail Sales}
+            \begin{block}{\textcolor{MainBlue}{US Unemployment}}
                 \begin{itemize}
-                    \item Monthly 2018-2023
-                    \item FRED economic data
-                    \item COVID-19 impact
+                    \item Monthly 2015-2023
+                    \item Bureau of Labor Stats
+                    \item COVID-19 shock
                     \item Structural breaks
                 \end{itemize}
             \end{block}
@@ -235,18 +236,18 @@
 \end{frame}
 
 %=============================================================================
-% SECTION 2: CASE STUDY 1 - FINANCIAL DATA
+% SECTION 2: CASE STUDY 1 - BITCOIN
 %=============================================================================
-\section{Case Study 1: S\&P 500 Financial Analysis}
+\section{Case Study 1: Bitcoin Volatility Analysis}
 
-\begin{frame}{S\&P 500: Data Overview}
+\begin{frame}{Bitcoin: Data Overview}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch10_sp500_overview.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch10_bitcoin_overview.pdf}
     \end{center}
 
     \begin{itemize}
-        \item \textbf{Data:} S\&P 500 daily closing prices and returns (2019-2024)
-        \item \textbf{Key events:} COVID-19 crash (March 2020), recovery, 2022 bear market
+        \item \textbf{Data:} Bitcoin daily prices and log returns (2019-2024)
+        \item \textbf{Key events:} COVID crash, 2021 bull run, crypto winter 2022
     \end{itemize}
 \end{frame}
 
@@ -260,21 +261,21 @@
             \end{itemize}
 
             \vspace{0.5em}
-            \textbf{Results on S\&P 500:}
+            \textbf{Results on Bitcoin:}
             \begin{table}[h]
                 \footnotesize
                 \begin{tabular}{lcc}
                     \toprule
                     Series & ADF Statistic & p-value \\
                     \midrule
-                    Prices & $-1.23$ & 0.66 \\
-                    Returns & $-35.2$ & $<0.001$ \\
+                    Prices & $-0.87$ & 0.79 \\
+                    Log Returns & $-42.1$ & $<0.001$ \\
                     \bottomrule
                 \end{tabular}
             \end{table}
 
             \vspace{0.5em}
-            $\Rightarrow$ Prices: non-stationary \\
+            $\Rightarrow$ Prices: non-stationary (random walk) \\
             $\Rightarrow$ Returns: stationary
         \end{column}
         \begin{column}{0.43\textwidth}
@@ -285,11 +286,11 @@
                 \end{itemize}
 
                 \vspace{0.3em}
-                Prices: KPSS = 4.21** \\
-                Returns: KPSS = 0.08
+                Prices: KPSS = 5.83** \\
+                Returns: KPSS = 0.12
 
                 \vspace{0.3em}
-                \textcolor{Forest}{Both tests confirm: use returns!}
+                \textcolor{Forest}{Both tests confirm: use log returns!}
             \end{exampleblock}
         \end{column}
     \end{columns}
@@ -297,13 +298,13 @@
 
 \begin{frame}{Step 2: ACF/PACF Analysis of Returns}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_sp500_acf_pacf.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_bitcoin_acf_pacf.pdf}
     \end{center}
 
     \begin{itemize}
-        \item \textbf{Returns:} Near white noise (weak autocorrelation)
-        \item \textbf{Squared returns:} Strong persistence $\Rightarrow$ volatility clustering
-        \item \textbf{Implication:} Need GARCH for volatility modeling
+        \item \textbf{Returns:} Near white noise (weak linear dependence)
+        \item \textbf{Squared returns:} Strong persistence $\Rightarrow$ \textcolor{IDAred}{volatility clustering}
+        \item \textbf{Implication:} GARCH model essential for Bitcoin!
     \end{itemize}
 \end{frame}
 
@@ -318,20 +319,20 @@
                     \toprule
                     Model & AIC & BIC \\
                     \midrule
-                    ARIMA(0,0,0) & -8234 & -8228 \\
-                    ARIMA(1,0,0) & -8236 & -8224 \\
-                    ARIMA(0,0,1) & -8235 & -8223 \\
-                    \textbf{ARIMA(1,0,1)} & \textbf{-8238} & \textbf{-8220} \\
+                    ARIMA(0,0,0) & 9524 & 9530 \\
+                    ARIMA(1,0,0) & 9522 & 9534 \\
+                    ARIMA(0,0,1) & 9523 & 9535 \\
+                    \textbf{ARIMA(1,0,1)} & \textbf{9520} & \textbf{9538} \\
                     \bottomrule
                 \end{tabular}
             \end{table}
 
             \vspace{0.3em}
-            Best model: ARIMA(1,0,1) or simple mean model
+            Best: ARIMA(1,0,1) but marginal improvement
         \end{column}
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Key Insight}
-                Stock returns are nearly unpredictable (efficient market hypothesis). The real story is in the \textbf{volatility}, not the mean!
+                Crypto returns are notoriously unpredictable. The ``alpha'' is in understanding \textbf{volatility dynamics}, not predicting direction!
             \end{alertblock}
         \end{column}
     \end{columns}
@@ -339,7 +340,7 @@
 
 \begin{frame}{Step 4: GARCH Model for Volatility}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_sp500_garch.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_bitcoin_garch.pdf}
     \end{center}
 
     \textbf{GARCH(1,1) Model:}
@@ -348,12 +349,12 @@
     \]
 
     \begin{itemize}
-        \item High $\alpha + \beta \approx 0.98$ indicates strong volatility persistence
-        \item COVID-19 period shows massive volatility spike
+        \item Bitcoin shows $\alpha + \beta \approx 0.95$ (high persistence)
+        \item COVID and May 2021 periods show massive volatility spikes
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Financial Data: Summary of Approach}
+\begin{frame}{Bitcoin: Summary of Approach}
     \begin{center}
         \begin{tikzpicture}[
             node distance=0.4cm,
@@ -368,7 +369,7 @@
             \node[box, right=0.8cm of returns] (arima) {ARIMA(1,0,1)};
             \node[result, right=0.8cm of arima] (garch) {GARCH(1,1)};
 
-            \draw[arrow] (prices) -- node[above, font=\tiny] {diff/log} (returns);
+            \draw[arrow] (prices) -- node[above, font=\tiny] {log diff} (returns);
             \draw[arrow] (returns) -- node[above, font=\tiny] {mean eq.} (arima);
             \draw[arrow] (arima) -- node[above, font=\tiny] {variance eq.} (garch);
         \end{tikzpicture}
@@ -380,181 +381,139 @@
             \textbf{Key Findings:}
             \begin{itemize}
                 \item Returns are nearly unpredictable
-                \item Volatility clusters significantly
+                \item Extreme volatility clustering
                 \item GARCH captures risk dynamics
             \end{itemize}
         \end{column}
         \begin{column}{0.48\textwidth}
             \textbf{Practical Use:}
             \begin{itemize}
-                \item Risk management (VaR)
-                \item Option pricing
-                \item Portfolio optimization
+                \item Risk management (VaR, CVaR)
+                \item Position sizing
+                \item Volatility trading strategies
             \end{itemize}
         \end{column}
     \end{columns}
 \end{frame}
 
 %=============================================================================
-% SECTION 3: CASE STUDY 2 - SEASONAL DATA
+% SECTION 3: CASE STUDY 2 - SUNSPOTS
 %=============================================================================
-\section{Case Study 2: Air Passengers with Seasonality}
+\section{Case Study 2: Sunspot Cycle Analysis}
 
-\begin{frame}{Air Passengers: The Classic Dataset}
+\begin{frame}{Sunspots: A Classic Long-Cycle Dataset}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_airpassengers_overview.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_sunspot_overview.pdf}
     \end{center}
 
     \begin{itemize}
-        \item \textbf{Data:} Monthly airline passengers (thousands), 1949-1960
-        \item \textbf{Characteristics:} Upward trend + yearly seasonality + multiplicative pattern
+        \item \textbf{Data:} Monthly sunspot numbers, 1990-2023
+        \item \textbf{Characteristics:} Famous $\sim$11 year solar cycle (132 months)
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Step 1: Decomposition Analysis}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_airpassengers_decomposition.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_sunspot_decomposition.pdf}
     \end{center}
 
     \begin{itemize}
-        \item \textbf{Trend:} Strong upward growth (aviation industry expansion)
-        \item \textbf{Seasonal:} Peak in summer (July-August), trough in winter
-        \item \textbf{Multiplicative:} Seasonal amplitude grows with level
+        \item \textbf{Trend:} Long-term average sunspot activity
+        \item \textbf{Cycle:} 11-year solar cycle (Schwabe cycle)
+        \item \textbf{Challenge:} Very long seasonal period ($m = 132$)
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Step 2: Making Data Stationary}
-    \textbf{Transformations Applied:}
-    \begin{enumerate}
-        \item Log transformation (stabilize variance)
-        \item First difference (remove trend)
-        \item Seasonal difference (remove seasonality)
-    \end{enumerate}
+\begin{frame}{Step 2: Handling Long Seasonality}
+    \textbf{The Challenge:}
+    \begin{itemize}
+        \item Standard SARIMA with $m=132$ requires estimating many parameters
+        \item Seasonal differencing at lag 132 loses 11 years of data!
+    \end{itemize}
 
     \vspace{0.5em}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lc}
-                    \toprule
-                    Series & ADF p-value \\
-                    \midrule
-                    Original & 0.99 \\
-                    Log & 0.42 \\
-                    Log + Diff & 0.07 \\
-                    Log + Diff + SDiff & $<0.01$ \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \textbf{SARIMA notation:}
-            \[
-                \text{SARIMA}(p,d,q)(P,D,Q)_s
-            \]
-
-            For Air Passengers:
+            \textbf{Option 1: Fourier Terms}
             \begin{itemize}
-                \item $d=1$ (first difference)
-                \item $D=1$ (seasonal difference)
-                \item $s=12$ (monthly seasonality)
+                \item Add sine/cosine regressors
+                \item Period = 132 months
+                \item Fewer parameters than full SARIMA
             \end{itemize}
-        \end{column}
-    \end{columns}
-\end{frame}
 
-\begin{frame}{Step 3: SARIMA Model Fitting}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \textbf{Model Selection:}
-            \begin{table}[h]
-                \footnotesize
-                \begin{tabular}{lc}
-                    \toprule
-                    Model & AIC \\
-                    \midrule
-                    $(1,1,1)(1,1,1)_{12}$ & 1020.3 \\
-                    $(0,1,1)(0,1,1)_{12}$ & 1018.7 \\
-                    \textbf{$(2,1,1)(0,1,1)_{12}$} & \textbf{1017.1} \\
-                    $(1,1,0)(1,1,0)_{12}$ & 1025.4 \\
-                    \bottomrule
-                \end{tabular}
-            \end{table}
-
-            \vspace{0.3em}
-            Best: SARIMA$(2,1,1)(0,1,1)_{12}$
+            \[
+                \sum_{k=1}^{K} \left[ a_k \sin\left(\frac{2\pi k t}{132}\right) + b_k \cos\left(\frac{2\pi k t}{132}\right) \right]
+            \]
         \end{column}
         \begin{column}{0.48\textwidth}
-            \textbf{Model Equation:}
-            \[
-                (1-\phi_1 B - \phi_2 B^2)(1-B)(1-B^{12})y_t
-            \]
-            \[
-                = (1+\theta_1 B)(1+\Theta_1 B^{12})\varepsilon_t
-            \]
+            \textbf{Option 2: AR Model}
+            \begin{itemize}
+                \item High-order AR captures cycle
+                \item AR(12) or AR(24) often sufficient
+                \item Simple and effective
+            \end{itemize}
 
             \vspace{0.5em}
-            \textbf{Diagnostics:}
-            \begin{itemize}
-                \item Ljung-Box: p = 0.42
-                \item Residuals: white noise
-            \end{itemize}
+            \begin{exampleblock}{Classic Result}
+                Sunspots are well-modeled by AR(9) or AR(12) models (Yule, 1927)
+            \end{exampleblock}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Step 4: Prophet as Alternative}
+\begin{frame}{Step 3: SARIMA Forecasting}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_airpassengers_prophet.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_sunspot_sarima.pdf}
     \end{center}
 
-    \textbf{Prophet Model:}
-    \[
-        y(t) = g(t) + s(t) + h(t) + \varepsilon_t
-    \]
+    \textbf{Model:} AR(12) with Fourier terms for 11-year cycle
 
     \begin{itemize}
-        \item Trend $g(t)$: Piecewise linear with changepoints
-        \item Seasonality $s(t)$: Fourier series (multiplicative mode)
+        \item Captures the quasi-periodic behavior
+        \item Forecast uncertainty grows significantly with horizon
     \end{itemize}
 \end{frame}
 
-\begin{frame}{SARIMA vs Prophet: Comparison}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch10_airpassengers_comparison.pdf}
-    \end{center}
-
+\begin{frame}{Sunspots: Model Comparison}
     \begin{table}[h]
         \footnotesize
         \centering
         \begin{tabular}{lccc}
             \toprule
-            Model & RMSE & MAE & MAPE (\%) \\
+            Model & RMSE & MAE & Notes \\
             \midrule
-            SARIMA$(2,1,1)(0,1,1)_{12}$ & 18.2 & 14.5 & 3.1 \\
-            Prophet (multiplicative) & 21.4 & 17.2 & 3.7 \\
-            TBATS & 19.8 & 15.9 & 3.4 \\
+            AR(12) & 28.4 & 22.1 & Simple, interpretable \\
+            ARIMA(2,0,2) + Fourier & 26.8 & 20.5 & Good cycle capture \\
+            \textbf{TBATS} & \textbf{25.2} & \textbf{19.8} & Automatic cycle detection \\
+            Prophet & 29.1 & 23.4 & Less suited for long cycles \\
             \bottomrule
         \end{tabular}
     \end{table}
 
-    \textbf{Conclusion:} SARIMA slightly better for this classic, well-behaved dataset
+    \vspace{0.5em}
+    \begin{alertblock}{Key Lesson}
+        For very long seasonal periods, consider:
+        \begin{itemize}
+            \item Fourier regression terms
+            \item TBATS (automatic cycle selection)
+            \item High-order AR models
+        \end{itemize}
+    \end{alertblock}
 \end{frame}
 
 %=============================================================================
-% SECTION 4: CASE STUDY 3 - ECONOMIC DATA WITH STRUCTURAL BREAK
+% SECTION 4: CASE STUDY 3 - UNEMPLOYMENT
 %=============================================================================
-\section{Case Study 3: US Retail Sales with Structural Break}
+\section{Case Study 3: US Unemployment with Structural Break}
 
-\begin{frame}{US Retail Sales: COVID-19 Impact}
+\begin{frame}{US Unemployment: COVID-19 Shock}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_retail_overview.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch10_unemployment_overview.pdf}
     \end{center}
 
     \begin{itemize}
-        \item \textbf{Data:} US Retail Sales, monthly, 2018-2023 (FRED)
-        \item \textbf{Challenge:} Major structural break in March-April 2020
+        \item \textbf{Data:} US Unemployment Rate, monthly, 2015-2023 (BLS)
+        \item \textbf{Shock:} From 3.5\% to 14.7\% in one month (April 2020)!
     \end{itemize}
 \end{frame}
 
@@ -565,7 +524,7 @@
             \begin{itemize}
                 \item Use only post-COVID data
                 \item Pro: Clean, no breaks
-                \item Con: Lose historical info
+                \item Con: Lose historical patterns
             \end{itemize}
 
             \vspace{0.5em}
@@ -581,48 +540,42 @@
             \begin{itemize}
                 \item Automatic detection
                 \item Pro: Handles breaks naturally
-                \item Con: May overfit
+                \item Con: May need tuning
             \end{itemize}
 
             \vspace{0.5em}
             \begin{exampleblock}{Recommendation}
-                For COVID-impacted data, Prophet's changepoint detection or post-COVID truncation often works best.
+                For COVID-impacted data, Prophet's changepoint detection or regime-switching models work best.
             \end{exampleblock}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Prophet for Retail Sales}
+\begin{frame}{Prophet for Unemployment}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_retail_prophet.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.60\textheight, keepaspectratio]{ch10_unemployment_prophet.pdf}
     \end{center}
 
     \textbf{Prophet Configuration:}
     \begin{itemize}
-        \item \texttt{changepoint\_prior\_scale = 0.1} (flexible for COVID)
-        \item \texttt{seasonality\_mode = 'multiplicative'}
-        \item Automatic changepoint detection captures the break
+        \item \texttt{changepoint\_prior\_scale = 0.5} (flexible for COVID shock)
+        \item Automatic changepoint at April 2020
+        \item Captures V-shaped recovery pattern
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Model Comparison on Retail Sales}
-    \begin{table}[h]
-        \centering
-        \begin{tabular}{lccc}
-            \toprule
-            Model & RMSE (\$B) & MAE (\$B) & MAPE (\%) \\
-            \midrule
-            SARIMA (full data) & 42.1 & 35.8 & 6.2 \\
-            SARIMA (post-COVID) & 18.3 & 14.7 & 2.4 \\
-            \textbf{Prophet (with breaks)} & \textbf{15.2} & \textbf{12.1} & \textbf{2.0} \\
-            TBATS & 19.4 & 15.8 & 2.6 \\
-            \bottomrule
-        \end{tabular}
-    \end{table}
+\begin{frame}{Model Comparison on Unemployment}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch10_unemployment_comparison.pdf}
+    \end{center}
 
-    \vspace{0.5em}
     \begin{alertblock}{Key Lesson}
-        When data has structural breaks, traditional ARIMA struggles. Prophet's flexibility with changepoints makes it better suited for such scenarios.
+        When data has extreme structural breaks:
+        \begin{itemize}
+            \item Traditional ARIMA may fail or require intervention analysis
+            \item Prophet's flexibility with changepoints captures regime changes
+            \item Consider regime-switching models (Markov-switching)
+        \end{itemize}
     \end{alertblock}
 \end{frame}
 
@@ -649,9 +602,9 @@
             \addlinespace
             Single seasonality & Trend + one seasonal period & SARIMA & ETS, Prophet \\
             \addlinespace
-            Multiple seasonality & Daily + weekly + annual & Prophet, TBATS & Dynamic regression \\
+            Long cycles & Sunspots, business cycles & AR + Fourier, TBATS & Spectral methods \\
             \addlinespace
-            Structural breaks & COVID, regime changes & Prophet & Piecewise regression \\
+            Structural breaks & COVID, regime changes & Prophet & Intervention ARIMA \\
             \addlinespace
             Multiple series & Interdependencies & VAR, VECM & Factor models \\
             \bottomrule
@@ -729,7 +682,7 @@
             \textbf{Modern Approaches}
             \begin{itemize}
                 \item Prophet: Interpretable, handles breaks
-                \item TBATS: Multiple seasonalities
+                \item TBATS: Multiple/long seasonalities
                 \item VAR/VECM: Multiple time series
             \end{itemize}
 
