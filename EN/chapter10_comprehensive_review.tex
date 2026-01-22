@@ -230,33 +230,39 @@
 
 \begin{frame}{Real Datasets for This Chapter}
     \begin{columns}[T]
-        \begin{column}{0.32\textwidth}
-            \begin{block}{\textcolor{BitcoinOrange}{Bitcoin} Returns}
+        \begin{column}{0.24\textwidth}
+            \begin{block}{\textcolor{BitcoinOrange}{Bitcoin}}
                 \begin{itemize}
-                    \item Daily crypto data
-                    \item 2019-2024
-                    \item Extreme volatility
+                    \item Daily 2019-2024
+                    \item Volatility clustering
                     \item ARIMA + GARCH
                 \end{itemize}
             \end{block}
         \end{column}
-        \begin{column}{0.32\textwidth}
-            \begin{block}{\textcolor{Orange}{Sunspot} Numbers}
+        \begin{column}{0.24\textwidth}
+            \begin{block}{\textcolor{Orange}{Sunspots}}
                 \begin{itemize}
-                    \item Monthly 1990-2023
-                    \item Classic 11-year cycle
-                    \item Long-period seasonality
-                    \item SARIMA analysis
+                    \item Yearly 1900-2023
+                    \item 11-year cycle
+                    \item Fourier terms
                 \end{itemize}
             \end{block}
         \end{column}
-        \begin{column}{0.32\textwidth}
-            \begin{block}{\textcolor{MainBlue}{US Unemployment}}
+        \begin{column}{0.24\textwidth}
+            \begin{block}{\textcolor{MainBlue}{Unemployment}}
                 \begin{itemize}
-                    \item Monthly 2015-2023
-                    \item Bureau of Labor Stats
+                    \item Monthly 2010-2023
                     \item COVID-19 shock
-                    \item Structural breaks
+                    \item Prophet
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.24\textwidth}
+            \begin{block}{\textcolor{Forest}{Economic VAR}}
+                \begin{itemize}
+                    \item Quarterly 2000-2023
+                    \item GDP, Inflation, etc.
+                    \item Multivariate VAR
                 \end{itemize}
             \end{block}
         \end{column}
@@ -608,7 +614,262 @@
 \end{frame}
 
 %=============================================================================
-% SECTION 5: MODEL SELECTION GUIDE
+% SECTION 5: CASE STUDY 4 - VAR MULTIVARIATE
+%=============================================================================
+\section{Case Study 4: Multivariate VAR Analysis}
+
+\begin{frame}{Why Multivariate Analysis?}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Single Series (Univariate):}
+            \begin{itemize}
+                \item ARIMA, GARCH, Prophet
+                \item One variable at a time
+                \item Cannot capture cross-series dynamics
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Multiple Series (Multivariate):}
+            \begin{itemize}
+                \item \textcolor{MainBlue}{VAR}: Vector Autoregression
+                \item \textcolor{MainBlue}{VECM}: With cointegration
+                \item Captures interdependencies
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{When to Use VAR?}
+                \begin{itemize}
+                    \item Economic indicators (GDP, inflation, unemployment)
+                    \item Financial markets (stocks, bonds, FX)
+                    \item Supply chain variables
+                    \item Any system with feedback loops
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR Model: The Basics}
+    \textbf{Vector Autoregression VAR(p):}
+
+    For $k$ variables, VAR(p) is:
+    \[
+        \mathbf{y}_t = \mathbf{c} + \mathbf{A}_1 \mathbf{y}_{t-1} + \mathbf{A}_2 \mathbf{y}_{t-2} + \cdots + \mathbf{A}_p \mathbf{y}_{t-p} + \boldsymbol{\varepsilon}_t
+    \]
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Example: VAR(1) with 2 variables}
+            \[
+                \begin{pmatrix} y_{1t} \\ y_{2t} \end{pmatrix} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} + \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix} \begin{pmatrix} y_{1,t-1} \\ y_{2,t-1} \end{pmatrix} + \begin{pmatrix} \varepsilon_{1t} \\ \varepsilon_{2t} \end{pmatrix}
+            \]
+
+            \vspace{0.3em}
+            \textcolor{IDAred}{Key:} Each variable depends on lags of ALL variables
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Key Features:}
+            \begin{itemize}
+                \item Captures dynamic feedback
+                \item All variables are endogenous
+                \item Enables Granger causality tests
+                \item Impulse response analysis
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Case Study: US Economic Variables}
+    \textbf{Variables (Quarterly, 2000-2023):}
+    \begin{itemize}
+        \item \textcolor{MainBlue}{GDP Growth} (YoY \%)
+        \item \textcolor{IDAred}{Unemployment Rate} (\%)
+        \item \textcolor{Forest}{Inflation} (CPI YoY \%)
+        \item \textcolor{Orange}{Federal Funds Rate} (\%)
+    \end{itemize}
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Expected Relationships:}
+            \begin{itemize}
+                \item GDP $\uparrow$ $\Rightarrow$ Unemployment $\downarrow$ (Okun's Law)
+                \item GDP $\uparrow$ $\Rightarrow$ Inflation $\uparrow$ (demand-pull)
+                \item Inflation $\uparrow$ $\Rightarrow$ Fed Rate $\uparrow$ (Taylor Rule)
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Data Sources (FRED):}
+            \begin{itemize}
+                \item GDPC1: Real GDP
+                \item UNRATE: Unemployment
+                \item CPIAUCSL: Consumer Price Index
+                \item FEDFUNDS: Fed Funds Rate
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Granger Causality}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \textbf{Definition:}
+
+            Variable $X$ \textit{Granger-causes} $Y$ if past values of $X$ help predict $Y$ beyond what past values of $Y$ alone provide.
+
+            \vspace{0.5em}
+            \textbf{Test:}
+            \begin{itemize}
+                \item $H_0$: $X$ does NOT Granger-cause $Y$
+                \item $H_1$: $X$ Granger-causes $Y$
+                \item F-test on coefficient restrictions
+            \end{itemize}
+
+            \vspace{0.5em}
+            \begin{alertblock}{Warning}
+                Granger causality $\neq$ True causality!
+
+                It measures \textit{predictive} causality, not structural causality.
+            \end{alertblock}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Example Results:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    Cause $\rightarrow$ Effect & p-value \\
+                    \midrule
+                    GDP $\rightarrow$ Unemp & 0.02* \\
+                    Unemp $\rightarrow$ GDP & 0.15 \\
+                    Inflation $\rightarrow$ Fed & 0.01** \\
+                    Fed $\rightarrow$ Inflation & 0.08 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            \textcolor{Forest}{GDP leads unemployment}
+
+            \textcolor{Forest}{Inflation leads Fed Rate}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Impulse Response Functions (IRF)}
+    \textbf{What is an IRF?}
+
+    Shows how a one-unit shock to variable $X$ affects all variables over time.
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{GDP Shock Analysis:}
+            \begin{itemize}
+                \item Positive GDP shock
+                \item $\Rightarrow$ Unemployment decreases
+                \item $\Rightarrow$ Inflation increases
+                \item $\Rightarrow$ Fed raises rates
+                \item Effects persist for several quarters
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Interpretation:}
+            \begin{itemize}
+                \item Shows dynamic multiplier effects
+                \item Confidence bands show uncertainty
+                \item Can identify policy transmission
+            \end{itemize}
+
+            \vspace{0.3em}
+            \begin{exampleblock}{Policy Use}
+                Central banks use IRFs to understand how monetary policy shocks propagate through the economy.
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR: Model Selection and Diagnostics}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Step 1: Lag Order Selection}
+            \begin{itemize}
+                \item Use information criteria (AIC, BIC)
+                \item BIC tends to select simpler models
+                \item Cross-validate on held-out data
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Step 2: Stationarity Check}
+            \begin{itemize}
+                \item All variables should be stationary
+                \item Or use VECM if cointegrated
+                \item Test each variable with ADF
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Step 3: Diagnostics}
+            \begin{itemize}
+                \item Residual autocorrelation (Portmanteau)
+                \item Normality (Jarque-Bera)
+                \item Stability (eigenvalue check)
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Step 4: Forecast Evaluation}
+            \begin{itemize}
+                \item RMSE for each variable
+                \item Compare to univariate benchmarks
+                \item VAR often wins for interdependent systems
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR Case Study: Summary}
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            box/.style={rectangle, rounded corners, draw=MainBlue, fill=MainBlue!10,
+                        text width=2.2cm, minimum height=0.7cm, align=center, font=\footnotesize},
+            arrow/.style={-{Stealth[length=2mm]}, thick, MainBlue}
+        ]
+            \node[box] (gdp) {GDP Growth};
+            \node[box, right=1cm of gdp] (unemp) {Unemployment};
+            \node[box, below=0.8cm of gdp] (infl) {Inflation};
+            \node[box, right=1cm of infl] (fed) {Fed Rate};
+
+            \draw[arrow, IDAred] (gdp) -- (unemp);
+            \draw[arrow, Forest] (infl) -- (fed);
+            \draw[arrow, dashed] (gdp) -- (infl);
+            \draw[arrow, dashed] (fed) -- (unemp);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Key Findings:}
+            \begin{itemize}
+                \item GDP Granger-causes unemployment
+                \item Inflation Granger-causes Fed policy
+                \item VAR captures these dynamics
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Practical Applications:}
+            \begin{itemize}
+                \item Economic forecasting
+                \item Policy analysis
+                \item Risk management in portfolios
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 6: MODEL SELECTION GUIDE
 %=============================================================================
 \section{Model Selection: A Practical Guide}
 

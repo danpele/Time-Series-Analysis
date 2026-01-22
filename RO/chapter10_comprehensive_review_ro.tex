@@ -230,33 +230,39 @@
 
 \begin{frame}{Seturi de Date Reale pentru Acest Capitol}
     \begin{columns}[T]
-        \begin{column}{0.32\textwidth}
-            \begin{block}{\textcolor{BitcoinOrange}{Bitcoin} Randamente}
+        \begin{column}{0.24\textwidth}
+            \begin{block}{\textcolor{BitcoinOrange}{Bitcoin}}
                 \begin{itemize}
-                    \item Date zilnice crypto
-                    \item 2019-2024
-                    \item Volatilitate extremă
+                    \item Zilnic 2019-2024
+                    \item Clustering volatilitate
                     \item ARIMA + GARCH
                 \end{itemize}
             \end{block}
         \end{column}
-        \begin{column}{0.32\textwidth}
+        \begin{column}{0.24\textwidth}
             \begin{block}{\textcolor{Orange}{Pete Solare}}
                 \begin{itemize}
-                    \item Lunar 1990-2023
-                    \item Ciclu clasic de 11 ani
-                    \item Sezonalitate lungă
-                    \item Analiză SARIMA
+                    \item Anual 1900-2023
+                    \item Ciclu de 11 ani
+                    \item Termeni Fourier
                 \end{itemize}
             \end{block}
         \end{column}
-        \begin{column}{0.32\textwidth}
-            \begin{block}{\textcolor{MainBlue}{Șomaj SUA}}
+        \begin{column}{0.24\textwidth}
+            \begin{block}{\textcolor{MainBlue}{Șomaj}}
                 \begin{itemize}
-                    \item Lunar 2015-2023
-                    \item Bureau of Labor Stats
+                    \item Lunar 2010-2023
                     \item Șocul COVID-19
-                    \item Rupturi structurale
+                    \item Prophet
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.24\textwidth}
+            \begin{block}{\textcolor{Forest}{Economic VAR}}
+                \begin{itemize}
+                    \item Trimestrial 2000-2023
+                    \item PIB, Inflație, etc.
+                    \item VAR Multivariat
                 \end{itemize}
             \end{block}
         \end{column}
@@ -608,7 +614,262 @@
 \end{frame}
 
 %=============================================================================
-% SECTION 5: MODEL SELECTION GUIDE
+% SECTION 5: CASE STUDY 4 - VAR MULTIVARIATE
+%=============================================================================
+\section{Studiu de Caz 4: Analiza Multivariată VAR}
+
+\begin{frame}{De Ce Analiză Multivariată?}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Serie Singulară (Univariată):}
+            \begin{itemize}
+                \item ARIMA, GARCH, Prophet
+                \item O singură variabilă la un moment dat
+                \item Nu captează dinamica între serii
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Serii Multiple (Multivariate):}
+            \begin{itemize}
+                \item \textcolor{MainBlue}{VAR}: Vector Autoregression
+                \item \textcolor{MainBlue}{VECM}: Cu cointegrare
+                \item Captează interdependențele
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{Când să Folosim VAR?}
+                \begin{itemize}
+                    \item Indicatori economici (PIB, inflație, șomaj)
+                    \item Piețe financiare (acțiuni, obligațiuni, FX)
+                    \item Variabile supply chain
+                    \item Orice sistem cu bucle de feedback
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Modelul VAR: Bazele}
+    \textbf{Vector Autoregression VAR(p):}
+
+    Pentru $k$ variabile, VAR(p) este:
+    \[
+        \mathbf{y}_t = \mathbf{c} + \mathbf{A}_1 \mathbf{y}_{t-1} + \mathbf{A}_2 \mathbf{y}_{t-2} + \cdots + \mathbf{A}_p \mathbf{y}_{t-p} + \boldsymbol{\varepsilon}_t
+    \]
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Exemplu: VAR(1) cu 2 variabile}
+            \[
+                \begin{pmatrix} y_{1t} \\ y_{2t} \end{pmatrix} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} + \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix} \begin{pmatrix} y_{1,t-1} \\ y_{2,t-1} \end{pmatrix} + \begin{pmatrix} \varepsilon_{1t} \\ \varepsilon_{2t} \end{pmatrix}
+            \]
+
+            \vspace{0.3em}
+            \textcolor{IDAred}{Cheie:} Fiecare variabilă depinde de lag-urile TUTUROR variabilelor
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Caracteristici Cheie:}
+            \begin{itemize}
+                \item Captează feedback dinamic
+                \item Toate variabilele sunt endogene
+                \item Permite teste de cauzalitate Granger
+                \item Analiză impulse response
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Studiu de Caz: Variabile Economice SUA}
+    \textbf{Variabile (Trimestrial, 2000-2023):}
+    \begin{itemize}
+        \item \textcolor{MainBlue}{Creștere PIB} (YoY \%)
+        \item \textcolor{IDAred}{Rata Șomajului} (\%)
+        \item \textcolor{Forest}{Inflație} (CPI YoY \%)
+        \item \textcolor{Orange}{Rata Fed Funds} (\%)
+    \end{itemize}
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Relații Așteptate:}
+            \begin{itemize}
+                \item PIB $\uparrow$ $\Rightarrow$ Șomaj $\downarrow$ (Legea lui Okun)
+                \item PIB $\uparrow$ $\Rightarrow$ Inflație $\uparrow$ (cerere-push)
+                \item Inflație $\uparrow$ $\Rightarrow$ Rata Fed $\uparrow$ (Regula Taylor)
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Surse Date (FRED):}
+            \begin{itemize}
+                \item GDPC1: PIB Real
+                \item UNRATE: Șomaj
+                \item CPIAUCSL: Indicele Prețurilor
+                \item FEDFUNDS: Rata Fed Funds
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Cauzalitatea Granger}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \textbf{Definiție:}
+
+            Variabila $X$ \textit{Granger-cauzează} $Y$ dacă valorile trecute ale lui $X$ ajută la predicția lui $Y$ dincolo de ceea ce oferă doar valorile trecute ale lui $Y$.
+
+            \vspace{0.5em}
+            \textbf{Test:}
+            \begin{itemize}
+                \item $H_0$: $X$ NU Granger-cauzează $Y$
+                \item $H_1$: $X$ Granger-cauzează $Y$
+                \item Test F pe restricții de coeficienți
+            \end{itemize}
+
+            \vspace{0.5em}
+            \begin{alertblock}{Atenție}
+                Cauzalitate Granger $\neq$ Cauzalitate reală!
+
+                Măsoară cauzalitate \textit{predictivă}, nu structurală.
+            \end{alertblock}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \textbf{Exemple de Rezultate:}
+            \begin{table}[h]
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    Cauză $\rightarrow$ Efect & p-value \\
+                    \midrule
+                    PIB $\rightarrow$ Șomaj & 0.02* \\
+                    Șomaj $\rightarrow$ PIB & 0.15 \\
+                    Inflație $\rightarrow$ Fed & 0.01** \\
+                    Fed $\rightarrow$ Inflație & 0.08 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+
+            \vspace{0.3em}
+            \textcolor{Forest}{PIB conduce șomajul}
+
+            \textcolor{Forest}{Inflația conduce Rata Fed}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Funcții de Răspuns la Impuls (IRF)}
+    \textbf{Ce este IRF?}
+
+    Arată cum un șoc de o unitate în variabila $X$ afectează toate variabilele în timp.
+
+    \vspace{0.5em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Analiza Șocului PIB:}
+            \begin{itemize}
+                \item Șoc pozitiv PIB
+                \item $\Rightarrow$ Șomajul scade
+                \item $\Rightarrow$ Inflația crește
+                \item $\Rightarrow$ Fed crește ratele
+                \item Efectele persistă câteva trimestre
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Interpretare:}
+            \begin{itemize}
+                \item Arată efectele multiplicator dinamice
+                \item Benzile de încredere arată incertitudinea
+                \item Poate identifica transmisia politicii
+            \end{itemize}
+
+            \vspace{0.3em}
+            \begin{exampleblock}{Utilizare în Politici}
+                Băncile centrale folosesc IRF pentru a înțelege cum șocurile de politică monetară se propagă în economie.
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR: Selecția Modelului și Diagnostice}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Pasul 1: Selecția Ordinului Lag}
+            \begin{itemize}
+                \item Folosiți criterii informaționale (AIC, BIC)
+                \item BIC tinde să selecteze modele mai simple
+                \item Validare încrucișată pe date reținute
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Pasul 2: Verificare Staționaritate}
+            \begin{itemize}
+                \item Toate variabilele trebuie să fie staționare
+                \item Sau folosiți VECM dacă sunt cointegrate
+                \item Testați fiecare variabilă cu ADF
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Pasul 3: Diagnostice}
+            \begin{itemize}
+                \item Autocorelație reziduuri (Portmanteau)
+                \item Normalitate (Jarque-Bera)
+                \item Stabilitate (verificare eigenvalue)
+            \end{itemize}
+
+            \vspace{0.5em}
+            \textbf{Pasul 4: Evaluare Prognoză}
+            \begin{itemize}
+                \item RMSE pentru fiecare variabilă
+                \item Comparați cu benchmark-uri univariate
+                \item VAR adesea câștigă pentru sisteme interdependente
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Studiu de Caz VAR: Rezumat}
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            box/.style={rectangle, rounded corners, draw=MainBlue, fill=MainBlue!10,
+                        text width=2.2cm, minimum height=0.7cm, align=center, font=\footnotesize},
+            arrow/.style={-{Stealth[length=2mm]}, thick, MainBlue}
+        ]
+            \node[box] (gdp) {Creștere PIB};
+            \node[box, right=1cm of gdp] (unemp) {Șomaj};
+            \node[box, below=0.8cm of gdp] (infl) {Inflație};
+            \node[box, right=1cm of infl] (fed) {Rata Fed};
+
+            \draw[arrow, IDAred] (gdp) -- (unemp);
+            \draw[arrow, Forest] (infl) -- (fed);
+            \draw[arrow, dashed] (gdp) -- (infl);
+            \draw[arrow, dashed] (fed) -- (unemp);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Constatări Cheie:}
+            \begin{itemize}
+                \item PIB Granger-cauzează șomajul
+                \item Inflația Granger-cauzează politica Fed
+                \item VAR captează aceste dinamici
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Aplicații Practice:}
+            \begin{itemize}
+                \item Prognoză economică
+                \item Analiză de politici
+                \item Managementul riscului în portofolii
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%=============================================================================
+% SECTION 6: MODEL SELECTION GUIDE
 %=============================================================================
 \section{Selecția Modelului: Ghid Practic}
 
