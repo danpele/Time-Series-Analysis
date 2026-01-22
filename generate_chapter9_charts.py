@@ -10,12 +10,15 @@ from matplotlib.dates import DateFormatter
 import warnings
 warnings.filterwarnings('ignore')
 
-# Set style
-plt.style.use('seaborn-v0_8-whitegrid')
+# Set style - NO GRID, transparent background
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['font.size'] = 11
 plt.rcParams['axes.titlesize'] = 14
 plt.rcParams['axes.labelsize'] = 12
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['axes.grid'] = False
 
 # Colors
 MAIN_BLUE = '#1A3A6E'
@@ -25,9 +28,9 @@ AMBER = '#B5853F'
 ORANGE = '#E67E22'
 
 def save_chart(fig, name):
-    """Save chart to charts folder"""
-    fig.savefig(f'charts/{name}.pdf', bbox_inches='tight', dpi=150)
-    fig.savefig(f'charts/{name}.png', bbox_inches='tight', dpi=150)
+    """Save chart to charts folder - transparent background"""
+    fig.savefig(f'charts/{name}.pdf', bbox_inches='tight', dpi=150, transparent=True)
+    fig.savefig(f'charts/{name}.png', bbox_inches='tight', dpi=150, transparent=True)
     plt.close(fig)
     print(f"Saved: charts/{name}.pdf")
 
@@ -82,7 +85,10 @@ def generate_multiple_seasonality_example():
     axes[2].set_ylabel('Value')
     axes[2].set_xlabel('Time')
     axes[2].xaxis.set_major_formatter(DateFormatter('%H:00'))
-    axes[2].legend()
+    axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2)
+
+    for ax in axes:
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_multiple_seasonality')
@@ -102,7 +108,7 @@ def generate_fourier_terms_visualization():
     axes[0, 0].plot(t, k1, color=IDA_RED, linewidth=2, linestyle='--', label='K=1 approximation')
     axes[0, 0].fill_between(t, true_pattern, k1, alpha=0.3, color=IDA_RED)
     axes[0, 0].set_title('K = 1 (One Harmonic)', fontweight='bold')
-    axes[0, 0].legend()
+    axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
     axes[0, 0].set_ylabel('Value')
 
     # K=2 (two harmonics)
@@ -111,14 +117,14 @@ def generate_fourier_terms_visualization():
     axes[0, 1].plot(t, k2, color=ORANGE, linewidth=2, linestyle='--', label='K=2 approximation')
     axes[0, 1].fill_between(t, true_pattern, k2, alpha=0.3, color=ORANGE)
     axes[0, 1].set_title('K = 2 (Two Harmonics)', fontweight='bold')
-    axes[0, 1].legend()
+    axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
 
     # K=3 (three harmonics) - perfect fit
     k3 = np.sin(t) + 0.5*np.sin(2*t) + 0.3*np.cos(3*t)
     axes[1, 0].plot(t, true_pattern, 'k-', linewidth=2, label='True pattern')
     axes[1, 0].plot(t, k3, color=FOREST, linewidth=2, linestyle='--', label='K=3 approximation')
     axes[1, 0].set_title('K = 3 (Three Harmonics) - Perfect Fit', fontweight='bold')
-    axes[1, 0].legend()
+    axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
     axes[1, 0].set_ylabel('Value')
     axes[1, 0].set_xlabel('Time (one seasonal cycle)')
 
@@ -138,6 +144,9 @@ def generate_fourier_terms_visualization():
     axes[1, 1].set_xlabel('Number of Harmonics (K)')
     axes[1, 1].set_ylabel('Mean Squared Error')
     axes[1, 1].set_title('Approximation Error vs K', fontweight='bold')
+
+    for ax in axes.flat:
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_fourier_approximation')
@@ -180,6 +189,7 @@ def generate_tbats_decomposition():
 
     for ax in axes:
         ax.xaxis.set_major_formatter(DateFormatter('%b %Y'))
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_tbats_decomposition')
@@ -218,7 +228,7 @@ def generate_prophet_components():
     axes[0].plot(dates, fitted, color=MAIN_BLUE, linewidth=1, label='Fitted')
     axes[0].set_title('Prophet Decomposition with Trend Changepoint', fontweight='bold')
     axes[0].set_ylabel('Value')
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
     axes[0].axvline(dates[365], color=IDA_RED, linestyle='--', alpha=0.7, label='Changepoint')
 
     # Trend
@@ -242,6 +252,9 @@ def generate_prophet_components():
     axes[4].bar(dates, holidays, color=IDA_RED, width=1)
     axes[4].set_ylabel('Holidays')
     axes[4].set_xlabel('Date')
+
+    for ax in axes:
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_prophet_components')
@@ -285,7 +298,7 @@ def generate_prophet_vs_tbats_comparison():
                      arrowprops=dict(arrowstyle='->', color='gray'), fontsize=10)
     axes[0].set_title('Prophet vs TBATS: 30-Day Forecast Comparison', fontweight='bold')
     axes[0].set_ylabel('Value')
-    axes[0].legend(loc='upper left')
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=4)
 
     # Error comparison
     prophet_error = y[n_train:] - prophet_forecast
@@ -298,7 +311,7 @@ def generate_prophet_vs_tbats_comparison():
     axes[1].set_xlabel('Forecast Horizon (days)')
     axes[1].set_ylabel('Absolute Error')
     axes[1].set_title('Forecast Errors by Horizon', fontweight='bold')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
 
     # Add RMSE annotations
     prophet_rmse = np.sqrt(np.mean(prophet_error**2))
@@ -306,6 +319,9 @@ def generate_prophet_vs_tbats_comparison():
     axes[1].text(0.95, 0.95, f'Prophet RMSE: {prophet_rmse:.2f}\nTBATS RMSE: {tbats_rmse:.2f}',
                 transform=axes[1].transAxes, ha='right', va='top', fontsize=11,
                 bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+
+    for ax in axes:
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_prophet_vs_tbats')
@@ -390,6 +406,9 @@ def generate_electricity_demand_example():
     axes[2].set_title('Average Weekly Profile (168-hour pattern)', fontweight='bold')
     axes[2].set_xticks(range(7))
     axes[2].set_xticklabels(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])
+
+    for ax in axes:
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_electricity_demand')
@@ -477,6 +496,9 @@ def generate_retail_sales_example():
     axes[1, 1].set_ylabel('Additional Sales ($)')
     axes[1, 1].set_title('Holiday Effects', fontweight='bold')
 
+    for ax in axes.flat:
+        ax.grid(False)
+
     plt.tight_layout()
     save_chart(fig, 'ch9_retail_sales')
 
@@ -506,7 +528,7 @@ def generate_additive_vs_multiplicative():
     axes[0].plot(dates, trend, color=IDA_RED, linewidth=2, linestyle='--', label='Trend')
     axes[0].set_title('Additive Seasonality: $Y_t = T_t + S_t + \\epsilon_t$', fontweight='bold')
     axes[0].set_ylabel('Value')
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2)
 
     # Add annotation showing constant amplitude
     axes[0].annotate('', xy=(dates[90], additive[90]), xytext=(dates[90], trend[90]),
@@ -520,7 +542,7 @@ def generate_additive_vs_multiplicative():
     axes[1].set_title('Multiplicative Seasonality: $Y_t = T_t \\times S_t \\times \\epsilon_t$', fontweight='bold')
     axes[1].set_ylabel('Value')
     axes[1].set_xlabel('Date')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
 
     # Add annotation showing growing amplitude
     axes[1].annotate('', xy=(dates[90], multiplicative[90]), xytext=(dates[90], trend[90]),
@@ -532,6 +554,7 @@ def generate_additive_vs_multiplicative():
 
     for ax in axes:
         ax.xaxis.set_major_formatter(DateFormatter('%b %Y'))
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_additive_vs_multiplicative')
@@ -568,7 +591,7 @@ def generate_changepoint_detection():
     axes[0].axvline(dates[changepoints[0]], color=FOREST, linestyle='--', alpha=0.8, linewidth=2, label='Changepoints')
     axes[0].set_title('Prophet Trend Changepoint Detection', fontweight='bold')
     axes[0].set_ylabel('Value')
-    axes[0].legend(loc='upper left')
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
 
     # Trend slope over time
     slopes = np.diff(trend)
@@ -582,10 +605,11 @@ def generate_changepoint_detection():
     axes[1].set_title('Trend Growth Rate (slope changes at changepoints)', fontweight='bold')
     axes[1].set_ylabel('Daily Change')
     axes[1].set_xlabel('Date')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
 
     for ax in axes:
         ax.xaxis.set_major_formatter(DateFormatter('%b %Y'))
+        ax.grid(False)
 
     plt.tight_layout()
     save_chart(fig, 'ch9_changepoint_detection')
