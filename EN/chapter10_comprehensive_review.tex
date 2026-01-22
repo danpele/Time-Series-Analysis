@@ -314,17 +314,21 @@
         \begin{center}
             \includegraphics[width=\textwidth]{../charts/btc_squared_returns.pdf}
         \end{center}
+        \vspace{0.1cm}
+        {\small Squared returns $r_t^2$ proxy for volatility $\sigma_t^2$. Spikes cluster together.}
 
         \column{0.5\textwidth}
         \begin{center}
             \includegraphics[width=\textwidth]{../charts/btc_acf_squared.pdf}
         \end{center}
+        \vspace{0.1cm}
+        {\small ACF bars exceed blue bands $\Rightarrow$ significant autocorrelation at multiple lags.}
     \end{columns}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
     \begin{alertblock}{Why GARCH?}
-        Squared returns (volatility proxy) show \textbf{significant autocorrelation}. This means past volatility predicts future volatility---exactly what GARCH models!
+        If $r_t^2$ were white noise, ACF would be zero. Significant ACF means \textbf{past volatility predicts future volatility}---GARCH captures this!
     \end{alertblock}
 \end{frame}
 
@@ -483,12 +487,20 @@
 
 \begin{frame}{GARCH: Multi-Step Forecasts Converge}
     \begin{center}
-        \includegraphics[width=0.85\textwidth]{../charts/garch_convergence.pdf}
+        \includegraphics[width=0.8\textwidth]{../charts/garch_convergence.pdf}
     \end{center}
 
-    \begin{alertblock}{Problem}
-        Multi-step GARCH forecasts converge to $\bar{\sigma}^2 = \omega/(1-\alpha-\beta)$. For long horizons, this gives a \textbf{flat line}---useless for dynamic risk management!
-    \end{alertblock}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{The Problem}
+            GARCH forecasts converge to unconditional variance $\bar{\sigma}^2 = \frac{\omega}{1-\alpha-\beta}$
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Intuition}
+            After a shock, volatility gradually returns to its long-run average level.
+        \end{exampleblock}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{GARCH: Rolling One-Step-Ahead Solution}
@@ -575,44 +587,41 @@
         \begin{center}
             \includegraphics[width=\textwidth]{../charts/sunspots.pdf}
         \end{center}
+        {\small Dashed lines mark cycle peaks ($\approx$ every 11 years). Amplitude varies.}
 
         \column{0.45\textwidth}
         \begin{center}
             \includegraphics[width=\textwidth]{../charts/sunspots_acf.pdf}
         \end{center}
+        {\small ACF peaks at lag 11 and 22 confirm the solar cycle periodicity.}
     \end{columns}
 
     \vspace{0.2cm}
 
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{block}{Data}
-            Period: 1900--2008, 109 years. ACF confirms 11-year periodicity.
-        \end{block}
-
-        \column{0.5\textwidth}
-        \begin{alertblock}{Challenge}
-            SARIMA with $s=11$ needs too many parameters. \textbf{Solution}: Fourier terms.
-        \end{alertblock}
-    \end{columns}
+    \begin{alertblock}{Challenge}
+        SARIMA$(p,d,q)(P,D,Q)_{11}$ requires estimating seasonal lags at 11, 22, 33... Too many parameters! \textbf{Solution}: Use Fourier terms instead.
+    \end{alertblock}
 \end{frame}
 
 \begin{frame}{Fourier Terms for Seasonality}
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{../charts/fourier_terms.pdf}
+        \includegraphics[width=0.85\textwidth]{../charts/fourier_terms.pdf}
     \end{center}
 
-    \vspace{0.2cm}
-
     \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{block}{Formula}
+        \column{0.55\textwidth}
+        \begin{block}{How It Works}
+            Approximate any periodic pattern using sine and cosine waves:
             $S_t = \sum_{k=1}^{K}\left[\alpha_k \sin\left(\frac{2\pi k t}{s}\right) + \beta_k \cos\left(\frac{2\pi k t}{s}\right)\right]$
         \end{block}
 
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Advantages}
-            Only $2K$ parameters (not $s$). $K$ controls flexibility.
+        \column{0.45\textwidth}
+        \begin{exampleblock}{Key Insight}
+            \begin{itemize}
+                \item $K=1$: Simple wave (2 params)
+                \item $K=3$: Complex shape (6 params)
+                \item For sunspots: $s=11$, $K=3$
+            \end{itemize}
         \end{exampleblock}
     \end{columns}
 \end{frame}
@@ -721,24 +730,22 @@
 
 \begin{frame}{Unemployment: COVID-19 Structural Break}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{../charts/unemployment.pdf}
+        \includegraphics[width=0.9\textwidth]{../charts/unemployment.pdf}
     \end{center}
-
-    \vspace{0.2cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Key Statistics}
+        \begin{block}{The Challenge}
             \begin{itemize}
-                \item Pre-COVID min: 3.5\%
-                \item COVID peak: \textbf{14.8\%}
-                \item Change: +10.3 pp in one month
+                \item Pre-COVID: 3.5\% (50-year low)
+                \item April 2020: \textbf{14.8\%} peak
+                \item Largest monthly jump in US history
             \end{itemize}
         \end{block}
 
         \column{0.5\textwidth}
-        \begin{exampleblock}{Solution}
-            \textbf{Prophet} with automatic changepoint detection adapts to structural breaks.
+        \begin{exampleblock}{Why Not ARIMA?}
+            ARIMA treats sudden jumps as \textbf{outliers}. Prophet detects \textbf{changepoints} and adapts the trend accordingly.
         \end{exampleblock}
     \end{columns}
 \end{frame}
@@ -986,41 +993,52 @@
 
 \begin{frame}{Granger Causality Analysis}
     \begin{columns}[T]
-        \column{0.45\textwidth}
+        \column{0.42\textwidth}
         \begin{center}
             \includegraphics[width=\textwidth]{../charts/granger_heatmap.pdf}
         \end{center}
+        {\small Green cells: $p < 0.10$ (significant). Read: row causes column.}
 
-        \column{0.55\textwidth}
-        \begin{block}{Definition}
-            $X$ \textbf{Granger-causes} $Y$ if past values of $X$ help predict $Y$.
+        \column{0.58\textwidth}
+        \begin{block}{What is Granger Causality?}
+            $X$ \textbf{Granger-causes} $Y$ if past $X$ improves prediction of $Y$ beyond past $Y$ alone.
 
-            \vspace{0.1cm}
-            \textit{Note: Granger $\neq$ true causality.}
+            \textit{Warning: ``Granger causality'' $\neq$ true causality!}
         \end{block}
 
         \vspace{0.2cm}
 
-        \begin{exampleblock}{Key Findings}
+        \begin{exampleblock}{Economic Findings}
             \begin{itemize}
-                \item Unemployment $\rightarrow$ GDP ($p=0.045$)
-                \item Fed Rate $\rightarrow$ Inflation ($p=0.087$)
+                \item Unemp $\rightarrow$ GDP ($p=0.045$): Okun's Law
+                \item Fed $\rightarrow$ Inflation ($p=0.087$): Monetary policy works
             \end{itemize}
-            Consistent with Okun's Law and Taylor Rule.
         \end{exampleblock}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Impulse Response Functions}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth]{../charts/irf_gdp_shock.pdf}
-    \end{center}
+\begin{frame}{Impulse Response Functions (IRF)}
+    \begin{columns}[T]
+        \column{0.6\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/irf_gdp_shock.pdf}
+        \end{center}
 
-    \vspace{0.1cm}
+        \column{0.4\textwidth}
+        \begin{block}{What is IRF?}
+            Shows how a 1-unit shock to one variable affects others over time.
+        \end{block}
 
-    \begin{exampleblock}{Economic Interpretation}
-        GDP shock $\rightarrow$ Unemployment $\downarrow$ (Okun's Law), Inflation $\uparrow$ (demand-pull), Fed Rate $\uparrow$ (Taylor Rule).
-    \end{exampleblock}
+        \vspace{0.2cm}
+
+        \begin{exampleblock}{GDP Shock Effects}
+            \begin{itemize}
+                \item \textbf{Unemp} $\downarrow$: Okun's Law
+                \item \textbf{Inflation} $\uparrow$: Demand-pull
+                \item \textbf{Fed Rate} $\uparrow$: Taylor Rule
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{VAR: Test Set Results}
