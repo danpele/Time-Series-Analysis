@@ -191,47 +191,14 @@
 
 \begin{frame}{Train/Validation/Test Framework}
     \begin{center}
-    \begin{tikzpicture}[scale=0.95]
-        % Timeline
-        \draw[thick, MainBlue] (0,0) -- (14,0);
-
-        % Training section
-        \fill[MainBlue!30] (0,-0.5) rectangle (9,0.5);
-        \node at (4.5,0) {\textbf{Training (70\%)}};
-
-        % Validation section
-        \fill[Orange!30] (9,-0.5) rectangle (11.5,0.5);
-        \node at (10.25,0) {\textbf{Val (15\%)}};
-
-        % Test section
-        \fill[Crimson!30] (11.5,-0.5) rectangle (14,0.5);
-        \node at (12.75,0) {\textbf{Test (15\%)}};
-
-        % Arrows and labels
-        \draw[thick, ->, MainBlue] (4.5,-1) -- (4.5,-0.6);
-        \node[below, MainBlue] at (4.5,-1) {\small Estimate parameters};
-
-        \draw[thick, ->, Orange] (10.25,-1) -- (10.25,-0.6);
-        \node[below, Orange] at (10.25,-1) {\small Select model};
-
-        \draw[thick, ->, Crimson] (12.75,-1) -- (12.75,-0.6);
-        \node[below, Crimson] at (12.75,-1) {\small Final evaluation};
-
-        % Time arrow
-        \draw[thick, ->] (0,-2) -- (14,-2);
-        \node[right] at (14,-2) {Time};
-        \node[left] at (0,-2) {$t_0$};
-    \end{tikzpicture}
+        \includegraphics[width=0.9\textwidth]{../charts/train_val_test_split.pdf}
     \end{center}
-
-    \vspace{0.3cm}
 
     \begin{columns}[T]
         \column{0.33\textwidth}
         \begin{block}{Training Set}
             \begin{itemize}
-                \item Fit model parameters
-                \item $\hat{\theta} = \arg\min_\theta L(\theta)$
+                \item Fit parameters
                 \item Largest portion
             \end{itemize}
         \end{block}
@@ -240,17 +207,15 @@
         \begin{block}{Validation Set}
             \begin{itemize}
                 \item Compare models
-                \item Tune hyperparameters
-                \item Select best approach
+                \item Tune hyperparams
             \end{itemize}
         \end{block}
 
         \column{0.33\textwidth}
         \begin{block}{Test Set}
             \begin{itemize}
-                \item \textbf{Held out} until end
-                \item Unbiased evaluation
-                \item Report final metrics
+                \item \textbf{Held out}
+                \item Final metrics
             \end{itemize}
         \end{block}
     \end{columns}
@@ -258,15 +223,14 @@
 
 \begin{frame}{Evaluation Metrics}
     \begin{defn}[Forecast Error Metrics]
-        Let $y_t$ be actual values and $\hat{y}_t$ forecasts for $t = 1, \ldots, n$:
+        Let $y_t$ be actual, $\hat{y}_t$ forecast:
+        \vspace{-0.2cm}
         \begin{align}
-            \RMSE &= \sqrt{\frac{1}{n}\sum_{t=1}^{n}(y_t - \hat{y}_t)^2} \\[0.3cm]
-            \MAE &= \frac{1}{n}\sum_{t=1}^{n}|y_t - \hat{y}_t| \\[0.3cm]
-            \MAPE &= \frac{100\%}{n}\sum_{t=1}^{n}\left|\frac{y_t - \hat{y}_t}{y_t}\right|
+            \RMSE = \sqrt{\frac{1}{n}\sum_{t}(y_t - \hat{y}_t)^2}, \quad
+            \MAE = \frac{1}{n}\sum_{t}|y_t - \hat{y}_t|, \quad
+            \MAPE = \frac{100\%}{n}\sum_{t}\left|\frac{y_t - \hat{y}_t}{y_t}\right|
         \end{align}
     \end{defn}
-
-    \vspace{0.2cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
@@ -282,7 +246,7 @@
         \begin{alertblock}{Caution}
             \begin{itemize}
                 \item MAPE undefined when $y_t = 0$
-                \item Compare models on \textbf{same} test set
+                \item Compare on \textbf{same} test set
                 \item Report \textbf{out-of-sample} metrics
             \end{itemize}
         \end{alertblock}
@@ -336,14 +300,32 @@
 
 \begin{frame}{Bitcoin: Volatility Clustering}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{../charts/btc_returns.pdf}
+        \includegraphics[width=0.92\textwidth]{../charts/btc_returns.pdf}
     \end{center}
 
-    \vspace{0.2cm}
-
     \begin{exampleblock}{Observation}
-        Large returns (positive or negative) tend to be followed by large returns, and small returns by small returns. This is \textbf{volatility clustering}---the key phenomenon that GARCH models capture.
+        Large returns tend to follow large returns, small follow small. This is \textbf{volatility clustering}---the phenomenon GARCH captures.
     \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bitcoin: Evidence for GARCH}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/btc_squared_returns.pdf}
+        \end{center}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/btc_acf_squared.pdf}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Why GARCH?}
+        Squared returns (volatility proxy) show \textbf{significant autocorrelation}. This means past volatility predicts future volatility---exactly what GARCH models!
+    \end{alertblock}
 \end{frame}
 
 \begin{frame}{GARCH Model Specification}
@@ -499,37 +481,31 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{GARCH Forecasting: Rolling vs Multi-Step}
+\begin{frame}{GARCH: Multi-Step Forecasts Converge}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth]{../charts/garch_convergence.pdf}
+    \end{center}
+
+    \begin{alertblock}{Problem}
+        Multi-step GARCH forecasts converge to $\bar{\sigma}^2 = \omega/(1-\alpha-\beta)$. For long horizons, this gives a \textbf{flat line}---useless for dynamic risk management!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{GARCH: Rolling One-Step-Ahead Solution}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth]{../charts/rolling_vs_multistep.pdf}
+    \end{center}
+
     \begin{columns}[T]
-        \column{0.55\textwidth}
-        \begin{alertblock}{Why Rolling One-Step-Ahead?}
-            Multi-step GARCH forecasts converge to the \textbf{unconditional variance}:
-            \begin{equation}
-                \lim_{h \to \infty} \E[\sigma_{t+h}^2 | \mathcal{F}_t] = \bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}
-            \end{equation}
-            This produces a \textbf{flat line}!
-        \end{alertblock}
-
-        \vspace{0.2cm}
-
-        \begin{block}{Multi-Step}
-            \begin{itemize}
-                \item Converges to $\bar{\sigma}^2$
-                \item \textcolor{Crimson}{Flat line forecast}
-            \end{itemize}
+        \column{0.5\textwidth}
+        \begin{block}{Multi-Step (Left)}
+            Converges to $\bar{\sigma}^2$ \textcolor{Crimson}{(flat)}
         \end{block}
 
-        \begin{exampleblock}{Rolling 1-Step}
-            \begin{itemize}
-                \item Re-estimate at each $t$
-                \item \textcolor{Forest}{Dynamic forecasts}
-            \end{itemize}
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Rolling 1-Step (Right)}
+            Re-estimate at each $t$ \textcolor{Forest}{(dynamic)}
         \end{exampleblock}
-
-        \column{0.45\textwidth}
-        \begin{center}
-            \includegraphics[width=\textwidth]{../charts/rolling_vs_multistep.pdf}
-        \end{center}
     \end{columns}
 \end{frame}
 
@@ -594,20 +570,24 @@
 \section{Case Study 2: Sunspot Cycles (Fourier)}
 
 \begin{frame}{Sunspots: The 11-Year Solar Cycle}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth]{../charts/sunspots.pdf}
-    \end{center}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/sunspots.pdf}
+        \end{center}
+
+        \column{0.45\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/sunspots_acf.pdf}
+        \end{center}
+    \end{columns}
 
     \vspace{0.2cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
         \begin{block}{Data}
-            \begin{itemize}
-                \item Source: Statsmodels (Wolfer)
-                \item Period: 1900 -- 2008
-                \item Observations: 109 years
-            \end{itemize}
+            Period: 1900--2008, 109 years. ACF confirms 11-year periodicity.
         \end{block}
 
         \column{0.5\textwidth}
@@ -618,34 +598,21 @@
 \end{frame}
 
 \begin{frame}{Fourier Terms for Seasonality}
-    \begin{defn}[Fourier Representation]
-        A seasonal pattern with period $s$ can be approximated by:
-        \begin{equation}
-            S_t = \sum_{k=1}^{K}\left[\alpha_k \sin\left(\frac{2\pi k t}{s}\right) + \beta_k \cos\left(\frac{2\pi k t}{s}\right)\right]
-        \end{equation}
-        where $K \leq \lfloor s/2 \rfloor$ is the number of harmonic pairs.
-    \end{defn}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{../charts/fourier_terms.pdf}
+    \end{center}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Advantages}
-            \begin{itemize}
-                \item Only $2K$ parameters (not $s$)
-                \item Handles \textbf{any} seasonal period
-                \item Smooth seasonal pattern
-                \item $K$ controls flexibility
-            \end{itemize}
+        \begin{block}{Formula}
+            $S_t = \sum_{k=1}^{K}\left[\alpha_k \sin\left(\frac{2\pi k t}{s}\right) + \beta_k \cos\left(\frac{2\pi k t}{s}\right)\right]$
         \end{block}
 
         \column{0.5\textwidth}
-        \begin{exampleblock}{Model Structure}
-            ARIMA$(p,d,q)$ with Fourier regressors:
-            \begin{equation}
-                y_t = \underbrace{S_t}_{\text{Fourier}} + \underbrace{\eta_t}_{\text{ARIMA}}
-            \end{equation}
-            where $\eta_t$ follows ARIMA dynamics.
+        \begin{exampleblock}{Advantages}
+            Only $2K$ parameters (not $s$). $K$ controls flexibility.
         \end{exampleblock}
     \end{columns}
 \end{frame}
@@ -1018,60 +985,42 @@
 \end{frame}
 
 \begin{frame}{Granger Causality Analysis}
-    \begin{defn}[Granger Causality]
-        Variable $X$ \textbf{Granger-causes} $Y$ if past values of $X$ help predict $Y$, beyond $Y$'s own past.
+    \begin{columns}[T]
+        \column{0.45\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/granger_heatmap.pdf}
+        \end{center}
+
+        \column{0.55\textwidth}
+        \begin{block}{Definition}
+            $X$ \textbf{Granger-causes} $Y$ if past values of $X$ help predict $Y$.
+
+            \vspace{0.1cm}
+            \textit{Note: Granger $\neq$ true causality.}
+        \end{block}
 
         \vspace{0.2cm}
-        \textit{Note: Granger causality $\neq$ true causality. It measures predictive content.}
-    \end{defn}
 
-    \vspace{0.3cm}
-
-    \begin{center}
-    \textbf{Granger Causality p-values (row $\rightarrow$ column)}
-    \begin{tabular}{lcccc}
-        \toprule
-        & \textbf{GDP} & \textbf{Unemp} & \textbf{Inflation} & \textbf{Fed Rate} \\
-        \midrule
-        GDP Growth & --- & \cellcolor{Forest!20}0.076 & 0.309 & 0.698 \\
-        Unemployment & \cellcolor{Forest!20}\textbf{0.045} & --- & 0.093 & 0.857 \\
-        Inflation & 0.545 & 0.665 & --- & 0.834 \\
-        Fed Rate & 0.286 & 0.317 & \cellcolor{Forest!20}0.087 & --- \\
-        \bottomrule
-    \end{tabular}
-    \end{center}
-
-    \vspace{0.2cm}
-
-    \begin{exampleblock}{Key Finding}
-        Unemployment Granger-causes GDP ($p = 0.045$), consistent with Okun's Law.
-    \end{exampleblock}
+        \begin{exampleblock}{Key Findings}
+            \begin{itemize}
+                \item Unemployment $\rightarrow$ GDP ($p=0.045$)
+                \item Fed Rate $\rightarrow$ Inflation ($p=0.087$)
+            \end{itemize}
+            Consistent with Okun's Law and Taylor Rule.
+        \end{exampleblock}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Impulse Response Functions}
-    \begin{defn}[Impulse Response Function]
-        The IRF traces the effect of a one-unit shock to variable $j$ on variable $i$ over $h$ periods:
-        \begin{equation}
-            \text{IRF}_{ij}(h) = \frac{\partial y_{i,t+h}}{\partial u_{jt}}
-        \end{equation}
-    \end{defn}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{../charts/irf_gdp_shock.pdf}
+    \end{center}
 
-    \vspace{0.3cm}
+    \vspace{0.1cm}
 
-    \begin{block}{Response to GDP Shock}
-        A positive shock to GDP growth:
-        \begin{itemize}
-            \item \textbf{Unemployment}: Decreases (Okun's Law confirmed)
-            \item \textbf{Inflation}: Increases with lag (demand-pull)
-            \item \textbf{Fed Rate}: Increases after 2-3 quarters (Taylor Rule)
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{alertblock}{Economic Interpretation}
-        The VAR captures the classic macroeconomic transmission mechanism from output to employment, prices, and monetary policy.
-    \end{alertblock}
+    \begin{exampleblock}{Economic Interpretation}
+        GDP shock $\rightarrow$ Unemployment $\downarrow$ (Okun's Law), Inflation $\uparrow$ (demand-pull), Fed Rate $\uparrow$ (Taylor Rule).
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{VAR: Test Set Results}
@@ -1122,53 +1071,55 @@
 
 \begin{frame}{Model Selection Framework}
     \begin{center}
-    \begin{tikzpicture}[
-        node distance=1.5cm,
-        box/.style={rectangle, draw=MainBlue, thick, fill=MainBlue!10, rounded corners, minimum width=3cm, minimum height=0.8cm, align=center},
-        decision/.style={diamond, draw=Orange, thick, fill=Orange!10, aspect=2, align=center},
+    \begin{tikzpicture}[scale=0.8, transform shape,
+        node distance=1.2cm,
+        box/.style={rectangle, draw=MainBlue, thick, fill=MainBlue!10, rounded corners, minimum width=2.5cm, minimum height=0.7cm, align=center},
+        decision/.style={diamond, draw=Orange, thick, fill=Orange!10, aspect=2, align=center, font=\small},
         arrow/.style={->, thick, >=stealth}
     ]
-        % Start
         \node[box] (start) {Time Series Data};
-
-        % Decisions
         \node[decision, below=of start] (q1) {Multiple\\series?};
-        \node[decision, below left=1.5cm and 2cm of q1] (q2) {Structural\\breaks?};
-        \node[decision, below right=1.5cm and 2cm of q1] (q3) {Financial\\data?};
-
-        % Endpoints
+        \node[decision, below left=1.2cm and 1.5cm of q1] (q2) {Structural\\breaks?};
+        \node[decision, below right=1.2cm and 1.5cm of q1] (q3) {Financial\\data?};
         \node[box, fill=Forest!20, below=of q1] (var) {\textbf{VAR}};
         \node[box, fill=Forest!20, below=of q2] (prophet) {\textbf{Prophet}};
-        \node[box, fill=Forest!20, below left=1cm and 0cm of q3] (garch) {\textbf{GARCH}};
-        \node[box, fill=Forest!20, below right=1cm and 0cm of q3] (arima) {\textbf{ARIMA}\\+ Fourier};
-
-        % Arrows
+        \node[box, fill=Forest!20, below left=0.8cm and 0cm of q3] (garch) {\textbf{GARCH}};
+        \node[box, fill=Forest!20, below right=0.8cm and 0cm of q3] (arima) {\textbf{ARIMA+Fourier}};
         \draw[arrow] (start) -- (q1);
-        \draw[arrow] (q1) -- node[right] {Yes} (var);
-        \draw[arrow] (q1) -- node[above left] {No} (q2);
-        \draw[arrow] (q2) -- node[left] {Yes} (prophet);
-        \draw[arrow] (q2) -- node[above right] {No} (q3);
-        \draw[arrow] (q3) -- node[left] {Vol.} (garch);
-        \draw[arrow] (q3) -- node[right] {Level} (arima);
+        \draw[arrow] (q1) -- node[right] {\small Yes} (var);
+        \draw[arrow] (q1) -- node[above left] {\small No} (q2);
+        \draw[arrow] (q2) -- node[left] {\small Yes} (prophet);
+        \draw[arrow] (q2) -- node[above right] {\small No} (q3);
+        \draw[arrow] (q3) -- node[left] {\small Vol.} (garch);
+        \draw[arrow] (q3) -- node[right] {\small Level} (arima);
     \end{tikzpicture}
     \end{center}
 \end{frame}
 
 \begin{frame}{Summary: Model Comparison}
-    \begin{center}
-    \begin{tabular}{lllll}
-        \toprule
-        \textbf{Case Study} & \textbf{Challenge} & \textbf{Model} & \textbf{Key Feature} & \textbf{Test RMSE} \\
-        \midrule
-        Bitcoin & Volatility clustering & GARCH(1,1) & Rolling forecasts & 2.21 \\
-        Sunspots & Long seasonality & ARIMA + Fourier & Sin/Cos terms & 48.51 \\
-        Unemployment & Structural break & Prophet & Changepoints & 0.42 \\
-        Economic & Multiple series & VAR(2) & Cross-dynamics & 1.32 (avg) \\
-        \bottomrule
-    \end{tabular}
-    \end{center}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        \begin{center}
+        \footnotesize
+        \begin{tabular}{llll}
+            \toprule
+            \textbf{Case} & \textbf{Challenge} & \textbf{Model} & \textbf{RMSE} \\
+            \midrule
+            Bitcoin & Volatility & GARCH & 2.21 \\
+            Sunspots & Seasonality & Fourier & 48.51 \\
+            Unemp & Break & Prophet & 0.42 \\
+            Economic & Multi-var & VAR & 1.32 \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
 
-    \vspace{0.3cm}
+        \column{0.45\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/model_comparison.pdf}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.2cm}
 
     \begin{exampleblock}{Key Principle}
         \textbf{Match the model to the data characteristics.} No single model dominates---choose based on:
