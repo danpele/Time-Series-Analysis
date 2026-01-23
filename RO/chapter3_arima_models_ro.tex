@@ -1288,33 +1288,34 @@
 \end{frame}
 
 \begin{frame}{Interval de Încredere: Exemplu Numeric}
-    {\small
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{exampleblock}{Date: $\sigma^2 = 4$, $\phi_1 = 0.6$, $\hat{Y}_{T+1|T} = 111$}
     \end{exampleblock}
 
-    \vspace{0.1cm}
+    \vspace{0.05cm}
 
     \begin{block}{IC la 1 Pas}
-        \vspace{-0.2cm}
+        \vspace{-0.3cm}
         \begin{align*}
-            \Var(e_{T+1|T}) &= \sigma^2 = 4 \\
-            \text{IC 95\%} &= 111 \pm 1.96 \times \sqrt{4} = 111 \pm 3.92 \\
-            &= \boxed{[107.08, \; 114.92]}
+            \Var(e_{T+1|T}) &= \sigma^2 = 4 \\[-0.2cm]
+            \text{IC 95\%} &= 111 \pm 1.96 \times \sqrt{4} = 111 \pm 3.92 = \boxed{[107.08, \; 114.92]}
         \end{align*}
+        \vspace{-0.3cm}
     \end{block}
 
-    \vspace{0.1cm}
+    \vspace{0.05cm}
 
     \begin{block}{IC la 2 Pași (pentru $\hat{Y}_{T+2|T} = 112.8$)}
-        \vspace{-0.2cm}
+        \vspace{-0.3cm}
         \begin{align*}
-            \psi_1 &= 1 + \phi_1 = 1.6, \quad \Var(e_{T+2|T}) = 4(1 + 1.6^2) = 14.24 \\
-            \text{IC 95\%} &= 112.8 \pm 1.96 \times \sqrt{14.24} = 112.8 \pm 7.40 \\
-            &= \boxed{[105.40, \; 120.20]}
+            \psi_1 &= 1 + \phi_1 = 1.6, \quad \Var(e_{T+2|T}) = 4(1 + 1.6^2) = 14.24 \\[-0.2cm]
+            \text{IC 95\%} &= 112.8 \pm 1.96 \times \sqrt{14.24} = 112.8 \pm 7.40 = \boxed{[105.40, \; 120.20]}
         \end{align*}
+        \vspace{-0.3cm}
     \end{block}
 
-    {\footnotesize \textbf{Notă}: IC se lărgește pe măsură ce orizontul crește!}
+    \textbf{Notă}: IC se lărgește pe măsură ce orizontul crește!
     }
 \end{frame}
 
@@ -1334,25 +1335,26 @@
 \end{frame}
 
 \begin{frame}[fragile]{Prognoză Rulantă: Cod Python}
-    {\small
+    \vspace{-0.3cm}
+    {\scriptsize
     \begin{block}{Implementare}
-        \begin{verbatim}
+        \vspace{-0.2cm}
+\begin{verbatim}
 from statsmodels.tsa.arima.model import ARIMA
 
 window_size = 100
 forecasts, actuals = [], []
 
 for t in range(window_size, len(y) - 1):
-    train = y[:t]                    # Fereastra rulanta
+    train = y[:t]                      # Fereastra rulanta
     model = ARIMA(train, order=(1,1,0)).fit()
     forecast = model.forecast(steps=1)[0]
-
     forecasts.append(forecast)
     actuals.append(y[t])
 
-rmse = np.sqrt(np.mean((np.array(forecasts)
-                        - np.array(actuals))**2))
-        \end{verbatim}
+rmse = np.sqrt(np.mean((np.array(forecasts) - np.array(actuals))**2))
+\end{verbatim}
+        \vspace{-0.2cm}
     \end{block}
     }
 \end{frame}
@@ -1360,7 +1362,193 @@ rmse = np.sqrt(np.mean((np.array(forecasts)
 %=============================================================================
 % SECȚIUNEA 9: APLICAȚIE PE DATE REALE
 %=============================================================================
-\section{Aplicație pe Date Reale: PIB SUA}
+\section{Studiu de Caz: Prognoza PIB SUA}
+
+\begin{frame}{Studiu de Caz: Analiză ARIMA Completă}
+    \begin{block}{Obiectiv}
+        Prognoza PIB Real al SUA folosind metodologia Box-Jenkins
+    \end{block}
+
+    \vspace{0.2cm}
+
+    {\small
+    \begin{enumerate}
+        \item \textbf{Pasul 1}: Vizualizarea datelor și verificarea staționarității
+        \item \textbf{Pasul 2}: Aplicarea testelor de rădăcină unitate (ADF, KPSS)
+        \item \textbf{Pasul 3}: Diferențiere dacă e necesar, identificare $p$ și $q$
+        \item \textbf{Pasul 4}: Estimarea modelului ARIMA
+        \item \textbf{Pasul 5}: Verificare diagnostică
+        \item \textbf{Pasul 6}: Generarea prognozelor cu intervale de încredere
+        \item \textbf{Pasul 7}: Evaluarea acurateții prognozei
+    \end{enumerate}
+    }
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Date}
+        PIB Real SUA (FRED: GDPC1), Trimestrial, 1990T1--2024T2, $n = 138$ observații
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Pasul 1: Analiza Inițială a Datelor}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.5\textheight, keepaspectratio]{ch3_gdp_levels.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small
+    \begin{block}{Observații}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Trend ascendent clar $\Rightarrow$ medie neconstantă
+            \item Varianța pare relativ stabilă (după transformare log)
+            \item Scădere notabilă în 2020 (pandemia COVID-19)
+            \item \textbf{Concluzie}: Seria este nestaționară, necesită diferențiere
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Pasul 2: Testarea Rădăcinii Unitate}
+    \vspace{-0.2cm}
+    {\small
+    \begin{block}{Test ADF pe Log PIB în Niveluri}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Statistică test: $-0.91$
+            \item Valori critice: $-3.48$ (1\%), $-2.88$ (5\%), $-2.58$ (10\%)
+            \item p-value: $0.79$
+            \item \textbf{Rezultat}: Nu putem respinge $H_0$ $\Rightarrow$ \textcolor{red}{Rădăcină unitate prezentă}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Test ADF pe Prima Diferență (Rata de Creștere)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Statistică test: $-13.24$
+            \item p-value: $< 0.001$
+            \item \textbf{Rezultat}: Respingem $H_0$ la 1\% $\Rightarrow$ \textcolor{green!50!black}{Staționar după diferențiere}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{alertblock}{Concluzie}
+        PIB este $I(1)$ $\Rightarrow$ Folosim $d = 1$ în modelul ARIMA
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Pasul 3: Identificarea Modelului prin ACF/PACF}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth, height=0.48\textheight, keepaspectratio]{ch3_acf_pacf.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Analiza Seriei Diferențiate}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item ACF: Spike semnificativ la lag 1, apoi se întrerupe $\Rightarrow$ sugerează MA(1)
+            \item PACF: Spike semnificativ la lag 1, scade $\Rightarrow$ sugerează AR(1)
+            \item \textbf{Modele candidate}: ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1)
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Pasul 4: Estimarea Modelului}
+    \vspace{-0.2cm}
+    {\small
+    \begin{block}{Compararea Modelelor folosind Criterii Informaționale}
+        \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Model} & \textbf{AIC} & \textbf{BIC} & \textbf{Log-Lik} \\
+            \midrule
+            ARIMA(1,1,0) & $-725.2$ & $-719.5$ & $364.6$ \\
+            ARIMA(0,1,1) & $-724.8$ & $-719.2$ & $364.4$ \\
+            \textbf{ARIMA(1,1,1)} & $\mathbf{-747.0}$ & $\mathbf{-738.5}$ & $\mathbf{376.5}$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{exampleblock}{Model Selectat: ARIMA(1,1,1)}
+        \vspace{-0.2cm}
+        $$(1 - 0.35L)(1-L)Y_t = (1 + 0.58L)\varepsilon_t, \quad \hat{\sigma}^2 = 0.000156$$
+        \vspace{-0.3cm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\hat{\phi}_1 = 0.35$ (SE = 0.09), semnificativ la 1\%
+            \item $\hat{\theta}_1 = 0.58$ (SE = 0.08), semnificativ la 1\%
+        \end{itemize}
+    \end{exampleblock}
+    }
+\end{frame}
+
+\begin{frame}{Pasul 5: Verificare Diagnostică}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth, height=0.5\textheight, keepaspectratio]{ch3_diagnostics.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Analiza Reziduurilor}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Test Ljung-Box: $Q(10) = 5.8$, p-value $= 0.83$ $\Rightarrow$ Fără autocorelare
+            \item Test Jarque-Bera: $JB = 156.4$, p-value $< 0.001$ $\Rightarrow$ Non-normal (outlier COVID)
+            \item \textbf{Concluzie}: Modelul trece verificările de autocorelare; outlierii sunt așteptați
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Pasul 6: Prognoza cu Intervale de Încredere}
+    \vspace{-0.2cm}
+    {\small
+    \begin{block}{Ultimele Valori Observate (Log PIB)}
+        $Y_T = 9.973$ (2024T2), \quad $Y_{T-1} = 9.956$ (2024T1)
+
+        $\Delta Y_T = 0.017$, \quad $\hat{\varepsilon}_T = 0.004$
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{exampleblock}{Prognoza la 1 Pas (2024T3)}
+        \vspace{-0.2cm}
+        \begin{align*}
+            \hat{\Delta Y}_{T+1} &= \hat{\phi}_1 \Delta Y_T + \hat{\theta}_1 \hat{\varepsilon}_T = 0.35(0.017) + 0.58(0.004) = 0.0083 \\
+            \hat{Y}_{T+1} &= 9.973 + 0.0083 = \boxed{9.981}
+        \end{align*}
+        \vspace{-0.3cm}
+    \end{exampleblock}
+
+    \vspace{0.1cm}
+
+    \begin{alertblock}{Interval de Încredere 95\%}
+        \vspace{-0.2cm}
+        $$\text{IC} = 9.981 \pm 1.96 \times \sqrt{0.000156} = [9.957, \; 10.006]$$
+        În niveluri: Prognoză PIB = \$21,652 mld, IC = [\$21,142 mld, \$22,175 mld]
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Pasul 7: Evaluarea Prognozei}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth, height=0.48\textheight, keepaspectratio]{ch3_arima_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Performanță Out-of-Sample (Ultimele 12 Trimestre)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item RMSE = 0.0486 (scală log) $\approx$ 4.86\% eroare
+            \item MAE = 0.0430 (scală log) $\approx$ 4.30\% eroare
+            \item Acuratețe direcție = 91\% (a prezis corect creștere/scădere)
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
 
 \begin{frame}{Rezultatele Testului de Rădăcină Unitate}
     \vspace{-0.3cm}
