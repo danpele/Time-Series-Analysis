@@ -959,7 +959,7 @@ def plot_multiple_series_comparison(data):
         ax1.plot(test.index, forecast.values, color=COLORS['ida_red'], linewidth=1.5, linestyle='--', label='Forecast')
         ax1.axvline(x=train.index[-1], color=COLORS['medium_gray'], linestyle=':', linewidth=0.6)
         ax1.set_title(f'{name}', fontweight='bold', fontsize=9, color=COLORS['dark_gray'])
-        ax1.legend(loc='upper left', fontsize=7, frameon=False)
+        ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=7, frameon=False)
         setup_axis(ax1)
 
         # Residual plot
@@ -1116,15 +1116,15 @@ def plot_trend_estimation_comparison(data):
 
     fig, ax = plt.subplots(figsize=(10, 4))
 
-    ax.plot(airline.index, airline.values, color=COLORS['light_gray'], linewidth=0.6, label='Observed', alpha=0.8)
-    ax.plot(airline.index, ma12.values, color=COLORS['main_blue'], linewidth=1.2, label='MA(12)')
-    ax.plot(airline.index, poly_trend, color=COLORS['forest'], linewidth=1.2, label='Polynomial')
-    ax.plot(airline.index, hw.level, color=COLORS['ida_red'], linewidth=1.2, label='ETS Level')
-    ax.plot(airline.index, result.trend, color=COLORS['amber'], linewidth=1.2, label='STL/LOESS')
+    ax.plot(airline.index, airline.values, color='#AAAAAA', linewidth=1.0, label='Observed', alpha=0.7)
+    ax.plot(airline.index, ma12.values, color='#1A3A6E', linewidth=2.5, label='MA(12)')
+    ax.plot(airline.index, poly_trend, color='#2E7D32', linewidth=2.5, label='Polynomial')
+    ax.plot(airline.index, hw.level, color='#DC3545', linewidth=2.5, label='ETS Level')
+    ax.plot(airline.index, result.trend, color='#E67E22', linewidth=2.5, label='STL/LOESS')
 
     ax.set_xlabel('Date')
     ax.set_ylabel('Passengers')
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=5, frameon=False, fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=5, frameon=False, fontsize=9)
     setup_axis(ax)
 
     plt.tight_layout()
@@ -1152,7 +1152,7 @@ def plot_deterministic_trend_example():
     ax1.set_xlabel('Time $t$')
     ax1.set_ylabel('$X_t$')
     ax1.set_title('Deterministic Trend', fontweight='bold', fontsize=10, color=COLORS['dark_gray'])
-    ax1.legend(loc='upper left', fontsize=8, frameon=False)
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2, fontsize=8, frameon=False)
     setup_axis(ax1)
 
     # Plot 2: Detrended by regression
@@ -1252,7 +1252,7 @@ def plot_trend_comparison_sidebyside():
     ax1.set_ylabel('$X_t$')
     ax1.set_title('Deterministic: $X_t = \\beta_0 + \\beta_1 t + \\varepsilon_t$',
                   fontweight='bold', fontsize=9, color=COLORS['dark_gray'])
-    ax1.legend(loc='upper left', fontsize=8, frameon=False)
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2, fontsize=8, frameon=False)
     setup_axis(ax1)
 
     # Top right: Stochastic trend

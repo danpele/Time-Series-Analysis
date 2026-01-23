@@ -176,24 +176,20 @@ def ch1_quiz4_wn_rw():
     wn = np.random.normal(0, 1, n)
 
     axes[0].plot(wn, 'b-', linewidth=1, alpha=0.8)
-    axes[0].axhline(y=0, color='red', linestyle='--', linewidth=2)
+    axes[0].axhline(y=0, color='red', linestyle='--', linewidth=2, label='Mean = 0')
     axes[0].axhline(y=2, color='orange', linestyle=':', alpha=0.7)
     axes[0].axhline(y=-2, color='orange', linestyle=':', alpha=0.7)
-    axes[0].set_title('White Noise: $\\varepsilon_t \\sim N(0, \\sigma^2)$', fontsize=10)
+    axes[0].set_title('White Noise: $\\varepsilon_t \\sim N(0, \\sigma^2)$\nConstant Mean & Variance', fontsize=10)
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].text(50, 2.5, 'Mean = 0, Var = $\\sigma^2$', ha='center', fontsize=9,
-                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
     # Random walk
     rw = np.cumsum(wn)
 
     axes[1].plot(rw, 'r-', linewidth=1.5)
     axes[1].axhline(y=0, color='blue', linestyle='--', alpha=0.5)
-    axes[1].set_title('Random Walk: $Y_t = Y_{t-1} + \\varepsilon_t$', fontsize=10)
+    axes[1].set_title('Random Walk: $Y_t = Y_{t-1} + \\varepsilon_t$\nVariance Grows with Time', fontsize=10)
     axes[1].set_xlabel('Time')
-    axes[1].text(50, max(rw)-2, 'Var grows with t', ha='center', fontsize=9,
-                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
     plt.tight_layout()
     save_fig('ch1_quiz4_wn_rw')
@@ -216,15 +212,13 @@ def ch1_quiz5_forecast_errors():
     axes[0].plot(t, actual, 'b-o', label='Actual', markersize=5)
     axes[0].plot(t, forecast_good, 'g--s', label='Forecast', markersize=4)
     axes[0].fill_between(t, actual, forecast_good, alpha=0.3, color='green')
-    axes[0].set_title('Good Forecast: Small Errors', fontsize=10)
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     mae_good = np.mean(np.abs(errors_good))
     rmse_good = np.sqrt(np.mean(errors_good**2))
-    axes[0].text(10, 95, f'MAE = {mae_good:.2f}\nRMSE = {rmse_good:.2f}',
-                 fontsize=9, bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8))
+    axes[0].set_title(f'Good Forecast\nMAE={mae_good:.2f}, RMSE={rmse_good:.2f}', fontsize=10, color='green')
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Bad forecast
     forecast_bad = actual + np.random.normal(5, 8, n)
@@ -233,14 +227,12 @@ def ch1_quiz5_forecast_errors():
     axes[1].plot(t, actual, 'b-o', label='Actual', markersize=5)
     axes[1].plot(t, forecast_bad, 'r--s', label='Forecast', markersize=4)
     axes[1].fill_between(t, actual, forecast_bad, alpha=0.3, color='red')
-    axes[1].set_title('Poor Forecast: Large Errors', fontsize=10)
     axes[1].set_xlabel('Time')
-    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     mae_bad = np.mean(np.abs(errors_bad))
     rmse_bad = np.sqrt(np.mean(errors_bad**2))
-    axes[1].text(10, 90, f'MAE = {mae_bad:.2f}\nRMSE = {rmse_bad:.2f}',
-                 fontsize=9, bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8))
+    axes[1].set_title(f'Poor Forecast\nMAE={mae_bad:.2f}, RMSE={rmse_bad:.2f}', fontsize=10, color='red')
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch1_quiz5_forecast_errors')
@@ -262,12 +254,10 @@ def ch1_quiz6_decomposition():
 
     axes[0].plot(t, y_add, 'b-', linewidth=1.5, label='Y = T + S + ε')
     axes[0].plot(t, trend, 'r--', linewidth=2, label='Trend', alpha=0.7)
-    axes[0].set_title('Additive Decomposition', fontsize=10)
+    axes[0].set_title('Additive: Y = T + S + ε\nConstant Seasonal Amplitude', fontsize=10)
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
     axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
-    axes[0].text(24, 5, 'Constant\nSeasonal\nAmplitude', ha='center', fontsize=9,
-                 bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
 
     # Multiplicative: Y = T * S * e
     seasonal_mult = 1 + 0.2 * np.sin(2 * np.pi * t / 12)
@@ -276,11 +266,9 @@ def ch1_quiz6_decomposition():
 
     axes[1].plot(t, y_mult, 'g-', linewidth=1.5, label='Y = T × S × ε')
     axes[1].plot(t, trend, 'r--', linewidth=2, label='Trend', alpha=0.7)
-    axes[1].set_title('Multiplicative Decomposition', fontsize=10)
+    axes[1].set_title('Multiplicative: Y = T × S × ε\nSeasonal Amplitude Grows', fontsize=10)
     axes[1].set_xlabel('Time')
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
-    axes[1].text(24, 8, 'Seasonal\nAmplitude\nGrows', ha='center', fontsize=9,
-                 bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8))
 
     plt.tight_layout()
     save_fig('ch1_quiz6_decomposition')

@@ -8,23 +8,32 @@ from scipy import stats
 import warnings
 warnings.filterwarnings('ignore')
 
-# Set style
+# Set Harvard-style professional settings
 plt.rcParams['figure.figsize'] = (12, 5)
-plt.rcParams['axes.facecolor'] = 'none'
-plt.rcParams['figure.facecolor'] = 'none'
-plt.rcParams['savefig.facecolor'] = 'none'
-plt.rcParams['savefig.transparent'] = True
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['savefig.facecolor'] = 'white'
+plt.rcParams['savefig.dpi'] = 150
+plt.rcParams['savefig.bbox'] = 'tight'
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
-plt.rcParams['font.size'] = 12
+plt.rcParams['font.size'] = 11
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['axes.labelsize'] = 11
+plt.rcParams['axes.titlesize'] = 12
+plt.rcParams['xtick.labelsize'] = 10
+plt.rcParams['ytick.labelsize'] = 10
+plt.rcParams['legend.fontsize'] = 10
+plt.rcParams['axes.linewidth'] = 0.8
 
-# Colors
-BLUE = '#1A3A6E'
-RED = '#DC3545'
-GREEN = '#2E7D32'
-ORANGE = '#FF8C00'
-PURPLE = '#6A1B9A'
+# Professional color palette (Harvard/academic style)
+BLUE = '#1A3A6E'      # Dark navy blue
+RED = '#DC3545'       # Clear red
+GREEN = '#2E7D32'     # Forest green
+ORANGE = '#E67E22'    # Muted orange
+PURPLE = '#8E44AD'    # Academic purple
+GRAY = '#666666'      # Neutral gray
 
 np.random.seed(42)
 
