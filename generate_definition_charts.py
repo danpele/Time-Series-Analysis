@@ -57,6 +57,7 @@ def ch1_def_timeseries():
                    xytext=(0, 10), ha='center', fontsize=9)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_timeseries')
 
 ch1_def_timeseries()
@@ -83,6 +84,7 @@ def ch1_def_stochastic():
     ax.legend(fontsize=8, loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_stochastic')
 
 ch1_def_stochastic()
@@ -122,6 +124,7 @@ def ch1_def_strict_stationarity():
     axes[1].set_xlabel('Time')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_strict_stationarity')
 
 ch1_def_strict_stationarity()
@@ -158,6 +161,7 @@ def ch1_def_weak_stationarity():
     axes[1].set_ylabel('Autocovariance')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_weak_stationarity')
 
 ch1_def_weak_stationarity()
@@ -195,6 +199,7 @@ def ch1_def_white_noise():
     axes[1].set_ylim(-0.3, 1.1)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_white_noise')
 
 ch1_def_white_noise()
@@ -222,6 +227,7 @@ def ch1_def_lag_operator():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_lag_operator')
 
 ch1_def_lag_operator()
@@ -249,6 +255,7 @@ def ch1_def_moving_average():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_moving_average')
 
 ch1_def_moving_average()
@@ -283,6 +290,7 @@ def ch1_def_stl():
     axes[3].set_xlabel('Time')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_stl')
 
 ch1_def_stl()
@@ -325,6 +333,7 @@ def ch1_def_ets():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_def_ets')
 
 ch1_def_ets()
@@ -370,6 +379,7 @@ def ch2_def_ar1():
                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_def_ar1')
 
 ch2_def_ar1()
@@ -410,6 +420,7 @@ def ch2_def_arp():
     axes[1].set_ylabel('ACF')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_def_arp')
 
 ch2_def_arp()
@@ -449,6 +460,7 @@ def ch2_def_ma1():
     axes[1].set_ylim(-0.3, 1.1)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_def_ma1')
 
 ch2_def_ma1()
@@ -493,6 +505,7 @@ def ch2_def_maq():
     axes[1].annotate('Cuts off', xy=(4, 0.05), fontsize=9, color='red')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_def_maq')
 
 ch2_def_maq()
@@ -537,6 +550,7 @@ def ch2_def_invertibility():
     axes[1].set_ylim(0, 5)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_def_invertibility')
 
 ch2_def_invertibility()
@@ -580,6 +594,7 @@ def ch2_def_arma():
     axes[1].set_ylim(-0.3, 1.1)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_def_arma')
 
 ch2_def_arma()
@@ -628,6 +643,7 @@ def ch2_def_ljungbox():
                 bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_def_ljungbox')
 
 ch2_def_ljungbox()
@@ -674,6 +690,7 @@ def ch3_def_random_walk():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_def_random_walk')
 
 ch3_def_random_walk()
@@ -704,6 +721,7 @@ def ch3_def_random_walk_drift():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_def_random_walk_drift')
 
 ch3_def_random_walk_drift()
@@ -743,6 +761,7 @@ def ch3_def_integrated():
     axes[2].set_xlabel('Time')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_def_integrated')
 
 ch3_def_integrated()
@@ -773,6 +792,7 @@ def ch3_def_difference():
     axes[1].set_ylabel('$\\Delta Y_t$')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_def_difference')
 
 ch3_def_difference()
@@ -834,6 +854,7 @@ def ch3_def_arima():
     axes[1, 1].set_ylabel('PACF')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_def_arima')
 
 ch3_def_arima()
@@ -870,6 +891,7 @@ def ch3_def_adf():
                 bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_def_adf')
 
 ch3_def_adf()
@@ -913,6 +935,7 @@ def ch4_def_seasonality():
         axes[1].axvspan(i*4, (i+1)*4 - 0.5, alpha=0.1, color=['green', 'purple'][i % 2])
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch4_def_seasonality')
 
 ch4_def_seasonality()
@@ -947,6 +970,7 @@ def ch4_def_seasonal_diff():
     axes[1].set_ylabel('$\\Delta_{12} Y_t$')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch4_def_seasonal_diff')
 
 ch4_def_seasonal_diff()
@@ -994,6 +1018,7 @@ def ch4_def_sarima():
     axes[1, 1].set_xlabel('Time')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch4_def_sarima')
 
 ch4_def_sarima()
@@ -1047,6 +1072,7 @@ def ch5_def_ccf():
     axes[1].text(8, 0.35, '$X$ leads $Y$', fontsize=9)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch5_def_ccf')
 
 ch5_def_ccf()

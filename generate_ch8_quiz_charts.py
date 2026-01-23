@@ -73,6 +73,7 @@ def ch8_quiz1_long_memory():
     axes[1].set_ylim(-0.2, 1.1)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz1_long_memory')
 
 ch8_quiz1_long_memory()
@@ -110,6 +111,7 @@ def ch8_quiz2_arfima_d():
     axes[0].set_ylabel('ACF')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz2_arfima_d')
 
 ch8_quiz2_arfima_d()
@@ -164,6 +166,7 @@ def ch8_quiz3_hurst():
                  bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8), ha='center')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz3_hurst')
 
 ch8_quiz3_hurst()
@@ -206,6 +209,7 @@ def ch8_quiz4_rf_features():
     ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, ncol=2, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz4_rf_features')
 
 ch8_quiz4_rf_features()
@@ -282,6 +286,7 @@ def ch8_quiz5_cv_comparison():
     ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, ncol=3, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz5_cv_comparison')
 
 ch8_quiz5_cv_comparison()
@@ -326,6 +331,7 @@ def ch8_quiz6_lstm_advantage():
             ha='center', fontsize=9, bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz6_lstm_advantage')
 
 ch8_quiz6_lstm_advantage()
@@ -366,6 +372,7 @@ def ch8_quiz7_model_selection():
     ax.set_ylim(0, 11)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz7_model_selection')
 
 ch8_quiz7_model_selection()
@@ -428,6 +435,7 @@ def ch8_quiz8_data_leakage():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz8_data_leakage')
 
 ch8_quiz8_data_leakage()
@@ -465,6 +473,7 @@ def ch8_quiz9_complexity_data():
                 f'{rec_d}', ha='center', fontsize=8, color='steelblue')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz9_complexity_data')
 
 ch8_quiz9_complexity_data()
@@ -517,6 +526,7 @@ def ch8_quiz10_metrics():
                 arrowprops=dict(arrowstyle='->', color='red'), fontsize=9, color='red')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch8_quiz10_metrics')
 
 ch8_quiz10_metrics()

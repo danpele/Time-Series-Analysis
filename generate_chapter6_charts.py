@@ -70,6 +70,7 @@ def plot_spurious_regression():
     ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/spurious_regression.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 
@@ -118,6 +119,7 @@ def plot_cointegrated_series():
     ax2.set_title('Cointegrating Relation: $Y_1 - 1.25 Y_2$ is Stationary')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/cointegrated_series.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 
@@ -180,6 +182,7 @@ def plot_error_correction():
     ax2.set_title('Error Correction Term: Reverts to Zero')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/error_correction.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 
@@ -231,6 +234,7 @@ def plot_interest_rates():
     ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/interest_rates_coint.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 
@@ -282,6 +286,7 @@ def plot_pairs_trading():
     ax2.annotate('Buy spread', xy=(T*0.7, -2*spread.std()), fontsize=9, color=FOREST)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/pairs_trading.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 
@@ -325,6 +330,7 @@ def plot_ppp_example():
     ax2.set_title('PPP: Real Exchange Rate is Stationary')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/ppp_cointegration.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 
@@ -374,6 +380,7 @@ def plot_vecm_irf():
     ax2.set_xlim(0, T-1)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/vecm_irf.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 
@@ -407,6 +414,7 @@ def plot_eigenvalues():
     ax.set_ylim(0, 0.5)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig(f'{output_dir}/johansen_eigenvalues.pdf', bbox_inches='tight', transparent=True)
     plt.close()
 

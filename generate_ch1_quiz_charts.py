@@ -65,6 +65,7 @@ def ch1_quiz1_components():
     axes[1, 1].set_xlabel('Time')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_quiz1_components')
 
 ch1_quiz1_components()
@@ -100,6 +101,7 @@ def ch1_quiz2_stationarity():
     axes[1].set_xlabel('Time')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_quiz2_stationarity')
 
 ch1_quiz2_stationarity()
@@ -161,6 +163,7 @@ def ch1_quiz3_acf():
     axes[1, 1].set_ylim(-0.4, 1.1)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_quiz3_acf')
 
 ch1_quiz3_acf()
@@ -192,6 +195,7 @@ def ch1_quiz4_wn_rw():
     axes[1].set_xlabel('Time')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_quiz4_wn_rw')
 
 ch1_quiz4_wn_rw()
@@ -235,6 +239,7 @@ def ch1_quiz5_forecast_errors():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_quiz5_forecast_errors')
 
 ch1_quiz5_forecast_errors()
@@ -271,6 +276,7 @@ def ch1_quiz6_decomposition():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch1_quiz6_decomposition')
 
 ch1_quiz6_decomposition()

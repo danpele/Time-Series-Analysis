@@ -83,6 +83,7 @@ def generate_eurron_series():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/ch8_eurron_series.pdf', dpi=150, bbox_inches='tight')
     plt.close()
     print("Generated: ch8_eurron_series.pdf")
@@ -131,6 +132,7 @@ def generate_lstm_training():
     axes[1].set_xlim(1, 50)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/ch8_lstm_training.pdf', dpi=150, bbox_inches='tight')
     plt.close()
     print("Generated: ch8_lstm_training.pdf")
@@ -167,6 +169,7 @@ def generate_rf_feature_importance():
     ax.set_xlim(0, 0.35)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/ch8_rf_feature_importance.pdf', dpi=150, bbox_inches='tight')
     plt.close()
     print("Generated: ch8_rf_feature_importance.pdf")

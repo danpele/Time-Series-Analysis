@@ -167,6 +167,7 @@ def generate_multiple_seasonality_example():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_multiple_seasonality')
 
 
@@ -229,6 +230,7 @@ def generate_fourier_terms_visualization():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_fourier_approximation')
 
 
@@ -279,6 +281,7 @@ def generate_tbats_decomposition():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_tbats_decomposition')
 
 
@@ -348,6 +351,7 @@ def generate_prophet_components():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_prophet_components')
 
 
@@ -431,6 +435,7 @@ def generate_prophet_vs_tbats_comparison():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_prophet_vs_tbats')
 
 
@@ -492,6 +497,7 @@ def generate_electricity_demand_example():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_electricity_demand')
 
 
@@ -551,6 +557,7 @@ def generate_retail_sales_example():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_retail_sales')
 
 
@@ -608,6 +615,7 @@ def generate_additive_vs_multiplicative():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_additive_vs_multiplicative')
 
 
@@ -668,6 +676,7 @@ def generate_changepoint_detection():
         ax.grid(False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch9_changepoint_detection')
 
 

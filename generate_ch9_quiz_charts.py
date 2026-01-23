@@ -94,6 +94,7 @@ def ch9_quiz1_multiple_seasonality():
                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz1_multiple_seasonality')
 
 ch9_quiz1_multiple_seasonality()
@@ -135,6 +136,7 @@ def ch9_quiz2_tbats_components():
     ax.set_title('TBATS: What Does It Stand For?', fontsize=14, fontweight='bold')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz2_tbats_components')
 
 ch9_quiz2_tbats_components()
@@ -169,7 +171,7 @@ def ch9_quiz3_fourier_harmonics():
         ax.plot(t, approx, 'r-', linewidth=2, label=f'Fourier K={K}')
         ax.set_title(title, fontsize=10)
         ax.set_xlabel('Period')
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
+        ax.legend(loc='upper right', fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch9_quiz3_fourier_harmonics')
@@ -223,6 +225,7 @@ def ch9_quiz4_prophet_decomposition():
     axes[3].set_xlabel('Day')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz4_prophet_decomposition')
 
 ch9_quiz4_prophet_decomposition()
@@ -270,6 +273,7 @@ def ch9_quiz5_prophet_vs_tbats():
     ax.set_title('TBATS vs Prophet: Head-to-Head Comparison', fontsize=14, fontweight='bold', pad=20)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz5_prophet_vs_tbats')
 
 ch9_quiz5_prophet_vs_tbats()
@@ -296,7 +300,7 @@ def ch9_quiz6_seasonality_mode():
     axes[0].set_title('Additive: $Y = T + S + \\varepsilon$\nConstant Seasonal Amplitude', fontsize=10, color='blue')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
+    axes[0].legend(loc='upper left', fontsize=8, frameon=False)
 
     # Multiplicative seasonality
     seasonal_mult = 1 + 0.2 * np.sin(2 * np.pi * t / 12)  # +-20%
@@ -307,7 +311,7 @@ def ch9_quiz6_seasonality_mode():
     axes[1].fill_between(t, trend * 0.8, trend * 1.2, alpha=0.2, color='green', label='Growing amplitude')
     axes[1].set_title('Multiplicative: $Y = T \\times S \\times \\varepsilon$\nSeasonal Amplitude Grows', fontsize=10, color='green')
     axes[1].set_xlabel('Time')
-    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
+    axes[1].legend(loc='upper left', fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch9_quiz6_seasonality_mode')
@@ -366,6 +370,7 @@ def ch9_quiz7_changepoints():
     ax.annotate('Slope = 0.02', xy=(175, trend[175]+5), fontsize=9, color='blue')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz7_changepoints')
 
 ch9_quiz7_changepoints()
@@ -374,62 +379,79 @@ ch9_quiz7_changepoints()
 # Quiz 8: When to use which model
 def ch9_quiz8_model_decision():
     """Decision flowchart for model selection"""
-    fig, ax = plt.subplots(figsize=(10, 7))
+    fig, ax = plt.subplots(figsize=(12, 8))
     ax.axis('off')
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 10)
 
-    # Simple flowchart using text and boxes
-    ax.text(0.5, 0.95, 'Multiple Seasonal Periods?', ha='center', va='center', fontsize=12,
-            fontweight='bold', bbox=dict(boxstyle='round,pad=0.5', facecolor='lightblue', edgecolor='black'))
+    from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 
-    # No branch -> SARIMA
-    ax.annotate('No', xy=(0.25, 0.88), xytext=(0.25, 0.85), fontsize=10, ha='center')
-    ax.text(0.15, 0.75, 'SARIMA', ha='center', va='center', fontsize=11, fontweight='bold',
-            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightgreen', edgecolor='green'))
+    # Box positions (x, y, width, height)
+    # Level 1: Main question
+    box1 = FancyBboxPatch((4, 8.5), 4, 1, boxstyle="round,pad=0.1",
+                          facecolor='lightblue', edgecolor='black', linewidth=2)
+    ax.add_patch(box1)
+    ax.text(6, 9, 'Multiple Seasonal\nPeriods?', ha='center', va='center',
+            fontsize=12, fontweight='bold')
 
-    # Yes branch
-    ax.annotate('Yes', xy=(0.75, 0.88), xytext=(0.75, 0.85), fontsize=10, ha='center')
-    ax.text(0.75, 0.75, 'Holiday Effects\nImportant?', ha='center', va='center', fontsize=11,
-            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightyellow', edgecolor='black'))
+    # Level 2 Left: SARIMA (No path)
+    box2 = FancyBboxPatch((0.5, 6), 2.5, 1, boxstyle="round,pad=0.1",
+                          facecolor='lightgreen', edgecolor='green', linewidth=2)
+    ax.add_patch(box2)
+    ax.text(1.75, 6.5, 'SARIMA', ha='center', va='center',
+            fontsize=12, fontweight='bold', color='darkgreen')
 
-    # No holidays -> TBATS
-    ax.annotate('No', xy=(0.55, 0.68), xytext=(0.45, 0.60), fontsize=10, ha='center')
-    ax.text(0.35, 0.50, 'TBATS', ha='center', va='center', fontsize=11, fontweight='bold',
-            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightgreen', edgecolor='green'))
-    ax.text(0.35, 0.40, '• High-frequency data\n• Automatic selection\n• No external regressors',
+    # Level 2 Right: Holiday question (Yes path)
+    box3 = FancyBboxPatch((7, 6), 4, 1, boxstyle="round,pad=0.1",
+                          facecolor='lightyellow', edgecolor='orange', linewidth=2)
+    ax.add_patch(box3)
+    ax.text(9, 6.5, 'Holiday Effects\nImportant?', ha='center', va='center',
+            fontsize=11, fontweight='bold')
+
+    # Level 3 Left: TBATS (No holidays)
+    box4 = FancyBboxPatch((5, 3), 2.5, 1, boxstyle="round,pad=0.1",
+                          facecolor='lightgreen', edgecolor='green', linewidth=2)
+    ax.add_patch(box4)
+    ax.text(6.25, 3.5, 'TBATS', ha='center', va='center',
+            fontsize=12, fontweight='bold', color='darkgreen')
+    ax.text(6.25, 2.3, '• High-frequency\n• Auto seasonality\n• No regressors',
             ha='center', va='top', fontsize=9)
 
-    # Yes holidays -> Prophet
-    ax.annotate('Yes', xy=(0.85, 0.68), xytext=(0.85, 0.55), fontsize=10, ha='center')
-    ax.text(0.75, 0.50, 'External\nRegressors?', ha='center', va='center', fontsize=11,
-            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightyellow', edgecolor='black'))
+    # Level 3 Right: Prophet (Yes holidays)
+    box5 = FancyBboxPatch((9, 3), 2.5, 1, boxstyle="round,pad=0.1",
+                          facecolor='lightgreen', edgecolor='green', linewidth=2)
+    ax.add_patch(box5)
+    ax.text(10.25, 3.5, 'Prophet', ha='center', va='center',
+            fontsize=12, fontweight='bold', color='darkgreen')
+    ax.text(10.25, 2.3, '• Holidays built-in\n• Changepoints\n• Interpretable',
+            ha='center', va='top', fontsize=9)
 
-    ax.annotate('No', xy=(0.65, 0.43), xytext=(0.55, 0.35), fontsize=10, ha='center')
-    ax.text(0.50, 0.25, 'Prophet', ha='center', va='center', fontsize=11, fontweight='bold',
-            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightgreen', edgecolor='green'))
+    # Arrows with labels
+    # Arrow 1: Main -> SARIMA (No)
+    arrow1 = FancyArrowPatch((4, 8.8), (3, 7), arrowstyle='->', mutation_scale=20,
+                             color='red', linewidth=2)
+    ax.add_patch(arrow1)
+    ax.text(3.2, 8.1, 'No', fontsize=11, fontweight='bold', color='red')
 
-    ax.annotate('Yes', xy=(0.85, 0.43), xytext=(0.85, 0.35), fontsize=10, ha='center')
-    ax.text(0.80, 0.25, 'Prophet +\nRegressors', ha='center', va='center', fontsize=11, fontweight='bold',
-            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightgreen', edgecolor='green'))
+    # Arrow 2: Main -> Holiday? (Yes)
+    arrow2 = FancyArrowPatch((8, 8.8), (9, 7), arrowstyle='->', mutation_scale=20,
+                             color='green', linewidth=2)
+    ax.add_patch(arrow2)
+    ax.text(8.8, 8.1, 'Yes', fontsize=11, fontweight='bold', color='green')
 
-    # Draw arrows
-    from matplotlib.patches import FancyArrowPatch
-    arrows = [
-        ((0.5, 0.89), (0.25, 0.80)),   # Main to SARIMA
-        ((0.5, 0.89), (0.75, 0.80)),   # Main to Holidays?
-        ((0.65, 0.70), (0.45, 0.55)),  # Holidays No to TBATS
-        ((0.75, 0.70), (0.75, 0.55)),  # Holidays Yes to Regressors?
-        ((0.65, 0.45), (0.55, 0.30)),  # Regressors No to Prophet
-        ((0.85, 0.45), (0.85, 0.30)),  # Regressors Yes to Prophet+
-    ]
+    # Arrow 3: Holiday? -> TBATS (No)
+    arrow3 = FancyArrowPatch((7, 6.3), (7.5, 4), arrowstyle='->', mutation_scale=20,
+                             color='red', linewidth=2)
+    ax.add_patch(arrow3)
+    ax.text(6.8, 5.2, 'No', fontsize=11, fontweight='bold', color='red')
 
-    for start, end in arrows:
-        arrow = FancyArrowPatch(start, end, arrowstyle='->', mutation_scale=15,
-                                color='gray', linewidth=1.5)
-        ax.add_patch(arrow)
+    # Arrow 4: Holiday? -> Prophet (Yes)
+    arrow4 = FancyArrowPatch((11, 6.3), (10.5, 4), arrowstyle='->', mutation_scale=20,
+                             color='green', linewidth=2)
+    ax.add_patch(arrow4)
+    ax.text(11, 5.2, 'Yes', fontsize=11, fontweight='bold', color='green')
 
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_title('Model Selection: Decision Flowchart', fontsize=14, fontweight='bold')
+    ax.set_title('Model Selection: Decision Flowchart', fontsize=14, fontweight='bold', pad=10)
 
     plt.tight_layout()
     save_fig('ch9_quiz8_model_decision')
@@ -482,6 +504,7 @@ def ch9_quiz9_prophet_uncertainty():
                 arrowprops=dict(arrowstyle='->', color='red'), fontsize=9, color='red')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz9_prophet_uncertainty')
 
 ch9_quiz9_prophet_uncertainty()
@@ -561,6 +584,7 @@ def ch9_quiz10_energy_example():
                     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.9))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz10_energy_example')
 
 ch9_quiz10_energy_example()

@@ -198,6 +198,7 @@ def generate_bitcoin_overview():
     axes[1].axhline(y=-df['returns'].std()*3, color=IDA_RED, linestyle='--', alpha=0.5)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_bitcoin_overview')
 
 
@@ -267,6 +268,7 @@ def generate_bitcoin_acf_pacf():
     axes[1, 1].set_ylabel('PACF')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_bitcoin_acf_pacf')
 
 
@@ -312,6 +314,7 @@ def generate_bitcoin_garch():
                     alpha=0.3, color=IDA_RED)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_bitcoin_garch')
 
 
@@ -366,6 +369,7 @@ def generate_sunspot_overview():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=1)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_sunspot_overview')
 
 
@@ -416,6 +420,7 @@ def generate_sunspot_decomposition():
     axes[3].set_ylabel('Residual')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_sunspot_decomposition')
 
 
@@ -479,6 +484,7 @@ def generate_sunspot_sarima():
                  bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_sunspot_sarima')
 
 
@@ -528,6 +534,7 @@ def generate_unemployment_overview():
     ax.set_ylim(0, 16)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_unemployment_overview')
 
 
@@ -583,6 +590,7 @@ def generate_unemployment_prophet():
     axes[2].set_xticklabels(months)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_unemployment_prophet')
 
 
@@ -650,6 +658,7 @@ def generate_unemployment_comparison():
                      f'{bar.get_height():.2f}', ha='center', fontsize=9)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_unemployment_comparison')
 
 
@@ -710,6 +719,7 @@ def generate_model_selection_flowchart():
     ax.annotate('Yes', xy=(8.2, 1.5), xytext=(7.5, 2.2), arrowprops=dict(arrowstyle='->', color=IDA_RED))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     save_chart(fig, 'ch10_model_selection_flowchart')
 
 

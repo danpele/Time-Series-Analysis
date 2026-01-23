@@ -103,6 +103,7 @@ def ch1_white_noise():
     axes[1, 1].set_title('White Noise Properties', fontweight='bold')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem1_white_noise.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem1_white_noise.pdf")
@@ -165,6 +166,7 @@ def ch1_holt_method():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem1_holt_method.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem1_holt_method.pdf")
@@ -251,6 +253,7 @@ def ch1_decomposition():
     axes[1, 1].text(9.5, 3, 'Multiplicative\n(fan shape)', fontsize=9, color=ORANGE, ha='right')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem1_decomposition.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem1_decomposition.pdf")
@@ -391,6 +394,7 @@ def ch2_stationarity_region():
            bbox=dict(boxstyle='round', facecolor='lightyellow'))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem2_stationarity_region.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem2_stationarity_region.pdf")
@@ -451,6 +455,7 @@ def ch2_invertibility():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=9, frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem2_invertibility.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem2_invertibility.pdf")
@@ -512,6 +517,7 @@ def ch2_information_criteria():
     ax.annotate(f'n = e² ≈ 7.4\n(equal penalties)', xy=(np.exp(2), 10), fontsize=9)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem2_information_criteria.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem2_information_criteria.pdf")
@@ -575,6 +581,7 @@ def ch3_trend_vs_difference():
     axes[1, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem3_trend_vs_diff.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem3_trend_vs_diff.pdf")
@@ -656,6 +663,7 @@ def ch3_arima_flowchart():
     ax.annotate('', xy=(1.2, 2.8), xytext=(2.2, 2), arrowprops=dict(arrowstyle='->', lw=1.5, connectionstyle='arc3,rad=-0.5'))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem3_arima_flowchart.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem3_arima_flowchart.pdf")
@@ -719,6 +727,7 @@ def ch4_sarima_notation():
     ax.text(6, 1, 'one seasonal diff at lag 12, seasonal MA(1)', fontsize=10, ha='center')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem4_sarima_notation.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem4_sarima_notation.pdf")
@@ -781,6 +790,7 @@ def ch4_airline_model():
         axes[1, 1].text(0.8, 3 - i*0.7, point, fontsize=10, ha='left')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem4_airline_model.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem4_airline_model.pdf")
@@ -847,6 +857,7 @@ def ch5_cholesky_ordering():
         ax.text(1.3, 2.3 - i*0.6, point, fontsize=10, ha='left')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem5_cholesky_ordering.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem5_cholesky_ordering.pdf")
@@ -914,6 +925,7 @@ def ch5_var_diagnostics():
                        arrowprops=dict(arrowstyle='->', color=RED))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem5_var_diagnostics.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem5_var_diagnostics.pdf")
@@ -963,6 +975,7 @@ def ch5_var_parameters():
            bbox=dict(boxstyle='round', facecolor='lightyellow', edgecolor=ORANGE))
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem5_var_parameters.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem5_var_parameters.pdf")
