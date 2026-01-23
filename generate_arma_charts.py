@@ -530,13 +530,13 @@ def plot_residual_diagnostics_arma():
     axes[1, 0].text(0.95, 0.95, 'White noise', transform=axes[1, 0].transAxes,
                    ha='right', va='top', fontsize=11, color=GREEN, fontweight='bold')
 
-    # Q-Q plot (45-degree reference line)
-    (osm, osr), _ = stats.probplot(resid, dist='norm', fit=True)
+    # Q-Q plot (45-degree reference line) - standardize residuals first
+    std_resid = (resid - resid.mean()) / resid.std()
+    (osm, osr), _ = stats.probplot(std_resid, dist='norm', fit=True)
     axes[1, 1].scatter(osm, osr, color=BLUE, alpha=0.6, s=20)
-    q_range = max(abs(osm).max(), abs(osr).max()) * 1.1
-    axes[1, 1].plot([-q_range, q_range], [-q_range, q_range], color=RED, linewidth=2, linestyle='--')
-    axes[1, 1].set_xlim(-q_range, q_range)
-    axes[1, 1].set_ylim(-q_range, q_range)
+    axes[1, 1].plot([-3, 3], [-3, 3], color=RED, linewidth=2, linestyle='--')
+    axes[1, 1].set_xlim(-3.5, 3.5)
+    axes[1, 1].set_ylim(-3.5, 3.5)
     axes[1, 1].set_title('Q-Q Plot', fontweight='bold')
     axes[1, 1].set_xlabel('Theoretical Quantiles')
     axes[1, 1].set_ylabel('Sample Quantiles')
