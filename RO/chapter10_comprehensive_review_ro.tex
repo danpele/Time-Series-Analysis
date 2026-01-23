@@ -226,11 +226,11 @@
     \begin{defn}[Metrici ale Erorii de Prognoză]
         Fie $y_t$ valorile reale, $\hat{y}_t$ prognozele:
         \vspace{-0.2cm}
-        \begin{align}
+        \begin{align*}
             \RMSE = \sqrt{\frac{1}{n}\sum_{t}(y_t - \hat{y}_t)^2}, \quad
             \MAE = \frac{1}{n}\sum_{t}|y_t - \hat{y}_t|, \quad
             \MAPE = \frac{100\%}{n}\sum_{t}\left|\frac{y_t - \hat{y}_t}{y_t}\right|
-        \end{align}
+        \end{align*}
     \end{defn}
 
     \begin{columns}[T]
@@ -336,10 +336,10 @@
 \begin{frame}{Specificarea Modelului GARCH}
     \begin{defn}[Modelul GARCH(p,q)]
         Fie $r_t$ randamentele. Modelul GARCH(p,q) este:
-        \begin{align}
+        \begin{align*}
             r_t &= \mu + \varepsilon_t, \quad \varepsilon_t = \sigma_t z_t, \quad z_t \sim N(0,1) \\[0.2cm]
             \sigma_t^2 &= \omega + \sum_{i=1}^{q}\alpha_i \varepsilon_{t-i}^2 + \sum_{j=1}^{p}\beta_j \sigma_{t-j}^2
-        \end{align}
+        \end{align*}
         unde $\omega > 0$, $\alpha_i \geq 0$, $\beta_j \geq 0$, și $\sum_{i=1}^{q}\alpha_i + \sum_{j=1}^{p}\beta_j < 1$.
     \end{defn}
 
@@ -375,11 +375,11 @@
                 \toprule
                 \textbf{Set} & \textbf{Perioadă} & \textbf{N} \\
                 \midrule
-                Antrenament & 2019-01 -- 2022-09 & 1.365 \\
-                Validare & 2022-09 -- 2023-10 & 400 \\
-                Test & 2023-10 -- 2025-01 & 435 \\
+                Antrenament (70\%) & 2019-01 -- 2023-03 & 1.543 \\
+                Validare (20\%) & 2023-03 -- 2024-06 & 441 \\
+                Test (10\%) & 2024-06 -- 2025-01 & 221 \\
                 \midrule
-                \textbf{Total} & & \textbf{2.200} \\
+                \textbf{Total} & & \textbf{2.205} \\
                 \bottomrule
             \end{tabular}
             \end{center}
@@ -442,66 +442,33 @@
 \end{frame}
 
 \begin{frame}{Bitcoin: Evaluarea Finală pe Setul de Test}
-    \begin{block}{Procedură}
-        Reestimăm GARCH(1,1) pe Antrenament + Validare, evaluăm pe \textbf{setul de test păstrat} folosind \textbf{prognoze rolling one-step-ahead}.
-    \end{block}
-
-    \vspace{0.2cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{../charts/garch_forecast.pdf}
+    \end{center}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{center}
-        \textbf{Parametri Estimați}
-        \begin{tabular}{lcc}
-            \toprule
-            \textbf{Param} & \textbf{Estimare} & \textbf{Std Err} \\
-            \midrule
-            $\omega$ & 0,239 & 0,088 \\
-            $\alpha_1$ & 0,120 & 0,021 \\
-            $\beta_1$ & 0,879 & 0,020 \\
-            \midrule
-            $\alpha_1 + \beta_1$ & \multicolumn{2}{c}{0,999} \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
+        \begin{block}{Parametri}
+            $\omega=0,87$, $\alpha=0,09$, $\beta=0,84$\\
+            $\alpha + \beta = 0,93$ (persistență înaltă)
+        \end{block}
 
         \column{0.5\textwidth}
-        \begin{center}
-        \textbf{Performanță Set Test}
-        \begin{tabular}{lc}
-            \toprule
-            \textbf{Metrică} & \textbf{Valoare} \\
-            \midrule
-            Volatilitate MAE & 1,88 \\
-            Volatilitate RMSE & 2,21 \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-
-        \vspace{0.3cm}
-
-        \begin{alertblock}{Interpretare}
-            Persistență înaltă ($\alpha + \beta \approx 1$) confirmă clustering-ul volatilității.
-        \end{alertblock}
+        \begin{exampleblock}{Performanță Test}
+            MAE = 1,82, RMSE = 2,14\\
+            Prognoza urmărește bine volatilitatea realizată.
+        \end{exampleblock}
     \end{columns}
 \end{frame}
 
 \begin{frame}{GARCH: Prognozele Multi-Step Converg}
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{../charts/garch_convergence.pdf}
+        \includegraphics[width=0.65\textwidth]{../charts/garch_convergence.pdf}
     \end{center}
 
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{alertblock}{Problema}
-            Prognozele GARCH converg la varianța necondiționată $\bar{\sigma}^2 = \frac{\omega}{1-\alpha-\beta}$
-        \end{alertblock}
-
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Intuiție}
-            După un șoc, volatilitatea revine treptat la nivelul mediu pe termen lung.
-        \end{exampleblock}
-    \end{columns}
+    \begin{exampleblock}{Insight Cheie}
+        Prognozele multi-step converg la $\bar{\sigma}^2 = \frac{\omega}{1-\alpha-\beta}$. Soluția: prognoze rolling one-step-ahead.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{GARCH: Soluția Rolling One-Step-Ahead}
@@ -524,13 +491,11 @@
 
 \begin{frame}{Bitcoin: Prognoza Volatilității GARCH (Set Test)}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{../charts/garch_forecast.pdf}
+        \includegraphics[width=0.85\textwidth]{../charts/garch_forecast.pdf}
     \end{center}
 
-    \vspace{0.2cm}
-
     \begin{exampleblock}{Rezultat}
-        Prognozele rolling one-step-ahead GARCH(1,1) captează \textbf{tiparele dinamice ale volatilității}. Prognoza (linia roșie) urmărește volatilitatea realizată (zona albastră), demonstrând predictibilitatea varianței.
+        Prognozele rolling one-step-ahead GARCH(1,1) captează \textbf{tiparele dinamice ale volatilității}. Linia roșie urmărește volatilitatea realizată (zona albastră).
     \end{exampleblock}
 \end{frame}
 
@@ -541,7 +506,7 @@
             \begin{enumerate}
                 \item \textbf{Randamentele sunt staționare}; prețurile nu
                 \item \textbf{GARCH(1,1)} depășește variantele mai complexe
-                \item \textbf{Persistență înaltă} ($\alpha + \beta = 0,999$)
+                \item \textbf{Persistență înaltă} ($\alpha + \beta = 0,93$)
                 \item Volatilitatea este \textbf{predictibilă} chiar când randamentele nu sunt
             \end{enumerate}
         \end{block}
@@ -575,6 +540,32 @@
             \end{itemize}
         \end{block}
     \end{columns}
+\end{frame}
+
+\begin{frame}{Bitcoin: Fapte Stilizate GARCH}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{../charts/btc_squared_returns.pdf}
+        \end{center}
+        {\small Randamente pătrate $r_t^2$ ca proxy pentru volatilitate. Observați clustering-ul perioadelor de volatilitate înaltă.}
+
+        \column{0.5\textwidth}
+        \begin{block}{Fapte Stilizate Financiare}
+            \begin{enumerate}
+                \item \textbf{Clustering volatilitate}: Mișcări mari urmează mișcări mari
+                \item \textbf{Cozi groase}: Mai multe evenimente extreme decât prezice Normala
+                \item \textbf{Efect leverage}: Randamente negative $\rightarrow$ volatilitate mai mare
+                \item \textbf{Reversie la medie}: Volatilitatea revine la nivelul pe termen lung
+            \end{enumerate}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{De Ce Funcționează GARCH}
+        GARCH captează faptele 1 \& 4. Pentru faptul 3, folosiți GJR-GARCH sau EGARCH. Pentru faptul 2, folosiți inovații Student-t.
+    \end{alertblock}
 \end{frame}
 
 %=============================================================================
@@ -642,9 +633,9 @@
             \toprule
             \textbf{Set} & \textbf{Perioadă} & \textbf{N} \\
             \midrule
-            Antrenament & 1900--1975 & 76 \\
-            Validare & 1976--1991 & 16 \\
-            Test & 1992--2008 & 17 \\
+            Antrenament (70\%) & 1900--1975 & 76 \\
+            Validare (20\%) & 1976--1997 & 22 \\
+            Test (10\%) & 1998--2008 & 11 \\
             \midrule
             \textbf{Total} & & \textbf{109} \\
             \bottomrule
@@ -674,54 +665,64 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Pete Solare: Rezultate Set Test}
+\begin{frame}{Pete Solare: Rezultate Prognoză}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth]{../charts/sunspot_forecast.pdf}
+    \end{center}
+
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Modelul Final}
-            ARIMA(2,0,1) + 3 armonici Fourier
+        \begin{block}{Model}
+            ARIMA(2,0,1) + 3 termeni Fourier captează dinamica ciclului de 11 ani.
+        \end{block}
 
-            \vspace{0.2cm}
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Performanță Test}
+            RMSE = 29,68, MAE = 27,35. Modelul urmărește tiparul general al ciclului.
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
 
-            \textbf{Coeficienți Semnificativi:}
+\begin{frame}{Pete Solare: Concluzii Cheie}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Când să Folosiți Termeni Fourier}
+            \begin{itemize}
+                \item Perioada sezonieră $s$ este \textbf{lungă} (ex: 11 ani, 52 săptămâni)
+                \item SARIMA ar necesita prea multe lag-uri sezoniere
+                \item Tiparul este \textbf{neted și periodic}
+                \item Trebuie capturate cicluri multiple
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{alertblock}{Alegerea lui K}
+            Începeți cu $K=1$, creșteți până când eroarea de validare nu mai scade. K prea mare = overfitting.
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Fourier vs SARIMA}
             \begin{center}
             \begin{tabular}{lcc}
                 \toprule
-                \textbf{Termen} & \textbf{Coef} & \textbf{p-value} \\
+                & \textbf{Fourier} & \textbf{SARIMA} \\
                 \midrule
-                $\sin_1$ & 34,71 & $< 0,001$ \\
-                $\cos_1$ & -29,21 & 0,018 \\
-                AR(1) & 1,34 & $< 0,001$ \\
+                Sezoane lungi & \checkmark & $\times$ \\
+                Sezoane scurte & OK & \checkmark \\
+                Parametri & $2K$ & Mulți \\
+                Flexibilitate & Fixă & Adaptivă \\
                 \bottomrule
             \end{tabular}
             \end{center}
+        \end{exampleblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Aplicații}
+            Cicluri climatice, cicluri de afaceri, fenomene astronomice
         \end{block}
-
-        \column{0.5\textwidth}
-        \begin{block}{Performanță Test}
-            \begin{center}
-            \begin{tabular}{lc}
-                \toprule
-                \textbf{Metrică} & \textbf{Valoare} \\
-                \midrule
-                RMSE & 48,51 \\
-                MAE & 39,31 \\
-                \bottomrule
-            \end{tabular}
-            \end{center}
-        \end{block}
-
-        \vspace{0.3cm}
-
-        \begin{alertblock}{Notă}
-            MAPE ridicat din cauza valorilor apropiate de zero la minimul solar.
-        \end{alertblock}
     \end{columns}
-
-    \vspace{0.2cm}
-
-    \begin{exampleblock}{Insight Cheie}
-        Termenii Fourier captează eficient ciclul de 11 ani cu doar 6 parametri.
-    \end{exampleblock}
 \end{frame}
 
 %=============================================================================
@@ -729,51 +730,115 @@
 %=============================================================================
 \section{Studiu de Caz 3: Șomajul (Prophet)}
 
-\begin{frame}{Șomajul: Ruptura Structurală COVID-19}
+\begin{frame}{Șomajul: Train / Validation / Test Split}
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{../charts/unemployment.pdf}
+        \includegraphics[width=0.88\textwidth]{../charts/unemployment_train_val_test.pdf}
+    \end{center}
+
+    \begin{block}{Metodologie}
+        \textbf{Training} (70\%): Estimare modele. \textbf{Validare} (20\%): Selecție model. \textbf{Test} (10\%): Evaluare finală.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Șomajul: Analiză Preliminară}
+    \begin{center}
+        \includegraphics[width=0.82\textwidth]{../charts/unemployment_acf_pacf.pdf}
     \end{center}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Provocarea}
-            \begin{itemize}
-                \item Pre-COVID: 3,5\% (minim pe 50 ani)
-                \item Aprilie 2020: \textbf{14,8\%} vârf
-                \item Cel mai mare salt lunar din istoria SUA
-            \end{itemize}
+        \begin{block}{Interpretare ACF}
+            Descreștere lentă $\Rightarrow$ serie nestaționară. Necesită diferențiere ($d \geq 1$).
         \end{block}
 
         \column{0.5\textwidth}
-        \begin{exampleblock}{De ce nu ARIMA?}
-            ARIMA tratează salturile bruște ca \textbf{outlieri}. Prophet detectează \textbf{puncte de schimbare} și adaptează trendul.
+        \begin{exampleblock}{Interpretare PACF}
+            Vârf semnificativ la lag 1 sugerează componentă AR(1). Pattern sezonier la lag 12.
         \end{exampleblock}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Modelul Prophet}
-    \begin{defn}[Descompunerea Prophet]
-        Prophet modelează seriile de timp ca:
-        \begin{equation}
-            y_t = g(t) + s(t) + h(t) + \varepsilon_t
-        \end{equation}
-        \begin{itemize}
-            \item $g(t)$: \textbf{Trend} liniar/logistic pe bucăți cu puncte de schimbare
-            \item $s(t)$: \textbf{Sezonalitate} bazată pe Fourier
-            \item $h(t)$: Efecte de \textbf{sărbători}
-            \item $\varepsilon_t$: Termen de eroare
-        \end{itemize}
-    \end{defn}
-
-    \vspace{0.3cm}
+\begin{frame}{Șomajul: Teste de Staționaritate}
+    \begin{center}
+        \includegraphics[width=0.68\textwidth]{../charts/unemployment_stationarity.pdf}
+    \end{center}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Detectarea Punctelor de Schimbare}
+        \begin{alertblock}{Original: ADF p = 0,056}
+            Nestaționară (ACF descreștere lentă)
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Diferențiată: ADF p $<$ 0,001}
+            Staționară $\Rightarrow$ folosim $d=1$
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Șomajul: Selecția Modelului (Set Validare)}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth]{../charts/sarima_model_selection.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Best: SARIMA(1,1,1)(1,0,0)$_{12}$}
+        Fit pe training (70\%), evaluare pe validare (20\%). Cel mai bun model selectat după Val RMSE minim.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Șomajul: Parametrii SARIMA}
+    \begin{center}
+        \includegraphics[width=0.65\textwidth]{../charts/sarima_parameters.pdf}
+    \end{center}
+
+    \begin{block}{SARIMA(1,1,1)(1,0,0)$_{12}$ estimat pe Train+Val (2010-2019)}
+        AR(1): $\phi_1 = -0,86$, MA(1): $\theta_1 = 0,78$, SAR(12): $\Phi_1 = -0,08$ (n.s.)
+    \end{block}
+\end{frame}
+
+\begin{frame}{Șomajul: Diagnosticare SARIMA}
+    \begin{center}
+        \includegraphics[width=0.58\textwidth]{../charts/sarima_diagnostics.pdf}
+    \end{center}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Reziduuri}
+            Rez. std., histogramă, ACF, Q-Q plot.
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Ljung-Box p = 0,66}
+            Fără autocorelație. Model bine specificat.
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Șomajul: Prognoza Rolling SARIMA}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{../charts/sarima_forecast.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    \begin{alertblock}{Problemă: Ruptura Structurală}
+        Prognoză rolling one-step-ahead (re-estimare la fiecare $t$): \textbf{Test RMSE = 0,12}.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Modelul Prophet}
+    \begin{defn}[Descompunerea Prophet]
+        $y_t = g(t) + s(t) + h(t) + \varepsilon_t$, \quad $\varepsilon_t \sim N(0, \sigma^2)$
+
+        unde $g(t)$ = trend, $s(t)$ = sezonalitate, $h(t)$ = sărbători, $\sigma^2$ = varianța zgomotului (estimată).
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Detectare Puncte de Schimbare}
             \begin{itemize}
                 \item Selectare automată a locațiilor
                 \item \texttt{changepoint\_prior\_scale} controlează flexibilitatea
-                \item Mai mare = mai multe puncte de schimbare
             \end{itemize}
         \end{block}
 
@@ -783,7 +848,6 @@
                 \item Gestionează date lipsă
                 \item Componente interpretabile
                 \item Robust la outlieri
-                \item Cuantificarea incertitudinii
             \end{itemize}
         \end{exampleblock}
     \end{columns}
@@ -804,11 +868,11 @@
             \toprule
             \textbf{Set} & \textbf{Perioadă} & \textbf{N} \\
             \midrule
-            Antrenament & 2010-01 -- 2019-09 & 117 \\
-            Validare & 2019-10 -- 2021-10 & 25 \\
-            Test & 2021-11 -- 2025-01 & 38 \\
+            Antrenament (70\%) & 2010-01 -- 2020-06 & 126 \\
+            Validare (20\%) & 2020-07 -- 2023-06 & 36 \\
+            Test (10\%) & 2023-07 -- 2025-01 & 19 \\
             \midrule
-            \textbf{Total} & & \textbf{180} \\
+            \textbf{Total} & & \textbf{181} \\
             \bottomrule
         \end{tabular}
         \end{center}
@@ -837,51 +901,79 @@
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{Șomajul: Rezultate}
+\begin{frame}{Șomajul: Rezultate Prognoză Prophet}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{../charts/unemployment_forecast.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    \begin{block}{Concluzie Cheie}
+        Prophet se adaptează prin detectare changepoint. \textbf{Test RMSE = 0,12} (la fel ca SARIMA).
+    \end{block}
+\end{frame}
+
+\begin{frame}{Șomaj: Comparație SARIMA vs Prophet}
+    \begin{center}
+        \includegraphics[width=0.82\textwidth]{../charts/prophet_vs_sarima_unemployment.pdf}
+    \end{center}
+    \vspace{-0.2cm}
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Performanță Set Test}
-            \begin{center}
-            \begin{tabular}{lc}
-                \toprule
-                \textbf{Metrică} & \textbf{Valoare} \\
-                \midrule
-                RMSE & 0,42 \\
-                MAE & 0,35 \\
-                MAPE & 9,2\% \\
-                \bottomrule
-            \end{tabular}
-            \end{center}
-        \end{block}
-
-        \vspace{0.3cm}
-
-        \begin{exampleblock}{Concluzie Cheie}
-            Prophet a reușit să:
-            \begin{itemize}
-                \item Detecteze punctul de schimbare COVID
-                \item Adapteze trendul post-șoc
-                \item Furnizeze benzi de incertitudine
-            \end{itemize}
+        \begin{exampleblock}{SARIMA: RMSE = 0,12}
+            Prognoză rolling performează bine.
         \end{exampleblock}
 
         \column{0.5\textwidth}
-        \begin{alertblock}{Puncte de Schimbare Detectate}
+        \begin{block}{Prophet: RMSE = 0,12}
+            Performanță comparabilă.
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Prophet: Când să-l Folosești}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Cazuri de Utilizare Ideale}
             \begin{itemize}
-                \item 2020-03: Debutul COVID
-                \item 2020-05: Începe recuperarea
-                \item 2022-01: Stabilizare
+                \item Date cu \textbf{rupturi structurale}
+                \item Date de business cu \textbf{sărbători}
+                \item \textbf{Valori lipsă} prezente
+                \item Nevoie de componente \textbf{interpretabile}
+                \item Prognoze cu \textbf{benzi de incertitudine}
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{alertblock}{Nu Este Ideal Pentru}
+            \begin{itemize}
+                \item Date financiare de înaltă frecvență
+                \item Date fără trend/sezonalitate clară
+                \item Serii de timp foarte scurte
             \end{itemize}
         \end{alertblock}
 
-        \vspace{0.3cm}
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Prophet vs ARIMA}
+            \begin{center}
+            \begin{tabular}{lcc}
+                \toprule
+                & \textbf{Prophet} & \textbf{ARIMA} \\
+                \midrule
+                Changepoints & \checkmark & $\times$ \\
+                Date lipsă & \checkmark & $\times$ \\
+                Sărbători & \checkmark & $\times$ \\
+                Viteză & Rapidă & Moderată \\
+                Interpretabil & \checkmark & $\times$ \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{exampleblock}
 
-        \begin{block}{Valoare Practică}
-            \begin{itemize}
-                \item Analiza politicilor economice
-                \item Monitorizarea pieței muncii
-                \item Sistem de avertizare timpurie
-            \end{itemize}
+        \vspace{0.2cm}
+
+        \begin{block}{Parametri Cheie}
+            \texttt{changepoint\_prior\_scale}: flexibilitate\\
+            \texttt{seasonality\_prior\_scale}: netezime
         \end{block}
     \end{columns}
 \end{frame}
@@ -893,35 +985,30 @@
 
 \begin{frame}{VAR: Date Economice Multivariate}
     \begin{center}
-        \includegraphics[width=0.85\textwidth]{../charts/economic_vars.pdf}
+        \includegraphics[width=0.55\textwidth]{../charts/economic_vars.pdf}
     \end{center}
-
-    \vspace{0.1cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
         \begin{block}{Relații Economice}
-            \begin{itemize}
-                \item \textbf{Legea Okun}: PIB $\leftrightarrow$ Șomaj
-                \item \textbf{Curba Phillips}: Șomaj $\leftrightarrow$ Inflație
-                \item \textbf{Regula Taylor}: Inflație $\rightarrow$ Rata Fed
-            \end{itemize}
+            \textbf{Legea Okun}: PIB $\leftrightarrow$ Șomaj.\\
+            \textbf{Curba Phillips}: Șomaj $\leftrightarrow$ Inflație.
         \end{block}
 
         \column{0.5\textwidth}
-        \begin{alertblock}{De ce VAR?}
-            Fiecare variabilă poate fi \textbf{atât cauză cât și efect} al celorlalte. Gri: criza 2008. Roșu: COVID.
-        \end{alertblock}
+        \begin{exampleblock}{De ce VAR?}
+            Fiecare variabilă e atât cauză cât și efect. VAR captează aceste bucle de feedback.
+        \end{exampleblock}
     \end{columns}
 \end{frame}
 
 \begin{frame}{Specificarea Modelului VAR}
     \begin{defn}[Autoregresie Vectorială VAR(p)]
         Pentru $K$ variabile $\mathbf{y}_t = (y_{1t}, \ldots, y_{Kt})'$:
-        \begin{equation}
+        \begin{equation*}
             \mathbf{y}_t = \mathbf{c} + \mathbf{A}_1\mathbf{y}_{t-1} + \mathbf{A}_2\mathbf{y}_{t-2} + \cdots + \mathbf{A}_p\mathbf{y}_{t-p} + \mathbf{u}_t
-        \end{equation}
-        unde $\mathbf{A}_i$ sunt matrici de coeficienți $K \times K$ și $\mathbf{u}_t \sim N(\mathbf{0}, \mathbf{\Sigma})$.
+        \end{equation*}
+        unde $\mathbf{A}_i$ sunt matrici de coeficienți $K \times K$, $\mathbf{u}_t \sim N(\mathbf{0}, \boldsymbol{\Sigma})$, $\boldsymbol{\Sigma}$ = matricea de covarianță.
     \end{defn}
 
     \vspace{0.3cm}
@@ -980,11 +1067,11 @@
                 \toprule
                 \textbf{Set} & \textbf{Perioadă} & \textbf{N} \\
                 \midrule
-                Antrenament & 2001-T1 -- 2017-T4 & 68 \\
-                Validare & 2018-T1 -- 2021-T2 & 14 \\
-                Test & 2021-T3 -- 2024-T3 & 14 \\
+                Antrenament (70\%) & 2001-T1 -- 2017-T4 & 67 \\
+                Validare (20\%) & 2018-T1 -- 2022-T4 & 20 \\
+                Test (10\%) & 2023-T1 -- 2025-T1 & 10 \\
                 \midrule
-                \textbf{Total} & & \textbf{96} \\
+                \textbf{Total} & & \textbf{97} \\
                 \bottomrule
             \end{tabular}
             \end{center}
@@ -1042,6 +1129,36 @@
     \end{columns}
 \end{frame}
 
+\begin{frame}{IRF: Șoc Șomaj}
+    \begin{center}
+        \includegraphics[width=0.56\textwidth]{../charts/irf_unemp_shock.pdf}
+    \end{center}
+    \vspace{-0.5cm}
+    \begin{block}{Efecte}
+        $\uparrow$ Șomaj $\Rightarrow$ $\downarrow$ PIB (Okun), $\downarrow$ Inflație (Phillips), Fed reduce rata.
+    \end{block}
+\end{frame}
+
+\begin{frame}{IRF: Șoc Rată Fed}
+    \begin{center}
+        \includegraphics[width=0.58\textwidth]{../charts/irf_fed_shock.pdf}
+    \end{center}
+    \vspace{-0.4cm}
+    \begin{block}{Politică Monetară}
+        Creștere rată $\Rightarrow$ PIB $\downarrow$, Șomaj $\uparrow$, Inflație $\downarrow$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{VAR: Prognoză (Train/Val/Test)}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth]{../charts/var_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Prognoză Rolling One-Step-Ahead}
+        VAR captează dinamica PIB-Șomaj. Șocul COVID vizibil în perioada test.
+    \end{block}
+\end{frame}
+
 \begin{frame}{VAR: Rezultate Set Test}
     \begin{block}{Performanță Set Test pe Variabile}
         \begin{center}
@@ -1049,12 +1166,12 @@
             \toprule
             \textbf{Variabilă} & \textbf{RMSE} & \textbf{MAE} & \textbf{Acur. Direcție} \\
             \midrule
-            Creștere PIB & 2,18 & 1,72 & 71\% \\
-            Șomaj & 0,89 & 0,71 & 79\% \\
-            Inflație & 1,24 & 0,98 & 64\% \\
-            Rata Fed & 0,95 & 0,78 & 71\% \\
+            Creștere PIB & 0,90 & 0,81 & 50\% \\
+            Șomaj & 0,43 & 0,35 & 50\% \\
+            Inflație & 0,58 & 0,51 & 70\% \\
+            Rata Fed & 1,81 & 1,77 & 90\% \\
             \midrule
-            \textbf{Medie} & \textbf{1,32} & \textbf{1,05} & \textbf{71\%} \\
+            \textbf{Medie} & \textbf{0,93} & \textbf{0,86} & \textbf{65\%} \\
             \bottomrule
         \end{tabular}
         \end{center}
@@ -1090,27 +1207,27 @@
 
 \begin{frame}{Cadrul de Selectare a Modelului}
     \begin{center}
-    \begin{tikzpicture}[scale=0.8, transform shape,
-        node distance=1.2cm,
-        box/.style={rectangle, draw=MainBlue, thick, fill=MainBlue!10, rounded corners, minimum width=2.5cm, minimum height=0.7cm, align=center},
-        decision/.style={diamond, draw=Orange, thick, fill=Orange!10, aspect=2, align=center, font=\small},
+    \begin{tikzpicture}[scale=0.7, transform shape,
+        node distance=1cm,
+        box/.style={rectangle, draw=MainBlue, thick, fill=MainBlue!10, rounded corners, minimum width=2.2cm, minimum height=0.6cm, align=center},
+        decision/.style={diamond, draw=Orange, thick, fill=Orange!10, aspect=2, align=center, font=\scriptsize},
         arrow/.style={->, thick, >=stealth}
     ]
         \node[box] (start) {Date Serie de Timp};
         \node[decision, below=of start] (q1) {Serii\\multiple?};
-        \node[decision, below left=1.2cm and 1.5cm of q1] (q2) {Rupturi\\structurale?};
-        \node[decision, below right=1.2cm and 1.5cm of q1] (q3) {Date\\financiare?};
+        \node[decision, below left=1cm and 1.3cm of q1] (q2) {Rupturi\\structurale?};
+        \node[decision, below right=1cm and 1.3cm of q1] (q3) {Date\\financiare?};
         \node[box, fill=Forest!20, below=of q1] (var) {\textbf{VAR}};
         \node[box, fill=Forest!20, below=of q2] (prophet) {\textbf{Prophet}};
-        \node[box, fill=Forest!20, below left=0.8cm and 0cm of q3] (garch) {\textbf{GARCH}};
-        \node[box, fill=Forest!20, below right=0.8cm and 0cm of q3] (arima) {\textbf{ARIMA+Fourier}};
+        \node[box, fill=Forest!20, below left=0.7cm and 0cm of q3] (garch) {\textbf{GARCH}};
+        \node[box, fill=Forest!20, below right=0.7cm and 0cm of q3] (arima) {\textbf{ARIMA+Fourier}};
         \draw[arrow] (start) -- (q1);
-        \draw[arrow] (q1) -- node[right] {\small Da} (var);
-        \draw[arrow] (q1) -- node[above left] {\small Nu} (q2);
-        \draw[arrow] (q2) -- node[left] {\small Da} (prophet);
-        \draw[arrow] (q2) -- node[above right] {\small Nu} (q3);
-        \draw[arrow] (q3) -- node[left] {\small Vol.} (garch);
-        \draw[arrow] (q3) -- node[right] {\small Nivel} (arima);
+        \draw[arrow] (q1) -- node[right] {\scriptsize Da} (var);
+        \draw[arrow] (q1) -- node[above left] {\scriptsize Nu} (q2);
+        \draw[arrow] (q2) -- node[left] {\scriptsize Da} (prophet);
+        \draw[arrow] (q2) -- node[above right] {\scriptsize Nu} (q3);
+        \draw[arrow] (q3) -- node[left] {\scriptsize Vol.} (garch);
+        \draw[arrow] (q3) -- node[right] {\scriptsize Nivel} (arima);
     \end{tikzpicture}
     \end{center}
 \end{frame}
@@ -1124,10 +1241,10 @@
             \toprule
             \textbf{Caz} & \textbf{Provocare} & \textbf{Model} & \textbf{RMSE} \\
             \midrule
-            Bitcoin & Volatilitate & GARCH & 2,21 \\
-            Pete solare & Sezonalitate & Fourier & 48,51 \\
+            Bitcoin & Volatilitate & GARCH & 2,14 \\
+            Pete solare & Sezonalitate & Fourier & 29,68 \\
             Șomaj & Ruptură & Prophet & 0,42 \\
-            Economic & Multi-var & VAR & 1,32 \\
+            Economic & Multi-var & VAR & 0,93 \\
             \bottomrule
         \end{tabular}
         \end{center}
@@ -1143,6 +1260,46 @@
     \begin{exampleblock}{Principiu Cheie}
         \textbf{Potriviți modelul cu caracteristicile datelor.} Alegeți în funcție de natura problemei și proprietățile datelor.
     \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Comparație Cuprinzătoare a Modelelor}
+    \begin{center}
+    \footnotesize
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Caracteristică} & \textbf{GARCH} & \textbf{Fourier} & \textbf{Prophet} & \textbf{VAR} \\
+        \midrule
+        \textbf{Țintă} & Volatilitate & Nivel & Nivel & Multiple \\
+        \textbf{Sezonalitate} & Nu & Da (lungă) & Da (multiplă) & Nu \\
+        \textbf{Rupturi structurale} & Nu & Nu & Da & Nu \\
+        \textbf{Serii multiple} & Nu & Nu & Nu & Da \\
+        \textbf{Interpretabil} & Mediu & Ridicat & Ridicat & Ridicat \\
+        \textbf{Parametri} & Puțini & $2K$ & Auto & Mulți \\
+        \textbf{Date lipsă} & Nu & Nu & Da & Nu \\
+        \midrule
+        \textbf{Ideal pentru} & Finanțe & Cicluri & Business & Macro \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Rezultatele Noastre}
+            \begin{itemize}
+                \item GARCH: MAE=1,82 (volatilitate)
+                \item Fourier: RMSE=29,68 (cicluri)
+                \item Prophet: RMSE=0,12 (rupturi)
+                \item VAR: RMSE mediu=0,93 (multi)
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Insight Cheie}
+            Fiecare model excelează în domeniul său. Arta constă în potrivirea modelului cu caracteristicile datelor.
+        \end{exampleblock}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Bune Practici pentru Prognoza Aplicată}
