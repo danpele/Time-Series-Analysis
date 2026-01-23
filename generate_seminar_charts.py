@@ -176,12 +176,13 @@ def ch1_timeseries_cv():
     ax.set_yticks([i*0.8+0.35 for i in range(n_folds)])
     ax.set_yticklabels([f'Fold {i+1}' for i in range(n_folds)])
 
-    # Add legend
+    # Add legend at bottom
     from matplotlib.patches import Patch
     legend_elements = [Patch(facecolor=BLUE, alpha=0.5, label='Training'),
-                      Patch(facecolor=GREEN, alpha=0.7, label='Test'),
-                      Patch(facecolor=RED, alpha=0.7, label='Test (k-fold)')]
-    fig.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(0.98, 0.98))
+                      Patch(facecolor=GREEN, alpha=0.7, label='Test (correct)'),
+                      Patch(facecolor=RED, alpha=0.7, label='Test (k-fold - wrong)')]
+    fig.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, 0.02),
+               ncol=3, frameon=False, fontsize=9)
 
     plt.tight_layout()
     plt.savefig('charts/sem1_timeseries_cv.pdf', bbox_inches='tight', dpi=150)
