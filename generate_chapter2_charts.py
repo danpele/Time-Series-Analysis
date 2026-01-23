@@ -324,10 +324,10 @@ axes[1, 0].set_title('ACF of Residuals (Should Be White Noise)', fontweight='bol
 axes[1, 0].set_xlabel('Lag')
 axes[1, 0].set_ylabel('ACF')
 
-# Q-Q plot
-(osm, osr), (slope, intercept, r) = stats.probplot(residuals, dist='norm', fit=True)
+# Q-Q plot (45-degree reference line)
+(osm, osr), _ = stats.probplot(residuals, dist='norm', fit=True)
 axes[1, 1].scatter(osm, osr, color=BLUE, alpha=0.6, s=30)
-axes[1, 1].plot(osm, slope * osm + intercept, color=RED, linewidth=2)
+axes[1, 1].plot([-3, 3], [-3, 3], color=RED, linewidth=2, linestyle='--')
 axes[1, 1].set_title('Q-Q Plot', fontweight='bold')
 axes[1, 1].set_xlabel('Theoretical Quantiles')
 axes[1, 1].set_ylabel('Sample Quantiles')
