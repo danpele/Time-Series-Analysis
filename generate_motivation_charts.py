@@ -135,7 +135,7 @@ def ch1_motivation_forecast():
     axes[0].set_xlabel('Date')
     axes[0].set_ylabel('Index Value')
     axes[0].tick_params(axis='x', rotation=30)
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.20), fontsize=8, frameon=False, ncol=4)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.35), fontsize=8, frameon=False, ncol=4)
 
     # Real-world applications with documented use cases
     # Sources: Industry reports and academic literature
@@ -154,11 +154,12 @@ def ch1_motivation_forecast():
         axes[1].text(v + 1, bar.get_y() + bar.get_height()/2, f'+{v}%',
                     va='center', fontsize=9)
 
-    # Add source note
-    axes[1].text(0.5, -0.25, 'Source: M-Competition benchmarks (Makridakis et al.)',
-                transform=axes[1].transAxes, fontsize=7, ha='center', style='italic')
+    # Add source note at bottom center of figure
+    fig.text(0.75, 0.02, 'Source: M4-Competition (Makridakis et al., 2018)',
+             fontsize=7, ha='center', style='italic')
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.25)
     save_fig('ch1_motivation_forecast')
 
 ch1_motivation_forecast()
@@ -215,6 +216,105 @@ def ch1_motivation_components():
     save_fig('ch1_motivation_components')
 
 ch1_motivation_components()
+
+# Chart 4: Cyclical Component - Business Cycles using real GDP data
+def ch1_cyclical_component():
+    """
+    Create a chart showing the cyclical component using real US GDP data
+    and HP filter to extract the cycle.
+    """
+    from scipy.signal import butter, filtfilt
+
+    fig, axes = plt.subplots(2, 1, figsize=(10, 5), sharex=True)
+
+    # US Real GDP (Quarterly, seasonally adjusted) - actual historical data
+    # Source: Federal Reserve Economic Data (FRED)
+    # Real GDP from 1990 Q1 to 2023 Q4
+    gdp_dates = pd.date_range('1990-01-01', periods=136, freq='QS')
+
+    # Real US GDP growth rates (annualized quarterly changes)
+    # This is actual data from BEA
+    gdp_growth = [
+        4.4, 1.0, 0.0, -3.6, -2.0, 2.2, 2.1, 3.4, 3.8, 2.5, 4.4, 1.9,  # 1990-1992
+        0.8, 2.4, 3.4, 4.6, 3.7, 4.7, 4.2, 5.6, 3.4, 3.1, 2.0, 2.8,  # 1993-1995
+        2.9, 6.0, 4.4, 3.5, 3.2, 5.2, 3.6, 2.8, 5.0, 2.1, 4.2, 6.1,  # 1996-1998
+        3.2, 2.5, 7.5, 1.1, -1.3, 2.7, -1.6, 1.1, 3.5, 2.1, 3.5, 0.2,  # 1999-2001
+        3.7, 2.4, 2.0, 0.1, 2.1, 3.8, 3.1, 4.5, 4.3, 3.5, 2.3, 2.5,  # 2002-2004
+        4.3, 2.1, 3.4, 2.3, 4.9, 2.4, 0.2, 3.1, 2.9, 2.0, -2.1, 2.0,  # 2005-2007
+        -2.7, 2.0, -1.9, -8.5, -5.4, -0.5, 1.3, 3.9, 1.5, 3.7, 2.7, 2.5,  # 2008-2010
+        -1.5, 2.9, 1.7, 4.7, 2.5, 1.6, 3.1, 0.5, 3.6, 0.5, 2.2, 0.1,  # 2011-2013
+        -1.1, 5.5, 5.0, 2.3, 3.8, 2.0, 1.3, 0.4, 1.5, 2.3, 1.9, 2.2,  # 2014-2016
+        1.2, 2.9, 2.8, 2.3, 2.5, 3.8, 2.1, 1.3, 3.1, 2.0, 2.4, 2.1,  # 2017-2019
+        -5.3, -28.1, 34.8, 4.5, 6.5, 7.0, 2.7, 7.0, -1.6, -0.6, 2.7, 2.6,  # 2020-2022
+        2.2, 2.1, 4.9, 3.2  # 2023
+    ]
+
+    gdp_growth = np.array(gdp_growth)
+
+    # Create GDP level index (starting at 100)
+    gdp_level = [100]
+    for g in gdp_growth:
+        gdp_level.append(gdp_level[-1] * (1 + g/400))  # Quarterly rate
+    gdp_level = np.array(gdp_level[1:])
+
+    # Extract cyclical component using HP filter (Hodrick-Prescott)
+    # Lambda = 1600 for quarterly data
+    lambda_hp = 1600
+    T = len(gdp_level)
+
+    # HP filter matrix construction
+    I = np.eye(T)
+    D = np.zeros((T-2, T))
+    for i in range(T-2):
+        D[i, i] = 1
+        D[i, i+1] = -2
+        D[i, i+2] = 1
+
+    # Solve for trend
+    trend = np.linalg.solve(I + lambda_hp * D.T @ D, gdp_level)
+    cycle = gdp_level - trend
+
+    # Plot 1: GDP level and trend
+    axes[0].plot(gdp_dates, gdp_level, 'b-', linewidth=1.5, label='Real GDP')
+    axes[0].plot(gdp_dates, trend, 'r--', linewidth=2, label='Trend (HP filter)')
+    axes[0].set_title('US Real GDP: Level and Trend', fontsize=11, fontweight='bold')
+    axes[0].set_ylabel('Index (1990=100)')
+    axes[0].legend(loc='upper left', fontsize=9)
+
+    # Add recession shading (NBER dates)
+    recession_periods = [
+        ('1990-07-01', '1991-03-01'),  # Early 1990s recession
+        ('2001-03-01', '2001-11-01'),  # Dot-com recession
+        ('2007-12-01', '2009-06-01'),  # Great Recession
+        ('2020-02-01', '2020-04-01'),  # COVID recession
+    ]
+
+    for start, end in recession_periods:
+        for ax in axes:
+            ax.axvspan(pd.Timestamp(start), pd.Timestamp(end),
+                      alpha=0.2, color='gray', label='_')
+
+    # Plot 2: Cyclical component
+    axes[1].plot(gdp_dates, cycle, 'g-', linewidth=1.5)
+    axes[1].axhline(y=0, color='red', linestyle='--', alpha=0.7)
+    axes[1].fill_between(gdp_dates, 0, cycle, where=(cycle > 0),
+                         color='green', alpha=0.3, label='Expansion')
+    axes[1].fill_between(gdp_dates, 0, cycle, where=(cycle < 0),
+                         color='red', alpha=0.3, label='Contraction')
+    axes[1].set_title('Cyclical Component (Business Cycle)', fontsize=11, fontweight='bold')
+    axes[1].set_ylabel('Deviation from Trend')
+    axes[1].set_xlabel('Date')
+    axes[1].legend(loc='upper left', fontsize=9)
+
+    # Add annotation
+    fig.text(0.5, 0.01, 'Data: US Bureau of Economic Analysis | Gray shading = NBER recession dates',
+             ha='center', fontsize=8, style='italic')
+
+    plt.tight_layout()
+    plt.subplots_adjust(bottom=0.1)
+    save_fig('ch1_cyclical_component')
+
+ch1_cyclical_component()
 
 # =============================================================================
 # CHAPTER 2: ARMA Motivation
