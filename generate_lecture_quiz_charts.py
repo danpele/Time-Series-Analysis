@@ -78,7 +78,6 @@ def ch2_ar_stationarity():
     axes[1, 1].set_xlabel('Time')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_quiz_ar_stationarity')
 
 ch2_ar_stationarity()
@@ -150,7 +149,6 @@ def ch2_acf_pacf_patterns():
     axes[1, 2].set_xlabel('Lag')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_quiz_acf_pacf_patterns')
 
 ch2_acf_pacf_patterns()
@@ -189,7 +187,6 @@ def ch2_information_criteria():
     ax.set_xticks(orders)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_quiz_information_criteria')
 
 ch2_information_criteria()
@@ -228,7 +225,6 @@ def ch2_ljung_box():
     axes[1].set_ylim(-0.5, 0.5)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_quiz_ljung_box')
 
 ch2_ljung_box()
@@ -284,7 +280,6 @@ def ch2_forecast_properties():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch2_quiz_forecast_properties')
 
 ch2_forecast_properties()
@@ -324,7 +319,6 @@ def ch3_quiz1_rw_variance():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_quiz1_rw_variance')
 
 ch3_quiz1_rw_variance()
@@ -363,7 +357,6 @@ def ch3_quiz2_differencing():
     axes[2].set_xlabel('Time')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_quiz2_differencing')
 
 ch3_quiz2_differencing()
@@ -410,7 +403,6 @@ def ch3_quiz3_adf_test():
     ax.set_yticks([])
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_quiz3_adf_test')
 
 ch3_quiz3_adf_test()
@@ -438,7 +430,6 @@ def ch3_quiz4_acf_decay():
     
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_quiz4_acf_decay')
 
 ch3_quiz4_acf_decay()
@@ -492,7 +483,6 @@ def ch3_quiz5_forecast_ci():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch3_quiz5_forecast_ci')
 
 ch3_quiz5_forecast_ci()
@@ -540,7 +530,6 @@ def ch4_quiz1_seasonal_periods():
     axes[1, 1].set_xlabel('Day')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch4_quiz1_seasonal_periods')
 
 ch4_quiz1_seasonal_periods()
@@ -582,7 +571,6 @@ def ch4_quiz2_seasonal_diff():
     axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch4_quiz2_seasonal_diff')
 
 ch4_quiz2_seasonal_diff()
@@ -626,7 +614,6 @@ def ch4_quiz5_seasonal_acf():
     axes[1].set_title('After Differencing: Spikes at 1 and 12')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch4_quiz5_seasonal_acf')
 
 ch4_quiz5_seasonal_acf()
@@ -669,7 +656,6 @@ def ch5_quiz1_var_stability():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch5_quiz1_var_stability')
 
 ch5_quiz1_var_stability()
@@ -718,7 +704,6 @@ def ch5_quiz2_granger_causality():
                  ha='center', fontsize=11, style='italic')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch5_quiz2_granger_causality')
 
 ch5_quiz2_granger_causality()
@@ -772,7 +757,6 @@ def ch5_quiz3_cholesky_ordering():
                  ha='center', fontsize=10, bbox=dict(boxstyle='round', facecolor='wheat'))
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch5_quiz3_cholesky_ordering')
 
 ch5_quiz3_cholesky_ordering()
@@ -806,7 +790,6 @@ def ch5_quiz5_fevd():
     ax.set_ylim(0, 1.1)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch5_quiz5_fevd')
 
 ch5_quiz5_fevd()

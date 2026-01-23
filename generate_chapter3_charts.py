@@ -49,11 +49,12 @@ print(f"Using: {data_source}")
 # Chart 1: Non-stationary time series (GDP in levels)
 fig, ax = plt.subplots(figsize=(12, 5))
 ax.plot(gdp_data.index, gdp_data.values, color=BLUE, linewidth=1.5)
-ax.set_title('US Real GDP: A Non-Stationary Time Series', fontweight='bold', fontsize=14)
+ax.set_title('US Real GDP (Quarterly, 1990-2024): A Non-Stationary Time Series', fontweight='bold', fontsize=14)
 ax.set_xlabel('Date')
 ax.set_ylabel('Billions of 2017 Dollars')
+ax.text(0.02, 0.98, 'Source: FRED (GDPC1)', transform=ax.transAxes, fontsize=9,
+        verticalalignment='top', style='italic', color='gray')
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch3_gdp_levels.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_gdp_levels.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -77,10 +78,10 @@ axes[1].axhline(y=gdp_growth.mean(), color=RED, linestyle='--', alpha=0.7, label
 axes[1].set_title('GDP Growth Rate (Stationary)', fontweight='bold')
 axes[1].set_xlabel('Date')
 axes[1].set_ylabel('Growth Rate (%)')
-axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
+plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch3_differencing.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_differencing.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -130,7 +131,6 @@ axes[1, 1].set_xlabel('Lag')
 axes[1, 1].set_ylabel('PACF')
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch3_acf_pacf.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_acf_pacf.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -171,10 +171,10 @@ ax.axvline(x=train.index[-1], color='gray', linestyle=':', alpha=0.7, linewidth=
 ax.set_title('US GDP: ARIMA(1,1,1) Forecast vs Actual', fontweight='bold', fontsize=14)
 ax.set_xlabel('Date')
 ax.set_ylabel('Billions of 2017 Dollars')
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4, frameon=False)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.14), ncol=4, frameon=False)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
+plt.subplots_adjust(bottom=0.16)
 plt.savefig('charts/ch3_arima_forecast.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_arima_forecast.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -212,7 +212,6 @@ ax.text(0.02, 0.92, f'GDP Growth: p-value = {adf_diff[1]:.4f} (Stationary)',
         transform=ax.transAxes, fontsize=10, verticalalignment='top', color=GREEN)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch3_adf_test.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_adf_test.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -239,7 +238,7 @@ axes[0, 1].plot(x_range, stats.norm.pdf(x_range, resid.mean(), resid.std()),
 axes[0, 1].set_title('Residual Distribution', fontweight='bold')
 axes[0, 1].set_xlabel('Residual')
 axes[0, 1].set_ylabel('Density')
-axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
+axes[0, 1].legend(loc='upper right', fontsize=9, frameon=False)
 
 # ACF of residuals
 acf_resid = acf(resid.dropna(), nlags=20)
@@ -260,7 +259,6 @@ axes[1, 1].set_xlabel('Theoretical Quantiles')
 axes[1, 1].set_ylabel('Sample Quantiles')
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch3_diagnostics.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_diagnostics.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -289,7 +287,6 @@ axes[1].set_xlabel('Time')
 axes[1].set_ylabel('$Y_t$')
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch3_random_walk.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_random_walk.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -309,7 +306,7 @@ axes[0].plot(2 + 0.1 * t, color=RED, linewidth=2, linestyle='--', label='Trend l
 axes[0].set_title('Deterministic Trend (Trend-Stationary)', fontweight='bold')
 axes[0].set_xlabel('Time')
 axes[0].set_ylabel('$Y_t$')
-axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2, frameon=False)
 
 # Stochastic trend (random walk with drift)
 stoch_trend = np.cumsum(0.1 + np.random.normal(0, 2, n_sim))
@@ -317,10 +314,10 @@ axes[1].plot(stoch_trend, color=GREEN, linewidth=1.5, label='$Y_t = Y_{t-1} + \\
 axes[1].set_title('Stochastic Trend (Unit Root)', fontweight='bold')
 axes[1].set_xlabel('Time')
 axes[1].set_ylabel('$Y_t$')
-axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
+plt.subplots_adjust(bottom=0.20)
 plt.savefig('charts/ch3_trend_comparison.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_trend_comparison.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -359,10 +356,10 @@ axes[1].plot(theoretical_var, color=RED, linewidth=2, linestyle='--', label='The
 axes[1].set_title('Variance of Random Walk Grows Linearly', fontweight='bold')
 axes[1].set_xlabel('Time $t$')
 axes[1].set_ylabel('$Var(Y_t)$')
-axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2, frameon=False)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
+plt.subplots_adjust(bottom=0.20)
 plt.savefig('charts/ch3_variance_growth.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_variance_growth.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -413,10 +410,78 @@ axes[1, 1].set_xlabel('Lag')
 axes[1, 1].set_ylabel('ACF')
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch3_acf_nonstationary.pdf', dpi=300, bbox_inches='tight')
 plt.savefig('charts/ch3_acf_nonstationary.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Created: ch3_acf_nonstationary.pdf")
+
+# Chart 11: Rolling Forecast Illustration
+np.random.seed(42)
+n_total = 150
+window_size = 80
+
+# Generate ARIMA(1,1,0) data
+phi = 0.6
+eps = np.random.normal(0, 2, n_total)
+diff_y = np.zeros(n_total)
+for t in range(1, n_total):
+    diff_y[t] = phi * diff_y[t-1] + eps[t]
+y = 100 + np.cumsum(diff_y)
+
+# Rolling forecasts
+forecasts = []
+forecast_times = []
+actuals = []
+
+for t in range(window_size, n_total - 1):
+    # Fit on window
+    train = y[:t]
+    # Simple 1-step forecast using last difference
+    last_diff = train[-1] - train[-2]
+    forecast = train[-1] + phi * last_diff
+    forecasts.append(forecast)
+    forecast_times.append(t)
+    actuals.append(y[t])
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Left: Show rolling window concept
+t_show = list(range(n_total))
+axes[0].plot(t_show, y, color=BLUE, linewidth=1.5, label='Actual Data')
+
+# Highlight different windows
+windows_to_show = [80, 100, 120]
+colors_w = ['#FFD700', '#FFA500', '#FF6347']
+for i, w_start in enumerate(windows_to_show):
+    w_end = w_start
+    axes[0].axvspan(w_start - window_size, w_start, alpha=0.2, color=colors_w[i])
+    axes[0].scatter([w_start], [y[w_start]], color=colors_w[i], s=100, zorder=5,
+                    edgecolor='black', linewidth=1.5)
+
+axes[0].axvline(x=window_size, color='gray', linestyle='--', alpha=0.7)
+axes[0].set_title('Rolling Window Concept', fontweight='bold')
+axes[0].set_xlabel('Time')
+axes[0].set_ylabel('$Y_t$')
+axes[0].text(40, max(y)-10, f'Window\nsize = {window_size}', fontsize=10, ha='center')
+axes[0].legend(loc='upper left', fontsize=9, frameon=False)
+
+# Right: Forecasts vs Actuals
+axes[1].plot(forecast_times, actuals, color=BLUE, linewidth=1.5, label='Actual')
+axes[1].plot(forecast_times, forecasts, color=RED, linewidth=1.5, linestyle='--',
+             label='1-Step Forecast', alpha=0.8)
+
+# Calculate RMSE
+rmse = np.sqrt(np.mean((np.array(forecasts) - np.array(actuals))**2))
+axes[1].set_title(f'Rolling 1-Step Forecasts (RMSE = {rmse:.2f})', fontweight='bold')
+axes[1].set_xlabel('Time')
+axes[1].set_ylabel('Value')
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
+
+plt.tight_layout()
+plt.subplots_adjust(bottom=0.18)
+plt.savefig('charts/ch3_rolling_forecast.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_rolling_forecast.png', dpi=300, bbox_inches='tight')
+plt.close()
+print("Created: ch3_rolling_forecast.pdf")
 
 print("\nAll Chapter 3 charts generated successfully!")

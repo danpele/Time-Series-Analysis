@@ -170,7 +170,6 @@ def create_ch3_motivation_realworld():
     ax1 = axes[0]
     stock = 100 * np.exp(np.cumsum(np.random.normal(0.001, 0.02, T)))
     ax1.plot(time, stock, color=MAIN_BLUE, linewidth=1.5)
-    ax1.fill_between(time, stock, alpha=0.3, color=MAIN_BLUE)
     ax1.set_title('Stock Price\n(Geometric Random Walk)', fontweight='bold')
     ax1.set_xlabel('Trading Days')
     ax1.set_ylabel('Price ($)')
@@ -182,7 +181,6 @@ def create_ch3_motivation_realworld():
     ax2 = axes[1]
     fx = 1.1 + np.cumsum(np.random.normal(0, 0.005, T))
     ax2.plot(time, fx, color=FOREST, linewidth=1.5)
-    ax2.fill_between(time, fx, alpha=0.3, color=FOREST)
     ax2.set_title('Exchange Rate\n(EUR/USD)', fontweight='bold')
     ax2.set_xlabel('Days')
     ax2.set_ylabel('Rate')
@@ -195,7 +193,6 @@ def create_ch3_motivation_realworld():
     ir = 3 + np.cumsum(np.random.normal(0, 0.1, T)) * 0.1
     ir = np.clip(ir, 0.5, 8)
     ax3.plot(time, ir, color=CRIMSON, linewidth=1.5)
-    ax3.fill_between(time, ir, alpha=0.3, color=CRIMSON)
     ax3.set_title('Interest Rate\n(Central Bank Policy)', fontweight='bold')
     ax3.set_xlabel('Months')
     ax3.set_ylabel('Rate (%)')

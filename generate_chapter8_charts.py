@@ -99,7 +99,6 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 axes[1].set_xlim(-1, max_lag)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_acf_comparison.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_acf_comparison.png', dpi=150, bbox_inches='tight')
 plt.close()
@@ -148,7 +147,6 @@ axes[2].set_title('Persistent (H > 0.5)\nTrending', fontweight='bold', fontsize=
 axes[2].set_xlabel('Time')
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_hurst_interpretation.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_hurst_interpretation.png', dpi=150, bbox_inches='tight')
 plt.close()
@@ -211,7 +209,6 @@ axes[1, 1].set_ylabel('ACF')
 axes[1, 1].set_xlim(-1, max_lag)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_volatility_long_memory.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_volatility_long_memory.png', dpi=150, bbox_inches='tight')
 plt.close()
@@ -276,7 +273,6 @@ for bar, val in zip(bars, feature_importance):
                     va='center', fontsize=10)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_feature_engineering.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_feature_engineering.png', dpi=150, bbox_inches='tight')
 plt.close()
@@ -327,7 +323,6 @@ ax.set_ylabel('Value')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_rf_prediction.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_rf_prediction.png', dpi=150, bbox_inches='tight')
 plt.close()
@@ -372,7 +367,6 @@ ax.set_yticks([])
 ax.spines['left'].set_visible(False)
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_timeseries_cv.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_timeseries_cv.png', dpi=150, bbox_inches='tight')
 plt.close()
@@ -480,7 +474,6 @@ for bar, val in zip(bars2, training_time):
                  ha='center', fontsize=11, fontweight='bold')
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_model_comparison.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_model_comparison.png', dpi=150, bbox_inches='tight')
 plt.close()
@@ -527,7 +520,6 @@ ax.annotate('Slow decay\n(Long memory)', xy=(20, 0.15), xytext=(22, 0.35),
             fontsize=9, color=COLORS['red'])
 
 plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
 plt.savefig('charts/ch8_arfima_d_effect.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('charts/ch8_arfima_d_effect.png', dpi=150, bbox_inches='tight')
 plt.close()

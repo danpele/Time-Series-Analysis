@@ -76,7 +76,6 @@ def ch6_quiz1_cointegration():
     axes[2].set_xlabel('Time')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz1_cointegration')
 
 ch6_quiz1_cointegration()
@@ -115,7 +114,6 @@ def ch6_quiz2_spurious():
                  verticalalignment='top', bbox=props)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz2_spurious')
 
 ch6_quiz2_spurious()
@@ -167,7 +165,6 @@ def ch6_quiz4_johansen():
     axes[1].set_title('Johansen vs Engle-Granger', fontsize=11, pad=20)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz4_johansen')
 
 ch6_quiz4_johansen()
@@ -221,7 +218,6 @@ def ch6_quiz6_adjustment():
     axes[1].set_title('Error Correction Mechanism', fontsize=11)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz6_adjustment')
 
 ch6_quiz6_adjustment()
@@ -267,7 +263,6 @@ def ch6_quiz3_eg_critical():
     ax.set_yticks([])
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz3_eg_critical')
 
 ch6_quiz3_eg_critical()
@@ -310,7 +305,6 @@ def ch6_quiz_vecm_irf():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz_vecm_irf')
 
 ch6_quiz_vecm_irf()
@@ -361,7 +355,6 @@ def ch6_quiz_weak_exog():
     axes[1].set_title('$Y_2$ Weakly Exogenous ($\\alpha_2=0$)', fontsize=10)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz_weak_exog')
 
 ch6_quiz_weak_exog()
@@ -403,7 +396,6 @@ def ch6_quiz_trace_test():
             verticalalignment='top', horizontalalignment='right', bbox=props)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch6_quiz_trace_test')
 
 ch6_quiz_trace_test()

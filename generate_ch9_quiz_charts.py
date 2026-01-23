@@ -94,7 +94,6 @@ def ch9_quiz1_multiple_seasonality():
                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz1_multiple_seasonality')
 
 ch9_quiz1_multiple_seasonality()
@@ -136,7 +135,6 @@ def ch9_quiz2_tbats_components():
     ax.set_title('TBATS: What Does It Stand For?', fontsize=14, fontweight='bold')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz2_tbats_components')
 
 ch9_quiz2_tbats_components()
@@ -225,7 +223,6 @@ def ch9_quiz4_prophet_decomposition():
     axes[3].set_xlabel('Day')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz4_prophet_decomposition')
 
 ch9_quiz4_prophet_decomposition()
@@ -273,7 +270,6 @@ def ch9_quiz5_prophet_vs_tbats():
     ax.set_title('TBATS vs Prophet: Head-to-Head Comparison', fontsize=14, fontweight='bold', pad=20)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz5_prophet_vs_tbats')
 
 ch9_quiz5_prophet_vs_tbats()
@@ -370,7 +366,6 @@ def ch9_quiz7_changepoints():
     ax.annotate('Slope = 0.02', xy=(175, trend[175]+5), fontsize=9, color='blue')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz7_changepoints')
 
 ch9_quiz7_changepoints()
@@ -504,7 +499,6 @@ def ch9_quiz9_prophet_uncertainty():
                 arrowprops=dict(arrowstyle='->', color='red'), fontsize=9, color='red')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz9_prophet_uncertainty')
 
 ch9_quiz9_prophet_uncertainty()
@@ -584,7 +578,6 @@ def ch9_quiz10_energy_example():
                     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.9))
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     save_fig('ch9_quiz10_energy_example')
 
 ch9_quiz10_energy_example()

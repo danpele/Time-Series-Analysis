@@ -71,7 +71,6 @@ def ch1_acf_decay():
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem1_acf_decay.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem1_acf_decay.pdf")
@@ -118,7 +117,6 @@ def ch1_forecast_intervals():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem1_forecast_intervals.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem1_forecast_intervals.pdf")
@@ -187,7 +185,6 @@ def ch1_timeseries_cv():
                ncol=3, frameon=False, fontsize=9)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem1_timeseries_cv.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem1_timeseries_cv.pdf")
@@ -234,7 +231,6 @@ def ch3_random_walk_variance():
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem3_rw_variance.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem3_rw_variance.pdf")
@@ -279,7 +275,6 @@ def ch3_adf_kpss_comparison():
         ax.text(7, y, col3, fontsize=10, ha='center', fontweight='bold', color=color)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem3_adf_kpss.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem3_adf_kpss.pdf")
@@ -341,7 +336,6 @@ def ch3_overdifferencing():
     axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem3_overdifferencing.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem3_overdifferencing.pdf")
@@ -402,7 +396,6 @@ def ch4_seasonal_acf():
                      fontweight='bold', color=RED)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem4_seasonal_acf.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem4_seasonal_acf.pdf")
@@ -477,7 +470,6 @@ def ch4_multiplicative_additive():
     ax.set_title('Multiplicative: Diverging Lines\n(Use log transform!)', fontweight='bold', color=ORANGE)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem4_mult_add.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem4_mult_add.pdf")
@@ -539,7 +531,6 @@ def ch5_var_stability():
                arrowprops=dict(arrowstyle='->', color=RED))
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem5_var_stability.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem5_var_stability.pdf")
@@ -583,7 +574,6 @@ def ch5_irf_example():
                 fontsize=14, fontweight='bold', y=1.02)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem5_irf_example.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem5_irf_example.pdf")
@@ -632,7 +622,6 @@ def ch5_granger_diagram():
            ha='center', va='center', fontsize=10)
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem5_granger_diagram.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem5_granger_diagram.pdf")
@@ -669,7 +658,6 @@ def ch5_fevd_example():
         ax.text(i, own + other/2, f'{other}%', ha='center', va='center', fontsize=9, color='white', fontweight='bold')
 
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.18)
     plt.savefig('charts/sem5_fevd_example.pdf', bbox_inches='tight', dpi=150)
     plt.close()
     print("Created: sem5_fevd_example.pdf")
