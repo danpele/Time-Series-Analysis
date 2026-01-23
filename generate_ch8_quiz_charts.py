@@ -203,7 +203,7 @@ def ch8_quiz4_rf_features():
         Patch(facecolor='orange', alpha=0.7, label='Calendar features'),
         Patch(facecolor='gray', alpha=0.7, label='Other')
     ]
-    ax.legend(handles=legend_elements, loc='lower right', fontsize=8)
+    ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, ncol=2, frameon=False)
 
     plt.tight_layout()
     save_fig('ch8_quiz4_rf_features')
@@ -279,7 +279,7 @@ def ch8_quiz5_cv_comparison():
         Patch(facecolor='red', alpha=0.7, label='Test'),
         Patch(facecolor='lightgray', alpha=0.7, label='Future (not used)')
     ]
-    ax.legend(handles=legend_elements, loc='upper right', fontsize=8, ncol=3)
+    ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, ncol=3, frameon=False)
 
     plt.tight_layout()
     save_fig('ch8_quiz5_cv_comparison')
@@ -402,7 +402,7 @@ def ch8_quiz8_data_leakage():
     ax.set_xlabel('Time')
     ax.set_ylabel('Value')
     ax.set_title('CORRECT: Rolling Mean Uses Past Only', fontsize=10, color='green')
-    ax.legend(loc='upper left', fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
 
     # Wrong: centered rolling mean (uses future data)
     ax = axes[1]
@@ -425,7 +425,7 @@ def ch8_quiz8_data_leakage():
     ax.set_xlabel('Time')
     ax.set_ylabel('Value')
     ax.set_title('WRONG: Centered Mean Uses Future Data!', fontsize=10, color='red')
-    ax.legend(loc='upper left', fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch8_quiz8_data_leakage')
@@ -453,7 +453,7 @@ def ch8_quiz9_complexity_data():
     ax.set_title('Model Complexity vs Data Requirements', fontsize=11)
     ax.set_xticks(x)
     ax.set_xticklabels(models)
-    ax.legend(loc='upper left', fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=9, frameon=False)
     ax.set_yscale('log')
     ax.set_ylim(10, 100000)
 
@@ -490,7 +490,7 @@ def ch8_quiz10_metrics():
     ax.set_xlabel('Observation')
     ax.set_ylabel('Absolute Error')
     ax.set_title('Normal Errors\nMAE $\\approx$ RMSE', fontsize=10)
-    ax.legend(loc='upper right', fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
     ax.set_ylim(0, 15)
 
     # Scenario 2: With outliers
@@ -509,7 +509,7 @@ def ch8_quiz10_metrics():
     ax.set_xlabel('Observation')
     ax.set_ylabel('Absolute Error')
     ax.set_title('With Outlier\nRMSE >> MAE (RMSE penalizes outliers)', fontsize=10)
-    ax.legend(loc='upper right', fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
     ax.set_ylim(0, 20)
 
     # Annotate outlier

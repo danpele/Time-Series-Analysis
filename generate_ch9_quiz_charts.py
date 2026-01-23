@@ -169,7 +169,7 @@ def ch9_quiz3_fourier_harmonics():
         ax.plot(t, approx, 'r-', linewidth=2, label=f'Fourier K={K}')
         ax.set_title(title, fontsize=10)
         ax.set_xlabel('Period')
-        ax.legend(loc='upper right', fontsize=8)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch9_quiz3_fourier_harmonics')
@@ -210,7 +210,7 @@ def ch9_quiz4_prophet_decomposition():
     axes[1].axvline(x=200, color='red', linestyle='--', alpha=0.7, label='Changepoint')
     axes[1].set_title('g(t): Trend with Changepoint', fontsize=10, color='blue')
     axes[1].set_ylabel('g(t)')
-    axes[1].legend(loc='upper left', fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     axes[2].plot(t[:50], weekly[:50], 'g-', linewidth=1.5)
     axes[2].set_title('s(t): Weekly Seasonality (period=7)', fontsize=10, color='green')
@@ -296,7 +296,7 @@ def ch9_quiz6_seasonality_mode():
     axes[0].set_title('Additive: $Y = T + S + \\varepsilon$\nConstant Seasonal Amplitude', fontsize=10, color='blue')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(loc='upper left', fontsize=8)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Multiplicative seasonality
     seasonal_mult = 1 + 0.2 * np.sin(2 * np.pi * t / 12)  # +-20%
@@ -307,7 +307,7 @@ def ch9_quiz6_seasonality_mode():
     axes[1].fill_between(t, trend * 0.8, trend * 1.2, alpha=0.2, color='green', label='Growing amplitude')
     axes[1].set_title('Multiplicative: $Y = T \\times S \\times \\varepsilon$\nSeasonal Amplitude Grows', fontsize=10, color='green')
     axes[1].set_xlabel('Time')
-    axes[1].legend(loc='upper left', fontsize=8)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch9_quiz6_seasonality_mode')
@@ -357,7 +357,7 @@ def ch9_quiz7_changepoints():
     ax.set_ylabel('Value')
     ax.set_title('Prophet: Automatic Changepoint Detection\n$g(t) = (k + \\mathbf{a}(t)^T \\delta) \\cdot t + (m + \\mathbf{a}(t)^T \\gamma)$',
                  fontsize=11)
-    ax.legend(loc='upper left', fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=9, frameon=False)
 
     # Add annotations for slope changes
     ax.annotate('Slope = 0.1', xy=(25, trend[25]+5), fontsize=9, color='blue')
@@ -474,7 +474,7 @@ def ch9_quiz9_prophet_uncertainty():
     ax.set_ylabel('Value')
     ax.set_title('Prophet: Uncertainty Grows with Forecast Horizon\n(Trend + Seasonality + Observation Uncertainty)',
                  fontsize=11)
-    ax.legend(loc='upper left', fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=9, frameon=False)
 
     # Annotate uncertainty sources
     ax.annotate('Uncertainty grows\nwith horizon', xy=(n_hist + 25, y_forecast[-5] + 1.96*uncertainty[-5]),

@@ -138,7 +138,7 @@ axes[0, 0].axvline(x=pd.Timestamp(val_start), color='gray', linestyle='--', alph
 axes[0, 0].axvline(x=pd.Timestamp(test_start), color='gray', linestyle='--', alpha=0.5)
 axes[0, 0].set_title('Original Series (Train/Val/Test)', fontweight='bold', fontsize=11)
 axes[0, 0].set_ylabel('Rate (%)')
-axes[0, 0].legend(loc='upper right', fontsize=8, frameon=False)
+axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 color = COLORS['red'] if adf_orig[1] > 0.05 else COLORS['green']
 axes[0, 0].text(0.02, 0.95, f'ADF p = {adf_orig[1]:.3f}', transform=axes[0, 0].transAxes, fontsize=9, va='top', color=color)
 

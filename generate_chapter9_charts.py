@@ -514,7 +514,7 @@ def generate_retail_sales_example():
     covid_start = pd.Timestamp('2020-03-01')
     covid_end = pd.Timestamp('2020-06-01')
     axes[0, 0].axvspan(covid_start, covid_end, alpha=0.3, color=IDA_RED, label='COVID Impact')
-    axes[0, 0].legend(loc='upper left')
+    axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Monthly pattern (average)
     df['month'] = df['ds'].dt.month

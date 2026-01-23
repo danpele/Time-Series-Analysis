@@ -80,7 +80,7 @@ def ch1_def_stochastic():
     ax.set_xlabel('Time $t$')
     ax.set_ylabel('$X_t(\\omega)$')
     ax.set_title('Stochastic Process: Multiple realizations from same underlying process')
-    ax.legend(fontsize=8, loc='upper right')
+    ax.legend(fontsize=8, loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
     plt.tight_layout()
     save_fig('ch1_def_stochastic')
@@ -516,7 +516,7 @@ def ch2_def_invertibility():
     axes[0].plot(0.5, 0, 'go', markersize=12, label='Invertible: $|\\theta| < 1$')
     axes[0].plot(1.3, 0, 'rx', markersize=12, mew=3, label='Non-invertible: $|\\theta| > 1$')
     axes[0].set_title('Invertibility: Root outside unit circle')
-    axes[0].legend(fontsize=8, loc='lower right')
+    axes[0].legend(fontsize=8, loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0].set_xlabel('Real')
     axes[0].set_ylabel('Imaginary')
 

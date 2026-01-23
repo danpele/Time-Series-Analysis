@@ -381,7 +381,7 @@ def ch2_stationarity_region():
     ax.set_ylabel('$\\phi_2$', fontsize=12)
     ax.set_title('AR(2) Stationarity Region\n$Y_t = \\phi_1 Y_{t-1} + \\phi_2 Y_{t-2} + \\varepsilon_t$',
                 fontweight='bold')
-    ax.legend(loc='upper right', fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=9, frameon=False)
     ax.set_aspect('equal')
     
 
@@ -424,7 +424,7 @@ def ch2_invertibility():
     ax.set_ylabel('Imaginary')
     ax.set_title('Invertible MA(1): $\\theta = 0.6$\nRoot outside unit circle',
                 fontweight='bold', color=GREEN)
-    ax.legend(loc='lower right', fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=9, frameon=False)
 
     # Non-invertible MA(1)
     ax = axes[1]
@@ -448,7 +448,7 @@ def ch2_invertibility():
     ax.set_ylabel('Imaginary')
     ax.set_title('Non-Invertible MA(1): $\\theta = 1.5$\nRoot inside unit circle',
                 fontweight='bold', color=RED)
-    ax.legend(loc='lower right', fontsize=9)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=9, frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/sem2_invertibility.pdf', bbox_inches='tight', dpi=150)

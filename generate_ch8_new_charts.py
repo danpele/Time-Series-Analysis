@@ -67,7 +67,7 @@ def generate_eurron_series():
     axes[0].set_title('Evoluția Cursului EUR/RON (2015-2024)', fontweight='bold')
     axes[0].axhline(y=df['EURRON'].mean(), color=IDA_RED, linestyle='--',
                     alpha=0.7, label=f'Media: {df["EURRON"].mean():.2f}')
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Returns
     axes[1].plot(df.index, df['Returns'], color=ACCENT_BLUE, linewidth=0.5, alpha=0.8)
@@ -80,7 +80,7 @@ def generate_eurron_series():
     high_vol = df['Returns'].abs() > 1.5
     axes[1].scatter(df.index[high_vol], df['Returns'][high_vol],
                    color=IDA_RED, s=10, alpha=0.6, label='Volatilitate ridicată')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
     plt.savefig('charts/ch8_eurron_series.pdf', dpi=150, bbox_inches='tight')
@@ -112,7 +112,7 @@ def generate_lstm_training():
     axes[0].set_xlabel('Epoch')
     axes[0].set_ylabel('Loss (MSE)')
     axes[0].set_title('Curba de Învățare LSTM', fontweight='bold')
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0].set_xlim(1, 50)
 
     # Learning rate effect (simulated)
@@ -127,7 +127,7 @@ def generate_lstm_training():
     axes[1].set_xlabel('Epoch')
     axes[1].set_ylabel('Loss (MSE)')
     axes[1].set_title('Efectul Learning Rate', fontweight='bold')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[1].set_xlim(1, 50)
 
     plt.tight_layout()

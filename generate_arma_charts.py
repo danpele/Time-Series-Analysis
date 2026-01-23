@@ -720,25 +720,30 @@ def plot_box_jenkins_flowchart():
     from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle
     from matplotlib.patches import Polygon
 
-    fig, ax = plt.subplots(figsize=(16, 12))
-    ax.set_xlim(0, 16)
-    ax.set_ylim(0, 14)
+    fig, ax = plt.subplots(figsize=(14, 10))
+    ax.set_xlim(0, 14)
+    ax.set_ylim(0, 12)
     ax.axis('off')
 
     # Colors
-    step_colors = [BLUE, GREEN, ORANGE, PURPLE]
+    step_colors = ['#2E86AB', '#28A745', '#F39C12', '#9B59B6']  # Blue, Green, Orange, Purple
+    decision_color = '#E74C3C'
+    detail_color = '#34495E'
 
     # Draw main process boxes
     def draw_box(ax, x, y, width, height, text, color, step_num=None):
         box = FancyBboxPatch((x - width/2, y - height/2), width, height,
-                             boxstyle="round,pad=0.02,rounding_size=0.3",
+                             boxstyle="round,pad=0.02,rounding_size=0.2",
                              facecolor=color, edgecolor='white', linewidth=2)
         ax.add_patch(box)
         if step_num:
-            ax.text(x, y + height/2 - 0.4, f'STEP {step_num}', ha='center', va='top',
-                   fontsize=10, color='white', fontweight='bold', alpha=0.8)
-        ax.text(x, y - 0.1, text, ha='center', va='center', fontsize=11,
-               color='white', fontweight='bold', wrap=True)
+            ax.text(x, y + height/2 - 0.3, f'STEP {step_num}', ha='center', va='top',
+                   fontsize=11, color='white', fontweight='bold', alpha=0.9)
+            ax.text(x, y - 0.15, text, ha='center', va='center', fontsize=10,
+                   color='white', fontweight='bold', wrap=True)
+        else:
+            ax.text(x, y, text, ha='center', va='center', fontsize=9,
+                   color='white', fontweight='bold', wrap=True)
 
     # Draw diamond decision box
     def draw_diamond(ax, x, y, size, text, color):
@@ -748,49 +753,53 @@ def plot_box_jenkins_flowchart():
         ax.text(x, y, text, ha='center', va='center', fontsize=10,
                color='white', fontweight='bold')
 
-    # Main steps
-    draw_box(ax, 5, 12, 5, 1.8, 'IDENTIFICATION\nAnalyze ACF/PACF patterns\nDetermine p, d, q orders', step_colors[0], 1)
-    draw_box(ax, 5, 9, 5, 1.8, 'ESTIMATION\nEstimate parameters\nMLE or Yule-Walker', step_colors[1], 2)
-    draw_box(ax, 5, 6, 5, 1.8, 'DIAGNOSTIC CHECKING\nResidual analysis\nLjung-Box test', step_colors[2], 3)
-    draw_box(ax, 5, 2.5, 5, 1.8, 'FORECASTING\nGenerate predictions\nConfidence intervals', step_colors[3], 4)
+    # Main steps (left column)
+    draw_box(ax, 4, 10, 4.5, 1.6, 'IDENTIFICATION\nAnalyze ACF/PACF\nDetermine p, d, q', step_colors[0], 1)
+    draw_box(ax, 4, 7.5, 4.5, 1.6, 'ESTIMATION\nEstimate parameters\nMLE or Yule-Walker', step_colors[1], 2)
+    draw_box(ax, 4, 5, 4.5, 1.6, 'DIAGNOSTIC CHECK\nResidual analysis\nLjung-Box test', step_colors[2], 3)
+    draw_box(ax, 4, 2, 4.5, 1.6, 'FORECASTING\nGenerate predictions\nConfidence intervals', step_colors[3], 4)
 
-    # Decision diamond
-    draw_diamond(ax, 11, 6, 1.2, 'Model\nAdequate?', '#E74C3C')
+    # Decision diamond (right of Step 3)
+    draw_diamond(ax, 9.5, 5, 1.0, 'Model\nOK?', decision_color)
 
-    # Side boxes with details
-    detail_color = '#34495E'
-    draw_box(ax, 12.5, 12, 4.5, 1.5, 'Plot time series\nCheck stationarity\nTransform if needed', detail_color)
-    draw_box(ax, 12.5, 9, 4.5, 1.5, 'Maximum Likelihood\nLeast Squares\nMethod of Moments', detail_color)
-    draw_box(ax, 12.5, 2.5, 4.5, 1.5, 'Point forecasts\n95% prediction intervals\nModel uncertainty', detail_color)
+    # Side boxes with details (right column)
+    draw_box(ax, 11, 10, 3.8, 1.3, 'Check stationarity\nTransform if needed', detail_color)
+    draw_box(ax, 11, 7.5, 3.8, 1.3, 'Maximum Likelihood\nLeast Squares', detail_color)
+    draw_box(ax, 11, 2, 3.8, 1.3, 'Point forecasts\n95% intervals', detail_color)
 
-    # Arrows
-    arrow_style = dict(arrowstyle='->', color=GRAY, lw=2.5, mutation_scale=20)
+    # Arrow style
+    arrow_main = dict(arrowstyle='->', color='#555555', lw=2, mutation_scale=15)
+    arrow_yes = dict(arrowstyle='->', color='#28A745', lw=2.5, mutation_scale=15)
+    arrow_no = dict(arrowstyle='->', color='#E74C3C', lw=2.5, mutation_scale=15)
 
-    # Main flow arrows
-    ax.annotate('', xy=(5, 10.9), xytext=(5, 11.1), arrowprops=arrow_style)
-    ax.annotate('', xy=(5, 7.9), xytext=(5, 8.1), arrowprops=arrow_style)
-    ax.annotate('', xy=(7.5, 6), xytext=(9.8, 6), arrowprops=arrow_style)
+    # Main flow arrows (Step 1 → 2 → 3)
+    ax.annotate('', xy=(4, 9.2), xytext=(4, 8.3), arrowprops=arrow_main)
+    ax.annotate('', xy=(4, 6.7), xytext=(4, 5.8), arrowprops=arrow_main)
 
-    # Yes arrow down
-    ax.annotate('', xy=(5, 4.3), xytext=(5, 4.9), arrowprops=dict(arrowstyle='->', color=GREEN, lw=2.5, mutation_scale=20))
-    ax.text(4.3, 4.6, 'YES', fontsize=11, color=GREEN, fontweight='bold')
+    # Step 3 → Decision diamond
+    ax.annotate('', xy=(8.5, 5), xytext=(6.25, 5), arrowprops=arrow_main)
 
-    # No arrow - loop back
-    ax.annotate('', xy=(11, 10.5), xytext=(11, 7.2),
+    # YES arrow: Decision → Step 4
+    ax.annotate('', xy=(4, 2.8), xytext=(4, 4.2), arrowprops=arrow_yes)
+    ax.text(3.3, 3.5, 'YES', fontsize=11, color='#28A745', fontweight='bold')
+
+    # NO arrow: Decision → back to Step 1 (curved)
+    ax.annotate('', xy=(9.5, 6.0), xytext=(9.5, 8.8),
                 arrowprops=dict(arrowstyle='->', color='#E74C3C', lw=2.5,
-                              connectionstyle='arc3,rad=-0.3', mutation_scale=20))
-    ax.annotate('', xy=(7.5, 11), xytext=(10, 10.5),
-                arrowprops=dict(arrowstyle='->', color='#E74C3C', lw=2.5, mutation_scale=20))
-    ax.text(11.3, 8.5, 'NO', fontsize=11, color='#E74C3C', fontweight='bold')
-    ax.text(11.5, 8, 'Revise\nmodel', fontsize=10, color='#E74C3C', ha='left')
+                              connectionstyle='arc3,rad=0.3', mutation_scale=15))
+    ax.annotate('', xy=(6.25, 10), xytext=(9.5, 9.2),
+                arrowprops=dict(arrowstyle='->', color='#E74C3C', lw=2.5, mutation_scale=15))
+    ax.text(10.2, 7.5, 'NO', fontsize=11, color='#E74C3C', fontweight='bold')
+    ax.text(10.2, 7.0, 'Revise', fontsize=9, color='#E74C3C')
 
     # Dotted lines to detail boxes
-    for y in [12, 9, 2.5]:
-        ax.plot([7.5, 10.2], [y, y], '--', color=GRAY, alpha=0.5, linewidth=1.5)
+    ax.plot([6.25, 9.1], [10, 10], '--', color='#888888', alpha=0.5, linewidth=1.5)
+    ax.plot([6.25, 9.1], [7.5, 7.5], '--', color='#888888', alpha=0.5, linewidth=1.5)
+    ax.plot([6.25, 9.1], [2, 2], '--', color='#888888', alpha=0.5, linewidth=1.5)
 
     # Title
-    ax.text(8, 13.5, 'Box-Jenkins Methodology', ha='center', va='center',
-           fontsize=18, fontweight='bold', color=BLUE)
+    ax.text(7, 11.5, 'Box-Jenkins Methodology', ha='center', va='center',
+           fontsize=16, fontweight='bold', color='#2E86AB')
 
     plt.tight_layout()
     save_chart(fig, 'box_jenkins_flowchart')

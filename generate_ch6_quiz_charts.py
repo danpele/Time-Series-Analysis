@@ -259,7 +259,7 @@ def ch6_quiz3_eg_critical():
     ax.set_ylim(0, 1)
     ax.set_xlabel('Engle-Granger Test Statistic')
     ax.set_title('Cointegration Test: Reject $H_0$ (Cointegrated!)', color='green')
-    ax.legend(loc='upper left', fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
     ax.set_yticks([])
 
     plt.tight_layout()

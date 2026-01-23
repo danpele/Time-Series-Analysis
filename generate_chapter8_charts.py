@@ -83,7 +83,7 @@ axes[0].axhline(y=-1.96/np.sqrt(n), color='gray', linestyle=':', alpha=0.7)
 axes[0].set_title('Short Memory (AR(1), φ=0.7)\nFast Exponential Decay', fontweight='bold', fontsize=12)
 axes[0].set_xlabel('Lag')
 axes[0].set_ylabel('ACF')
-axes[0].legend(loc='upper right')
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 axes[0].set_xlim(-1, max_lag)
 
 # Long memory ACF
@@ -95,7 +95,7 @@ axes[1].axhline(y=-1.96/np.sqrt(n), color='gray', linestyle=':', alpha=0.7)
 axes[1].set_title('Long Memory (ARFIMA, d=0.35)\nSlow Hyperbolic Decay', fontweight='bold', fontsize=12)
 axes[1].set_xlabel('Lag')
 axes[1].set_ylabel('ACF')
-axes[1].legend(loc='upper right')
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 axes[1].set_xlim(-1, max_lag)
 
 plt.tight_layout()
@@ -241,7 +241,7 @@ axes[0, 0].plot(y, color=COLORS['blue'], linewidth=1.5, label='y_t')
 axes[0, 0].set_title('Original Series y_t', fontweight='bold')
 axes[0, 0].set_xlabel('Time (t)')
 axes[0, 0].set_ylabel('Value')
-axes[0, 0].legend()
+axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Lag features
 axes[0, 1].plot(y, color=COLORS['blue'], linewidth=1.5, alpha=0.5, label='y_t')
@@ -249,14 +249,14 @@ axes[0, 1].plot(lag1, color=COLORS['red'], linewidth=1.5, label='y_{t-1} (lag 1)
 axes[0, 1].plot(lag2, color=COLORS['orange'], linewidth=1.5, label='y_{t-2} (lag 2)')
 axes[0, 1].set_title('Lag Features', fontweight='bold')
 axes[0, 1].set_xlabel('Time (t)')
-axes[0, 1].legend(loc='upper left')
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Rolling statistics
 axes[1, 0].plot(y, color=COLORS['blue'], linewidth=1, alpha=0.5, label='y_t')
 axes[1, 0].plot(rolling_mean, color=COLORS['green'], linewidth=2, label='Rolling Mean (7)')
 axes[1, 0].set_title('Rolling Statistics', fontweight='bold')
 axes[1, 0].set_xlabel('Time (t)')
-axes[1, 0].legend()
+axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Feature matrix illustration
 feature_names = ['y_{t-1}', 'y_{t-2}', 'y_{t-3}', 'MA_7', 'STD_7']
@@ -320,7 +320,7 @@ ax.text(train_size + 2, ax.get_ylim()[1] - 3, 'Test Period', fontsize=10)
 ax.set_title('Random Forest Time Series Prediction', fontweight='bold', fontsize=12)
 ax.set_xlabel('Time')
 ax.set_ylabel('Value')
-ax.legend(loc='upper left')
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
 plt.savefig('charts/ch8_rf_prediction.pdf', dpi=150, bbox_inches='tight')
@@ -508,7 +508,7 @@ ax.axhline(y=0, color='black', linewidth=0.5)
 ax.set_xlabel('Lag (k)', fontsize=11)
 ax.set_ylabel('ACF ρ(k)', fontsize=11)
 ax.set_title('Effect of Fractional Differencing Parameter d on ACF Decay', fontweight='bold', fontsize=12)
-ax.legend(loc='upper right')
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 ax.set_xlim(0, max_lag + 1)
 
 # Add annotations

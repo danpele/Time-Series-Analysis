@@ -277,7 +277,7 @@ def ch2_forecast_properties():
     ax.set_xlabel('Time')
     ax.set_ylabel('$Y_t$')
     ax.set_title('AR(1) Forecasts Converge to Unconditional Mean')
-    ax.legend(loc='upper right', fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch2_quiz_forecast_properties')
@@ -399,7 +399,7 @@ def ch3_quiz3_adf_test():
     ax.set_ylim(0, 1)
     ax.set_xlabel('ADF Test Statistic')
     ax.set_title('ADF Test: Cannot Reject Unit Root (Non-stationary)')
-    ax.legend(loc='upper left', fontsize=8)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), fontsize=8, frameon=False)
     ax.set_yticks([])
 
     plt.tight_layout()
