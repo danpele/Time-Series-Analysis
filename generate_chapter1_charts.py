@@ -342,4 +342,114 @@ plt.savefig('charts/ch1_wn_rw.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Created: ch1_wn_rw.pdf")
 
+# Chart 9: HP Filter - Effect of Lambda
+def hp_filter(y, lamb):
+    """Apply Hodrick-Prescott filter"""
+    T = len(y)
+    I = np.eye(T)
+    D = np.zeros((T-2, T))
+    for i in range(T-2):
+        D[i, i] = 1
+        D[i, i+1] = -2
+        D[i, i+2] = 1
+    trend = np.linalg.solve(I + lamb * D.T @ D, y)
+    return trend
+
+# Generate sample data with trend and cycle
+np.random.seed(42)
+T = 120
+t = np.arange(T)
+trend_true = 100 + 0.3 * t + 0.005 * t**2
+cycle = 8 * np.sin(2 * np.pi * t / 20)
+noise = np.random.normal(0, 2, T)
+y = trend_true + cycle + noise
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Effect of different lambdas
+lambdas = [10, 100, 1600, 50000]
+colors = [BLUE, GREEN, ORANGE, RED]
+labels = ['$\\lambda = 10$ (flexible)', '$\\lambda = 100$', '$\\lambda = 1600$ (standard)', '$\\lambda = 50000$ (smooth)']
+
+axes[0].plot(t, y, 'k-', linewidth=0.8, alpha=0.5, label='Original data')
+for lamb, color, label in zip(lambdas, colors, labels):
+    trend_hp = hp_filter(y, lamb)
+    axes[0].plot(t, trend_hp, color=color, linewidth=2, label=label)
+
+axes[0].set_title('HP Filter: Effect of $\\lambda$ on Trend', fontweight='bold')
+axes[0].set_xlabel('Time')
+axes[0].set_ylabel('Value')
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
+
+# Corresponding cycles
+axes[1].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+for lamb, color in zip(lambdas, colors):
+    trend_hp = hp_filter(y, lamb)
+    cycle_hp = y - trend_hp
+    axes[1].plot(t, cycle_hp, color=color, linewidth=1.5, alpha=0.8)
+
+axes[1].set_title('HP Filter: Extracted Cycles', fontweight='bold')
+axes[1].set_xlabel('Time')
+axes[1].set_ylabel('Cycle Component')
+
+plt.tight_layout()
+plt.subplots_adjust(bottom=0.2)
+plt.savefig('charts/ch1_hp_filter_lambda.pdf', dpi=300, bbox_inches='tight')
+plt.close()
+print("Created: ch1_hp_filter_lambda.pdf")
+
+# Chart 10: HP Filter - Business Cycle Extraction
+# Use real-like GDP data
+np.random.seed(123)
+T = 136  # Quarterly data 1990-2023
+t = np.arange(T)
+
+# Simulate realistic GDP growth pattern
+trend_gdp = 100 * np.exp(0.006 * t)  # ~2.5% annual growth
+cycle_gdp = 3 * np.sin(2 * np.pi * t / 32) + 2 * np.sin(2 * np.pi * t / 16)
+# Add recession shocks
+cycle_gdp[32:36] -= 5  # Early 1990s
+cycle_gdp[44:48] -= 3  # 2001 recession
+cycle_gdp[72:80] -= 10  # Great recession
+cycle_gdp[120:122] -= 15  # COVID
+noise_gdp = np.random.normal(0, 0.8, T)
+gdp = trend_gdp * (1 + (cycle_gdp + noise_gdp) / 100)
+
+# Apply HP filter with lambda = 1600 (quarterly)
+trend_hp = hp_filter(gdp, 1600)
+cycle_hp = (gdp - trend_hp) / trend_hp * 100  # Percentage deviation
+
+fig, axes = plt.subplots(2, 1, figsize=(12, 7), sharex=True)
+dates = pd.date_range('1990-01-01', periods=T, freq='QS')
+
+# GDP and trend
+axes[0].plot(dates, gdp, 'b-', linewidth=1, label='GDP (Index)')
+axes[0].plot(dates, trend_hp, 'r--', linewidth=2, label='HP Trend ($\\lambda=1600$)')
+axes[0].set_title('US GDP: Level and HP Trend', fontweight='bold')
+axes[0].set_ylabel('Index (1990=100)')
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, frameon=False)
+
+# Add recession shading
+recessions = [('1990-07-01', '1991-03-01'), ('2001-03-01', '2001-11-01'),
+              ('2007-12-01', '2009-06-01'), ('2020-02-01', '2020-04-01')]
+for start, end in recessions:
+    for ax in axes:
+        ax.axvspan(pd.Timestamp(start), pd.Timestamp(end), alpha=0.2, color='gray')
+
+# Cyclical component
+axes[1].fill_between(dates, 0, cycle_hp, where=(cycle_hp >= 0), color=GREEN, alpha=0.4, label='Expansion')
+axes[1].fill_between(dates, 0, cycle_hp, where=(cycle_hp < 0), color=RED, alpha=0.4, label='Contraction')
+axes[1].plot(dates, cycle_hp, 'k-', linewidth=1)
+axes[1].axhline(y=0, color='gray', linestyle='-', linewidth=0.5)
+axes[1].set_title('Business Cycle: HP Cyclical Component', fontweight='bold')
+axes[1].set_xlabel('Date')
+axes[1].set_ylabel('% Deviation from Trend')
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
+
+plt.tight_layout()
+plt.subplots_adjust(bottom=0.12)
+plt.savefig('charts/ch1_hp_filter_cycle.pdf', dpi=300, bbox_inches='tight')
+plt.close()
+print("Created: ch1_hp_filter_cycle.pdf")
+
 print("\nAll Chapter 1 charts generated successfully!")

@@ -1192,6 +1192,91 @@
     \small Metodele diferite captează trendul la niveluri variate de netezime.
 \end{frame}
 
+\begin{frame}{Filtrul Hodrick-Prescott (HP)}
+    \begin{defn}[Filtrul HP]
+        \textbf{Filtrul HP} descompune o serie de timp $X_t$ în trend $\tau_t$ și ciclu $c_t$:
+        \[
+            X_t = \tau_t + c_t
+        \]
+        prin minimizarea:
+        \[
+            \min_{\{\tau_t\}} \left\{ \sum_{t=1}^{T}(X_t - \tau_t)^2 + \lambda \sum_{t=2}^{T-1}[(\tau_{t+1} - \tau_t) - (\tau_t - \tau_{t-1})]^2 \right\}
+        \]
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Interpretare}
+            \begin{itemize}
+                \item Primul termen: potrivire la date
+                \item Al doilea termen: penalizare netezime
+                \item $\lambda$: parametru de compromis
+            \end{itemize}
+        \end{block}
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Valori Standard $\lambda$}
+            \begin{itemize}
+                \item Anual: $\lambda = 6.25$
+                \item Trimestrial: $\lambda = 1600$
+                \item Lunar: $\lambda = 129600$
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Filtrul HP: Efectul lui $\lambda$}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch1_hp_filter_lambda.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Compromis}
+        \begin{itemize}
+            \item \textbf{$\lambda$ mic}: Trendul urmează datele îndeaproape (mai flexibil)
+            \item \textbf{$\lambda$ mare}: Trendul devine mai neted (se apropie de trend liniar)
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Filtrul HP: Extragerea Ciclului de Afaceri}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch1_hp_filter_cycle.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{Aplicație}
+        Filtrul HP este utilizat pe scară largă în macroeconomie pentru extragerea ciclurilor de afaceri din PIB și alte serii economice.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Filtrul HP: Limitări}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{Probleme Cunoscute}
+            \begin{itemize}
+                \item \textbf{Problema capetelor}: Estimările trendului nesigure la capete
+                \item \textbf{Cicluri false}: Poate crea dinamici artificiale
+                \item \textbf{Alegerea $\lambda$}: Rezultatele sensibile la parametru
+                \item \textbf{Non-staționar}: Presupune trend neted
+            \end{itemize}
+        \end{alertblock}
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Alternative}
+            \begin{itemize}
+                \item \textbf{Filtre band-pass}: Baxter-King, Christiano-Fitzgerald
+                \item \textbf{Filtrul Hamilton}: Bazat pe regresie
+                \item \textbf{Componente neobservate}: Modele spațiu-stare
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Critica lui Hamilton (2018)}
+        „De ce nu ar trebui să folosiți niciodată filtrul Hodrick-Prescott" --- sugerează utilizarea regresiei pe valori întârziate.
+    \end{block}
+\end{frame}
+
 \begin{frame}{Metode de Eliminare a Sezonalității}
     \textbf{Patru abordări pentru eliminarea sezonalității:}
 
@@ -2122,6 +2207,60 @@
         Multiplicativă: $Y_t = T_t \times S_t \times \varepsilon_t$ --- oscilațiile sezoniere proporționale cu trendul.
     \end{exampleblock}
 \end{frame}
+
+%=============================================================================
+\section{Studiu de Caz: PIB România}
+%=============================================================================
+
+\begin{frame}{Studiu de Caz: PIB Trimestrial România}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.75\textheight, keepaspectratio]{ch1_case_gdp_raw.pdf}
+    \end{center}
+
+    \begin{itemize}
+        \item \textbf{Date}: PIB trimestrial România, 2010--2023 (sursa: INS/Eurostat)
+        \item \textbf{Observații}: Trend crescător, sezonalitate trimestrială, șoc COVID-19 în 2020
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Descompunerea Seriei PIB}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch1_case_gdp_decomposition.pdf}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Interpretarea Componentelor}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Componente Identificate}
+                \begin{itemize}
+                    \item \textbf{Trend}: Creștere economică susținută
+                    \item \textbf{Sezonalitate}: Pattern trimestrial regulat (Q4 > Q1)
+                    \item \textbf{Reziduu}: Include șocul COVID-19 din 2020
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{alertblock}{Lecții Învățate}
+                \begin{itemize}
+                    \item Descompunerea ajută la înțelegerea structurii datelor
+                    \item Șocurile externe (COVID) apar în componenta reziduală
+                    \item Sezonalitatea trebuie modelată explicit
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{exampleblock}{Următorii Pași}
+        În capitolele următoare vom învăța să modelăm fiecare componentă: ARIMA pentru trend, SARIMA pentru sezonalitate.
+    \end{exampleblock}
+\end{frame}
+
+%=============================================================================
+\section{Referințe}
+%=============================================================================
 
 \begin{frame}{Referințe}
     \footnotesize

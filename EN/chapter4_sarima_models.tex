@@ -5,7 +5,7 @@
 \documentclass[9pt, aspectratio=169, t]{beamer}
 
 % Ensure content fits on slides
-\setbeamersize{text margin left=18mm, text margin right=12mm}
+\setbeamersize{text margin left=8mm, text margin right=8mm}
 
 %=============================================================================
 % THEME AND STYLE CONFIGURATION
@@ -291,10 +291,12 @@
 
 \begin{frame}{Seasonality: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{charts/ch4_def_seasonality.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch4_def_seasonality.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Left: monthly data with $s=12$ seasonal period. Right: quarterly data with $s=4$.
+    \begin{exampleblock}{Seasonal Periods}
+        Left: Monthly data with $s=12$ (annual cycle). Right: Quarterly data with $s=4$. The pattern repeats every $s$ periods --- this regularity is exploited by SARIMA models.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Examples of Seasonal Data}
@@ -722,10 +724,35 @@
 
 \begin{frame}{Seasonal Difference: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{charts/ch4_def_seasonal_diff.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch4_def_seasonal_diff.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Left: original series with seasonal pattern. Right: after $\Delta_{12}$, seasonal pattern is removed.
+    \begin{block}{Effect of Seasonal Differencing}
+        Left: Original series with clear seasonal pattern. Right: After $\Delta_{12} = (1-L^{12})$, seasonal pattern is removed. Year-over-year comparison eliminates seasonal effects.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Proof: Seasonal Differencing Removes Deterministic Seasonality}
+    \textbf{Claim:} If $Y_t = \mu_t + \varepsilon_t$ where $\mu_t = \mu_{t-s}$ (periodic mean), then $\Delta_s Y_t$ removes the seasonal mean.
+
+    \vspace{0.2cm}
+    \textbf{Proof:} Let $Y_t = \mu_t + \varepsilon_t$ where $\mu_t$ has period $s$. Apply seasonal difference:
+    \begin{align*}
+    \Delta_s Y_t &= Y_t - Y_{t-s} = (\mu_t + \varepsilon_t) - (\mu_{t-s} + \varepsilon_{t-s}) \\
+    &= \mu_t - \mu_{t-s} + \varepsilon_t - \varepsilon_{t-s} \\
+    &= 0 + \varepsilon_t - \varepsilon_{t-s} \quad \text{(since } \mu_t = \mu_{t-s}\text{)}
+    \end{align*}
+
+    \textbf{Properties of $\Delta_s Y_t = \varepsilon_t - \varepsilon_{t-s}$:}
+    \begin{itemize}
+        \item $\E[\Delta_s Y_t] = 0$ (constant mean)
+        \item $\Var(\Delta_s Y_t) = 2\sigma^2$ (constant variance)
+        \item Autocovariance: $\gamma(s) = -\sigma^2$, $\gamma(k) = 0$ for $k \neq 0, s$
+    \end{itemize}
+
+    \begin{exampleblock}{Result}
+        Seasonal differencing transforms periodic seasonal pattern into MA(1) at seasonal lag.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Combining Regular and Seasonal Differencing}
@@ -828,10 +855,40 @@
 
 \begin{frame}{SARIMA: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{charts/ch4_def_sarima.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch4_def_sarima.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Progressive differencing: original $\to$ regular diff $\to$ seasonal diff $\to$ both differences.
+    \begin{alertblock}{Differencing Strategy}
+        Progressive transformation: Original $\to$ regular difference (removes trend) $\to$ seasonal difference (removes seasonality) $\to$ both. Apply minimum differencing needed to achieve stationarity.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Proof: Multiplicative Seasonal Structure}
+    \textbf{Why multiplicative?} Consider SARIMA$(1,0,0)\times(1,0,0)_s$:
+    $$(1-\phi L)(1-\Phi L^s)Y_t = \varepsilon_t$$
+
+    \vspace{0.15cm}
+    \textbf{Expand the product:}
+    \begin{align*}
+    (1-\phi L)(1-\Phi L^s)Y_t &= Y_t - \phi L Y_t - \Phi L^s Y_t + \phi\Phi L^{s+1} Y_t \\
+    &= Y_t - \phi Y_{t-1} - \Phi Y_{t-s} + \phi\Phi Y_{t-s-1}
+    \end{align*}
+
+    \textbf{Result:} The model includes an \textbf{interaction term} $\phi\Phi Y_{t-s-1}$
+
+    \vspace{0.15cm}
+    \begin{exampleblock}{Interpretation (Monthly, $s=12$)}
+        $Y_t$ depends on:
+        \begin{itemize}
+            \item $Y_{t-1}$: Last month (short-run dynamics)
+            \item $Y_{t-12}$: Same month last year (seasonal effect)
+            \item $Y_{t-13}$: Interaction of both effects
+        \end{itemize}
+    \end{exampleblock}
+
+    \begin{block}{Parsimony}
+        Multiplicative form: 2 parameters ($\phi, \Phi$). Additive would need 3+ parameters.
+    \end{block}
 \end{frame}
 
 \begin{frame}{SARIMA Notation}
@@ -1235,6 +1292,101 @@
     \begin{alertblock}{Note}
         Complete Python examples with comments are provided in the Jupyter notebooks.
     \end{alertblock}
+    }
+\end{frame}
+
+%=============================================================================
+% SECTION 7.5: CASE STUDY - AIRLINE PASSENGERS
+%=============================================================================
+\section{Case Study: Airline Passengers}
+
+\begin{frame}{Case Study: Airline Passengers Data}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch4_case_raw_data.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    {\small
+    \begin{itemize}
+        \item Classic Box-Jenkins dataset: monthly airline passengers (1949-1960)
+        \item Clear upward trend and increasing seasonal amplitude
+        \item Multiplicative seasonality suggests log transformation
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Step 1: Transformations}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch4_case_transformations.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    {\small
+    \begin{itemize}
+        \item Log transform stabilizes variance (multiplicative $\rightarrow$ additive)
+        \item First difference removes trend; seasonal difference removes seasonality
+        \item Double-differenced series appears stationary
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Step 2: ACF/PACF Analysis}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch4_case_acf_pacf.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    {\small
+    \begin{itemize}
+        \item ACF: Significant spike at lag 1 and lag 12 $\Rightarrow$ MA(1), SMA(1)
+        \item PACF: Exponential decay pattern confirms MA structure
+        \item Suggests SARIMA$(0,1,1)\times(0,1,1)_{12}$ (airline model)
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Step 3: Model Comparison}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch4_case_model_comparison.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    {\small
+    \begin{itemize}
+        \item Compare candidate SARIMA models using AIC criterion
+        \item SARIMA$(0,1,1)\times(0,1,1)_{12}$ provides best fit (lowest AIC)
+        \item This is the famous ``airline model'' identified by Box \& Jenkins
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Step 4: Residual Diagnostics}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch4_case_diagnostics.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    {\small
+    \begin{itemize}
+        \item Residuals appear random with no remaining autocorrelation
+        \item Q-Q plot shows approximate normality
+        \item Model adequately captures both trend and seasonal structure
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Step 5: Forecasting}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{charts/ch4_case_forecast.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    {\small
+    \begin{itemize}
+        \item 24-month forecast with 95\% confidence interval
+        \item Model captures seasonal pattern and upward trend
+        \item Prediction intervals widen appropriately with forecast horizon
+    \end{itemize}
     }
 \end{frame}
 

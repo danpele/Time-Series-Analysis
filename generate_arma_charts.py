@@ -715,90 +715,81 @@ def plot_model_identification_table():
 # 15. BOX-JENKINS METHODOLOGY FLOWCHART (IMPROVED)
 # =============================================================================
 def plot_box_jenkins_flowchart():
-    """Create professional Box-Jenkins methodology flowchart"""
-    from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle
-    from matplotlib.patches import Polygon
+    """Create clean, professional Box-Jenkins methodology flowchart"""
+    from matplotlib.patches import FancyBboxPatch, Polygon
 
-    fig, ax = plt.subplots(figsize=(14, 10))
-    ax.set_xlim(0, 14)
-    ax.set_ylim(0, 12)
+    fig, ax = plt.subplots(figsize=(11, 8))
+    ax.set_xlim(0, 11)
+    ax.set_ylim(0, 9)
     ax.axis('off')
 
-    # Colors
-    step_colors = ['#2E86AB', '#28A745', '#F39C12', '#9B59B6']  # Blue, Green, Orange, Purple
-    decision_color = '#E74C3C'
-    detail_color = '#34495E'
+    # Professional colors
+    BLUE = '#1A3A6E'
+    GREEN = '#2E7D32'
+    ORANGE = '#E67E22'
+    PURPLE = '#8E44AD'
+    RED = '#C0392B'
+    GRAY = '#5D6D7E'
 
-    # Draw main process boxes
-    def draw_box(ax, x, y, width, height, text, color, step_num=None):
-        box = FancyBboxPatch((x - width/2, y - height/2), width, height,
-                             boxstyle="round,pad=0.02,rounding_size=0.2",
+    def draw_box(ax, x, y, w, h, color, title, subtitle=None):
+        """Draw a rounded rectangle with text"""
+        box = FancyBboxPatch((x - w/2, y - h/2), w, h,
+                             boxstyle="round,pad=0.02,rounding_size=0.12",
                              facecolor=color, edgecolor='white', linewidth=2)
         ax.add_patch(box)
-        if step_num:
-            ax.text(x, y + height/2 - 0.3, f'STEP {step_num}', ha='center', va='top',
-                   fontsize=11, color='white', fontweight='bold', alpha=0.9)
-            ax.text(x, y - 0.15, text, ha='center', va='center', fontsize=10,
-                   color='white', fontweight='bold', wrap=True)
+        if subtitle:
+            ax.text(x, y + 0.12, title, ha='center', va='center',
+                   fontsize=11, color='white', fontweight='bold')
+            ax.text(x, y - 0.18, subtitle, ha='center', va='center',
+                   fontsize=9, color='white', alpha=0.95)
         else:
-            ax.text(x, y, text, ha='center', va='center', fontsize=9,
-                   color='white', fontweight='bold', wrap=True)
+            ax.text(x, y, title, ha='center', va='center',
+                   fontsize=10, color='white', fontweight='bold')
 
-    # Draw diamond decision box
-    def draw_diamond(ax, x, y, size, text, color):
-        diamond = Polygon([(x, y + size), (x + size, y), (x, y - size), (x - size, y)],
-                         facecolor=color, edgecolor='white', linewidth=2)
+    def draw_diamond(ax, x, y, size, text):
+        """Draw a decision diamond"""
+        pts = [(x, y + size), (x + size*0.7, y), (x, y - size), (x - size*0.7, y)]
+        diamond = Polygon(pts, facecolor=RED, edgecolor='white', linewidth=2)
         ax.add_patch(diamond)
-        ax.text(x, y, text, ha='center', va='center', fontsize=10,
-               color='white', fontweight='bold')
+        ax.text(x, y, text, ha='center', va='center',
+               fontsize=10, color='white', fontweight='bold')
 
-    # Main steps (left column)
-    draw_box(ax, 4, 10, 4.5, 1.6, 'IDENTIFICATION\nAnalyze ACF/PACF\nDetermine p, d, q', step_colors[0], 1)
-    draw_box(ax, 4, 7.5, 4.5, 1.6, 'ESTIMATION\nEstimate parameters\nMLE or Yule-Walker', step_colors[1], 2)
-    draw_box(ax, 4, 5, 4.5, 1.6, 'DIAGNOSTIC CHECK\nResidual analysis\nLjung-Box test', step_colors[2], 3)
-    draw_box(ax, 4, 2, 4.5, 1.6, 'FORECASTING\nGenerate predictions\nConfidence intervals', step_colors[3], 4)
+    # Main flow - center column
+    cx = 3.5
+    draw_box(ax, cx, 7.5, 3.8, 1.1, BLUE, '1. IDENTIFICATION', 'ACF/PACF → (p, d, q)')
+    draw_box(ax, cx, 5.8, 3.8, 1.1, GREEN, '2. ESTIMATION', 'MLE / Yule-Walker')
+    draw_box(ax, cx, 4.1, 3.8, 1.1, ORANGE, '3. DIAGNOSTIC', 'Ljung-Box Test')
+    draw_diamond(ax, cx, 2.5, 0.55, 'OK?')
+    draw_box(ax, cx, 1.0, 3.8, 0.9, PURPLE, '4. FORECAST')
 
-    # Decision diamond (right of Step 3)
-    draw_diamond(ax, 9.5, 5, 1.0, 'Model\nOK?', decision_color)
+    # Arrows - main flow
+    arrow_style = dict(arrowstyle='-|>', color='#333333', lw=1.8, mutation_scale=12)
+    ax.annotate('', xy=(cx, 6.95), xytext=(cx, 6.35), arrowprops=arrow_style)
+    ax.annotate('', xy=(cx, 5.25), xytext=(cx, 4.65), arrowprops=arrow_style)
+    ax.annotate('', xy=(cx, 3.55), xytext=(cx, 3.05), arrowprops=arrow_style)
 
-    # Side boxes with details (right column)
-    draw_box(ax, 11, 10, 3.8, 1.3, 'Check stationarity\nTransform if needed', detail_color)
-    draw_box(ax, 11, 7.5, 3.8, 1.3, 'Maximum Likelihood\nLeast Squares', detail_color)
-    draw_box(ax, 11, 2, 3.8, 1.3, 'Point forecasts\n95% intervals', detail_color)
+    # YES arrow
+    ax.annotate('', xy=(cx, 1.45), xytext=(cx, 1.95),
+               arrowprops=dict(arrowstyle='-|>', color=GREEN, lw=2, mutation_scale=12))
+    ax.text(cx + 0.3, 1.7, 'Yes', fontsize=10, color=GREEN, fontweight='bold')
 
-    # Arrow style
-    arrow_main = dict(arrowstyle='->', color='#555555', lw=2, mutation_scale=15)
-    arrow_yes = dict(arrowstyle='->', color='#28A745', lw=2.5, mutation_scale=15)
-    arrow_no = dict(arrowstyle='->', color='#E74C3C', lw=2.5, mutation_scale=15)
+    # NO arrow - loop back
+    ax.plot([cx + 0.4, cx + 1.8, cx + 1.8, cx + 1.9], [2.5, 2.5, 7.5, 7.5],
+           color=RED, lw=2, solid_capstyle='round')
+    ax.annotate('', xy=(cx + 1.9, 7.5), xytext=(cx + 1.8, 7.5),
+               arrowprops=dict(arrowstyle='-|>', color=RED, lw=2, mutation_scale=12))
+    ax.text(cx + 2.0, 5.0, 'No →\nRevise', fontsize=9, color=RED, fontweight='bold', ha='left')
 
-    # Main flow arrows (Step 1 → 2 → 3)
-    ax.annotate('', xy=(4, 9.2), xytext=(4, 8.3), arrowprops=arrow_main)
-    ax.annotate('', xy=(4, 6.7), xytext=(4, 5.8), arrowprops=arrow_main)
+    # Right side details
+    rx = 8.5
+    draw_box(ax, rx, 7.5, 3.2, 0.85, GRAY, 'Stationarity check')
+    draw_box(ax, rx, 5.8, 3.2, 0.85, GRAY, 'SE, σ² estimates')
+    draw_box(ax, rx, 4.1, 3.2, 0.85, GRAY, 'Residual ACF')
+    draw_box(ax, rx, 1.0, 3.2, 0.85, GRAY, '95% CI')
 
-    # Step 3 → Decision diamond
-    ax.annotate('', xy=(8.5, 5), xytext=(6.25, 5), arrowprops=arrow_main)
-
-    # YES arrow: Decision → Step 4
-    ax.annotate('', xy=(4, 2.8), xytext=(4, 4.2), arrowprops=arrow_yes)
-    ax.text(3.3, 3.5, 'YES', fontsize=11, color='#28A745', fontweight='bold')
-
-    # NO arrow: Decision → back to Step 1 (curved)
-    ax.annotate('', xy=(9.5, 6.0), xytext=(9.5, 8.8),
-                arrowprops=dict(arrowstyle='->', color='#E74C3C', lw=2.5,
-                              connectionstyle='arc3,rad=0.3', mutation_scale=15))
-    ax.annotate('', xy=(6.25, 10), xytext=(9.5, 9.2),
-                arrowprops=dict(arrowstyle='->', color='#E74C3C', lw=2.5, mutation_scale=15))
-    ax.text(10.2, 7.5, 'NO', fontsize=11, color='#E74C3C', fontweight='bold')
-    ax.text(10.2, 7.0, 'Revise', fontsize=9, color='#E74C3C')
-
-    # Dotted lines to detail boxes
-    ax.plot([6.25, 9.1], [10, 10], '--', color='#888888', alpha=0.5, linewidth=1.5)
-    ax.plot([6.25, 9.1], [7.5, 7.5], '--', color='#888888', alpha=0.5, linewidth=1.5)
-    ax.plot([6.25, 9.1], [2, 2], '--', color='#888888', alpha=0.5, linewidth=1.5)
-
-    # Title
-    ax.text(7, 11.5, 'Box-Jenkins Methodology', ha='center', va='center',
-           fontsize=16, fontweight='bold', color='#2E86AB')
+    # Dotted connectors
+    for y in [7.5, 5.8, 4.1, 1.0]:
+        ax.plot([cx + 1.9, rx - 1.6], [y, y], '--', color='#AAAAAA', lw=1.2, alpha=0.6)
 
     plt.tight_layout()
     save_chart(fig, 'box_jenkins_flowchart')
@@ -1478,6 +1469,220 @@ def plot_forecast_use_case():
 
     plt.tight_layout()
     save_chart(fig, 'forecast_train_val_test')
+
+# =============================================================================
+# ROLLING FORECAST CHARTS FOR ARMA
+# =============================================================================
+
+def plot_arma_rolling_forecast():
+    """Rolling window forecast illustration for ARMA models"""
+    np.random.seed(42)
+
+    # Generate AR(1) data
+    n = 150
+    phi = 0.7
+    data = np.zeros(n)
+    for t in range(1, n):
+        data[t] = phi * data[t-1] + np.random.randn()
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+    # Left panel: Fixed window rolling
+    ax = axes[0]
+    window_size = 50
+    forecast_start = 80
+
+    ax.plot(range(n), data, color=GRAY, alpha=0.5, linewidth=1, label='Full series')
+
+    # Show multiple rolling windows
+    colors_windows = [BLUE, GREEN, ORANGE]
+    for i, origin in enumerate([80, 95, 110]):
+        if origin + 10 <= n:
+            window_data = data[origin-window_size:origin]
+            # Fit AR(1) and forecast
+            phi_hat = np.corrcoef(window_data[:-1], window_data[1:])[0,1]
+            last_val = data[origin-1]
+            forecasts = [last_val * (phi_hat ** h) for h in range(1, 11)]
+
+            # Plot window
+            ax.axvspan(origin-window_size, origin, alpha=0.1, color=colors_windows[i])
+            ax.plot(range(origin, origin+10), forecasts, '--', color=colors_windows[i],
+                   linewidth=2, marker='o', markersize=4)
+
+    ax.set_xlabel('Time', fontsize=11)
+    ax.set_ylabel('$X_t$', fontsize=11)
+    ax.set_title('Fixed Window Rolling Forecast', fontweight='bold', fontsize=12)
+    ax.legend(['Data', 'Window 1', 'Window 2', 'Window 3'],
+              loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=4, frameon=False)
+
+    # Right panel: Expanding window
+    ax = axes[1]
+    ax.plot(range(n), data, color=GRAY, alpha=0.5, linewidth=1)
+
+    for i, origin in enumerate([80, 95, 110]):
+        if origin + 10 <= n:
+            window_data = data[:origin]  # Expanding: use all data up to origin
+            phi_hat = np.corrcoef(window_data[:-1], window_data[1:])[0,1]
+            last_val = data[origin-1]
+            forecasts = [last_val * (phi_hat ** h) for h in range(1, 11)]
+
+            ax.axvspan(0, origin, alpha=0.05 + i*0.03, color=colors_windows[i])
+            ax.plot(range(origin, origin+10), forecasts, '--', color=colors_windows[i],
+                   linewidth=2, marker='o', markersize=4)
+
+    ax.set_xlabel('Time', fontsize=11)
+    ax.set_ylabel('$X_t$', fontsize=11)
+    ax.set_title('Expanding Window Rolling Forecast', fontweight='bold', fontsize=12)
+
+    plt.tight_layout()
+    save_chart(fig, 'ch2_rolling_forecast')
+
+def plot_arma_rolling_vs_multistep():
+    """Compare rolling 1-step vs recursive multi-step forecasting"""
+    np.random.seed(123)
+
+    # Generate AR(1) data
+    n = 120
+    phi = 0.8
+    data = np.zeros(n)
+    for t in range(1, n):
+        data[t] = phi * data[t-1] + np.random.randn()
+
+    train_end = 80
+    test_len = 40
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+    # Left: Rolling 1-step ahead
+    ax = axes[0]
+    ax.plot(range(n), data, color=GRAY, alpha=0.6, linewidth=1.5, label='Actual')
+
+    rolling_forecasts = []
+    for t in range(train_end, n):
+        window = data[:t]
+        phi_hat = np.corrcoef(window[:-1], window[1:])[0,1]
+        forecast = phi_hat * data[t-1]
+        rolling_forecasts.append(forecast)
+
+    ax.plot(range(train_end, n), rolling_forecasts, color=GREEN, linewidth=2,
+           linestyle='--', label='Rolling 1-step forecast')
+    ax.axvline(x=train_end, color='black', linestyle=':', alpha=0.5)
+    ax.fill_between(range(train_end, n),
+                    [f - 1.96 for f in rolling_forecasts],
+                    [f + 1.96 for f in rolling_forecasts],
+                    alpha=0.2, color=GREEN)
+
+    ax.set_xlabel('Time', fontsize=11)
+    ax.set_ylabel('$X_t$', fontsize=11)
+    ax.set_title('Rolling 1-Step Ahead Forecast', fontweight='bold', fontsize=12)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
+
+    # Right: Recursive multi-step
+    ax = axes[1]
+    ax.plot(range(n), data, color=GRAY, alpha=0.6, linewidth=1.5, label='Actual')
+
+    # Estimate on training data
+    train_data = data[:train_end]
+    phi_hat = np.corrcoef(train_data[:-1], train_data[1:])[0,1]
+
+    # Generate recursive forecasts
+    recursive_forecasts = []
+    last_known = data[train_end-1]
+    for h in range(1, test_len + 1):
+        forecast = last_known * (phi_hat ** h)
+        recursive_forecasts.append(forecast)
+
+    ax.plot(range(train_end, n), recursive_forecasts, color=RED, linewidth=2,
+           linestyle='--', label='Recursive multi-step')
+    ax.axvline(x=train_end, color='black', linestyle=':', alpha=0.5)
+
+    # Widening confidence intervals
+    for h in range(test_len):
+        std_h = np.sqrt(sum(phi_hat**(2*j) for j in range(h+1)))
+        ax.fill_between([train_end + h, train_end + h + 1],
+                       [recursive_forecasts[h] - 1.96*std_h]*2,
+                       [recursive_forecasts[h] + 1.96*std_h]*2,
+                       alpha=0.15, color=RED)
+
+    ax.set_xlabel('Time', fontsize=11)
+    ax.set_ylabel('$X_t$', fontsize=11)
+    ax.set_title('Recursive Multi-Step Forecast', fontweight='bold', fontsize=12)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
+    ax.annotate('Converges to\nunconditional mean', xy=(n-5, 0), fontsize=9,
+               ha='center', color=RED)
+
+    plt.tight_layout()
+    save_chart(fig, 'ch2_rolling_vs_multistep')
+
+def plot_real_data_arma_forecast():
+    """Real data ARMA forecasting example using simulated economic-like data"""
+    np.random.seed(456)
+
+    # Simulate GDP growth-like data (stationary around 2%)
+    n = 100
+    mu = 2.0
+    phi = 0.6
+    data = np.zeros(n)
+    data[0] = mu
+    for t in range(1, n):
+        data[t] = mu + phi * (data[t-1] - mu) + np.random.randn() * 0.8
+
+    train_end = 80
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+
+    # Training data
+    ax.plot(range(train_end), data[:train_end], color=BLUE, linewidth=1.5, label='Training data')
+    # Test data
+    ax.plot(range(train_end-1, n), data[train_end-1:], color=GRAY, linewidth=1.5,
+           linestyle='-', alpha=0.7, label='Actual (test)')
+
+    # ARMA forecast
+    train_data = data[:train_end]
+    mu_hat = np.mean(train_data)
+    phi_hat = np.corrcoef(train_data[:-1], train_data[1:])[0,1]
+
+    forecasts = []
+    last_val = data[train_end-1]
+    for h in range(1, n - train_end + 1):
+        f = mu_hat + phi_hat**h * (last_val - mu_hat)
+        forecasts.append(f)
+
+    ax.plot(range(train_end, n), forecasts, color=GREEN, linewidth=2,
+           linestyle='--', label='ARMA(1,0) forecast')
+
+    # Confidence intervals
+    sigma = np.std(train_data - np.roll(train_data, 1)[1:])
+    for h in range(len(forecasts)):
+        std_h = sigma * np.sqrt(sum(phi_hat**(2*j) for j in range(h+1)))
+        ax.fill_between([train_end + h - 0.5, train_end + h + 0.5],
+                       [forecasts[h] - 1.96*std_h]*2,
+                       [forecasts[h] + 1.96*std_h]*2,
+                       alpha=0.15, color=GREEN)
+
+    # Naive forecast (last value)
+    naive = [data[train_end-1]] * (n - train_end)
+    ax.plot(range(train_end, n), naive, color=ORANGE, linewidth=1.5,
+           linestyle=':', label='Naive forecast')
+
+    ax.axvline(x=train_end, color='black', linestyle='--', alpha=0.3)
+    ax.axhline(y=mu_hat, color=GRAY, linestyle=':', alpha=0.3)
+
+    ax.set_xlabel('Quarter', fontsize=11)
+    ax.set_ylabel('GDP Growth (%)', fontsize=11)
+    ax.set_title('Real Data Application: GDP Growth Forecasting', fontweight='bold', fontsize=14)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4, frameon=False)
+
+    # Add metrics
+    actual_test = data[train_end:]
+    rmse_arma = np.sqrt(np.mean((actual_test - forecasts)**2))
+    rmse_naive = np.sqrt(np.mean((actual_test - naive)**2))
+    ax.text(0.02, 0.98, f'RMSE ARMA: {rmse_arma:.2f}\nRMSE Naive: {rmse_naive:.2f}',
+           transform=ax.transAxes, fontsize=10, va='top',
+           bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+
+    plt.tight_layout()
+    save_chart(fig, 'ch2_real_data_forecast')
 
 # =============================================================================
 # MAIN EXECUTION

@@ -133,7 +133,7 @@
     \end{tikzpicture}
     \vfill
     \begin{center}
-        {\Large\textcolor{MediumGray}{Analiza și Prognoza Seriilor de Timp}}\\[0.3cm]
+        {\Large\textcolor{MediumGray}{Analiza și Prognoză Seriilor de Timp}}\\[0.3cm]
         {\Huge\textbf{\textcolor{MainBlue}{Capitolul 2: Modele ARMA}}}\\[0.5cm]
         {\Large\textcolor{IDAred}{Serii de Timp Staționare}}
     \end{center}
@@ -287,6 +287,16 @@
     \textbf{Notă:} Zgomotul alb \textit{nu} este predictibil --- este pur aleatoriu.
 \end{frame}
 
+\begin{frame}{Zgomot Alb: Ilustrare Vizuală}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_white_noise.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Caracteristici Cheie}
+        \textbf{Stânga}: Seria fluctuează aleatoriu în jurul mediei zero, fără tipare. \textbf{Dreapta}: ACF arată doar un vârf la lag 0; toate celelalte autocorelații sunt în intervalul de încredere --- nicio structură de prezis.
+    \end{block}
+\end{frame}
+
 %=============================================================================
 % SECȚIUNEA 2: MODELE AR
 %=============================================================================
@@ -315,10 +325,12 @@
 
 \begin{frame}{AR(1): Ilustrație Vizuală}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch2_def_ar1.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_def_ar1.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Stânga: $\phi$ pozitiv creează tipare persistente, netede. Dreapta: $\phi$ negativ creează comportament oscilant în jurul mediei.
+    \begin{block}{Tipare de Comportament}
+        \textbf{$\phi$ pozitiv}: Fluctuații persistente, netede --- valorile tind să rămână pe aceeași parte a mediei. \textbf{$\phi$ negativ}: Comportament oscilant --- valorile alternează în jurul mediei.
+    \end{block}
 \end{frame}
 
 \begin{frame}{Condiția de Staționaritate AR(1)}
@@ -336,7 +348,7 @@
     \textbf{Ecuația caracteristică:}
     $$\phi(z) = 1 - \phi z = 0 \implies z = \frac{1}{\phi}$$
 
-    Staționaritatea necesită ca rădăcina $z = 1/\phi$ să se afle \textbf{în afara cercului unitate}, adică $|z| > 1$, ceea ce înseamnă $|\phi| < 1$.
+    Staționaritatea necesită ca rădăcina $z = 1/\phi$ să se afle \textbf{în afără cercului unitate}, adică $|z| > 1$, ceea ce înseamnă $|\phi| < 1$.
 \end{frame}
 
 \begin{frame}{Proprietățile AR(1)}
@@ -356,6 +368,62 @@
     $$\rho(h) = \phi^h$$
 
     \textbf{Observație cheie:} ACF scade exponențial la rata $\phi$
+\end{frame}
+
+\begin{frame}{Demonstrație: Media AR(1)}
+    \textbf{Afirmație:} Pentru AR(1): $X_t = c + \phi X_{t-1} + \varepsilon_t$, media este $\mu = \frac{c}{1-\phi}$
+
+    \vspace{0.2cm}
+    \textbf{Demonstrație:} Luăm speranța ambelor părți:
+    $$\E[X_t] = \E[c + \phi X_{t-1} + \varepsilon_t] = c + \phi \E[X_{t-1}] + \E[\varepsilon_t]$$
+
+    Prin staționaritate, $\E[X_t] = \E[X_{t-1}] = \mu$, și $\E[\varepsilon_t] = 0$:
+    $$\mu = c + \phi \mu$$
+
+    Rezolvând pentru $\mu$:
+    $$\mu - \phi\mu = c \implies \mu(1-\phi) = c \implies \boxed{\mu = \frac{c}{1-\phi}}$$
+
+    \vspace{0.1cm}
+    \begin{alertblock}{Cerință}
+        Aceasta necesită $\phi \neq 1$. Dacă $\phi = 1$ (rădăcină unitară), media este nedefinită.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Demonstrație: Varianța AR(1)}
+    \textbf{Afirmație:} $\Var(X_t) = \frac{\sigma^2}{1-\phi^2}$
+
+    \vspace{0.15cm}
+    \textbf{Demonstrație:} FSPG presupunem $c=0$ (proces centrat). Luăm varianța din $X_t = \phi X_{t-1} + \varepsilon_t$:
+    $$\Var(X_t) = \Var(\phi X_{t-1} + \varepsilon_t) = \phi^2 \Var(X_{t-1}) + \Var(\varepsilon_t) + 2\phi\Cov(X_{t-1}, \varepsilon_t)$$
+
+    Deoarece $\varepsilon_t$ este independent de $X_{t-1}$, $\Cov(X_{t-1}, \varepsilon_t) = 0$:
+    $$\gamma(0) = \phi^2 \gamma(0) + \sigma^2$$
+
+    Prin staționaritate, $\Var(X_t) = \Var(X_{t-1}) = \gamma(0)$:
+    $$\gamma(0) - \phi^2\gamma(0) = \sigma^2 \implies \gamma(0)(1-\phi^2) = \sigma^2 \implies \boxed{\gamma(0) = \frac{\sigma^2}{1-\phi^2}}$$
+
+    \begin{exampleblock}{Notă}
+        Necesită $|\phi| < 1$ pentru varianță pozitivă. Când $|\phi| \to 1$, varianța $\to \infty$.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Demonstrație: Funcția de Autocorelație AR(1)}
+    \textbf{Afirmație:} $\rho(h) = \phi^h$ pentru $h \geq 0$
+
+    \vspace{0.15cm}
+    \textbf{Demonstrație:} Mai întâi, găsim autocovarianța $\gamma(h) = \Cov(X_t, X_{t-h})$.
+
+    Înmulțim $X_t = \phi X_{t-1} + \varepsilon_t$ cu $X_{t-h}$ și luăm speranța:
+    $$\E[X_t X_{t-h}] = \phi \E[X_{t-1} X_{t-h}] + \E[\varepsilon_t X_{t-h}]$$
+
+    Pentru $h \geq 1$: $\E[\varepsilon_t X_{t-h}] = 0$ (șocul viitor necorelat cu valorile trecute)
+    $$\gamma(h) = \phi \gamma(h-1)$$
+
+    Aceasta este o relație recursivă! Pornind de la $\gamma(0)$:
+    $$\gamma(1) = \phi\gamma(0), \quad \gamma(2) = \phi\gamma(1) = \phi^2\gamma(0), \quad \ldots \quad \boxed{\gamma(h) = \phi^h\gamma(0)}$$
+
+    ACF este:
+    $$\rho(h) = \frac{\gamma(h)}{\gamma(0)} = \frac{\phi^h\gamma(0)}{\gamma(0)} = \boxed{\phi^h}$$
 \end{frame}
 
 \begin{frame}{Varianța AR(1) ca Funcție de $\phi$}
@@ -400,7 +468,7 @@
     \begin{itemize}
         \item \textbf{ACF}: Descreștere exponențială la rata $\phi$ -- formula teoretică: $\rho(h) = \phi^h$
         \item \textbf{PACF}: Un singur vârf la lag 1, apoi se întrerupe -- aceasta identifică AR(1)
-        \item Estimările din eșantion (bare) fluctuează în jurul valorilor teoretice; folosiți benzile de încredere
+        \item Eștimările din eșantion (bare) fluctuează în jurul valorilor teoretice; folosiți benzile de încredere
     \end{itemize}
     }
 \end{frame}
@@ -448,7 +516,7 @@
     \vspace{0.15cm}
     \textbf{Condiție de staționaritate:}
     \begin{itemize}
-        \item Toate rădăcinile lui $\phi(z) = 0$ trebuie să se afle \textbf{în afara} cercului unitate
+        \item Toate rădăcinile lui $\phi(z) = 0$ trebuie să se afle \textbf{în afără} cercului unitate
         \item Echivalent: toate rădăcinile au modul $> 1$
     \end{itemize}
 
@@ -462,10 +530,12 @@
 
 \begin{frame}{AR(p): Ilustrație Vizuală}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch2_def_arp.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_def_arp.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small AR(2) poate prezenta comportament ciclic. ACF arată tiparul de descreștere amortizată caracteristic proceselor AR.
+    \begin{exampleblock}{Caracteristici AR(2)}
+        AR(2) poate prezentă comportament pseudo-ciclic când rădăcinile sunt complexe conjugate. ACF arată descreștere sinusoidală amortizată; PACF se întrerupe după lag 2 --- tiparul cheie de identificare.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Staționaritatea AR(2): Vizualizarea Cercului Unitate}
@@ -473,7 +543,7 @@
         \includegraphics[width=0.85\textwidth, height=0.65\textheight, keepaspectratio]{unit_circle_stationarity.pdf}
     \end{center}
 
-    \textbf{Regulă:} Toate rădăcinile lui $\phi(z) = 0$ trebuie să se afle \textbf{în afara} cercului unitate umbrit
+    \textbf{Regulă:} Toate rădăcinile lui $\phi(z) = 0$ trebuie să se afle \textbf{în afără} cercului unitate umbrit
 \end{frame}
 
 \begin{frame}{Triunghiul de Staționaritate AR(2)}
@@ -486,7 +556,7 @@
     \begin{itemize}
         \item Regiunea triunghiulară definește toate combinațiile de parametri AR(2) staționari
         \item Granițe: $\phi_1 + \phi_2 < 1$, $\phi_2 - \phi_1 < 1$ și $|\phi_2| < 1$
-        \item Punctele din afara acestei regiuni duc la procese nestaționare sau explozive
+        \item Punctele din afără acestei regiuni duc la procese nestaționare sau explozive
     \end{itemize}
     }
 \end{frame}
@@ -576,10 +646,12 @@
 
 \begin{frame}{MA(1): Ilustrație Vizuală}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch2_def_ma1.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_def_ma1.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Procesul MA(1) în stânga. ACF în dreapta arată întreruperea caracteristică după lag 1.
+    \begin{block}{Semnătura MA(1)}
+        ACF are un singur vârf la lag 1, apoi se întrerupe imediat --- aceasta este semnătura caracteristică MA(1). PACF descreștere exponențială --- opusul AR(1).
+    \end{block}
 \end{frame}
 
 \begin{frame}{Proprietățile MA(1)}
@@ -600,6 +672,45 @@
 
     \vspace{0.15cm}
     \textbf{Observație cheie:} ACF \textbf{se întrerupe} după lag 1
+\end{frame}
+
+\begin{frame}{Demonstrație: Varianța și Autocovarianța MA(1)}
+    \textbf{Punct de plecare:} $X_t = \varepsilon_t + \theta\varepsilon_{t-1}$ (presupunând $\mu = 0$)
+
+    \vspace{0.15cm}
+    \textbf{Varianța:}
+    \begin{align*}
+    \gamma(0) &= \Var(X_t) = \Var(\varepsilon_t + \theta\varepsilon_{t-1}) \\
+    &= \Var(\varepsilon_t) + \theta^2\Var(\varepsilon_{t-1}) + 2\theta\Cov(\varepsilon_t, \varepsilon_{t-1}) \\
+    &= \sigma^2 + \theta^2\sigma^2 + 0 = \boxed{\sigma^2(1+\theta^2)}
+    \end{align*}
+
+    \textbf{Autocovarianța la lag 1:}
+    \begin{align*}
+    \gamma(1) &= \Cov(X_t, X_{t-1}) = \Cov(\varepsilon_t + \theta\varepsilon_{t-1}, \varepsilon_{t-1} + \theta\varepsilon_{t-2}) \\
+    &= \Cov(\varepsilon_t, \varepsilon_{t-1}) + \theta\Cov(\varepsilon_t, \varepsilon_{t-2}) + \theta\Cov(\varepsilon_{t-1}, \varepsilon_{t-1}) + \theta^2\Cov(\varepsilon_{t-1}, \varepsilon_{t-2}) \\
+    &= 0 + 0 + \theta\sigma^2 + 0 = \boxed{\theta\sigma^2}
+    \end{align*}
+
+    \textbf{Autocovarianța la lag $h \geq 2$:} Niciun termen $\varepsilon$ comun $\Rightarrow \gamma(h) = 0$
+\end{frame}
+
+\begin{frame}{Demonstrație: Maximul ACF pentru MA(1)}
+    \textbf{Afirmație:} $|\rho(1)| \leq 0.5$ pentru orice valoare a lui $\theta$
+
+    \vspace{0.2cm}
+    \textbf{Demonstrație:} ACF la lag 1 este:
+    $$\rho(1) = \frac{\gamma(1)}{\gamma(0)} = \frac{\theta\sigma^2}{\sigma^2(1+\theta^2)} = \frac{\theta}{1+\theta^2}$$
+
+    Pentru a găsi maximul, derivăm în raport cu $\theta$ și egalăm cu zero:
+    $$\frac{d\rho(1)}{d\theta} = \frac{(1+\theta^2) - \theta(2\theta)}{(1+\theta^2)^2} = \frac{1-\theta^2}{(1+\theta^2)^2} = 0$$
+
+    Soluție: $\theta = \pm 1$. La aceste valori:
+    $$\rho(1)\big|_{\theta=1} = \frac{1}{1+1} = \frac{1}{2}, \quad \rho(1)\big|_{\theta=-1} = \frac{-1}{1+1} = -\frac{1}{2}$$
+
+    \begin{exampleblock}{Implicație}
+        Dacă eștimați $|\hat{\rho}(1)| > 0.5$ din date, procesul \textbf{nu} este MA(1).
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Simulări MA(1): Efectul lui $\theta$}
@@ -647,7 +758,7 @@
     \textbf{Acesta este tiparul opus față de AR(1)!}
 \end{frame}
 
-\begin{frame}{ACF și PACF MA(1): Comparație Vizuală}
+\begin{frame}{ACF și PACF MA(1): Comparăție Vizuală}
     \vspace{-0.3cm}
     \begin{center}
         \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch2_ma1_acf_pacf.pdf}
@@ -671,13 +782,13 @@
     \vspace{0.15cm}
     \textbf{Pentru MA(1):} Invertibil dacă $|\theta| < 1$
 
-    \textbf{Pentru MA(q):} Toate rădăcinile lui $\theta(z) = 0$ trebuie să se afle în afara cercului unitate
+    \textbf{Pentru MA(q):} Toate rădăcinile lui $\theta(z) = 0$ trebuie să se afle în afără cercului unitate
 
     \vspace{0.15cm}
     \textbf{De ce contează invertibilitatea:}
     \begin{itemize}
-        \item Asigură reprezentare unică
-        \item Necesară pentru prognoză și estimare
+        \item Asigură reprezentăre unică
+        \item Necesară pentru prognoză și eștimare
         \item Creează corespondență: AR($\infty$) $\leftrightarrow$ MA(q)
     \end{itemize}
 
@@ -690,7 +801,7 @@
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch2_def_invertibility.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Stânga: invertibilitatea necesită rădăcini în afara cercului unitate. Dreapta: ponderile AR($\infty$) scad doar când $|\theta| < 1$.
+    \small Stânga: invertibilitatea necesită rădăcini în afără cercului unitate. Dreapta: ponderile AR($\infty$) scad doar când $|\theta| < 1$.
 \end{frame}
 
 \begin{frame}{Modelul MA(q): Forma Generală}
@@ -709,7 +820,7 @@
         \item Întotdeauna staționar (varianță finită)
         \item ACF se întrerupe după lag $q$: $\rho(h) = 0$ pentru $h > q$
         \item PACF scade gradual
-        \item Invertibil dacă toate rădăcinile lui $\theta(z) = 0$ se află în afara cercului unitate
+        \item Invertibil dacă toate rădăcinile lui $\theta(z) = 0$ se află în afără cercului unitate
     \end{itemize}
 \end{frame}
 
@@ -792,10 +903,12 @@
 
 \begin{frame}{ARMA: Ilustrație Vizuală}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch2_def_arma.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_def_arma.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Proces ARMA(1,1). ACF arată descreștere după lag-ul inițial, combinând caracteristicile AR și MA.
+    \begin{exampleblock}{Proces ARMA(1,1)}
+        ACF descreștere exponențială după lag 1 (ca AR), dar punctul de pornire depinde atât de $\phi$ cât și de $\theta$. Ambele ACF și PACF scad --- necesită criterii informaționale pentru selecția modelului.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Structura Modelului ARMA}
@@ -884,8 +997,8 @@
         \toprule
         \textbf{Condiție} & \textbf{Cerință} \\
         \midrule
-        Staționaritate & Rădăcinile lui $\phi(z) = 0$ în afara cercului unitate \\
-        Invertibilitate & Rădăcinile lui $\theta(z) = 0$ în afara cercului unitate \\
+        Staționaritate & Rădăcinile lui $\phi(z) = 0$ în afără cercului unitate \\
+        Invertibilitate & Rădăcinile lui $\theta(z) = 0$ în afără cercului unitate \\
         \bottomrule
     \end{tabular}
 
@@ -897,7 +1010,7 @@
     \end{itemize}
 
     \vspace{0.15cm}
-    \textbf{Reprezentare cauzală:} $X_t$ depinde doar de șocurile \textit{trecute} (nu viitoare)
+    \textbf{Reprezentăre cauzală:} $X_t$ depinde doar de șocurile \textit{trecute} (nu viitoare)
 \end{frame}
 
 \begin{frame}{Teorema de Descompunere a lui Wold}
@@ -908,7 +1021,7 @@
     \textbf{Orice proces staționar poate fi scris ca MA($\infty$):} $X_t = \sum_{j=0}^{\infty} \psi_j \varepsilon_{t-j}$
 \end{frame}
 
-\begin{frame}{Quiz: Reprezentarea ARMA}
+\begin{frame}{Quiz: Reprezentărea ARMA}
     \begin{alertblock}{Întrebare}
         Forma compactă $\phi(L)X_t = \theta(L)\varepsilon_t$ reprezintă ce model?
     \end{alertblock}
@@ -964,7 +1077,7 @@
 \begin{frame}{Tabel Rezumat pentru Identificarea Modelului}
     \vspace{-0.2cm}
     \begin{center}
-        \includegraphics[width=0.85\textwidth, height=0.65\textheight, keepaspectratio]{model_identification_table.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.65\textheight, keepaspectratio]{model_identificâțion_table.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\small \textbf{Sfat practic:} Începeți simplu ($p$, $q$ mici), creșteți dacă diagnosticele eșuează}
@@ -1026,7 +1139,7 @@
         \item Valori mai mici sunt mai bune
         \item BIC penalizează complexitatea mai puternic decât AIC
         \item AIC tinde să aleagă modele mai mari; BIC mai simplu
-        \item Comparați modele potrivite pe \textit{aceleași date}
+        \item Comparăți modele potrivite pe \textit{aceleași date}
     \end{itemize}
 \end{frame}
 
@@ -1080,7 +1193,7 @@
         \item BIC mai mic înseamnă întotdeauna prognoze mai bune
         \item BIC penalizează complexitatea mai puțin decât AIC
         \item Modelul cu BIC mai mic este preferat
-        \item BIC poate compara doar modele cu același număr de parametri
+        \item BIC poate compară doar modele cu același număr de parametri
     \end{enumerate}
 \end{frame}
 
@@ -1097,9 +1210,9 @@
 %=============================================================================
 % SECȚIUNEA 6: ESTIMAREA PARAMETRILOR
 %=============================================================================
-\section{Estimarea Parametrilor}
+\section{Eștimarea Parametrilor}
 
-\begin{frame}{Prezentare Generală a Metodelor de Estimare}
+\begin{frame}{Prezentare Generală a Metodelor de Eștimare}
     \textbf{Trei abordări principale:}
 
     \vspace{0.15cm}
@@ -1111,7 +1224,7 @@
     \end{itemize}
 
     \vspace{0.15cm}
-    \textbf{2. Estimarea prin Maximum de Verosimilitate (MLE)}
+    \textbf{2. Eștimarea prin Maximum de Verosimilitate (MLE)}
     \begin{itemize}
         \item Cea mai comună abordare
         \item Necesită ipoteză distribuțională (de obicei Gaussiană)
@@ -1127,9 +1240,9 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Comparația Metodelor de Estimare}
+\begin{frame}{Comparăția Metodelor de Eștimare}
     \begin{center}
-        \includegraphics[width=0.80\textwidth, height=0.70\textheight, keepaspectratio]{estimation_comparison.pdf}
+        \includegraphics[width=0.80\textwidth, height=0.70\textheight, keepaspectratio]{eștimation_comparison.pdf}
     \end{center}
 \end{frame}
 
@@ -1155,10 +1268,32 @@
     \begin{pmatrix} \rho(1) \\ \rho(2) \\ \vdots \\ \rho(p) \end{pmatrix}$$
 
     \vspace{0.15cm}
-    \textbf{Estimare:} Înlocuiți $\rho(k)$ cu autocorelațiile din eșantion $\hat{\rho}(k)$
+    \textbf{Eștimare:} Înlocuiți $\rho(k)$ cu autocorelațiile din eșantion $\hat{\rho}(k)$
 \end{frame}
 
-\begin{frame}{Estimarea prin Maximum de Verosimilitate}
+\begin{frame}{Demonstrație: Ecuațiile Yule-Walker}
+    \textbf{Scop:} Derivarea relației $\rho(k) = \phi_1\rho(k-1) + \cdots + \phi_p\rho(k-p)$
+
+    \vspace{0.15cm}
+    \textbf{Demonstrație:} Pornim de la AR(p): $X_t = \phi_1 X_{t-1} + \cdots + \phi_p X_{t-p} + \varepsilon_t$
+
+    Înmulțim ambele părți cu $X_{t-k}$ și luăm speranța:
+    $$\E[X_t X_{t-k}] = \phi_1 \E[X_{t-1} X_{t-k}] + \cdots + \phi_p \E[X_{t-p} X_{t-k}] + \E[\varepsilon_t X_{t-k}]$$
+
+    Pentru $k \geq 1$: $\E[\varepsilon_t X_{t-k}] = 0$ (șocul viitor necorelat cu trecutul)
+
+    Folosind $\gamma(k) = \E[X_t X_{t-k}]$ (presupunând medie zero):
+    $$\gamma(k) = \phi_1 \gamma(k-1) + \phi_2 \gamma(k-2) + \cdots + \phi_p \gamma(k-p)$$
+
+    Împărțind la $\gamma(0)$:
+    $$\boxed{\rho(k) = \phi_1 \rho(k-1) + \phi_2 \rho(k-2) + \cdots + \phi_p \rho(k-p)}$$
+
+    \begin{exampleblock}{Cazul Special AR(1)}
+        $\rho(k) = \phi_1 \rho(k-1) = \phi_1^k$ (folosind $\rho(0) = 1$)
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Eștimarea prin Maximum de Verosimilitate}
     \textbf{Presupunând erori Gaussiene:} $\varepsilon_t \sim N(0, \sigma^2)$
 
     \vspace{0.15cm}
@@ -1168,7 +1303,7 @@
     unde $\varepsilon_t$ sunt inovațiile calculate recursiv.
 
     \vspace{0.15cm}
-    \textbf{Procedura de estimare:}
+    \textbf{Procedura de eștimare:}
     \begin{enumerate}
         \item Inițializare: folosiți metoda momentelor sau OLS pentru valori de pornire
         \item Optimizare: metode numerice (de ex., BFGS, Newton-Raphson)
@@ -1192,7 +1327,7 @@
     \textbf{Testarea ipotezelor:}
     \begin{itemize}
         \item $H_0: \phi_j = 0$ (sau $\theta_j = 0$)
-        \item Statistica de test: $z = \frac{\hat{\phi}_j}{SE(\hat{\phi}_j)} \sim N(0,1)$ asimptotic
+        \item Statistică de test: $z = \frac{\hat{\phi}_j}{SE(\hat{\phi}_j)} \sim N(0,1)$ asimptotic
         \item Respingeți dacă $|z| > 1.96$ la nivel de 5\%
     \end{itemize}
 
@@ -1206,10 +1341,10 @@
 \section{Diagnosticarea Modelului}
 
 \begin{frame}{Analiza Reziduurilor}
-    \textbf{Dacă modelul este corect specificat, reziduurile ar trebui să fie zgomot alb:}
+    \textbf{Dacă modelul este corect specificăt, reziduurile ar trebui să fie zgomot alb:}
 
     \vspace{0.15cm}
-    \textbf{1. Reprezentați grafic reziduurile în timp}
+    \textbf{1. Reprezentăți grafic reziduurile în timp}
     \begin{itemize}
         \item Ar trebui să fluctueze în jurul lui zero
         \item Fără tipare sau trenduri evidente
@@ -1220,7 +1355,7 @@
     \textbf{2. Verificați ACF reziduurilor}
     \begin{itemize}
         \item Toate corelațiile ar trebui să fie în benzile de încredere
-        \item Fără vârfuri semnificative $\rightarrow$ zgomot alb
+        \item Fără vârfuri semnificâțive $\rightarrow$ zgomot alb
     \end{itemize}
 
     \vspace{0.15cm}
@@ -1240,7 +1375,7 @@
     {\footnotesize
     \begin{itemize}
         \item \textbf{Graficul reziduurilor}: Ar trebui să arate dispersie aleatorie în jurul lui zero cu varianță constantă
-        \item \textbf{ACF reziduurilor}: Fără vârfuri semnificative indică zgomot alb (potrivire bună)
+        \item \textbf{ACF reziduurilor}: Fără vârfuri semnificâțive indică zgomot alb (potrivire bună)
         \item \textbf{Graficul Q-Q}: Punctele pe linia diagonală indică reziduuri distribuite normal
     \end{itemize}
     }
@@ -1251,7 +1386,7 @@
         Testează dacă reziduurile sunt distribuite independent (fără autocorelație).
     \end{defn}
 
-    \textbf{Statistica de test:}
+    \textbf{Statistică de test:}
     $$Q(m) = n(n+2)\sum_{k=1}^{m}\frac{\hat{\rho}_k^2}{n-k}$$
 
     \textbf{Ipoteze:}
@@ -1266,7 +1401,7 @@
     \textbf{Decizie:}
     \begin{itemize}
         \item p-value $> 0.05$ $\rightarrow$ nu respingem $H_0$ $\rightarrow$ reziduurile arată ca zgomot alb (bine!)
-        \item p-value $< 0.05$ $\rightarrow$ autocorelație semnificativă rămâne $\rightarrow$ model inadecvat
+        \item p-value $< 0.05$ $\rightarrow$ autocorelație semnificâțivă rămâne $\rightarrow$ model inadecvat
     \end{itemize}
 \end{frame}
 
@@ -1275,7 +1410,7 @@
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch2_def_ljungbox.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Stânga: Model bun -- reziduurile sunt zgomot alb (fără ACF semnificativ). Dreapta: Model slab -- reziduurile arată autocorelație.
+    \small Stânga: Model bun -- reziduurile sunt zgomot alb (fără ACF semnificâțiv). Dreapta: Model slab -- reziduurile arată autocorelație.
 \end{frame}
 
 \begin{frame}{Lista de Verificare Diagnostic}
@@ -1283,22 +1418,22 @@
 
     \vspace{0.15cm}
     \begin{enumerate}
-        \item \textbf{Staționaritate:} Rădăcinile AR în afara cercului unitate \\
+        \item \textbf{Staționaritate:} Rădăcinile AR în afără cercului unitate \\
               \textcolor{Forest}{$\checkmark$} Verificați cu \texttt{arroots}
 
-        \item \textbf{Invertibilitate:} Rădăcinile MA în afara cercului unitate \\
+        \item \textbf{Invertibilitate:} Rădăcinile MA în afără cercului unitate \\
               \textcolor{Forest}{$\checkmark$} Verificați cu \texttt{maroots}
 
-        \item \textbf{Reziduuri zgomot alb:} Fără ACF semnificativ \\
+        \item \textbf{Reziduuri zgomot alb:} Fără ACF semnificâțiv \\
               \textcolor{Forest}{$\checkmark$} Grafic ACF, testul Ljung-Box
 
         \item \textbf{Reziduuri normale:} (dacă presupunem) \\
               \textcolor{Forest}{$\checkmark$} Grafic Q-Q, testul Jarque-Bera
 
         \item \textbf{Fără heteroscedasticitate:} Varianță constantă \\
-              \textcolor{Forest}{$\checkmark$} Reprezentați reziduurile, testul ARCH
+              \textcolor{Forest}{$\checkmark$} Reprezentăți reziduurile, testul ARCH
 
-        \item \textbf{Simplu:} Cel mai mic AIC/BIC dintre modelele adecvate
+        \item \textbf{Simplu:} Cel mai mic AIC/BIC dîntre modelele adecvate
     \end{enumerate}
 
     \vspace{0.15cm}
@@ -1333,10 +1468,10 @@
 %=============================================================================
 % SECȚIUNEA 8: PROGNOZA
 %=============================================================================
-\section{Prognoza cu ARMA}
+\section{Prognoză cu ARMA}
 
 \begin{frame}{Prognoze Punctuale}
-    \textbf{Prognoza optimă:} Speranța condiționată minimizează MSE
+    \textbf{Prognoză optimă:} Speranța condiționată minimizează MSE
     $$\hat{X}_{n+h|n} = \E[X_{n+h} | X_n, X_{n-1}, \ldots]$$
 
     \vspace{0.15cm}
@@ -1375,13 +1510,13 @@
     \textbf{Observație cheie:} Incertitudinea prognozei crește cu orizontul, ajungând eventual la varianța necondiționată
 \end{frame}
 
-\begin{frame}{Prognoza ARMA cu Intervale de Încredere}
+\begin{frame}{Prognoză ARMA cu Intervale de Încredere}
     \begin{center}
         \includegraphics[width=0.88\textwidth, height=0.70\textheight, keepaspectratio]{arma_forecast.pdf}
     \end{center}
 \end{frame}
 
-\begin{frame}{Prognoza AR(1): Revenirea la Medie}
+\begin{frame}{Prognoză AR(1): Revenirea la Medie}
     \vspace{-0.3cm}
     \begin{center}
         \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch2_ar1_forecast.pdf}
@@ -1425,11 +1560,11 @@
 \end{frame}
 
 \begin{frame}{Evaluarea Prognozei}
-    \textbf{Testare în afara eșantionului:}
+    \textbf{Testare în afără eșantionului:}
     \begin{enumerate}
         \item Împărțiți datele: set de antrenare (potriviți modelul) și set de test (evaluați)
-        \item Generați prognoze pentru perioada de test
-        \item Comparați prognozele cu valorile reale
+        \item Generați prognoze pentru perioadă de test
+        \item Comparăți prognozele cu valorile reale
     \end{enumerate}
 
     \vspace{0.15cm}
@@ -1443,7 +1578,7 @@
     \vspace{0.15cm}
     \textbf{Fereastră mobilă/în expansiune:}
     \begin{itemize}
-        \item Re-estimați modelul pe măsură ce sosesc date noi
+        \item Re-eștimați modelul pe măsură ce sosesc date noi
         \item Evaluare mai realistă a performanței prognozei
     \end{itemize}
 \end{frame}
@@ -1452,6 +1587,52 @@
     \begin{center}
         \includegraphics[width=0.88\textwidth, height=0.70\textheight, keepaspectratio]{forecast_train_val_test.pdf}
     \end{center}
+    \vspace{-0.2cm}
+    \begin{alertblock}{Bună Practică}
+        Evaluați întotdeauna prognozele pe date nevăzute. Folosiți setul de antrenare pentru eștimare, setul de validare pentru selecția modelului și setul de test pentru evaluarea finală.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Prognoză cu Fereastră Mobilă (Rolling Forecast)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_rolling_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Metodologia Rolling Forecast}
+        \begin{itemize}
+            \item \textbf{Fereastră fixă:} Re-eștimare model folosind cele mai recente $w$ observații
+            \item \textbf{Fereastră expansivă:} Folosește toate datele disponibile până la origine
+            \item Generează prognoză 1-pas înainte, mută fereastra, repetă
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Rolling vs Prognoză Multi-Pas}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_rolling_vs_multistep.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{Diferențe Cheie}
+        \begin{itemize}
+            \item \textbf{Rolling 1-pas:} Mai precis, necesită re-eștimare frecventă
+            \item \textbf{Multi-pas direct:} Eștimare model separat pentru fiecare orizont $h$
+            \item \textbf{Multi-pas recursiv:} Iterează prognoze 1-pas (acumulare erori)
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Aplicație cu Date Reale: Comparăție Prognoze}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{real_data_forecast_comparison.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Considerații Practice}
+        \begin{itemize}
+            \item Datele reale prezintă adesea nestaționaritate, rupturi structurale
+            \item Comparăți mai multe modele: ARMA, netezire exponențială, naive
+            \item Folosiți validare încrucișată sau evaluare rolling pentru robustețe
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 \begin{frame}{Quiz: Proprietățile Prognozei}
@@ -1503,7 +1684,7 @@
     \texttt{\small print(results.summary())}
 
     \vspace{0.2cm}
-    \texttt{\small \# Prognoza}
+    \texttt{\small \# Prognoză}
 
     \texttt{\small forecast = results.get\_forecast(steps=10)}
 
@@ -1566,18 +1747,81 @@
             \item Căutare pe grilă cu criterii informaționale
         \end{itemize}
 
-        \item \textbf{Estimare și diagnosticare}
+        \item \textbf{Eștimare și diagnosticare}
         \begin{itemize}
-            \item Potriviți modelul, verificați semnificația
+            \item Potriviți modelul, verificăți semnificația
             \item Analiză reziduală, testul Ljung-Box
         \end{itemize}
 
-        \item \textbf{Prognoza}
+        \item \textbf{Prognoză}
         \begin{itemize}
             \item Prognoze punctuale cu intervale de încredere
-            \item Validare în afara eșantionului
+            \item Validare în afără eșantionului
         \end{itemize}
     \end{enumerate}
+\end{frame}
+
+%=============================================================================
+% STUDIU DE CAZ: DATE REALE
+%=============================================================================
+\section{Studiu de Caz: Date Reale}
+
+\begin{frame}{Studiu de Caz: Petele Solare (Sunspots)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_case_raw_data.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Descrierea Datelor}
+        \textbf{Numărul anual de pete solare (1700--2008)}: Set de date clasic în analiza seriilor de timp. Serie staționară cu cicluri de aproximativ 11 ani. Vom aplica metodologia Box-Jenkins completă.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Pasul 1: Analiza ACF/PACF}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_case_acf_pacf.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{Identificare}
+        \begin{itemize}
+            \item \textbf{ACF}: Descreștere lentă, sinusoidală --- sugerează AR
+            \item \textbf{PACF}: Vârfuri semnificâțive la lag-urile 1, 2, 9 --- sugerează AR(9) sau AR(2)
+            \item Seria pare staționară (nu necesită diferențiere, $d=0$)
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Pasul 2: Comparărea Modelelor}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch2_case_model_comparison.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{alertblock}{Selecția Modelului}
+        Comparăm mai multe modele cândidate folosind criteriul AIC. Modelul \textbf{AR(9)} are cel mai mic AIC, capturând ciclul solar de 11 ani.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Pasul 3: Verificarea Diagnostică}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch2_case_diagnostics.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Diagnostice AR(9)}
+        Reziduurile seamănă cu zgomot alb: medie zero, varianță constantă, ACF fără structură semnificâțivă, distribuție aproximativ normală.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Pasul 4: Prognoză}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch2_case_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{Rezultate}
+        \begin{itemize}
+            \item Modelul AR(9) captează natura ciclică a petelor solare
+            \item Intervalele de încredere de 95\% acoperă majoritatea valorilor reale
+            \item RMSE pe setul de test: aproximativ 30 (rezonabil pentru această serie volatilă)
+        \end{itemize}
+    \end{exampleblock}
 \end{frame}
 
 %=============================================================================
@@ -1589,13 +1833,13 @@
     \begin{enumerate}
         \item \textbf{Modele AR(p):} Valoarea curentă depinde de $p$ valori trecute
         \begin{itemize}
-            \item Staționaritate: rădăcinile lui $\phi(z)$ în afara cercului unitate
+            \item Staționaritate: rădăcinile lui $\phi(z)$ în afără cercului unitate
             \item PACF se întrerupe la lag $p$
         \end{itemize}
 
         \item \textbf{Modele MA(q):} Valoarea curentă depinde de $q$ șocuri trecute
         \begin{itemize}
-            \item Întotdeauna staționar; invertibilitate: rădăcinile lui $\theta(z)$ în afara cercului unitate
+            \item Întotdeauna staționar; invertibilitate: rădăcinile lui $\theta(z)$ în afără cercului unitate
             \item ACF se întrerupe la lag $q$
         \end{itemize}
 
@@ -1604,7 +1848,7 @@
             \item Atât ACF cât și PACF scad
         \end{itemize}
 
-        \item \textbf{Box-Jenkins:} Identificare $\to$ Estimare $\to$ Diagnosticare $\to$ Prognoză
+        \item \textbf{Box-Jenkins:} Identificare $\to$ Eștimare $\to$ Diagnosticare $\to$ Prognoză
 
         \item \textbf{Diagnosticare:} Reziduurile trebuie să fie zgomot alb
 
@@ -1641,7 +1885,7 @@
         \bibitem{hamilton1994} Hamilton, J.D. (1994). \textit{Time Series Analysis}. Princeton University Press.
         \bibitem{hyndman2021} Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}. 3rd ed., OTexts. \url{https://otexts.com/fpp3/}
         \bibitem{brockwell2016} Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}. 3rd ed., Springer.
-        \bibitem{shumway2017} Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}. 4th ed., Springer.
+        \bibitem{shumway2017} Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applicâțions}. 4th ed., Springer.
     \end{thebibliography}
 \end{frame}
 

@@ -1,19 +1,19 @@
-% Capitolul 8: Extensii Moderne în Analiza Seriilor de Timp
-% ARFIMA, Machine Learning (Random Forest, LSTM)
+% Capitolul 8: Extensii Moderne ale Seriilor de Timp
+% Prezentare academică de calitate Harvard
 % Program de licență, Academia de Studii Economice din București
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
 
-% Ensure content fits on slides
+% Asigură încadrarea conținutului pe diapozitive
 \setbeamersize{text margin left=8mm, text margin right=8mm}
 
 %=============================================================================
-% THEME AND STYLE CONFIGURATION
+% CONFIGURARE TEMĂ ȘI STIL
 %=============================================================================
 \usetheme{Madrid}
 \usecolortheme{seahorse}
 
-% IDA-Inspired Color Palette
+% Paletă de Culori Profesională
 \definecolor{MainBlue}{RGB}{26, 58, 110}
 \definecolor{AccentBlue}{RGB}{42, 82, 140}
 \definecolor{IDAred}{RGB}{220, 53, 69}
@@ -25,6 +25,7 @@
 \definecolor{Forest}{RGB}{46, 125, 50}
 \definecolor{Amber}{RGB}{181, 133, 63}
 \definecolor{Orange}{RGB}{230, 126, 34}
+\definecolor{HarvardCrimson}{RGB}{165, 28, 48}
 
 \setbeamercolor{palette primary}{bg=MainBlue, fg=white}
 \setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
@@ -59,7 +60,7 @@
 }
 
 %=============================================================================
-% PACKAGES
+% PACHETE
 %=============================================================================
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -67,37 +68,44 @@
 \usepackage{mathtools}
 \usepackage{bm}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{colortbl}
 \hypersetup{colorlinks=false, pdfborder={0 0 0}}
 \graphicspath{{../logos/}{../charts/}}
 
 %=============================================================================
-% THEOREM ENVIRONMENTS
+% MEDII PENTRU TEOREME
 %=============================================================================
 \theoremstyle{definition}
 \setbeamertemplate{theorems}[numbered]
 \newtheorem{defn}{Definiție}
 \newtheorem{thm}{Teoremă}
 \newtheorem{prop}{Propoziție}
+\newtheorem{rmk}{Observație}
 
 %=============================================================================
-% CUSTOM COMMANDS
+% COMENZI PERSONALIZATE
 %=============================================================================
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Var}{\text{Var}}
 \newcommand{\Cov}{\text{Cov}}
 \newcommand{\Corr}{\text{Corr}}
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\RMSE}{\text{RMSE}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAPE}{\text{MAPE}}
 
 %=============================================================================
-% TITLE INFORMATION
+% INFORMAȚII TITLU
 %=============================================================================
-\title[Capitolul 8: Extensii Moderne]{Capitolul 8: Extensii Moderne}
+\title[Capitolul 8: Extensii Moderne]{Capitolul 8: Extensii Moderne ale Seriilor de Timp}
 \subtitle{Program de licență, Facultatea de Cibernetică, Statistică și Informatică Economică, Academia de Studii Economice din București}
 \author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
 \institute{Academia de Studii Economice din București}
@@ -106,7 +114,7 @@
 \begin{document}
 
 %=============================================================================
-% TITLE SLIDE
+% DIAPOZITIV TITLU
 %=============================================================================
 \begin{frame}[plain]
     \begin{tikzpicture}[remember picture, overlay]
@@ -123,7 +131,7 @@
     \end{tikzpicture}
     \vfill
     \begin{center}
-        {\Large\textcolor{MediumGray}{Analiza și Prognoza Seriilor de Timp}}\\[0.3cm]
+        {\Large\textcolor{MediumGray}{Analiza și Prognoză Seriilor de Timp}}\\[0.3cm]
         {\Huge\textbf{\textcolor{MainBlue}{Capitolul 8: Extensii Moderne}}}\\[0.5cm]
         {\Large\textcolor{IDAred}{ARFIMA, Machine Learning, Deep Learning}}
     \end{center}
@@ -176,10 +184,10 @@
     \begin{block}{La finalul acestui capitol, veți fi capabili să:}
         \begin{enumerate}
             \item Înțelegeți conceptul de \textbf{memorie lungă} în seriile de timp
-            \item Estimați și interpretați modele \textbf{ARFIMA}
-            \item Aplicați \textbf{Random Forest} pentru prognoza seriilor de timp
+            \item Eștimați și interpretați modele \textbf{ARFIMA}
+            \item Aplicați \textbf{Random Forest} pentru prognoză seriilor de timp
             \item Construiți rețele \textbf{LSTM} pentru serii temporale
-            \item Comparați performanța modelelor clasice vs ML
+            \item Comparăți performanța modelelor clasice vs ML
             \item Alegeți metoda potrivită în funcție de context
             \item Implementați aceste metode în \textbf{Python}
         \end{enumerate}
@@ -434,7 +442,7 @@
             \item \textbf{Rolling statistics}: medie mobilă, deviație standard
             \item \textbf{Calendar features}: ziua săptămânii, luna, sezon
             \item \textbf{Trend features}: timp, trend pătratic
-            \item \textbf{Variabile exogene}: indicatori economici, evenimente
+            \item \textbf{Variabile exogene}: indicători economici, evenimente
         \end{enumerate}
     \end{block}
 
@@ -455,7 +463,7 @@
     \end{center}
     \vspace{-0.3cm}
     {\footnotesize
-    Transformăm seria temporală în features: lag-uri, statistici rolling, iar modelul RF învață relațiile dintre acestea și valorile viitoare.
+    Transformăm seria temporală în features: lag-uri, statistici rolling, iar modelul RF învață relațiile dîntre acestea și valorile viitoare.
     }
 \end{frame}
 
@@ -464,7 +472,7 @@
         {\footnotesize
         \texttt{from sklearn.ensemble import RandomForestRegressor}
 
-        \texttt{rf = RandomForestRegressor(n\_estimators=100, max\_depth=10)}
+        \texttt{rf = RandomForestRegressor(n\_eștimators=100, max\_depth=10)}
 
         \texttt{rf.fit(X\_train, y\_train)}
 
@@ -505,7 +513,7 @@
     \end{center}
     \vspace{-0.3cm}
     {\footnotesize
-    Modelul Random Forest antrenat pe date istorice (albastru) produce prognoze (roșu punctat) care urmăresc bine valorile reale din perioada de test (verde).
+    Modelul Random Forest antrenat pe date istorice (albastru) produce prognoze (roșu punctat) care urmăresc bine valorile reale din perioadă de test (verde).
     }
 \end{frame}
 
@@ -665,7 +673,7 @@
 
         \texttt{~~~~X, y = [], []}
 
-        \texttt{~~~~for i in range(len(data) - n\_steps):}
+        \texttt{~~~~for i în range(len(data) - n\_steps):}
 
         \texttt{~~~~~~~~X.append(data[i:(i + n\_steps)])}
 
@@ -687,7 +695,7 @@
             \item \textbf{RMSE}: $\sqrt{\frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2}$ --- Eroare în unități originale
             \item \textbf{MAE}: $\frac{1}{n}\sum_{i=1}^n |y_i - \hat{y}_i|$ --- Robust la outlieri
             \item \textbf{MAPE}: $\frac{100}{n}\sum_{i=1}^n \left|\frac{y_i - \hat{y}_i}{y_i}\right|$ --- Eroare procentuală
-            \item \textbf{MASE}: Comparat cu benchmark naiv
+            \item \textbf{MASE}: Comparăt cu benchmark naiv
         \end{itemize}
     \end{block}
 
@@ -764,7 +772,7 @@
 \section{Aplicații Practice}
 %=============================================================================
 
-\begin{frame}{Studiu de Caz: Prognoza Prețului Bitcoin}
+\begin{frame}{Studiu de Caz: Prognoză Prețului Bitcoin}
     \begin{block}{De ce Bitcoin?}
         \begin{itemize}
             \item Volatilitate \textbf{extremă} și pattern-uri complexe
@@ -776,7 +784,7 @@
 
     \vspace{0.2cm}
 
-    \begin{exampleblock}{Abordare Comparativă}
+    \begin{exampleblock}{Abordare Comparătivă}
         \begin{enumerate}
             \item ARIMA pe randamente
             \item ARFIMA pentru memorie lungă
@@ -786,7 +794,7 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Studiu de Caz: Prognoza Consumului de Energie}
+\begin{frame}{Studiu de Caz: Prognoză Consumului de Energie}
     \begin{block}{Caracteristici}
         \begin{itemize}
             \item \textbf{Sezonalitate multiplă}: zilnică, săptămânală, anuală
@@ -869,7 +877,7 @@
 \section{Studiu de Caz Complet: Cursul EUR/RON}
 %=============================================================================
 
-\begin{frame}{Studiu de Caz: Prognoza Cursului EUR/RON}
+\begin{frame}{Studiu de Caz: Prognoză Cursului EUR/RON}
     \begin{block}{De ce EUR/RON?}
         \begin{itemize}
             \item Relevanță pentru economia românească
@@ -937,10 +945,10 @@ print(f"Phillips-Perron p-value: {pp_test.pvalue:.4f}")
 
 # Estimarea exponentului Hurst
 H, c, data_rs = compute_Hc(df['Returns'].values, kind='change')
-d_estimated = H - 0.5
+d_eștimated = H - 0.5
 
 print(f"Exponentul Hurst (H): {H:.4f}")
-print(f"Parametrul d estimat: {d_estimated:.4f}")
+print(f"Parametrul d eștimat: {d_eștimated:.4f}")
 
 # Interpretare
 if H > 0.5:
@@ -959,7 +967,7 @@ else:
         {\footnotesize
         \texttt{Phillips-Perron p-value: 0.0001} (randamentele sunt staționare)\\
         \texttt{Exponentul Hurst (H): 0.47}\\
-        \texttt{Parametrul d estimat: -0.03}\\
+        \texttt{Parametrul d eștimat: -0.03}\\
         \texttt{Serie ușor ANTI-PERSISTENTĂ (mean-reverting)}
         }
     \end{block}
@@ -1012,13 +1020,13 @@ print(f"ARIMA(1,0,1) - RMSE: {rmse_arima:.4f}, MAE: {mae_arima:.4f}")
 from arch import arch_model
 
 # ARFIMA(1,d,1) folosind arch pentru estimare robustă
-# Notă: arch estimează d automat în contextul GARCH
+# Notă: arch eștimează d automat în contextul GARCH
 
 # Alternativ, folosim statsmodels cu d fracționar
 from statsmodels.tsa.arima.model import ARIMA
 
-# Estimăm d folosind GPH sau setăm manual
-d_frac = 0.1  # sau valoarea estimată anterior
+# Eștimăm d folosind GPH sau setăm manual
+d_frac = 0.1  # sau valoarea eștimată anterior
 
 model_arfima = ARIMA(train, order=(1, d_frac, 1))
 try:
@@ -1045,7 +1053,7 @@ def create_features(data, lags=5):
     df_feat['target'] = data.values
 
     # Lag features
-    for i in range(1, lags + 1):
+    for i în range(1, lags + 1):
         df_feat[f'lag_{i}'] = data.shift(i)
 
     # Rolling statistics
@@ -1079,7 +1087,7 @@ y_train, y_test = y[:train_size], y[train_size:]
 
 # Antrenăm Random Forest
 rf_model = RandomForestRegressor(
-    n_estimators=100,
+    n_eștimators=100,
     max_depth=10,
     min_samples_split=5,
     random_state=42
@@ -1120,7 +1128,7 @@ scaled_data = scaler.fit_transform(df['Returns'].values.reshape(-1, 1))
 # Creăm secvențe
 def create_sequences(data, seq_length=20):
     X, y = [], []
-    for i in range(seq_length, len(data)):
+    for i în range(seq_length, len(data)):
         X.append(data[i-seq_length:i, 0])
         y.append(data[i, 0])
     return np.array(X), np.array(y)
@@ -1302,7 +1310,7 @@ print(f"LSTM - RMSE: {rmse_lstm:.4f}")
     \begin{alertblock}{Rezultate Tipice}
         \begin{itemize}
             \item ARFIMA cu $d \approx 0.35$ -- captează persistența
-            \item ARIMA subestimează persistența șocurilor
+            \item ARIMA subeștimează persistența șocurilor
             \item ML nu funcționează bine (date puține, ~300 obs.)
         \end{itemize}
     \end{alertblock}
@@ -1401,7 +1409,7 @@ print(f"LSTM - RMSE: {rmse_lstm:.4f}")
 
         \vspace{0.15cm}
 
-        \item \textbf{LSTM vs RNN}: LSTM rezolvă problema ``vanishing gradient'' prin mecanismul de porți, permițând învățarea dependențelor pe termen lung.
+        \item \textbf{LSTM vs RNN}: LSTM rezolvă problemă ``vanishing gradient'' prin mecanismul de porți, permițând învățarea dependențelor pe termen lung.
 
         \vspace{0.15cm}
 

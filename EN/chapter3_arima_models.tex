@@ -352,10 +352,47 @@
 
 \begin{frame}{Random Walk: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{ch3_def_random_walk.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Left: multiple random walk paths wander unpredictably. Right: variance grows linearly with time.
+    \begin{alertblock}{Key Properties}
+        Left: Multiple random walk paths wander unpredictably with no mean reversion. Right: Variance $\Var(Y_t) = t\sigma^2$ grows linearly --- the defining feature of non-stationarity.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Proof: Random Walk Variance}
+    \textbf{Claim:} For $Y_t = Y_{t-1} + \varepsilon_t$ with $Y_0 = 0$: $\Var(Y_t) = t\sigma^2$
+
+    \vspace{0.2cm}
+    \textbf{Proof:} By recursive substitution:
+    $$Y_t = Y_{t-1} + \varepsilon_t = Y_{t-2} + \varepsilon_{t-1} + \varepsilon_t = \cdots = \sum_{i=1}^{t} \varepsilon_i$$
+
+    Taking variance:
+    $$\Var(Y_t) = \Var\left(\sum_{i=1}^{t} \varepsilon_i\right) = \sum_{i=1}^{t} \Var(\varepsilon_i) + 2\sum_{i<j} \Cov(\varepsilon_i, \varepsilon_j)$$
+
+    Since $\varepsilon_t$ are independent (white noise), all covariances are zero:
+    $$\Var(Y_t) = \sum_{i=1}^{t} \sigma^2 = \boxed{t\sigma^2}$$
+
+    \begin{alertblock}{Non-Stationarity}
+        Variance depends on $t$ $\Rightarrow$ violates stationarity requirement ($\Var(Y_t) = \gamma(0)$ constant).
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Proof: Random Walk Autocovariance}
+    \textbf{Claim:} $\Cov(Y_t, Y_{t-k}) = (t-k)\sigma^2$ for $k \leq t$
+
+    \vspace{0.2cm}
+    \textbf{Proof:} Using $Y_t = \sum_{i=1}^{t} \varepsilon_i$ and $Y_{t-k} = \sum_{i=1}^{t-k} \varepsilon_i$:
+    \begin{align*}
+    \Cov(Y_t, Y_{t-k}) &= \Cov\left(\sum_{i=1}^{t} \varepsilon_i, \sum_{j=1}^{t-k} \varepsilon_j\right) \\
+    &= \sum_{i=1}^{t}\sum_{j=1}^{t-k} \Cov(\varepsilon_i, \varepsilon_j) = \sum_{i=1}^{t-k} \Var(\varepsilon_i) = \boxed{(t-k)\sigma^2}
+    \end{align*}
+
+    Only terms with $i = j$ survive (when $i \leq t-k$).
+
+    \vspace{0.1cm}
+    \textbf{ACF:}
+    $$\rho(k) = \frac{\Cov(Y_t, Y_{t-k})}{\sqrt{\Var(Y_t)\Var(Y_{t-k})}} = \frac{(t-k)\sigma^2}{\sqrt{t\sigma^2 \cdot (t-k)\sigma^2}} = \sqrt{\frac{t-k}{t}}$$
 \end{frame}
 
 \begin{frame}{Random Walk with Drift}
@@ -383,10 +420,12 @@
 
 \begin{frame}{Random Walk with Drift: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{ch3_def_random_walk_drift.pdf}
+        \includegraphics[width=0.9\textwidth, height=0.58\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Random walk without drift (blue) wanders around zero. With drift (red), there's a systematic trend.
+    \begin{exampleblock}{Comparison}
+        Without drift (blue): wanders around zero with no direction. With drift $\mu > 0$ (red): systematic upward trend. Both are non-stationary --- drift adds deterministic trend to stochastic wandering.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Simulating Random Walks}
@@ -514,6 +553,27 @@
     }
 \end{frame}
 
+\begin{frame}{Proof: Differencing Induces Stationarity}
+    \textbf{Claim:} If $Y_t \sim I(1)$, then $\Delta Y_t = Y_t - Y_{t-1}$ is stationary.
+
+    \vspace{0.15cm}
+    \textbf{Proof for Random Walk with Drift:} $Y_t = \mu + Y_{t-1} + \varepsilon_t$
+
+    The first difference is:
+    $$\Delta Y_t = Y_t - Y_{t-1} = \mu + \varepsilon_t$$
+
+    Check stationarity conditions:
+    \begin{enumerate}
+        \item \textbf{Mean:} $\E[\Delta Y_t] = \mu$ (constant, does not depend on $t$) \checkmark
+        \item \textbf{Variance:} $\Var(\Delta Y_t) = \Var(\varepsilon_t) = \sigma^2$ (constant) \checkmark
+        \item \textbf{Autocovariance:} $\Cov(\Delta Y_t, \Delta Y_{t-k}) = \Cov(\varepsilon_t, \varepsilon_{t-k}) = 0$ for $k \neq 0$ \checkmark
+    \end{enumerate}
+
+    \begin{exampleblock}{General Principle}
+        Differencing removes the ``memory'' that causes variance to accumulate. For $I(d)$ processes, $d$ differences are needed.
+    \end{exampleblock}
+\end{frame}
+
 \begin{frame}{ACF Diagnostic: Detecting Non-Stationarity}
     \vspace{-0.3cm}
     \begin{center}
@@ -531,16 +591,12 @@
 \begin{frame}{Differencing in Practice: GDP Example}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.65\textheight, keepaspectratio]{ch3_differencing.pdf}
+        \includegraphics[width=0.92\textwidth, height=0.55\textheight, keepaspectratio]{ch3_differencing.pdf}
     \end{center}
     \vspace{-0.2cm}
-    {\footnotesize
-    \begin{itemize}
-        \item \textbf{Left}: GDP in levels -- clear upward trend (non-stationary)
-        \item \textbf{Right}: GDP growth rate (log difference) -- fluctuates around mean (stationary)
-        \item Differencing removes the trend and achieves stationarity
-    \end{itemize}
-    }
+    \begin{block}{Transformation}
+        \textbf{Left}: GDP in levels with clear upward trend (non-stationary). \textbf{Right}: GDP growth rate $\Delta \log(GDP_t)$ fluctuates around constant mean (stationary). One difference removes the stochastic trend.
+    \end{block}
 \end{frame}
 
 \begin{frame}{Overdifferencing}
@@ -591,10 +647,12 @@
 
 \begin{frame}{ARIMA: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.85\textwidth, height=0.62\textheight, keepaspectratio]{ch3_def_arima.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_arima.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \small Top: original ARIMA series. Bottom left/right: after differencing, ACF/PACF help identify AR and MA orders.
+    \begin{exampleblock}{Interpretation}
+        Top: original ARIMA series (non-stationary). Bottom: after differencing $d$ times, ACF/PACF reveal the AR and MA orders for the stationary component.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{ARIMA Components}
@@ -1630,6 +1688,77 @@ print(model.summary())
         \end{verbatim}
     \end{block}
     }
+\end{frame}
+
+%=============================================================================
+% CASE STUDY: REAL DATA
+%=============================================================================
+\section{Case Study: Real Data}
+
+\begin{frame}{Case Study: GDP Index (Simulated)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_raw_data.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Data Description}
+        \textbf{Simulated quarterly GDP index (1960--2010)}: Non-stationary series with upward trend. Demonstrates the need for differencing before ARMA modeling.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Step 1: ADF Test for Stationarity}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_case_adf_test.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{alertblock}{ADF Test Results}
+        \textbf{Original series}: Large p-value $\Rightarrow$ fail to reject $H_0$ (unit root present).
+        \textbf{First difference}: p-value $< 0.01$ $\Rightarrow$ reject $H_0$ $\Rightarrow$ $d = 1$ is sufficient.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Step 2: ACF/PACF Before and After Differencing}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.62\textheight, keepaspectratio]{ch3_case_acf_diff.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{Identification}
+        \textbf{Top}: Slow ACF decay $\Rightarrow$ non-stationarity.
+        \textbf{Bottom}: After differencing, ACF and PACF suggest low-order ARMA.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Step 3: ARIMA Model Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_case_model_comparison.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Model Selection}
+        Compare ARIMA(0,1,0), ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1). The model with lowest AIC is selected.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Step 4: Diagnostic Checking}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch3_case_diagnostics.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{ARIMA(1,1,1) Diagnostics}
+        Residuals are approximately white noise: no significant autocorrelation, nearly normal distribution.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Step 5: Forecasting}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Results}
+        \begin{itemize}
+            \item ARIMA(1,1,1) forecasts follow the data trend
+            \item Confidence intervals widen with horizon (characteristic of I(1))
+            \item Uncertainty grows because errors accumulate through differencing
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 %=============================================================================

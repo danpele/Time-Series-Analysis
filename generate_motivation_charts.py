@@ -107,33 +107,46 @@ ch1_motivation_everywhere()
 def ch1_motivation_forecast():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
-    # Real S&P 500 data with actual forecast visualization
-    print("  Fetching S&P 500 for forecast visualization...")
-    sp500 = yf.download('^GSPC', start='2022-06-01', end='2024-01-01', progress=False)
+    # Airline passengers data - classic forecasting example
+    passengers = [112, 118, 132, 129, 121, 135, 148, 148, 136, 119, 104, 118,
+                  115, 126, 141, 135, 125, 149, 170, 170, 158, 133, 114, 140,
+                  145, 150, 178, 163, 172, 178, 199, 199, 184, 162, 146, 166,
+                  171, 180, 193, 181, 183, 218, 230, 242, 209, 191, 172, 194,
+                  196, 196, 236, 235, 229, 243, 264, 272, 237, 211, 180, 201,
+                  204, 188, 235, 227, 234, 264, 302, 293, 259, 229, 203, 229,
+                  242, 233, 267, 269, 270, 315, 364, 347, 312, 274, 237, 278,
+                  284, 277, 317, 313, 318, 374, 413, 405, 355, 306, 271, 306,
+                  315, 301, 356, 348, 355, 422, 465, 467, 404, 347, 305, 336,
+                  340, 318, 362, 348, 363, 435, 491, 505, 404, 359, 310, 337,
+                  360, 342, 406, 396, 420, 472, 548, 559, 463, 407, 362, 405,
+                  417, 391, 419, 461, 472, 535, 622, 606, 508, 461, 390, 432]
 
-    # Split into "historical" and "forecast" period
-    split_date = '2023-09-01'
-    close_series = sp500['Close'].squeeze()  # Convert to 1D Series
-    hist = close_series[close_series.index < split_date]
-    future = close_series[close_series.index >= split_date]
+    dates = pd.date_range('1949-01', periods=144, freq='MS')
+    y = pd.Series(passengers, index=dates)
 
-    # Create simple forecast from last value
-    last_val = float(hist.iloc[-1])
-    future_last = float(future.iloc[-1])
-    forecast_vals = np.linspace(last_val, future_last, len(future))
+    # Split into historical and forecast period (last 24 months)
+    split_idx = 120  # Keep first 10 years for training
+    hist = y.iloc[:split_idx]
+    future = y.iloc[split_idx:]
+
+    # Simple Holt-Winters style forecast (trend extrapolation with seasonal)
+    from statsmodels.tsa.holtwinters import ExponentialSmoothing
+    model = ExponentialSmoothing(hist, seasonal_periods=12, trend='add', seasonal='mul')
+    fit = model.fit()
+    forecast_vals = fit.forecast(len(future))
 
     # Confidence interval (widening over time)
-    ci_width = np.linspace(50, 300, len(future))
+    ci_width = np.linspace(15, 60, len(future))
 
-    axes[0].plot(hist.index, hist.values.flatten(), 'b-', linewidth=1.5, label='Historical')
-    axes[0].plot(future.index, future.values.flatten(), 'k-', linewidth=1, alpha=0.5, label='Actual')
+    axes[0].plot(hist.index, hist.values, 'b-', linewidth=1.5, label='Historical')
+    axes[0].plot(future.index, future.values, 'k-', linewidth=1, alpha=0.5, label='Actual')
     axes[0].plot(future.index, forecast_vals, 'r--', linewidth=2, label='Forecast')
     axes[0].fill_between(future.index, forecast_vals - ci_width, forecast_vals + ci_width,
                          color='red', alpha=0.2, label='95% CI')
-    axes[0].axvline(x=pd.Timestamp(split_date), color='gray', linestyle='-', alpha=0.5)
-    axes[0].set_title('S&P 500: Historical vs Forecast', fontsize=11, fontweight='bold')
+    axes[0].axvline(x=hist.index[-1], color='gray', linestyle='-', alpha=0.5)
+    axes[0].set_title('Airline Passengers: Historical vs Forecast', fontsize=11, fontweight='bold')
     axes[0].set_xlabel('Date')
-    axes[0].set_ylabel('Index Value')
+    axes[0].set_ylabel('Passengers (000s)')
     axes[0].tick_params(axis='x', rotation=30)
     axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.35), fontsize=8, frameon=False, ncol=4)
 
@@ -279,7 +292,7 @@ def ch1_cyclical_component():
     axes[0].plot(gdp_dates, trend, 'r--', linewidth=2, label='Trend (HP filter)')
     axes[0].set_title('US Real GDP: Level and Trend', fontsize=11, fontweight='bold')
     axes[0].set_ylabel('Index (1990=100)')
-    axes[0].legend(loc='upper left', fontsize=9)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False, ncol=2)
 
     # Add recession shading (NBER dates)
     recession_periods = [
@@ -304,7 +317,7 @@ def ch1_cyclical_component():
     axes[1].set_title('Cyclical Component (Business Cycle)', fontsize=11, fontweight='bold')
     axes[1].set_ylabel('Deviation from Trend')
     axes[1].set_xlabel('Date')
-    axes[1].legend(loc='upper left', fontsize=9)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False, ncol=2)
 
     # Add annotation
     fig.text(0.5, 0.01, 'Data: US Bureau of Economic Analysis | Gray shading = NBER recession dates',

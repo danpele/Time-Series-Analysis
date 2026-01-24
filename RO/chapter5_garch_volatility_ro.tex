@@ -1,19 +1,19 @@
-% Capitolul: Modele ARCH/GARCH pentru Volatilitate
-% Prezentare Beamer
-% Program de licenta, Academia de Studii Economice din Bucuresti
+% Capitolul 5: Modele ARCH/GARCH pentru Volatilitate
+% Prezentare academică de calitate Harvard
+% Program de licență, Academia de Studii Economice din București
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
 
-% Ensure content fits on slides
-\setbeamersize{text margin left=18mm, text margin right=12mm}
+% Asigură încadrarea conținutului pe diapozitive
+\setbeamersize{text margin left=8mm, text margin right=8mm}
 
 %=============================================================================
-% THEME AND STYLE CONFIGURATION
+% CONFIGURARE TEMĂ ȘI STIL
 %=============================================================================
 \usetheme{Madrid}
 \usecolortheme{seahorse}
 
-% IDA-Inspired Color Palette
+% Paletă de Culori Profesională
 \definecolor{MainBlue}{RGB}{26, 58, 110}
 \definecolor{AccentBlue}{RGB}{42, 82, 140}
 \definecolor{IDAred}{RGB}{220, 53, 69}
@@ -24,6 +24,8 @@
 \definecolor{Crimson}{RGB}{220, 53, 69}
 \definecolor{Forest}{RGB}{46, 125, 50}
 \definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+\definecolor{HarvardCrimson}{RGB}{165, 28, 48}
 
 \setbeamercolor{palette primary}{bg=MainBlue, fg=white}
 \setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
@@ -58,7 +60,7 @@
 }
 
 %=============================================================================
-% PACKAGES
+% PACHETE
 %=============================================================================
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -66,27 +68,28 @@
 \usepackage{mathtools}
 \usepackage{bm}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{colortbl}
 \hypersetup{colorlinks=false, pdfborder={0 0 0}}
 \graphicspath{{../logos/}{../charts/}}
 
 %=============================================================================
-% THEOREM ENVIRONMENTS
+% MEDII PENTRU TEOREME
 %=============================================================================
 \theoremstyle{definition}
 \setbeamertemplate{theorems}[numbered]
-\newtheorem{defn}{Definitie}
-\newtheorem{thm}{Teorema}
-\newtheorem{prop}{Propozitie}
-\newtheorem{rmk}{Observatie}
+\newtheorem{defn}{Definiție}
+\newtheorem{thm}{Teoremă}
+\newtheorem{prop}{Propoziție}
+\newtheorem{rmk}{Observație}
 
 %=============================================================================
-% CUSTOM COMMANDS
+% COMENZI PERSONALIZATE
 %=============================================================================
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Var}{\text{Var}}
@@ -95,21 +98,23 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
-\newcommand{\B}{\mathbf{B}}
+\newcommand{\RMSE}{\text{RMSE}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAPE}{\text{MAPE}}
 
 %=============================================================================
-% TITLE INFORMATION
+% INFORMAȚII TITLU
 %=============================================================================
-\title[Capitolul 5: GARCH]{Capitolul 5: Modele de Volatilitate: ARCH, GARCH și Extensii}
-\subtitle{Program de licenta, Facultatea de Cibernetica, Statistica si Informatica Economica, Academia de Studii Economice din Bucuresti}
+\title[Capitolul 5: Modele GARCH]{Capitolul 5: Modele ARCH/GARCH pentru Volatilitate}
+\subtitle{Program de licență, Facultatea de Cibernetică, Statistică și Informatică Economică, Academia de Studii Economice din București}
 \author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
-\institute{Academia de Studii Economice din Bucuresti}
+\institute{Academia de Studii Economice din București}
 \date{An Universitar 2025--2026}
 
 \begin{document}
 
 %=============================================================================
-% TITLE SLIDE
+% DIAPOZITIV TITLU
 %=============================================================================
 \begin{frame}[plain]
     \begin{tikzpicture}[remember picture, overlay]
@@ -126,7 +131,7 @@
     \end{tikzpicture}
     \vfill
     \begin{center}
-        {\Large\textcolor{MediumGray}{Analiza și Prognoza Seriilor de Timp}}\\[0.3cm]
+        {\Large\textcolor{MediumGray}{Analiza și Prognoză Seriilor de Timp}}\\[0.3cm]
         {\Huge\textbf{\textcolor{MainBlue}{Capitolul 5: Modele de Volatilitate}}}\\[0.5cm]
         {\Large\textcolor{IDAred}{ARCH, GARCH, EGARCH, TGARCH}}
     \end{center}
@@ -166,10 +171,10 @@
     \begin{block}{La finalul acestui capitol, veți fi capabili să:}
         \begin{enumerate}
             \item Înțelegeți \textbf{volatility clustering} și faptele stilizate ale randamentelor financiare
-            \item Estimați și interpretați modele \textbf{ARCH} și \textbf{GARCH}
+            \item Eștimați și interpretați modele \textbf{ARCH} și \textbf{GARCH}
             \item Aplicați modele asimetrice (\textbf{EGARCH}, \textbf{GJR-GARCH}) pentru efectul de levier
             \item Efectuați diagnosticarea și selectarea modelelor
-            \item Prognozați volatilitatea și calculați \textbf{Value at Risk (VaR)}
+            \item Prognozăți volatilitatea și calculați \textbf{Value at Risk (VaR)}
         \end{enumerate}
     \end{block}
 
@@ -285,7 +290,7 @@
         \begin{itemize}
             \item $\omega > 0$ (varianța de bază pozitivă)
             \item $\alpha_i \geq 0$ pentru $i = 1, \ldots, q$ (non-negativitate)
-            \item $\sum_{i=1}^{q} \alpha_i < 1$ (stationaritate)
+            \item $\sum_{i=1}^{q} \alpha_i < 1$ (staționaritate)
         \end{itemize}
     \end{block}
 
@@ -318,13 +323,13 @@
     \begin{block}{Testul Engle pentru Efecte ARCH}
         \textbf{Procedură}:
         \begin{enumerate}
-            \item Estimează modelul pentru medie și obține reziduurile $\hat{\varepsilon}_t$
+            \item Eștimează modelul pentru medie și obține reziduurile $\hat{\varepsilon}_t$
             \item Calculează $\hat{\varepsilon}_t^2$
             \item Regresează $\hat{\varepsilon}_t^2$ pe lag-urile sale:
             \[
                 \hat{\varepsilon}_t^2 = \beta_0 + \beta_1 \hat{\varepsilon}_{t-1}^2 + \cdots + \beta_q \hat{\varepsilon}_{t-q}^2 + u_t
             \]
-            \item Calculează statistica $LM = T \cdot R^2 \sim \chi^2(q)$
+            \item Calculează statistică $LM = T \cdot R^2 \sim \chi^2(q)$
         \end{enumerate}
     \end{block}
 
@@ -396,7 +401,7 @@
                 \begin{itemize}
                     \item $\omega > 0$
                     \item $\alpha \geq 0$, $\beta \geq 0$
-                    \item $\alpha + \beta < 1$ (stationaritate)
+                    \item $\alpha + \beta < 1$ (staționaritate)
                 \end{itemize}
             \end{block}
 
@@ -431,7 +436,7 @@
         \begin{itemize}
             \item ACF al $\varepsilon_t^2$ decade exponențial (ca ARMA)
             \item Persistența este dată de $\alpha + \beta$
-            \item PACF poate ajuta la identificarea ordinului
+            \item PACF poate ajută la identificarea ordinului
         \end{itemize}
     \end{exampleblock}
 \end{frame}
@@ -603,7 +608,7 @@
                 \midrule
                 GARCH & $\sigma_t^2$ & Nu \\
                 EGARCH & $\ln(\sigma_t^2)$ & Da ($\gamma < 0$) \\
-                GJR-GARCH & $\sigma_t^2$ cu indicator & Da ($\gamma > 0$) \\
+                GJR-GARCH & $\sigma_t^2$ cu indicător & Da ($\gamma > 0$) \\
                 TGARCH & $\sigma_t$ & Da ($\alpha^- > \alpha^+$) \\
                 \bottomrule
             \end{tabular}
@@ -643,7 +648,7 @@
             \hat{z}_t = \frac{\hat{\varepsilon}_t}{\hat{\sigma}_t}
         \]
 
-        Dacă modelul este corect specificat, $\hat{z}_t$ ar trebui să fie i.i.d.(0,1).
+        Dacă modelul este corect specificăt, $\hat{z}_t$ ar trebui să fie i.i.d.(0,1).
     \end{block}
 
     \vspace{0.3cm}
@@ -652,7 +657,7 @@
         \begin{enumerate}
             \item \textbf{Ljung-Box pe $\hat{z}_t$}: verifică absența autocorrelației în medie
             \item \textbf{Ljung-Box pe $\hat{z}_t^2$}: verifică absența efectelor ARCH reziduale
-            \item \textbf{Test ARCH-LM pe $\hat{z}_t$}: confirmare absență heteroscedasticitate
+            \item \textbf{Test ARCH-LM pe $\hat{z}_t$}: confirmăre absență heteroscedasticitate
             \item \textbf{Histogramă + QQ-plot}: verifică distribuția asumată
         \end{enumerate}
     \end{block}
@@ -667,9 +672,9 @@
 %=============================================================================
 % SECTION 6: FORECASTING VOLATILITY
 %=============================================================================
-\section{Prognoza Volatilității}
+\section{Prognoză Volatilității}
 
-\begin{frame}{Prognoza cu GARCH(1,1)}
+\begin{frame}{Prognoză cu GARCH(1,1)}
     \begin{block}{Prognoză Un Pas Înainte}
         \[
             \hat{\sigma}_{T+1}^2 = \omega + \alpha \varepsilon_T^2 + \beta \sigma_T^2
@@ -690,17 +695,17 @@
         \[
             \lim_{h \to \infty} \E_T[\sigma_{T+h}^2] = \bar{\sigma}^2
         \]
-        Prognoza converge către varianța necondiționată!
+        Prognoză converge către varianța necondiționată!
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Prognoza Volatilității --- Vizualizare}
+\begin{frame}{Prognoză Volatilității --- Vizualizare}
     \begin{center}
         \includegraphics[width=0.85\textwidth]{garch_forecast.pdf}
     \end{center}
 
     \begin{itemize}
-        \item Prognoza converge exponențial către $\bar{\sigma}^2$
+        \item Prognoză converge exponențial către $\bar{\sigma}^2$
         \item Viteza de convergență depinde de $\alpha + \beta$
         \item Cu cât $\alpha + \beta$ mai aproape de 1, cu atât convergența mai lentă
     \end{itemize}
@@ -739,7 +744,7 @@
 
 \begin{frame}{Value at Risk --- Exemplu Numeric}
     \begin{exampleblock}{Calculul VaR pentru un Portofoliu}
-        \textbf{Date:} Portofoliu de \textbf{1.000.000 EUR}, volatilitate prognozată $\hat{\sigma}_{T+1} = 1.5\%$
+        \textbf{Date:} Portofoliu de \textbf{1.000.000 EUR}, volatilitate prognozătă $\hat{\sigma}_{T+1} = 1.5\%$
     \end{exampleblock}
 
     \vspace{0.2cm}
@@ -769,7 +774,7 @@
 \begin{frame}{Value at Risk --- Distribuție Student-t}
     \begin{block}{De ce Student-t?}
         \begin{itemize}
-            \item Distribuția normală \textbf{subestimează} riscul de coadă
+            \item Distribuția normală \textbf{subeștimează} riscul de coadă
             \item Randamentele financiare au \textbf{cozi groase} (kurtosis $> 3$)
             \item Student-t cu $\nu$ grade de libertate capturează mai bine extremele
         \end{itemize}
@@ -800,8 +805,8 @@
 \begin{frame}{VaR --- Exemplu Complet cu GARCH}
     \begin{block}{Procedura de Calcul VaR}
         \begin{enumerate}
-            \item Estimează modelul GARCH(1,1) cu distribuție Student-t
-            \item Obține prognoza volatilității: $\hat{\sigma}_{T+1}$
+            \item Eștimează modelul GARCH(1,1) cu distribuție Student-t
+            \item Obține prognoză volatilității: $\hat{\sigma}_{T+1}$
             \item Calculează VaR: $\text{VaR}_\alpha = t_\alpha(\nu) \cdot \hat{\sigma}_{T+1} \cdot \sqrt{\frac{\nu-2}{\nu}}$
         \end{enumerate}
     \end{block}
@@ -810,8 +815,8 @@
 
     \begin{exampleblock}{Exemplu: S\&P 500}
         \begin{itemize}
-            \item Parametri estimați: $\alpha = 0.088$, $\beta = 0.900$, $\nu = 6.4$
-            \item Volatilitate prognozată: $\hat{\sigma}_{T+1} = 1.2\%$
+            \item Parametri eștimați: $\alpha = 0.088$, $\beta = 0.900$, $\nu = 6.4$
+            \item Volatilitate prognozătă: $\hat{\sigma}_{T+1} = 1.2\%$
             \item Portofoliu: 10.000.000 EUR
         \end{itemize}
 
@@ -1017,13 +1022,13 @@ VaR_95 = 1.645 * sigma_forecast  # pentru alpha = 5%
             \item \textbf{ARCH(q)}: varianța condiționată depinde de pătratele erorilor trecute
             \item \textbf{GARCH(p,q)}: adaugă lag-uri ale varianței pentru persistență
             \item \textbf{EGARCH}: permite leverage effect, fără restricții de pozitivitate
-            \item \textbf{GJR-GARCH/TGARCH}: captură asimetria cu variabile indicator
+            \item \textbf{GJR-GARCH/TGARCH}: captură asimetria cu variabile indicător
         \end{itemize}
     \end{block}
 
     \begin{block}{Aplicații}
         \begin{itemize}
-            \item Măsurarea și prognoza riscului (VaR, ES)
+            \item Măsurarea și prognoză riscului (VaR, ES)
             \item Prețul derivatelor
             \item Managementul portofoliului
         \end{itemize}
@@ -1036,11 +1041,11 @@ VaR_95 = 1.645 * sigma_forecast  # pentru alpha = 5%
 
 \begin{frame}{Referințe}
     \begin{thebibliography}{10}
-        \bibitem{engle1982} Engle, R.F. (1982). \textit{Autoregressive Conditional Heteroscedasticity with Estimates of the Variance of United Kingdom Inflation}. Econometrica, 50(4), 987-1007.
+        \bibitem{engle1982} Engle, R.F. (1982). \textit{Autoregressive Conditional Heteroscedasticity with Eștimates of the Variance of United Kingdom Inflation}. Econometrica, 50(4), 987-1007.
 
         \bibitem{bollerslev1986} Bollerslev, T. (1986). \textit{Generalized Autoregressive Conditional Heteroskedasticity}. Journal of Econometrics, 31(3), 307-327.
 
-        \bibitem{nelson1991} Nelson, D.B. (1991). \textit{Conditional Heteroskedasticity in Asset Returns: A New Approach}. Econometrica, 59(2), 347-370.
+        \bibitem{nelson1991} Nelson, D.B. (1991). \textit{Conditional Heteroskedasticity în Asset Returns: A New Approach}. Econometrica, 59(2), 347-370.
 
         \bibitem{gjr1993} Glosten, L.R., Jagannathan, R., \& Runkle, D.E. (1993). \textit{On the Relation between the Expected Value and the Volatility of the Nominal Excess Return on Stocks}. The Journal of Finance, 48(5), 1779-1801.
 

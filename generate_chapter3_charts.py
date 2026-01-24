@@ -238,7 +238,7 @@ axes[0, 1].plot(x_range, stats.norm.pdf(x_range, resid.mean(), resid.std()),
 axes[0, 1].set_title('Residual Distribution', fontweight='bold')
 axes[0, 1].set_xlabel('Residual')
 axes[0, 1].set_ylabel('Density')
-axes[0, 1].legend(loc='upper right', fontsize=9, frameon=False)
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False)
 
 # ACF of residuals
 acf_resid = acf(resid.dropna(), nlags=20)
@@ -466,7 +466,7 @@ axes[0].set_title('Rolling Window Concept', fontweight='bold')
 axes[0].set_xlabel('Time')
 axes[0].set_ylabel('$Y_t$')
 axes[0].text(40, max(y)-10, f'Window\nsize = {window_size}', fontsize=10, ha='center')
-axes[0].legend(loc='upper left', fontsize=9, frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=9, frameon=False)
 
 # Right: Forecasts vs Actuals
 axes[1].plot(forecast_times, actuals, color=BLUE, linewidth=1.5, label='Actual')
