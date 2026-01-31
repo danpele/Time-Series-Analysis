@@ -1,5 +1,5 @@
-% Chapter 3: ARIMA Models for Non-Stationary Data
-% Comprehensive Beamer Presentation
+% Chapter 3: ARIMA Models
+% Harvard-quality academic presentation
 % Bachelor program, Bucharest University of Economic Studies
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
@@ -10,27 +10,43 @@
 %=============================================================================
 % THEME AND STYLE CONFIGURATION
 %=============================================================================
-\usetheme{Madrid}
-\usecolortheme{seahorse}
+\usetheme{default}
+% Using default theme for clean header/footer control
 
-% IDA-Inspired Color Palette
+% Color Palette (matching Redispatch PDF)
 \definecolor{MainBlue}{RGB}{26, 58, 110}
-\definecolor{AccentBlue}{RGB}{42, 82, 140}
-\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{AccentBlue}{RGB}{26, 58, 110}
+\definecolor{IDAred}{RGB}{205, 0, 0}
 \definecolor{DarkGray}{RGB}{51, 51, 51}
 \definecolor{MediumGray}{RGB}{128, 128, 128}
 \definecolor{LightGray}{RGB}{248, 248, 248}
 \definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{KeynoteGray}{RGB}{218, 218, 218}
+\definecolor{SectionGray}{RGB}{120, 120, 120}
+\definecolor{FooterGray}{RGB}{100, 100, 100}
 \definecolor{Crimson}{RGB}{220, 53, 69}
 \definecolor{Forest}{RGB}{46, 125, 50}
 \definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+\definecolor{Purple}{RGB}{142, 68, 173}
+
+% Gradient background (exact Keynote 315° gradient: white to RGB 218,218,218)
+\setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \shade[shading=axis, shading angle=315,
+        top color=white, bottom color=KeynoteGray]
+        (current page.south west) rectangle (current page.north east);
+    \end{tikzpicture}%
+}
+% Fallback solid color for compatibility
+\setbeamercolor{background canvas}{bg=}
 
 \setbeamercolor{palette primary}{bg=MainBlue, fg=white}
 \setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
 \setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
 \setbeamercolor{structure}{fg=MainBlue}
-\setbeamercolor{title}{fg=MainBlue}
-\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{title}{fg=IDAred}
+\setbeamercolor{frametitle}{fg=IDAred, bg=}
 \setbeamercolor{block title}{bg=MainBlue, fg=white}
 \setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
 \setbeamercolor{block title alerted}{bg=Crimson, fg=white}
@@ -39,39 +55,150 @@
 \setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
 \setbeamercolor{item}{fg=MainBlue}
 
+% Footer colors (override Madrid theme blue)
+\setbeamercolor{author in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{title in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{date in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{section in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{subsection in head/foot}{fg=FooterGray, bg=}
+
+% Bullet styles (apply everywhere including blocks)
+\setbeamertemplate{itemize item}{\color{MainBlue}$\boxdot$}
+\setbeamertemplate{itemize subitem}{\color{MainBlue}$\blacktriangleright$}
+\setbeamertemplate{itemize subsubitem}{\color{MainBlue}\tiny$\bullet$}
+\setbeamertemplate{itemize/enumerate body begin}{\normalsize}
+\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
+
+% Item spacing
+\setlength{\leftmargini}{1.5em}
+\setlength{\leftmarginii}{1.5em}
+
 \setbeamertemplate{navigation symbols}{}
 
-\setbeamertemplate{footline}{
-    \leavevmode%
-    \hbox{%
-        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
-            \usebeamerfont{author in head/foot}\insertshortauthor
-        \end{beamercolorbox}%
-        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
-            \usebeamerfont{title in head/foot}\insertshorttitle
-        \end{beamercolorbox}%
-        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
-            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
-            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
-        \end{beamercolorbox}}%
-    \vskip0pt%
+% TOC with bullets
+\setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$\hspace{0.5em}\inserttocsection}
+
+%=============================================================================
+% CUSTOM HEADLINE
+%=============================================================================
+\setbeamertemplate{headline}{%
+    \vskip10pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        {\small\color{FooterGray}\renewcommand{\hyperlink}[2]{##2}\insertsectionhead}%
+        \hfill%
+        \textcolor{FooterGray}{\small\insertframenumber}%
+        \hskip0.5cm%
+    }%
+    \vskip4pt%
+    {\color{FooterGray}\hrule height 0.4pt}%
+}
+
+%=============================================================================
+% CUSTOM FOOTER
+%=============================================================================
+\usepackage{fontawesome5}
+
+\setbeamertemplate{footline}{%
+    {\color{FooterGray}\hrule height 0.4pt}%
+    \vskip4pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        \textcolor{FooterGray}{\small Time Series Analysis and Forecasting}%
+        \hfill%
+        \raisebox{-0.1em}{%
+            \begin{tikzpicture}[x=0.08em, y=0.08em, line width=0.4pt]
+                \draw[FooterGray] (0,3) -- (1,4) -- (2,3.5) -- (3,5) -- (4,4) -- (5,6) -- (6,5.5) -- (7,4) -- (8,5) -- (9,7) -- (10,6) -- (11,5) -- (12,6.5) -- (13,8) -- (14,7) -- (15,6) -- (16,7.5) -- (17,9) -- (18,8) -- (19,7) -- (20,8.5) -- (21,10) -- (22,9) -- (23,8) -- (24,9.5);
+            \end{tikzpicture}%
+        }%
+        \hskip0.5cm%
+    }%
+    \vskip6pt%
 }
 
 %=============================================================================
 % PACKAGES
 %=============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{mathtools}
 \usepackage{bm}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing, shadings}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\hypersetup{colorlinks=false, pdfborder={0 0 0}}
+\usepackage{colortbl}
+\hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
 \graphicspath{{../logos/}{../charts/}}
+
+%=============================================================================
+% QUANTLET COMMAND
+%=============================================================================
+\newcommand{\quantlet}[2]{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south east, inner sep=0pt] at ([xshift=-0.5cm, yshift=0.75cm]current page.south east) {%
+            \href{#2}{%
+                \raisebox{-0.1em}{\includegraphics[height=0.8em]{ql_logo.png}}%
+                \textcolor{MainBlue}{\scriptsize\ #1}%
+            }%
+        };
+    \end{tikzpicture}%
+}
+
+%=============================================================================
+% CUSTOM TITLE PAGE
+%=============================================================================
+\defbeamertemplate*{title page}{hybrid}[1][]
+{
+    \vspace{0.2cm}
+    % Logos row - top header (with clickable links)
+    \begin{center}
+        \href{https://www.ase.ro}{\includegraphics[height=1.0cm]{ase_logo.png}}\hspace{0.3cm}%
+        \href{https://theida.net}{\includegraphics[height=1.0cm]{ida_logo.png}}\hspace{0.3cm}%
+        \href{https://blockchain-research-center.com}{\includegraphics[height=1.0cm]{brc_logo.png}}\hspace{0.3cm}%
+        \href{https://www.ai4efin.ase.ro}{\includegraphics[height=1.0cm]{ai4efin_logo.png}}\hspace{0.3cm}%
+        \href{https://ipe.ro/new}{\includegraphics[height=1.0cm]{acad_logo.png}}\hspace{0.3cm}%
+        \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.0cm]{msca_logo.png}}%
+    \end{center}
+
+    \vspace{0.6cm}
+
+    % Main title with Q logos on sides (with clickable links)
+    \begin{center}
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantlet.com}{\includegraphics[height=1.1cm]{ql_logo.png}}
+        \end{minipage}%
+        \begin{minipage}{0.78\textwidth}
+            \centering
+            {\LARGE\bfseries\usebeamercolor[fg]{title}\inserttitle}
+
+            \vspace{0.3cm}
+
+            {\usebeamerfont{subtitle}\usebeamercolor[fg]{title}\insertsubtitle}
+        \end{minipage}%
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantinar.com}{\includegraphics[height=1.1cm]{qr_logo.png}}
+        \end{minipage}
+    \end{center}
+
+    \vspace{0.6cm}
+
+    % Authors (left aligned)
+    \hspace{0.5cm}{\usebeamerfont{author}\insertauthor}
+
+    \vspace{0.3cm}
+
+    % Institute/Affiliations (left aligned)
+    \hspace{0.5cm}\begin{minipage}[t]{0.9\textwidth}
+        \raggedright\small\insertinstitute
+    \end{minipage}
+}
 
 %=============================================================================
 % THEOREM ENVIRONMENTS
@@ -95,82 +222,47 @@
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\B}{\mathbf{B}}
 \newcommand{\imark}{\textcolor{MainBlue}{\textbullet}}
+\newcommand{\RMSE}{\text{RMSE}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAPE}{\text{MAPE}}
 
 %=============================================================================
 % TITLE INFORMATION
 %=============================================================================
-\title[Chapter 3: ARIMA Models]{Chapter 3: ARIMA Models for Non-Stationary Data}
-\subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
-\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
-\institute{Bucharest University of Economic Studies}
-\date{Academic Year 2025--2026}
+\title[Time Series Analysis]{Time Series Analysis and Forecasting}
+\subtitle{Chapter 3: ARIMA Models}
+\author[D.T. Pele]{Daniel Traian PELE}
+\institute{Bucharest University of Economic Studies\\
+IDA Institute Digital Assets\\
+Blockchain Research Center\\
+AI4EFin -- Artificial Intelligence for Energy Finance\\
+Romanian Academy, Institute for Economic Forecasting\\
+MSCA Digital Finance}
+\date{}
 
 \begin{document}
 
-%=============================================================================
-% TITLE SLIDE
-%=============================================================================
+% Title page (no header/footer)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
 \begin{frame}[plain]
-    \begin{tikzpicture}[remember picture, overlay]
-        \fill[IDAred] (current page.north west) rectangle ([yshift=-0.15cm]current page.north east);
-        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
-            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
-        };
-        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
-            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
-        };
-        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
-            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
-        };
-    \end{tikzpicture}
-    \vfill
-    \begin{center}
-        {\Large\textcolor{MediumGray}{Time Series Analysis and Forecasting}}\\[0.3cm]
-        {\Huge\textbf{\textcolor{MainBlue}{Chapter 3: ARIMA Models}}}\\[0.5cm]
-        {\Large\textcolor{IDAred}{Non-Stationary Time Series}}
-    \end{center}
-    \vfill
-
-    \begin{tikzpicture}[remember picture, overlay]
-        \fill[IDAred] (current page.south west) rectangle ([yshift=0.15cm]current page.south east);
-        \node[anchor=south west] at ([xshift=0.5cm, yshift=0.8cm]current page.south west) {
-            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
-        };
-        \node[anchor=south] at ([xshift=-3cm, yshift=0.8cm]current page.south) {
-            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
-        };
-        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
-            \href{https://quantinar.com}{\includegraphics[height=0.9cm]{qr_logo.png}}
-        };
-        \node[anchor=south] at ([xshift=3cm, yshift=0.8cm]current page.south) {
-            \href{https://quantlet.com}{\includegraphics[height=0.9cm]{ql_logo.png}}
-        };
-        \node[anchor=south east] at ([xshift=-0.5cm, yshift=0.8cm]current page.south east) {
-            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
-        };
-    \end{tikzpicture}
+    \titlepage
 \end{frame}
+}
 
 %=============================================================================
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
-    \vspace{-0.3cm}
-    {\small
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \tableofcontents[sections={1-6}, hideallsubsections]
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \tableofcontents[sections={7-11}, hideallsubsections]
-        \end{column}
-    \end{columns}
-    }
+    \tableofcontents
 \end{frame}
 
 %=============================================================================
 % MOTIVATION
 %=============================================================================
+\section{Motivation}
+
 \begin{frame}{Motivating Example: Non-Stationary Data Is Everywhere}
     \vspace{-0.3cm}
     \begin{center}
@@ -184,24 +276,21 @@
         \item Standard ARMA models \textbf{cannot} handle these series directly
     \end{itemize}
     }
+    \quantlet{TSA\_ch3\_motivation\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_motivation_nonstationary}
 \end{frame}
 
 \begin{frame}{Real-World Applications}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.58\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
-    \end{center}
     \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.92\textwidth, height=0.55\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
+    \end{center}
+    \vspace{-0.3cm}
     {\footnotesize
     \begin{alertblock}{The Challenge}
-        Financial and economic data are typically \textbf{integrated} (I(1) or near unit root):
-        \begin{itemize}
-            \item Stock prices: random walk in logs
-            \item Exchange rates: random walk
-            \item Interest rates: highly persistent (near unit root)
-        \end{itemize}
+        Financial/economic data are typically I(1): stock prices, exchange rates, interest rates.
     \end{alertblock}
     }
+    \quantlet{TSA\_ch3\_motivation\_realworld}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_motivation_realworld}
 \end{frame}
 
 \begin{frame}{The Solution: Differencing}
@@ -216,6 +305,7 @@
         $\Delta Y_t = Y_t - Y_{t-1}$. The ACF changes from slow decay to quick decay!
     \end{exampleblock}
     }
+    \quantlet{TSA\_ch3\_motivation\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_motivation_differencing}
 \end{frame}
 
 \begin{frame}{What We'll Learn Today}
@@ -279,6 +369,7 @@
         \item We cannot apply ARMA models directly to this data
     \end{itemize}
     }
+    \quantlet{TSA\_ch3\_gdp\_levels}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_gdp_levels}
 \end{frame}
 
 \begin{frame}{Types of Non-Stationarity}
@@ -305,11 +396,13 @@
         \end{column}
     \end{columns}
 
-    \vspace{0.5cm}
+    \vspace{0.3cm}
 
+    {\small
     \begin{alertblock}{Key Distinction}
-        Correct identification is crucial: detrending a unit root process or differencing a trend-stationary process both lead to misspecification!
+        Correct identification is crucial: detrending a unit root $\rightarrow$ misspecification; differencing trend-stationary $\rightarrow$ misspecification.
     \end{alertblock}
+    }
 \end{frame}
 
 \begin{frame}{Visualizing the Difference}
@@ -325,6 +418,7 @@
         \item Both look similar, but require \textbf{different} treatments!
     \end{itemize}
     }
+    \quantlet{TSA\_ch3\_trend\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_trend_comparison}
 \end{frame}
 
 \begin{frame}{The Random Walk Process}
@@ -352,29 +446,30 @@
 
 \begin{frame}{Random Walk: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
     \end{center}
-    \vspace{-0.2cm}
+    \vspace{-0.3cm}
+    {\small
     \begin{alertblock}{Key Properties}
-        Left: Multiple random walk paths wander unpredictably with no mean reversion. Right: Variance $\Var(Y_t) = t\sigma^2$ grows linearly --- the defining feature of non-stationarity.
+        \textbf{Left}: Paths wander unpredictably, no mean reversion.
+        \textbf{Right}: $\Var(Y_t) = t\sigma^2$ grows linearly $\Rightarrow$ non-stationary.
     \end{alertblock}
+    }
+    \quantlet{TSA\_ch3\_def\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_def_random_walk}
 \end{frame}
 
 \begin{frame}{Proof: Random Walk Variance}
     \textbf{Claim:} For $Y_t = Y_{t-1} + \varepsilon_t$ with $Y_0 = 0$: $\Var(Y_t) = t\sigma^2$
 
-    \vspace{0.2cm}
-    \textbf{Proof:} By recursive substitution:
-    $$Y_t = Y_{t-1} + \varepsilon_t = Y_{t-2} + \varepsilon_{t-1} + \varepsilon_t = \cdots = \sum_{i=1}^{t} \varepsilon_i$$
+    \vspace{0.15cm}
+    \textbf{Proof:} By recursive substitution: $Y_t = \sum_{i=1}^{t} \varepsilon_i$
 
     Taking variance:
     $$\Var(Y_t) = \Var\left(\sum_{i=1}^{t} \varepsilon_i\right) = \sum_{i=1}^{t} \Var(\varepsilon_i) + 2\sum_{i<j} \Cov(\varepsilon_i, \varepsilon_j)$$
 
-    Since $\varepsilon_t$ are independent (white noise), all covariances are zero:
-    $$\Var(Y_t) = \sum_{i=1}^{t} \sigma^2 = \boxed{t\sigma^2}$$
-
-    \begin{alertblock}{Non-Stationarity}
-        Variance depends on $t$ $\Rightarrow$ violates stationarity requirement ($\Var(Y_t) = \gamma(0)$ constant).
+    Since $\varepsilon_t$ independent (white noise): $\Var(Y_t) = \sum_{i=1}^{t} \sigma^2 = \boxed{t\sigma^2}$
+    \vspace{-0.1cm}
+    \begin{alertblock}{Variance depends on $t$ $\Rightarrow$ non-stationary}
     \end{alertblock}
 \end{frame}
 
@@ -426,6 +521,7 @@
     \begin{exampleblock}{Comparison}
         Without drift (blue): wanders around zero with no direction. With drift $\mu > 0$ (red): systematic upward trend. Both are non-stationary --- drift adds deterministic trend to stochastic wandering.
     \end{exampleblock}
+    \quantlet{TSA\_ch3\_def\_random\_walk\_drift}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_def_random_walk_drift}
 \end{frame}
 
 \begin{frame}{Simulating Random Walks}
@@ -441,6 +537,7 @@
         \item Each path is unique; uncertainty grows over time
     \end{itemize}
     }
+    \quantlet{TSA\_ch3\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_random_walk}
 \end{frame}
 
 \begin{frame}{Variance Growth: Why Random Walks Are Non-Stationary}
@@ -456,6 +553,7 @@
         \item This violates stationarity (variance should be constant)
     \end{itemize}
     }
+    \quantlet{TSA\_ch3\_variance\_growth}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_variance_growth}
 \end{frame}
 
 \begin{frame}{Integrated Processes}
@@ -476,8 +574,11 @@
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item $I(0)$: Stationary process (e.g., ARMA)
             \item $I(1)$: First difference is stationary (most common for economic data)
-            \item $I(2)$: Second difference is stationary (less common)
-        \end{itemize}
+            \item $I(2)$:
+                \begin{itemize}
+                    \item Second difference is stationary (less common)
+                \end{itemize}
+            \end{itemize}
     \end{exampleblock}
     \end{minipage}
     }
@@ -485,10 +586,11 @@
 
 \begin{frame}{Integrated Process: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{ch3_def_integrated.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_integrated.pdf}
     \end{center}
     \vspace{-0.2cm}
     \small $I(0)$: stationary. $I(1)$: one difference needed. $I(2)$: two differences needed.
+    \quantlet{TSA\_ch3\_def\_integrated}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_def_integrated}
 \end{frame}
 
 %=============================================================================
@@ -525,10 +627,11 @@
 
 \begin{frame}{First Difference: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{ch3_def_difference.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_difference.pdf}
     \end{center}
     \vspace{-0.2cm}
     \small Left: non-stationary series. Right: after first difference, the series becomes stationary.
+    \quantlet{TSA\_ch3\_def\_difference}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_def_difference}
 \end{frame}
 
 \begin{frame}{Example: Differencing a Random Walk}
@@ -586,6 +689,7 @@
         \item \textbf{Bottom}: After differencing, ACF cuts off $\Rightarrow$ stationary
     \end{itemize}
     }
+    \quantlet{TSA\_ch3\_acf\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_acf_nonstationary}
 \end{frame}
 
 \begin{frame}{Differencing in Practice: GDP Example}
@@ -597,6 +701,7 @@
     \begin{block}{Transformation}
         \textbf{Left}: GDP in levels with clear upward trend (non-stationary). \textbf{Right}: GDP growth rate $\Delta \log(GDP_t)$ fluctuates around constant mean (stationary). One difference removes the stochastic trend.
     \end{block}
+    \quantlet{TSA\_ch3\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_differencing}
 \end{frame}
 
 \begin{frame}{Overdifferencing}
@@ -604,10 +709,19 @@
     \hfill\begin{minipage}{0.9\textwidth}
     \begin{alertblock}{Warning: Overdifferencing}
         Differencing more than necessary introduces problems:
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Creates artificial negative autocorrelation
+            \begin{itemize}
+                \item ACF shows spurious patterns
+            \end{itemize}
             \item Inflates variance
+            \begin{itemize}
+                \item Reduces forecast accuracy
+            \end{itemize}
             \item Loses information
+            \begin{itemize}
+                \item Cannot recover original level
+            \end{itemize}
         \end{itemize}
     \end{alertblock}
 
@@ -653,6 +767,7 @@
     \begin{exampleblock}{Interpretation}
         Top: original ARIMA series (non-stationary). Bottom: after differencing $d$ times, ACF/PACF reveal the AR and MA orders for the stationary component.
     \end{exampleblock}
+    \quantlet{TSA\_ch3\_def\_arima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_def_arima}
 \end{frame}
 
 \begin{frame}{ARIMA Components}
@@ -734,10 +849,20 @@
     \vspace{0.1cm}
 
     \begin{alertblock}{Important Implications}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item For $d=1$: $c$ represents the \textbf{drift} (average change): $\E[\Delta Y_t] = \frac{c}{1-\phi_1-\cdots-\phi_p}$
-            \item For $d=2$: $c$ affects the \textbf{curvature} of the trend
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item For $d=1$: $c$ represents the \textbf{drift}
+            \begin{itemize}
+                \item Average change: $\E[\Delta Y_t] = \frac{c}{1-\phi_1-\cdots-\phi_p}$
+                \item Linear trend in levels
+            \end{itemize}
+            \item For $d=2$: $c$ affects the \textbf{curvature}
+            \begin{itemize}
+                \item Quadratic trend in levels
+            \end{itemize}
             \item Often $c=0$ is assumed when $d \geq 1$
+            \begin{itemize}
+                \item No deterministic trend component
+            \end{itemize}
         \end{itemize}
     \end{alertblock}
     \end{minipage}
@@ -851,10 +976,11 @@
 
 \begin{frame}{ADF Test: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{ch3_def_adf.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_adf.pdf}
     \end{center}
     \vspace{-0.2cm}
     \small Left: stationary series -- ADF rejects unit root. Right: non-stationary -- ADF fails to reject.
+    \quantlet{TSA\_ch3\_def\_adf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_def_adf}
 \end{frame}
 
 \begin{frame}{ADF Test Critical Values}
@@ -1129,8 +1255,11 @@
             \item \textbf{Residual ACF/PACF}: Should show no significant spikes
             \item \textbf{Ljung-Box test}: Tests for autocorrelation at multiple lags
             \item \textbf{Q-Q plot}: Checks normality assumption
-            \item \textbf{Residual vs fitted}: Checks for heteroskedasticity
-        \end{itemize}
+            \item \textbf{Residual vs fitted}:
+                \begin{itemize}
+                    \item Checks for heteroskedasticity
+                \end{itemize}
+            \end{itemize}
     \end{block}
     \end{minipage}
     }
@@ -1263,6 +1392,95 @@
     }
 \end{frame}
 
+\begin{frame}{Fixed vs Expanding Window}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.85, transform shape]
+        % Title for Fixed Window
+        \node[font=\bfseries\small, color=IDAred] at (0, 3.8) {Fixed Window (Rolling)};
+
+        % Fixed window iterations
+        \foreach \i in {0,1,2,3} {
+            \pgfmathsetmacro{\y}{3 - \i*0.9}
+            \fill[MainBlue!70] ({\i*0.8}, \y) rectangle ({2+\i*0.8}, {\y+0.5});
+            \fill[Purple!70] ({2+\i*0.8}, \y) rectangle ({2.5+\i*0.8}, {\y+0.5});
+            \node[font=\tiny, left] at ({\i*0.8-0.1}, {\y+0.25}) {t=\pgfmathparse{int(\i+1)}\pgfmathresult};
+        }
+        \fill[MainBlue!70] (-0.5, -0.5) rectangle (0, -0.2);
+        \node[font=\tiny, right] at (0.1, -0.35) {Train};
+        \fill[Purple!70] (1.5, -0.5) rectangle (2, -0.2);
+        \node[font=\tiny, right] at (2.1, -0.35) {Forecast};
+
+        % Title for Expanding Window
+        \node[font=\bfseries\small, color=IDAred] at (8, 3.8) {Expanding Window};
+
+        % Expanding window iterations
+        \foreach \i in {0,1,2,3} {
+            \pgfmathsetmacro{\y}{3 - \i*0.9}
+            \fill[MainBlue!70] (5.5, \y) rectangle ({7.5+\i*0.5}, {\y+0.5});
+            \fill[Purple!70] ({7.5+\i*0.5}, \y) rectangle ({8+\i*0.5}, {\y+0.5});
+            \node[font=\tiny, left] at (5.4, {\y+0.25}) {t=\pgfmathparse{int(\i+1)}\pgfmathresult};
+        }
+
+        \draw[->, thick, color=MediumGray] (-0.5, -1) -- (4.5, -1) node[right, font=\tiny] {Time};
+        \draw[->, thick, color=MediumGray] (5.5, -1) -- (10.5, -1) node[right, font=\tiny] {Time};
+    \end{tikzpicture}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{block}{Comparison}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Fixed}: Window slides forward, constant size --- adapts to regime changes
+            \item \textbf{Expanding}: Window grows over time --- uses all historical data
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{1-Step vs Multi-Step Forecasting}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{1-Step Ahead (Recursive)}
+                \begin{itemize}\setlength{\itemsep}{1pt}
+                    \item Forecast only next period
+                    \begin{itemize}
+                        \item Refit model after each step
+                        \item Use actual value once revealed
+                    \end{itemize}
+                    \item Most accurate for short horizons
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Multi-Step (Direct)}
+                \begin{itemize}\setlength{\itemsep}{1pt}
+                    \item Forecast multiple periods ahead
+                    \begin{itemize}
+                        \item No refit between steps
+                        \item Uses forecasted values as inputs
+                    \end{itemize}
+                    \item Uncertainty compounds over horizon
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+    \vspace{0.3cm}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.7, transform shape]
+        \node[font=\small\bfseries, color=IDAred] at (0, 1.5) {1-Step Ahead};
+        \fill[MainBlue!70] (-2, 0) rectangle (1, 0.6);
+        \fill[Forest!70] (1, 0) rectangle (1.5, 0.6);
+        \node[font=\tiny] at (-0.5, 0.3) {Train};
+        \node[font=\tiny] at (1.25, 0.3) {$\hat{y}_{t+1}$};
+        \draw[->, thick] (1.7, 0.3) -- (2.3, 0.3);
+        \node[font=\tiny, right] at (2.3, 0.3) {Observe $y_{t+1}$, refit};
+
+        \node[font=\small\bfseries, color=IDAred] at (8, 1.5) {Multi-Step (h=3)};
+        \fill[MainBlue!70] (5.5, 0) rectangle (8.5, 0.6);
+        \fill[Orange!70] (8.5, 0) rectangle (10.5, 0.6);
+        \node[font=\tiny] at (7, 0.3) {Train};
+        \node[font=\tiny] at (9.5, 0.3) {$\hat{y}_{t+1}, \hat{y}_{t+2}, \hat{y}_{t+3}$};
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
 \begin{frame}{Rolling Forecast: Step-by-Step Example}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1390,304 +1608,7 @@
         \item Rolling window keeps model estimation up-to-date
     \end{itemize}
     }
-\end{frame}
-
-\begin{frame}[fragile]{Rolling Forecast: Python Code}
-    \vspace{-0.3cm}
-    {\scriptsize
-    \begin{block}{Implementation}
-        \vspace{-0.2cm}
-\begin{verbatim}
-from statsmodels.tsa.arima.model import ARIMA
-
-window_size = 100
-forecasts, actuals = [], []
-
-for t in range(window_size, len(y) - 1):
-    train = y[:t]                      # Rolling window
-    model = ARIMA(train, order=(1,1,0)).fit()
-    forecast = model.forecast(steps=1)[0]
-    forecasts.append(forecast)
-    actuals.append(y[t])
-
-rmse = np.sqrt(np.mean((np.array(forecasts) - np.array(actuals))**2))
-\end{verbatim}
-        \vspace{-0.2cm}
-    \end{block}
-    }
-\end{frame}
-
-%=============================================================================
-% SECTION 9: REAL DATA APPLICATION
-%=============================================================================
-\section{Case Study: US GDP Forecasting}
-
-\begin{frame}{Case Study: Complete ARIMA Analysis}
-    \begin{block}{Objective}
-        Forecast US Real GDP using the Box-Jenkins methodology
-    \end{block}
-
-    \vspace{0.2cm}
-
-    {\small
-    \begin{enumerate}
-        \item \textbf{Step 1}: Visualize data and check for stationarity
-        \item \textbf{Step 2}: Apply unit root tests (ADF, KPSS)
-        \item \textbf{Step 3}: Difference if needed, identify $p$ and $q$
-        \item \textbf{Step 4}: Estimate ARIMA model
-        \item \textbf{Step 5}: Diagnostic checking
-        \item \textbf{Step 6}: Generate forecasts with confidence intervals
-        \item \textbf{Step 7}: Evaluate forecast accuracy
-    \end{enumerate}
-    }
-
-    \vspace{0.2cm}
-
-    \begin{alertblock}{Data}
-        US Real GDP (FRED: GDPC1), Quarterly, 1990Q1--2024Q2, $n = 138$ observations
-    \end{alertblock}
-\end{frame}
-
-\begin{frame}{Step 1: Initial Data Analysis}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.5\textheight, keepaspectratio]{ch3_gdp_levels.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\small
-    \begin{block}{Observations}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Clear upward trend $\Rightarrow$ non-constant mean
-            \item Variance appears relatively stable (after log transform)
-            \item Notable dip in 2020 (COVID-19 pandemic)
-            \item \textbf{Conclusion}: Series is non-stationary, needs differencing
-        \end{itemize}
-    \end{block}
-    }
-\end{frame}
-
-\begin{frame}{Step 2: Unit Root Testing}
-    \vspace{-0.2cm}
-    {\small
-    \begin{block}{ADF Test on Log GDP Levels}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Test statistic: $-0.91$
-            \item Critical values: $-3.48$ (1\%), $-2.88$ (5\%), $-2.58$ (10\%)
-            \item p-value: $0.79$
-            \item \textbf{Result}: Cannot reject $H_0$ $\Rightarrow$ \textcolor{red}{Unit root present}
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{block}{ADF Test on First Difference (Growth Rate)}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Test statistic: $-13.24$
-            \item p-value: $< 0.001$
-            \item \textbf{Result}: Reject $H_0$ at 1\% $\Rightarrow$ \textcolor{green!50!black}{Stationary after differencing}
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{alertblock}{Conclusion}
-        GDP is $I(1)$ $\Rightarrow$ Use $d = 1$ in ARIMA model
-    \end{alertblock}
-    }
-\end{frame}
-
-\begin{frame}{Step 3: Model Identification via ACF/PACF}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.7\textwidth, height=0.48\textheight, keepaspectratio]{ch3_acf_pacf.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Analysis of Differenced Series}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item ACF: Significant spike at lag 1, then cuts off $\Rightarrow$ suggests MA(1)
-            \item PACF: Significant spike at lag 1, decays $\Rightarrow$ suggests AR(1)
-            \item \textbf{Candidate models}: ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1)
-        \end{itemize}
-    \end{block}
-    }
-\end{frame}
-
-\begin{frame}{Step 4: Model Estimation}
-    \vspace{-0.2cm}
-    {\small
-    \begin{block}{Comparing Models using Information Criteria}
-        \begin{center}
-        \begin{tabular}{lccc}
-            \toprule
-            \textbf{Model} & \textbf{AIC} & \textbf{BIC} & \textbf{Log-Lik} \\
-            \midrule
-            ARIMA(1,1,0) & $-725.2$ & $-719.5$ & $364.6$ \\
-            ARIMA(0,1,1) & $-724.8$ & $-719.2$ & $364.4$ \\
-            \textbf{ARIMA(1,1,1)} & $\mathbf{-747.0}$ & $\mathbf{-738.5}$ & $\mathbf{376.5}$ \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{exampleblock}{Selected Model: ARIMA(1,1,1)}
-        \vspace{-0.2cm}
-        $$(1 - 0.35L)(1-L)Y_t = (1 + 0.58L)\varepsilon_t, \quad \hat{\sigma}^2 = 0.000156$$
-        \vspace{-0.3cm}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\hat{\phi}_1 = 0.35$ (SE = 0.09), significant at 1\%
-            \item $\hat{\theta}_1 = 0.58$ (SE = 0.08), significant at 1\%
-        \end{itemize}
-    \end{exampleblock}
-    }
-\end{frame}
-
-\begin{frame}{Step 5: Diagnostic Checking}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.7\textwidth, height=0.5\textheight, keepaspectratio]{ch3_diagnostics.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Residual Analysis}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ljung-Box test: $Q(10) = 5.8$, p-value $= 0.83$ $\Rightarrow$ No autocorrelation
-            \item Jarque-Bera test: $JB = 156.4$, p-value $< 0.001$ $\Rightarrow$ Non-normal (COVID outlier)
-            \item \textbf{Conclusion}: Model passes autocorrelation checks; outliers expected
-        \end{itemize}
-    \end{block}
-    }
-\end{frame}
-
-\begin{frame}{Step 6: Forecasting with Confidence Intervals}
-    \vspace{-0.2cm}
-    {\small
-    \begin{block}{Last Observed Values (Log GDP)}
-        $Y_T = 9.973$ (2024Q2), \quad $Y_{T-1} = 9.956$ (2024Q1)
-
-        $\Delta Y_T = 0.017$, \quad $\hat{\varepsilon}_T = 0.004$
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{exampleblock}{1-Step Ahead Forecast (2024Q3)}
-        \vspace{-0.2cm}
-        \begin{align*}
-            \hat{\Delta Y}_{T+1} &= \hat{\phi}_1 \Delta Y_T + \hat{\theta}_1 \hat{\varepsilon}_T = 0.35(0.017) + 0.58(0.004) = 0.0083 \\
-            \hat{Y}_{T+1} &= 9.973 + 0.0083 = \boxed{9.981}
-        \end{align*}
-        \vspace{-0.3cm}
-    \end{exampleblock}
-
-    \vspace{0.1cm}
-
-    \begin{alertblock}{95\% Confidence Interval}
-        \vspace{-0.2cm}
-        $$\text{CI} = 9.981 \pm 1.96 \times \sqrt{0.000156} = [9.957, \; 10.006]$$
-        In levels: GDP forecast = \$21,652B, CI = [\$21,142B, \$22,175B]
-    \end{alertblock}
-    }
-\end{frame}
-
-\begin{frame}{Step 7: Forecast Evaluation}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.78\textwidth, height=0.48\textheight, keepaspectratio]{ch3_arima_forecast.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Out-of-Sample Performance (Last 12 Quarters)}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item RMSE = 0.0486 (log scale) $\approx$ 4.86\% error
-            \item MAE = 0.0430 (log scale) $\approx$ 4.30\% error
-            \item Direction accuracy = 91\% (correctly predicted growth/decline)
-        \end{itemize}
-    \end{block}
-    }
-\end{frame}
-
-\begin{frame}{Unit Root Test Results}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.85\textwidth, height=0.68\textheight, keepaspectratio]{ch3_adf_test.pdf}
-    \end{center}
-    \vspace{-0.1cm}
-    {\small
-    \begin{itemize}
-        \item GDP in levels: Cannot reject unit root (non-stationary)
-        \item GDP growth: Reject unit root at 1\% level (stationary)
-    \end{itemize}
-    }
-\end{frame}
-
-\begin{frame}{ACF/PACF: Levels vs Differenced}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.7\textheight, keepaspectratio]{ch3_acf_pacf.pdf}
-    \end{center}
-    \vspace{-0.1cm}
-    {\footnotesize
-    \begin{itemize}
-        \item \textbf{Top}: Slow ACF decay in levels suggests non-stationarity
-        \item \textbf{Bottom}: After differencing, ACF/PACF help identify $p$ and $q$
-    \end{itemize}
-    }
-\end{frame}
-
-\begin{frame}{ARIMA Forecasting: Actual vs Predicted}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.9\textwidth, height=0.68\textheight, keepaspectratio]{ch3_arima_forecast.pdf}
-    \end{center}
-    \vspace{-0.1cm}
-    {\small
-    \begin{itemize}
-        \item ARIMA(1,1,1) captures the trend dynamics
-        \item Confidence intervals widen with forecast horizon
-    \end{itemize}
-    }
-\end{frame}
-
-\begin{frame}{Model Diagnostics}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.7\textheight, keepaspectratio]{ch3_diagnostics.pdf}
-    \end{center}
-    \vspace{-0.1cm}
-    {\footnotesize
-    \begin{itemize}
-        \item Residuals appear random; ACF within bounds
-        \item Q-Q plot shows approximate normality
-    \end{itemize}
-    }
-\end{frame}
-
-\begin{frame}[fragile]{Python Implementation}
-    {\small
-    \begin{block}{Key Libraries}
-        \begin{verbatim}
-import pandas as pd
-import numpy as np
-from statsmodels.tsa.arima.model import ARIMA
-from statsmodels.tsa.stattools import adfuller, kpss
-import pmdarima as pm
-        \end{verbatim}
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{block}{Auto-ARIMA Example}
-        \begin{verbatim}
-# Automatic model selection
-model = pm.auto_arima(y, start_p=0, start_q=0,
-                      max_p=3, max_q=3, d=None,
-                      seasonal=False, trace=True)
-print(model.summary())
-        \end{verbatim}
-    \end{block}
-    }
+    \quantlet{TSA\_ch3\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_rolling_forecast}
 \end{frame}
 
 %=============================================================================
@@ -1695,14 +1616,18 @@ print(model.summary())
 %=============================================================================
 \section{Case Study: Real Data}
 
-\begin{frame}{Case Study: GDP Index (Simulated)}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_raw_data.pdf}
-    \end{center}
+\begin{frame}{Case Study: US Real GDP (FRED)}
     \vspace{-0.2cm}
-    \begin{block}{Data Description}
-        \textbf{Simulated quarterly GDP index (1960--2010)}: Non-stationary series with upward trend. Demonstrates the need for differencing before ARMA modeling.
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_case_raw_data.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\small
+    \begin{block}{Data: FRED GDPC1 (1960Q1--2024Q3)}
+        Quarterly Real GDP, seasonally adjusted, billions of chained 2017 dollars. Non-stationary series with upward trend $\Rightarrow$ requires differencing.
     \end{block}
+    }
+    \quantlet{TSA\_ch3\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_case_raw_data}
 \end{frame}
 
 \begin{frame}{Step 1: ADF Test for Stationarity}
@@ -1714,17 +1639,17 @@ print(model.summary())
         \textbf{Original series}: Large p-value $\Rightarrow$ fail to reject $H_0$ (unit root present).
         \textbf{First difference}: p-value $< 0.01$ $\Rightarrow$ reject $H_0$ $\Rightarrow$ $d = 1$ is sufficient.
     \end{alertblock}
+    \quantlet{TSA\_ch3\_case\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_case_adf_test}
 \end{frame}
 
 \begin{frame}{Step 2: ACF/PACF Before and After Differencing}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.62\textheight, keepaspectratio]{ch3_case_acf_diff.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_acf_diff.pdf}
     \end{center}
     \vspace{-0.2cm}
-    \begin{exampleblock}{Identification}
-        \textbf{Top}: Slow ACF decay $\Rightarrow$ non-stationarity.
-        \textbf{Bottom}: After differencing, ACF and PACF suggest low-order ARMA.
+    \begin{exampleblock}{Top: Slow ACF decay (non-stationary) | Bottom: After differencing, low-order ARMA}
     \end{exampleblock}
+    \quantlet{TSA\_ch3\_case\_acf\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_case_acf_diff}
 \end{frame}
 
 \begin{frame}{Step 3: ARIMA Model Comparison}
@@ -1735,30 +1660,46 @@ print(model.summary())
     \begin{block}{Model Selection}
         Compare ARIMA(0,1,0), ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1). The model with lowest AIC is selected.
     \end{block}
+    \quantlet{TSA\_ch3\_case\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_case_model_comparison}
 \end{frame}
 
 \begin{frame}{Step 4: Diagnostic Checking}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch3_case_diagnostics.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_diagnostics.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    \begin{exampleblock}{ARIMA(1,1,1) Diagnostics}
-        Residuals are approximately white noise: no significant autocorrelation, nearly normal distribution.
-    \end{exampleblock}
+    \vspace{-0.4cm}
+    {\footnotesize
+    \begin{alertblock}{ARIMA(1,1,1) Diagnostics}
+        ACF: no autocorrelation $\checkmark$ \quad Q-Q: \textbf{non-normal} (COVID-19 outlier) \quad JB test: p $<$ 0.001
+    \end{alertblock}
+    }
+    \quantlet{TSA\_ch3\_case\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_case_diagnostics}
 \end{frame}
 
-\begin{frame}{Step 5: Forecasting}
+\begin{frame}{Step 5: Out-of-Sample Forecasting}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_forecast.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{ch3_case_forecast.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    \begin{block}{Results}
-        \begin{itemize}
-            \item ARIMA(1,1,1) forecasts follow the data trend
-            \item Confidence intervals widen with horizon (characteristic of I(1))
-            \item Uncertainty grows because errors accumulate through differencing
-        \end{itemize}
+    \vspace{-0.3cm}
+    {\small
+    \begin{block}{Train/Val/Test Split (70\%/15\%/15\%)}
+        \textbf{Train 70\%} (blue): Estimation | \textbf{Val 15\%} (green): Tuning | \textbf{Test 15\%} (purple): Evaluation with 95\% CI
     \end{block}
+    }
+    \quantlet{TSA\_ch3\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_case_forecast}
+\end{frame}
+
+\begin{frame}{Step 6: Rolling Forecast with Train/Val/Test}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.48\textheight, keepaspectratio]{ch3_case_rolling_forecast.pdf}
+    \end{center}
+    \vspace{-0.3cm}
+    {\small
+    \begin{block}{Rolling 1-Step Ahead Forecast (Expanding Window, 95\% CI)}
+        Train 70\% $\to$ Val 15\% $\to$ Test 15\% | Expanding window refits model at each step
+    \end{block}
+    }
+    \quantlet{TSA\_ch3\_case\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_case_rolling_forecast}
 \end{frame}
 
 %=============================================================================
@@ -1768,24 +1709,18 @@ print(model.summary())
 
 \begin{frame}{Key Takeaways}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Main Points}
         \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{Non-stationarity} is common in economic data -- must be addressed
-            \item \textbf{Differencing} transforms I(d) to I(0)
+            \item \textbf{Non-stationarity} common in economic data -- use differencing to transform I(d) to I(0)
             \item \textbf{ARIMA(p,d,q)} combines differencing with ARMA modeling
-            \item \textbf{Unit root tests} (ADF, KPSS) help determine $d$
-            \item \textbf{Box-Jenkins methodology}: Identify $\to$ Estimate $\to$ Diagnose
-            \item \textbf{Forecasts} for I(1) series have growing uncertainty
+            \item \textbf{Unit root tests} (ADF, KPSS) help determine integration order $d$
+            \item \textbf{Box-Jenkins}: Identify $\to$ Estimate $\to$ Diagnose $\to$ Forecast
+            \item \textbf{Forecasts} for I(1) series have growing uncertainty over horizon
         \end{enumerate}
     \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{alertblock}{Next Steps}
-        Chapter 4 will extend ARIMA to handle seasonality: SARIMA models.
+    \vspace{-0.1cm}
+    \begin{alertblock}{Next: Chapter 4 extends ARIMA to handle seasonality (SARIMA)}
     \end{alertblock}
-    \end{minipage}
     }
 \end{frame}
 
@@ -1817,6 +1752,7 @@ print(model.summary())
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz1_rw_variance.pdf}
     \end{center}
+    \quantlet{TSA\_ch3\_quiz1\_rw\_variance}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_quiz1_rw_variance}
 \end{frame}
 
 \begin{frame}{Quiz Question 2}
@@ -1842,6 +1778,7 @@ print(model.summary())
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz2_differencing.pdf}
     \end{center}
+    \quantlet{TSA\_ch3\_quiz2\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_quiz2_differencing}
 \end{frame}
 
 \begin{frame}{Quiz Question 3}
@@ -1867,6 +1804,7 @@ print(model.summary())
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz3_adf_test.pdf}
     \end{center}
+    \quantlet{TSA\_ch3\_quiz3\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_quiz3_adf_test}
 \end{frame}
 
 \begin{frame}{Quiz Question 4}
@@ -1892,6 +1830,7 @@ print(model.summary())
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz4_acf_decay.pdf}
     \end{center}
+    \quantlet{TSA\_ch3\_quiz4\_acf\_decay}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_quiz4_acf_decay}
 \end{frame}
 
 \begin{frame}{Quiz Question 5}
@@ -1917,6 +1856,7 @@ print(model.summary())
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz5_forecast_ci.pdf}
     \end{center}
+    \quantlet{TSA\_ch3\_quiz5\_forecast\_ci}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3_quiz5_forecast_ci}
 \end{frame}
 
 \begin{frame}{References}

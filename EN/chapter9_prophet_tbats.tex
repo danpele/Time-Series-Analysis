@@ -1,5 +1,5 @@
-% Chapter 9: Prophet and TBATS for Multiple Seasonalities
-% Modern approaches for complex seasonal patterns
+% Chapter 9: Prophet and TBATS
+% Harvard-quality academic presentation
 % Bachelor program, Bucharest University of Economic Studies
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
@@ -10,28 +10,43 @@
 %=============================================================================
 % THEME AND STYLE CONFIGURATION
 %=============================================================================
-\usetheme{Madrid}
-\usecolortheme{seahorse}
+\usetheme{default}
+% Using default theme for clean header/footer control
 
-% IDA-Inspired Color Palette
+% Color Palette (matching Redispatch PDF)
 \definecolor{MainBlue}{RGB}{26, 58, 110}
-\definecolor{AccentBlue}{RGB}{42, 82, 140}
-\definecolor{IDAred}{RGB}{220, 53, 69}
+\definecolor{AccentBlue}{RGB}{26, 58, 110}
+\definecolor{IDAred}{RGB}{205, 0, 0}
 \definecolor{DarkGray}{RGB}{51, 51, 51}
 \definecolor{MediumGray}{RGB}{128, 128, 128}
 \definecolor{LightGray}{RGB}{248, 248, 248}
 \definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{KeynoteGray}{RGB}{218, 218, 218}
+\definecolor{SectionGray}{RGB}{120, 120, 120}
+\definecolor{FooterGray}{RGB}{100, 100, 100}
 \definecolor{Crimson}{RGB}{220, 53, 69}
 \definecolor{Forest}{RGB}{46, 125, 50}
 \definecolor{Amber}{RGB}{181, 133, 63}
 \definecolor{Orange}{RGB}{230, 126, 34}
+\definecolor{Purple}{RGB}{142, 68, 173}
+
+% Gradient background (exact Keynote 315° gradient: white to RGB 218,218,218)
+\setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \shade[shading=axis, shading angle=315,
+        top color=white, bottom color=KeynoteGray]
+        (current page.south west) rectangle (current page.north east);
+    \end{tikzpicture}%
+}
+% Fallback solid color for compatibility
+\setbeamercolor{background canvas}{bg=}
 
 \setbeamercolor{palette primary}{bg=MainBlue, fg=white}
 \setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
 \setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
 \setbeamercolor{structure}{fg=MainBlue}
-\setbeamercolor{title}{fg=MainBlue}
-\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
+\setbeamercolor{title}{fg=IDAred}
+\setbeamercolor{frametitle}{fg=IDAred, bg=}
 \setbeamercolor{block title}{bg=MainBlue, fg=white}
 \setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
 \setbeamercolor{block title alerted}{bg=Crimson, fg=white}
@@ -40,22 +55,65 @@
 \setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
 \setbeamercolor{item}{fg=MainBlue}
 
+% Footer colors (override Madrid theme blue)
+\setbeamercolor{author in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{title in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{date in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{section in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{subsection in head/foot}{fg=FooterGray, bg=}
+
+% Bullet styles (apply everywhere including blocks)
+\setbeamertemplate{itemize item}{\color{MainBlue}$\boxdot$}
+\setbeamertemplate{itemize subitem}{\color{MainBlue}$\blacktriangleright$}
+\setbeamertemplate{itemize subsubitem}{\color{MainBlue}\tiny$\bullet$}
+\setbeamertemplate{itemize/enumerate body begin}{\normalsize}
+\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
+
+% Item spacing
+\setlength{\leftmargini}{1.5em}
+\setlength{\leftmarginii}{1.5em}
+
 \setbeamertemplate{navigation symbols}{}
 
-\setbeamertemplate{footline}{
-    \leavevmode%
-    \hbox{%
-        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
-            \usebeamerfont{author in head/foot}\insertshortauthor
-        \end{beamercolorbox}%
-        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
-            \usebeamerfont{title in head/foot}\insertshorttitle
-        \end{beamercolorbox}%
-        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
-            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
-            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
-        \end{beamercolorbox}}%
-    \vskip0pt%
+% TOC with bullets
+\setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$\hspace{0.5em}\inserttocsection}
+
+%=============================================================================
+% CUSTOM HEADLINE
+%=============================================================================
+\setbeamertemplate{headline}{%
+    \vskip10pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        {\small\color{FooterGray}\renewcommand{\hyperlink}[2]{##2}\insertsectionhead}%
+        \hfill%
+        \textcolor{FooterGray}{\small\insertframenumber}%
+        \hskip0.5cm%
+    }%
+    \vskip4pt%
+    {\color{FooterGray}\hrule height 0.4pt}%
+}
+
+%=============================================================================
+% CUSTOM FOOTER
+%=============================================================================
+\usepackage{fontawesome5}
+
+\setbeamertemplate{footline}{%
+    {\color{FooterGray}\hrule height 0.4pt}%
+    \vskip4pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        \textcolor{FooterGray}{\small Time Series Analysis and Forecasting}%
+        \hfill%
+        \raisebox{-0.1em}{%
+            \begin{tikzpicture}[x=0.08em, y=0.08em, line width=0.4pt]
+                \draw[FooterGray] (0,3) -- (1,4) -- (2,3.5) -- (3,5) -- (4,4) -- (5,6) -- (6,5.5) -- (7,4) -- (8,5) -- (9,7) -- (10,6) -- (11,5) -- (12,6.5) -- (13,8) -- (14,7) -- (15,6) -- (16,7.5) -- (17,9) -- (18,8) -- (19,7) -- (20,8.5) -- (21,10) -- (22,9) -- (23,8) -- (24,9.5);
+            \end{tikzpicture}%
+        }%
+        \hskip0.5cm%
+    }%
+    \vskip6pt%
 }
 
 %=============================================================================
@@ -67,14 +125,80 @@
 \usepackage{mathtools}
 \usepackage{bm}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing, shadings}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\hypersetup{colorlinks=false, pdfborder={0 0 0}}
+\usepackage{colortbl}
+\hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
 \graphicspath{{../logos/}{../charts/}}
+
+%=============================================================================
+% QUANTLET COMMAND
+%=============================================================================
+\newcommand{\quantlet}[2]{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south east, inner sep=0pt] at ([xshift=-0.5cm, yshift=0.75cm]current page.south east) {%
+            \href{#2}{%
+                \raisebox{-0.1em}{\includegraphics[height=0.8em]{ql_logo.png}}%
+                \textcolor{MainBlue}{\scriptsize\ #1}%
+            }%
+        };
+    \end{tikzpicture}%
+}
+
+%=============================================================================
+% CUSTOM TITLE PAGE
+%=============================================================================
+\defbeamertemplate*{title page}{hybrid}[1][]
+{
+    \vspace{0.2cm}
+    % Logos row - top header (with clickable links)
+    \makebox[\textwidth][c]{%
+        \href{https://www.ase.ro}{\includegraphics[height=0.9cm]{ase_logo.png}}\hspace{0.15cm}%
+        \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}\hspace{0.15cm}%
+        \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}\hspace{0.15cm}%
+        \href{https://www.ai4efin.ase.ro}{\includegraphics[height=0.9cm]{ai4efin_logo.png}}\hspace{0.15cm}%
+        \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}\hspace{0.15cm}%
+        \href{https://www.digital-finance-msca.com}{\includegraphics[height=0.9cm]{msca_logo.png}}%
+    }
+
+    \vspace{0.6cm}
+
+    % Main title with Q logos on sides (with clickable links)
+    \begin{center}
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantlet.com}{\includegraphics[height=1.0cm]{ql_logo.png}}
+        \end{minipage}%
+        \begin{minipage}{0.76\textwidth}
+            \centering
+            {\LARGE\bfseries\usebeamercolor[fg]{title}\inserttitle}
+
+            \vspace{0.3cm}
+
+            {\usebeamerfont{subtitle}\usebeamercolor[fg]{title}\insertsubtitle}
+        \end{minipage}%
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantinar.com}{\includegraphics[height=1.0cm]{qr_logo.png}}
+        \end{minipage}
+    \end{center}
+
+    \vspace{0.6cm}
+
+    % Authors (left aligned)
+    \hspace{0.5cm}{\usebeamerfont{author}\insertauthor}
+
+    \vspace{0.3cm}
+
+    % Institute/Affiliations (left aligned)
+    \hspace{0.5cm}\begin{minipage}[t]{0.9\textwidth}
+        \raggedright\small\insertinstitute
+    \end{minipage}
+}
 
 %=============================================================================
 % THEOREM ENVIRONMENTS
@@ -84,6 +208,7 @@
 \newtheorem{defn}{Definition}
 \newtheorem{thm}{Theorem}
 \newtheorem{prop}{Proposition}
+\newtheorem{rmk}{Remark}
 
 %=============================================================================
 % CUSTOM COMMANDS
@@ -93,64 +218,41 @@
 \newcommand{\Cov}{\text{Cov}}
 \newcommand{\Corr}{\text{Corr}}
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\B}{\mathbf{B}}
+\newcommand{\imark}{\textcolor{MainBlue}{\textbullet}}
+\newcommand{\RMSE}{\text{RMSE}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAPE}{\text{MAPE}}
 
 %=============================================================================
 % TITLE INFORMATION
 %=============================================================================
-\title[Chapter 9: Prophet \& TBATS]{Chapter 9: Prophet and TBATS}
-\subtitle{Bachelor Program, Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies}
-\author[Prof. Daniel Traian Pele, PhD]{Prof. Daniel Traian Pele, PhD\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
-\institute{Bucharest University of Economic Studies}
-\date{Academic Year 2025--2026}
+\title[Time Series Analysis]{Time Series Analysis and Forecasting}
+\subtitle{Chapter 9: Prophet and TBATS}
+\author[D.T. Pele]{Daniel Traian PELE}
+\institute{Bucharest University of Economic Studies\\
+IDA Institute Digital Assets\\
+Blockchain Research Center\\
+AI4EFin Artificial Intelligence for Energy Finance\\
+Romanian Academy, Institute for Economic Forecasting\\
+MSCA Digital Finance}
+\date{}
 
 \begin{document}
 
-%=============================================================================
-% TITLE SLIDE
-%=============================================================================
-\begin{frame}[plain]
-    \begin{tikzpicture}[remember picture, overlay]
-        \fill[IDAred] (current page.north west) rectangle ([yshift=-0.15cm]current page.north east);
-        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
-            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
-        };
-        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
-            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
-        };
-        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
-            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
-        };
-    \end{tikzpicture}
-    \vfill
-    \begin{center}
-        {\Large\textcolor{MediumGray}{Time Series Analysis and Forecasting}}\\[0.3cm]
-        {\Huge\textbf{\textcolor{MainBlue}{Chapter 9: Prophet and TBATS}}}\\[0.5cm]
-        {\Large\textcolor{IDAred}{Modern Models for Multiple Seasonalities}}
-    \end{center}
-    \vfill
-
-    \begin{tikzpicture}[remember picture, overlay]
-        \fill[IDAred] (current page.south west) rectangle ([yshift=0.15cm]current page.south east);
-        \node[anchor=south west] at ([xshift=0.5cm, yshift=0.8cm]current page.south west) {
-            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
-        };
-        \node[anchor=south] at ([xshift=-3cm, yshift=0.8cm]current page.south) {
-            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
-        };
-        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
-            \href{https://quantinar.com}{\includegraphics[height=0.9cm]{qr_logo.png}}
-        };
-        \node[anchor=south] at ([xshift=3cm, yshift=0.8cm]current page.south) {
-            \href{https://quantlet.com}{\includegraphics[height=0.9cm]{ql_logo.png}}
-        };
-        \node[anchor=south east] at ([xshift=-0.5cm, yshift=0.8cm]current page.south east) {
-            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
-        };
-    \end{tikzpicture}
+% Title page (no header/footer)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
 \end{frame}
+}
 
 %=============================================================================
-% OUTLINE
+% TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
     \tableofcontents
@@ -167,8 +269,11 @@
             \item \textbf{Hourly electricity demand}: Daily + Weekly + Annual patterns
             \item \textbf{Website traffic}: Daily + Weekly + Holiday effects
             \item \textbf{Retail sales}: Weekly + Monthly + Annual + Holiday effects
-            \item \textbf{Call center volume}: Hourly + Daily + Weekly patterns
-        \end{itemize}
+            \item \textbf{Call center volume}:
+                \begin{itemize}
+                    \item Hourly + Daily + Weekly patterns
+                \end{itemize}
+            \end{itemize}
     \end{block}
 
     \vspace{0.3cm}
@@ -197,7 +302,10 @@
             \begin{itemize}
                 \item \textbf{TBATS}: Automatic, handles many periods
                 \item \textbf{Prophet}: Flexible, interpretable
-                \item \textbf{Neural methods}: Deep learning
+                \item \textbf{Neural methods}:
+                \begin{itemize}
+                    \item Deep learning
+                \end{itemize}
             \end{itemize}
         \end{exampleblock}
     \end{columns}
@@ -222,18 +330,21 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_multiple_seasonality.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_multiple\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_multiple_seasonality}
 \end{frame}
 
 \begin{frame}{Real Example: Electricity Demand}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_electricity_demand.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_electricity\_demand}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_electricity_demand}
 \end{frame}
 
 \begin{frame}{Real Example: Retail Sales with Holidays}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_retail_sales.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_retail\_sales}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_retail_sales}
 \end{frame}
 
 %=============================================================================
@@ -252,37 +363,40 @@
         \end{description}
     \end{block}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
-    \begin{exampleblock}{Key Innovation}
-        TBATS uses \textbf{trigonometric representation} of seasonality:
+    \begin{exampleblock}{Key Innovation: Trigonometric Seasonality}
         \[
         s_t^{(i)} = \sum_{j=1}^{k_i} \left[ s_j^{(i)} \cos\left(\frac{2\pi j t}{m_i}\right) + s_j^{*(i)} \sin\left(\frac{2\pi j t}{m_i}\right) \right]
         \]
-        where $m_i$ is the $i$-th seasonal period and $k_i$ is the number of harmonics.
+        {\small $m_i$ = seasonal period, $k_i$ = number of harmonics}
     \end{exampleblock}
 \end{frame}
 
 \begin{frame}{TBATS Model Structure}
-    \begin{block}{Full Model Specification}
+    \begin{block}{State Space Representation}
         \begin{align}
-            y_t^{(\omega)} &= \ell_{t-1} + \phi b_{t-1} + \sum_{i=1}^{T} s_{t-m_i}^{(i)} + d_t \\[0.3cm]
-            \ell_t &= \ell_{t-1} + \phi b_{t-1} + \alpha d_t \\[0.2cm]
-            b_t &= \phi b_{t-1} + \beta d_t \\[0.2cm]
-            d_t &= \sum_{i=1}^{p} \varphi_i d_{t-i} + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t
+            y_t^{(\omega)} &= \ell_{t-1} + \phi b_{t-1} + \sum_{i=1}^{T} s_{t-m_i}^{(i)} + d_t \\
+            \ell_t &= \ell_{t-1} + \phi b_{t-1} + \alpha d_t, \quad b_t = \phi b_{t-1} + \beta d_t
         \end{align}
     \end{block}
 
-    \vspace{0.1cm}
+    {\small
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item $y_t^{(\omega)}$: Box-Cox transformed
+            \item $\ell_t$: local level
+            \item $b_t$: trend with damping $\phi$
+        \end{itemize}
 
-    {\footnotesize
-    Where:
-    \begin{itemize}
-        \item $y_t^{(\omega)}$ is Box-Cox transformed series (if $\omega \neq 1$)
-        \item $\ell_t$ is local level, $b_t$ is trend with damping $\phi$
-        \item $s_t^{(i)}$ are $T$ seasonal components with periods $m_1, \ldots, m_T$
-        \item $d_t$ is ARMA$(p,q)$ error process
-    \end{itemize}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item $s_t^{(i)}$: seasonal components
+            \item $d_t$: ARMA$(p,q)$ errors
+            \item Multiple periods: $m_1, \ldots, m_T$
+        \end{itemize}
+    \end{columns}
     }
 \end{frame}
 
@@ -323,32 +437,29 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_fourier_approximation.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_fourier\_approximation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_fourier_approximation}
 \end{frame}
 
-\begin{frame}{TBATS in Practice}
-    \begin{block}{Python Implementation}
-        \texttt{tbats} package provides automatic model selection:
+\begin{frame}{TBATS: Key Features}
+    \begin{block}{Automatic Model Selection}
+        TBATS automatically determines:
         \begin{itemize}
-            \item Automatically selects Box-Cox parameter $\omega$
-            \item Chooses number of harmonics $k_i$ for each seasonal period
-            \item Selects ARMA orders $(p,q)$
-            \item Tests damped vs non-damped trend
+            \item Box-Cox parameter $\omega$ for variance stabilization
+            \item Number of harmonics $k_i$ for each seasonal period
+            \item ARMA orders $(p,q)$ for residual autocorrelation
+            \item Damped vs non-damped trend specification
         \end{itemize}
     \end{block}
 
     \vspace{0.3cm}
 
-    \begin{exampleblock}{Code Example}
-        \small
-        \texttt{from tbats import TBATS}\\
-        \texttt{estimator = TBATS(seasonal\_periods=[7, 365.25])}\\
-        \texttt{model = estimator.fit(y)}\\
-        \texttt{forecast = model.forecast(steps=30)}
+    \begin{exampleblock}{BATS vs TBATS}
+        \begin{itemize}
+            \item \textbf{BATS}: Traditional seasonal states (dummy variables)
+            \item \textbf{TBATS}: Trigonometric (Fourier) seasonal representation
+            \item TBATS more parsimonious for long seasonal periods
+        \end{itemize}
     \end{exampleblock}
-
-    \vspace{0.2cm}
-
-    {\small \textbf{Note}: BATS is the simpler version without trigonometric terms (uses traditional seasonal states).}
 \end{frame}
 
 \begin{frame}{TBATS: Advantages and Limitations}
@@ -381,6 +492,7 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_tbats_decomposition.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_tbats\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_tbats_decomposition}
 \end{frame}
 
 %=============================================================================
@@ -390,26 +502,18 @@
 
 \begin{frame}{Prophet: Overview}
     \begin{block}{What is Prophet?}
-        Prophet is a forecasting procedure developed by Facebook (Meta) in 2017.
-
-        \vspace{0.2cm}
-
-        Designed for \textbf{business time series} with:
+        Forecasting procedure developed by Facebook (Meta) in 2017 for \textbf{business time series}:
         \begin{itemize}
             \item Strong seasonal effects (daily, weekly, yearly)
-            \item Holiday effects
-            \item Trend changes (changepoints)
-            \item Missing data and outliers
+            \item Holiday effects and trend changes (changepoints)
+            \item Handles missing data and outliers
         \end{itemize}
     \end{block}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
-    \begin{exampleblock}{Key Philosophy}
-        \begin{center}
-            \textit{``Analyst-in-the-loop'' forecasting}
-        \end{center}
-        Prophet is designed to be tuned by analysts who have domain knowledge but may not be time series experts.
+    \begin{exampleblock}{Key Philosophy: ``Analyst-in-the-loop''}
+        Designed for analysts with domain knowledge but without time series expertise.
     \end{exampleblock}
 \end{frame}
 
@@ -454,41 +558,42 @@
 \end{frame}
 
 \begin{frame}{Prophet: Trend Component}
-    \begin{block}{Linear Trend with Changepoints}
-        \[
-        g(t) = (k + \bm{a}(t)^T \bm{\delta}) \cdot t + (m + \bm{a}(t)^T \bm{\gamma})
-        \]
-        where:
-        \begin{itemize}
-            \item $k$ is the base growth rate
-            \item $\bm{\delta}$ is a vector of rate adjustments at changepoints
-            \item $\bm{a}(t)$ indicates which changepoints are active at time $t$
-            \item $m$ is the offset, $\bm{\gamma}$ ensures continuity
-        \end{itemize}
-    \end{block}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        \begin{block}{Linear Trend with Changepoints}
+            \[
+            g(t) = (k + \bm{a}(t)^T \bm{\delta}) \cdot t + (m + \bm{a}(t)^T \bm{\gamma})
+            \]
+            {\small
+            \begin{itemize}
+                \item $k$: base growth rate
+                \item $\bm{\delta}$: rate adjustments
+                \item $\bm{a}(t)$: active changepoints
+            \end{itemize}
+            }
+        \end{block}
 
-    \vspace{0.3cm}
-
-    \begin{exampleblock}{Logistic Growth (for saturating trends)}
-        \[
-        g(t) = \frac{C(t)}{1 + \exp(-(k + \bm{a}(t)^T \bm{\delta})(t - (m + \bm{a}(t)^T \bm{\gamma})))}
-        \]
-        where $C(t)$ is the (possibly time-varying) carrying capacity.
-    \end{exampleblock}
+        \column{0.45\textwidth}
+        \begin{exampleblock}{Logistic Growth}
+            For saturating trends:
+            \[
+            g(t) = \frac{C(t)}{1 + e^{-k(t-m)}}
+            \]
+            {\small $C(t)$ = carrying capacity}
+        \end{exampleblock}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Prophet: Seasonality Component}
     \begin{block}{Fourier Series Representation}
-        For a seasonal period $P$, Prophet uses:
         \[
         s(t) = \sum_{n=1}^{N} \left[ a_n \cos\left(\frac{2\pi n t}{P}\right) + b_n \sin\left(\frac{2\pi n t}{P}\right) \right]
         \]
     \end{block}
 
-    \vspace{0.3cm}
-
     \begin{exampleblock}{Default Settings}
         \begin{center}
+        \small
         \begin{tabular}{lcc}
             \toprule
             \textbf{Seasonality} & \textbf{Period} & \textbf{Fourier Order} \\
@@ -499,23 +604,22 @@
             \bottomrule
         \end{tabular}
         \end{center}
+        {\small Higher $N$ = more flexibility but risk of overfitting}
     \end{exampleblock}
-
-    \vspace{0.2cm}
-
-    {\small Higher Fourier order $N$ = more flexibility (can fit more complex patterns) but higher risk of overfitting.}
 \end{frame}
 
 \begin{frame}{Prophet Component Decomposition}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_prophet_components.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_prophet\_components}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_prophet_components}
 \end{frame}
 
 \begin{frame}{Trend Changepoint Detection}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_changepoint_detection.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_changepoint\_detection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_changepoint_detection}
 \end{frame}
 
 \begin{frame}{Prophet: Holiday Effects}
@@ -528,78 +632,67 @@
 
     \vspace{0.3cm}
 
-    \begin{exampleblock}{Features}
-        \begin{itemize}
-            \item \textbf{Built-in holidays}: 60+ countries supported
-            \item \textbf{Custom holidays}: Add your own events (Black Friday, company events)
-            \item \textbf{Window effects}: Holidays can affect days before/after
-            \item \textbf{Prior scale}: Control regularization of holiday effects
-        \end{itemize}
-    \end{exampleblock}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Built-in Features}
+            \begin{itemize}
+                \item 60+ countries supported
+                \item Custom holiday definitions
+                \item Window effects (before/after)
+            \end{itemize}
+        \end{exampleblock}
 
-    \vspace{0.3cm}
-
-    \begin{block}{Code Example}
-        \small
-        \texttt{holidays = pd.DataFrame(\{'holiday': 'black\_friday', ....\})}\\
-        \texttt{model = Prophet(holidays=holidays)}
-    \end{block}
+        \column{0.5\textwidth}
+        \begin{block}{Holiday Types}
+            \begin{itemize}
+                \item National holidays
+                \item Religious observances
+                \item Business events
+            \end{itemize}
+        \end{block}
+    \end{columns}
 \end{frame}
 
-\begin{frame}{Prophet in Practice}
-    \begin{block}{Basic Usage}
-        \small
-        \texttt{from prophet import Prophet}\\
-        \texttt{import pandas as pd}\\[0.2cm]
-        \texttt{\# Data must have columns 'ds' (date) and 'y' (value)}\\
-        \texttt{df = pd.DataFrame(\{'ds': dates, 'y': values\})}\\[0.2cm]
-        \texttt{model = Prophet()}\\
-        \texttt{model.fit(df)}\\[0.2cm]
-        \texttt{future = model.make\_future\_dataframe(periods=365)}\\
-        \texttt{forecast = model.predict(future)}
+\begin{frame}{Prophet: Customization Options}
+    \begin{block}{Seasonality Customization}
+        \begin{itemize}
+            \item Add custom seasonal periods (monthly, quarterly)
+            \item Control Fourier order for each seasonality
+            \item Enable/disable default seasonalities
+        \end{itemize}
     \end{block}
 
     \vspace{0.3cm}
 
-    \begin{exampleblock}{Adding Custom Seasonality}
-        \small
-        \texttt{model = Prophet(weekly\_seasonality=False)}\\
-        \texttt{model.add\_seasonality(name='monthly', period=30.5, fourier\_order=5)}\\
-        \texttt{model.add\_seasonality(name='quarterly', period=91.25, fourier\_order=3)}
+    \begin{exampleblock}{External Regressors}
+        Prophet supports adding external variables:
+        \begin{itemize}
+            \item Weather data, promotions, special events
+            \item Binary or continuous regressors
+            \item Automatic regularization
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Prophet: Uncertainty Quantification}
-    \begin{block}{Three Sources of Uncertainty}
-        \begin{enumerate}
-            \item \textbf{Trend uncertainty}: Future changepoints are uncertain
-            \item \textbf{Seasonality uncertainty}: Parameter estimation uncertainty
-            \item \textbf{Observation noise}: Inherent randomness
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.3cm}
-
     \begin{columns}[T]
-        \column{0.6\textwidth}
+        \column{0.5\textwidth}
+        \begin{block}{Sources of Uncertainty}
+            \begin{enumerate}
+                \item Trend uncertainty
+                \item Seasonality uncertainty
+                \item Observation noise
+            \end{enumerate}
+        \end{block}
+
+        \column{0.5\textwidth}
         \begin{exampleblock}{Prediction Intervals}
-            Prophet provides:
             \begin{itemize}
-                \item Point forecast: \texttt{yhat}
-                \item Lower bound: \texttt{yhat\_lower}
-                \item Upper bound: \texttt{yhat\_upper}
+                \item Default: 80\% interval
+                \item Configurable width
+                \item Grows with horizon
             \end{itemize}
-
-            \vspace{0.2cm}
-
-            Default is 80\% interval.\\
-            Change with \texttt{interval\_width=0.95}
         \end{exampleblock}
-
-        \column{0.4\textwidth}
-        \begin{alertblock}{Note}
-            Uncertainty grows with forecast horizon, especially for trend uncertainty.
-        \end{alertblock}
     \end{columns}
 \end{frame}
 
@@ -664,6 +757,7 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_additive_vs_multiplicative.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_additive\_vs\_multiplicative}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_additive_vs_multiplicative}
 \end{frame}
 
 %=============================================================================
@@ -698,33 +792,30 @@
         \column{0.5\textwidth}
         \begin{block}{Use TBATS when:}
             \begin{itemize}
-                \item High-frequency data (hourly, sub-daily)
-                \item Multiple complex seasonal periods
-                \item No external regressors needed
-                \item Automatic model selection preferred
-                \item Traditional state-space framework desired
+                \item High-frequency data
+                \item Multiple seasonal periods
+                \item No external regressors
+                \item Automatic selection preferred
             \end{itemize}
         \end{block}
 
         \column{0.5\textwidth}
         \begin{block}{Use Prophet when:}
             \begin{itemize}
-                \item Business forecasting (daily/weekly)
-                \item Holiday effects are important
-                \item Trend has structural breaks
-                \item Missing data present
-                \item Interpretability is key
+                \item Business forecasting
+                \item Holiday effects important
+                \item Trend has changepoints
                 \item External regressors available
             \end{itemize}
         \end{block}
     \end{columns}
 
-    \vspace{0.5cm}
+    \vspace{0.3cm}
 
     \begin{exampleblock}{General Guideline}
         \begin{center}
-            \textbf{Prophet} for business applications with daily data\\
-            \textbf{TBATS} for technical applications with high-frequency data
+            \textbf{Prophet}: business applications with daily data\\
+            \textbf{TBATS}: technical applications with high-frequency data
         \end{center}
     \end{exampleblock}
 \end{frame}
@@ -732,26 +823,22 @@
 \begin{frame}{Decision Flowchart}
     \begin{center}
     \begin{tikzpicture}[
-        scale=0.75, transform shape,
-        node distance=1.2cm,
-        decision/.style={diamond, draw, fill=MainBlue!20, text width=2.5cm, text centered, inner sep=1pt, font=\small},
-        block/.style={rectangle, draw, fill=Forest!20, text width=2.5cm, text centered, rounded corners, minimum height=0.8cm, font=\small},
+        scale=0.65, transform shape,
+        node distance=1cm,
+        decision/.style={diamond, draw, fill=MainBlue!20, text width=2.2cm, text centered, inner sep=1pt, font=\footnotesize},
+        block/.style={rectangle, draw, fill=Forest!20, text width=2cm, text centered, rounded corners, minimum height=0.7cm, font=\footnotesize},
         line/.style={draw, ->, thick}
     ]
-        \node [decision] (q1) {Multiple seasonal periods?};
-        \node [block, below left=1cm and 2cm of q1] (sarima) {SARIMA};
-        \node [decision, below right=1cm and 2cm of q1] (q2) {Holiday effects important?};
-        \node [block, below left=1cm and 1cm of q2] (tbats) {TBATS};
-        \node [decision, below right=1cm and 1cm of q2] (q3) {External regressors?};
-        \node [block, below left=0.8cm and 0.5cm of q3] (prophet1) {Prophet};
-        \node [block, below right=0.8cm and 0.5cm of q3] (prophet2) {Prophet + Regressors};
+        \node [decision] (q1) {Multiple seasons?};
+        \node [block, below left=0.8cm and 1.5cm of q1] (sarima) {SARIMA};
+        \node [decision, below right=0.8cm and 1.5cm of q1] (q2) {Holidays?};
+        \node [block, below left=0.8cm and 0.8cm of q2] (tbats) {TBATS};
+        \node [block, below right=0.8cm and 0.8cm of q2] (prophet) {Prophet};
 
-        \path [line] (q1) -- node[above left, font=\scriptsize] {No} (sarima);
-        \path [line] (q1) -- node[above right, font=\scriptsize] {Yes} (q2);
-        \path [line] (q2) -- node[above left, font=\scriptsize] {No} (tbats);
-        \path [line] (q2) -- node[above right, font=\scriptsize] {Yes} (q3);
-        \path [line] (q3) -- node[above left, font=\scriptsize] {No} (prophet1);
-        \path [line] (q3) -- node[above right, font=\scriptsize] {Yes} (prophet2);
+        \path [line] (q1) -- node[above left, font=\tiny] {No} (sarima);
+        \path [line] (q1) -- node[above right, font=\tiny] {Yes} (q2);
+        \path [line] (q2) -- node[above left, font=\tiny] {No} (tbats);
+        \path [line] (q2) -- node[above right, font=\tiny] {Yes} (prophet);
     \end{tikzpicture}
     \end{center}
 \end{frame}
@@ -760,12 +847,14 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_prophet_vs_tbats.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_prophet_vs_tbats}
 \end{frame}
 
 \begin{frame}{Model Selection Guide}
     \begin{center}
         \includegraphics[width=0.90\textwidth, height=0.60\textheight, keepaspectratio]{ch9_model_selection_guide.pdf}
     \end{center}
+    \quantlet{TSA\_ch9\_model\_selection\_guide}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_model_selection_guide}
 \end{frame}
 
 %=============================================================================
@@ -795,19 +884,10 @@
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Case Study: Results Interpretation}
-    \begin{block}{Evaluation Metrics}
-        \begin{itemize}
-            \item \textbf{MAPE}: Mean Absolute Percentage Error
-            \item \textbf{RMSE}: Root Mean Square Error
-            \item \textbf{Coverage}: \% of actuals within prediction interval
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.3cm}
-
-    \begin{exampleblock}{Typical Findings}
+\begin{frame}{Case Study: Results}
+    \begin{exampleblock}{Model Comparison}
         \begin{center}
+        \small
         \begin{tabular}{lccc}
             \toprule
             \textbf{Model} & \textbf{MAPE} & \textbf{RMSE} & \textbf{Coverage} \\
@@ -821,32 +901,96 @@
         \end{center}
     \end{exampleblock}
 
-    {\small Multiple seasonality models significantly outperform single-seasonality SARIMA.}
+    \begin{alertblock}{Key Finding}
+        Multiple seasonality models significantly outperform single-seasonality SARIMA.
+    \end{alertblock}
 \end{frame}
 
 %=============================================================================
-% SECTION 6: SUMMARY
+% SECTION 6: QUIZ
+%=============================================================================
+\section{Quiz}
+
+\begin{frame}{Quiz 1: Multiple Seasonality}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch9_quiz1_multiple_seasonality.pdf}
+    \end{center}
+
+    \textbf{Question}: Why can't standard SARIMA$(p,d,q)(P,D,Q)_s$ model hourly electricity data with both daily and weekly patterns?
+
+    \vspace{0.2cm}
+    {\small \textbf{Answer}: SARIMA handles only \textbf{one} seasonal period $s$. Cannot set $s=24$ and $s=168$ simultaneously.}
+\end{frame}
+
+\begin{frame}{Quiz 2: TBATS Components}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch9_quiz2_tbats_components.pdf}
+    \end{center}
+
+    \textbf{Question}: What does each letter in TBATS represent?
+
+    \vspace{0.2cm}
+    {\small \textbf{Answer}: \textbf{T}rigonometric seasonality, \textbf{B}ox-Cox transformation, \textbf{A}RMA errors, \textbf{T}rend, \textbf{S}easonal components.}
+\end{frame}
+
+\begin{frame}{Quiz 3: Fourier Harmonics}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch9_quiz3_fourier_harmonics.pdf}
+    \end{center}
+
+    \textbf{Question}: What happens when we increase the number of Fourier harmonics $K$?
+
+    \vspace{0.2cm}
+    {\small \textbf{Answer}: Higher $K$ captures more complex patterns but increases overfitting risk.}
+\end{frame}
+
+\begin{frame}{Quiz 4: Prophet Decomposition}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch9_quiz4_prophet_decomposition.pdf}
+    \end{center}
+
+    \textbf{Question}: What are the main components in Prophet's model $y(t) = g(t) + s(t) + h(t) + \varepsilon_t$?
+
+    \vspace{0.2cm}
+    {\small \textbf{Answer}: $g(t)$ = trend with changepoints, $s(t)$ = seasonality, $h(t)$ = holiday effects.}
+\end{frame}
+
+\begin{frame}{Quiz 5: Model Comparison}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch9_quiz5_prophet_vs_tbats.pdf}
+    \end{center}
+
+    \textbf{Question}: What key features does Prophet have that TBATS lacks?
+
+    \vspace{0.2cm}
+    {\small \textbf{Answer}: Holiday effects, external regressors, trend changepoints, native missing data handling.}
+\end{frame}
+
+%=============================================================================
+% SECTION 7: SUMMARY
 %=============================================================================
 \section{Summary}
 
 \begin{frame}{Key Takeaways}
-    \begin{block}{Multiple Seasonalities}
-        \begin{itemize}
-            \item Real-world data often has multiple seasonal patterns
-            \item Standard SARIMA handles only one seasonal period
-            \item TBATS and Prophet are designed for this challenge
-        \end{itemize}
-    \end{block}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Multiple Seasonalities}
+            \begin{itemize}
+                \item Real-world data has multiple patterns
+                \item SARIMA: one seasonal period
+                \item TBATS/Prophet: multiple periods
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.3cm}
-
-    \begin{exampleblock}{Model Selection}
-        \begin{itemize}
-            \item \textbf{TBATS}: Automatic, handles high-frequency, no external regressors
-            \item \textbf{Prophet}: Interpretable, holiday effects, external regressors
-            \item Both use Fourier terms for efficient seasonality representation
-        \end{itemize}
-    \end{exampleblock}
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Model Selection}
+            \begin{itemize}
+                \item TBATS: high-frequency, automatic
+                \item Prophet: interpretable, holidays
+                \item Both use Fourier terms
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
 
     \vspace{0.3cm}
 

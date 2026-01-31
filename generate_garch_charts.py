@@ -100,12 +100,12 @@ fig, axes = plt.subplots(2, 1, figsize=(14, 8), sharex=True)
 # Returns
 axes[0].plot(sp500_returns.index, sp500_returns.values, color=COLORS['blue'], linewidth=0.5, alpha=0.8)
 axes[0].axhline(y=0, color='black', linewidth=0.5)
-axes[0].set_ylabel('Randament Zilnic (%)')
-axes[0].set_title('S&P 500 - Randamente Zilnice (Date Reale)', fontweight='bold', fontsize=12)
+axes[0].set_ylabel('Daily Return (%)')
+axes[0].set_title('S&P 500 - Daily Returns (Real Data)', fontweight='bold', fontsize=12)
 
 # Highlight crisis periods
 crisis_periods = [
-    ('2008-09-01', '2009-03-31', 'Criza 2008'),
+    ('2008-09-01', '2009-03-31', '2008 Crisis'),
     ('2020-02-20', '2020-04-30', 'COVID-19'),
     ('2022-01-01', '2022-10-31', '2022'),
 ]
@@ -116,8 +116,8 @@ for start, end, label in crisis_periods:
 # Conditional volatility
 axes[1].plot(sp500_returns.index, conditional_vol, color=COLORS['red'], linewidth=0.8)
 axes[1].fill_between(sp500_returns.index, 0, conditional_vol, color=COLORS['red'], alpha=0.3)
-axes[1].set_ylabel('Volatilitate Condiționată (%)')
-axes[1].set_xlabel('Data')
+axes[1].set_ylabel('Conditional Volatility (%)')
+axes[1].set_xlabel('Date')
 axes[1].set_title('Volatility Clustering - GARCH(1,1)', fontweight='bold', fontsize=12)
 
 plt.tight_layout()
@@ -136,13 +136,13 @@ fig, axes = plt.subplots(2, 2, figsize=(12, 10))
 # ACF of returns
 plot_acf(sp500_returns.values, lags=30, ax=axes[0, 0], color=COLORS['blue'],
          vlines_kwargs={'color': COLORS['blue']}, alpha=0.05)
-axes[0, 0].set_title('ACF Randamente S&P 500', fontweight='bold')
+axes[0, 0].set_title('ACF of S&P 500 Returns', fontweight='bold')
 axes[0, 0].set_xlabel('Lag')
 
 # ACF of squared returns
 plot_acf(sp500_returns.values**2, lags=30, ax=axes[0, 1], color=COLORS['red'],
          vlines_kwargs={'color': COLORS['red']}, alpha=0.05)
-axes[0, 1].set_title('ACF Randamente Pătrate (Volatility Clustering)', fontweight='bold')
+axes[0, 1].set_title('ACF of Squared Returns (Volatility Clustering)', fontweight='bold')
 axes[0, 1].set_xlabel('Lag')
 
 # Histogram with normal overlay
@@ -151,9 +151,9 @@ axes[1, 0].hist(sp500_returns.values, bins=100, density=True, color=COLORS['blue
 x = np.linspace(sp500_returns.min(), sp500_returns.max(), 200)
 axes[1, 0].plot(x, stats.norm.pdf(x, sp500_returns.mean(), sp500_returns.std()),
                 color=COLORS['red'], linewidth=2, label='Normal')
-axes[1, 0].set_title('Distribuție: Cozi Groase (Leptokurtic)', fontweight='bold')
-axes[1, 0].set_xlabel('Randament (%)')
-axes[1, 0].set_ylabel('Densitate')
+axes[1, 0].set_title('Distribution: Fat Tails (Leptokurtic)', fontweight='bold')
+axes[1, 0].set_xlabel('Return (%)')
+axes[1, 0].set_ylabel('Density')
 axes[1, 0].set_xlim(-10, 10)
 kurtosis = float(stats.kurtosis(sp500_returns.values))
 skewness = float(stats.skew(sp500_returns.values))
@@ -207,9 +207,9 @@ for i, (name, res) in enumerate(models_results.items()):
     ax.plot(sp500_returns.index[-1000:], vol[-1000:], linewidth=1.2,
             color=colors[i], label=name, alpha=0.8)
 
-ax.set_xlabel('Data')
-ax.set_ylabel('Volatilitate Condiționată (%)')
-ax.set_title('Comparație Modele GARCH pe S&P 500 (Ultimele 1000 Zile)', fontweight='bold', fontsize=12)
+ax.set_xlabel('Date')
+ax.set_ylabel('Conditional Volatility (%)')
+ax.set_title('GARCH Models Comparison on S&P 500 (Last 1000 Days)', fontweight='bold', fontsize=12)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), frameon=False, ncol=3)
 
 plt.tight_layout()
@@ -243,9 +243,9 @@ fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 colors = [COLORS['red'] if r < 0 else COLORS['blue'] for r in df_lev['lagged_returns']]
 axes[0].scatter(df_lev['lagged_returns'], df_lev['future_vol'],
                 c=colors, alpha=0.3, s=10)
-axes[0].set_xlabel('Randament la t (%)')
-axes[0].set_ylabel('Volatilitate Realizată la t+22 (%)')
-axes[0].set_title('Leverage Effect: Șocuri Negative vs Pozitive', fontweight='bold')
+axes[0].set_xlabel('Return at t (%)')
+axes[0].set_ylabel('Realized Volatility at t+22 (%)')
+axes[0].set_title('Leverage Effect: Negative vs Positive Shocks', fontweight='bold')
 axes[0].axvline(x=0, color='gray', linestyle='--', linewidth=0.8)
 axes[0].set_xlim(-10, 10)
 
@@ -257,7 +257,7 @@ neutral_mask = (df_lev['lagged_returns'] >= -1) & (df_lev['lagged_returns'] <= 1
 bp = axes[1].boxplot([df_lev.loc[neg_mask, 'future_vol'].values,
                        df_lev.loc[neutral_mask, 'future_vol'].values,
                        df_lev.loc[pos_mask, 'future_vol'].values],
-                      labels=['Șoc Negativ\n(r < -1%)', 'Neutru\n(-1% < r < 1%)', 'Șoc Pozitiv\n(r > 1%)'],
+                      labels=['Negative Shock\n(r < -1%)', 'Neutral\n(-1% < r < 1%)', 'Positive Shock\n(r > 1%)'],
                       patch_artist=True)
 bp['boxes'][0].set_facecolor(COLORS['red'])
 bp['boxes'][0].set_alpha(0.6)
@@ -265,8 +265,8 @@ bp['boxes'][1].set_facecolor(COLORS['gray'])
 bp['boxes'][1].set_alpha(0.6)
 bp['boxes'][2].set_facecolor(COLORS['blue'])
 bp['boxes'][2].set_alpha(0.6)
-axes[1].set_ylabel('Volatilitate Următoare (%)')
-axes[1].set_title('Distribuția Volatilității după Tipul Șocului', fontweight='bold')
+axes[1].set_ylabel('Future Volatility (%)')
+axes[1].set_title('Volatility Distribution by Shock Type', fontweight='bold')
 
 plt.tight_layout()
 plt.savefig('charts/garch_leverage_effect.pdf', dpi=150, bbox_inches='tight')
@@ -311,13 +311,13 @@ ax.plot(epsilon_range, np.sqrt(sigma2_gjr), color=COLORS['red'], linewidth=2.5,
         label=f'GJR-GARCH: α={alpha_gjr:.3f}, γ={gamma_gjr:.3f}, β={beta_gjr:.3f}')
 
 ax.axvline(x=0, color='gray', linestyle=':', linewidth=1)
-ax.set_xlabel('Șoc εₜ₋₁ (%)', fontsize=12)
-ax.set_ylabel('Volatilitate Condiționată σₜ (%)', fontsize=12)
-ax.set_title('News Impact Curve - Estimat pe S&P 500', fontweight='bold', fontsize=14)
+ax.set_xlabel('Shock εₜ₋₁ (%)', fontsize=12)
+ax.set_ylabel('Conditional Volatility σₜ (%)', fontsize=12)
+ax.set_title('News Impact Curve - Estimated on S&P 500', fontweight='bold', fontsize=14)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), frameon=False, ncol=2)
 
 # Add text annotation
-ax.text(0.02, 0.98, 'Șocurile negative au impact\nmai mare asupra volatilității',
+ax.text(0.02, 0.98, 'Negative shocks have greater\nimpact on volatility',
         transform=ax.transAxes, fontsize=10, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
@@ -341,19 +341,19 @@ axes[0, 0].plot(sp500_returns.index, std_resid, color=COLORS['blue'], linewidth=
 axes[0, 0].axhline(y=0, color='black', linewidth=0.5)
 axes[0, 0].axhline(y=2, color=COLORS['red'], linestyle='--', linewidth=0.8, alpha=0.5)
 axes[0, 0].axhline(y=-2, color=COLORS['red'], linestyle='--', linewidth=0.8, alpha=0.5)
-axes[0, 0].set_title('Reziduuri Standardizate GARCH(1,1)', fontweight='bold')
-axes[0, 0].set_xlabel('Data')
+axes[0, 0].set_title('Standardized Residuals GARCH(1,1)', fontweight='bold')
+axes[0, 0].set_xlabel('Date')
 axes[0, 0].set_ylabel('zₜ = εₜ/σₜ')
 
 # ACF of squared standardized residuals
 plot_acf(std_resid**2, lags=30, ax=axes[0, 1], color=COLORS['blue'],
          vlines_kwargs={'color': COLORS['blue']}, alpha=0.05)
-axes[0, 1].set_title('ACF(zₜ²) - Verificare Efecte ARCH Reziduale', fontweight='bold')
+axes[0, 1].set_title('ACF(zₜ²) - Check for Residual ARCH Effects', fontweight='bold')
 axes[0, 1].set_xlabel('Lag')
 
 # Histogram
 axes[1, 0].hist(std_resid, bins=80, density=True, color=COLORS['blue'],
-                alpha=0.7, edgecolor='white', label='Reziduuri Std.')
+                alpha=0.7, edgecolor='white', label='Std. Residuals')
 x = np.linspace(-5, 5, 100)
 axes[1, 0].plot(x, stats.norm.pdf(x), color=COLORS['red'],
                 linewidth=2, label='N(0,1)')
@@ -361,7 +361,7 @@ axes[1, 0].plot(x, stats.norm.pdf(x), color=COLORS['red'],
 df_est = 2 / (stats.kurtosis(std_resid) - 3 + 2) if stats.kurtosis(std_resid) > 3 else 30
 axes[1, 0].plot(x, stats.t.pdf(x, df=5), color=COLORS['green'],
                 linewidth=2, linestyle='--', label='t(5)')
-axes[1, 0].set_title('Distribuția Reziduurilor Standardizate', fontweight='bold')
+axes[1, 0].set_title('Standardized Residuals Distribution', fontweight='bold')
 axes[1, 0].set_xlabel('zₜ')
 axes[1, 0].set_xlim(-5, 5)
 axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False, ncol=3)
@@ -371,7 +371,7 @@ stats.probplot(std_resid, dist="norm", plot=axes[1, 1])
 axes[1, 1].get_lines()[0].set_color(COLORS['blue'])
 axes[1, 1].get_lines()[0].set_markersize(2)
 axes[1, 1].get_lines()[1].set_color(COLORS['red'])
-axes[1, 1].set_title('QQ-Plot Reziduuri vs Normal', fontweight='bold')
+axes[1, 1].set_title('QQ-Plot Residuals vs Normal', fontweight='bold')
 
 plt.tight_layout()
 plt.savefig('charts/garch_diagnostics.pdf', dpi=150, bbox_inches='tight')
@@ -401,27 +401,27 @@ forecast_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=f
 fig, ax = plt.subplots(figsize=(14, 6))
 
 # Historical
-ax.plot(hist_dates, hist_vol, color=COLORS['blue'], linewidth=1.2, label='Volatilitate Istorică')
+ax.plot(hist_dates, hist_vol, color=COLORS['blue'], linewidth=1.2, label='Historical Volatility')
 
 # Forecast
 ax.plot(forecast_dates, forecast_vol, color=COLORS['red'], linewidth=2.5,
-        linestyle='--', label='Prognoză GARCH(1,1)')
+        linestyle='--', label='GARCH(1,1) Forecast')
 
 # Unconditional volatility
 unconditional_vol = np.sqrt(omega_g / (1 - alpha_g - beta_g))
 ax.axhline(y=unconditional_vol, color=COLORS['green'], linestyle=':', linewidth=1.5,
-           label=f'σ̄ (necondiționată) = {unconditional_vol:.2f}%')
+           label=f'σ̄ (unconditional) = {unconditional_vol:.2f}%')
 
 # Confidence interval (approximate)
 ax.fill_between(forecast_dates, forecast_vol * 0.7, forecast_vol * 1.3,
-                color=COLORS['red'], alpha=0.2, label='Interval 70%')
+                color=COLORS['red'], alpha=0.2, label='70% Interval')
 
 ax.axvline(x=last_date, color='gray', linestyle='--', linewidth=1, alpha=0.5)
-ax.text(last_date, ax.get_ylim()[1]*0.95, ' Prognoză →', fontsize=10)
+ax.text(last_date, ax.get_ylim()[1]*0.95, ' Forecast →', fontsize=10)
 
-ax.set_xlabel('Data')
-ax.set_ylabel('Volatilitate (%)')
-ax.set_title(f'Prognoza Volatilității GARCH(1,1) - S&P 500 ({forecast_horizon} zile)',
+ax.set_xlabel('Date')
+ax.set_ylabel('Volatility (%)')
+ax.set_title(f'GARCH(1,1) Volatility Forecast - S&P 500 ({forecast_horizon} days)',
              fontweight='bold', fontsize=12)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), frameon=False, ncol=4)
 
@@ -442,16 +442,16 @@ fig, axes = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
 axes[0].plot(sp500_returns.index, sp500_returns.values, color=COLORS['blue'],
              linewidth=0.4, alpha=0.8)
 axes[0].axhline(y=0, color='black', linewidth=0.5)
-axes[0].set_ylabel('Randament Zilnic (%)')
-axes[0].set_title('S&P 500 - Randamente Zilnice (2000-2024)', fontweight='bold', fontsize=12)
+axes[0].set_ylabel('Daily Return (%)')
+axes[0].set_title('S&P 500 - Daily Returns (2000-2024)', fontweight='bold', fontsize=12)
 
 # Add annotations for major events
 events = [
     ('2001-09-11', 'Sep 11', -5),
-    ('2008-10-15', 'Criză Financiară', 8),
+    ('2008-10-15', 'Financial Crisis', 8),
     ('2010-05-06', 'Flash Crash', -5),
     ('2020-03-16', 'COVID-19', -12),
-    ('2022-06-13', 'Inflație 2022', -4),
+    ('2022-06-13', 'Inflation 2022', -4),
 ]
 for date, label, y_offset in events:
     try:
@@ -467,13 +467,13 @@ for date, label, y_offset in events:
 # Volatility
 axes[1].plot(sp500_returns.index, conditional_vol, color=COLORS['red'], linewidth=0.6)
 axes[1].fill_between(sp500_returns.index, 0, conditional_vol, color=COLORS['red'], alpha=0.3)
-axes[1].set_ylabel('Volatilitate GARCH (%)')
-axes[1].set_xlabel('Data')
-axes[1].set_title('Volatilitate Condiționată GARCH(1,1)', fontweight='bold', fontsize=12)
+axes[1].set_ylabel('GARCH Volatility (%)')
+axes[1].set_xlabel('Date')
+axes[1].set_title('Conditional Volatility GARCH(1,1)', fontweight='bold', fontsize=12)
 
 # Add VIX-like threshold
-axes[1].axhline(y=2, color=COLORS['green'], linestyle='--', linewidth=1, alpha=0.7, label='Nivel normal (~2%)')
-axes[1].axhline(y=4, color=COLORS['orange'], linestyle='--', linewidth=1, alpha=0.7, label='Nivel ridicat (~4%)')
+axes[1].axhline(y=2, color=COLORS['green'], linestyle='--', linewidth=1, alpha=0.7, label='Normal level (~2%)')
+axes[1].axhline(y=4, color=COLORS['orange'], linestyle='--', linewidth=1, alpha=0.7, label='High level (~4%)')
 
 plt.tight_layout()
 plt.savefig('charts/garch_sp500_returns.pdf', dpi=150, bbox_inches='tight')
@@ -505,15 +505,15 @@ ax.plot(sp500_common.index, sp500_common.values, color=COLORS['blue'],
 ax.plot(btc_common.index, btc_common.values, color=COLORS['orange'],
         linewidth=1, label='Bitcoin', alpha=0.8)
 
-ax.set_xlabel('Data')
-ax.set_ylabel('Volatilitate GARCH(1,1) (%)')
-ax.set_title('Comparație Volatilitate: S&P 500 vs Bitcoin', fontweight='bold', fontsize=12)
+ax.set_xlabel('Date')
+ax.set_ylabel('GARCH(1,1) Volatility (%)')
+ax.set_title('Volatility Comparison: S&P 500 vs Bitcoin', fontweight='bold', fontsize=12)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), frameon=False, ncol=2)
 
 # Add statistics
 sp500_mean_vol = sp500_common.mean()
 btc_mean_vol = btc_common.mean()
-ax.text(0.02, 0.98, f'Volatilitate medie:\nS&P 500: {sp500_mean_vol:.2f}%\nBitcoin: {btc_mean_vol:.2f}%',
+ax.text(0.02, 0.98, f'Mean Volatility:\nS&P 500: {sp500_mean_vol:.2f}%\nBitcoin: {btc_mean_vol:.2f}%',
         transform=ax.transAxes, fontsize=10, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
@@ -564,15 +564,15 @@ width = 0.35
 bars1 = axes[0].bar(x - width/2, aic_values, width, label='AIC', color=COLORS['blue'], alpha=0.8)
 bars2 = axes[0].bar(x + width/2, bic_values, width, label='BIC', color=COLORS['red'], alpha=0.8)
 
-axes[0].set_ylabel('Valoare Criteriu')
-axes[0].set_title('Comparație Modele GARCH - Criterii Informaționale', fontweight='bold')
+axes[0].set_ylabel('Criterion Value')
+axes[0].set_title('GARCH Models Comparison - Information Criteria', fontweight='bold')
 axes[0].set_xticks(x)
 axes[0].set_xticklabels(models_names, rotation=15, ha='right')
 axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False, ncol=2)
 
 # Highlight best model
 min_aic_idx = np.argmin(aic_values)
-axes[0].annotate('Cel mai bun', xy=(x[min_aic_idx] - width/2, aic_values[min_aic_idx]),
+axes[0].annotate('Best', xy=(x[min_aic_idx] - width/2, aic_values[min_aic_idx]),
                 xytext=(x[min_aic_idx] - width/2, aic_values[min_aic_idx] - 500),
                 fontsize=9, color=COLORS['green'], fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color=COLORS['green']))
@@ -586,9 +586,9 @@ axes[1].plot(sp500_returns.index[-last_n:], res_t.conditional_volatility[-last_n
 axes[1].plot(sp500_returns.index[-last_n:], res_gjr_t.conditional_volatility[-last_n:],
              color=COLORS['green'], linewidth=1, label='GJR-GARCH-t', alpha=0.7)
 
-axes[1].set_xlabel('Data')
-axes[1].set_ylabel('Volatilitate (%)')
-axes[1].set_title('Volatilitate Estimată - Ultimele 500 Zile', fontweight='bold')
+axes[1].set_xlabel('Date')
+axes[1].set_ylabel('Volatility (%)')
+axes[1].set_title('Estimated Volatility - Last 500 Days', fontweight='bold')
 axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False, ncol=3)
 
 plt.tight_layout()
@@ -608,7 +608,7 @@ print(f"  ω (omega) = {res_garch.params['omega']:.6f}")
 print(f"  α (alpha) = {res_garch.params['alpha[1]']:.4f}")
 print(f"  β (beta)  = {res_garch.params['beta[1]']:.4f}")
 print(f"  α + β     = {res_garch.params['alpha[1]'] + res_garch.params['beta[1]']:.4f}")
-print(f"  Volatilitate necondiționată = {np.sqrt(omega_g / (1 - alpha_g - beta_g)):.4f}%")
+print(f"  Unconditional volatility = {np.sqrt(omega_g / (1 - alpha_g - beta_g)):.4f}%")
 print(f"\nGJR-GARCH Parameters:")
 print(f"  γ (gamma) = {res_gjr.params['gamma[1]']:.4f} (leverage effect)")
 print(f"\nModel Fit:")

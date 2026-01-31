@@ -63,23 +63,23 @@ def generate_eurron_series():
 
     # Price
     axes[0].plot(df.index, df['EURRON'], color=MAIN_BLUE, linewidth=0.8)
-    axes[0].set_ylabel('Curs EUR/RON')
-    axes[0].set_title('Evoluția Cursului EUR/RON (2015-2024)', fontweight='bold')
+    axes[0].set_ylabel('EUR/RON Rate')
+    axes[0].set_title('EUR/RON Exchange Rate Evolution (2015-2024)', fontweight='bold')
     axes[0].axhline(y=df['EURRON'].mean(), color=IDA_RED, linestyle='--',
-                    alpha=0.7, label=f'Media: {df["EURRON"].mean():.2f}')
+                    alpha=0.7, label=f'Mean: {df["EURRON"].mean():.2f}')
     axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     # Returns
     axes[1].plot(df.index, df['Returns'], color=ACCENT_BLUE, linewidth=0.5, alpha=0.8)
     axes[1].axhline(y=0, color='black', linewidth=0.5)
-    axes[1].set_ylabel('Randamente (%)')
-    axes[1].set_xlabel('Data')
-    axes[1].set_title('Randamente Zilnice', fontweight='bold')
+    axes[1].set_ylabel('Returns (%)')
+    axes[1].set_xlabel('Date')
+    axes[1].set_title('Daily Returns', fontweight='bold')
 
     # Highlight volatility clusters
     high_vol = df['Returns'].abs() > 1.5
     axes[1].scatter(df.index[high_vol], df['Returns'][high_vol],
-                   color=IDA_RED, s=10, alpha=0.6, label='Volatilitate ridicată')
+                   color=IDA_RED, s=10, alpha=0.6, label='High volatility')
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
     plt.tight_layout()
@@ -111,7 +111,7 @@ def generate_lstm_training():
     axes[0].plot(epochs, val_loss, color=IDA_RED, linewidth=2, label='Validation Loss')
     axes[0].set_xlabel('Epoch')
     axes[0].set_ylabel('Loss (MSE)')
-    axes[0].set_title('Curba de Învățare LSTM', fontweight='bold')
+    axes[0].set_title('LSTM Learning Curve', fontweight='bold')
     axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[0].set_xlim(1, 50)
 
@@ -121,12 +121,12 @@ def generate_lstm_training():
     lr_medium = 0.5 * np.exp(-0.08 * lr_epochs) + 0.02
     lr_slow = 0.5 * np.exp(-0.03 * lr_epochs) + 0.025
 
-    axes[1].plot(lr_epochs, lr_fast, color=IDA_RED, linewidth=2, label='LR=0.01 (rapid)')
-    axes[1].plot(lr_epochs, lr_medium, color=MAIN_BLUE, linewidth=2, label='LR=0.001 (optim)')
-    axes[1].plot(lr_epochs, lr_slow, color=FOREST, linewidth=2, label='LR=0.0001 (lent)')
+    axes[1].plot(lr_epochs, lr_fast, color=IDA_RED, linewidth=2, label='LR=0.01 (fast)')
+    axes[1].plot(lr_epochs, lr_medium, color=MAIN_BLUE, linewidth=2, label='LR=0.001 (optimal)')
+    axes[1].plot(lr_epochs, lr_slow, color=FOREST, linewidth=2, label='LR=0.0001 (slow)')
     axes[1].set_xlabel('Epoch')
     axes[1].set_ylabel('Loss (MSE)')
-    axes[1].set_title('Efectul Learning Rate', fontweight='bold')
+    axes[1].set_title('Learning Rate Effect', fontweight='bold')
     axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
     axes[1].set_xlim(1, 50)
 
@@ -156,8 +156,8 @@ def generate_rf_feature_importance():
                    [importance[i] for i in sorted_idx],
                    color=colors, edgecolor='white', linewidth=0.5)
 
-    ax.set_xlabel('Importanță')
-    ax.set_title('Importanța Features în Random Forest', fontweight='bold')
+    ax.set_xlabel('Importance')
+    ax.set_title('Random Forest Feature Importance', fontweight='bold')
 
     # Add value labels
     for bar, val in zip(bars, [importance[i] for i in sorted_idx]):
