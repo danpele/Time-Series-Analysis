@@ -1,0 +1,1084 @@
+% Capitolul 9: Prophet și TBATS
+% Prezentare academică de calitate Harvard
+% Program de licență, Academia de Studii Economice din București
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Asigură încadrarea conținutului pe diapozitive
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% CONFIGURARE TEMĂ ȘI STIL
+%=============================================================================
+\usetheme{default}
+% Using default theme for clean header/footer control
+
+% Color Palette (matching Redispatch PDF)
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{26, 58, 110}
+\definecolor{IDAred}{RGB}{205, 0, 0}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{KeynoteGray}{RGB}{218, 218, 218}
+\definecolor{SectionGray}{RGB}{120, 120, 120}
+\definecolor{FooterGray}{RGB}{100, 100, 100}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+\definecolor{Purple}{RGB}{142, 68, 173}
+
+% Gradient background (exact Keynote 315° gradient: white to RGB 218,218,218)
+\setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \shade[shading=axis, shading angle=315,
+        top color=white, bottom color=KeynoteGray]
+        (current page.south west) rectangle (current page.north east);
+    \end{tikzpicture}%
+}
+% Fallback solid color for compatibility
+\setbeamercolor{background canvas}{bg=}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=IDAred}
+\setbeamercolor{frametitle}{fg=IDAred, bg=}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+% Footer colors (override Madrid theme blue)
+\setbeamercolor{author in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{title in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{date in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{section in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{subsection in head/foot}{fg=FooterGray, bg=}
+
+% Bullet styles (apply everywhere including blocks)
+\setbeamertemplate{itemize item}{\color{MainBlue}$\boxdot$}
+\setbeamertemplate{itemize subitem}{\color{MainBlue}$\blacktriangleright$}
+\setbeamertemplate{itemize subsubitem}{\color{MainBlue}\tiny$\bullet$}
+\setbeamertemplate{itemize/enumerate body begin}{\normalsize}
+\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
+
+% Item spacing - compact style
+\setlength{\leftmargini}{10pt}       % Level 1: minimal indent
+\setlength{\leftmarginii}{10pt}      % Level 2: minimal additional indent
+
+\setbeamertemplate{navigation symbols}{}
+
+%=============================================================================
+% CUSTOM HEADLINE
+%=============================================================================
+\setbeamertemplate{headline}{%
+    \vskip10pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        {\small\color{FooterGray}\renewcommand{\hyperlink}[2]{##2}\insertsectionhead}%
+        \hfill%
+        \textcolor{FooterGray}{\small\insertframenumber}%
+        \hskip0.5cm%
+    }%
+    \vskip4pt%
+    {\color{FooterGray}\hrule height 0.4pt}%
+}
+
+%=============================================================================
+% CUSTOM FOOTER
+%=============================================================================
+\usepackage{fontawesome5}
+
+\setbeamertemplate{footline}{%
+    {\color{FooterGray}\hrule height 0.4pt}%
+    \vskip4pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        \textcolor{FooterGray}{\small Analiza și Prognoza seriilor de timp}%
+        \hfill%
+        \raisebox{-0.1em}{%
+            \begin{tikzpicture}[x=0.08em, y=0.08em, line width=0.4pt]
+                \draw[FooterGray] (0,3) -- (1,4) -- (2,3.5) -- (3,5) -- (4,4) -- (5,6) -- (6,5.5) -- (7,4) -- (8,5) -- (9,7) -- (10,6) -- (11,5) -- (12,6.5) -- (13,8) -- (14,7) -- (15,6) -- (16,7.5) -- (17,9) -- (18,8) -- (19,7) -- (20,8.5) -- (21,10) -- (22,9) -- (23,8) -- (24,9.5);
+            \end{tikzpicture}%
+        }%
+        \hskip0.5cm%
+    }%
+    \vskip6pt%
+}
+
+%=============================================================================
+% PACHETE
+%=============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing, shadings}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{colortbl}
+\hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
+\graphicspath{{../../logos/}{../../charts/}}
+\hfuzz=2pt  % Suppress tiny overfull warnings (<2pt)
+
+%=============================================================================
+% COMANDA QUANTLET
+%=============================================================================
+% Usage: \quantlet{QuantletName}{https://github.com/...}
+\newcommand{\quantlet}[2]{%
+    \hfill\href{#2}{\raisebox{-0.15em}{\includegraphics[height=0.7em]{ql_logo.png}}\textcolor{MainBlue}{\tiny\ #1}}%
+}
+
+
+%=============================================================================
+% PAGINĂ TITLU PERSONALIZATĂ
+%=============================================================================
+\defbeamertemplate*{title page}{hybrid}[1][]
+{
+    \vspace{0.2cm}
+    % Logos row - top header (with clickable links)
+    \begin{center}
+        \href{https://www.ase.ro}{\includegraphics[height=1.0cm]{ase_logo.png}}\hspace{0.3cm}%
+        \href{https://theida.net}{\includegraphics[height=1.0cm]{ida_logo.png}}\hspace{0.3cm}%
+        \href{https://blockchain-research-center.com}{\includegraphics[height=1.0cm]{brc_logo.png}}\hspace{0.3cm}%
+        \href{https://www.ai4efin.ase.ro}{\includegraphics[height=1.0cm]{ai4efin_logo.png}}\hspace{0.3cm}%
+        \href{https://ipe.ro/new}{\includegraphics[height=1.0cm]{acad_logo.png}}\hspace{0.3cm}%
+        \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.0cm]{msca_logo.png}}%
+    \end{center}
+
+    \vspace{0.6cm}
+
+    % Main title with Q logos on sides (with clickable links)
+    \begin{center}
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantlet.com}{\includegraphics[height=1.1cm]{ql_logo.png}}
+        \end{minipage}%
+        \begin{minipage}{0.78\textwidth}
+            \centering
+            {\LARGE\bfseries\usebeamercolor[fg]{title}\inserttitle}
+
+            \vspace{0.3cm}
+
+            {\usebeamerfont{subtitle}\usebeamercolor[fg]{title}\insertsubtitle}
+        \end{minipage}%
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantinar.com}{\includegraphics[height=1.1cm]{qr_logo.png}}
+        \end{minipage}
+    \end{center}
+
+    \vspace{0.6cm}
+
+    % Authors (left aligned)
+    \hspace{0.5cm}{\usebeamerfont{author}\insertauthor}
+
+    \vspace{0.3cm}
+
+    % Institute/Affiliations (left aligned)
+    \hspace{0.5cm}\begin{minipage}[t]{0.9\textwidth}
+        \raggedright\small\insertinstitute
+    \end{minipage}
+}
+
+%=============================================================================
+% MEDII PENTRU TEOREME
+%=============================================================================
+\theoremstyle{definition}
+\setbeamertemplate{theorems}[numbered]
+\newtheorem{defn}{Definiție}
+\newtheorem{thm}{Teoremă}
+\newtheorem{prop}{Propoziție}
+\newtheorem{rmk}{Observație}
+
+%=============================================================================
+% COMENZI PERSONALIZATE
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\RMSE}{\text{RMSE}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAPE}{\text{MAPE}}
+
+%=============================================================================
+% INFORMAȚII TITLU
+%=============================================================================
+\title[Analiza Seriilor de Timp]{Analiza și Prognoza seriilor de timp}
+\subtitle{Capitolul 9: Prophet și TBATS}
+\author[D.T. Pele]{Daniel Traian PELE}
+\institute{Academia de Studii Economice din București\\
+IDA Institute Digital Assets\\
+Blockchain Research Center\\
+AI4EFin Artificial Intelligence for Energy Finance\\
+Academia Română, Institutul de Prognoză Economică\\
+MSCA Digital Finance}
+\date{}
+
+\begin{document}
+
+% Title page (no header/footer)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Cuprins}
+    \tableofcontents
+\end{frame}
+
+%=============================================================================
+% SECTION 1: MOTIVATION
+%=============================================================================
+\section{Sezonalități Multiple}
+
+\begin{frame}{Problema: tipare sezoniere complexe}
+    \begin{block}{Exemple din Lumea Reală}
+        \begin{itemize}
+            \item \textbf{Cerere de electricitate pe oră}: Tipare zilnice + săptămânale + anuale
+            \item \textbf{Trafic web}: Zilnic + săptămânal + efecte de sărbători
+            \item \textbf{Vânzări retail}: Săptămânal + lunar + anual + sărbători
+            \item \textbf{Volum call center}: Pe oră + zilnic + săptămânal
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Limitarea SARIMA}
+        SARIMA$(p,d,q)(P,D,Q)_s$ standard gestionează doar \textbf{o singură} perioadă sezonieră $s$.
+
+        \vspace{0.2cm}
+        Pentru date orare cu tipare zilnice ȘI săptămânale, avem nevoie de $s_1 = 24$ și $s_2 = 168$.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Soluții pentru sezonalități multiple}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Abordări Tradiționale}
+            \begin{itemize}
+                \item \textbf{Termeni Fourier}: Adăugare regresori sin/cos
+                \item \textbf{Variabile dummy}: Mulți parametri
+                \item \textbf{Modele nested}: Specificare complexă
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Abordări Moderne}
+            \begin{itemize}
+                \item \textbf{TBATS}: Automat, gestionează multe perioade
+                \item \textbf{Prophet}: Flexibil, interpretabil
+                \item \textbf{Metode neurale}: Deep learning
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Metodă} & \textbf{Nr. Max Sezonalități} & \textbf{Interpretabil} \\
+            \midrule
+            SARIMA & 1 & Da \\
+            Fourier + ARIMA & Multiple & Moderat \\
+            TBATS & Multiple & Moderat \\
+            Prophet & Multiple & Da \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Exemplu: date orare cu sezonalități multiple}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_multiple_seasonality.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_multiple\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_multiple_seasonality}
+\end{frame}
+
+\begin{frame}{Exemplu real: cerere de electricitate}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_electricity_demand.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_electricity\_demand}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_electricity_demand}
+\end{frame}
+
+\begin{frame}{Exemplu real: vânzări retail cu sărbători}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_retail_sales.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_retail\_sales}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_retail_sales}
+\end{frame}
+
+%=============================================================================
+% SECTION 2: TBATS
+%=============================================================================
+\section{Modelul TBATS}
+
+\begin{frame}{TBATS: ce înseamnă?}
+    \begin{block}{Componentele TBATS}
+        \begin{description}
+            \item[T] Sezonalitate \textbf{Trigonometrică} folosind termeni Fourier
+            \item[B] Transformare \textbf{Box-Cox} pentru stabilizarea varianței
+            \item[A] Erori \textbf{ARMA} pentru autocorelația reziduală
+            \item[T] Componentă de \textbf{Trend} (posibil amortizat)
+            \item[S] Componente \textbf{Sezoniere} (multiple permise)
+        \end{description}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{exampleblock}{Inovația Cheie}
+        TBATS folosește \textbf{reprezentare trigonometrică} pentru sezonalitate:
+        \[
+        s_t^{(i)} = \sum_{j=1}^{k_i} \left[ s_j^{(i)} \cos\left(\frac{2\pi j t}{m_i}\right) + s_j^{*(i)} \sin\left(\frac{2\pi j t}{m_i}\right) \right]
+        \]
+        unde $m_i$ este perioadă sezonieră $i$ și $k_i$ este numărul de armonici.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Structura modelului TBATS}
+    \vspace{-0.2cm}
+    \begin{block}{Specificația Completă a modelului}
+        {\small
+        \begin{align}
+            y_t^{(\omega)} &= \ell_{t-1} + \phi b_{t-1} + \sum_{i=1}^{M} s_t^{(i)} + d_t \\[0.15cm]
+            \ell_t &= \ell_{t-1} + \phi b_{t-1} + \alpha d_t \\[0.1cm]
+            b_t &= \phi b_{t-1} + \beta d_t \\[0.1cm]
+            d_t &= \sum_{i=1}^{p} \varphi_i d_{t-i} + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t
+        \end{align}
+        }
+    \end{block}
+
+    \vspace{-0.05cm}
+
+    {\footnotesize
+    Unde:
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item $y_t^{(\omega)}$ este seria transformată Box-Cox (dacă $\omega \neq 1$)
+        \item $\ell_t$ este nivelul local, $b_t$ este trendul cu amortizare $\phi$
+        \item $s_t^{(i)}$ sunt $M$ componente sezoniere cu perioade $m_1, \ldots, m_M$
+        \item $d_t$ este procesul de eroare ARMA$(p,q)$
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{TBATS: sezonalitate trigonometrică}
+    \begin{block}{De ce Termeni Fourier/Trigonometrici?}
+        \begin{enumerate}
+            \item \textbf{Simplu}: Mai puțini parametri decât variabilele dummy
+            \item \textbf{Neted}: Captează natural tiparele sezoniere netede
+            \item \textbf{Flexibil}: Numărul de armonici $k$ controlează complexitatea
+            \item \textbf{Perioade non-întregi}: Poate gestiona $s = 365.25$ pentru date zilnice
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{$k$ mic (puține armonici)}
+            \begin{itemize}
+                \item Tipar neted
+                \item Mai puțini parametri
+                \item Poate rata vârfuri abrupte
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{$k$ mare (multe armonici)}
+            \begin{itemize}
+                \item Poate capta orice tipar
+                \item Mai mulți parametri
+                \item Risc de supraajustare
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Aproximarea Fourier a sezonalității}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_fourier_approximation.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_fourier\_approximation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_fourier_approximation}
+\end{frame}
+
+\begin{frame}{TBATS în practică}
+    \begin{block}{implementare Python}
+        Pachetul \texttt{tbats} oferă selecție automată a modelului:
+        \begin{itemize}
+            \item Selectează automat parametrul Box-Cox $\omega$
+            \item Alege numărul de armonici $k_i$ pentru fiecare perioadă sezonieră
+            \item Selectează ordinele ARMA $(p,q)$
+            \item Testează trend amortizat vs neamortizat
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Exemplu de Cod}
+        \small
+        \texttt{from tbats import TBATS}\\
+        \texttt{estimator = TBATS(seasonal\_periods=[7, 365.25])}\\
+        \texttt{model = estimator.fit(y)}\\
+        \texttt{forecast = model.forecast(steps=30)}
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    {\small \textbf{Notă}: BATS este versiunea mai simplă fără termeni trigonometrici (folosește stări sezoniere tradiționale).}
+\end{frame}
+
+\begin{frame}{TBATS: avantaje și limitări}
+    \small
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Avantaje}
+            \begin{itemize}
+                \item Gestionează \textbf{multiple} perioade sezoniere
+                \item Selecție \textbf{automată} a modelului
+                \item Gestionează perioade \textbf{non-întregi} (365.25)
+                \item \textbf{Box-Cox} pentru heteroscedasticitate
+                \item Bun pentru date de \textbf{frecvență înaltă}
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Limitări}
+            \begin{itemize}
+                \item \textbf{Intensiv computațional}
+                \item Fără \textbf{regresori externi}
+                \item Mai puțin \textbf{interpretabil} decât Prophet
+                \item Poate fi \textbf{lent} pentru serii foarte lungi
+                \item Necesită \textbf{suficiente date} per sezon
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Exemplu descompunere TBATS}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_tbats_decomposition.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_tbats\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_tbats_decomposition}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: PROPHET
+%=============================================================================
+\section{Facebook Prophet}
+
+\begin{frame}{Prophet: prezentare generală}
+    \begin{block}{Ce este Prophet?}
+        Prophet este o procedură de prognoză dezvoltată de Facebook (Meta) în 2017.
+
+        \vspace{0.2cm}
+
+        Proiectat pentru \textbf{serii de timp de business} cu:
+        \begin{itemize}
+            \item Efecte sezoniere puternice (zilnice, săptămânale, anuale)
+            \item Efecte de sărbători
+            \item Schimbări de trend (changepoints)
+            \item Date lipsă și outlieri
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Filosofia Cheie}
+        \begin{center}
+            \textit{``Analyst-in-the-loop'' forecasting}
+        \end{center}
+        Prophet este proiectat pentru a fi ajustat de analiști cu cunoștințe de domeniu, dar care nu sunt neapărat experți în serii de timp.
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Structura modelului Prophet}
+    \begin{block}{Abordare prin Descompunere}
+        Prophet folosește o \textbf{descompunere aditivă}:
+        \[
+        y(t) = g(t) + s(t) + h(t) + \varepsilon_t
+        \]
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.33\textwidth}
+        \begin{block}{$g(t)$: Trend}
+            \begin{itemize}
+                \item Liniar sau logistic
+                \item Changepoints automate
+                \item Saturație de creștere
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{$s(t)$: Sezonalitate}
+            \begin{itemize}
+                \item Serii Fourier
+                \item Perioade multiple
+                \item Sezonalitate custom
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{$h(t)$: Sărbători}
+            \begin{itemize}
+                \item Sărbători pe țară
+                \item Evenimente custom
+                \item Efecte de fereastră
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Prophet: componenta de trend}
+    \begin{block}{trend liniar cu Changepoints}
+        \[
+        g(t) = (k + \bm{a}(t)^T \bm{\delta}) \cdot t + (m + \bm{a}(t)^T \bm{\gamma})
+        \]
+        unde:
+        \begin{itemize}
+            \item $k$ este rata de creștere de bază
+            \item $\bm{\delta}$ este un vector de ajustări de rată la changepoints
+            \item $\bm{a}(t)$ indică ce changepoints sunt active la momentul $t$
+            \item $m$ este offset-ul, $\bm{\gamma}$ asigură continuitatea
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    {\small
+    \begin{exampleblock}{Creștere Logistică (pentru trenduri cu saturație)}
+        \[
+        g(t) = \frac{C(t)}{1 + \exp(-(k + \bm{a}(t)^T \bm{\delta})(t - (m + \bm{a}(t)^T \bm{\gamma})))}
+        \]
+        unde $C(t)$ este capacitatea maximă (posibil variabilă în timp).
+    \end{exampleblock}
+    }
+\end{frame}
+
+\begin{frame}{Prophet: componenta de sezonalitate}
+    \begin{block}{Reprezentare prin Serii Fourier}
+        Pentru o perioadă sezonieră $P$, Prophet folosește:
+        \[
+        s(t) = \sum_{n=1}^{N} \left[ a_n \cos\left(\frac{2\pi n t}{P}\right) + b_n \sin\left(\frac{2\pi n t}{P}\right) \right]
+        \]
+    \end{block}
+
+    \vspace{0.1cm}
+
+    {\small
+    \begin{exampleblock}{Setări Implicite}
+        \begin{center}
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Sezonalitate} & \textbf{Perioadă} & \textbf{Ordin Fourier} \\
+            \midrule
+            Anuală & 365.25 zile & 10 \\
+            Săptămânală & 7 zile & 3 \\
+            Zilnică & 1 zi & 4 \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{exampleblock}
+    }
+
+    \vspace{0.05cm}
+
+    {\footnotesize Ordin Fourier $N$ mai mare = mai multă flexibilitate (poate ajusta tipare mai complexe) dar risc mai mare de supraajustare.}
+\end{frame}
+
+\begin{frame}{Descompunerea componentelor Prophet}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_prophet_components.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_prophet\_components}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_prophet_components}
+\end{frame}
+
+\begin{frame}{Detectarea changepoints în trend}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_changepoint_detection.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_changepoint\_detection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_changepoint_detection}
+\end{frame}
+
+\begin{frame}{Prophet: efecte de sărbători}
+    \vspace{-0.15cm}
+    \begin{block}{Modelul de Sărbători}
+        \[
+        h(t) = Z(t) \cdot \bm{\kappa}
+        \]
+        unde $Z(t)$ este o matrice indicător pentru sărbători și $\bm{\kappa}$ sunt efectele sărbătorilor.
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{exampleblock}{Caracteristici}
+        \begin{itemize}
+            \item \textbf{Sărbători integrate}: 60+ țări suportate
+            \item \textbf{Sărbători custom}: Adăugați propriile evenimente (Black Friday, evenimente companie)
+            \item \textbf{Efecte de fereastră}: Sărbătorile pot afecta zilele înainte/după
+            \item \textbf{Prior scale}: Controlează regularizarea efectelor de sărbătoare
+        \end{itemize}
+    \end{exampleblock}
+
+    \begin{block}{Exemplu de Cod}
+        \footnotesize
+        \texttt{holidays = pd.DataFrame(\{'holiday': 'black\_friday', ....\})}\\
+        \texttt{model = Prophet(holidays=holidays)}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Prophet în practică}
+    \begin{block}{Utilizare de Bază}
+        \small
+        \texttt{from prophet import Prophet}\\
+        \texttt{import pandas as pd}\\[0.2cm]
+        \texttt{\# Datele trebuie să aibă coloane 'ds' (dată) și 'y' (valoare)}\\
+        \texttt{df = pd.DataFrame(\{'ds': dates, 'y': values\})}\\[0.2cm]
+        \texttt{model = Prophet()}\\
+        \texttt{model.fit(df)}\\[0.2cm]
+        \texttt{future = model.make\_future\_dataframe(periods=365)}\\
+        \texttt{forecast = model.predict(future)}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Adăugare Sezonalitate Custom}
+        \small
+        \texttt{model = Prophet(weekly\_seasonality=False)}\\
+        \texttt{model.add\_seasonality(name='monthly', period=30.5, fourier\_order=5)}\\
+        \texttt{model.add\_seasonality(name='quarterly', period=91.25, fourier\_order=3)}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Prophet: cuantificarea incertitudinii}
+    \begin{block}{Trei Surse de Incertitudine}
+        \begin{enumerate}
+            \item \textbf{Incertitudine de trend}: Changepoints viitoare sunt incerte
+            \item \textbf{Incertitudine de sezonalitate}: Incertitudine în estimarea parametrilor
+            \item \textbf{Zgomot de observație}: Aleatorietate inerentă
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[T]
+        \column{0.6\textwidth}
+        \begin{exampleblock}{Intervale de Predicție}
+            Prophet oferă:
+            \begin{itemize}
+                \item Prognoză punctuală: \texttt{yhat}
+                \item Limita inferioară: \texttt{yhat\_lower}
+                \item Limita superioară: \texttt{yhat\_upper}
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            Implicit este interval de 80\%.\\
+            Schimbați cu \texttt{interval\_width=0.95}
+        \end{exampleblock}
+
+        \column{0.4\textwidth}
+        \begin{alertblock}{Notă}
+            Incertitudinea crește cu orizontul de prognoză, în special pentru incertitudinea de trend.
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Prophet: parametri de ajustare}
+    \begin{block}{Parametri cheie}
+        \begin{center}
+        \small
+        \begin{tabular}{p{4cm}p{8cm}}
+            \toprule
+            \textbf{Parametru} & \textbf{Efect} \\
+            \midrule
+            \texttt{changepoint\_prior\_scale} & Flexibilitate trend (implicit: 0.05) \\
+            \texttt{seasonality\_prior\_scale} & Flexibilitate sezonalitate (implicit: 10) \\
+            \texttt{holidays\_prior\_scale} & Mărime efect sărbători (implicit: 10) \\
+            \texttt{seasonality\_mode} & 'additive' sau 'multiplicative' \\
+            \texttt{changepoint\_range} & Porțiune din istoric pentru changepoints \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Sfaturi Practice}
+        \begin{itemize}
+            \item \textbf{Supraajustare pe trend?} Micșorați \texttt{changepoint\_prior\_scale}
+            \item \textbf{Subajustare pe sezonalitate?} Măriți \texttt{seasonality\_prior\_scale}
+            \item \textbf{Amplitudinea sezonieră variază?} Folosiți \texttt{seasonality\_mode='multiplicative'}
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Prophet: avantaje și limitări}
+    \small
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Avantaje}
+            \begin{itemize}
+                \item \textbf{Ușor de folosit}: Ajustare minimă necesară
+                \item \textbf{Interpretabil}: Descompunere clară
+                \item \textbf{Gestionează date lipsă} bine
+                \item \textbf{Efecte sărbători} integrate
+                \item \textbf{Sezonalități multiple}
+                \item \textbf{Regresori externi} suportați
+                \item \textbf{Ajustare rapidă}
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Limitări}
+            \begin{itemize}
+                \item \textbf{Nu bazat pe ARIMA}: Fără modelare autocorelație
+                \item \textbf{Focus pe date zilnice}: Mai puțin potrivit pentru frecvență foarte înaltă
+                \item \textbf{Ipoteze de trend}: Liniar/logistic poate să nu se potrivească
+                \item \textbf{CV integrat}: \texttt{cross\_validation()} disponibil, dar necesită configurare atentă
+                \item \textbf{Risc supraajustare} cu multe sezonalități
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Sezonalitate aditivă vs multiplicativă}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_additive_vs_multiplicative.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_additive\_vs\_multiplicative}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_additive_vs_multiplicative}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: COMPARISON
+%=============================================================================
+\section{Comparație și Ghid de Selecție}
+
+\begin{frame}{TBATS vs Prophet: comparație directă}
+    \begin{center}
+    \small
+    \begin{tabular}{p{4cm}p{4.5cm}p{4.5cm}}
+        \toprule
+        \textbf{Caracteristică} & \textbf{TBATS} & \textbf{Prophet} \\
+        \midrule
+        Sezonalități multiple & Da (automat) & Da (manual sau auto) \\
+        Efecte sărbători & Nu & Da (integrat) \\
+        Regresori externi & Nu & Da \\
+        Changepoints trend & Nu (neted) & Da (automat) \\
+        Date lipsă & Necesită interpolare & Gestionează nativ \\
+        Interpretabilitate & Moderată & Înaltă \\
+        Viteză calcul & Lent & Rapid \\
+        Date frecvență înaltă & Bun & Moderat \\
+        Perioade non-întregi & Da (ex: 365.25) & Da \\
+        Intervale incertitudine & Da & Da \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Comparație Prophet vs TBATS: prognoze}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_prophet_vs_tbats.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_prophet_vs_tbats}
+\end{frame}
+
+\begin{frame}{Când să folosim fiecare model}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Folosiți TBATS când:}
+            \begin{itemize}
+                \item Date de frecvență înaltă (orare, sub-zilnice)
+                \item Multiple perioade sezoniere complexe
+                \item Nu sunt necesari regresori externi
+                \item Se preferă selecție automată a modelului
+                \item Se dorește framework tradițional state-space
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{Folosiți Prophet când:}
+            \begin{itemize}
+                \item Prognoză de business (zilnic/săptămânal)
+                \item Efectele sărbătorilor sunt importante
+                \item Trendul are rupturi structurale
+                \item Sunt prezente date lipsă
+                \item Interpretabilitatea este cheie
+                \item Sunt disponibili regresori externi
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{exampleblock}{Ghid General}
+        \begin{center}
+            \textbf{Prophet} pentru aplicații de business cu date zilnice\\
+            \textbf{TBATS} pentru aplicații tehnice cu date de frecvență înaltă
+        \end{center}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Ghid selecție model}
+    \begin{center}
+        \includegraphics[width=0.90\textwidth, height=0.60\textheight, keepaspectratio]{ch9_model_selection_guide.pdf}
+    \end{center}
+    \quantlet{TSA\_ch9\_model\_selection\_guide}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9_model_selection_guide}
+\end{frame}
+
+\begin{frame}{Diagramă de decizie}
+    \vspace{-0.2cm}
+    \begin{center}
+    \begin{tikzpicture}[
+        scale=0.70, transform shape,
+        node distance=1.0cm,
+        decision/.style={diamond, draw, fill=MainBlue!20, text width=2.5cm, text centered, inner sep=1pt, font=\small},
+        block/.style={rectangle, draw, fill=Forest!20, text width=2.5cm, text centered, rounded corners, minimum height=0.8cm, font=\small},
+        line/.style={draw, ->, thick}
+    ]
+        \node [decision] (q1) {Perioade sezoniere multiple?};
+        \node [block, below left=1cm and 2cm of q1] (sarima) {SARIMA};
+        \node [decision, below right=1cm and 2cm of q1] (q2) {Efecte sărbători importante?};
+        \node [block, below left=1cm and 1cm of q2] (tbats) {TBATS};
+        \node [decision, below right=1cm and 1cm of q2] (q3) {Regresori externi?};
+        \node [block, below left=0.8cm and 0.5cm of q3] (prophet1) {Prophet};
+        \node [block, below right=0.8cm and 0.5cm of q3] (prophet2) {Prophet + Regresori};
+
+        \path [line] (q1) -- node[above left, font=\scriptsize] {Nu} (sarima);
+        \path [line] (q1) -- node[above right, font=\scriptsize] {Da} (q2);
+        \path [line] (q2) -- node[above left, font=\scriptsize] {Nu} (tbats);
+        \path [line] (q2) -- node[above right, font=\scriptsize] {Da} (q3);
+        \path [line] (q3) -- node[above left, font=\scriptsize] {Nu} (prophet1);
+        \path [line] (q3) -- node[above right, font=\scriptsize] {Da} (prophet2);
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: PRACTICAL EXAMPLE
+%=============================================================================
+\section{Studiu de Caz}
+
+\begin{frame}{Studiu de caz: prognoza cererii de energie}
+    \begin{block}{Problema}
+        Prognozați cererea de electricitate pe oră cu:
+        \begin{itemize}
+            \item \textbf{Tipar zilnic}: Vârf la prânz și seara
+            \item \textbf{Tipar săptămânal}: Mai scăzut în weekend
+            \item \textbf{Tipar anual}: Mai mare vara (AC) și iarna (încălzire)
+            \item \textbf{Efecte sărbători}: Cerere mai mică în sărbători
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Abordare}
+        \begin{enumerate}
+            \item Încercați TBATS cu perioade [24, 168, 8766]
+            \item Încercați Prophet cu sezonalitate zilnică, săptămânală, anuală + sărbători
+            \item Comparați folosind cross-validation
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Studiu de caz: interpretarea rezultatelor}
+    \begin{block}{Metrici de Evaluare}
+        \begin{itemize}
+            \item \textbf{MAPE}: Mean Absolute Percentage Error
+            \item \textbf{RMSE}: Root Mean Square Error
+            \item \textbf{Acoperire}: \% din valori reale în intervalul de predicție
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Rezultate Tipice}
+        \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Model} & \textbf{MAPE} & \textbf{RMSE} & \textbf{Acoperire} \\
+            \midrule
+            SARIMA (doar zilnic) & 8.5\% & 450 MW & 75\% \\
+            TBATS & 4.2\% & 220 MW & 82\% \\
+            Prophet & 4.8\% & 250 MW & 85\% \\
+            Prophet + sărbători & 3.9\% & 200 MW & 88\% \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{exampleblock}
+
+    {\small Modelele cu sezonalități multiple depășesc semnificativ SARIMA cu o singură sezonalitate.}
+\end{frame}
+
+%=============================================================================
+% SECTION 6: SUMMARY
+%=============================================================================
+\section{Rezumat}
+
+\begin{frame}{Concluzii cheie}
+    \begin{block}{Sezonalități Multiple}
+        \begin{itemize}
+            \item Datele din lumea reală au adesea tipare sezoniere multiple
+            \item SARIMA standard gestionează doar o perioadă sezonieră
+            \item TBATS și Prophet sunt proiectate pentru această provocare
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Selecția modelului}
+        \begin{itemize}
+            \item \textbf{TBATS}: Automat, gestionează frecvență înaltă, fără regresori externi
+            \item \textbf{Prophet}: Interpretabil, efecte sărbători, regresori externi
+            \item Ambele folosesc termeni Fourier pentru reprezentare eficientă a sezonalității
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{De Reținut}
+        Validați întotdeauna cu cross-validation adecvat pentru serii de timp!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Întrebări?}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Întrebări?}
+
+        \vspace{1cm}
+
+        \normalsize
+        \textbf{Pași Următori:}
+        \begin{itemize}
+            \item Exersați cu notebook-ul Jupyter
+            \item Încercați Prophet pe propriile date
+            \item Explorați NeuralProphet pentru extensia deep learning
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+
+%=============================================================================
+% QUIZ
+%=============================================================================
+\section{Quiz}
+
+\begin{frame}{Quiz rapid}
+    \begin{enumerate}
+        \item Ce sunt sezonalitățile multiple și de ce SARIMA standard nu le poate gestiona?
+
+        \vspace{0.3cm}
+
+        \item Cum aproximează termenii Fourier o componentă sezonieră?
+
+        \vspace{0.3cm}
+
+        \item Ce reprezintă acronimul TBATS?
+
+        \vspace{0.3cm}
+
+        \item Ce sunt \textit{changepoints} în modelul Prophet?
+
+        \vspace{0.3cm}
+
+        \item Când alegeți Prophet în loc de TBATS (și invers)?
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Răspunsuri quiz}
+    {\small
+    \begin{enumerate}
+        \item \textbf{Sezonalități multiple}: O serie prezintă mai multe cicluri periodice suprapuse (ex: zilnic + săptămânal + anual). SARIMA acceptă doar o singură perioadă sezonieră $s$.
+
+        \vspace{0.2cm}
+
+        \item \textbf{Termeni Fourier}: Aproximează sezonalitatea prin combinații de $\sin(2\pi k t / s)$ și $\cos(2\pi k t / s)$. Cu $K$ armonici se captează forme complexe fără a estima un coeficient pentru fiecare perioadă.
+
+        \vspace{0.2cm}
+
+        \item \textbf{TBATS}: \textbf{T}rigonometric seasonality, \textbf{B}ox-Cox transformation, \textbf{A}RMA errors, \textbf{T}rend, \textbf{S}easonal components.
+
+        \vspace{0.2cm}
+
+        \item \textbf{Changepoints}: Puncte în timp unde rata de creștere a trendului se modifică brusc. Prophet le detectează automat și permite ajustarea flexibilității prin parametrul \texttt{changepoint\_prior\_scale}.
+
+        \vspace{0.2cm}
+
+        \item \textbf{Prophet vs TBATS}: Prophet---când aveți regresori externi, efecte de sărbători, date lipsă sau rupturi structurale. TBATS---când frecvența este foarte înaltă sau când doriți o abordare complet automată fără intervenție manuală.
+    \end{enumerate}
+    }
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\begin{frame}{Bibliografie I}
+    \begin{block}{Prophet}
+        {\small
+        \begin{itemize}
+            \item Taylor, S.J., \& Letham, B. (2018). Forecasting at Scale, \textit{The American Statistician}, 72(1), 37--45.
+            \item Harvey, A.C. (1989). \textit{Forecasting, Structural Time Series Models and the Kalman Filter}, Cambridge University Press.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{TBATS și netezire exponențială}
+        {\small
+        \begin{itemize}
+            \item De Livera, A.M., Hyndman, R.J., \& Snyder, R.D. (2011). Forecasting Time Series with Complex Seasonal Patterns Using Exponential Smoothing, \textit{JASA}, 106(496), 1513--1527.
+            \item Hyndman, R.J., Koehler, A.B., Ord, J.K., \& Snyder, R.D. (2008). \textit{Forecasting with Exponential Smoothing: The State Space Approach}, Springer.
+            \item Taylor, J.W. (2003). Short-term Electricity Demand Forecasting Using Double Seasonal Exponential Smoothing, \textit{Journal of the Operational Research Society}, 54(8), 799--805.
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bibliografie II}
+    \begin{block}{Comparații și competiții de prognoză}
+        {\small
+        \begin{itemize}
+            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, \textit{International Journal of Forecasting}, 36(1), 54--74.
+            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
+            \item Petropoulos, F., et al. (2022). Forecasting: Theory and Practice, \textit{International Journal of Forecasting}, 38(3), 845--1054.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Resurse online și cod}
+        {\small
+        \begin{itemize}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Depozit de cod pentru statistică
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Platformă de învățare metode cantitative
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA} --- Cod Python pentru acest curs
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\end{document}
