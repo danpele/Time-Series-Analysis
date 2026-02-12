@@ -652,91 +652,86 @@ MSCA Digital Finance}
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{AI Exercise 1: Prompt Engineering}
-    \begin{block}{Task}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Write a prompt for an AI assistant to perform STL decomposition on monthly airline passenger data
-            \item Then \textbf{evaluate the output}
-        \end{itemize}
+\begin{frame}{AI Exercise 1: Decomposition Audit}
+    \begin{block}{AI Output (monthly US retail sales, 2015--2023)}
+        {\small
+        \textbf{Prompt}: ``I have a file with monthly US retail sales from 2015 to 2023. What trends and patterns do you see?''\\[2pt]
+        \textbf{AI}: ``Applied additive STL, period=12. Trend captures growth from \$420B to \$580B. Seasonal component is stable across the sample.''
+        }
     \end{block}
-
-    \vspace{0.3cm}
-
-    \textbf{Compare these prompts:}
-    \begin{enumerate}
-        \item \textit{``Decompose this time series''}
-        \item \textit{``Apply STL to AirPassengers, period=12, plot trend, seasonal, residual''}
-    \end{enumerate}
-
-    \vspace{0.3cm}
-
-    \textbf{Evaluate the AI output:}
-    \begin{itemize}
-        \item Is the seasonal period correct?
-        \item Is the decomposition additive or multiplicative? Is that appropriate?
-        \item Are the residuals roughly white noise?
-        \item Would you choose a different method? Why?
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{AI Exercise 2: Find the Errors}
-    \begin{block}{Scenario}
-        {\small An AI assistant produced this analysis of stock prices:}
-        \begin{enumerate}
-            \item Plotted the raw price series
-            \item Computed ACF --- found strong autocorrelation
-            \item Concluded: ``high autocorrelation means we can forecast well''
-            \item Fitted Holt-Winters with $\alpha=0.9$, $\beta=0.1$
-            \item Reported MAPE = 1.2\% on the training set
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.3cm}
-
-    \textbf{Identify all errors:}
-    \begin{enumerate}
-        \item Did the AI test for stationarity? What test is needed?
-        \item Is ``high ACF $\Rightarrow$ good forecasting'' correct?
-        \item What does $\alpha = 0.9$ imply about the smoothing?
-        \item Why is training set MAPE misleading?
-        \item What should be done differently?
-    \end{enumerate}
-\end{frame}
-
-\begin{frame}{AI Exercise 3: Human vs.\ AI Forecasting}
-    \begin{block}{Task}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Use the \texttt{AirPassengers} dataset from \texttt{statsmodels}
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.1cm}
-
+    \vspace{-1mm}
     {\small
-    \textbf{Step 1 --- Manual approach:}
+    \textbf{The data contradicts the AI}:
     \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Examine the data visually (trend, seasonality)
-        \item Choose decomposition type with justification
-        \item Apply Holt-Winters, select parameters
-        \item Evaluate on held-out test set (last 24 months)
+        \item Dec--Jan seasonal swing: $\pm\$18$B in 2015, $\pm\$45$B in 2023
+        \item Residual std: \$3.2B (2015--2017) vs \$8.7B (2021--2023)
     \end{itemize}
 
-    \vspace{0.1cm}
+    \vspace{1mm}
+    \textbf{Tasks}:
+    \begin{enumerate}\setlength{\itemsep}{1pt}
+        \item Compute $\frac{\text{seasonal amplitude}}{\text{level}}$ for 2015 vs 2023. If the ratio is approximately constant, what decomposition does this imply?
+        \item If $X_t = T_t \cdot S_t \cdot \varepsilon_t$, show that $\ln X_t = \underbrace{\ln T_t}_{\text{trend}} + \underbrace{\ln S_t}_{\text{seasonal}} + \underbrace{\ln \varepsilon_t}_{\text{residual}}$ is additive.
+        \item Apply STL to $\ln X_t$. How would you verify constant residual variance? (Hint: Breusch--Pagan or plot $|\hat\varepsilon_t|$ vs $t$.)
+        \item What are the consequences of using additive STL on multiplicative data for forecasting?
+    \end{enumerate}
+    }
+\end{frame}
 
-    \textbf{Step 2 --- AI approach:}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Ask an AI to ``forecast airline passengers for 24 months''
-        \item Record the AI's methodology and code
-    \end{itemize}
+\begin{frame}[fragile]{AI Exercise 2: Data Leakage Detection}
+    \begin{block}{AI Code (spot the errors)}
+        {\scriptsize
+\begin{verbatim}
+df['ma12'] = df['sales'].rolling(12, center=True).mean()
+df['detrended'] = df['sales'] - df['ma12']
+model = ExponentialSmoothing(df['sales'], seasonal='add',
+                             seasonal_periods=12).fit()
+print(f"MAPE = {mape(df['sales'], model.fittedvalues):.1f}%")
+# Output: MAPE = 1.1%
+\end{verbatim}
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\small
+    \textbf{Find three critical errors}:
+    \begin{enumerate}\setlength{\itemsep}{1pt}
+        \item \texttt{center=True} means $\text{MA}_{12}(t)$ uses $X_{t-5}, \ldots, X_{t+6}$ --- \textbf{six future values} leak into the feature. What is the correct setting?
+        \item MAPE is computed on \textbf{in-sample fitted values}, not out-of-sample forecasts. If the true OOS MAPE $= 8.3\%$, what explains the $7\times$ gap?
+        \item Additive seasonal model on data with growing amplitude. What diagnostic plot reveals this? (Hint: plot $|S_t|$ vs level $T_t$.)
+    \end{enumerate}
 
-    \vspace{0.1cm}
+    \vspace{1mm}
+    \textbf{Fix}: rewrite with \texttt{center=False}, split 80/20, compute MAPE on the test set, and compare with the seasonal na\"ive benchmark $\hat{X}_{t+h} = X_{t+h-12}$.
+    }
+\end{frame}
 
-    \textbf{Step 3 --- Compare and reflect:}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Which approach achieved lower RMSE/MAPE?
-        \item Did the AI check stationarity? Use proper train/test split?
-        \item What did you learn that the AI missed (or vice versa)?
-    \end{itemize}
+\begin{frame}{AI Exercise 3: Smoothing Parameter Forensics}
+    \begin{block}{AI Model Comparison (Industrial Production Index)}
+        {\small
+        \begin{center}
+        \begin{tabular}{lccccc}
+            \toprule
+            \textbf{Model} & $\alpha$ & $\beta$ & $\gamma$ & \textbf{Train RMSE} & \textbf{Test RMSE} \\
+            \midrule
+            SES & 0.98 & --- & --- & 1.2 & 4.8 \\
+            Holt & 0.95 & 0.89 & --- & 0.9 & 6.3 \\
+            Holt-Winters & 0.99 & 0.85 & 0.01 & 0.3 & 9.1 \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+        \vspace{-2mm}
+        AI conclusion: ``Holt-Winters has the lowest RMSE --- best model.''
+        }
+    \end{block}
+    \vspace{-1mm}
+    {\small
+    \textbf{Tasks}:
+    \begin{enumerate}\setlength{\itemsep}{1pt}
+        \item Show that SES with $\alpha \to 1$ gives $\hat{X}_{t+1|t} = X_t$ (na\"ive forecast). What does $\alpha = 0.98$ approximate?
+        \item Test RMSE \textit{increases} with complexity: $4.8 \to 6.3 \to 9.1$. Name this phenomenon. Which RMSE column should guide model selection?
+        \item $\gamma = 0.01$: the seasonal indices barely update from their initial values. What happens if the seasonal pattern shifts (e.g., post-COVID)?
+        \item What model would you select, and why? Compute AIC $= T\ln(\text{SSE}/T) + 2k$ for each.
+    \end{enumerate}
     }
 \end{frame}
 

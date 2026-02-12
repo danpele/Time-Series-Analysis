@@ -1449,7 +1449,7 @@ MSCA Digital Finance}
     \vspace{-2mm}
     \begin{block}{\footnotesize Prompt $\to$ Response}
         {\footnotesize
-        \textbf{You}: ``Test if EUR/RON exchange rate is stationary and build a forecast model''\\[2pt]
+        \textbf{You}: ``I have daily EUR/RON exchange rate data for the last 5 years. Can you forecast next week?''\\[2pt]
         \textbf{ChatGPT}: ``ADF: $p = 0.67$ $\to$ non-stationary. After differencing: $p < 0.01$ $\to$ stationary.\\
         Fitted ARMA(2,1). Coefficient $\phi_1 = 0.03$ significant ($p = 0.02$). RMSE $= 0.0043$.''
         }
@@ -1470,6 +1470,40 @@ MSCA Digital Finance}
     \begin{alertblock}{}
         {\small \textbf{Discussion}: If prices follow a random walk, can \textit{any} AI model predict them?}
     \end{alertblock}
+\end{frame}
+
+\begin{frame}{Quantitative Audit: Verifying the AI}
+    \vspace{-2mm}
+    {\small
+    \begin{block}{Reproduce the AI's claims with actual EUR/RON data (2019--2024, $T \approx 1300$)}
+        \vspace{-1mm}
+        {\footnotesize
+        \begin{center}
+        \begin{tabular}{lll}
+            \toprule
+            \textbf{AI claim} & \textbf{Verification} & \textbf{Verdict} \\
+            \midrule
+            ADF $p = 0.67$ on levels & \texttt{adfuller(x, regression='ct')} & Plausible (depends on lags) \\
+            $\hat\rho_1 = 0.03$ on $\Delta x_t$ & Band: $\pm 1.96/\sqrt{1300} = \pm 0.054$ & \textcolor{Crimson}{Inside the band!} \\
+            ARMA RMSE $= 0.0043$ & Na\"ive RMSE on same period & Na\"ive $\approx 0.0044$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+        }
+    \end{block}
+    \vspace{-1mm}
+    \textbf{The decisive test}: Diebold--Mariano
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item $H_0$: ARMA and na\"ive have \textbf{equal forecast accuracy}
+        \item Typical result: $p > 0.5$ $\succ$ cannot reject $H_0$
+        \item The ARMA model adds \textbf{nothing} over $\hat{X}_{t+1|t} = X_t$
+    \end{itemize}
+
+    \vspace{1mm}
+    \begin{alertblock}{Lesson}
+        Always benchmark against the \textbf{na\"ive forecast}. A model with low RMSE is worthless if the random walk achieves the same.
+    \end{alertblock}
+    }
 \end{frame}
 
 %=============================================================================

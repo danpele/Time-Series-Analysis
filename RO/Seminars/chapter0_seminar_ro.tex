@@ -658,91 +658,86 @@ MSCA Digital Finance}
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{Exercițiu AI 1: Prompt Engineering}
-    \begin{block}{Sarcina}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Scrieți un prompt prin care să cereți unui asistent AI să aplice descompunerea STL pe date lunare de pasageri aerieni
-            \item Apoi \textbf{evaluați rezultatul}
-        \end{itemize}
+\begin{frame}{Exercițiu AI 1: Audit descompunere}
+    \begin{block}{Rezultat AI (vânzări lunare retail SUA, 2015--2023)}
+        {\small
+        \textbf{Prompt}: ``Am un fișier cu vânzări lunare retail din SUA, din 2015 până în 2023. Ce tendințe și pattern-uri apar?''\\[2pt]
+        \textbf{AI}: ``Am aplicat STL aditiv, perioadă=12. Trendul surprinde creșterea de la \$420 mld la \$580 mld. Componenta sezonieră este stabilă pe întreaga perioadă.''
+        }
     \end{block}
-
-    \vspace{0.3cm}
-
-    \textbf{Comparați aceste prompt-uri:}
-    \begin{enumerate}
-        \item \textit{``Descompune această serie de timp''}
-        \item \textit{``Aplică STL pe AirPassengers, period=12, afișează trend, sezonalitate, reziduu''}
-    \end{enumerate}
-
-    \vspace{0.3cm}
-
-    \textbf{Evaluați rezultatul AI:}
-    \begin{itemize}
-        \item Perioada sezonieră este corectă?
-        \item Descompunerea este aditivă sau multiplicativă? Este adecvată?
-        \item Reziduurile seamănă cu zgomot alb?
-        \item Ați alege o altă metodă? De ce?
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Exercițiu AI 2: Găsește erorile}
-    \begin{block}{Scenariu}
-        {\small Un asistent AI a produs această analiză a prețurilor acțiunilor:}
-        \begin{enumerate}
-            \item A reprezentat grafic seria brută de prețuri
-            \item A calculat ACF --- a găsit autocorelație puternică
-            \item A concluzionat: ``autocorelația mare înseamnă prognoză bună''
-            \item A aplicat Holt-Winters cu $\alpha=0.9$, $\beta=0.1$
-            \item A raportat MAPE = 1.2\% pe setul de antrenare
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.3cm}
-
-    \textbf{Identificați toate erorile:}
-    \begin{enumerate}
-        \item AI-ul a testat staționaritatea? Ce test este necesar?
-        \item Este corect că ``ACF mare $\Rightarrow$ prognoză bună''?
-        \item Ce implică $\alpha = 0.9$ despre netezire?
-        \item De ce MAPE pe setul de antrenare este înșelător?
-        \item Ce ar trebui făcut diferit?
-    \end{enumerate}
-\end{frame}
-
-\begin{frame}{Exercițiu AI 3: Om vs.\ AI --- Prognoză}
-    \begin{block}{Sarcina}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Folosiți setul de date \texttt{AirPassengers} din \texttt{statsmodels}
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.1cm}
-
+    \vspace{-1mm}
     {\small
-    \textbf{Pasul 1 --- Abordare manuală:}
+    \textbf{Datele contrazic AI-ul}:
     \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Examinați datele vizual (trend, sezonalitate)
-        \item Alegeți tipul de descompunere cu justificare
-        \item Aplicați Holt-Winters, selectați parametrii
-        \item Evaluați pe setul de test (ultimele 24 de luni)
+        \item Oscilația sezonieră dec--ian: $\pm\$18$ mld în 2015, $\pm\$45$ mld în 2023
+        \item Deviația std a reziduurilor: \$3{,}2 mld (2015--2017) vs \$8{,}7 mld (2021--2023)
     \end{itemize}
 
-    \vspace{0.1cm}
+    \vspace{1mm}
+    \textbf{Cerințe}:
+    \begin{enumerate}\setlength{\itemsep}{1pt}
+        \item Calculați $\frac{\text{amplitudine sezonieră}}{\text{nivel}}$ pentru 2015 vs 2023. Dacă raportul e aproximativ constant, ce tip de descompunere implică?
+        \item Dacă $X_t = T_t \cdot S_t \cdot \varepsilon_t$, arătați că $\ln X_t = \underbrace{\ln T_t}_{\text{trend}} + \underbrace{\ln S_t}_{\text{sezon}} + \underbrace{\ln \varepsilon_t}_{\text{reziduu}}$ este aditivă.
+        \item Aplicați STL pe $\ln X_t$. Cum verificați varianța constantă a reziduurilor? (Indiciu: Breusch--Pagan sau grafic $|\hat\varepsilon_t|$ vs $t$.)
+        \item Care sunt consecințele folosirii STL aditiv pe date multiplicative pentru prognoză?
+    \end{enumerate}
+    }
+\end{frame}
 
-    \textbf{Pasul 2 --- Abordare AI:}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Cereți unui AI să ``prognozeze pasagerii aerieni pe 24 de luni''
-        \item Înregistrați metodologia și codul AI-ului
-    \end{itemize}
+\begin{frame}[fragile]{Exercițiu AI 2: Detectarea scurgerii de date}
+    \begin{block}{Cod AI (găsiți erorile)}
+        {\scriptsize
+\begin{verbatim}
+df['ma12'] = df['sales'].rolling(12, center=True).mean()
+df['detrended'] = df['sales'] - df['ma12']
+model = ExponentialSmoothing(df['sales'], seasonal='add',
+                             seasonal_periods=12).fit()
+print(f"MAPE = {mape(df['sales'], model.fittedvalues):.1f}%")
+# Output: MAPE = 1.1%
+\end{verbatim}
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\small
+    \textbf{Găsiți trei erori critice}:
+    \begin{enumerate}\setlength{\itemsep}{1pt}
+        \item \texttt{center=True} înseamnă $\text{MA}_{12}(t)$ folosește $X_{t-5}, \ldots, X_{t+6}$ --- \textbf{șase valori viitoare} se scurg în caracteristică. Care este setarea corectă?
+        \item MAPE e calculat pe \textbf{valorile ajustate in-sample}, nu pe prognoze out-of-sample. Dacă MAPE real OOS $= 8{,}3\%$, ce explică diferența de $7\times$?
+        \item Model sezonier aditiv pe date cu amplitudine crescătoare. Ce grafic diagnostic relevă aceasta? (Indiciu: $|S_t|$ vs nivelul $T_t$.)
+    \end{enumerate}
 
-    \vspace{0.1cm}
+    \vspace{1mm}
+    \textbf{Corectare}: rescrieți cu \texttt{center=False}, împărțiți 80/20, calculați MAPE pe test, și comparați cu benchmark-ul naiv sezonier $\hat{X}_{t+h} = X_{t+h-12}$.
+    }
+\end{frame}
 
-    \textbf{Pasul 3 --- Comparați și reflectați:}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Care abordare a obținut RMSE/MAPE mai mic?
-        \item AI-ul a verificat staționaritatea? A folosit o împărțire corectă?
-        \item Ce ați observat voi, dar AI-ul a omis (sau invers)?
-    \end{itemize}
+\begin{frame}{Exercițiu AI 3: Expertiza parametrilor de netezire}
+    \begin{block}{Comparație modele AI (Indicele Producției Industriale)}
+        {\small
+        \begin{center}
+        \begin{tabular}{lccccc}
+            \toprule
+            \textbf{Model} & $\alpha$ & $\beta$ & $\gamma$ & \textbf{RMSE antrenare} & \textbf{RMSE test} \\
+            \midrule
+            SES & 0{,}98 & --- & --- & 1{,}2 & 4{,}8 \\
+            Holt & 0{,}95 & 0{,}89 & --- & 0{,}9 & 6{,}3 \\
+            Holt-Winters & 0{,}99 & 0{,}85 & 0{,}01 & 0{,}3 & 9{,}1 \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+        \vspace{-2mm}
+        Concluzia AI: ``Holt-Winters are cel mai mic RMSE --- cel mai bun model.''
+        }
+    \end{block}
+    \vspace{-1mm}
+    {\small
+    \textbf{Cerințe}:
+    \begin{enumerate}\setlength{\itemsep}{1pt}
+        \item Arătați că SES cu $\alpha \to 1$ dă $\hat{X}_{t+1|t} = X_t$ (prognoză naivă). Ce aproximează $\alpha = 0{,}98$?
+        \item RMSE pe test \textit{crește} cu complexitatea: $4{,}8 \to 6{,}3 \to 9{,}1$. Numiți acest fenomen. Care coloană RMSE trebuie folosită la selecția modelului?
+        \item $\gamma = 0{,}01$: indicii sezonieri aproape nu se actualizează. Ce se întâmplă dacă tiparul sezonier se schimbă (ex.\ post-COVID)?
+        \item Ce model ați selecta și de ce? Calculați AIC $= T\ln(\text{SSE}/T) + 2k$ pentru fiecare.
+    \end{enumerate}
     }
 \end{frame}
 
