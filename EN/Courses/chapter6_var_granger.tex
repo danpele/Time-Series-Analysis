@@ -133,7 +133,8 @@
 \usepackage{hyperref}
 \usepackage{colortbl}
 \hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
-\graphicspath{{../logos/}{../charts/}}
+\graphicspath{{../../logos/}{../../charts/}}
+\hfuzz=2pt
 
 %=============================================================================
 % QUANTLET COMMAND
@@ -256,6 +257,20 @@ MSCA Digital Finance}
 }
 
 %=============================================================================
+% LEARNING OBJECTIVES
+%=============================================================================
+\begin{frame}{Learning Objectives}
+\begin{block}{By the end of this chapter, you will be able to:}
+\begin{itemize}
+    \item Model multivariate time series using Vector Autoregression (VAR)
+    \item Test for Granger causality between economic variables
+    \item Compute and interpret Impulse Response Functions (IRFs)
+    \item Analyze Forecast Error Variance Decomposition (FEVD)
+\end{itemize}
+\end{block}
+\end{frame}
+
+%=============================================================================
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
@@ -270,7 +285,7 @@ MSCA Digital Finance}
 \begin{frame}{Motivating Example: Macroeconomic Dynamics}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch5_motivation_econ.pdf}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{ch5_motivation_econ.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -286,7 +301,7 @@ MSCA Digital Finance}
 \begin{frame}{The Key Insight: Variables Interact}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.85\textwidth, height=0.60\textheight, keepaspectratio]{charts/ch5_motivation_scatter.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.60\textheight, keepaspectratio]{ch5_motivation_scatter.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -302,7 +317,7 @@ MSCA Digital Finance}
 \begin{frame}{Lead-Lag Relationships}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{charts/ch5_motivation_leadlag.pdf}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{ch5_motivation_leadlag.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -316,20 +331,24 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Why Univariate Models Are Not Enough}
-    \vspace{-0.4cm}
-    \begin{center}
-        \includegraphics[width=0.90\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_motivation_univariate.pdf}
-    \end{center}
-    \vspace{-0.3cm}
-    {\footnotesize
-    \begin{alertblock}{The Problem}
-        ARIMA models each variable \textbf{in isolation}---ignoring valuable information from other variables!
-    \end{alertblock}
-    \begin{exampleblock}{The Solution}
-        \textbf{VAR models} capture the joint dynamics and feedback effects between multiple time series.
-    \end{exampleblock}
-    }
-    \quantlet{TSA\_ch5\_motivation\_univariate}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_motivation_univariate}
+    \begin{columns}[T]
+        \begin{column}{0.35\textwidth}
+            {\footnotesize
+            \begin{alertblock}{The Problem}
+                ARIMA models each variable \textbf{in isolation}---ignoring valuable information from other variables!
+            \end{alertblock}
+            \begin{exampleblock}{The Solution}
+                \textbf{VAR models} capture the joint dynamics and feedback effects between multiple time series.
+            \end{exampleblock}
+            }
+            \quantlet{TSA\_ch5\_motivation\_univariate}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_motivation_univariate}
+        \end{column}
+        \begin{column}{0.63\textwidth}
+            \begin{center}
+                \includegraphics[height=0.78\textheight, keepaspectratio]{ch5_motivation_univariate.pdf}
+            \end{center}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{What We'll Learn Today}
@@ -550,7 +569,7 @@ MSCA Digital Finance}
 \begin{frame}{VAR Process: GDP and Unemployment (FRED)}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_var_simulation.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_var_simulation.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -604,7 +623,7 @@ MSCA Digital Finance}
 \begin{frame}{Stability Condition: Visual Interpretation}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_stability_roots.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_stability_roots.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -654,6 +673,78 @@ MSCA Digital Finance}
     }
 \end{frame}
 
+\begin{frame}{Derivation: The Lyapunov Equation}
+    \begin{block}{Starting Point: VAR(1) Model}
+        Consider the stationary VAR(1): $\bY_t = \mathbf{c} + \bA\bY_{t-1} + \bepsilon_t$
+
+        \vspace{0.1cm}
+        Without loss of generality, assume $\mathbf{c} = \mathbf{0}$ (mean-centered):
+        $$\bY_t = \bA\bY_{t-1} + \bepsilon_t$$
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Step 1: Definition of Variance-Covariance Matrix}
+        The unconditional variance-covariance matrix is:
+        $$\boldsymbol{\Gamma}(0) = \E[\bY_t \bY_t']$$
+
+        By stationarity: $\boldsymbol{\Gamma}(0) = \E[\bY_{t-1} \bY_{t-1}']$
+    \end{block}
+\end{frame}
+
+\begin{frame}{Derivation: The Lyapunov Equation (cont.)}
+    \begin{block}{Step 2: Substitute VAR(1) into Variance Expression}
+        $$\boldsymbol{\Gamma}(0) = \E[\bY_t \bY_t'] = \E[(\bA\bY_{t-1} + \bepsilon_t)(\bA\bY_{t-1} + \bepsilon_t)']$$
+
+        Expanding:
+        $$= \E[\bA\bY_{t-1}\bY_{t-1}'\bA' + \bA\bY_{t-1}\bepsilon_t' + \bepsilon_t\bY_{t-1}'\bA' + \bepsilon_t\bepsilon_t']$$
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Step 3: Apply Expectations}
+        Since $\bepsilon_t$ is independent of $\bY_{t-1}$: $\E[\bY_{t-1}\bepsilon_t'] = \mathbf{0}$ and $\E[\bepsilon_t\bY_{t-1}'] = \mathbf{0}$
+
+        \vspace{0.1cm}
+        Therefore:
+        $$\boldsymbol{\Gamma}(0) = \bA\E[\bY_{t-1}\bY_{t-1}']\bA' + \E[\bepsilon_t\bepsilon_t'] = \bA\boldsymbol{\Gamma}(0)\bA' + \bSigma$$
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{alertblock}{The Discrete Lyapunov Equation}
+        $$\boxed{\boldsymbol{\Gamma}(0) = \bA\boldsymbol{\Gamma}(0)\bA' + \bSigma}$$
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Solving the Lyapunov Equation}
+    \begin{block}{The Vectorization Approach}
+        The Lyapunov equation $\boldsymbol{\Gamma}(0) = \bA\boldsymbol{\Gamma}(0)\bA' + \bSigma$ is a matrix equation.
+
+        \vspace{0.1cm}
+        To solve it, we use the \textbf{vec operator} which stacks columns of a matrix into a vector.
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Key Property: Kronecker Product}
+        For matrices $\mathbf{A}$, $\mathbf{B}$, $\mathbf{X}$: $\text{vec}(\mathbf{AXB}) = (\mathbf{B}' \otimes \mathbf{A})\text{vec}(\mathbf{X})$
+
+        \vspace{0.1cm}
+        Applying to $\bA\boldsymbol{\Gamma}(0)\bA'$:
+        $$\text{vec}(\bA\boldsymbol{\Gamma}(0)\bA') = (\bA \otimes \bA)\text{vec}(\boldsymbol{\Gamma}(0))$$
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{alertblock}{Solution}
+        Vectorizing both sides of the Lyapunov equation:
+        $$\text{vec}(\boldsymbol{\Gamma}(0)) = (\bA \otimes \bA)\text{vec}(\boldsymbol{\Gamma}(0)) + \text{vec}(\bSigma)$$
+        $$\boxed{\text{vec}(\boldsymbol{\Gamma}(0)) = (\mathbf{I}_{K^2} - \bA \otimes \bA)^{-1} \text{vec}(\bSigma)}$$
+        This solution exists when VAR is stable (eigenvalues of $\bA \otimes \bA$ inside unit circle).
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}{Estimation of VAR}
     \begin{block}{OLS Estimation}
         Each equation can be estimated by \textbf{OLS separately}:
@@ -696,7 +787,7 @@ MSCA Digital Finance}
 \begin{frame}{Lag Selection: Example}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_lag_selection.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_lag_selection.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -876,7 +967,7 @@ MSCA Digital Finance}
 
 \begin{frame}{Cross-Correlation: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{charts/ch5_def_ccf.pdf}
+        \includegraphics[width=0.95\textwidth]{ch5_def_ccf.pdf}
     \end{center}
     \vspace{-0.2cm}
     \small Left: two related series. Right: CCF reveals that $X$ leads $Y$ (significant correlations at positive lags).
@@ -1085,7 +1176,7 @@ MSCA Digital Finance}
 \begin{frame}{Impulse Response Functions: Example}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_irf.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_irf.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1228,7 +1319,7 @@ MSCA Digital Finance}
 \begin{frame}{Structural IRF Example}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_structural_irf.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_structural_irf.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1272,7 +1363,7 @@ MSCA Digital Finance}
 \begin{frame}{FEVD: Example}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_fevd.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_fevd.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1332,7 +1423,7 @@ MSCA Digital Finance}
 \begin{frame}{Historical Decomposition: Example}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_historical_decomp.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_historical_decomp.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1440,7 +1531,7 @@ MSCA Digital Finance}
 \begin{frame}{Diagnostic Summary Plot}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_diagnostics.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_diagnostics.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1523,7 +1614,7 @@ MSCA Digital Finance}
 \begin{frame}{VAR Forecasts: Example}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_var_forecast.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_var_forecast.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1585,7 +1676,7 @@ MSCA Digital Finance}
 \begin{frame}{GDP and Unemployment: Data}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_gdp_unemployment.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_gdp_unemployment.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1636,7 +1727,7 @@ MSCA Digital Finance}
 \begin{frame}{Estimated VAR Results}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_var_results.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_var_results.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1700,7 +1791,7 @@ MSCA Digital Finance}
 \begin{frame}{Monetary Policy VAR: IRFs}
     \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{charts/ch5_monetary_irf.pdf}
+        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_monetary_irf.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
@@ -1841,7 +1932,7 @@ MSCA Digital Finance}
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_quiz1_var_stability.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz1_var_stability.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_quiz1\_var\_stability}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz1_var_stability}
 \end{frame}
@@ -1867,7 +1958,7 @@ MSCA Digital Finance}
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_quiz2_granger_causality.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz2_granger_causality.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_quiz2\_granger\_causality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz2_granger_causality}
 \end{frame}
@@ -1893,7 +1984,7 @@ MSCA Digital Finance}
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_quiz3_cholesky_ordering.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz3_cholesky_ordering.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_quiz3\_cholesky\_ordering}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz3_cholesky_ordering}
 \end{frame}
@@ -1956,7 +2047,7 @@ MSCA Digital Finance}
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{charts/ch5_quiz5_fevd.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz5_fevd.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_quiz5\_fevd}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz5_fevd}
 \end{frame}
@@ -1998,42 +2089,42 @@ MSCA Digital Finance}
 
 \begin{frame}{Step 1: Data Visualization}
     \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch6_case_raw_data.pdf}
+        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_raw_data.pdf}
     \end{center}
     \quantlet{TSA\_ch6\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_raw_data}
 \end{frame}
 
 \begin{frame}{Step 2: Stationarity Tests}
     \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch6_case_stationarity.pdf}
+        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_stationarity.pdf}
     \end{center}
     \quantlet{TSA\_ch6\_case\_stationarity}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_stationarity}
 \end{frame}
 
 \begin{frame}{Step 3: Lag Selection and VAR Estimation}
     \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch6_case_lag_selection.pdf}
+        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_lag_selection.pdf}
     \end{center}
     \quantlet{TSA\_ch6\_case\_lag\_selection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_lag_selection}
 \end{frame}
 
 \begin{frame}{Step 4: Granger Causality Tests}
     \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch6_case_granger.pdf}
+        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_granger.pdf}
     \end{center}
     \quantlet{TSA\_ch6\_case\_granger}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_granger}
 \end{frame}
 
 \begin{frame}{Step 5: Impulse Response Functions}
     \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch6_case_irf.pdf}
+        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_irf.pdf}
     \end{center}
     \quantlet{TSA\_ch6\_case\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_irf}
 \end{frame}
 
 \begin{frame}{Step 6: Forecasting}
     \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{charts/ch6_case_forecast.pdf}
+        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_forecast.pdf}
     \end{center}
     \quantlet{TSA\_ch6\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_forecast}
 \end{frame}

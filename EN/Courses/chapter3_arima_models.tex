@@ -133,7 +133,8 @@
 \usepackage{hyperref}
 \usepackage{colortbl}
 \hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
-\graphicspath{{../logos/}{../charts/}}
+\graphicspath{{../../logos/}{../../charts/}}
+\hfuzz=2pt
 
 %=============================================================================
 % QUANTLET COMMAND
@@ -252,6 +253,20 @@ MSCA Digital Finance}
 }
 
 %=============================================================================
+% LEARNING OBJECTIVES
+%=============================================================================
+\begin{frame}{Learning Objectives}
+\begin{block}{By the end of this chapter, you will be able to:}
+\begin{itemize}
+    \item Understand the concept and implications of non-stationarity
+    \item Apply differencing to achieve stationarity in time series
+    \item Use the Augmented Dickey-Fuller (ADF) test for unit root detection
+    \item Build, estimate, and forecast with ARIMA models
+\end{itemize}
+\end{block}
+\end{frame}
+
+%=============================================================================
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
@@ -264,48 +279,58 @@ MSCA Digital Finance}
 \section{Motivation}
 
 \begin{frame}{Motivating Example: Non-Stationary Data Is Everywhere}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{ch3_motivation_nonstationary.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{itemize}
-        \item Stock prices, GDP, exchange rates all exhibit \textbf{trends} or \textbf{wandering behavior}
-        \item The sample mean (red line) is meaningless for a random walk
-        \item Standard ARMA models \textbf{cannot} handle these series directly
-    \end{itemize}
-    }
-    \quantlet{TSA\_ch3\_motivation\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_nonstationary}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\footnotesize
+        \begin{block}{Key Observations}
+            \begin{itemize}
+                \item Stock prices, GDP, exchange rates all exhibit \textbf{trends} or \textbf{wandering behavior}
+                \item The sample mean (red line) is meaningless for a random walk
+                \item Standard ARMA models \textbf{cannot} handle these series directly
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_motivation\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_nonstationary}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_motivation_nonstationary.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Real-World Applications}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.55\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
-    \end{center}
-    \vspace{-0.3cm}
-    {\footnotesize
-    \begin{alertblock}{The Challenge}
-        Financial/economic data are typically I(1): stock prices, exchange rates, interest rates.
-    \end{alertblock}
-    }
-    \quantlet{TSA\_ch3\_motivation\_realworld}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_realworld}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{alertblock}{The Challenge}
+            Financial/economic data are typically I(1): stock prices, exchange rates, interest rates.
+        \end{alertblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_motivation\_realworld}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_realworld}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{The Solution: Differencing}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{ch3_motivation_differencing.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{exampleblock}{Key Insight}
-        \textbf{Differencing} transforms a non-stationary series into a stationary one:
-        $\Delta Y_t = Y_t - Y_{t-1}$. The ACF changes from slow decay to quick decay!
-    \end{exampleblock}
-    }
-    \quantlet{TSA\_ch3\_motivation\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_differencing}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Key Insight}
+            \textbf{Differencing} transforms a non-stationary series into a stationary one:
+            $\Delta Y_t = Y_t - Y_{t-1}$. The ACF changes from slow decay to quick decay!
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_motivation\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_differencing}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_motivation_differencing.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{What We'll Learn Today}
@@ -357,19 +382,25 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Example: US Real GDP}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.78\textwidth, height=0.55\textheight, keepaspectratio]{ch3_gdp_levels.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\small
-    \begin{itemize}
-        \item Clear upward \textbf{trend} -- mean is not constant
-        \item This is a classic example of a \textbf{non-stationary} time series
-        \item We cannot apply ARMA models directly to this data
-    \end{itemize}
-    }
-    \quantlet{TSA\_ch3\_gdp\_levels}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_gdp_levels}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\small
+        \begin{block}{Key Observations}
+            \begin{itemize}
+                \item Clear upward \textbf{trend} -- mean is not constant
+                \item This is a classic example of a \textbf{non-stationary} time series
+                \item We cannot apply ARMA models directly to this data
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_gdp\_levels}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_gdp_levels}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_gdp_levels.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Types of Non-Stationarity}
@@ -406,19 +437,25 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Visualizing the Difference}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch3_trend_comparison.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{itemize}
-        \item \textbf{Left}: Deterministic trend -- deviations from trend are temporary
-        \item \textbf{Right}: Stochastic trend -- shocks accumulate permanently
-        \item Both look similar, but require \textbf{different} treatments!
-    \end{itemize}
-    }
-    \quantlet{TSA\_ch3\_trend\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_trend_comparison}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\footnotesize
+        \begin{block}{Key Distinction}
+            \begin{itemize}
+                \item \textbf{Left}: Deterministic trend -- deviations from trend are temporary
+                \item \textbf{Right}: Stochastic trend -- shocks accumulate permanently
+                \item Both look similar, but require \textbf{different} treatments!
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_trend\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_trend_comparison}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_trend_comparison.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{The Random Walk Process}
@@ -445,17 +482,22 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Random Walk: Visual Illustration}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
-    \end{center}
-    \vspace{-0.3cm}
-    {\small
-    \begin{alertblock}{Key Properties}
-        \textbf{Left}: Paths wander unpredictably, no mean reversion.
-        \textbf{Right}: $\Var(Y_t) = t\sigma^2$ grows linearly $\Rightarrow$ non-stationary.
-    \end{alertblock}
-    }
-    \quantlet{TSA\_ch3\_def\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\small
+        \begin{alertblock}{Key Properties}
+            \textbf{Left}: Paths wander unpredictably, no mean reversion.
+            \textbf{Right}: $\Var(Y_t) = t\sigma^2$ grows linearly $\Rightarrow$ non-stationary.
+        \end{alertblock}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_def\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Proof: Random Walk Variance}
@@ -514,46 +556,63 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Random Walk with Drift: Visual Illustration}
-    \begin{center}
-        \includegraphics[width=0.9\textwidth, height=0.58\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \begin{exampleblock}{Comparison}
-        Without drift (blue): wanders around zero with no direction. With drift $\mu > 0$ (red): systematic upward trend. Both are non-stationary --- drift adds deterministic trend to stochastic wandering.
-    \end{exampleblock}
-    \quantlet{TSA\_ch3\_def\_random\_walk\_drift}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk_drift}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Comparison}
+            Without drift (blue): wanders around zero with no direction. With drift $\mu > 0$ (red): systematic upward trend. Both are non-stationary --- drift adds deterministic trend to stochastic wandering.
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_def\_random\_walk\_drift}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk_drift}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Simulating Random Walks}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch3_random_walk.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{itemize}
-        \item \textbf{Left}: Pure random walks -- no drift, wander unpredictably
-        \item \textbf{Right}: Random walks with drift -- upward trend on average
-        \item Each path is unique; uncertainty grows over time
-    \end{itemize}
-    }
-    \quantlet{TSA\_ch3\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_random_walk}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\footnotesize
+        \begin{block}{Random Walk Types}
+            \begin{itemize}
+                \item \textbf{Left}: Pure random walks -- no drift, wander unpredictably
+                \item \textbf{Right}: Random walks with drift -- upward trend on average
+                \item Each path is unique; uncertainty grows over time
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_random_walk}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_random_walk.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Variance Growth: Why Random Walks Are Non-Stationary}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch3_variance_growth.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{itemize}
-        \item \textbf{Left}: Fan of paths shows uncertainty growing over time
-        \item \textbf{Right}: Variance grows linearly: $\Var(Y_t) = t\sigma^2$
-        \item This violates stationarity (variance should be constant)
-    \end{itemize}
-    }
-    \quantlet{TSA\_ch3\_variance\_growth}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_variance_growth}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\footnotesize
+        \begin{block}{Key Observations}
+            \begin{itemize}
+                \item \textbf{Left}: Fan of paths shows uncertainty growing over time
+                \item \textbf{Right}: Variance grows linearly: $\Var(Y_t) = t\sigma^2$
+                \item This violates stationarity (variance should be constant)
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_variance\_growth}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_variance_growth}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_variance_growth.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Integrated Processes}
@@ -678,30 +737,40 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{ACF Diagnostic: Detecting Non-Stationarity}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.68\textheight, keepaspectratio]{ch3_acf_nonstationary.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{itemize}
-        \item \textbf{Top}: Random walk ACF decays very slowly $\Rightarrow$ unit root
-        \item \textbf{Bottom}: After differencing, ACF cuts off $\Rightarrow$ stationary
-    \end{itemize}
-    }
-    \quantlet{TSA\_ch3\_acf\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_acf_nonstationary}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\footnotesize
+        \begin{block}{ACF Patterns}
+            \begin{itemize}
+                \item \textbf{Top}: Random walk ACF decays very slowly $\Rightarrow$ unit root
+                \item \textbf{Bottom}: After differencing, ACF cuts off $\Rightarrow$ stationary
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_acf\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_acf_nonstationary}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_acf_nonstationary.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Differencing in Practice: GDP Example}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.55\textheight, keepaspectratio]{ch3_differencing.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \begin{block}{Transformation}
-        \textbf{Left}: GDP in levels with clear upward trend (non-stationary). \textbf{Right}: GDP growth rate $\Delta \log(GDP_t)$ fluctuates around constant mean (stationary). One difference removes the stochastic trend.
-    \end{block}
-    \quantlet{TSA\_ch3\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_differencing}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{block}{Transformation}
+            \textbf{Left}: GDP in levels with clear upward trend (non-stationary). \textbf{Right}: GDP growth rate $\Delta \log(GDP_t)$ fluctuates around constant mean (stationary). One difference removes the stochastic trend.
+        \end{block}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_differencing}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_differencing.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Overdifferencing}
@@ -760,14 +829,19 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{ARIMA: Visual Illustration}
-    \begin{center}
-        \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_arima.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \begin{exampleblock}{Interpretation}
-        Top: original ARIMA series (non-stationary). Bottom: after differencing $d$ times, ACF/PACF reveal the AR and MA orders for the stationary component.
-    \end{exampleblock}
-    \quantlet{TSA\_ch3\_def\_arima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_arima}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Interpretation}
+            Top: original ARIMA series (non-stationary). Bottom: after differencing $d$ times, ACF/PACF reveal the AR and MA orders for the stationary component.
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_def\_arima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_arima}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_arima.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{ARIMA Components}
@@ -1596,19 +1670,25 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Rolling Window Illustration}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.9\textwidth, height=0.6\textheight, keepaspectratio]{ch3_rolling_forecast.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{itemize}
-        \item Each window produces a 1-step ahead forecast
-        \item Compare forecasts to actuals to compute RMSE, MAE
-        \item Rolling window keeps model estimation up-to-date
-    \end{itemize}
-    }
-    \quantlet{TSA\_ch3\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_rolling_forecast}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\footnotesize
+        \begin{block}{Rolling Procedure}
+            \begin{itemize}
+                \item Each window produces a 1-step ahead forecast
+                \item Compare forecasts to actuals to compute RMSE, MAE
+                \item Rolling window keeps model estimation up-to-date
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_rolling_forecast}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_rolling_forecast.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 %=============================================================================
@@ -1617,89 +1697,124 @@ MSCA Digital Finance}
 \section{Case Study: Real Data}
 
 \begin{frame}{Case Study: US Real GDP (FRED)}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_case_raw_data.pdf}
-    \end{center}
-    \vspace{-0.3cm}
-    {\small
-    \begin{block}{Data: FRED GDPC1 (1960Q1--2024Q3)}
-        Quarterly Real GDP, seasonally adjusted, billions of chained 2017 dollars. Non-stationary series with upward trend $\Rightarrow$ requires differencing.
-    \end{block}
-    }
-    \quantlet{TSA\_ch3\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_raw_data}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\small
+        \begin{block}{Data: FRED GDPC1 (1960Q1--2024Q3)}
+            Quarterly Real GDP, seasonally adjusted, billions of chained 2017 dollars. Non-stationary series with upward trend $\Rightarrow$ requires differencing.
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_raw_data}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_raw_data.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Step 1: ADF Test for Stationarity}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_case_adf_test.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \begin{alertblock}{ADF Test Results}
-        \textbf{Original series}: Large p-value $\Rightarrow$ fail to reject $H_0$ (unit root present).
-        \textbf{First difference}: p-value $< 0.01$ $\Rightarrow$ reject $H_0$ $\Rightarrow$ $d = 1$ is sufficient.
-    \end{alertblock}
-    \quantlet{TSA\_ch3\_case\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_adf_test}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{alertblock}{ADF Test Results}
+            \textbf{Original series}: Large p-value $\Rightarrow$ fail to reject $H_0$ (unit root present).
+            \textbf{First difference}: p-value $< 0.01$ $\Rightarrow$ reject $H_0$ $\Rightarrow$ $d = 1$ is sufficient.
+        \end{alertblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_case\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_adf_test}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_adf_test.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Step 2: ACF/PACF Before and After Differencing}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_acf_diff.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \begin{exampleblock}{Top: Slow ACF decay (non-stationary) | Bottom: After differencing, low-order ARMA}
-    \end{exampleblock}
-    \quantlet{TSA\_ch3\_case\_acf\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_acf_diff}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{ACF/PACF Analysis}
+            Top: Slow ACF decay (non-stationary) | Bottom: After differencing, low-order ARMA
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_case\_acf\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_acf_diff}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_acf_diff.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Step 3: ARIMA Model Comparison}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_case_model_comparison.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \begin{block}{Model Selection}
-        Compare ARIMA(0,1,0), ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1). The model with lowest AIC is selected.
-    \end{block}
-    \quantlet{TSA\_ch3\_case\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_model_comparison}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{block}{Model Selection}
+            Compare ARIMA(0,1,0), ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1). The model with lowest AIC is selected.
+        \end{block}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_case\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_model_comparison}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_model_comparison.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Step 4: Diagnostic Checking}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.58\textheight, keepaspectratio]{ch3_case_diagnostics.pdf}
-    \end{center}
-    \vspace{-0.4cm}
-    {\footnotesize
-    \begin{alertblock}{ARIMA(1,1,1) Diagnostics}
-        ACF: no autocorrelation $\checkmark$ \quad Q-Q: \textbf{non-normal} (COVID-19 outlier) \quad JB test: p $<$ 0.001
-    \end{alertblock}
-    }
-    \quantlet{TSA\_ch3\_case\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_diagnostics}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\footnotesize
+        \begin{alertblock}{ARIMA(1,1,1) Diagnostics}
+            ACF: no autocorrelation $\checkmark$ \quad Q-Q: \textbf{non-normal} (COVID-19 outlier) \quad JB test: p $<$ 0.001
+        \end{alertblock}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_case\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_diagnostics}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_diagnostics.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Step 5: Out-of-Sample Forecasting}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{ch3_case_forecast.pdf}
-    \end{center}
-    \vspace{-0.3cm}
-    {\small
-    \begin{block}{Train/Val/Test Split (70\%/15\%/15\%)}
-        \textbf{Train 70\%} (blue): Estimation | \textbf{Val 15\%} (green): Tuning | \textbf{Test 15\%} (purple): Evaluation with 95\% CI
-    \end{block}
-    }
-    \quantlet{TSA\_ch3\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_forecast}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\small
+        \begin{block}{Train/Val/Test Split (70\%/15\%/15\%)}
+            \textbf{Train 70\%} (blue): Estimation | \textbf{Val 15\%} (green): Tuning | \textbf{Test 15\%} (purple): Evaluation with 95\% CI
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_forecast}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_forecast.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Step 6: Rolling Forecast with Train/Val/Test}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.48\textheight, keepaspectratio]{ch3_case_rolling_forecast.pdf}
-    \end{center}
-    \vspace{-0.3cm}
-    {\small
-    \begin{block}{Rolling 1-Step Ahead Forecast (Expanding Window, 95\% CI)}
-        Train 70\% $\to$ Val 15\% $\to$ Test 15\% | Expanding window refits model at each step
-    \end{block}
-    }
-    \quantlet{TSA\_ch3\_case\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_rolling_forecast}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        {\small
+        \begin{block}{Rolling 1-Step Ahead Forecast (Expanding Window, 95\% CI)}
+            Train 70\% $\to$ Val 15\% $\to$ Test 15\% | Expanding window refits model at each step
+        \end{block}
+        }
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_case\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_rolling_forecast}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_rolling_forecast.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 %=============================================================================
@@ -1745,14 +1860,19 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Quiz Question 1: Answer}
-    \begin{exampleblock}{Correct Answer: (B) $\Var(Y_t) = t \cdot \sigma^2$}
-        Random walk variance grows linearly with time --- this is why random walks are non-stationary.
-    \end{exampleblock}
-    \vspace{0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz1_rw_variance.pdf}
-    \end{center}
-    \quantlet{TSA\_ch3\_quiz1\_rw\_variance}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz1_rw_variance}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Correct Answer: (B) $\Var(Y_t) = t \cdot \sigma^2$}
+            Random walk variance grows linearly with time --- this is why random walks are non-stationary.
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_quiz1\_rw\_variance}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz1_rw_variance}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_quiz1_rw_variance.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Quiz Question 2}
@@ -1771,14 +1891,19 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Quiz Question 2: Answer}
-    \begin{exampleblock}{Correct Answer: (C) 2 times}
-        I($d$) means ``integrated of order $d$'' --- requires $d$ differences for stationarity.
-    \end{exampleblock}
-    \vspace{0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz2_differencing.pdf}
-    \end{center}
-    \quantlet{TSA\_ch3\_quiz2\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz2_differencing}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Correct Answer: (C) 2 times}
+            I($d$) means ``integrated of order $d$'' --- requires $d$ differences for stationarity.
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_quiz2\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz2_differencing}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_quiz2_differencing.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Quiz Question 3}
@@ -1797,14 +1922,19 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Quiz Question 3: Answer}
-    \begin{exampleblock}{Correct Answer: (C) Fail to reject $H_0$: series has unit root}
-        Test stat $-2.1 > -2.57$ (10\% CV) $\Rightarrow$ Cannot reject at any level. Consider differencing.
-    \end{exampleblock}
-    \vspace{0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz3_adf_test.pdf}
-    \end{center}
-    \quantlet{TSA\_ch3\_quiz3\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz3_adf_test}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Correct Answer: (C) Fail to reject $H_0$: series has unit root}
+            Test stat $-2.1 > -2.57$ (10\% CV) $\Rightarrow$ Cannot reject at any level. Consider differencing.
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_quiz3\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz3_adf_test}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_quiz3_adf_test.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Quiz Question 4}
@@ -1823,14 +1953,19 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Quiz Question 4: Answer}
-    \begin{exampleblock}{Correct Answer: (B) Decays exponentially}
-        ARIMA(1,1,0) $\Rightarrow$ $\Delta Y_t$ follows AR(1) with ACF $\rho_k = \phi_1^k$ (geometric decay).
-    \end{exampleblock}
-    \vspace{0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz4_acf_decay.pdf}
-    \end{center}
-    \quantlet{TSA\_ch3\_quiz4\_acf\_decay}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz4_acf_decay}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Correct Answer: (B) Decays exponentially}
+            ARIMA(1,1,0) $\Rightarrow$ $\Delta Y_t$ follows AR(1) with ACF $\rho_k = \phi_1^k$ (geometric decay).
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_quiz4\_acf\_decay}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz4_acf_decay}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_quiz4_acf_decay.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Quiz Question 5}
@@ -1849,14 +1984,19 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Quiz Question 5: Answer}
-    \begin{exampleblock}{Correct Answer: (C) They widen without bound}
-        For I(1): CI width $\propto \sqrt{h}$ (unbounded). For I(0): CIs converge to a limit.
-    \end{exampleblock}
-    \vspace{0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_quiz5_forecast_ci.pdf}
-    \end{center}
-    \quantlet{TSA\_ch3\_quiz5\_forecast\_ci}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz5_forecast_ci}
+    \begin{columns}[T]
+        \column{0.35\textwidth}
+        \begin{exampleblock}{Correct Answer: (C) They widen without bound}
+            For I(1): CI width $\propto \sqrt{h}$ (unbounded). For I(0): CIs converge to a limit.
+        \end{exampleblock}
+        \vspace{0.3cm}
+        \quantlet{TSA\_ch3\_quiz5\_forecast\_ci}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz5_forecast_ci}
+        \column{0.63\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_quiz5_forecast_ci.pdf}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{References}
