@@ -276,7 +276,7 @@ def chart_def_weak_stationarity():
     axes[0].set_title(r'$E[X_t] = \mu$, $Var(X_t) = \sigma^2$', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel(r'$X_t$')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Rolling mean
     window = 50
@@ -287,7 +287,7 @@ def chart_def_weak_stationarity():
     axes[1].set_title('Constant mean over time', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Time')
     axes[1].set_ylabel('Mean')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # ACF
     acf_vals = acf(y, nlags=20)
@@ -297,7 +297,7 @@ def chart_def_weak_stationarity():
     axes[2].set_title(r'ACF: $\gamma(h)$ depends only on $h$', fontsize=9, fontweight='bold')
     axes[2].set_xlabel('Lag')
     axes[2].set_ylabel(r'$\hat{\rho}(h)$')
-    axes[2].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[2].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_def_weak_stationarity')
@@ -335,7 +335,7 @@ def chart_counterexample_stationarity():
     axes[1].plot(xr, stats.norm.pdf(xr, 0, 1), color=GREEN, linewidth=1.5)
     axes[1].set_title('t even: Symmetric', fontsize=9, fontweight='bold')
     axes[1].set_xlabel(r'$X_t$')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Odd indices (Chi-squared)
     x_odd = x[1::2]
@@ -345,7 +345,7 @@ def chart_counterexample_stationarity():
     axes[2].plot(xr2, chi_pdf, color=RED, linewidth=1.5)
     axes[2].set_title('t odd: Asymmetric', fontsize=9, fontweight='bold')
     axes[2].set_xlabel(r'$X_t$')
-    axes[2].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[2].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_counterexample_stationarity')
@@ -373,7 +373,7 @@ def chart_ergodicity():
     axes[0].set_xlabel('T (no. observations)')
     axes[0].set_ylabel(r'$\bar{X}_T$')
     axes[0].set_ylim(mu_true - 2, mu_true + 2)
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Right: Ensemble average across realizations
     ensemble_means = []
@@ -396,7 +396,7 @@ def chart_ergodicity():
     axes[1].set_ylabel(r'$X_t$')
 
     # Combined legend
-    ax2.legend(fontsize=7, loc='upper right', frameon=False)
+    ax2.legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_ergodicity')
@@ -470,7 +470,7 @@ def chart_def_lag_operator():
     axes[0].set_title(r'$LX_t = X_{t-1}$', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # First difference
     diff1 = np.diff(y)
@@ -540,14 +540,14 @@ def chart_transform_sequence_ro():
     axes[0].set_xlabel('Date')
     axes[0].set_ylabel('Price')
     axes[0].tick_params(axis='x', rotation=30)
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     axes[1].plot(dates[:len(log_prices)], log_prices, color=GREEN, linewidth=0.8, label=r'$\ln(P_t)$')
     axes[1].set_title(r'$\ln(P_t)$', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Date')
     axes[1].set_ylabel('Log price')
     axes[1].tick_params(axis='x', rotation=30)
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     axes[2].plot(dates[1:len(returns)+1], returns, color=RED, linewidth=0.4, alpha=0.8, label=r'$r_t = \Delta \ln(P_t)$')
     axes[2].axhline(0, color=GRAY, linewidth=0.5, linestyle='--')
@@ -555,7 +555,7 @@ def chart_transform_sequence_ro():
     axes[2].set_xlabel('Date')
     axes[2].set_ylabel('Return')
     axes[2].tick_params(axis='x', rotation=30)
-    axes[2].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[2].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_transform_sequence_ro')
@@ -580,7 +580,7 @@ def chart_def_white_noise():
     axes[0].set_title(r'White noise: $\varepsilon_t \sim WN(0, \sigma^2)$', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel(r'$\varepsilon_t$')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # ACF
     acf_vals = acf(wn, nlags=25)
@@ -592,7 +592,7 @@ def chart_def_white_noise():
     axes[1].set_title('ACF white noise', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Lag')
     axes[1].set_ylabel(r'$\hat{\rho}(h)$')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_def_white_noise')
@@ -623,7 +623,7 @@ def chart_random_walk():
     axes[0].set_title('Random walk: multiple realizations', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel(r'$X_t$')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Variance grows linearly
     variances = []
@@ -637,7 +637,7 @@ def chart_random_walk():
     axes[1].set_title(r'$Var(X_t) = t\sigma^2$ grows linearly', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Time (t)')
     axes[1].set_ylabel('Variance')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'random_walk')
@@ -991,7 +991,7 @@ def chart_returns_distribution():
     axes[0].set_title('S&P 500 returns distribution', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Return')
     axes[0].set_ylabel('Density')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # QQ plot
     stats.probplot(returns, dist='norm', plot=axes[1])
@@ -1029,7 +1029,7 @@ def chart_volatility_clustering():
     axes[1].set_xlabel('Date')
     axes[1].set_ylabel(r'$|r_t|$')
     axes[1].tick_params(axis='x', rotation=30)
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(h_pad=2.0)
     save_chart(fig, 'volatility_clustering')
@@ -1457,7 +1457,7 @@ def chart_differencing():
     axes[0].set_title('Original series (non-stationary)', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel(r'$X_t$')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     diff = np.diff(rw)
     axes[1].plot(diff, color=GREEN, linewidth=0.5, label=r'$\Delta X_t = X_t - X_{t-1}$')
@@ -1465,7 +1465,7 @@ def chart_differencing():
     axes[1].set_title('After differencing (stationary)', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Time')
     axes[1].set_ylabel(r'$\Delta X_t$')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_differencing')
@@ -1612,7 +1612,7 @@ def chart_white_noise_test():
     axes[1].set_title('ACF (all within bands)', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Lag')
     axes[1].set_ylabel('ACF')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Histogram
     axes[2].hist(wn, bins=30, color=BLUE, alpha=0.6, edgecolor='white', density=True)
@@ -1621,7 +1621,7 @@ def chart_white_noise_test():
     axes[2].set_title('Distribution', fontsize=9, fontweight='bold')
     axes[2].set_xlabel(r'$\varepsilon_t$')
     axes[2].set_ylabel('Density')
-    axes[2].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[2].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_white_noise_test')
@@ -1643,14 +1643,14 @@ def chart_transform_sequence():
     axes[0].set_xlabel('Date')
     axes[0].set_ylabel('Price')
     axes[0].tick_params(axis='x', rotation=30)
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     axes[1].plot(dates[:len(log_prices)], log_prices, color=GREEN, linewidth=0.8, label=r'$\ln(P_t)$')
     axes[1].set_title(r'$\ln(P_t)$', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Date')
     axes[1].set_ylabel('Log price')
     axes[1].tick_params(axis='x', rotation=30)
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     axes[2].plot(dates[1:len(returns)+1], returns, color=RED, linewidth=0.4, alpha=0.8, label=r'$r_t = \Delta \ln(P_t)$')
     axes[2].axhline(0, color=GRAY, linewidth=0.5, linestyle='--')
@@ -1658,7 +1658,7 @@ def chart_transform_sequence():
     axes[2].set_xlabel('Date')
     axes[2].set_ylabel('Return')
     axes[2].tick_params(axis='x', rotation=30)
-    axes[2].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[2].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_transform_sequence')
@@ -1689,14 +1689,14 @@ def chart_hp_filter_cycle():
     axes[0].plot(smooth_trend, color=RED, linewidth=1.5, label='Trend (HP)')
     axes[0].set_title('Hodrick-Prescott filter: Trend', fontsize=9, fontweight='bold')
     axes[0].set_ylabel('Value')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     axes[1].plot(hp_cycle, color=GREEN, linewidth=0.7, label='Cycle (HP)')
     axes[1].axhline(0, color=GRAY, linewidth=0.5, linestyle='--')
     axes[1].set_title('Cyclical component', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Time')
     axes[1].set_ylabel('Cycle')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(h_pad=2.0)
     save_chart(fig, 'ch1_hp_filter_cycle')
@@ -1748,7 +1748,7 @@ def chart_cyclical_component():
     axes[0].set_title('Business cycle', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Cyclical component')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Different cycle lengths
     c1 = np.sin(2*np.pi*t/20)
@@ -1759,7 +1759,7 @@ def chart_cyclical_component():
     axes[1].plot(c3, color=GREEN, linewidth=1.2, label='Long cycle (100)')
     axes[1].set_title('Cycles of different lengths', fontsize=9, fontweight='bold')
     axes[1].set_xlabel('Time')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_cyclical_component')
@@ -1851,7 +1851,7 @@ def chart_quiz5_forecast_errors():
     axes[0].set_title('Forecast vs Actual', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Error metrics
     mae = np.mean(np.abs(errors))
@@ -2019,7 +2019,7 @@ def chart_forecast_eval():
     axes[0].set_title('Model comparison', fontsize=9, fontweight='bold')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[0].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     # Error comparison
     metrics = ['MAE', 'RMSE', 'MAPE']
@@ -2036,7 +2036,7 @@ def chart_forecast_eval():
     axes[1].set_xticklabels(metrics)
     axes[1].set_title('Error metrics', fontsize=9, fontweight='bold')
     axes[1].set_ylabel('Value')
-    axes[1].legend(fontsize=7, loc='upper right', frameon=False)
+    axes[1].legend(fontsize=7, loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
     fig.tight_layout(w_pad=2.0)
     save_chart(fig, 'ch1_forecast_eval')
