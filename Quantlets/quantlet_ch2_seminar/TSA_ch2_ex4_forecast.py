@@ -119,7 +119,7 @@ ax1.scatter([0], [X_100], color='green', s=150, zorder=5, label=f'X_100 = {X_100
 ax1.set_title('Forecast Path: Mean Reversion', fontsize=12)
 ax1.set_xlabel('Horizon h')
 ax1.set_ylabel('E[X_{100+h}|X_100]')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 
 # Forecast with confidence intervals
@@ -137,7 +137,7 @@ ax2.axhline(y=mu, color='red', linestyle='--', linewidth=2, label=f'μ = {mu}')
 ax2.set_title('Forecasts with Expanding Confidence Intervals', fontsize=12)
 ax2.set_xlabel('Horizon h')
 ax2.set_ylabel('Forecast')
-ax2.legend()
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax2.grid(True, alpha=0.3)
 
 # Summary

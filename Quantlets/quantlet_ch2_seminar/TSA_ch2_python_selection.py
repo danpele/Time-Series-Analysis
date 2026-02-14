@@ -163,7 +163,7 @@ ax1.axhline(y=np.mean(x), color='red', linestyle='--', linewidth=2, label=f'Mean
 ax1.set_title('Time Series Data', fontsize=12)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('Value')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 
 # Plot 2: ACF
@@ -189,7 +189,7 @@ ax4.set_xticks(x_pos)
 ax4.set_xticklabels(models, rotation=45, ha='right')
 ax4.set_title('Model Comparison: AIC vs BIC', fontsize=12)
 ax4.set_ylabel('Information Criterion')
-ax4.legend()
+ax4.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax4.grid(True, alpha=0.3, axis='y')
 
 # Highlight best

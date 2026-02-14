@@ -123,7 +123,7 @@ ax1.axhline(y=mu_given, color='red', linestyle='--', linewidth=2, label=f'Mean =
 ax1.set_title(f'Simulated MA(1): X_t = {mu_given} + ε_t + ({theta})ε_{{t-1}}', fontsize=11)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('X_t')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 
 # ACF

@@ -97,7 +97,7 @@ bars = ax1.bar(quarters, seasonal_indices, color=colors, alpha=0.7, edgecolor='b
 ax1.axhline(y=1, color='black', linestyle='--', linewidth=2, label='Neutral (1.0)')
 ax1.set_ylabel('Seasonal Index')
 ax1.set_title('Quarterly Seasonal Indices')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3, axis='y')
 ax1.set_ylim(0, 1.5)
 

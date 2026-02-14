@@ -1,0 +1,1379 @@
+% Chapter 5: GARCH and Volatility
+% Harvard-quality academic presentation
+% Bachelor program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+
+% Ensure content fits on slides
+\setbeamersize{text margin left=8mm, text margin right=8mm}
+
+%=============================================================================
+% THEME AND STYLE CONFIGURATION
+%=============================================================================
+\usetheme{default}
+% Using default theme for clean header/footer control
+
+% Color Palette (matching Redispatch PDF)
+\definecolor{MainBlue}{RGB}{26, 58, 110}
+\definecolor{AccentBlue}{RGB}{26, 58, 110}
+\definecolor{IDAred}{RGB}{205, 0, 0}
+\definecolor{DarkGray}{RGB}{51, 51, 51}
+\definecolor{MediumGray}{RGB}{128, 128, 128}
+\definecolor{LightGray}{RGB}{248, 248, 248}
+\definecolor{VeryLightGray}{RGB}{235, 235, 235}
+\definecolor{KeynoteGray}{RGB}{218, 218, 218}
+\definecolor{SectionGray}{RGB}{120, 120, 120}
+\definecolor{FooterGray}{RGB}{100, 100, 100}
+\definecolor{Crimson}{RGB}{220, 53, 69}
+\definecolor{Forest}{RGB}{46, 125, 50}
+\definecolor{Amber}{RGB}{181, 133, 63}
+\definecolor{Orange}{RGB}{230, 126, 34}
+\definecolor{Purple}{RGB}{142, 68, 173}
+
+% Gradient background (exact Keynote 315° gradient: white to RGB 218,218,218)
+\setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \shade[shading=axis, shading angle=315,
+        top color=white, bottom color=KeynoteGray]
+        (current page.south west) rectangle (current page.north east);
+    \end{tikzpicture}%
+}
+% Fallback solid color for compatibility
+\setbeamercolor{background canvas}{bg=}
+
+\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
+\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
+\setbeamercolor{structure}{fg=MainBlue}
+\setbeamercolor{title}{fg=IDAred}
+\setbeamercolor{frametitle}{fg=IDAred, bg=}
+\setbeamercolor{block title}{bg=MainBlue, fg=white}
+\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
+\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
+\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
+\setbeamercolor{block title example}{bg=Forest, fg=white}
+\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
+\setbeamercolor{item}{fg=MainBlue}
+
+% Footer colors (override Madrid theme blue)
+\setbeamercolor{author in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{title in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{date in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{section in head/foot}{fg=FooterGray, bg=}
+\setbeamercolor{subsection in head/foot}{fg=FooterGray, bg=}
+
+% Bullet styles (apply everywhere including blocks)
+\setbeamertemplate{itemize item}{\color{MainBlue}$\boxdot$}
+\setbeamertemplate{itemize subitem}{\color{MainBlue}$\blacktriangleright$}
+\setbeamertemplate{itemize subsubitem}{\color{MainBlue}\tiny$\bullet$}
+\setbeamertemplate{itemize/enumerate body begin}{\normalsize}
+\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
+
+% Item spacing
+\setlength{\leftmargini}{1.5em}
+\setlength{\leftmarginii}{1.5em}
+
+\setbeamertemplate{navigation symbols}{}
+
+% TOC with bullets
+\setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$\hspace{0.5em}\inserttocsection}
+
+%=============================================================================
+% CUSTOM HEADLINE
+%=============================================================================
+\setbeamertemplate{headline}{%
+    \vskip10pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        {\small\color{FooterGray}\renewcommand{\hyperlink}[2]{##2}\insertsectionhead}%
+        \hfill%
+        \textcolor{FooterGray}{\small\insertframenumber}%
+        \hskip0.5cm%
+    }%
+    \vskip4pt%
+    {\color{FooterGray}\hrule height 0.4pt}%
+}
+
+%=============================================================================
+% CUSTOM FOOTER
+%=============================================================================
+\usepackage{fontawesome5}
+
+\setbeamertemplate{footline}{%
+    {\color{FooterGray}\hrule height 0.4pt}%
+    \vskip4pt%
+    \hbox to \paperwidth{%
+        \hskip0.5cm%
+        \textcolor{FooterGray}{\small Time Series Analysis and Forecasting}%
+        \hfill%
+        \raisebox{-0.1em}{%
+            \begin{tikzpicture}[x=0.08em, y=0.08em, line width=0.4pt]
+                \draw[FooterGray] (0,3) -- (1,4) -- (2,3.5) -- (3,5) -- (4,4) -- (5,6) -- (6,5.5) -- (7,4) -- (8,5) -- (9,7) -- (10,6) -- (11,5) -- (12,6.5) -- (13,8) -- (14,7) -- (15,6) -- (16,7.5) -- (17,9) -- (18,8) -- (19,7) -- (20,8.5) -- (21,10) -- (22,9) -- (23,8) -- (24,9.5);
+            \end{tikzpicture}%
+        }%
+        \hskip0.5cm%
+    }%
+    \vskip6pt%
+}
+
+%=============================================================================
+% PACKAGES
+%=============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing, shadings}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{colortbl}
+\hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
+\graphicspath{{../../logos/}{../../charts/}}
+\hfuzz=2pt
+
+%=============================================================================
+% QUANTLET COMMAND
+%=============================================================================
+\newcommand{\quantlet}[2]{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north east, inner sep=0pt] at ([xshift=-0.3cm, yshift=-0.8cm]current page.north east) {%
+            \href{#2}{%
+                \raisebox{-0.1em}{\includegraphics[height=0.8em]{ql_logo.png}}%
+                \textcolor{MainBlue}{\scriptsize\ #1}%
+            }%
+        };
+    \end{tikzpicture}%
+}
+
+%=============================================================================
+% CUSTOM TITLE PAGE
+%=============================================================================
+\defbeamertemplate*{title page}{hybrid}[1][]
+{
+    \vspace{0.2cm}
+    % Logos row - top header (with clickable links)
+    \begin{center}
+        \href{https://www.ase.ro}{\includegraphics[height=1.0cm]{ase_logo.png}}\hspace{0.3cm}%
+        \href{https://theida.net}{\includegraphics[height=1.0cm]{ida_logo.png}}\hspace{0.3cm}%
+        \href{https://blockchain-research-center.com}{\includegraphics[height=1.0cm]{brc_logo.png}}\hspace{0.3cm}%
+        \href{https://www.ai4efin.ase.ro}{\includegraphics[height=1.0cm]{ai4efin_logo.png}}\hspace{0.3cm}%
+        \href{https://ipe.ro/new}{\includegraphics[height=1.0cm]{acad_logo.png}}\hspace{0.3cm}%
+        \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.0cm]{msca_logo.png}}%
+    \end{center}
+
+    \vspace{0.6cm}
+
+    % Main title with Q logos on sides (with clickable links)
+    \begin{center}
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantlet.com}{\includegraphics[height=1.1cm]{ql_logo.png}}
+        \end{minipage}%
+        \begin{minipage}{0.78\textwidth}
+            \centering
+            {\LARGE\bfseries\usebeamercolor[fg]{title}\inserttitle}
+
+            \vspace{0.3cm}
+
+            {\usebeamerfont{subtitle}\usebeamercolor[fg]{title}\insertsubtitle}
+        \end{minipage}%
+        \begin{minipage}{0.1\textwidth}
+            \centering
+            \href{https://quantinar.com}{\includegraphics[height=1.1cm]{qr_logo.png}}
+        \end{minipage}
+    \end{center}
+
+    \vspace{0.6cm}
+
+    % Authors (left aligned)
+    \hspace{0.5cm}{\usebeamerfont{author}\insertauthor}
+
+    \vspace{0.3cm}
+
+    % Institute/Affiliations (left aligned)
+    \hspace{0.5cm}\begin{minipage}[t]{0.9\textwidth}
+        \raggedright\small\insertinstitute
+    \end{minipage}
+}
+
+%=============================================================================
+% THEOREM ENVIRONMENTS
+%=============================================================================
+\theoremstyle{definition}
+\setbeamertemplate{theorems}[numbered]
+\newtheorem{defn}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{rmk}{Remark}
+
+%=============================================================================
+% CUSTOM COMMANDS
+%=============================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Corr}{\text{Corr}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\B}{\mathbf{B}}
+\newcommand{\imark}{\textcolor{MainBlue}{\textbullet}}
+\newcommand{\RMSE}{\text{RMSE}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAPE}{\text{MAPE}}
+
+%=============================================================================
+% TITLE INFORMATION
+%=============================================================================
+\title[Time Series Analysis]{Time Series Analysis and Forecasting}
+\subtitle{Chapter 5: GARCH and Volatility}
+\author[D.T. Pele]{Daniel Traian PELE}
+\institute{Bucharest University of Economic Studies\\
+IDA Institute Digital Assets\\
+Blockchain Research Center\\
+AI4EFin Artificial Intelligence for Energy Finance\\
+Romanian Academy, Institute for Economic Forecasting\\
+MSCA Digital Finance}
+\date{}
+
+\begin{document}
+
+% Title page (no header/footer)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% LEARNING OBJECTIVES
+%=============================================================================
+\begin{frame}{Learning Objectives}
+\begin{block}{By the end of this chapter, you will be able to:}
+\begin{itemize}
+    \item Understand volatility clustering and its importance in financial data
+    \item Model conditional heteroskedasticity using ARCH and GARCH models
+    \item Estimate GARCH models and interpret their parameters
+    \item Forecast volatility and apply it to risk management
+\end{itemize}
+\end{block}
+\end{frame}
+
+%=============================================================================
+% TABLE OF CONTENTS
+%=============================================================================
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+%=============================================================================
+% SECTION 1: INTRODUCTION TO VOLATILITY
+%=============================================================================
+\section{Introduction to Volatility Modeling}
+
+\begin{frame}{Why Model Volatility?}
+    \begin{block}{Empirical Observations in Financial Series}
+        \begin{itemize}
+            \item Financial returns exhibit \textbf{volatility clustering} --- periods of high volatility tend to be followed by periods of high volatility
+            \item The distribution of returns has \textbf{fat tails} (leptokurtosis)
+            \item Return correlation is nearly zero, but correlation of squares is significant
+            \item Volatility responds \textbf{asymmetrically} to shocks (leverage effect)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Limitation of ARIMA Models}
+        ARIMA models assume \textbf{constant variance} (homoskedasticity), which is not realistic for financial series!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Volatility Clustering}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth, height=0.55\textheight, keepaspectratio]{garch_volatility_clustering.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{itemize}
+        \item High volatility periods are followed by high volatility; calm by calm
+        \item This suggests that \textbf{conditional variance} is predictable
+    \end{itemize}
+    \quantlet{TSA\_ch5\_clustering}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{Stylized Facts of Financial Returns}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{garch_stylized_facts.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{block}{Observed Properties}
+        \begin{enumerate}
+            \item \textbf{No autocorrelation} in returns
+            \item \textbf{Autocorrelation} in $r_t^2$, $|r_t|$
+            \item \textbf{Fat tails} (kurtosis $> 3$)
+            \item \textbf{Leverage effect}
+            \item \textbf{Volatility clustering}
+        \end{enumerate}
+    \end{block}
+    \quantlet{TSA\_ch5\_stylized}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{Conditional Heteroskedasticity}
+    \begin{defn}[Conditional Variance]
+        For return series $\{r_t\}$, the \textbf{conditional variance} at time $t$ is:
+        $\sigma_t^2 = \Var(r_t | \mathcal{F}_{t-1}) = \E[(r_t - \mu_t)^2 | \mathcal{F}_{t-1}]$
+        where $\mathcal{F}_{t-1}$ is the information available up to time $t-1$.
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{block}{General Model}
+        $r_t = \mu_t + \varepsilon_t$, \quad $\varepsilon_t = \sigma_t z_t$, \quad $z_t \sim \text{i.i.d.}(0, 1)$
+        \begin{itemize}
+            \item $\mu_t$ = conditional mean (ARMA); \quad $\sigma_t^2$ = conditional variance (GARCH)
+            \item $z_t$ = standardized innovations (Normal, Student-t, GED)
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+%=============================================================================
+% SECTION 2: ARCH MODEL
+%=============================================================================
+\section{The ARCH Model}
+
+\begin{frame}{The ARCH(q) Model --- Engle (1982)}
+    \begin{defn}[ARCH(q)]
+        The \textbf{Autoregressive Conditional Heteroskedasticity} model of order $q$:
+        \[
+            \varepsilon_t = \sigma_t z_t, \quad z_t \sim \text{i.i.d.}(0, 1), \quad
+            \sigma_t^2 = \omega + \sum_{i=1}^{q} \alpha_i \varepsilon_{t-i}^2
+        \]
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Stationarity Restrictions}
+        \begin{itemize}
+            \item $\omega > 0$ (positive base variance), \quad $\alpha_i \geq 0$ (non-negativity)
+            \item $\sum_{i=1}^{q} \alpha_i < 1$ (stationarity)
+        \end{itemize}
+    \end{block}
+
+    \begin{rmk}
+        Robert Engle received the \textbf{Nobel Prize in Economics} in 2003 for developing the ARCH model!
+    \end{rmk}
+\end{frame}
+
+\begin{frame}{ARCH(1) Simulation: Effect of $\alpha$ Parameter}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.75\textheight, keepaspectratio]{garch_arch1_simulation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small Higher $\alpha$ means volatility reacts more strongly to recent shocks.}
+    \quantlet{TSA\_ch5\_arch\_sim}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{Properties of the ARCH(1) Model}
+    \begin{block}{ARCH(1): $\sigma_t^2 = \omega + \alpha_1 \varepsilon_{t-1}^2$}
+        \begin{itemize}
+            \item \textbf{Unconditional variance}: $\E[\varepsilon_t^2] = \dfrac{\omega}{1 - \alpha_1}$ (if $\alpha_1 < 1$)
+            \item \textbf{Kurtosis}: $\kappa = 3 \cdot \dfrac{1 - \alpha_1^2}{1 - 3\alpha_1^2}$ (if $\alpha_1^2 < 1/3$)
+            \item Kurtosis $> 3$ for $\alpha_1 > 0$ $\Rightarrow$ \textbf{fat tails}!
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Numerical Example}
+        If $\omega = 0.0001$ and $\alpha_1 = 0.3$:
+        \begin{itemize}
+            \item Unconditional variance: $\sigma^2 = \frac{0.0001}{1 - 0.3} = 0.000143$
+            \item Kurtosis: $\kappa = 3 \cdot \frac{1 - 0.09}{1 - 0.27} = 3.74 > 3$
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Derivation: Unconditional Variance of ARCH(1)}
+    \begin{proof}[Derivation]
+        Let $\varepsilon_t = \sigma_t z_t$ with $z_t \sim N(0,1)$ and $\sigma_t^2 = \omega + \alpha_1 \varepsilon_{t-1}^2$.
+
+        \vspace{0.2cm}
+        \textbf{Step 1}: Take unconditional expectation:
+        \[
+            \E[\varepsilon_t^2] = \E[\sigma_t^2 z_t^2] = \E[\sigma_t^2] \cdot \E[z_t^2] = \E[\sigma_t^2]
+        \]
+
+        \textbf{Step 2}: Apply expectation to variance equation:
+        \[
+            \E[\sigma_t^2] = \E[\omega + \alpha_1 \varepsilon_{t-1}^2] = \omega + \alpha_1 \E[\varepsilon_{t-1}^2]
+        \]
+
+        \textbf{Step 3}: By stationarity, $\E[\varepsilon_t^2] = \E[\varepsilon_{t-1}^2] = \sigma^2$:
+        \[
+            \sigma^2 = \omega + \alpha_1 \sigma^2 \quad \Rightarrow \quad \sigma^2 (1 - \alpha_1) = \omega
+        \]
+
+        \textbf{Result}: $\boxed{\sigma^2 = \dfrac{\omega}{1 - \alpha_1}}$ \quad (requires $\alpha_1 < 1$ for stationarity)
+    \end{proof}
+\end{frame}
+
+\begin{frame}{Derivation: Kurtosis of ARCH(1)}
+    {\small
+    For $\varepsilon_t = \sigma_t z_t$ with $z_t \sim N(0,1)$:
+
+    \textbf{Step 1}: $\E[\varepsilon_t^4] = \E[\sigma_t^4] \cdot \E[z_t^4] = 3 \E[\sigma_t^4]$ \quad (since $\E[z^4] = 3$)
+
+    \textbf{Step 2}: Using $\sigma_t^2 = \omega + \alpha_1 \varepsilon_{t-1}^2$:
+    \[
+        \E[\sigma_t^4] = \E[(\omega + \alpha_1 \varepsilon_{t-1}^2)^2] = \omega^2 + 2\omega\alpha_1 \sigma^2 + \alpha_1^2 \E[\varepsilon_{t-1}^4]
+    \]
+
+    \textbf{Step 3}: Solving the recursion yields:
+    \[
+        \boxed{\kappa = \frac{\E[\varepsilon_t^4]}{(\E[\varepsilon_t^2])^2} = 3 \cdot \frac{1 - \alpha_1^2}{1 - 3\alpha_1^2}}
+    \]
+    }
+
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}
+            \item $\kappa > 3$ for any $\alpha_1 > 0$ $\Rightarrow$ \textbf{fat tails} (leptokurtosis)
+            \item Requires $\alpha_1 < 0.577$ for finite fourth moment
+            \item ARCH naturally generates heavy-tailed distributions!
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Testing for ARCH Effects}
+    \begin{block}{Engle's Test for ARCH Effects}
+        \textbf{Procedure}:
+        \begin{enumerate}
+            \item Estimate the mean model and obtain residuals $\hat{\varepsilon}_t$
+            \item Calculate $\hat{\varepsilon}_t^2$
+            \item Regress $\hat{\varepsilon}_t^2$ on its lags:
+            \[
+                \hat{\varepsilon}_t^2 = \beta_0 + \beta_1 \hat{\varepsilon}_{t-1}^2 + \cdots + \beta_q \hat{\varepsilon}_{t-q}^2 + u_t
+            \]
+            \item Calculate the statistic $LM = T \cdot R^2 \sim \chi^2(q)$
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Hypotheses}
+        \begin{itemize}
+            \item $H_0$: No ARCH effects ($\alpha_1 = \cdots = \alpha_q = 0$)
+            \item $H_1$: ARCH effects present (at least one $\alpha_i \neq 0$)
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Limitations of the ARCH Model}
+    \begin{alertblock}{Practical Problems}
+        \begin{enumerate}
+            \item \textbf{High order} --- many lags are usually needed (large $q$)
+            \item \textbf{Many parameters} --- estimation difficulties
+            \item \textbf{Non-negativity constraints} --- difficult to impose for large $q$
+            \item \textbf{Does not capture persistence} --- observed volatility is very persistent
+        \end{enumerate}
+    \end{alertblock}
+
+    \vspace{0.5cm}
+
+    \begin{block}{The Solution}
+        \textbf{The GARCH Model} --- introduces lags of conditional variance to capture persistence with fewer parameters!
+    \end{block}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: GARCH MODEL
+%=============================================================================
+\section{The GARCH Model}
+
+\begin{frame}{The GARCH(p,q) Model --- Bollerslev (1986)}
+    \begin{defn}[GARCH(p,q)]
+        The \textbf{Generalized ARCH} model:
+        \[
+            \varepsilon_t = \sigma_t z_t, \quad z_t \sim \text{i.i.d.}(0, 1)
+        \]
+        \[
+            \sigma_t^2 = \omega + \sum_{i=1}^{q} \alpha_i \varepsilon_{t-i}^2 + \sum_{j=1}^{p} \beta_j \sigma_{t-j}^2
+        \]
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Interpretation}
+        \begin{itemize}
+            \item $\omega$ = base level of volatility
+            \item $\alpha_i$ = reaction to recent shocks (news coefficients)
+            \item $\beta_j$ = volatility persistence (memory)
+            \item $\alpha + \beta$ = total persistence
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{The GARCH(1,1) Model}
+    \begin{block}{The Most Popular Volatility Model}
+        $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{garch_conditional_variance.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{block}{Restrictions \& Properties}
+        \begin{itemize}
+            \item $\omega > 0$, $\alpha \geq 0$, $\beta \geq 0$; \quad $\alpha + \beta < 1$ (stationarity)
+            \item $\bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}$; \quad Half-life: $HL = \frac{\ln(0.5)}{\ln(\alpha + \beta)}$
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{GARCH(1,1) Simulation: Persistence Effect}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.75\textheight, keepaspectratio]{garch_garch11_simulation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small Parameter $\alpha$ controls reaction to shocks, $\beta$ controls persistence. The sum $\alpha + \beta$ determines mean-reversion speed.}
+    \quantlet{TSA\_ch5\_garch\_sim}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{Derivation: Unconditional Variance of GARCH(1,1)}
+\small
+    \begin{proof}[Derivation]
+        For $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$:
+
+        \textbf{Step 1}: Take unconditional expectation:
+        $\E[\sigma_t^2] = \omega + \alpha \E[\varepsilon_{t-1}^2] + \beta \E[\sigma_{t-1}^2]$
+
+        \textbf{Step 2}: By stationarity, $\E[\sigma_t^2] = \E[\sigma_{t-1}^2] = \bar{\sigma}^2$ and $\E[\varepsilon_t^2] = \bar{\sigma}^2$:
+        $\bar{\sigma}^2 = \omega + (\alpha + \beta) \bar{\sigma}^2$
+
+        \textbf{Step 3}: Solve: $\bar{\sigma}^2 (1 - \alpha - \beta) = \omega \Rightarrow \boxed{\bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}}$
+    \end{proof}
+    \vspace{-0.1cm}
+    \begin{alertblock}{Stationarity Condition}
+        Requires $\alpha + \beta < 1$ for finite unconditional variance.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{GARCH(1,1) as ARMA for $\varepsilon_t^2$}
+    \begin{block}{ARMA(1,1) Representation}
+        Define $\nu_t = \varepsilon_t^2 - \sigma_t^2$ (variance shock). Then:
+        \[
+            \varepsilon_t^2 = \omega + (\alpha + \beta) \varepsilon_{t-1}^2 + \nu_t - \beta \nu_{t-1}
+        \]
+
+        This is an \textbf{ARMA(1,1)} for $\varepsilon_t^2$!
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Implications}
+        \begin{itemize}
+            \item ACF of $\varepsilon_t^2$ decays exponentially (like ARMA)
+            \item Persistence is given by $\alpha + \beta$
+            \item PACF can help identify the order
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Derivation: ARMA Representation of GARCH(1,1)}
+    \begin{proof}[Derivation]
+        \textbf{Step 1}: Define variance shock: $\nu_t = \varepsilon_t^2 - \sigma_t^2$
+        \begin{itemize}
+            \item $\E[\nu_t | \mathcal{F}_{t-1}] = \E[\varepsilon_t^2 | \mathcal{F}_{t-1}] - \sigma_t^2 = \sigma_t^2 - \sigma_t^2 = 0$
+            \item $\nu_t$ is a martingale difference sequence
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{Step 2}: Substitute $\sigma_t^2 = \varepsilon_t^2 - \nu_t$ into GARCH equation:
+        \[
+            \varepsilon_t^2 - \nu_t = \omega + \alpha \varepsilon_{t-1}^2 + \beta (\varepsilon_{t-1}^2 - \nu_{t-1})
+        \]
+
+        \textbf{Step 3}: Rearrange:
+        \[
+            \varepsilon_t^2 = \omega + (\alpha + \beta) \varepsilon_{t-1}^2 + \nu_t - \beta \nu_{t-1}
+        \]
+
+        \textbf{Result}: ARMA(1,1) with AR coefficient $\phi = \alpha + \beta$ and MA coefficient $\theta = -\beta$.
+    \end{proof}
+\end{frame}
+
+\begin{frame}{Volatility Persistence and Half-Life}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Persistence}
+                $\alpha + \beta$ measures mean reversion speed:
+                \begin{itemize}
+                    \item $\approx 1$: very persistent
+                    \item $\ll 1$: quick reversion
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Half-Life Formula}
+                \[
+                    HL = \frac{-0.693}{\ln(\alpha + \beta)}
+                \]
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{Example: S\&P 500}
+                $\alpha = 0.09$, $\beta = 0.90$
+
+                $\alpha + \beta = 0.99$
+                \[
+                    HL = \frac{-0.693}{\ln(0.99)} \approx 69
+                \]
+                Shock halves in $\sim$69 trading days!
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Estimation of GARCH Models}
+    \begin{block}{Maximum Likelihood Estimation (MLE)}
+        Log-likelihood (normal): $\ell(\theta) = -\frac{T}{2} \ln(2\pi) - \frac{1}{2} \sum_{t=1}^{T} \left[ \ln(\sigma_t^2) + \frac{\varepsilon_t^2}{\sigma_t^2} \right]$
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Alternative Distributions for $z_t$}
+        \begin{itemize}
+            \item \textbf{Student-t}: captures fat tails --- most common choice
+            \item \textbf{GED}: flexibility for kurtosis
+            \item \textbf{Skewed Student-t}: asymmetry and fat tails
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Practical Note}
+        Student-t distribution typically provides better fit for financial returns due to fat tails (kurtosis $> 3$).
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Typical Values for GARCH(1,1)}
+    \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Series} & $\bm{\alpha}$ & $\bm{\beta}$ & $\bm{\alpha + \beta}$ \\
+            \midrule
+            S\&P 500 daily & 0.05--0.10 & 0.85--0.95 & 0.95--0.99 \\
+            EUR/USD daily & 0.03--0.08 & 0.90--0.95 & 0.95--0.99 \\
+            Bitcoin daily & 0.10--0.20 & 0.75--0.85 & 0.90--0.98 \\
+            Bonds & 0.02--0.05 & 0.90--0.97 & 0.95--0.99 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{Observations}
+        \begin{itemize}
+            \item $\alpha + \beta$ close to 1 $\Rightarrow$ \textbf{very persistent volatility}
+            \item Small $\alpha$, large $\beta$ $\Rightarrow$ slow reaction to shocks, long memory
+            \item Bitcoin: larger $\alpha$ $\Rightarrow$ faster reaction to news
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{IGARCH --- Integrated GARCH}
+    \begin{defn}[IGARCH(1,1)]
+        When $\alpha + \beta = 1$:
+        \[
+            \sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + (1 - \alpha) \sigma_{t-1}^2
+        \]
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Properties}
+        \begin{itemize}
+            \item Unconditional variance does not exist (infinite)
+            \item Shocks have \textbf{permanent} effect on volatility
+            \item Used for series with extreme persistence
+            \item Useful for \textbf{RiskMetrics} (J.P. Morgan): $\alpha = 0.06$, $\beta = 0.94$
+        \end{itemize}
+    \end{block}
+
+    \begin{rmk}
+        IGARCH is analogous to a unit root in variance!
+    \end{rmk}
+\end{frame}
+
+\begin{frame}{GARCH vs IGARCH: Persistence Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_igarch_comparison.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small Standard GARCH reverts to unconditional mean, while IGARCH has no finite mean and shocks persist indefinitely.}
+    \quantlet{TSA\_ch5\_igarch}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: ASYMMETRIC GARCH MODELS
+%=============================================================================
+\section{Asymmetric GARCH Models}
+
+\begin{frame}{Leverage Effect}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{garch_leverage_effect.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{block}{Definition}
+        \textbf{Leverage effect}: Negative shocks increase volatility \textbf{more} than positive shocks of the same magnitude.
+    \end{block}
+    \begin{alertblock}{Problem with GARCH}
+        Standard GARCH: $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$ --- only $\varepsilon_{t-1}^2$ matters, sign is lost! Economic intuition: Bad news $\Rightarrow$ stock price falls $\Rightarrow$ debt/equity ratio rises $\Rightarrow$ volatility increases.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{The EGARCH Model --- Nelson (1991)}
+    \begin{defn}[EGARCH(1,1)]
+        \textbf{Exponential GARCH}:
+        \[
+            \ln(\sigma_t^2) = \omega + \alpha \left( |z_{t-1}| - \E[|z_{t-1}|] \right) + \gamma z_{t-1} + \beta \ln(\sigma_{t-1}^2)
+        \]
+        where $z_t = \varepsilon_t / \sigma_t$.
+    \end{defn}
+
+    \vspace{0.3cm}
+
+    \begin{block}{EGARCH Advantages}
+        \begin{itemize}
+            \item \textbf{No non-negativity constraints required} --- models $\ln(\sigma_t^2)$
+            \item \textbf{Captures leverage effect} through parameter $\gamma$
+            \begin{itemize}
+                \item $\gamma < 0$: negative shocks $\Rightarrow$ higher volatility
+                \item $\gamma = 0$: symmetric effect (like GARCH)
+            \end{itemize}
+            \item Persistence is given by $\beta$
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{EGARCH Simulation: Symmetric vs Asymmetric}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_egarch_simulation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small When $\gamma < 0$, negative shocks (bad news) increase volatility more than positive shocks of the same magnitude.}
+    \quantlet{TSA\_ch5\_egarch\_sim}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{News Impact Curve --- EGARCH}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{garch_news_impact_curve.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{block}{Definition}
+        \textbf{News Impact Curve}: $\sigma_{t+1}^2$ as function of $\varepsilon_t$, holding $\sigma_t^2$ constant.
+    \end{block}
+    {\footnotesize
+    \begin{itemize}
+        \item \textbf{GARCH}: Symmetric V-shape (parabola); \textbf{EGARCH}: Asymmetric --- steeper for negative shocks; \textbf{GJR}: Piecewise linear with kink at zero
+        \item The asymmetry captures the leverage effect: bad news has larger impact on volatility than good news.
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch5\_nic}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{The GJR-GARCH Model}
+    \begin{defn}[GJR-GARCH(1,1)]
+        Glosten, Jagannathan \& Runkle (1993):
+        $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \gamma \varepsilon_{t-1}^2 \cdot I_{t-1} + \beta \sigma_{t-1}^2$
+        where $I_{t-1} = 1$ if $\varepsilon_{t-1} < 0$, else $0$.
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Interpretation}
+        \begin{itemize}
+            \item Positive shocks: impact = $\alpha$; \quad Negative shocks: impact = $\alpha + \gamma$
+            \item Leverage effect present if $\gamma > 0$
+            \item Stationarity: $\alpha + \gamma/2 + \beta < 1$
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{TGARCH --- Threshold GARCH}
+    \begin{defn}[TGARCH(1,1)]
+        Zakoian (1994) models standard deviation:
+        $\sigma_t = \omega + \alpha^+ \varepsilon_{t-1}^+ + \alpha^- \varepsilon_{t-1}^- + \beta \sigma_{t-1}$
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Comparison of Asymmetric Models}
+        \begin{center}
+            \small
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Model} & \textbf{Specification} & \textbf{Leverage} \\
+                \midrule
+                GARCH & $\sigma_t^2$ & No \\
+                EGARCH & $\ln(\sigma_t^2)$ & Yes ($\gamma < 0$) \\
+                GJR-GARCH & $\sigma_t^2$ with indicator & Yes ($\gamma > 0$) \\
+                TGARCH & $\sigma_t$ & Yes ($\alpha^- > \alpha^+$) \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{block}
+\end{frame}
+
+\begin{frame}{GJR-GARCH/TGARCH Simulation}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_gjr_simulation.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small GJR-GARCH adds an indicator term to capture asymmetric response to negative shocks.}
+    \quantlet{TSA\_ch5\_gjr\_sim}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{News Impact Curves Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_nic_comparison.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small Standard GARCH is symmetric, while EGARCH and GJR-GARCH capture asymmetry (leverage effect).}
+    \quantlet{TSA\_ch5\_nic\_comp}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{GARCH Family Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_family_comparison.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\small All models capture volatility clustering, but differ in how they model asymmetry.}
+    \quantlet{TSA\_ch5\_family}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{GARCH-M: GARCH-in-Mean Model}
+    \begin{defn}[GARCH-M]
+        The \textbf{GARCH-in-Mean} model: $r_t = \mu + \lambda \sigma_t + \varepsilon_t$, where $\lambda$ is the \textbf{risk premium}.
+    \end{defn}
+    \vspace{-0.1cm}
+    \begin{block}{Interpretation}
+        \begin{itemize}
+            \item $\lambda > 0$: Higher risk $\Rightarrow$ higher expected return
+            \item $\lambda = 0$: Reduces to standard GARCH
+            \item $\lambda < 0$: Higher risk $\Rightarrow$ lower return (rare)
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{alertblock}{Financial Intuition}
+        Investors demand compensation for bearing risk --- GARCH-M captures this \textbf{risk-return tradeoff}.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{GARCH-M: Alternative Specifications}
+\small
+    \begin{block}{Common Specifications}
+        Risk premium can enter in different forms: (1) $r_t = \mu + \lambda \sigma_t + \varepsilon_t$; (2) $r_t = \mu + \lambda \sigma_t^2 + \varepsilon_t$; (3) $r_t = \mu + \lambda \ln(\sigma_t^2) + \varepsilon_t$
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Typical Results for Equity Markets}
+        \begin{itemize}
+            \item Estimated $\lambda$ often positive but small (0.01--0.10)
+            \item Significance varies across markets and periods
+            \item Variance specification yields larger $\lambda$ estimates
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-0.1cm}
+    \begin{rmk}
+        GARCH-M is used in asset pricing, portfolio optimization, and CAPM testing.
+    \end{rmk}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: MODEL SELECTION AND DIAGNOSTICS
+%=============================================================================
+\section{Model Selection and Diagnostics}
+
+\begin{frame}{Order Selection}
+    \begin{block}{Information Criteria}
+        \begin{itemize}
+            \item \textbf{AIC} = $-2\ell + 2k$
+            \item \textbf{BIC} = $-2\ell + k \ln(T)$
+            \item \textbf{HQIC} = $-2\ell + 2k \ln(\ln(T))$
+        \end{itemize}
+        where $\ell$ = maximized log-likelihood, $k$ = number of parameters.
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Practical Recommendations}
+        \begin{itemize}
+            \item GARCH(1,1) is sufficient in \textbf{90\% of cases}
+            \item Check if asymmetric model significantly improves fit
+            \item Choose innovation distribution that minimizes AIC/BIC
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{GARCH Model Diagnostics}
+    \begin{block}{Standardized Residuals}
+        \[
+            \hat{z}_t = \frac{\hat{\varepsilon}_t}{\hat{\sigma}_t}
+        \]
+
+        If the model is correctly specified, $\hat{z}_t$ should be i.i.d.(0,1).
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Diagnostic Checks}
+        \begin{enumerate}
+            \item \textbf{Ljung-Box on $\hat{z}_t$}: check absence of autocorrelation in mean
+            \item \textbf{Ljung-Box on $\hat{z}_t^2$}: check absence of residual ARCH effects
+            \item \textbf{ARCH-LM test on $\hat{z}_t$}: confirm absence of heteroskedasticity
+            \item \textbf{Histogram + QQ-plot}: verify assumed distribution
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Diagnostic Example}
+    \begin{center}
+        \includegraphics[width=0.72\textwidth, height=0.68\textheight, keepaspectratio]{garch_diagnostics.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_diagnostic}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+%=============================================================================
+% SECTION 6: FORECASTING VOLATILITY
+%=============================================================================
+\section{Volatility Forecasting}
+
+\begin{frame}{Forecasting with GARCH(1,1)}
+    \begin{block}{One-Step-Ahead Forecast}
+        $\hat{\sigma}_{T+1}^2 = \omega + \alpha \varepsilon_T^2 + \beta \sigma_T^2$
+    \end{block}
+
+    \begin{block}{Multi-Step Forecast}
+        For $h > 1$: $\E_T[\sigma_{T+h}^2] = \bar{\sigma}^2 + (\alpha + \beta)^{h-1} (\sigma_{T+1}^2 - \bar{\sigma}^2)$
+        where $\bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}$ = unconditional variance.
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Convergence}
+        $\lim_{h \to \infty} \E_T[\sigma_{T+h}^2] = \bar{\sigma}^2$ --- forecast converges to unconditional variance!
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Volatility Forecast --- Visualization}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.55\textheight, keepaspectratio]{garch_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{itemize}
+        \item Forecast converges exponentially to $\bar{\sigma}^2$; speed depends on $\alpha + \beta$
+        \item The closer $\alpha + \beta$ is to 1, the slower the convergence
+    \end{itemize}
+    \quantlet{TSA\_ch5\_vol\_forecast}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{Applications of Volatility Forecasting}
+\small
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Value at Risk (VaR)}
+                $\text{VaR}_\alpha = z_\alpha \cdot \sigma_{T+1}$
+
+                Maximum loss with probability $1-\alpha$.
+            \end{block}
+
+            \begin{block}{Expected Shortfall (ES)}
+                $\text{ES}_\alpha = \E[-r | r < -\text{VaR}_\alpha]$
+
+                Average loss when VaR is exceeded.
+            \end{block}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Other Applications}
+                \begin{itemize}
+                    \item Option pricing
+                    \item Dynamic hedging
+                    \item Portfolio allocation
+                    \item Stress testing
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VaR and ES: Graphical Illustration}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_var_illustration.pdf}
+    \end{center}
+    {\small VaR 1\% = loss exceeded only in 1\% of cases. Red area = left tail (extreme losses).}
+    \quantlet{TSA\_ch5\_var\_plot}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{VaR vs Expected Shortfall: Normal vs Student-t}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_var_es_comparison.pdf}
+    \end{center}
+    {\small ES (green line) measures average loss when VaR is exceeded. Student-t has heavier tails $\Rightarrow$ larger VaR and ES.}
+    \quantlet{TSA\_ch5\_var\_es}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{Value at Risk --- Numerical Example}
+    \begin{exampleblock}{VaR Calculation}
+        Portfolio: \textbf{1,000,000 EUR}, forecasted volatility $\hat{\sigma}_{T+1} = 1.5\%$
+    \end{exampleblock}
+
+    \begin{block}{VaR with Normal Distribution}
+        \begin{center}
+            \small
+            \begin{tabular}{lccc}
+                \toprule
+                \textbf{Level} & $\bm{z_\alpha}$ & \textbf{VaR (\%)} & \textbf{VaR (EUR)} \\
+                \midrule
+                5\% (1 day) & 1.645 & 2.47\% & 24,675 \\
+                1\% (1 day) & 2.326 & 3.49\% & 34,890 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{block}
+
+    \begin{alertblock}{Scaling for Longer Periods}
+        $\text{VaR}_{h\text{ days}} = \text{VaR}_{1\text{ day}} \cdot \sqrt{h}$ --- assumes i.i.d. returns
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Value at Risk --- Student-t Distribution}
+    \begin{block}{Why Student-t?}
+        Normal distribution \textbf{underestimates} tail risk. Student-t with $\nu$ degrees of freedom better captures fat tails (kurtosis $> 3$).
+    \end{block}
+
+    \begin{exampleblock}{VaR 1\% (1 day) Comparison: $\sigma = 1.5\%$, Portfolio = 1M EUR}
+        \begin{center}
+            \small
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Distribution} & \textbf{Quantile} & \textbf{VaR (EUR)} \\
+                \midrule
+                Normal & 2.326 & 34,890 \\
+                Student-t ($\nu = 6$) & 3.143 & 47,145 \\
+                Student-t ($\nu = 4$) & 3.747 & 56,205 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{exampleblock}
+
+    \begin{alertblock}{Observation}
+        With $\nu = 6$ (typical for stocks), VaR is \textbf{35\% higher} than normal!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{VaR --- Complete Example with GARCH}
+    \begin{block}{VaR Calculation Procedure}
+        \begin{enumerate}
+            \item Estimate GARCH(1,1) model with Student-t distribution
+            \item Obtain volatility forecast: $\hat{\sigma}_{T+1}$
+            \item Calculate VaR: $\text{VaR}_\alpha = t_\alpha(\nu) \cdot \hat{\sigma}_{T+1} \cdot \sqrt{\frac{\nu-2}{\nu}}$
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Example: S\&P 500}
+        \begin{itemize}
+            \item Estimated parameters: $\alpha = 0.088$, $\beta = 0.900$, $\nu = 6.4$
+            \item Forecasted volatility: $\hat{\sigma}_{T+1} = 1.2\%$
+            \item Portfolio: 10,000,000 EUR
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{VaR 1\% (1 day):}
+        $\text{VaR} = 3.05 \times 0.012 \times 10{,}000{,}000 = \textbf{366{,}000 EUR}$
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{VaR Backtesting: Visual Overview}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_var_backtesting.pdf}
+    \end{center}
+    {\small Backtesting checks if VaR violations match expected rate (e.g., ~2.5 violations/year for VaR 1\%).}
+    \quantlet{TSA\_ch5\_backtest}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{Volatility Forecast with Confidence Intervals}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{garch_volatility_forecast.pdf}
+    \end{center}
+    {\small Forecast converges to unconditional volatility $\bar{\sigma}$. Uncertainty increases with forecast horizon.}
+    \quantlet{TSA\_ch5\_vol\_ci}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{VaR Backtesting: Kupiec Test}
+    \begin{block}{Unconditional Coverage Test}
+        Tests whether the observed violation rate equals the expected rate $p$ (e.g., 1\% for VaR 1\%).
+
+        \vspace{0.2cm}
+
+        Let $N$ = number of VaR violations, $T$ = total observations, $\hat{p} = N/T$.
+
+        \vspace{0.2cm}
+
+        \textbf{Likelihood Ratio Statistic:}
+        \[
+            LR_{uc} = -2\ln\left[\frac{(1-p)^{T-N} p^N}{(1-\hat{p})^{T-N} \hat{p}^N}\right] \sim \chi^2(1)
+        \]
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Hypotheses}
+        \begin{itemize}
+            \item $H_0$: $\hat{p} = p$ (VaR model is correctly calibrated)
+            \item $H_1$: $\hat{p} \neq p$ (VaR model under- or over-estimates risk)
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{VaR Backtesting: Christoffersen Test}
+    \begin{block}{Conditional Coverage Test}
+        Tests both \textbf{unconditional coverage} and \textbf{independence} of violations.
+
+        Violations should be independent --- no clustering of exceptions!
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{block}{Test Components}
+        \begin{itemize}
+            \item \textbf{Independence test} ($LR_{ind}$): Tests if violations are serially independent
+            \item \textbf{Conditional coverage}: $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{alertblock}{Interpretation}
+        Reject $LR_{uc}$: wrong frequency; Reject $LR_{ind}$: clustered violations; Reject $LR_{cc}$: model fails
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{VaR Backtesting: Python Implementation}
+\begin{block}{Kupiec Test Implementation}
+\begin{verbatim}
+import numpy as np
+from scipy import stats
+def kupiec_test(violations, T, p=0.01):
+    N = np.sum(violations)
+    p_hat = N / T
+    if N == 0 or N == T:
+        return np.nan, np.nan
+    LR = -2 * (np.log((1-p)**(T-N) * p**N) -
+               np.log((1-p_hat)**(T-N) * p_hat**N))
+    return LR, 1 - stats.chi2.cdf(LR, df=1)
+\end{verbatim}
+\end{block}
+\begin{exampleblock}{Usage}
+\texttt{LR, pval = kupiec\_test(violations, T=250, p=0.01)}
+\end{exampleblock}
+    \quantlet{TSA\_ch5\_backtest\_py}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+%=============================================================================
+% SECTION 7b: ARMA-GARCH JOINT MODELING
+%=============================================================================
+
+\begin{frame}{ARMA-GARCH: Joint Mean and Variance Modeling}
+\small
+    \begin{block}{Why Joint Modeling?}
+        \textbf{Serial correlation} $\Rightarrow$ ARMA for mean; \textbf{Volatility clustering} $\Rightarrow$ GARCH for variance.
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{defn}[ARMA(p,q)-GARCH(r,s)]
+        \textbf{Mean equation}: $r_t = \mu + \sum_{i=1}^{p} \phi_i (r_{t-i} - \mu) + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t$
+
+        \textbf{Variance equation}: $\varepsilon_t = \sigma_t z_t$, \quad $\sigma_t^2 = \omega + \sum_{i=1}^{r} \alpha_i \varepsilon_{t-i}^2 + \sum_{j=1}^{s} \beta_j \sigma_{t-j}^2$
+    \end{defn}
+\end{frame}
+
+\begin{frame}{ARMA-GARCH: Model Selection Strategy}
+    \begin{block}{Step-by-Step Approach}
+        \begin{enumerate}
+            \item \textbf{Identify mean model}: Check ACF/PACF of returns for ARMA structure
+            \item \textbf{Test for ARCH effects}: Apply ARCH-LM test to residuals
+            \item \textbf{Specify variance model}: Usually GARCH(1,1) is sufficient
+            \item \textbf{Joint estimation}: Estimate both equations via MLE
+            \item \textbf{Diagnostic checking}: Standardized residuals should be i.i.d.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Common Specifications}
+        \begin{itemize}
+            \item \textbf{Stock returns}: AR(1)-GARCH(1,1) or ARMA(1,1)-GARCH(1,1)
+            \item \textbf{Exchange rates}: Often just GARCH(1,1) (no mean dynamics)
+            \item \textbf{Interest rates}: AR(1)-EGARCH(1,1) for leverage effects
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{ARMA-GARCH: Python Implementation}
+\begin{block}{Using the \texttt{arch} Package}
+\begin{verbatim}
+from arch import arch_model
+model = arch_model(returns,
+                   mean='ARX',
+                   lags=1,
+                   vol='Garch',
+                   p=1, q=1,
+                   dist='t')
+result = model.fit(disp='off')
+print(result.summary())
+\end{verbatim}
+\end{block}
+\begin{exampleblock}{Parameters}
+\texttt{mean='ARX'}: ARMA mean; \texttt{lags=1}: AR(1); \texttt{dist='t'}: Student-t
+\end{exampleblock}
+    \quantlet{TSA\_ch5\_armagarch}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}[fragile]{ARMA-GARCH: Complete Example}
+\begin{verbatim}
+from arch import arch_model
+model = arch_model(returns,
+                   mean='ARX', lags=[1],
+                   vol='EGARCH', p=1, q=1,
+                   dist='skewt')
+result = model.fit(update_freq=0)
+cond_mean = result.conditional_mean
+cond_vol = result.conditional_volatility
+forecasts = result.forecast(horizon=5)
+\end{verbatim}
+\begin{exampleblock}{Note}
+For MA terms, use \texttt{mean='HARX'} or pre-filter with statsmodels ARIMA.
+\end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% SECTION 8: CASE STUDY
+%=============================================================================
+\section{Case Study: S\&P 500}
+
+\begin{frame}{S\&P 500 Volatility Analysis}
+    \begin{center}
+        \includegraphics[width=0.78\textwidth, height=0.58\textheight, keepaspectratio]{garch_sp500_returns.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    \begin{itemize}
+        \item S\&P 500 daily returns (2000--2024) --- volatility clustering visible
+        \item Crisis periods: 2008 (financial), 2020 (COVID-19), 2022 (inflation)
+    \end{itemize}
+    \quantlet{TSA\_ch5\_sp500}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{GARCH(1,1) Estimation --- S\&P 500}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{garch_sp500_volatility.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{block}{Estimation Results}
+        \begin{center}
+            \small
+            \begin{tabular}{lc}
+                \toprule
+                \textbf{Parameter} & \textbf{Value} \\
+                \midrule
+                $\omega$ & 0.0108 \\
+                $\alpha$ & 0.0883 \\
+                $\beta$ & 0.9002 \\
+                $\alpha + \beta$ & 0.9885 \\
+                $\nu$ (df) & 6.42 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+        Very persistent; Half-life $\approx$ 60 days
+    \end{block}
+    \quantlet{TSA\_ch5\_sp500\_garch}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+\begin{frame}{GARCH vs EGARCH Comparison --- S\&P 500}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{garch_sp500_comparison.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{block}{Leverage Effect Confirmed}
+        EGARCH: $\gamma = -0.12$ (significantly negative) --- negative shocks amplify volatility more than positive shocks. Both models capture volatility clustering, but EGARCH better fits crisis periods (2008, 2020).
+    \end{block}
+    \quantlet{TSA\_ch5\_sp500\_comp}{https://github.com/QuantLet/TSA/blob/main/TSA_ch5/TSA_ch5_garch.py}
+\end{frame}
+
+%=============================================================================
+% KEY FORMULAS
+%=============================================================================
+\begin{frame}{Key Formulas}
+    \begin{block}{Volatility Models}
+        \begin{itemize}
+            \item \textbf{ARCH(q):} $\sigma_t^2 = \omega + \sum_{i=1}^{q} \alpha_i \varepsilon_{t-i}^2$
+            \item \textbf{GARCH(1,1):} $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$
+            \item \textbf{EGARCH:} $\ln(\sigma_t^2) = \omega + \alpha(|z_{t-1}| - \E[|z|]) + \gamma z_{t-1} + \beta \ln(\sigma_{t-1}^2)$
+            \item \textbf{GJR-GARCH:} $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \gamma \varepsilon_{t-1}^2 I_{t-1} + \beta \sigma_{t-1}^2$
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Properties and Measures}
+        \begin{itemize}
+            \item \textbf{Unconditional variance:} $\bar{\sigma}^2 = \frac{\omega}{1-\alpha-\beta}$ \quad \textbf{Half-life:} $HL = \frac{\ln(0.5)}{\ln(\alpha+\beta)}$
+            \item \textbf{VaR:} $\text{VaR}_\alpha = z_\alpha \cdot \sigma_{T+1}$ \quad \textbf{Stationarity:} $\alpha + \beta < 1$
+            \item \textbf{ARCH-LM:} $LM = T \cdot R^2 \sim \chi^2(q)$
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+%=============================================================================
+% SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Summary --- Chapter 5: Volatility Models}
+    \begin{block}{Key Concepts}
+        \begin{itemize}
+            \item \textbf{ARCH(q)}: conditional variance depends on past squared errors
+            \item \textbf{GARCH(p,q)}: adds variance lags for persistence
+            \item \textbf{EGARCH/GJR-GARCH}: capture leverage effect (asymmetric response)
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Applications}
+        Risk measurement (VaR, ES), derivative pricing, portfolio management
+    \end{block}
+
+    \begin{alertblock}{Practical Tip}
+        Start with GARCH(1,1), check for leverage, choose distribution minimizing AIC/BIC!
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{References}
+    \begin{thebibliography}{10}
+        \bibitem{engle1982} Engle, R.F. (1982). \textit{Autoregressive Conditional Heteroscedasticity with Estimates of the Variance of United Kingdom Inflation}. Econometrica, 50(4), 987-1007.
+
+        \bibitem{bollerslev1986} Bollerslev, T. (1986). \textit{Generalized Autoregressive Conditional Heteroskedasticity}. Journal of Econometrics, 31(3), 307-327.
+
+        \bibitem{nelson1991} Nelson, D.B. (1991). \textit{Conditional Heteroskedasticity in Asset Returns: A New Approach}. Econometrica, 59(2), 347-370.
+
+        \bibitem{gjr1993} Glosten, L.R., Jagannathan, R., \& Runkle, D.E. (1993). \textit{On the Relation between the Expected Value and the Volatility of the Nominal Excess Return on Stocks}. The Journal of Finance, 48(5), 1779-1801.
+
+        \bibitem{tsay2010} Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}. 3rd Edition, Wiley.
+    \end{thebibliography}
+\end{frame}
+
+\end{document}

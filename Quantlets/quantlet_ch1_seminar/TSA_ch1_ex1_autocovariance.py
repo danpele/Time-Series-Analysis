@@ -122,7 +122,7 @@ ax2.set_ylabel('Value')
 ax2.set_title(f'AR(1) Mean Reversion: φ = {rho_1}')
 ax2.set_xlim(4, 8)
 ax2.set_ylim(4, 7)
-ax2.legend(loc='upper right')
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()

@@ -86,7 +86,7 @@ ax2.axhline(y=np.mean(diff1), color='orange', linestyle='-', linewidth=2, label=
 ax2.set_title('First Difference $\\Delta X_t = (1-L)X_t$', fontsize=12)
 ax2.set_xlabel('Time')
 ax2.set_ylabel('Value')
-ax2.legend()
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax2.grid(True, alpha=0.3)
 
 # Second difference

@@ -12,13 +12,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams['font.size'] = 11
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
 plt.rcParams['savefig.dpi'] = 150
 plt.rcParams['savefig.bbox'] = 'tight'
+plt.rcParams['savefig.transparent'] = True
 
 COLORS = {'blue': '#1A3A6E', 'red': '#DC3545', 'green': '#2E7D32',
           'orange': '#E67E22', 'gray': '#666666', 'purple': '#8E44AD'}
@@ -276,12 +277,15 @@ axes[0, 1].set_title('Distribution vs Normal', fontweight='bold')
 plot_acf(residuals.values, ax=axes[1, 0], lags=20, alpha=0.05)
 axes[1, 0].set_title('ACF of Residuals', fontweight='bold')
 
-(osm, osr), _ = stats.probplot(std_resid.values, dist="norm")
-axes[1, 1].scatter(osm, osr, color=COLORS['blue'], alpha=0.6, s=20)
-axes[1, 1].plot([-3, 3], [-3, 3], color=COLORS['red'], linewidth=2, linestyle='--')
-axes[1, 1].set_xlim(-3.5, 3.5)
-axes[1, 1].set_ylim(-3.5, 3.5)
+stats.probplot(std_resid.values, dist="norm", plot=axes[1, 1])
+axes[1, 1].get_lines()[0].set_markerfacecolor(COLORS['blue'])
+axes[1, 1].get_lines()[0].set_markeredgecolor(COLORS['blue'])
+axes[1, 1].get_lines()[0].set_markersize(4)
+axes[1, 1].get_lines()[1].set_color(COLORS['red'])
+axes[1, 1].get_lines()[1].set_linewidth(2)
 axes[1, 1].set_title('Q-Q Plot', fontweight='bold')
+axes[1, 1].set_xlabel('Theoretical Quantiles')
+axes[1, 1].set_ylabel('Sample Quantiles')
 jb_stat, jb_pval = stats.jarque_bera(std_resid.values)
 axes[1, 1].text(0.05, 0.95, f'JB p = {jb_pval:.3f}', transform=axes[1, 1].transAxes, fontsize=9, va='top')
 
@@ -390,6 +394,8 @@ for i in range(1, n_test):
 
 prophet_rmse = np.sqrt(np.mean((test_data.values - prophet_pred)**2))
 
+import matplotlib.dates as mdates
+
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
 
 # SARIMA - show train, val, test
@@ -401,11 +407,13 @@ ax1.plot(test_data.index, rolling_forecasts, color=COLORS['red'], linewidth=2, l
 ax1.fill_between(test_data.index, rolling_ci_lower, rolling_ci_upper, color=COLORS['red'], alpha=0.15)
 ax1.axvline(x=pd.Timestamp(val_start), color='gray', linestyle='--', alpha=0.5)
 ax1.axvline(x=pd.Timestamp(test_start), color='black', linestyle='--', alpha=0.7)
-ax1.set_title(f'{best_model["name"]}: Rolling Forecast', fontweight='bold', fontsize=11)
+ax1.set_title(f'SARIMA: Test RMSE = {test_rmse:.2f}', fontweight='bold', fontsize=11)
 ax1.set_xlabel('Date')
 ax1.set_ylabel('Unemployment Rate (%)')
 ax1.set_ylim(2, 16)
-ax1.text(0.05, 0.95, f'Test RMSE = {test_rmse:.2f}', transform=ax1.transAxes, fontsize=11, va='top', fontweight='bold', color=COLORS['red'])
+ax1.xaxis.set_major_locator(mdates.YearLocator(2))
+ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+ax1.tick_params(axis='x', rotation=0)
 
 # Prophet - show train, val, test
 ax2 = axes[1]
@@ -416,23 +424,24 @@ ax2.plot(test_data.index, prophet_pred, color=COLORS['orange'], linewidth=2, lin
 ax2.fill_between(test_data.index, prophet_pred - 0.8, prophet_pred + 0.8, color=COLORS['orange'], alpha=0.15)
 ax2.axvline(x=pd.Timestamp(val_start), color='gray', linestyle='--', alpha=0.5)
 ax2.axvline(x=pd.Timestamp(test_start), color='black', linestyle='--', alpha=0.7)
-ax2.set_title('Prophet: Adapts via Changepoints', fontweight='bold', fontsize=11)
+ax2.set_title(f'Prophet: Test RMSE = {prophet_rmse:.2f}', fontweight='bold', fontsize=11)
 ax2.set_xlabel('Date')
 ax2.set_ylim(2, 16)
-ax2.text(0.05, 0.95, f'Test RMSE = {prophet_rmse:.2f}', transform=ax2.transAxes, fontsize=11, va='top', fontweight='bold', color=COLORS['orange'])
+ax2.xaxis.set_major_locator(mdates.YearLocator(2))
+ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+ax2.tick_params(axis='x', rotation=0)
 
-# Combine handles from both axes (avoid duplicates, add Prophet)
+# Combined legend outside bottom
 handles1, labels1 = ax1.get_legend_handles_labels()
 handles2, labels2 = ax2.get_legend_handles_labels()
-# Get unique: Train, Val, Test from ax1, then SARIMA from ax1, Prophet from ax2
-all_handles = handles1[:3] + [handles1[3], handles2[3]]  # Train, Val, Test, SARIMA, Prophet
+all_handles = handles1[:3] + [handles1[3], handles2[3]]
 all_labels = labels1[:3] + [labels1[3], labels2[3]]
 fig.legend(all_handles, all_labels, loc='upper center', bbox_to_anchor=(0.5, -0.02), ncol=5, frameon=False, fontsize=9)
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
-plt.savefig(f'{OUTPUT_DIR}prophet_vs_sarima_unemployment.pdf')
-plt.savefig(f'{OUTPUT_DIR}prophet_vs_sarima_unemployment.png')
+plt.savefig(f'{OUTPUT_DIR}prophet_vs_sarima_unemployment.pdf', transparent=True)
+plt.savefig(f'{OUTPUT_DIR}prophet_vs_sarima_unemployment.png', transparent=True)
 plt.close()
 print(f"  - prophet_vs_sarima_unemployment.pdf (SARIMA={test_rmse:.2f}, Prophet={prophet_rmse:.2f})")
 

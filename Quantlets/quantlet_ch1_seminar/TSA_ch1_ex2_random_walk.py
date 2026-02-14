@@ -122,7 +122,7 @@ ax1.scatter([100], [X_0], color='purple', s=100, zorder=5, label=f'E[X_100] = {X
 ax1.set_xlabel('Time (t)')
 ax1.set_ylabel('X_t')
 ax1.set_title('Random Walk: Variance Grows with Time')
-ax1.legend(loc='upper left')
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 ax1.set_xlim(0, 100)
 
@@ -142,7 +142,7 @@ ax2.axhline(y=CI_upper, color='blue', linestyle=':', linewidth=2, label=f'95% CI
 ax2.set_xlabel('Time (t)')
 ax2.set_ylabel('X_t')
 ax2.set_title('Random Walk: 20 Simulated Paths')
-ax2.legend(loc='upper left')
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax2.grid(True, alpha=0.3)
 ax2.set_xlim(0, 100)
 

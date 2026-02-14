@@ -1566,17 +1566,17 @@ def chart_white_noise_types():
 
     fig, axes = plt.subplots(1, 3, figsize=(9, 2.5))
 
-    titles = ['Zgomot alb slab', 'Zgomot alb puternic (i.i.d.)', 'Zgomot alb Gaussian']
+    titles = ['Weak White Noise', 'Strong White Noise (i.i.d.)', 'Gaussian White Noise']
     data = [weak_wn, strong_wn, gauss_wn]
     colors = [ORANGE, BLUE, GREEN]
-    subtitles = ['Necorelat, dependențe neliniare', r'$\varepsilon_t \sim t_5$ (i.i.d.)',
+    subtitles = ['Uncorrelated, nonlinear dependence', r'$\varepsilon_t \sim t_5$ (i.i.d.)',
                  r'$\varepsilon_t \sim N(0,1)$ (i.i.d.)']
 
     for i, (ax, d, c, t, sub) in enumerate(zip(axes, data, colors, titles, subtitles)):
         ax.plot(d, color=c, linewidth=0.4, alpha=0.8)
         ax.axhline(0, color=GRAY, linewidth=0.5, linestyle='--')
         ax.set_title(t, fontsize=8, fontweight='bold')
-        ax.set_xlabel('Timp', fontsize=7)
+        ax.set_xlabel('Time', fontsize=7)
         ax.set_ylabel(r'$\varepsilon_t$', fontsize=7)
         ax.tick_params(labelsize=6)
         # Add subtitle

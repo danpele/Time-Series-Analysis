@@ -134,7 +134,7 @@ for _, row in df.iterrows():
 ax3.set_xlabel('Number of Parameters (k)')
 ax3.set_ylabel('Information Criterion')
 ax3.set_title('Complexity vs Fit Trade-off')
-ax3.legend()
+ax3.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax3.grid(True, alpha=0.3)
 
 plt.tight_layout()

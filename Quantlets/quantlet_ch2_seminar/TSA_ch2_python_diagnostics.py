@@ -165,7 +165,7 @@ ax4.plot(x_range, stats.norm.pdf(x_range, np.mean(residuals), np.std(residuals))
 ax4.set_title('Residual Distribution', fontsize=12)
 ax4.set_xlabel('Residual')
 ax4.set_ylabel('Density')
-ax4.legend()
+ax4.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax4.grid(True, alpha=0.3)
 
 # Plot 5: Q-Q plot

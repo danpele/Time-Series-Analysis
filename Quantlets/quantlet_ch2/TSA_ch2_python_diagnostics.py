@@ -60,7 +60,7 @@ x_range = np.linspace(resid.min(), resid.max(), 100)
 axes[1, 1].plot(x_range, stats.norm.pdf(x_range, resid.mean(), resid.std()),
                 'r-', linewidth=2, label='Normal')
 axes[1, 1].set_title('Residual Distribution')
-axes[1, 1].legend()
+axes[1, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 plt.tight_layout()
 plt.savefig('../../charts/sem2_diagnostics.png', dpi=150, bbox_inches='tight')

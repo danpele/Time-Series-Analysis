@@ -107,7 +107,7 @@ ax1.bar(t_vals + width/2, forecast, width, label='Forecast $\\hat{X}_t$', color=
 ax1.set_xlabel('Time (t)')
 ax1.set_ylabel('Value')
 ax1.set_title('Actual vs Forecast Values')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.set_xticks(t_vals)
 ax1.grid(True, alpha=0.3, axis='y')
 

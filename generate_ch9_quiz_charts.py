@@ -169,7 +169,7 @@ def ch9_quiz3_fourier_harmonics():
         ax.plot(t, approx, 'r-', linewidth=2, label=f'Fourier K={K}')
         ax.set_title(title, fontsize=10)
         ax.set_xlabel('Period')
-        ax.legend(loc='upper right', fontsize=8, frameon=False)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch9_quiz3_fourier_harmonics')
@@ -296,7 +296,7 @@ def ch9_quiz6_seasonality_mode():
     axes[0].set_title('Additive: $Y = T + S + \\varepsilon$\nConstant Seasonal Amplitude', fontsize=10, color='blue')
     axes[0].set_xlabel('Time')
     axes[0].set_ylabel('Value')
-    axes[0].legend(loc='upper left', fontsize=8, frameon=False)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     # Multiplicative seasonality
     seasonal_mult = 1 + 0.2 * np.sin(2 * np.pi * t / 12)  # +-20%
@@ -307,7 +307,7 @@ def ch9_quiz6_seasonality_mode():
     axes[1].fill_between(t, trend * 0.8, trend * 1.2, alpha=0.2, color='green', label='Growing amplitude')
     axes[1].set_title('Multiplicative: $Y = T \\times S \\times \\varepsilon$\nSeasonal Amplitude Grows', fontsize=10, color='green')
     axes[1].set_xlabel('Time')
-    axes[1].legend(loc='upper left', fontsize=8, frameon=False)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fontsize=8, frameon=False)
 
     plt.tight_layout()
     save_fig('ch9_quiz6_seasonality_mode')

@@ -101,7 +101,7 @@ ax1.axhline(y=np.mean(x), color='green', linestyle=':', linewidth=2, label=f'Sam
 ax1.set_title(f'Simulated AR(1): X_t = {c_true} + {phi_true}X_{{t-1}} + ε_t', fontsize=12)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('X_t')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 
 # Plot 2: ACF comparison
@@ -115,7 +115,7 @@ ax2.axhline(y=-1.96/np.sqrt(n), color='gray', linestyle='--', alpha=0.5)
 ax2.set_title('ACF: Theoretical vs Sample', fontsize=12)
 ax2.set_xlabel('Lag')
 ax2.set_ylabel('ACF')
-ax2.legend()
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax2.grid(True, alpha=0.3)
 
 # Plot 3: PACF
@@ -123,7 +123,7 @@ ax3 = axes[1, 0]
 plot_pacf(x, lags=15, ax=ax3, method='ywm')
 ax3.axhline(y=phi_true, color='red', linestyle='--', linewidth=2, label=f'True φ = {phi_true}')
 ax3.set_title('Sample PACF (should cut off after lag 1)', fontsize=12)
-ax3.legend()
+ax3.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Plot 4: Parameter comparison
 ax4 = axes[1, 1]

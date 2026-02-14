@@ -98,7 +98,7 @@ ax1.text(5.7, 10.5, 'Forecast\nhorizon', fontsize=9, color='gray')
 ax1.set_xlabel('Time (t)')
 ax1.set_ylabel('Value')
 ax1.set_title(f'Simple Exponential Smoothing (α = {alpha})')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 ax1.set_xticks(range(1, 7))
 

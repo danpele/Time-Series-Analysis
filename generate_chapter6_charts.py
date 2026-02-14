@@ -36,6 +36,8 @@ def plot_spurious_regression():
     """Two independent random walks that appear correlated"""
     T = 200
 
+    # Seed that produces high R² (spurious regression demonstration)
+    np.random.seed(100)
     # Generate two independent random walks
     e1 = np.random.normal(0, 1, T)
     e2 = np.random.normal(0, 1, T)

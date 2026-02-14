@@ -125,7 +125,7 @@ ax1.set_aspect('equal')
 ax1.set_title('Characteristic Roots\n(Must be OUTSIDE unit circle)', fontsize=11)
 ax1.set_xlabel('Real')
 ax1.set_ylabel('Imaginary')
-ax1.legend(loc='upper left', fontsize=9)
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False, fontsize=9)
 ax1.grid(True, alpha=0.3)
 
 # Stationarity triangle

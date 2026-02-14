@@ -36,7 +36,7 @@ ax1.set_ylim(-1.5, 1.5)
 ax1.set_xlabel(r'$\phi_1$', fontsize=12)
 ax1.set_ylabel(r'$\phi_2$', fontsize=12)
 ax1.set_title('AR(2) Stationarity Triangle', fontsize=12)
-ax1.legend(loc='upper right', fontsize=9)
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False, fontsize=9)
 ax1.grid(True, alpha=0.3)
 ax1.set_aspect('equal')
 

@@ -48,7 +48,7 @@ ax1.plot(model_mle.fittedvalues[:100], 'r--', linewidth=1.2, label='Fitted (MLE)
 ax1.set_title('AR(2) Series with Fitted Values', fontsize=12)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('Value')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 
 # Plot 2: Parameter comparison
@@ -67,7 +67,7 @@ ax2.set_ylabel('Parameter Value')
 ax2.set_title('Parameter Estimates Comparison', fontsize=12)
 ax2.set_xticks(x_pos)
 ax2.set_xticklabels(methods)
-ax2.legend()
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax2.grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()

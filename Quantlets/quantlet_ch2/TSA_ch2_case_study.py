@@ -59,7 +59,7 @@ ax4.fill_between(range(len(y[-50:]), len(y[-50:]) + 20),
                   forecast_ci.iloc[:, 0], forecast_ci.iloc[:, 1],
                   color='red', alpha=0.2, label='95% CI')
 ax4.set_title('20-Year Forecast', fontsize=11)
-ax4.legend()
+ax4.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax4.grid(True, alpha=0.3)
 
 plt.tight_layout()

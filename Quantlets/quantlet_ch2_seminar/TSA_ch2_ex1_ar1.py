@@ -108,7 +108,7 @@ ax1.axhline(y=mu - 2*np.sqrt(gamma_0), color='gray', linestyle=':', alpha=0.7, l
 ax1.set_title(f'Simulated AR(1): X_t = {c} + {phi}X_{{t-1}} + ε_t', fontsize=11)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('X_t')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3)
 
 # ACF

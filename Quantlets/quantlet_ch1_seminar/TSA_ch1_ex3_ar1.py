@@ -111,7 +111,7 @@ ax1.axhline(y=-0.05, color='red', linestyle='--', alpha=0.5)
 ax1.set_xlabel('Lag (h)')
 ax1.set_ylabel('ρ(h)')
 ax1.set_title(f'ACF of AR(1) with φ = {phi}')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax1.grid(True, alpha=0.3, axis='y')
 
 # Top-right: Simulated AR(1) path
@@ -130,7 +130,7 @@ ax2.axhline(y=-2*np.sqrt(Var_X), color='gray', linestyle=':', alpha=0.7, label='
 ax2.set_xlabel('Time')
 ax2.set_ylabel('X_t')
 ax2.set_title(f'Simulated AR(1): X_t = {phi}X_{{t-1}} + ε_t')
-ax2.legend()
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax2.grid(True, alpha=0.3)
 
 # Bottom-left: Forecast decay
@@ -142,7 +142,7 @@ ax3.axhline(y=0, color='red', linestyle='--', linewidth=2, label='Long-run mean'
 ax3.set_xlabel('Horizon (h)')
 ax3.set_ylabel('E[X_{t+h}|X_t]')
 ax3.set_title('Conditional Expectation: Mean Reversion')
-ax3.legend()
+ax3.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax3.grid(True, alpha=0.3)
 ax3.set_xticks(h_vals)
 
@@ -158,7 +158,7 @@ ax4.set_xlim(-1.5, 1.5)
 ax4.set_ylim(-0.5, 0.5)
 ax4.set_xlabel('φ')
 ax4.set_title('AR(1) Stationarity: |φ| < 1')
-ax4.legend(loc='upper right')
+ax4.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax4.set_yticks([])
 ax4.grid(True, alpha=0.3, axis='x')
 

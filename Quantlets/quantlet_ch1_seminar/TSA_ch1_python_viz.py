@@ -62,7 +62,7 @@ ax1.grid(True, alpha=0.3)
 z = np.polyfit(range(len(prices)), prices.values, 1)
 p = np.poly1d(z)
 ax1.plot(prices.index, p(range(len(prices))), 'r--', linewidth=2, label='Linear Trend')
-ax1.legend()
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Top-right: Returns
 ax2 = axes[0, 1]
@@ -73,7 +73,7 @@ ax2.set_title('S&P 500 Daily Returns (%)', fontsize=12)
 ax2.set_xlabel('Date')
 ax2.set_ylabel('Return (%)')
 ax2.grid(True, alpha=0.3)
-ax2.legend()
+ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 # Bottom-left: Histogram of returns
 ax3 = axes[1, 0]
@@ -85,7 +85,7 @@ ax3.plot(x, stats.norm.pdf(x, returns.mean(), returns.std()), 'r-', linewidth=2,
 ax3.set_title('Distribution of Returns', fontsize=12)
 ax3.set_xlabel('Return (%)')
 ax3.set_ylabel('Density')
-ax3.legend()
+ax3.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax3.grid(True, alpha=0.3)
 
 # Bottom-right: Rolling statistics
@@ -103,7 +103,7 @@ ax4.fill_between(rolling_mean.index,
 ax4.set_title(f'{window}-Day Rolling Statistics', fontsize=12)
 ax4.set_xlabel('Date')
 ax4.set_ylabel('Price ($)')
-ax4.legend()
+ax4.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 ax4.grid(True, alpha=0.3)
 
 plt.tight_layout()
