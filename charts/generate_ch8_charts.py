@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+import yfinance as yf
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -14,20 +15,29 @@ plt.rcParams['axes.grid'] = False
 plt.rcParams['font.size'] = 11
 plt.rcParams['axes.labelsize'] = 12
 plt.rcParams['axes.titlesize'] = 13
+plt.rcParams['savefig.transparent'] = True
+plt.rcParams['axes.spines.top'] = False
+plt.rcParams['axes.spines.right'] = False
 
-# Generate realistic EUR/RON data
-np.random.seed(42)
-n_obs = 1000
-dates = pd.date_range(start='2020-01-01', periods=n_obs, freq='B')
-
-# Create realistic EUR/RON exchange rate (around 4.8-5.0 range)
-base_rate = 4.85
-trend = np.linspace(0, 0.15, n_obs)  # Slight upward trend
-seasonality = 0.02 * np.sin(2 * np.pi * np.arange(n_obs) / 252)
-noise = np.cumsum(np.random.randn(n_obs) * 0.002)
-eurron = base_rate + trend + seasonality + noise
-
-df = pd.DataFrame({'EURRON': eurron}, index=dates)
+# Download real EUR/RON data
+try:
+    eurron_raw = yf.download('EURRON=X', start='2019-01-01', end='2025-01-01', progress=False)['Close'].squeeze()
+    eurron_raw = eurron_raw.dropna()
+    if len(eurron_raw) < 200:
+        raise ValueError("Insufficient data")
+    df = pd.DataFrame({'EURRON': eurron_raw.values.flatten()}, index=eurron_raw.index)
+    print("  Using real EUR/RON data from Yahoo Finance")
+except Exception as e:
+    print(f"  EUR/RON download failed ({e}), using fallback")
+    np.random.seed(42)
+    n_obs = 1000
+    dates = pd.date_range(start='2020-01-01', periods=n_obs, freq='B')
+    base_rate = 4.85
+    trend = np.linspace(0, 0.15, n_obs)
+    seasonality = 0.02 * np.sin(2 * np.pi * np.arange(n_obs) / 252)
+    noise = np.cumsum(np.random.randn(n_obs) * 0.002)
+    eurron = base_rate + trend + seasonality + noise
+    df = pd.DataFrame({'EURRON': eurron}, index=dates)
 
 # Train/test split
 train_size = int(len(df) * 0.8)
@@ -94,21 +104,118 @@ plt.close()
 print("Generated: ch8_case_acf_analysis.pdf")
 
 # ============================================================================
-# Chart 3: Feature Importance (Random Forest)
+# Build features and train real models for Charts 3-6
 # ============================================================================
-features = ['Lag 1', 'Lag 2', 'Lag 3', 'Lag 5', 'Lag 10',
-            'Rolling Mean 5', 'Rolling Std 5', 'Rolling Mean 20',
-            'Day of Week', 'Month']
-importance = [0.32, 0.18, 0.12, 0.08, 0.05, 0.10, 0.07, 0.04, 0.02, 0.02]
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from statsmodels.tsa.arima.model import ARIMA
+import time
+
+# Create features from EUR/RON data
+feature_df = pd.DataFrame({
+    'Lag 1': df['EURRON'].shift(1),
+    'Lag 2': df['EURRON'].shift(2),
+    'Lag 3': df['EURRON'].shift(3),
+    'Lag 5': df['EURRON'].shift(5),
+    'Lag 10': df['EURRON'].shift(10),
+    'Rolling Mean 5': df['EURRON'].rolling(5).mean(),
+    'Rolling Std 5': df['EURRON'].rolling(5).std(),
+    'Rolling Mean 20': df['EURRON'].rolling(20).mean(),
+    'Day of Week': df.index.dayofweek,
+    'Month': df.index.month,
+})
+feature_df = feature_df.dropna()
+target_all = df['EURRON'].loc[feature_df.index]
+
+# Split at same time boundary as train/test
+split_date = train.index[-1]
+X_train_ml = feature_df.loc[feature_df.index <= split_date]
+X_test_ml = feature_df.loc[feature_df.index > split_date]
+y_train_ml = target_all.loc[X_train_ml.index]
+y_test_ml = target_all.loc[X_test_ml.index]
+
+print(f"ML features: Train={len(X_train_ml)}, Test={len(X_test_ml)}")
+
+# --- Train ARIMA (1-step-ahead rolling forecast) ---
+print("  Training ARIMA(1,1,1)...")
+t0 = time.time()
+arima_model = ARIMA(train['EURRON'], order=(1, 1, 1))
+arima_fit = arima_model.fit()
+# Multi-step forecast for test period
+arima_forecast = arima_fit.forecast(steps=len(X_test_ml))
+# Align to ML test index
+arima_pred = arima_forecast.values[:len(X_test_ml)]
+arima_time = time.time() - t0
+print(f"  ARIMA trained in {arima_time:.2f}s")
+
+# --- Train Random Forest ---
+print("  Training Random Forest...")
+t0 = time.time()
+rf_model = RandomForestRegressor(n_estimators=200, max_depth=15,
+                                  min_samples_leaf=5, random_state=42)
+rf_model.fit(X_train_ml, y_train_ml)
+rf_time = time.time() - t0
+rf_pred = rf_model.predict(X_test_ml)
+rf_importance = rf_model.feature_importances_
+print(f"  RF trained in {rf_time:.2f}s")
+
+# --- Train MLP (Neural Network as LSTM proxy) ---
+print("  Training MLP Neural Network (100 epochs)...")
+scaler_X = StandardScaler()
+scaler_y = StandardScaler()
+X_train_sc = scaler_X.fit_transform(X_train_ml)
+X_test_sc = scaler_X.transform(X_test_ml)
+y_train_sc = scaler_y.fit_transform(y_train_ml.values.reshape(-1, 1)).ravel()
+
+# Track training history epoch-by-epoch
+train_losses = []
+val_losses = []
+t0 = time.time()
+mlp = MLPRegressor(hidden_layer_sizes=(64, 32), activation='relu',
+                   solver='adam', max_iter=1, warm_start=True,
+                   random_state=42, learning_rate_init=0.001, tol=1e-8)
+for epoch in range(100):
+    mlp.max_iter = epoch + 1
+    mlp.fit(X_train_sc, y_train_sc)
+    train_losses.append(mlp.loss_)
+    val_pred_sc = mlp.predict(X_test_sc)
+    val_pred_inv = scaler_y.inverse_transform(val_pred_sc.reshape(-1, 1)).ravel()
+    val_losses.append(mean_squared_error(y_test_ml, val_pred_inv))
+mlp_time = time.time() - t0
+mlp_pred_sc = mlp.predict(X_test_sc)
+mlp_pred = scaler_y.inverse_transform(mlp_pred_sc.reshape(-1, 1)).ravel()
+print(f"  MLP trained in {mlp_time:.2f}s")
+
+# Compute metrics
+rmse_arima = np.sqrt(mean_squared_error(y_test_ml, arima_pred))
+rmse_rf = np.sqrt(mean_squared_error(y_test_ml, rf_pred))
+rmse_mlp = np.sqrt(mean_squared_error(y_test_ml, mlp_pred))
+
+mae_arima = mean_absolute_error(y_test_ml, arima_pred)
+mae_rf = mean_absolute_error(y_test_ml, rf_pred)
+mae_mlp = mean_absolute_error(y_test_ml, mlp_pred)
+
+print(f"\nModel Performance (EUR/RON levels):")
+print(f"ARIMA     - RMSE: {rmse_arima:.4f}, MAE: {mae_arima:.4f}, Time: {arima_time:.2f}s")
+print(f"RF        - RMSE: {rmse_rf:.4f}, MAE: {mae_rf:.4f}, Time: {rf_time:.2f}s")
+print(f"MLP/LSTM  - RMSE: {rmse_mlp:.4f}, MAE: {mae_mlp:.4f}, Time: {mlp_time:.2f}s")
+
+# ============================================================================
+# Chart 3: Feature Importance (Real Random Forest)
+# ============================================================================
+feature_names = feature_df.columns.tolist()
+sorted_idx = np.argsort(rf_importance)
 
 fig, ax = plt.subplots(figsize=(10, 5))
-bars = ax.barh(features, importance, color='#2E86AB')
+bars = ax.barh([feature_names[i] for i in sorted_idx],
+               rf_importance[sorted_idx], color='#2E86AB')
 ax.set_xlabel('Feature Importance')
 ax.set_title('Random Forest: Feature Importance for EUR/RON Prediction')
-ax.invert_yaxis()
 
 # Add value labels
-for bar, val in zip(bars, importance):
+for bar, val in zip(bars, rf_importance[sorted_idx]):
     ax.text(val + 0.005, bar.get_y() + bar.get_height()/2, f'{val:.2f}',
             va='center', fontsize=10)
 
@@ -118,18 +225,16 @@ plt.close()
 print("Generated: ch8_case_feature_importance.pdf")
 
 # ============================================================================
-# Chart 4: LSTM Training History
+# Chart 4: MLP/LSTM Training History (Real)
 # ============================================================================
-epochs = np.arange(1, 51)
-train_loss = 0.015 * np.exp(-0.08 * epochs) + 0.001 + np.random.randn(50) * 0.0003
-val_loss = 0.018 * np.exp(-0.07 * epochs) + 0.0015 + np.random.randn(50) * 0.0004
+epochs = np.arange(1, len(train_losses) + 1)
 
 fig, ax = plt.subplots(figsize=(10, 5))
-ax.plot(epochs, train_loss, color='#2E86AB', linewidth=2, label='Training Loss')
-ax.plot(epochs, val_loss, color='#A23B72', linewidth=2, label='Validation Loss')
+ax.plot(epochs, train_losses, color='#2E86AB', linewidth=2, label='Training Loss')
+ax.plot(epochs, val_losses, color='#A23B72', linewidth=2, label='Validation Loss')
 ax.set_xlabel('Epoch')
 ax.set_ylabel('Loss (MSE)')
-ax.set_title('LSTM Training History')
+ax.set_title('Neural Network Training History (EUR/RON)')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
 
 plt.tight_layout()
@@ -138,27 +243,18 @@ plt.close()
 print("Generated: ch8_case_lstm_training.pdf")
 
 # ============================================================================
-# Chart 5: Predictions vs Actual (EUR/RON values, not returns)
+# Chart 5: Predictions vs Actual (Real Models)
 # ============================================================================
-# Generate realistic predictions for actual EUR/RON values
-test_values = test['EURRON'].values
-n_test = len(test_values)
-
-# ARIMA predictions - follows trend but with some lag
-arima_pred = test_values + np.random.randn(n_test) * 0.015 + 0.005
-
-# Random Forest predictions - better fit
-rf_pred = test_values + np.random.randn(n_test) * 0.008
-
-# LSTM predictions - good but slightly smoothed
-lstm_pred = pd.Series(test_values).rolling(3, min_periods=1).mean().values + np.random.randn(n_test) * 0.010
-
 fig, ax = plt.subplots(figsize=(12, 5))
 
-ax.plot(test.index, test_values, color='#333333', linewidth=1.5, label='Actual EUR/RON')
-ax.plot(test.index, arima_pred, color='#2E86AB', linewidth=1.2, linestyle='--', label='ARIMA', alpha=0.8)
-ax.plot(test.index, rf_pred, color='#28A745', linewidth=1.2, linestyle='--', label='Random Forest', alpha=0.8)
-ax.plot(test.index, lstm_pred, color='#A23B72', linewidth=1.2, linestyle='--', label='LSTM', alpha=0.8)
+ax.plot(y_test_ml.index, y_test_ml.values, color='#333333', linewidth=1.5,
+        label='Actual EUR/RON')
+ax.plot(y_test_ml.index, arima_pred, color='#2E86AB', linewidth=1.2,
+        linestyle='--', label='ARIMA', alpha=0.8)
+ax.plot(y_test_ml.index, rf_pred, color='#28A745', linewidth=1.2,
+        linestyle='--', label='Random Forest', alpha=0.8)
+ax.plot(y_test_ml.index, mlp_pred, color='#A23B72', linewidth=1.2,
+        linestyle='--', label='MLP/LSTM', alpha=0.8)
 
 ax.set_xlabel('Date')
 ax.set_ylabel('EUR/RON Exchange Rate')
@@ -170,29 +266,13 @@ plt.savefig('ch8_case_predictions.pdf', bbox_inches='tight', transparent=True)
 plt.close()
 print("Generated: ch8_case_predictions.pdf")
 
-# Calculate metrics
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-
-rmse_arima = np.sqrt(mean_squared_error(test_values, arima_pred))
-rmse_rf = np.sqrt(mean_squared_error(test_values, rf_pred))
-rmse_lstm = np.sqrt(mean_squared_error(test_values, lstm_pred))
-
-mae_arima = mean_absolute_error(test_values, arima_pred)
-mae_rf = mean_absolute_error(test_values, rf_pred)
-mae_lstm = mean_absolute_error(test_values, lstm_pred)
-
-print(f"\nModel Performance (EUR/RON levels):")
-print(f"ARIMA - RMSE: {rmse_arima:.4f}, MAE: {mae_arima:.4f}")
-print(f"Random Forest - RMSE: {rmse_rf:.4f}, MAE: {mae_rf:.4f}")
-print(f"LSTM - RMSE: {rmse_lstm:.4f}, MAE: {mae_lstm:.4f}")
-
 # ============================================================================
-# Chart 6: Model Comparison (Bar Charts)
+# Chart 6: Model Comparison (Bar Charts - Real Metrics)
 # ============================================================================
-models = ['ARIMA', 'Random Forest', 'LSTM']
-rmse_values = [rmse_arima, rmse_rf, rmse_lstm]
-mae_values = [mae_arima, mae_rf, mae_lstm]
-train_times = [0.12, 0.85, 12.3]
+models = ['ARIMA', 'Random Forest', 'MLP/LSTM']
+rmse_values = [rmse_arima, rmse_rf, rmse_mlp]
+mae_values = [mae_arima, mae_rf, mae_mlp]
+train_times = [arima_time, rf_time, mlp_time]
 
 fig, axes = plt.subplots(1, 3, figsize=(12, 4))
 
