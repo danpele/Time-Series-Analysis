@@ -135,7 +135,7 @@
 \usepackage{hyperref}
 \usepackage{colortbl}
 \hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
-\graphicspath{{../../logos/}{../../charts/}}
+\graphicspath{{../../logos/}{../../charts/}{../../photos/}}
 \hfuzz=2pt  % Suppress tiny overfull warnings (<2pt)
 \vfuzz=2pt  % Suppress tiny vertical overfull warnings (<2pt)
 
@@ -240,6 +240,16 @@ Romanian Academy, Institute for Economic Forecasting\\
 MSCA Digital Finance}
 \date{}
 
+%=============================================================================
+%=============================================================================
+% CENTRED MINIPAGE
+%=============================================================================
+\newenvironment{cminipage}[1]{%
+    \par\noindent\hfill\begin{minipage}{#1}\ignorespaces
+}{%
+    \end{minipage}\hfill\null\par
+}
+
 \begin{document}
 
 % Title page (no header/footer)
@@ -255,35 +265,40 @@ MSCA Digital Finance}
 % LEARNING OBJECTIVES
 %=============================================================================
 \begin{frame}{Learning Objectives}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
 \begin{block}{By the end of this chapter, you will be able to:}
-\begin{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
     \item Understand the concept and implications of non-stationarity
     \item Apply differencing to achieve stationarity in time series
     \item Use the Augmented Dickey-Fuller (ADF) test for unit root detection
     \item Build, estimate, and forecast with ARIMA models
 \end{itemize}
 \end{block}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Data Sources and Software Tools}
+    \begin{cminipage}{0.95\textwidth}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Data Sources}
                 \begin{itemize}\setlength{\itemsep}{0pt}
                     \item \textbf{FRED} (Federal Reserve)
-                    \begin{itemize}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
                         \item US Real GDP (GDPC1), interest rates
                     \end{itemize}
                     \item \textbf{Yahoo Finance}
-                    \begin{itemize}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
                         \item Stock prices, exchange rates
                     \end{itemize}
                     \item \textbf{Eurostat / World Bank}
-                    \begin{itemize}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
                         \item Macroeconomic data
                     \end{itemize}
                     \item \textbf{Statsmodels datasets}
-                    \begin{itemize}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
                         \item Sunspots, Nile, Macrodata
                     \end{itemize}
                 \end{itemize}
@@ -307,14 +322,17 @@ MSCA Digital Finance}
             \end{alertblock}
         \end{column}
     \end{columns}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Chapter Outline}
+    \begin{cminipage}{0.95\textwidth}
     \setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$~\inserttocsection}
     \tableofcontents
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -323,54 +341,62 @@ MSCA Digital Finance}
 \section{Motivation}
 
 \begin{frame}{Motivating Example: Non-Stationary Data Is Everywhere}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_motivation_nonstationary.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Key Observations}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Stock prices, GDP, exchange rates all exhibit \textbf{trends} or \textbf{wandering behavior}
             \item The sample mean (red line) is meaningless for a random walk
             \item Standard ARMA models \textbf{cannot} handle these series directly
         \end{itemize}
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Motivating Example: Non-Stationary Data Is Everywhere}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_motivation_nonstationary.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_motivation\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_nonstationary}
 \end{frame}
 
 \begin{frame}{Real-World Applications}
     \vspace{-0.2cm}
-    \begin{columns}[T]
-        \begin{column}{0.32\textwidth}
-            \vspace{0.3cm}
-            {\footnotesize
-            \begin{alertblock}{The Challenge}
-                Financial/economic data are typically I(1): stock prices, exchange rates, interest rates.
-            \end{alertblock}
-            }
-            \vspace{0.2cm}
-            \quantlet{TSA\_ch3\_motivation\_realworld}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_realworld}
-        \end{column}
-        \begin{column}{0.66\textwidth}
-            \includegraphics[width=\textwidth, height=0.78\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
-        \end{column}
-    \end{columns}
+    \vspace{0.3cm}
+    {\footnotesize
+    \begin{alertblock}{The Challenge}
+        Financial/economic data are typically I(1): stock prices, exchange rates, interest rates.
+    \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Real-World Applications}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
+    \end{center}
+    \quantlet{TSA\_ch3\_motivation\_realworld}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_realworld}
 \end{frame}
 
 \begin{frame}{The Solution: Differencing}
+    \vspace{-0.2cm}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_motivation_differencing.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    {\footnotesize
     \begin{exampleblock}{Key Insight}
         \textbf{Differencing} transforms a non-stationary series into a stationary one:
         $\Delta Y_t = Y_t - Y_{t-1}$. The ACF changes from slow decay to quick decay!
     \end{exampleblock}
+    }
+\end{frame}
+
+\begin{frame}{The Solution: Differencing}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_motivation_differencing.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_motivation\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_differencing}
 \end{frame}
 
 \begin{frame}{What We'll Learn Today}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Core Concepts}
         \begin{enumerate}
             \item \textbf{Non-Stationarity}: Why it matters and how to detect it
@@ -386,6 +412,7 @@ MSCA Digital Finance}
     \begin{exampleblock}{By the End of This Lecture}
         You will be able to model and forecast non-stationary time series like stock prices, GDP, and exchange rates using ARIMA models.
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -394,8 +421,8 @@ MSCA Digital Finance}
 \section{Non-Stationarity in Time Series}
 
 \begin{frame}{Why Non-Stationarity Matters}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{alertblock}{The Problem}
         Many economic and financial time series are \textbf{non-stationary}:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -414,32 +441,37 @@ MSCA Digital Finance}
             \item Statistical inference becomes invalid
         \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Example: US Real GDP}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_gdp_levels.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Key Observations}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Clear upward \textbf{trend} -- mean is not constant
             \item This is a classic example of a \textbf{non-stationary} time series
             \item We cannot apply ARMA models directly to this data
         \end{itemize}
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Example: US Real GDP}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_gdp_levels.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_gdp\_levels}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_gdp_levels}
 \end{frame}
 
 \begin{frame}{Types of Non-Stationarity}
+    \begin{cminipage}{0.95\textwidth}
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Deterministic Trend}
                 $$Y_t = \alpha + \beta t + \varepsilon_t$$
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Trend is a deterministic function of time
                     \item Can be removed by \textbf{detrending}
                     \item Shocks have temporary effects
@@ -449,7 +481,7 @@ MSCA Digital Finance}
         \begin{column}{0.48\textwidth}
             \begin{block}{Stochastic Trend (Unit Root)}
                 $$Y_t = Y_{t-1} + \varepsilon_t$$
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Random walk process
                     \item Must be removed by \textbf{differencing}
                     \item Shocks have permanent effects
@@ -460,32 +492,35 @@ MSCA Digital Finance}
 
     \vspace{0.3cm}
 
-    {\small
     \begin{alertblock}{Key Distinction}
         Correct identification is crucial: detrending a unit root $\rightarrow$ misspecification; differencing trend-stationary $\rightarrow$ misspecification.
     \end{alertblock}
-    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Visualizing the Difference}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_trend_comparison.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Key Distinction}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Left}: Deterministic trend -- deviations from trend are temporary
             \item \textbf{Right}: Stochastic trend -- shocks accumulate permanently
             \item Both look similar, but require \textbf{different} treatments!
         \end{itemize}
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Visualizing the Difference}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_trend_comparison.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_trend\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_trend_comparison}
 \end{frame}
 
 \begin{frame}{The Random Walk Process}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Random Walk]
         A \textbf{random walk} is defined as:
         $$Y_t = Y_{t-1} + \varepsilon_t, \quad \varepsilon_t \sim WN(0, \sigma^2)$$
@@ -502,24 +537,31 @@ MSCA Digital Finance}
             \item ACF: $\rho_k = \sqrt{\frac{t-k}{t}} \to 1$ as $t \to \infty$
         \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Random Walk: Visual Illustration}
+    \vspace{-0.2cm}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    {\footnotesize
     \begin{alertblock}{Key Properties}
         \textbf{Left}: Paths wander unpredictably, no mean reversion.
         \textbf{Right}: $\Var(Y_t) = t\sigma^2$ grows linearly $\Rightarrow$ non-stationary.
     \end{alertblock}
+    }
+\end{frame}
+
+\begin{frame}{Random Walk: Visual Illustration}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_def\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk}
 \end{frame}
 
 \begin{frame}{Proof: Random Walk Variance}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \textbf{Claim:} For $Y_t = Y_{t-1} + \varepsilon_t$ with $Y_0 = 0$: $\Var(Y_t) = t\sigma^2$
 
     \vspace{0.15cm}
@@ -529,12 +571,15 @@ MSCA Digital Finance}
     $$\Var(Y_t) = \Var\left(\sum_{i=1}^{t} \varepsilon_i\right) = \sum_{i=1}^{t} \Var(\varepsilon_i) + 2\sum_{i<j} \Cov(\varepsilon_i, \varepsilon_j)$$
 
     Since $\varepsilon_t$ independent (white noise): $\Var(Y_t) = \sum_{i=1}^{t} \sigma^2 = \boxed{t\sigma^2}$
-    \vspace{-0.1cm}
     \begin{alertblock}{Variance depends on $t$ $\Rightarrow$ non-stationary}
     \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Proof: Random Walk Autocovariance}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \textbf{Claim:} $\Cov(Y_t, Y_{t-k}) = (t-k)\sigma^2$ for $k \leq t$
 
     \vspace{0.2cm}
@@ -549,11 +594,13 @@ MSCA Digital Finance}
     \vspace{0.1cm}
     \textbf{ACF:}
     $$\rho(k) = \frac{\Cov(Y_t, Y_{t-k})}{\sqrt{\Var(Y_t)\Var(Y_{t-k})}} = \frac{(t-k)\sigma^2}{\sqrt{t\sigma^2 \cdot (t-k)\sigma^2}} = \sqrt{\frac{t-k}{t}}$$
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Random Walk with Drift}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Random Walk with Drift]
         A random walk with drift includes a constant term:
         $$Y_t = \mu + Y_{t-1} + \varepsilon_t$$
@@ -570,57 +617,70 @@ MSCA Digital Finance}
             \item Still non-stationary despite having a ``trend''
         \end{itemize}
     \end{block}
-    \end{minipage}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Random Walk with Drift: Visual Illustration}
+    \vspace{-0.2cm}
+    \vspace{0.3cm}
+    {\footnotesize
+    \begin{exampleblock}{Comparison}
+        Without drift (blue): wanders around zero with no direction. With drift $\mu > 0$ (red): systematic upward trend. Both are non-stationary --- drift adds deterministic trend to stochastic wandering.
+    \end{exampleblock}
     }
 \end{frame}
 
 \begin{frame}{Random Walk with Drift: Visual Illustration}
-    \vspace{0.3cm}
     \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
     \end{center}
-    \vspace{-0.1cm}
-    \begin{exampleblock}{Comparison}
-        Without drift (blue): wanders around zero with no direction. With drift $\mu > 0$ (red): systematic upward trend. Both are non-stationary --- drift adds deterministic trend to stochastic wandering.
-    \end{exampleblock}
     \quantlet{TSA\_ch3\_def\_random\_walk\_drift}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk_drift}
 \end{frame}
 
 \begin{frame}{Simulating Random Walks}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_random_walk.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Random Walk Types}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Left}: Pure random walks -- no drift, wander unpredictably
             \item \textbf{Right}: Random walks with drift -- upward trend on average
             \item Each path is unique; uncertainty grows over time
         \end{itemize}
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Simulating Random Walks}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_random_walk.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_random_walk}
 \end{frame}
 
 \begin{frame}{Variance Growth: Why Random Walks Are Non-Stationary}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_variance_growth.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Key Observations}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Left}: Fan of paths shows uncertainty growing over time
             \item \textbf{Right}: Variance grows linearly: $\Var(Y_t) = t\sigma^2$
             \item This violates stationarity (variance should be constant)
         \end{itemize}
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Variance Growth: Why Random Walks Are Non-Stationary}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_variance_growth.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_variance\_growth}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_variance_growth}
 \end{frame}
 
 \begin{frame}{Integrated Processes}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Integrated Process of Order $d$]
         A time series $\{Y_t\}$ is \textbf{integrated of order $d$}, written $Y_t \sim I(d)$, if:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -637,21 +697,33 @@ MSCA Digital Finance}
             \item $I(0)$: Stationary process (e.g., ARMA)
             \item $I(1)$: First difference is stationary (most common for economic data)
             \item $I(2)$:
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Second difference is stationary (less common)
                 \end{itemize}
             \end{itemize}
     \end{exampleblock}
-    \end{minipage}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Integrated Process: Visual Illustration}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Order of Integration}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $I(0)$: Stationary $\Rightarrow$ no differencing needed
+            \item $I(1)$: One difference needed (random walk)
+            \item $I(2)$: Two differences needed
+            \item Most economic series are $I(0)$ or $I(1)$
+        \end{itemize}
+    \end{block}
     }
 \end{frame}
 
 \begin{frame}{Integrated Process: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_integrated.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_integrated.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    \small $I(0)$: stationary. $I(1)$: one difference needed. $I(2)$: two differences needed.
     \quantlet{TSA\_ch3\_def\_integrated}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_integrated}
 \end{frame}
 
@@ -661,8 +733,8 @@ MSCA Digital Finance}
 \section{Differencing and the Difference Operator}
 
 \begin{frame}{The Difference Operator}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[First Difference]
         The \textbf{first difference operator} $\Delta$ is defined as:
         $\Delta Y_t = Y_t - Y_{t-1} = (1-L)Y_t$, where $L$ is the lag operator ($LY_t = Y_{t-1}$).
@@ -683,22 +755,32 @@ MSCA Digital Finance}
     \begin{alertblock}{Key Result}
         If $Y_t \sim I(d)$, then $\Delta^d Y_t \sim I(0)$ (stationary).
     \end{alertblock}
-    \end{minipage}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{First Difference: Visual Illustration}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Observation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Left}: non-stationary series
+            \item \textbf{Right}: after first difference, the series becomes stationary
+        \end{itemize}
+    \end{block}
     }
 \end{frame}
 
 \begin{frame}{First Difference: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_difference.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_difference.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    \small Left: non-stationary series. Right: after first difference, the series becomes stationary.
     \quantlet{TSA\_ch3\_def\_difference}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_difference}
 \end{frame}
 
 \begin{frame}{Example: Differencing a Random Walk}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{exampleblock}{Random Walk to White Noise}
         Let $Y_t = Y_{t-1} + \varepsilon_t$ (random walk). Taking the first difference:
         $$\Delta Y_t = Y_t - Y_{t-1} = \varepsilon_t$$
@@ -714,11 +796,13 @@ MSCA Digital Finance}
             \item The ``changes'' in a random walk are stationary
         \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Proof: Differencing Induces Stationarity}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \textbf{Claim:} If $Y_t \sim I(1)$, then $\Delta Y_t = Y_t - Y_{t-1}$ is stationary.
 
     \vspace{0.15cm}
@@ -728,7 +812,7 @@ MSCA Digital Finance}
     $$\Delta Y_t = Y_t - Y_{t-1} = \mu + \varepsilon_t$$
 
     Check stationarity conditions:
-    \begin{enumerate}
+    \begin{enumerate}\setlength{\itemsep}{0pt}
         \item \textbf{Mean:} $\E[\Delta Y_t] = \mu$ (constant, does not depend on $t$) \checkmark
         \item \textbf{Variance:} $\Var(\Delta Y_t) = \Var(\varepsilon_t) = \sigma^2$ (constant) \checkmark
         \item \textbf{Autocovariance:} $\Cov(\Delta Y_t, \Delta Y_{t-k}) = \Cov(\varepsilon_t, \varepsilon_{t-k}) = 0$ for $k \neq 0$ \checkmark
@@ -737,51 +821,62 @@ MSCA Digital Finance}
     \begin{exampleblock}{General Principle}
         Differencing removes the ``memory'' that causes variance to accumulate. For $I(d)$ processes, $d$ differences are needed.
     \end{exampleblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{ACF Diagnostic: Detecting Non-Stationarity}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_acf_nonstationary.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{ACF Patterns}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Top}: Random walk ACF decays very slowly $\Rightarrow$ unit root
             \item \textbf{Bottom}: After differencing, ACF cuts off $\Rightarrow$ stationary
         \end{itemize}
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{ACF Diagnostic: Detecting Non-Stationarity}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_acf_nonstationary.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_acf\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_acf_nonstationary}
 \end{frame}
 
 \begin{frame}{Differencing in Practice: GDP Example}
+    \vspace{-0.2cm}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_differencing.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    {\footnotesize
     \begin{block}{Transformation}
         \textbf{Left}: GDP in levels with clear upward trend (non-stationary). \textbf{Right}: GDP growth rate $\Delta \log(GDP_t)$ fluctuates around constant mean (stationary). One difference removes the stochastic trend.
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Differencing in Practice: GDP Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_differencing.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_differencing}
 \end{frame}
 
 \begin{frame}{Overdifferencing}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{alertblock}{Warning: Overdifferencing}
         Differencing more than necessary introduces problems:
         \begin{itemize}\setlength{\itemsep}{2pt}
             \item Creates artificial negative autocorrelation
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item ACF shows spurious patterns
             \end{itemize}
             \item Inflates variance
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Reduces forecast accuracy
             \end{itemize}
             \item Loses information
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Cannot recover original level
             \end{itemize}
         \end{itemize}
@@ -794,8 +889,8 @@ MSCA Digital Finance}
         $$\Delta^2 Y_t = \Delta Y_t - \Delta Y_{t-1} = \varepsilon_t - \varepsilon_{t-1}$$
         This is an MA(1) with $\theta = 1$ (non-invertible boundary)!
     \end{exampleblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -804,8 +899,8 @@ MSCA Digital Finance}
 \section{ARIMA(p,d,q) Models}
 
 \begin{frame}{Definition of ARIMA}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[ARIMA(p,d,q)]
         A time series $\{Y_t\}$ follows an \textbf{ARIMA(p,d,q)} process if:
         $$\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$$
@@ -817,23 +912,30 @@ MSCA Digital Finance}
             \item $\varepsilon_t \sim WN(0, \sigma^2)$
         \end{itemize}
     \end{defn}
-    \end{minipage}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{ARIMA: Visual Illustration}
+    \vspace{-0.2cm}
+    \vspace{0.3cm}
+    {\footnotesize
+    \begin{exampleblock}{Interpretation}
+        Top: original ARIMA series (non-stationary). Bottom: after differencing $d$ times, ACF/PACF reveal the AR and MA orders for the stationary component.
+    \end{exampleblock}
     }
 \end{frame}
 
 \begin{frame}{ARIMA: Visual Illustration}
-    \vspace{0.3cm}
     \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_def_arima.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_arima.pdf}
     \end{center}
-    \vspace{-0.1cm}
-    \begin{exampleblock}{Interpretation}
-        Top: original ARIMA series (non-stationary). Bottom: after differencing $d$ times, ACF/PACF reveal the AR and MA orders for the stationary component.
-    \end{exampleblock}
     \quantlet{TSA\_ch3\_def\_arima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_arima}
 \end{frame}
 
 \begin{frame}{ARIMA Components}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{center}
         \begin{tikzpicture}[node distance=2cm, every node/.style={font=\small}]
             \node[draw, rectangle, fill=MainBlue!20, minimum width=2.5cm, minimum height=1cm] (AR) {AR(p)};
@@ -848,7 +950,6 @@ MSCA Digital Finance}
 
     \vspace{0.2cm}
 
-    {\small
     \begin{block}{Special Cases}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item ARIMA(p,0,q) = ARMA(p,q) -- stationary
@@ -858,11 +959,12 @@ MSCA Digital Finance}
         \end{itemize}
     \end{block}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{ARIMA(1,1,0) Example}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{exampleblock}{ARI(1,1) Model}
         $$\Delta Y_t = c + \phi_1 \Delta Y_{t-1} + \varepsilon_t$$
         Equivalently: $(1-\phi_1 L)(1-L)Y_t = c + \varepsilon_t$
@@ -878,13 +980,13 @@ MSCA Digital Finance}
             \item Common model for many economic time series
         \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{ARIMA(0,1,1) Example}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{exampleblock}{IMA(1,1) Model}
         $$\Delta Y_t = c + \varepsilon_t + \theta_1 \varepsilon_{t-1}$$
         Equivalently: $(1-L)Y_t = c + (1+\theta_1 L)\varepsilon_t$
@@ -897,13 +999,13 @@ MSCA Digital Finance}
         $$\hat{Y}_{t+1} = \alpha Y_t + (1-\alpha)\hat{Y}_t$$
         where $\alpha = 1 + \theta_1$ (for $-1 < \theta_1 < 0$).
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{The Role of the Constant in ARIMA}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Constant Term in ARIMA(p,d,q)}
         When $d > 0$, the constant $c$ has a different interpretation:
         $\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$
@@ -914,22 +1016,22 @@ MSCA Digital Finance}
     \begin{alertblock}{Important Implications}
         \begin{itemize}\setlength{\itemsep}{2pt}
             \item For $d=1$: $c$ represents the \textbf{drift}
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Average change: $\E[\Delta Y_t] = \frac{c}{1-\phi_1-\cdots-\phi_p}$
                 \item Linear trend in levels
             \end{itemize}
             \item For $d=2$: $c$ affects the \textbf{curvature}
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Quadratic trend in levels
             \end{itemize}
             \item Often $c=0$ is assumed when $d \geq 1$
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item No deterministic trend component
             \end{itemize}
         \end{itemize}
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -938,8 +1040,8 @@ MSCA Digital Finance}
 \section{Unit Root Tests}
 
 \begin{frame}{Testing for Unit Roots}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Why Test?}
         Before fitting an ARIMA model, we need to determine:
         \begin{enumerate}\setlength{\itemsep}{0pt}
@@ -957,13 +1059,55 @@ MSCA Digital Finance}
             \item \textbf{KPSS} (stationarity test -- reversed null hypothesis)
         \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Researcher Spotlight: Dickey \& Fuller}
+    \vspace{-0.2cm}
+    \begin{columns}[T]
+        \begin{column}{0.22\textwidth}
+            \centering
+            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{photo_david_dickey.jpg}
+            \\[0.05cm]
+            {\tiny\textcolor{MediumGray}{David Dickey (*1945)}}\\[0.02cm]
+            \href{https://en.wikipedia.org/wiki/David_Dickey}{\faWikipediaW\ \textcolor{MainBlue}{\tiny Wikipedia}}
+        \end{column}
+        \begin{column}{0.76\textwidth}
+            \begin{block}{Biography}
+                {\footnotesize \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{David Dickey}: American statistician at NC State University. PhD student of Wayne Fuller at Iowa State
+                    \item \textbf{Wayne Fuller}: American statistician, professor at Iowa State University
+                    \item Together they developed the foundational test for unit roots in time series
+                \end{itemize}}
+            \end{block}
+        \end{column}
+    \end{columns}
+    \vspace{0.1cm}
+    \begin{columns}[T]
+        \begin{column}{0.22\textwidth}
+            \centering
+            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{photo_wayne_fuller.jpg}
+            \\[0.05cm]
+            {\tiny\textcolor{MediumGray}{Wayne Fuller (1931--2022)}}\\[0.02cm]
+            \href{https://en.wikipedia.org/wiki/Wayne_Fuller}{\faWikipediaW\ \textcolor{MainBlue}{\tiny Wikipedia}}
+        \end{column}
+        \begin{column}{0.76\textwidth}
+            \begin{exampleblock}{Key Contributions}
+                {\footnotesize \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Dickey-Fuller test} (1979) --- the fundamental unit root test
+                    \item \textbf{Augmented Dickey-Fuller (ADF)} --- extension with lagged differences
+                    \item \textbf{Critical value tables} --- non-standard distributions under the null
+                    \item Enabled rigorous testing of integration order for ARIMA modeling
+                \end{itemize}}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{The Dickey-Fuller Test}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Setup}
         Consider the AR(1) model: $Y_t = \phi Y_{t-1} + \varepsilon_t$. Subtract $Y_{t-1}$:
         $\Delta Y_t = (\phi - 1)Y_{t-1} + \varepsilon_t = \gamma Y_{t-1} + \varepsilon_t$, where $\gamma = \phi - 1$.
@@ -983,13 +1127,13 @@ MSCA Digital Finance}
     \begin{alertblock}{Key Issue}
         Under $H_0$, the $t$-statistic does \textbf{not} follow a standard $t$-distribution! Must use Dickey-Fuller critical values.
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Dickey-Fuller Test Variants}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Three Specifications}
         \begin{enumerate}\setlength{\itemsep}{0pt}
             \item \textbf{No constant, no trend}: $\Delta Y_t = \gamma Y_{t-1} + \varepsilon_t$
@@ -1007,12 +1151,12 @@ MSCA Digital Finance}
             \item Excluding necessary terms leads to incorrect inference
         \end{itemize}
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Augmented Dickey-Fuller (ADF) Test}
-    \vspace{-0.2cm}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{block}{The Problem with Simple DF}
         If AR dynamics beyond AR(1) exist, DF residuals will be autocorrelated.
@@ -1029,9 +1173,22 @@ MSCA Digital Finance}
     \vspace{0.1cm}
 
     \begin{block}{Choosing Lag Length $k$}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Use information criteria (AIC, BIC)
             \item Start with $k_{max}$, reduce until last lag significant
+        \end{itemize}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{ADF Test: Visual Illustration}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Observation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Left}: stationary series $\Rightarrow$ ADF rejects unit root
+            \item \textbf{Right}: non-stationary $\Rightarrow$ ADF fails to reject
         \end{itemize}
     \end{block}
     }
@@ -1039,15 +1196,13 @@ MSCA Digital Finance}
 
 \begin{frame}{ADF Test: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.6\textheight, keepaspectratio]{ch3_def_adf.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_def_adf.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    \small Left: stationary series -- ADF rejects unit root. Right: non-stationary -- ADF fails to reject.
     \quantlet{TSA\_ch3\_def\_adf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_adf}
 \end{frame}
 
 \begin{frame}{ADF Test Critical Values}
-    \vspace{-0.2cm}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{table}
         \centering
@@ -1061,21 +1216,19 @@ MSCA Digital Finance}
             \bottomrule
         \end{tabular}
     \end{table}
-    }
-    \vspace{-0.1cm}
     \begin{block}{Decision Rule}
-        {\small
         \begin{itemize}
             \item Test statistic $<$ critical value $\Rightarrow$ Reject $H_0$ (stationary)
             \item Test statistic $\geq$ critical value $\Rightarrow$ Fail to reject (unit root)
         \end{itemize}
-        }
     \end{block}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{The Phillips-Perron (PP) Test}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Motivation}
         Like ADF, tests $H_0$: Unit root vs $H_1$: Stationary, but uses a \textbf{non-parametric correction} for serial correlation instead of adding lagged differences.
     \end{block}
@@ -1092,14 +1245,13 @@ MSCA Digital Finance}
             \item No need to select lag length (uses bandwidth instead)
         \end{itemize}
     \end{exampleblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{The KPSS Test}
-    \vspace{-0.2cm}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Reversed Hypotheses}
         Unlike ADF: $H_0$: Stationary \quad vs \quad $H_1$: Unit root
     \end{block}
@@ -1114,14 +1266,14 @@ MSCA Digital Finance}
     \vspace{0.1cm}
 
     \begin{exampleblock}{Complementary Use with ADF}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item ADF rejects, KPSS doesn't $\Rightarrow$ Stationary
             \item ADF doesn't reject, KPSS rejects $\Rightarrow$ Unit root
             \item Both reject or neither $\Rightarrow$ Inconclusive
         \end{itemize}
     \end{exampleblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1130,6 +1282,7 @@ MSCA Digital Finance}
 \section{ARIMA Model Identification}
 
 \begin{frame}{The Box-Jenkins Methodology}
+    \begin{cminipage}{0.95\textwidth}
     \begin{center}
         \begin{tikzpicture}[node distance=1.5cm, every node/.style={font=\small}]
             \node[draw, rectangle, rounded corners, fill=MainBlue!20, minimum width=4cm, minimum height=0.8cm] (id) {1. Identification};
@@ -1143,11 +1296,12 @@ MSCA Digital Finance}
             \draw[->, thick, dashed] (diag.east) -- ++(1.5,0) |- (id.east) node[midway, right, text width=2cm] {\tiny Re-specify if needed};
         \end{tikzpicture}
     \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Step 1: Determining $d$}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Procedure}
         \begin{enumerate}\setlength{\itemsep}{0pt}
             \item Plot the time series -- look for trends, changing variance
@@ -1167,14 +1321,13 @@ MSCA Digital Finance}
             \item Watch for overdifferencing (ACF with $\rho_1 \approx -0.5$)
         \end{itemize}
     \end{exampleblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Step 2: Determining $p$ and $q$}
-    \vspace{-0.2cm}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.92\textwidth}
     \begin{block}{After Differencing}
         Once $W_t = \Delta^d Y_t$ is stationary, use ACF/PACF to identify ARMA($p$,$q$):
     \end{block}
@@ -1202,13 +1355,13 @@ MSCA Digital Finance}
         \end{itemize}
         Lower is better. BIC penalizes complexity more.
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Auto-ARIMA Algorithms}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Automated Model Selection}
         Modern software can automatically select $(p,d,q)$:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1233,8 +1386,8 @@ MSCA Digital Finance}
     \begin{alertblock}{Caution}
         Automated selection is helpful but not infallible. Always check diagnostics!
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1243,8 +1396,8 @@ MSCA Digital Finance}
 \section{ARIMA Estimation}
 
 \begin{frame}{Estimation Methods}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Maximum Likelihood Estimation (MLE)}
         The standard approach for ARIMA:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1264,13 +1417,40 @@ MSCA Digital Finance}
             \item Difference diminishes as sample size grows
         \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Conditional Log-Likelihood}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{block}{Gaussian Log-Likelihood Function}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\ell(\boldsymbol{\theta}, \sigma^2) = -\frac{T}{2}\ln(2\pi) - \frac{T}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{t=1}^{T} e_t^2(\boldsymbol{\theta})$
+            \item $e_t(\boldsymbol{\theta}) = X_t - \hat{X}_{t|t-1}$ are the \textbf{one-step prediction errors}
+            \item $\boldsymbol{\theta} = (\phi_1, \ldots, \phi_p, \theta_1, \ldots, \theta_q, c)$
+        \end{itemize}
+    \end{block}
+
+    \begin{exampleblock}{Example: ARIMA(1,1,1)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Prediction errors: $e_t = \Delta X_t - \phi_1 \Delta X_{t-1} - \theta_1 e_{t-1} - c$
+            \item Conditional MLE: set $e_0 = 0$, compute $e_1, \ldots, e_T$, maximize $\ell$
+        \end{itemize}
+    \end{exampleblock}
+
+    \begin{alertblock}{Estimating $\sigma^2$}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item At optimal parameters $\hat{\boldsymbol{\theta}}$: $\hat{\sigma}^2 = \frac{1}{T}\sum_{t=1}^{T} e_t^2(\hat{\boldsymbol{\theta}})$
+        \end{itemize}
+    \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Parameter Constraints}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{alertblock}{Stationarity and Invertibility}
         The estimated ARIMA model should satisfy:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1289,8 +1469,8 @@ MSCA Digital Finance}
             \item Warning if near-unit-root detected
         \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1299,8 +1479,8 @@ MSCA Digital Finance}
 \section{Diagnostic Checking}
 
 \begin{frame}{Residual Analysis}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{What to Check}
         If the model is correct, residuals $\hat{\varepsilon}_t$ should be white noise:
         \begin{enumerate}\setlength{\itemsep}{0pt}
@@ -1319,18 +1499,18 @@ MSCA Digital Finance}
             \item \textbf{Ljung-Box test}: Tests for autocorrelation at multiple lags
             \item \textbf{Q-Q plot}: Checks normality assumption
             \item \textbf{Residual vs fitted}:
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Checks for heteroskedasticity
                 \end{itemize}
             \end{itemize}
     \end{block}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{The Ljung-Box Test}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{defn}[Ljung-Box Q Statistic]
         $Q(m) = n(n+2) \sum_{k=1}^{m} \frac{\hat{\rho}_k^2}{n-k}$. Under $H_0$ (no autocorrelation): $Q(m) \sim \chi^2(m-p-q)$
     \end{defn}
@@ -1350,8 +1530,8 @@ MSCA Digital Finance}
     \begin{alertblock}{If Test Fails}
         Consider adding AR or MA terms, or check for structural breaks.
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1360,8 +1540,8 @@ MSCA Digital Finance}
 \section{Forecasting with ARIMA}
 
 \begin{frame}{Point Forecasts}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Minimum MSE Forecast}
         The optimal $h$-step ahead forecast is the conditional expectation:
         $\hat{Y}_{T+h|T} = \E[Y_{T+h} | Y_T, Y_{T-1}, \ldots]$
@@ -1376,13 +1556,13 @@ MSCA Digital Finance}
 
         For $h > 1$: replace unknown $\varepsilon_{T+j}$ with 0, unknown $Y_{T+j}$ with $\hat{Y}_{T+j|T}$
     \end{exampleblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Forecast Intervals}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Forecast Uncertainty}
         The $h$-step forecast error variance: $\Var(e_{T+h}) = \sigma^2 \sum_{j=0}^{h-1} \psi_j^2$, where $\psi_j$ are MA($\infty$) coefficients.
     \end{block}
@@ -1398,13 +1578,13 @@ MSCA Digital Finance}
     \begin{alertblock}{Key Property for I(1) Series}
         For integrated processes, forecast variance grows without bound as $h \to \infty$. Intervals widen over time!
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Long-Run Forecasts for ARIMA}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Behavior as $h \to \infty$}
         For ARIMA(p,1,q) with drift $c$:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1424,13 +1604,13 @@ MSCA Digital Finance}
     \begin{alertblock}{Practical Implication}
         ARIMA forecasts are most reliable for short horizons. Long-term forecasts have very wide uncertainty bands.
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Rolling Forecasting: Concept}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{What is Rolling Forecasting?}
         A technique to evaluate forecast accuracy out-of-sample:
         \begin{enumerate}\setlength{\itemsep}{0pt}
@@ -1451,8 +1631,8 @@ MSCA Digital Finance}
             \item Avoids overfitting to full sample
         \end{itemize}
     \end{exampleblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Fixed vs Expanding Window}
@@ -1488,7 +1668,6 @@ MSCA Digital Finance}
         \draw[->, thick, color=MediumGray] (5.5, -1) -- (10.5, -1) node[right, font=\tiny] {Time};
     \end{tikzpicture}
     \end{center}
-    \vspace{-0.2cm}
     \begin{block}{Comparison}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Fixed}: Window slides forward, constant size --- adapts to regime changes
@@ -1503,7 +1682,7 @@ MSCA Digital Finance}
             \begin{block}{1-Step Ahead (Recursive)}
                 \begin{itemize}\setlength{\itemsep}{1pt}
                     \item Forecast only next period
-                    \begin{itemize}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
                         \item Refit model after each step
                         \item Use actual value once revealed
                     \end{itemize}
@@ -1515,7 +1694,7 @@ MSCA Digital Finance}
             \begin{block}{Multi-Step (Direct)}
                 \begin{itemize}\setlength{\itemsep}{1pt}
                     \item Forecast multiple periods ahead
-                    \begin{itemize}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
                         \item No refit between steps
                         \item Uses forecasted values as inputs
                     \end{itemize}
@@ -1545,71 +1724,61 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Rolling Forecast: Step-by-Step Example}
-    \vspace{-0.2cm}
-    {\footnotesize
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{exampleblock}{Setup: ARIMA(1,1,0) with $\phi_1 = 0.6$}
-        \vspace{-0.1cm}
         Model: $\Delta Y_t = \phi_1 \Delta Y_{t-1} + \varepsilon_t$ where $\Delta Y_t = Y_t - Y_{t-1}$
-        \vspace{-0.1cm}
     \end{exampleblock}
 
     \vspace{0.1cm}
 
     \begin{block}{Given Data at Time $T$}
-        \vspace{-0.1cm}
         $Y_{T-2} = 100$, \quad $Y_{T-1} = 103$, \quad $Y_T = 108$ \quad $\Rightarrow$ \quad $\Delta Y_{T-1} = 3$, \quad $\Delta Y_T = 5$
-        \vspace{-0.1cm}
     \end{block}
 
     \vspace{0.1cm}
 
     \begin{alertblock}{1-Step Ahead Point Forecast}
-        \vspace{-0.3cm}
         \begin{align*}
             \hat{\Delta Y}_{T+1|T} &= \phi_1 \cdot \Delta Y_T = 0.6 \times 5 = 3 \\[-0.2cm]
             \hat{Y}_{T+1|T} &= Y_T + \hat{\Delta Y}_{T+1|T} = 108 + 3 = \boxed{111}
         \end{align*}
-        \vspace{-0.3cm}
     \end{alertblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Multi-Step Point Forecasts}
-    \vspace{-0.2cm}
-    {\footnotesize
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{block}{2-Step Ahead Forecast}
-        \vspace{-0.3cm}
         \begin{align*}
             \hat{\Delta Y}_{T+2|T} &= \phi_1 \cdot \hat{\Delta Y}_{T+1|T} = 0.6 \times 3 = 1.8 \\[-0.2cm]
             \hat{Y}_{T+2|T} &= \hat{Y}_{T+1|T} + \hat{\Delta Y}_{T+2|T} = 111 + 1.8 = \boxed{112.8}
         \end{align*}
-        \vspace{-0.3cm}
     \end{block}
 
     \vspace{0.05cm}
 
     \begin{block}{General Formula for $h$-Step Forecast (ARIMA(1,1,0))}
-        \vspace{-0.3cm}
         \begin{align*}
             \hat{\Delta Y}_{T+h|T} &= \phi_1^h \cdot \Delta Y_T \\[-0.2cm]
             \hat{Y}_{T+h|T} &= Y_T + \Delta Y_T \cdot \frac{\phi_1(1-\phi_1^h)}{1-\phi_1}
         \end{align*}
-        \vspace{-0.3cm}
     \end{block}
 
     \vspace{0.05cm}
 
     \begin{exampleblock}{Numerical: 3-Step Forecast}
-        \vspace{-0.1cm}
         $\hat{Y}_{T+3|T} = 108 + 5 \times \frac{0.6(1-0.6^3)}{1-0.6} = 108 + 5 \times 1.092 = \boxed{113.46}$
-        \vspace{-0.1cm}
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Confidence Intervals: Formulas}
+    \begin{cminipage}{0.95\textwidth}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
     \begin{block}{Forecast Error Variance}
         For ARIMA(1,1,0), the $h$-step forecast error variance:
         $$\Var(e_{T+h|T}) = \sigma^2 \left(1 + \sum_{j=1}^{h-1} \psi_j^2 \right)$$
@@ -1622,146 +1791,244 @@ MSCA Digital Finance}
         $$\hat{Y}_{T+h|T} \pm z_{\alpha/2} \cdot \sqrt{\Var(e_{T+h|T})}$$
         For 95\% CI: $z_{0.025} = 1.96$
     \end{alertblock}
-    \end{minipage}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Confidence Interval: Numerical Example}
-    \vspace{-0.2cm}
-    {\footnotesize
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{exampleblock}{Given: $\sigma^2 = 4$, $\phi_1 = 0.6$, $\hat{Y}_{T+1|T} = 111$}
     \end{exampleblock}
 
     \vspace{0.05cm}
 
     \begin{block}{1-Step Ahead CI}
-        \vspace{-0.3cm}
         \begin{align*}
             \Var(e_{T+1|T}) &= \sigma^2 = 4 \\[-0.2cm]
             \text{95\% CI} &= 111 \pm 1.96 \times \sqrt{4} = 111 \pm 3.92 = \boxed{[107.08, \; 114.92]}
         \end{align*}
-        \vspace{-0.3cm}
     \end{block}
 
     \vspace{0.05cm}
 
     \begin{block}{2-Step Ahead CI (for $\hat{Y}_{T+2|T} = 112.8$)}
-        \vspace{-0.3cm}
         \begin{align*}
             \psi_1 &= 1 + \phi_1 = 1.6, \quad \Var(e_{T+2|T}) = 4(1 + 1.6^2) = 14.24 \\[-0.2cm]
             \text{95\% CI} &= 112.8 \pm 1.96 \times \sqrt{14.24} = 112.8 \pm 7.40 = \boxed{[105.40, \; 120.20]}
         \end{align*}
-        \vspace{-0.3cm}
     \end{block}
 
     \textbf{Note}: CI widens as horizon increases!
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Rolling Window Illustration}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_rolling_forecast.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Rolling Procedure}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Each window produces a 1-step ahead forecast
             \item Compare forecasts to actuals to compute RMSE, MAE
             \item Rolling window keeps model estimation up-to-date
         \end{itemize}
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Rolling Window Illustration}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_rolling_forecast.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_rolling_forecast}
+\end{frame}
+
+\begin{frame}[fragile]{Rolling Forecast: Python Code}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\scriptsize
+    \begin{block}{Implementation}
+\begin{verbatim}
+from statsmodels.tsa.arima.model import ARIMA
+
+window_size = 100
+forecasts, actuals = [], []
+
+for t in range(window_size, len(y) - 1):
+    train = y[:t]                      # Rolling window
+    model = ARIMA(train, order=(1,1,0)).fit()
+    forecast = model.forecast(steps=1)[0]
+    forecasts.append(forecast)
+    actuals.append(y[t])
+
+rmse = np.sqrt(np.mean((np.array(forecasts) - np.array(actuals))**2))
+\end{verbatim}
+    \end{block}
+    }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
 % CASE STUDY: REAL DATA
 %=============================================================================
-\section{Case Study: Real Data}
+\section{Case Study}
+
+\begin{frame}{Case Study: Complete ARIMA Analysis}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{block}{Objective}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Forecast US Real GDP using the Box-Jenkins methodology
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Steps}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Step 1}: Visualize data and check stationarity
+            \item \textbf{Step 2}: Apply unit root tests (ADF, KPSS)
+            \item \textbf{Step 3}: Difference if needed, identify $p$ and $q$
+            \item \textbf{Step 4}: Estimate the ARIMA model
+            \item \textbf{Step 5}: Model diagnostics
+            \item \textbf{Step 6}: Generate forecasts with confidence intervals
+            \item \textbf{Step 7}: Evaluate forecast accuracy
+        \end{enumerate}
+    \end{block}
+
+    \begin{alertblock}{Data}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item US Real GDP (FRED: GDPC1), Quarterly, 1990Q1--2024Q2, $n = 138$
+        \end{itemize}
+    \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
 
 \begin{frame}{Case Study: US Real GDP (FRED)}
+    \vspace{-0.2cm}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_case_raw_data.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    {\footnotesize
     \begin{block}{Data: FRED GDPC1 (1960Q1--2024Q3)}
         Quarterly Real GDP, seasonally adjusted, billions of chained 2017 dollars. Non-stationary series with upward trend $\Rightarrow$ requires differencing.
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Case Study: US Real GDP (FRED)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_raw_data.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_raw_data}
 \end{frame}
 
 \begin{frame}{Step 1: ADF Test for Stationarity}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_case_adf_test.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    {\small
     \begin{alertblock}{ADF Test Results}
         \textbf{Original series}: Large p-value $\Rightarrow$ fail to reject $H_0$ (unit root present).
         \textbf{First difference}: p-value $< 0.01$ $\Rightarrow$ reject $H_0$ $\Rightarrow$ $d = 1$ is sufficient.
     \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Step 1: ADF Test for Stationarity}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_adf_test.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_case\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_adf_test}
+    }
 \end{frame}
 
 \begin{frame}{Step 2: ACF/PACF Before and After Differencing}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_case_acf_diff.pdf}
-    \end{center}
-    \vspace{-0.1cm}
     \begin{exampleblock}{ACF/PACF Analysis}
         Top: Slow ACF decay (non-stationary) | Bottom: After differencing, low-order ARMA
     \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Step 2: ACF/PACF Before and After Differencing}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_acf_diff.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_case\_acf\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_acf_diff}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Step 3: ARIMA Model Comparison}
+    \vspace{-0.2cm}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_case_model_comparison.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    {\footnotesize
     \begin{block}{Model Selection}
         Compare ARIMA(0,1,0), ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1). The model with lowest AIC is selected.
     \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 3: ARIMA Model Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_model_comparison.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_case\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_model_comparison}
 \end{frame}
 
 \begin{frame}{Step 4: Diagnostic Checking}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_case_diagnostics.pdf}
-    \end{center}
-    \vspace{-0.1cm}
+    {\small
     \begin{alertblock}{ARIMA(1,1,1) Diagnostics}
         ACF: no autocorrelation $\checkmark$ \quad Q-Q: \textbf{non-normal} (COVID-19 outlier) \quad JB test: p $<$ 0.001
     \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Step 4: Diagnostic Checking}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_diagnostics.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_case\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_diagnostics}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Step 5: Out-of-Sample Forecasting}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_case_forecast.pdf}
-    \end{center}
-    \vspace{-0.1cm}
     \begin{block}{Train/Val/Test Split (70\%/15\%/15\%)}
         \textbf{Train 70\%} (blue): Estimation | \textbf{Val 15\%} (green): Tuning | \textbf{Test 15\%} (purple): Evaluation with 95\% CI
     \end{block}
+\end{frame}
+
+\begin{frame}{Step 5: Out-of-Sample Forecasting}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_forecast.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_forecast}
+    }
 \end{frame}
 
 \begin{frame}{Step 6: Rolling Forecast with Train/Val/Test}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_case_rolling_forecast.pdf}
-    \end{center}
-    \vspace{-0.1cm}
     \begin{block}{Rolling 1-Step Ahead Forecast (Expanding Window, 95\% CI)}
         Train 70\% $\to$ Val 15\% $\to$ Test 15\% | Expanding window refits model at each step
     \end{block}
+\end{frame}
+
+\begin{frame}{Step 6: Rolling Forecast with Train/Val/Test}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch3_case_rolling_forecast.pdf}
+    \end{center}
     \quantlet{TSA\_ch3\_case\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_rolling_forecast}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1770,22 +2037,24 @@ MSCA Digital Finance}
 \section{Summary}
 
 \begin{frame}{Summary}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{block}{What we learned in this chapter}
         \begin{itemize}\setlength{\itemsep}{1pt}
             \item Non-stationarity in time series
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Deterministic vs stochastic trend; consequences for statistical inference
             \end{itemize}
             \item Differencing and integrated processes
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item $\Delta Y_t = Y_t - Y_{t-1}$; if $Y_t \sim I(d)$, then $\Delta^d Y_t \sim I(0)$
             \end{itemize}
             \item ARIMA($p,d,q$) models and unit root tests
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item ADF, PP, KPSS; Box-Jenkins: identify $\rightarrow$ estimate $\rightarrow$ validate
             \end{itemize}
             \item Forecasts with confidence intervals
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item For I(1): CIs widen without bound ($\propto \sqrt{h}$)
             \end{itemize}
         \end{itemize}
@@ -1795,21 +2064,20 @@ MSCA Digital Finance}
             \item \textbf{Difference carefully}: One difference is usually sufficient ($d=1$). Over-differencing creates artificial autocorrelation.
         \end{itemize}
     \end{exampleblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-\section{AI Usage}
+\section{AI Use Case}
 %=============================================================================
 
 \begin{frame}{AI Exercise: Critical Thinking}
-    \vspace{-3mm}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
-        {\footnotesize
         ``I have a quarterly GDP time series (80 observations). Test stationarity, difference if needed, estimate an ARIMA model, and forecast 8 quarters ahead. Give me complete Python code with plots.''
-        }
     \end{block}
-    \vspace{-2mm}
-    {\footnotesize
     \textbf{Exercise}:
     \begin{enumerate}\setlength{\itemsep}{0pt}
         \item Run the prompt in an LLM of your choice and critically analyze the response.
@@ -1818,14 +2086,16 @@ MSCA Digital Finance}
         \item How does it choose $p$ and $q$? ACF/PACF or just auto\_arima?
         \item Do forecast confidence intervals widen with horizon? (key I(1) property)
     \end{enumerate}
-    }
-    \vspace{-2mm}
     \begin{alertblock}{}
         {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
     \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quick Quiz}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{block}{Test your knowledge}
         \begin{itemize}\setlength{\itemsep}{4pt}
             \item[\textcolor{MainBlue}{\textbf{1.}}] What types of non-stationarity do you know and how is each treated?
@@ -1835,9 +2105,12 @@ MSCA Digital Finance}
             \item[\textcolor{MainBlue}{\textbf{5.}}] Why do ARIMA confidence intervals widen without bound for I(1) series?
         \end{itemize}
     \end{block}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Answers}
+    \begin{cminipage}{0.95\textwidth}
     {\footnotesize
     \begin{exampleblock}{Answers}
         \begin{itemize}\setlength{\itemsep}{1pt}
@@ -1849,9 +2122,11 @@ MSCA Digital Finance}
         \end{itemize}
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{What's Next?}
+    \begin{cminipage}{0.95\textwidth}
     \begin{center}
     \begin{minipage}{0.85\textwidth}
     \begin{block}{Chapter 4: SARIMA Models for Seasonal Data}
@@ -1870,6 +2145,7 @@ MSCA Digital Finance}
     \begin{center}
         \Large\textcolor{MainBlue}{Questions?}
     \end{center}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1878,184 +2154,210 @@ MSCA Digital Finance}
 \section{Quiz}
 
 \begin{frame}{Quiz Question 1}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{alertblock}{Question}
         A time series $Y_t$ follows a random walk: $Y_t = Y_{t-1} + \varepsilon_t$. What is $\Var(Y_t)$?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item $\sigma^2$ (constant)
         \item $t \cdot \sigma^2$ (grows linearly with time)
         \item $\sigma^2 / t$ (decreases with time)
         \item $\sigma^{2t}$ (grows exponentially)
     \end{enumerate}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 1: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{0.3cm}
     \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_quiz1_rw_variance.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch3_quiz1_rw_variance.pdf}
     \end{center}
-    \vspace{-0.1cm}
     \begin{exampleblock}{Correct Answer: (B) $\Var(Y_t) = t \cdot \sigma^2$}
         Random walk variance grows linearly with time --- this is why random walks are non-stationary.
     \end{exampleblock}
     \quantlet{TSA\_ch3\_quiz1\_rw\_variance}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz1_rw_variance}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 2}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{alertblock}{Question}
         If a series $Y_t$ is I(2), how many times must you difference it to achieve stationarity?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item 0 times (already stationary)
         \item 1 time
         \item 2 times
         \item Cannot be made stationary by differencing
     \end{enumerate}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 2: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{0.3cm}
     \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_quiz2_differencing.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch3_quiz2_differencing.pdf}
     \end{center}
-    \vspace{-0.1cm}
     \begin{exampleblock}{Correct Answer: (C) 2 times}
         I($d$) means ``integrated of order $d$'' --- requires $d$ differences for stationarity.
     \end{exampleblock}
     \quantlet{TSA\_ch3\_quiz2\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz2_differencing}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 3}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{alertblock}{Question}
         You run an ADF test and get a test statistic of $-2.1$ with critical values: $-3.43$ (1\%), $-2.86$ (5\%), $-2.57$ (10\%). What do you conclude?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item Reject $H_0$: series is stationary at all levels
         \item Reject $H_0$: series is stationary at 10\% level only
         \item Fail to reject $H_0$: series likely has a unit root
         \item The test is inconclusive
     \end{enumerate}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 3: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{0.3cm}
     \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_quiz3_adf_test.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch3_quiz3_adf_test.pdf}
     \end{center}
-    \vspace{-0.1cm}
     \begin{exampleblock}{Correct Answer: (C) Fail to reject $H_0$: series has unit root}
         Test stat $-2.1 > -2.57$ (10\% CV) $\Rightarrow$ Cannot reject at any level. Consider differencing.
     \end{exampleblock}
     \quantlet{TSA\_ch3\_quiz3\_adf\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz3_adf_test}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 4}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{alertblock}{Question}
         For an ARIMA(1,1,0) model, what is the ACF pattern of the \textbf{differenced} series $\Delta Y_t$?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item Cuts off after lag 1
         \item Decays exponentially
         \item Alternates in sign
         \item Is zero at all lags
     \end{enumerate}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 4: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{0.3cm}
     \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_quiz4_acf_decay.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch3_quiz4_acf_decay.pdf}
     \end{center}
-    \vspace{-0.1cm}
     \begin{exampleblock}{Correct Answer: (B) Decays exponentially}
         ARIMA(1,1,0) $\Rightarrow$ $\Delta Y_t$ follows AR(1) with ACF $\rho_k = \phi_1^k$ (geometric decay).
     \end{exampleblock}
     \quantlet{TSA\_ch3\_quiz4\_acf\_decay}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz4_acf_decay}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 5}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{alertblock}{Question}
         What happens to ARIMA forecast confidence intervals as the horizon $h$ increases for an I(1) series?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item They stay constant
         \item They narrow (more precision)
         \item They widen without bound
         \item They widen but converge to a limit
     \end{enumerate}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 5: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{0.3cm}
     \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch3_quiz5_forecast_ci.pdf}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch3_quiz5_forecast_ci.pdf}
     \end{center}
-    \vspace{-0.1cm}
     \begin{exampleblock}{Correct Answer: (C) They widen without bound}
         For I(1): CI width $\propto \sqrt{h}$ (unbounded). For I(0): CIs converge to a limit.
     \end{exampleblock}
     \quantlet{TSA\_ch3\_quiz5\_forecast\_ci}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_quiz5_forecast_ci}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Bibliography I}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{block}{Unit Root Tests}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}
             \item Dickey, D.A., \& Fuller, W.A. (1979). Distribution of the Estimators for Autoregressive Time Series with a Unit Root, \textit{JASA}, 74(366), 427--431.
             \item Phillips, P.C.B., \& Perron, P. (1988). Testing for a Unit Root in Time Series Regression, \textit{Biometrika}, 75(2), 335--346.
             \item Kwiatkowski, D., Phillips, P.C.B., Schmidt, P., \& Shin, Y. (1992). Testing the Null Hypothesis of Stationarity, \textit{Journal of Econometrics}, 54(1-3), 159--178.
         \end{itemize}
-        }
     \end{block}
 
     \begin{exampleblock}{ARIMA Models and Automatic Selection}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}
             \item Box, G.E.P., \& Jenkins, G.M. (1970). \textit{Time Series Analysis: Forecasting and Control}, Holden-Day.
             \item Hyndman, R.J., \& Khandakar, Y. (2008). Automatic Time Series Forecasting: The \texttt{forecast} Package for R, \textit{Journal of Statistical Software}, 27(3), 1--22.
         \end{itemize}
-        }
     \end{exampleblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Bibliography II}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{block}{Textbooks and Additional References}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}
             \item Hamilton, J.D. (1994). \textit{Time Series Analysis}, Princeton University Press.
             \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
             \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
         \end{itemize}
-        }
     \end{block}
 
     \begin{exampleblock}{Online Resources and Code}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}
             \item \textbf{Quantlet}: \url{https://quantlet.com} $\rightarrow$ Code repository for statistics
             \item \textbf{Quantinar}: \url{https://quantinar.com} $\rightarrow$ Learning platform for quantitative methods
             \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch3}
         \end{itemize}
-        }
     \end{exampleblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
     \centering
     \Huge\textcolor{MainBlue}{Thank You!}
 
@@ -2072,6 +2374,7 @@ MSCA Digital Finance}
 
     \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
     \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
 \end{frame}
 
 \end{document}

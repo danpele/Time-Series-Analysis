@@ -135,7 +135,7 @@
 \usepackage{hyperref}
 \usepackage{colortbl}
 \hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
-\graphicspath{{../../logos/}{../../charts/}}
+\graphicspath{{../../logos/}{../../charts/}{../../photos/}}
 \hfuzz=2pt  % Suppress tiny overfull warnings (<2pt)
 \vfuzz=2pt  % Suppress tiny vertical overfull warnings (<2pt)
 
@@ -244,6 +244,15 @@ Romanian Academy, Institute for Economic Forecasting\\
 MSCA Digital Finance}
 \date{}
 
+%=============================================================================
+% CENTRED MINIPAGE
+%=============================================================================
+\newenvironment{cminipage}[1]{%
+    \par\noindent\hfill\begin{minipage}{#1}\ignorespaces
+}{%
+    \end{minipage}\hfill\null\par
+}
+
 \begin{document}
 
 % Title page (no header/footer)
@@ -256,24 +265,37 @@ MSCA Digital Finance}
 }
 
 %=============================================================================
-% LEARNING OBJECTIVES
-%=============================================================================
-\begin{frame}{Learning Objectives}
-\begin{block}{By the end of this chapter, you will be able to:}
-\begin{itemize}
-    \item Model multivariate time series using Vector Autoregression (VAR)
-    \item Test for Granger causality between economic variables
-    \item Compute and interpret Impulse Response Functions (IRFs)
-    \item Analyze Forecast Error Variance Decomposition (FEVD)
-\end{itemize}
-\end{block}
-\end{frame}
-
-%=============================================================================
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
-    \tableofcontents
+    \vspace{-0.15cm}
+    {\small
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Foundations}
+                \begin{itemize}\setlength{\itemsep}{3pt}
+                    \item Motivation
+                    \item Introduction to multivariate time series
+                    \item Vector Autoregression (VAR)
+                    \item Granger Causality
+                    \item Impulse Response Functions
+                    \item Forecast Error Variance Decomposition
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{Applications}
+                \begin{itemize}\setlength{\itemsep}{3pt}
+                    \item VAR Diagnostics
+                    \item VAR Forecasting
+                    \item Practical Example
+                    \item \mbox{Case Study: GDP and Unemployment}
+                    \item Summary and Quiz
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+    }
 \end{frame}
 
 %=============================================================================
@@ -281,59 +303,89 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Motivation}
 
+\begin{frame}{Learning Objectives}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{By the end of this chapter, you will be able to:}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item Understand the \textbf{motivation} for multivariate time series analysis
+            \item Specify and estimate \textbf{VAR(p)} models
+            \item Apply \textbf{Granger causality} tests
+            \item Interpret \textbf{Impulse Response Functions (IRFs)}
+            \item Perform \textbf{Forecast Error Variance Decomposition (FEVD)}
+            \item Select the optimal lag order using information criteria
+            \item Implement VAR analysis in \textbf{Python}
+        \end{enumerate}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% MOTIVATION
+%=============================================================================
 \begin{frame}{Motivating Example: Macroeconomic Dynamics}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{ch5_motivation_econ.pdf}
-    \end{center}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
-        \item Economic variables are \textbf{interconnected}: GDP affects unemployment, inflation affects interest rates
-        \item Changes in one variable \textbf{propagate} through the system
-        \item Understanding these dynamics requires \textbf{multivariate} analysis
-    \end{itemize}
+    \begin{block}{Observations}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Economic variables are \textbf{interconnected}: GDP affects unemployment, inflation affects interest rates
+            \item Changes in one variable \textbf{propagate} through the system
+            \item Understanding these dynamics requires \textbf{multivariate} analysis
+        \end{itemize}
+    \end{block}
     }
-    \quantlet{TSA\_ch5\_motivation\_econ}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_motivation_econ}
+\end{frame}
+
+\begin{frame}{Motivating Example: Macroeconomic Dynamics}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_motivation_econ.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_motivation\_econ}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_motivation_econ}
 \end{frame}
 
 \begin{frame}{The Key Insight: Variables Interact}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.85\textwidth, height=0.60\textheight, keepaspectratio]{ch5_motivation_scatter.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item \textbf{Okun's Law}: Higher GDP growth $\Rightarrow$ lower unemployment
         \item \textbf{Taylor Rule}: Higher inflation $\Rightarrow$ higher interest rates
         \item \textbf{Phillips Curve}: Unemployment-inflation tradeoff
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_motivation\_scatter}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_motivation_scatter}
+\end{frame}
+
+\begin{frame}{The Key Insight: Variables Interact}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_motivation_scatter.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_motivation\_scatter}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_motivation_scatter}
 \end{frame}
 
 \begin{frame}{Lead-Lag Relationships}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{ch5_motivation_leadlag.pdf}
-    \end{center}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Some variables \textbf{lead} others: stock market predicts economic activity
         \item Cross-correlation reveals the \textbf{timing} of relationships
         \item Peak correlation at lag 4: stock market leads unemployment by $\sim$4 months
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_motivation\_leadlag}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_motivation_leadlag}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Lead-Lag Relationships}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_motivation_leadlag.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_motivation\_leadlag}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_motivation_leadlag}
 \end{frame}
 
 \begin{frame}{Why Univariate Models Are Not Enough}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
     \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.38\textheight, keepaspectratio]{ch5_motivation_univariate.pdf}
-    \end{center}
     \vspace{-0.1cm}
     {\footnotesize
     \begin{alertblock}{The Problem}
@@ -343,29 +395,47 @@ MSCA Digital Finance}
         \textbf{VAR models} capture the joint dynamics and feedback effects between multiple time series.
     \end{exampleblock}
     }
-    \quantlet{TSA\_ch5\_motivation\_univariate}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_motivation_univariate}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Why Univariate Models Are Not Enough}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_motivation_univariate.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_motivation\_univariate}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_motivation_univariate}
 \end{frame}
 
 \begin{frame}{What We'll Learn Today}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.1cm}
     \begin{block}{Core Concepts}
-        \begin{enumerate}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{1pt}
             \item \textbf{VAR Models}: How to model multiple time series jointly
             \item \textbf{Granger Causality}: Does $X$ help predict $Y$?
             \item \textbf{Impulse Response Functions}: How do shocks propagate?
             \item \textbf{Variance Decomposition}: What drives each variable?
         \end{enumerate}
+        }
     \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{exampleblock}{Applications}
-        \begin{itemize}
-            \item Macroeconomic policy analysis (monetary policy effects)
-            \item Financial market dynamics (stock-bond relationships)
-            \item Business cycle analysis (leading indicators)
-            \item Risk management (volatility transmission)
+    \vspace{-0.05cm}
+    {\small
+    \begin{exampleblock}{Recurring Example: GDP Growth and Unemployment}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $Y_{1t}$: \textbf{GDP Growth} \quad and \quad $Y_{2t}$: \textbf{Unemployment Rate} (\textit{Okun's Law})
+            \item Central question: Does GDP cause unemployment, or vice versa, or both?
         \end{itemize}
     \end{exampleblock}
+    }
+    \vspace{-0.05cm}
+    {\small
+    \begin{block}{Applications}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Macroeconomic policy \quad\textbullet\quad Financial markets \quad\textbullet\quad Business cycle \quad\textbullet\quad Risk management
+        \end{itemize}
+    \end{block}
+    }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -374,6 +444,7 @@ MSCA Digital Finance}
 \section{Introduction to Multivariate Time Series}
 
 \begin{frame}{Multivariate Time Series Notation}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Vector of Variables}
         Let $\bY_t = (Y_{1t}, Y_{2t}, \ldots, Y_{Kt})'$ be a $K \times 1$ vector of time series.
 
@@ -385,18 +456,20 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{block}{Key Questions}
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item Does $Y_1$ help predict $Y_2$? (Granger causality)
             \item How do shocks to $Y_1$ affect $Y_2$? (Impulse responses)
             \item What proportion of $Y_2$'s variance is due to $Y_1$? (Variance decomposition)
         \end{enumerate}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Multivariate Stationarity}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Definition: Weak Stationarity}
         A $K$-dimensional time series $\bY_t$ is \textbf{weakly stationary} if:
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item $\E[\bY_t] = \boldsymbol{\mu}$ (constant mean vector)
             \item $\Cov(\bY_t, \bY_{t-h}) = \boldsymbol{\Gamma}(h)$ depends only on $h$, not $t$
         \end{enumerate}
@@ -409,11 +482,13 @@ MSCA Digital Finance}
 
         Note: $\boldsymbol{\Gamma}(-h) = \boldsymbol{\Gamma}(h)'$ (transpose, not equal!)
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Cross-Covariance Properties}
+    \vspace{-2mm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Cross-Covariance Function}
         For variables $Y_{it}$ and $Y_{jt}$:
         $$\gamma_{ij}(h) = \Cov(Y_{it}, Y_{j,t-h}) = \E[(Y_{it} - \mu_i)(Y_{j,t-h} - \mu_j)]$$
@@ -430,11 +505,13 @@ MSCA Digital Finance}
     \begin{exampleblock}{Example}
         If $Y_1$ leads $Y_2$: $\gamma_{12}(h) > 0$ for $h > 0$ but $\gamma_{12}(h) \approx 0$ for $h < 0$
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Correlation Matrix Function}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.1cm}
     \begin{block}{Definition}
         The \textbf{autocorrelation matrix} at lag $h$:
         $$\mathbf{R}(h) = \mathbf{D}^{-1} \boldsymbol{\Gamma}(h) \mathbf{D}^{-1}$$
@@ -452,6 +529,7 @@ MSCA Digital Finance}
         \vspace{0.2cm}
         Diagonal elements: usual ACFs; Off-diagonal: cross-correlations
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -459,22 +537,69 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Vector Autoregression (VAR)}
 
+\begin{frame}{Researcher Spotlight: Sims \& Granger}
+    \vspace{-0.2cm}
+    \begin{columns}[T]
+        \begin{column}{0.22\textwidth}
+            \centering
+            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{photo_christopher_sims.jpg}
+            \\[0.05cm]
+            {\tiny\textcolor{MediumGray}{Christopher Sims (*1942)}}\\[-0.05cm]
+            {\tiny\textcolor{MediumGray}{Nobel Prize 2011}}\\[0.02cm]
+            \href{https://en.wikipedia.org/wiki/Christopher_A._Sims}{\faWikipediaW\ \textcolor{MainBlue}{\tiny Wikipedia}}
+        \end{column}
+        \begin{column}{0.76\textwidth}
+            \begin{block}{Biography}
+                {\footnotesize \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Christopher Sims}: American econometrician at Princeton. Nobel Prize (2011) ``for empirical research on cause and effect in the macroeconomy''
+                    \item \textbf{Clive Granger}: British-American economist at UC San Diego. Nobel Prize (2003) ``for methods of analyzing economic time series with common trends (cointegration)''
+                \end{itemize}}
+            \end{block}
+        \end{column}
+    \end{columns}
+    \vspace{0.1cm}
+    \begin{columns}[T]
+        \begin{column}{0.22\textwidth}
+            \centering
+            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{photo_clive_granger.jpg}
+            \\[0.05cm]
+            {\tiny\textcolor{MediumGray}{Clive Granger (1934--2009)}}\\[-0.05cm]
+            {\tiny\textcolor{MediumGray}{Nobel Prize 2003}}\\[0.02cm]
+            \href{https://en.wikipedia.org/wiki/Clive_Granger}{\faWikipediaW\ \textcolor{MainBlue}{\tiny Wikipedia}}
+        \end{column}
+        \begin{column}{0.76\textwidth}
+            \begin{exampleblock}{Key Contributions}
+                {\footnotesize
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{VAR models} (Sims, 1980) --- vector autoregression for macroeconomics
+                    \item \textbf{Granger causality} (Granger, 1969) --- predictive causality concept
+                    \item \textbf{Impulse response functions} and structural VAR identification
+                    \item \textbf{Cointegration} (Granger, 1981) --- long-run equilibrium relationships
+                \end{itemize}}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{The VAR(p) Model}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Definition}
         A \textbf{VAR(p)} model for $K$ variables:
         $$\bY_t = \mathbf{c} + \bA_1 \bY_{t-1} + \bA_2 \bY_{t-2} + \cdots + \bA_p \bY_{t-p} + \bepsilon_t$$
 
         where:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $\bY_t$: $K \times 1$ vector of endogenous variables
             \item $\mathbf{c}$: $K \times 1$ vector of constants
             \item $\bA_i$: $K \times K$ coefficient matrices
             \item $\bepsilon_t$: $K \times 1$ vector of error terms with $\E[\bepsilon_t] = \mathbf{0}$, $\E[\bepsilon_t \bepsilon_t'] = \bSigma$
         \end{itemize}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{VAR(1) with Two Variables}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Bivariate VAR(1)}
         $$\begin{pmatrix} Y_{1t} \\ Y_{2t} \end{pmatrix} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} + \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix} \begin{pmatrix} Y_{1,t-1} \\ Y_{2,t-1} \end{pmatrix} + \begin{pmatrix} \varepsilon_{1t} \\ \varepsilon_{2t} \end{pmatrix}$$
     \end{block}
@@ -489,11 +614,13 @@ MSCA Digital Finance}
 
         \textbf{Key insight}: Each equation includes lags of \textbf{all} variables!
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Numerical Example: VAR(1)}
+    \vspace{-2mm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Specific VAR(1) Model}
         $$\begin{pmatrix} Y_{1t} \\ Y_{2t} \end{pmatrix} = \begin{pmatrix} 0.5 \\ 0.3 \end{pmatrix} + \begin{pmatrix} 0.7 & 0.2 \\ -0.1 & 0.6 \end{pmatrix} \begin{pmatrix} Y_{1,t-1} \\ Y_{2,t-1} \end{pmatrix} + \begin{pmatrix} \varepsilon_{1t} \\ \varepsilon_{2t} \end{pmatrix}$$
     \end{exampleblock}
@@ -504,16 +631,19 @@ MSCA Digital Finance}
             \item $a_{12} = 0.2$: A 1-unit increase in $Y_2$ at $t-1$ increases $Y_1$ at $t$ by 0.2
             \item $a_{21} = -0.1$: A 1-unit increase in $Y_1$ at $t-1$ \textbf{decreases} $Y_2$ at $t$ by 0.1
             \item $a_{22} = 0.6$:
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item A 1-unit increase in $Y_2$ at $t-1$ increases $Y_2$ at $t$ by 0.6
                 \end{itemize}
             \end{itemize}
     \end{block}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{VAR(2): Higher Order Dynamics}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
+    {\small
     \begin{block}{VAR(2) Specification}
         $\bY_t = \mathbf{c} + \bA_1 \bY_{t-1} + \bA_2 \bY_{t-2} + \bepsilon_t$. For $K=2$: $2 + 2 \times 4 + 2 \times 4 = 18$ parameters!
     \end{block}
@@ -536,9 +666,14 @@ MSCA Digital Finance}
         VAR($p$) with $K$ variables has $K + pK^2$ parameters. With $K=5$, $p=4$: $5 + 4 \times 25 = 105$ parameters!
     \end{alertblock}
     }
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{The Companion Form}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\small
     \begin{block}{Converting VAR(p) to VAR(1)}
         Any VAR($p$) can be written as a VAR(1) in \textbf{companion form}:
         $\boldsymbol{\xi}_t = \mathbf{A} \boldsymbol{\xi}_{t-1} + \mathbf{v}_t$
@@ -559,25 +694,31 @@ MSCA Digital Finance}
         Stationarity, forecasting, and IRFs are easier in companion form. Matrix $\mathbf{A}$ is $Kp \times Kp$.
     \end{block}
     }
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{VAR Process: GDP and Unemployment (FRED)}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_var_simulation.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item \textbf{Data}: US GDP Growth (GDPC1) and Unemployment Rate (UNRATE) from FRED
         \item Each variable responds to both its own past and the other variable's past
         \item Classic example of macroeconomic interdependence (Okun's Law)
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_var\_simulation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_simulation}
+\end{frame}
+
+\begin{frame}{VAR Process: GDP and Unemployment (FRED)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_var_simulation.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_var\_simulation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_var_simulation}
 \end{frame}
 
 \begin{frame}{Stationarity of VAR}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Stability Condition}
         VAR(p) is \textbf{stable} (stationary) if all roots of:
         $$\det(\mathbf{I}_K - \bA_1 z - \bA_2 z^2 - \cdots - \bA_p z^p) = 0$$
@@ -594,11 +735,13 @@ MSCA Digital Finance}
 
         Both $< 1$ $\Rightarrow$ stable!
     \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Computing Eigenvalues: Example}
+    \vspace{-2mm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{For $\bA = \begin{pmatrix} 0.7 & 0.2 \\ -0.1 & 0.6 \end{pmatrix}$}
         Characteristic polynomial: $\det(\bA - \lambda \mathbf{I}) = 0$
         $$\det\begin{pmatrix} 0.7 - \lambda & 0.2 \\ -0.1 & 0.6 - \lambda \end{pmatrix} = (0.7-\lambda)(0.6-\lambda) + 0.02 = 0$$
@@ -611,27 +754,31 @@ MSCA Digital Finance}
 
         $|\lambda| = \sqrt{0.65^2 + 0.132^2} = \sqrt{0.44} = 0.663 < 1$ \quad $\checkmark$ Stable!
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Stability Condition: Visual Interpretation}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_stability_roots.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Eigenvalues of the companion matrix must lie inside the unit circle
         \item Complex eigenvalues come in conjugate pairs
         \item If any eigenvalue is outside the circle, the VAR is explosive (non-stationary)
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_stability\_roots}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_stability_roots}
+\end{frame}
+
+\begin{frame}{Stability Condition: Visual Interpretation}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_stability_roots.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_stability\_roots}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_stability_roots}
 \end{frame}
 
 \begin{frame}{Mean of a Stationary VAR}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{block}{Unconditional Mean}
         For stationary VAR(1): $\bY_t = \mathbf{c} + \bA \bY_{t-1} + \bepsilon_t$. Since $\E[\bY_t] = \E[\bY_{t-1}] = \boldsymbol{\mu}$:
@@ -643,11 +790,13 @@ MSCA Digital Finance}
         $\boldsymbol{\mu} = \begin{pmatrix} 0.3 & -0.2 \\ 0.1 & 0.4 \end{pmatrix}^{-1} \begin{pmatrix} 0.5 \\ 0.3 \end{pmatrix} = \begin{pmatrix} 2.3 \\ 1.0 \end{pmatrix}$
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Covariance Structure of VAR(1)}
+    \vspace{-2mm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Variance-Covariance Matrix $\boldsymbol{\Gamma}(0)$}
         For VAR(1), the variance satisfies the \textbf{discrete Lyapunov equation}:
         $$\boldsymbol{\Gamma}(0) = \bA \boldsymbol{\Gamma}(0) \bA' + \bSigma$$
@@ -664,83 +813,13 @@ MSCA Digital Finance}
         $$\text{vec}(\boldsymbol{\Gamma}(0)) = (\mathbf{I}_{K^2} - \bA \otimes \bA)^{-1} \text{vec}(\bSigma)$$
         where $\otimes$ denotes the Kronecker product.
     \end{alertblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
-\begin{frame}{Derivation: The Lyapunov Equation}
-    \begin{block}{Starting Point: VAR(1) Model}
-        Consider the stationary VAR(1): $\bY_t = \mathbf{c} + \bA\bY_{t-1} + \bepsilon_t$
-
-        \vspace{0.1cm}
-        Without loss of generality, assume $\mathbf{c} = \mathbf{0}$ (mean-centered):
-        $$\bY_t = \bA\bY_{t-1} + \bepsilon_t$$
-    \end{block}
-
-    \vspace{0.15cm}
-
-    \begin{block}{Step 1: Definition of Variance-Covariance Matrix}
-        The unconditional variance-covariance matrix is:
-        $$\boldsymbol{\Gamma}(0) = \E[\bY_t \bY_t']$$
-
-        By stationarity: $\boldsymbol{\Gamma}(0) = \E[\bY_{t-1} \bY_{t-1}']$
-    \end{block}
-\end{frame}
-
-\begin{frame}{Derivation: The Lyapunov Equation (cont.)}
-    \begin{block}{Step 2: Substitute VAR(1) into Variance Expression}
-        $$\boldsymbol{\Gamma}(0) = \E[\bY_t \bY_t'] = \E[(\bA\bY_{t-1} + \bepsilon_t)(\bA\bY_{t-1} + \bepsilon_t)']$$
-
-        Expanding:
-        $$= \E[\bA\bY_{t-1}\bY_{t-1}'\bA' + \bA\bY_{t-1}\bepsilon_t' + \bepsilon_t\bY_{t-1}'\bA' + \bepsilon_t\bepsilon_t']$$
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{block}{Step 3: Apply Expectations}
-        Since $\bepsilon_t$ is independent of $\bY_{t-1}$: $\E[\bY_{t-1}\bepsilon_t'] = \mathbf{0}$ and $\E[\bepsilon_t\bY_{t-1}'] = \mathbf{0}$
-
-        \vspace{0.1cm}
-        Therefore:
-        $$\boldsymbol{\Gamma}(0) = \bA\E[\bY_{t-1}\bY_{t-1}']\bA' + \E[\bepsilon_t\bepsilon_t'] = \bA\boldsymbol{\Gamma}(0)\bA' + \bSigma$$
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{alertblock}{The Discrete Lyapunov Equation}
-        $$\boxed{\boldsymbol{\Gamma}(0) = \bA\boldsymbol{\Gamma}(0)\bA' + \bSigma}$$
-    \end{alertblock}
-\end{frame}
-
-\begin{frame}{Solving the Lyapunov Equation}
-    \begin{block}{The Vectorization Approach}
-        The Lyapunov equation $\boldsymbol{\Gamma}(0) = \bA\boldsymbol{\Gamma}(0)\bA' + \bSigma$ is a matrix equation.
-
-        \vspace{0.1cm}
-        To solve it, we use the \textbf{vec operator} which stacks columns of a matrix into a vector.
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{block}{Key Property: Kronecker Product}
-        For matrices $\mathbf{A}$, $\mathbf{B}$, $\mathbf{X}$: $\text{vec}(\mathbf{AXB}) = (\mathbf{B}' \otimes \mathbf{A})\text{vec}(\mathbf{X})$
-
-        \vspace{0.1cm}
-        Applying to $\bA\boldsymbol{\Gamma}(0)\bA'$:
-        $$\text{vec}(\bA\boldsymbol{\Gamma}(0)\bA') = (\bA \otimes \bA)\text{vec}(\boldsymbol{\Gamma}(0))$$
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{alertblock}{Solution}
-        Vectorizing both sides of the Lyapunov equation:
-        $$\text{vec}(\boldsymbol{\Gamma}(0)) = (\bA \otimes \bA)\text{vec}(\boldsymbol{\Gamma}(0)) + \text{vec}(\bSigma)$$
-        $$\boxed{\text{vec}(\boldsymbol{\Gamma}(0)) = (\mathbf{I}_{K^2} - \bA \otimes \bA)^{-1} \text{vec}(\bSigma)}$$
-        This solution exists when VAR is stable (eigenvalues of $\bA \otimes \bA$ inside unit circle).
-    \end{alertblock}
-\end{frame}
-
 \begin{frame}{Estimation of VAR}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.1cm}
     \begin{block}{OLS Estimation}
         Each equation can be estimated by \textbf{OLS separately}:
         $$\hat{\bA} = \left(\sum_{t=1}^{T} \bY_{t-1} \bY_{t-1}'\right)^{-1} \left(\sum_{t=1}^{T} \bY_{t-1} \bY_t'\right)$$
@@ -756,9 +835,13 @@ MSCA Digital Finance}
 
         The errors $\varepsilon_{1t}$ and $\varepsilon_{2t}$ may be \textbf{contemporaneously correlated}.
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Lag Order Selection}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\small
     \begin{block}{Information Criteria}
         Choose $p$ that minimizes:
         \begin{align*}
@@ -777,27 +860,33 @@ MSCA Digital Finance}
         \end{itemize}
     \end{block}
     }
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Lag Selection: Example}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_lag_selection.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Information criteria values for different lag orders
         \item AIC and BIC may suggest different optimal lags
         \item Lower values indicate better model fit (penalized by complexity)
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_lag\_selection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_lag_selection}
+\end{frame}
+
+\begin{frame}{Lag Selection: Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_lag_selection.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_lag\_selection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_lag_selection}
 \end{frame}
 
 \begin{frame}{Restricted VAR Models}
+    \vspace{-0.2cm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Why Restrict?}
         Full VAR models can be \textbf{overparameterized}:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -821,7 +910,7 @@ MSCA Digital Finance}
 
         where $r$ = number of restrictions
     \end{alertblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
@@ -831,6 +920,7 @@ MSCA Digital Finance}
 \section{Granger Causality}
 
 \begin{frame}{What is Granger Causality?}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Clive Granger (1969, Nobel Prize 2003)}
         ``$X$ \textbf{Granger-causes} $Y$'' if past values of $X$ help predict $Y$, \textbf{beyond} what past values of $Y$ alone can predict.
     \end{block}
@@ -840,18 +930,20 @@ MSCA Digital Finance}
     \begin{alertblock}{Important Distinction}
         \textbf{Granger causality $\neq$ True causality}
 
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Granger causality is about \textbf{predictive content}
             \item Does NOT imply economic/structural causation
             \item ``$X$ Granger-causes $Y$'' means:
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item $X$ contains useful information for forecasting $Y$
                 \end{itemize}
             \end{itemize}
     \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Formal Definition}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Granger Causality}
         $X$ \textbf{does not Granger-cause} $Y$ if:
         $$\E[Y_t | Y_{t-1}, Y_{t-2}, \ldots, X_{t-1}, X_{t-2}, \ldots] = \E[Y_t | Y_{t-1}, Y_{t-2}, \ldots]$$
@@ -870,9 +962,12 @@ MSCA Digital Finance}
         \vspace{0.2cm}
         For VAR(p): $Y_2$ does not Granger-cause $Y_1$ if $a_{12}^{(1)} = a_{12}^{(2)} = \cdots = a_{12}^{(p)} = 0$.
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Testing for Granger Causality}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.1cm}
     \begin{block}{Hypothesis Test}
         \textbf{$H_0$}: $Y_2$ does \textbf{not} Granger-cause $Y_1$
 
@@ -887,14 +982,16 @@ MSCA Digital Finance}
         $$F = \frac{(RSS_R - RSS_U)/p}{RSS_U/(T-2p-1)} \sim F_{p, T-2p-1}$$
 
         where:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $RSS_R$: Residual sum of squares from restricted model (without $Y_2$ lags)
             \item $RSS_U$: Residual sum of squares from unrestricted model (full VAR)
         \end{itemize}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Types of Granger Causality}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.2cm}
     \begin{center}
     \begin{tikzpicture}[scale=0.8,
@@ -936,11 +1033,13 @@ MSCA Digital Finance}
         \end{itemize}
     \end{block}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Cross-Correlation Function}
+    \vspace{-0.1cm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{defn}[Cross-Correlation Function]
         The \textbf{cross-correlation} between $X_t$ and $Y_t$ at lag $k$ is:
         $$\rho_{XY}(k) = \frac{\gamma_{XY}(k)}{\sigma_X \sigma_Y} = \frac{\Cov(X_t, Y_{t+k})}{\sqrt{\Var(X_t)\Var(Y_t)}}$$
@@ -956,22 +1055,32 @@ MSCA Digital Finance}
     \begin{alertblock}{Note}
         Unlike ACF, cross-correlation is \textbf{not symmetric}: $\rho_{XY}(k) \neq \rho_{XY}(-k)$ in general.
     \end{alertblock}
-    \end{minipage}
+    \end{cminipage}
+    }
+\end{frame}
+
+\begin{frame}{Cross-Correlation: Visual Illustration}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Left: two related series; Right: CCF reveals that $X$ leads $Y$ (significant correlations at positive lags)
+        \end{itemize}
+    \end{block}
     }
 \end{frame}
 
 \begin{frame}{Cross-Correlation: Visual Illustration}
     \begin{center}
-        \includegraphics[width=0.95\textwidth]{ch5_def_ccf.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_def_ccf.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    \small Left: two related series. Right: CCF reveals that $X$ leads $Y$ (significant correlations at positive lags).
-    \quantlet{TSA\_ch5\_def\_ccf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_def_ccf}
+    \quantlet{TSA\_ch6\_def\_ccf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_def_ccf}
 \end{frame}
 
 \begin{frame}{Granger Causality: Practical Considerations}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Common Pitfalls}
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item \textbf{Omitted variables}: A third variable $Z$ may cause both $X$ and $Y$
             \item \textbf{Non-stationarity}: Test requires stationary data (or cointegration)
             \item \textbf{Lag selection}: Results can be sensitive to $p$
@@ -982,18 +1091,19 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{block}{Best Practices}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Test for unit roots first
             \item Use multiple lag selection criteria
             \item Check robustness to different lag lengths
             \item Report results for both directions
         \end{itemize}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Granger Causality Test: Numerical Example}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Testing: Does Money Growth Granger-cause Output?}
         \textbf{Unrestricted model} (VAR with 2 lags):
         $$\Delta Y_t = c + \alpha_1 \Delta Y_{t-1} + \alpha_2 \Delta Y_{t-2} + \beta_1 \Delta M_{t-1} + \beta_2 \Delta M_{t-2} + \varepsilon_t$$
@@ -1008,13 +1118,14 @@ MSCA Digital Finance}
 
         $F_{0.05}(2, 95) = 3.09$ $\Rightarrow$ \textbf{Reject $H_0$}: Money Granger-causes output!
     \end{block}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{The Toda-Yamamoto Procedure}
+    \vspace{-0.2cm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Problem with Non-Stationary Data}
         Standard Granger test has \textbf{non-standard distributions} when:
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1035,11 +1146,14 @@ MSCA Digital Finance}
     \begin{exampleblock}{Advantage}
         Wald test has asymptotic $\chi^2$ distribution regardless of cointegration!
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Instantaneous Causality}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.25cm}
+    {\scriptsize
     \begin{block}{Definition}
         $X$ \textbf{instantaneously causes} $Y$ if $\E[Y_t | \Omega_{t-1}, X_t] \neq \E[Y_t | \Omega_{t-1}]$, where $\Omega_{t-1}$ contains all past information.
     \end{block}
@@ -1059,9 +1173,12 @@ MSCA Digital Finance}
         Instantaneous causality often reflects \textbf{common shocks} or \textbf{data aggregation}, not true contemporaneous effects.
     \end{alertblock}
     }
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Granger Causality in Multiple Systems}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Block Exogeneity Test}
         In a VAR with $K > 2$ variables, test whether a \textbf{group} of variables Granger-causes another group.
 
@@ -1076,6 +1193,7 @@ MSCA Digital Finance}
 
         where $K_1$ = number of ``caused'' variables, $K_2$ = number of ``causing'' variables
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1084,6 +1202,9 @@ MSCA Digital Finance}
 \section{Impulse Response Functions}
 
 \begin{frame}{What are Impulse Response Functions?}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    {\small
     \begin{block}{Definition}
         An \textbf{Impulse Response Function (IRF)} traces the effect of a one-time shock to one variable on the current and future values of all variables.
     \end{block}
@@ -1102,9 +1223,12 @@ MSCA Digital Finance}
 
         The matrices $\boldsymbol{\Phi}_i$ are the \textbf{impulse responses} at horizon $i$.
     \end{block}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Computing IRFs for VAR(1)}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{For VAR(1): $\bY_t = \mathbf{c} + \bA \bY_{t-1} + \bepsilon_t$}
         The impulse response matrices are:
         $$\boldsymbol{\Phi}_0 = \mathbf{I}_K, \quad \boldsymbol{\Phi}_1 = \bA, \quad \boldsymbol{\Phi}_2 = \bA^2, \quad \ldots, \quad \boldsymbol{\Phi}_h = \bA^h$$
@@ -1118,11 +1242,13 @@ MSCA Digital Finance}
         \vspace{0.2cm}
         For stable VAR: $\boldsymbol{\Phi}_h \rightarrow \mathbf{0}$ as $h \rightarrow \infty$ (shocks die out)
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Computing IRFs for General VAR(p)}
+    \vspace{-0.1cm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Recursive Formula for VAR(p)}
         For $\bY_t = \mathbf{c} + \bA_1\bY_{t-1} + \bA_2\bY_{t-2} + \cdots + \bA_p\bY_{t-p} + \bepsilon_t$:
         $$\boldsymbol{\Phi}_h = \sum_{j=1}^{\min(h,p)} \bA_j \boldsymbol{\Phi}_{h-j}, \quad h = 1, 2, 3, \ldots$$
@@ -1137,11 +1263,14 @@ MSCA Digital Finance}
             \item $\boldsymbol{\Phi}_3 = \bA_1 \boldsymbol{\Phi}_2 + \bA_2 \boldsymbol{\Phi}_1 = \bA_1(\bA_1^2 + \bA_2) + \bA_2\bA_1$
         \end{itemize}
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Orthogonalized IRFs}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
+    {\small
     \begin{alertblock}{Problem: Correlated Errors}
         If $\bSigma$ is not diagonal, shocks $\varepsilon_{1t}$ and $\varepsilon_{2t}$ are correlated.
 
@@ -1166,27 +1295,33 @@ MSCA Digital Finance}
         Cholesky assumes variables ordered from ``most exogenous'' to ``most endogenous''. Results depend on this ordering.
     \end{alertblock}
     }
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Impulse Response Functions: Example}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_irf.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item IRFs show how each variable responds to a one-unit shock over time
         \item Shaded regions represent confidence intervals (uncertainty in estimates)
         \item For stable VAR models, responses converge to zero as the horizon increases
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_irf}
+\end{frame}
+
+\begin{frame}{Impulse Response Functions: Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_irf.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_irf}
 \end{frame}
 
 \begin{frame}{IRF Numerical Example}
+    \vspace{-3mm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{For $\bA = \begin{pmatrix} 0.7 & 0.2 \\ -0.1 & 0.6 \end{pmatrix}$}
         \begin{align*}
             \boldsymbol{\Phi}_0 &= \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \\
@@ -1201,11 +1336,12 @@ MSCA Digital Finance}
             \item $[\boldsymbol{\Phi}_2]_{21} = -0.13$: A unit shock to $Y_1$ \textbf{decreases} $Y_2$ by 0.13 after 2 periods
         \end{itemize}
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Cumulative Impulse Responses}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Definition}
         The \textbf{cumulative IRF} up to horizon $H$:
         $$\boldsymbol{\Psi}_H = \sum_{h=0}^{H} \boldsymbol{\Phi}_h$$
@@ -1229,11 +1365,13 @@ MSCA Digital Finance}
         Cumulative IRFs are useful when interested in total impact (e.g., cumulative GDP loss from a shock).
     \end{alertblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Confidence Intervals for IRFs}
+    \vspace{-0.2cm}
     {\footnotesize
-    \hfill\begin{minipage}{0.92\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Sources of Uncertainty}
         IRFs are functions of estimated parameters $\hat{\bA}_1, \ldots, \hat{\bA}_p$, so they have \textbf{sampling uncertainty}.
     \end{block}
@@ -1254,11 +1392,12 @@ MSCA Digital Finance}
             \item Repeat $B$ times; use percentiles for CIs
         \end{enumerate}
     \end{alertblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Structural VAR (SVAR)}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Motivation}
         Standard VAR shocks $\bepsilon_t$ are \textbf{reduced-form} innovations---linear combinations of structural shocks.
 
@@ -1281,11 +1420,13 @@ MSCA Digital Finance}
         $\bepsilon_t = \mathbf{B}_0^{-1} \mathbf{u}_t \quad \Rightarrow \quad \bSigma = \mathbf{B}_0^{-1} (\mathbf{B}_0^{-1})'$
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Identification in SVAR}
+    \vspace{-0.2cm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{The Identification Problem}
         $\bSigma$ has $K(K+1)/2$ unique elements, but $\mathbf{B}_0^{-1}$ has $K^2$ elements.
 
@@ -1307,24 +1448,27 @@ MSCA Digital Finance}
 
         Variable 1 doesn't respond to shock 2 contemporaneously.
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Structural IRF Example}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_structural_irf.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Structural IRFs based on Cholesky identification
         \item Order of variables affects interpretation of shocks
         \item First variable responds only to own shocks contemporaneously
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_structural\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_structural_irf}
+\end{frame}
+
+\begin{frame}{Structural IRF Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_structural_irf.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_structural\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_structural_irf}
 \end{frame}
 
 %=============================================================================
@@ -1333,6 +1477,7 @@ MSCA Digital Finance}
 \section{Forecast Error Variance Decomposition}
 
 \begin{frame}{Variance Decomposition}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         What proportion of the forecast error variance of $Y_i$ at horizon $h$ is due to shocks to $Y_j$?
     \end{alertblock}
@@ -1353,27 +1498,32 @@ MSCA Digital Finance}
         \end{itemize}
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{FEVD: Example}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_fevd.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item FEVD shows the proportion of forecast variance attributable to each shock
         \item At short horizons, own shocks dominate; cross-variable effects grow over time
         \item Useful for understanding the relative importance of different shocks in the system
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_fevd}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_fevd}
+\end{frame}
+
+\begin{frame}{FEVD: Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_fevd.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_fevd}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_fevd}
 \end{frame}
 
 \begin{frame}{FEVD: Numerical Example}
+    \vspace{-0.15cm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Computing FEVD for Bivariate VAR}
         Using orthogonalized IRFs $\boldsymbol{\Theta}_h$, FEVD at horizon $H$:
         $$\text{FEVD}_{11}(H) = \frac{\sum_{h=0}^{H-1} \theta_{11}^2(h)}{\sum_{h=0}^{H-1} [\theta_{11}^2(h) + \theta_{12}^2(h)]}$$
@@ -1394,11 +1544,12 @@ MSCA Digital Finance}
 
         $\text{FEVD}_{11}(3) = \frac{1.00 + 0.49 + 0.22}{1.00 + 0.49 + 0.22 + 0.00 + 0.04 + 0.07} = \frac{1.71}{1.82} = 94\%$
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Historical Decomposition}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Definition}
         \textbf{Historical decomposition} breaks down each observed value into contributions from each structural shock:
         $$Y_{it} - \bar{Y}_i = \sum_{j=1}^{K} \sum_{s=0}^{t-1} \theta_{ij}(s) \cdot u_{j,t-s}$$
@@ -1407,28 +1558,32 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{exampleblock}{Application}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item ``How much of the 2008 GDP decline was due to financial shocks vs. oil shocks?''
             \item Attributes historical movements to specific identified shocks
             \item Useful for policy analysis and narrative interpretation
         \end{itemize}
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Historical Decomposition: Example}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_historical_decomp.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Each color represents the contribution of a different structural shock
         \item Stacked contributions sum to the actual observed deviation from mean
         \item Helps identify which shocks drove historical episodes
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_historical\_decomp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_historical_decomp}
+\end{frame}
+
+\begin{frame}{Historical Decomposition: Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_historical_decomp.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_historical\_decomp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_historical_decomp}
 \end{frame}
 
 %=============================================================================
@@ -1437,9 +1592,10 @@ MSCA Digital Finance}
 \section{VAR Diagnostics}
 
 \begin{frame}{Residual Diagnostics}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{What to Check}
         After estimating VAR, verify that residuals $\hat{\bepsilon}_t$ behave like white noise:
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item No serial correlation
             \item Constant variance (homoskedasticity)
             \item Normality (for inference)
@@ -1449,17 +1605,19 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{alertblock}{Why It Matters}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Autocorrelated residuals $\Rightarrow$ inefficient estimates
             \item Heteroskedasticity $\Rightarrow$ invalid standard errors
             \item Non-normality $\Rightarrow$ inference may be unreliable
         \end{itemize}
     \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Testing for Serial Correlation}
+    \vspace{-0.25cm}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Portmanteau Test (Ljung-Box)}
         $$Q_h = T(T+2) \sum_{j=1}^{h} \frac{1}{T-j} \text{tr}(\hat{\mathbf{C}}_j' \hat{\mathbf{C}}_0^{-1} \hat{\mathbf{C}}_j \hat{\mathbf{C}}_0^{-1})$$
 
@@ -1478,11 +1636,12 @@ MSCA Digital Finance}
     \begin{alertblock}{If Rejected}
         Consider increasing lag order $p$ or adding additional variables.
     \end{alertblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{Testing for Heteroskedasticity}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{ARCH-LM Test}
         Test for autoregressive conditional heteroskedasticity in residuals:
         $$\hat{\varepsilon}_{it}^2 = \alpha_0 + \alpha_1 \hat{\varepsilon}_{i,t-1}^2 + \cdots + \alpha_q \hat{\varepsilon}_{i,t-q}^2 + v_t$$
@@ -1498,9 +1657,12 @@ MSCA Digital Finance}
         Test all equations jointly using:
         $$\text{vech}(\hat{\bepsilon}_t \hat{\bepsilon}_t') = \mathbf{c} + \sum_{j=1}^{q} \mathbf{B}_j \text{vech}(\hat{\bepsilon}_{t-j} \hat{\bepsilon}_{t-j}') + \mathbf{v}_t$$
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Normality Testing}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
     \begin{block}{Jarque-Bera Test (Univariate)}
         $$JB = \frac{T}{6}\left(S^2 + \frac{(K-3)^2}{4}\right) \sim \chi^2_2$$
 
@@ -1521,22 +1683,26 @@ MSCA Digital Finance}
         Normality is often rejected in financial data. Consider robust standard errors if non-normality is severe.
     \end{alertblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Diagnostic Summary Plot}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_diagnostics.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Residual ACF should show no significant autocorrelation
         \item Histogram should approximate normal distribution
         \item Q-Q plot should follow 45-degree line
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_diagnostics}
+\end{frame}
+
+\begin{frame}{Diagnostic Summary Plot}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_diagnostics.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_diagnostics}
 \end{frame}
 
 %=============================================================================
@@ -1545,6 +1711,7 @@ MSCA Digital Finance}
 \section{VAR Forecasting}
 
 \begin{frame}{Point Forecasts from VAR}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Iterative Forecasting}
         For VAR(1): $\bY_t = \mathbf{c} + \bA \bY_{t-1} + \bepsilon_t$
 
@@ -1563,9 +1730,12 @@ MSCA Digital Finance}
 
         For stable VAR: converges to $\boldsymbol{\mu} = (\mathbf{I} - \bA)^{-1}\mathbf{c}$ as $h \to \infty$
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Forecast Error and MSE}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
     {\footnotesize
     \begin{block}{$h$-Step Forecast Error}
         $\mathbf{e}_{T+h|T} = \bY_{T+h} - \hat{\bY}_{T+h|T} = \sum_{j=0}^{h-1} \bA^j \bepsilon_{T+h-j}$
@@ -1582,9 +1752,12 @@ MSCA Digital Finance}
         \end{itemize}
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Forecast Confidence Intervals}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
     \begin{block}{Constructing Intervals}
         For normally distributed errors, $(1-\alpha)$ confidence interval:
         $$\hat{Y}_{i,T+h|T} \pm z_{\alpha/2} \sqrt{[\text{MSE}(\hat{\bY}_{T+h|T})]_{ii}}$$
@@ -1604,27 +1777,32 @@ MSCA Digital Finance}
         These assume known parameters. Bootstrap methods account for parameter uncertainty.
     \end{block}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{VAR Forecasts: Example}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_var_forecast.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Point forecasts shown as solid line beyond observed data
         \item Confidence bands widen as forecast horizon increases
         \item Forecasts converge to unconditional mean for long horizons
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_var\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_forecast}
+\end{frame}
+
+\begin{frame}{VAR Forecasts: Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_var_forecast.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_var\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_var_forecast}
 \end{frame}
 
 \begin{frame}{Forecast Evaluation}
+    \vspace{-2mm}
     {\footnotesize
-    \hfill\begin{minipage}{0.92\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Out-of-Sample Evaluation}
         Split data: estimation sample (1 to $T_1$) and test sample ($T_1+1$ to $T$).
         Compute forecast errors: $e_{t+h} = Y_{t+h} - \hat{Y}_{t+h|t}$
@@ -1640,9 +1818,31 @@ MSCA Digital Finance}
         Test whether VAR forecasts are significantly better than alternative:
         $DM = \frac{\bar{d}}{\sqrt{\hat{\sigma}_d^2/n}} \sim N(0,1)$ where $d_t = L(e_{1t}) - L(e_{2t})$ is the loss differential.
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
-    \quantlet{TSA\_ch5\_var\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_rolling_forecast}
+\end{frame}
+
+\begin{frame}{Out-of-Sample Evaluation: VAR vs.\ AR}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \vspace{-3mm}
+    {\footnotesize
+    \begin{block}{General Methodology}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Train / Test Split: split data into training + test; estimate on train, evaluate on test
+            \item Why VAR vs.\ AR? AR ignores other variables; VAR exploits interdependencies
+            \item Metric: $\text{RMSE} = \sqrt{\tfrac{1}{h}\sum e_i^2}$
+        \end{itemize}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Out-of-Sample Evaluation: VAR vs.\ AR}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_var_rolling_forecast.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_var\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_var_rolling_forecast}
 \end{frame}
 
 %=============================================================================
@@ -1651,6 +1851,7 @@ MSCA Digital Finance}
 \section{Practical Example}
 
 \begin{frame}{Example: GDP and Unemployment}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Okun's Law}
         There is a negative relationship between GDP growth and unemployment:
         $$\Delta U_t \approx -\beta (\Delta Y_t - \bar{g})$$
@@ -1661,55 +1862,62 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{exampleblock}{VAR Analysis Questions}
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item Does GDP growth Granger-cause unemployment changes?
             \item Does unemployment Granger-cause GDP growth?
             \item How do shocks propagate between variables?
         \end{enumerate}
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{GDP and Unemployment: Data}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_gdp_unemployment.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item GDP growth and unemployment rate show clear negative correlation (Okun's Law)
         \item Both series exhibit cyclical patterns related to business cycle fluctuations
         \item This bivariate system is ideal for VAR analysis and Granger causality testing
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_gdp\_unemployment}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_gdp_unemployment}
+\end{frame}
+
+\begin{frame}{GDP and Unemployment: Data}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_gdp_unemployment.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_gdp\_unemployment}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_gdp_unemployment}
 \end{frame}
 
 \begin{frame}{VAR Workflow}
-    \begin{enumerate}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    {\small
+    \begin{enumerate}\setlength{\itemsep}{0pt}
         \item \textbf{Data preparation}
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Check for stationarity (unit root tests)
                 \item Transform if necessary (differences, logs)
             \end{itemize}
 
         \vspace{0.2cm}
         \item \textbf{Lag selection}
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Use AIC, BIC, HQ criteria
                 \item Check residual autocorrelation
             \end{itemize}
 
         \vspace{0.2cm}
         \item \textbf{Estimation}
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item OLS equation by equation
                 \item Check stability (eigenvalues)
             \end{itemize}
 
         \vspace{0.2cm}
         \item \textbf{Analysis}
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Granger causality tests
                 \item Impulse response functions
                 \item Variance decomposition
@@ -1718,27 +1926,32 @@ MSCA Digital Finance}
         \vspace{0.2cm}
         \item \textbf{Forecasting}
     \end{enumerate}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Estimated VAR Results}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_var_results.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Estimated coefficients with standard errors and t-statistics
         \item Information criteria values for model comparison
         \item Model diagnostics summary (residual tests)
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_var\_results}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_results}
+\end{frame}
+
+\begin{frame}{Estimated VAR Results}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_var_results.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_var\_results}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_var_results}
 \end{frame}
 
 \begin{frame}{Granger Causality Results}
     {\small
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Test Results: GDP and Unemployment}
         \begin{center}
         \begin{tabular}{lcccc}
@@ -1759,14 +1972,65 @@ MSCA Digital Finance}
             \item Evidence of \textbf{unidirectional} causality: GDP $\to$ Unemployment
         \end{itemize}
     \end{exampleblock}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
+\begin{frame}[fragile]{Python Implementation}
+    \vspace{-0.2cm}
+    \begin{block}{VAR in Python (statsmodels)}
+        \scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Code:
+\begin{verbatim}
+from statsmodels.tsa.api import VAR
+from statsmodels.tsa.stattools import grangercausalitytests
+# Fit the VAR model
+model = VAR(data)
+results = model.fit(maxlags=4, ic='aic')
+# Granger causality test
+granger_test = grangercausalitytests(data[['Y1','Y2']], maxlag=4)
+# Impulse response functions
+irf = results.irf(periods=20)
+irf.plot()
+# Variance decomposition
+fevd = results.fevd(periods=20)
+fevd.plot()
+\end{verbatim}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{R Implementation}
+    \vspace{-0.2cm}
+    \begin{block}{VAR in R (vars package)}
+        \scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Code:
+\begin{verbatim}
+library(vars)
+# Select optimal lag order
+lag_select <- VARselect(data, lag.max = 8)
+# Fit the VAR model
+var_model <- VAR(data, p = 2, type = "const")
+# Granger causality test
+causality(var_model, cause = "GDP")
+# Impulse response functions
+irf_results <- irf(var_model, n.ahead=20, boot=TRUE)
+plot(irf_results)
+# Forecast error variance decomposition
+fevd_results <- fevd(var_model, n.ahead = 20)
+plot(fevd_results)
+\end{verbatim}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
 \begin{frame}{Example: Monetary Policy Analysis}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Three-Variable VAR}
         Study the monetary transmission mechanism with:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $Y_1$: Output gap (GDP deviation from trend)
             \item $Y_2$: Inflation rate
             \item $Y_3$: Interest rate (policy instrument)
@@ -1776,28 +2040,265 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{exampleblock}{Key Questions}
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item How does an interest rate shock affect output and inflation?
             \item How long until the maximum effect is felt?
             \item What fraction of output variance is due to monetary shocks?
         \end{enumerate}
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Monetary Policy VAR: IRFs}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.58\textheight, keepaspectratio]{ch5_monetary_irf.pdf}
-    \end{center}
+    \vspace{-0.15cm}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Contractionary monetary policy shock (interest rate increase)
         \item Output decreases with peak effect after 4-6 quarters (``long and variable lags'')
         \item Inflation responds more slowly, decreasing after output
     \end{itemize}
     }
-    \quantlet{TSA\_ch5\_monetary\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_monetary_irf}
+\end{frame}
+
+\begin{frame}{Monetary Policy VAR: IRFs}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_monetary_irf.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_monetary\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_monetary_irf}
+\end{frame}
+
+%=============================================================================
+% CASE STUDY: GDP AND UNEMPLOYMENT
+%=============================================================================
+\section{Case Study: GDP and Unemployment}
+
+\begin{frame}{Case Study: The Relationship between GDP and Unemployment}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Data}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Real US data (FRED, 1990--2024): GDP Growth and Unemployment Rate ($T = 140$ quarters)
+            \item Visible negative correlation between series (Okun's Law); bidirectional dynamics
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Case Study: The Relationship between GDP and Unemployment}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_raw_data.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_raw_data}
+\end{frame}
+
+\begin{frame}{Step 1: Preliminary Analysis}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item GDP: ACF decays quickly $\Rightarrow$ stationary; Unemployment: persistent ACF (ADF: $p = 0.02$)
+            \item Negative GDP--Unemployment correlation ($\rho = -0.17$); cross-correlation suggests bidirectional relationships
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 1: Preliminary Analysis}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_stationarity.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_stationarity}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_stationarity}
+\end{frame}
+
+\begin{frame}{Step 2: VAR Order Selection}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item AIC and BIC criteria suggest VAR(2); trade-off between complexity and fit
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 2: VAR Order Selection}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_lag_selection.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_lag\_selection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_lag_selection}
+\end{frame}
+
+\begin{frame}{Step 3: Granger Causality Test}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item GDP $\Rightarrow$ Unemployment: $F = 17.35$, $p < 0.001$ $\Rightarrow$ GDP ``Granger-causes'' Unemployment
+            \item Unemployment $\Rightarrow$ GDP: $F = 38.93$, $p < 0.001$ $\Rightarrow$ bidirectional causality (Okun's Law)
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 3: Granger Causality Test}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_granger.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_granger}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_granger}
+\end{frame}
+
+\begin{frame}{Step 4: Impulse Response Functions (IRF)}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{IRF Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item GDP shock $\Rightarrow$ persistent negative effect on unemployment (Okun's Law, $>$20 quarters)
+            \item Unemployment shock $\Rightarrow$ short-lived positive effect on GDP (recovery, 2--3 quarters)
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 4: Impulse Response Functions (IRF)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_irf.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_irf}
+\end{frame}
+
+\begin{frame}{Step 5: Variance Decomposition (FEVD)}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{FEVD Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item GDP: $\sim$65\% of variance explained by own shocks, $\sim$35\% by Unemployment shocks
+            \item Unemployment: dominated by GDP shocks ($\sim$65\% at $h=1$, increasing to $\sim$92\% at $h=20$)
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 5: Variance Decomposition (FEVD)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_fevd.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_fevd}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_fevd}
+\end{frame}
+
+\begin{frame}{Step 6: Residual Diagnostics}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Diagnostics}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Residuals show no significant autocorrelation (ACF within bounds)
+            \item Significant non-normality (JB rejected) $\Rightarrow$ due to extreme COVID-19 values
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 6: Residual Diagnostics}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_diagnostics.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_diagnostics}
+\end{frame}
+
+\begin{frame}{Step 7: VAR Forecasting}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Forecast Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item 12-quarter forecast; VAR captures interdependencies between series
+            \item Forecasts converge to long-run equilibrium values
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 7: VAR Forecasting}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_forecast.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_forecast}
+\end{frame}
+
+\begin{frame}{Step 8: Rolling Forecast -- VAR vs AR}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \vspace{-3mm}
+    {\footnotesize
+    \begin{block}{Procedure}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Recursive Train/Test: $W = 80$, re-estimation at each step; AR(2) vs VAR(2) models
+            \item Expanding RMSE: $\text{RMSE}_t = \sqrt{\frac{1}{t}\sum_{s=1}^{t} e_s^2}$; 95\% confidence intervals
+            \item Mixed results:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Unemployment --- VAR $-$10\% RMSE vs AR (information from GDP helps)
+                    \item GDP --- VAR $+$6\% RMSE vs AR (information from unemployment does not help)
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Step 8: Rolling Forecast -- VAR vs AR}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_rolling_forecast.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_rolling_forecast}
+\end{frame}
+
+\begin{frame}{Step 9: Out-of-Sample Comparison -- AR vs VAR}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Methodology}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Recursive forecast: estimate on $[1, \ldots, t]$, forecast $\hat{y}_{t+1|t}$; AR(2) vs VAR(2) models
+            \item Expanding RMSE: $\text{RMSE}_t = \sqrt{\frac{1}{t}\sum_{s=1}^{t} e_s^2}$
+            \item VAR reduces RMSE for Unemployment ($\sim$10\%), not for GDP
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 9: Out-of-Sample Comparison -- AR vs VAR}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch6_case_oos_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch6\_case\_oos\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_oos_comparison}
+\end{frame}
+
+%=============================================================================
+\section{AI Use Case}
+%=============================================================================
+
+\begin{frame}{AI Exercise: Critical Thinking}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Download quarterly GDP and unemployment data for the US. Test for Granger causality, estimate a VAR model, and analyze impulse response functions. Give me complete Python code.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercise}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Run the prompt in an LLM of your choice and critically analyze the response.
+        \item Does it test stationarity of each variable before estimating the VAR?
+        \item How does it select the lag order? Does it compare AIC, BIC, HQIC?
+        \item Are impulse response functions orthogonalized? Does it discuss Cholesky ordering?
+        \item Does it check the stability condition (eigenvalues inside the unit circle)?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
+    \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1806,8 +2307,9 @@ MSCA Digital Finance}
 \section{Summary}
 
 \begin{frame}{Key Takeaways}
+    \vspace{-0.2cm}
     {\footnotesize
-    \hfill\begin{minipage}{0.9\textwidth}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{VAR Models}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Model \textbf{multiple} time series jointly
@@ -1830,11 +2332,13 @@ MSCA Digital Finance}
             \item Both depend on variable ordering (Cholesky decomposition)
         \end{itemize}
     \end{block}
-    \end{minipage}
+    \end{cminipage}
     }
 \end{frame}
 
 \begin{frame}{VAR Model Selection Checklist}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
     {\footnotesize
     \begin{columns}[T]
     \begin{column}{0.48\textwidth}
@@ -1866,11 +2370,13 @@ MSCA Digital Finance}
     \end{column}
     \end{columns}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Common Mistakes to Avoid}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Pitfalls in VAR Analysis}
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item \textbf{Ignoring non-stationarity}: Always test for unit roots first
             \item \textbf{Overfitting}: Too many lags $\Rightarrow$ poor forecasts
             \item \textbf{Wrong ordering}: Cholesky results depend on variable order
@@ -1879,17 +2385,19 @@ MSCA Digital Finance}
             \item \textbf{Short samples}: VAR requires many observations ($T > 50$)
         \end{enumerate}
     \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{What's Next?}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Topics for Further Study}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Cointegration}: Long-run relationships between non-stationary variables
             \item \textbf{VECM}: Error correction models for cointegrated systems
             \item \textbf{Structural VAR}: Imposing economic theory restrictions
             \item \textbf{Panel VAR}: VAR for panel data
             \item \textbf{Bayesian VAR}:
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Shrinkage priors for high-dimensional systems
                 \end{itemize}
             \end{itemize}
@@ -1900,6 +2408,7 @@ MSCA Digital Finance}
     \begin{center}
         \Large\textcolor{MainBlue}{Questions?}
     \end{center}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1908,99 +2417,115 @@ MSCA Digital Finance}
 \section{Quiz}
 
 \begin{frame}{Quiz Question 1}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For a VAR(1) model with coefficient matrix $\bA = \begin{pmatrix} 0.8 & 0.3 \\ 0.1 & 0.5 \end{pmatrix}$, is the model stable?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item Yes, because all diagonal elements are less than 1
         \item Yes, because all eigenvalues are inside the unit circle
         \item No, because the sum of coefficients exceeds 1
         \item Cannot be determined without knowing $\bSigma$
     \end{enumerate}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 1: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Correct Answer: (B) Eigenvalues inside unit circle}
         $\lambda_1 = 0.879$, $\lambda_2 = 0.421$ --- both $|\lambda| < 1$ $\Rightarrow$ Stable!
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz1_var_stability.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch6_quiz1_var_stability.pdf}
     \end{center}
-    \quantlet{TSA\_ch5\_quiz1\_var\_stability}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz1_var_stability}
+    \quantlet{TSA\_ch6\_quiz1\_var\_stability}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_quiz1_var_stability}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 2}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         If $X$ Granger-causes $Y$ at the 5\% significance level, which of the following statements is TRUE?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item $X$ is the economic cause of $Y$
         \item Past values of $X$ contain useful information for predicting $Y$
         \item $Y$ cannot Granger-cause $X$
         \item The correlation between $X$ and $Y$ is positive
     \end{enumerate}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 2: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Correct Answer: (B) Predictive information}
         Granger causality = predictive content, not true economic causation. Past X helps predict Y.
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz2_granger_causality.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch6_quiz2_granger_causality.pdf}
     \end{center}
-    \quantlet{TSA\_ch5\_quiz2\_granger\_causality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz2_granger_causality}
+    \quantlet{TSA\_ch6\_quiz2\_granger\_causality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_quiz2_granger_causality}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 3}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         In a VAR with Cholesky-identified IRFs, what does the ordering of variables determine?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item The magnitude of the impulse responses
         \item The speed at which shocks die out
         \item Which variables can respond contemporaneously to which shocks
         \item The number of lags in the VAR
     \end{enumerate}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 3: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Correct Answer: (C) Contemporaneous responses}
         Ordering determines which variables respond immediately to which shocks.
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz3_cholesky_ordering.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch6_quiz3_cholesky_ordering.pdf}
     \end{center}
-    \quantlet{TSA\_ch5\_quiz3\_cholesky\_ordering}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz3_cholesky_ordering}
+    \quantlet{TSA\_ch6\_quiz3\_cholesky\_ordering}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_quiz3_cholesky_ordering}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 4}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For a bivariate VAR(1), how many parameters need to be estimated (excluding the error covariance matrix)?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item 4
         \item 6
         \item 8
         \item 10
     \end{enumerate}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 4: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
     \begin{exampleblock}{Correct Answer: (B) 6 parameters}
     \end{exampleblock}
 
@@ -2008,7 +2533,7 @@ MSCA Digital Finance}
         VAR(1) with $K=2$ variables:
         $$\begin{pmatrix} Y_{1t} \\ Y_{2t} \end{pmatrix} = \underbrace{\begin{pmatrix} c_1 \\ c_2 \end{pmatrix}}_{\text{2 params}} + \underbrace{\begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix}}_{\text{4 params}} \begin{pmatrix} Y_{1,t-1} \\ Y_{2,t-1} \end{pmatrix} + \begin{pmatrix} \varepsilon_{1t} \\ \varepsilon_{2t} \end{pmatrix}$$
 
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Constant vector $\mathbf{c}$: $K = 2$ parameters
             \item Coefficient matrix $\bA$: $K^2 = 4$ parameters
             \item Total: $K + K^2 = 2 + 4 = 6$ parameters
@@ -2020,164 +2545,139 @@ MSCA Digital Finance}
         VAR($p$) with $K$ variables: $K + pK^2$ parameters (excluding $\bSigma$)
     \end{block}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 5}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         What does FEVD$_{12}(h) = 0.35$ mean?
     \end{alertblock}
 
     \vspace{0.3cm}
 
-    \begin{enumerate}[(A)]
+    \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
         \item 35\% of variable 1's total variance is explained by variable 2
         \item 35\% of variable 1's $h$-step forecast error variance is due to shocks to variable 2
         \item The correlation between variables 1 and 2 at lag $h$ is 0.35
         \item Variable 2 explains 35\% of the impulse response of variable 1
     \end{enumerate}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz Question 5: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Correct Answer: (B) Forecast error variance decomposition}
         35\% of variable 1's $h$-step forecast error variance is due to shocks from variable 2.
     \end{exampleblock}
     \vspace{0.2cm}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch5_quiz5_fevd.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch6_quiz5_fevd.pdf}
     \end{center}
-    \quantlet{TSA\_ch5\_quiz5\_fevd}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_quiz5_fevd}
+    \quantlet{TSA\_ch6\_quiz5\_fevd}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_quiz5_fevd}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-\section{Case Study: GDP and Inflation}
+% KEY FORMULAS SUMMARY
 %=============================================================================
+\section{Key Formulas}
 
-\begin{frame}{Case Study: VAR Analysis of GDP and Inflation}
-    \begin{block}{Research Question}
-        Is there a dynamic relationship between real GDP growth and inflation?
-        Does one variable Granger-cause the other?
-    \end{block}
-
-    \vspace{0.3cm}
-
+\begin{frame}{Key Formulas -- Summary}
+    \vspace{-0.2cm}
+    {\small
     \begin{columns}[T]
-        \begin{column}{0.5\textwidth}
-            \textbf{Data}
-            \begin{itemize}
-                \item US Quarterly Data (1960-2023)
-                \item Real GDP Growth Rate
-                \item CPI Inflation Rate
-                \item Source: FRED Database
-            \end{itemize}
+        \begin{column}{0.48\textwidth}
+            \begin{block}{VAR(p) Model}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $\bY_t = \mathbf{c} + \sum_{i=1}^{p}\bA_i\bY_{t-i} + \bepsilon_t$
+                    \item {\footnotesize $\bepsilon_t \sim \mathcal{N}(\mathbf{0}, \bSigma)$, i.i.d.}
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Granger Causality}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $H_0$: $X$ does not Granger-cause $Y$
+                    \item {\footnotesize F or Wald test on lag coefficients of $X$}
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Lag Selection}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $\text{AIC} = \ln|\hat{\bSigma}| + \frac{2pK^2}{T}$
+                    \item $\text{BIC} = \ln|\hat{\bSigma}| + \frac{pK^2\ln T}{T}$
+                \end{itemize}
+            \end{block}
         \end{column}
-        \begin{column}{0.5\textwidth}
-            \textbf{Methodology}
-            \begin{itemize}
-                \item Stationarity tests (ADF)
-                \item Lag order selection
-                \item VAR estimation
-                \item Granger causality tests
-                \item Impulse response analysis
-            \end{itemize}
+
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Impulse Response Functions}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $\bY_{t+h} = \sum_{i=0}^{\infty}\boldsymbol{\Phi}_i\bepsilon_{t+h-i}$
+                    \item {\footnotesize $\boldsymbol{\Phi}_i$ = multipliers at horizon $i$}
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{FEVD}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $\text{FEVD}_{jk}(h) = \frac{\sum_{i=0}^{h-1}(\mathbf{e}'_j\boldsymbol{\Phi}_i\mathbf{P}\mathbf{e}_k)^2}{\sum_{i=0}^{h-1}\mathbf{e}'_j\boldsymbol{\Phi}_i\bSigma\boldsymbol{\Phi}'_i\mathbf{e}_j}$
+                    \item {\footnotesize Contribution of shock $k$ to variance of $j$}
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{VAR Stationarity}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item All eigenvalues of $\bA$ inside the unit circle
+                \end{itemize}
+            \end{block}
         \end{column}
     \end{columns}
-\end{frame}
-
-\begin{frame}{Step 1: Data Visualization}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_raw_data.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_raw_data}
-\end{frame}
-
-\begin{frame}{Step 2: Stationarity Tests}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_stationarity.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_stationarity}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_stationarity}
-\end{frame}
-
-\begin{frame}{Step 3: Lag Selection and VAR Estimation}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_lag_selection.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_lag\_selection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_lag_selection}
-\end{frame}
-
-\begin{frame}{Step 4: Granger Causality Tests}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_granger.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_granger}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_granger}
-\end{frame}
-
-\begin{frame}{Step 5: Impulse Response Functions}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_irf.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_irf}
-\end{frame}
-
-\begin{frame}{Step 6: Forecast Error Variance Decomposition}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_fevd.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_fevd}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_fevd}
-\end{frame}
-
-\begin{frame}{Step 7: Residual Diagnostics}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_diagnostics.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_diagnostics}
-\end{frame}
-
-\begin{frame}{Step 8: Forecasting}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_forecast.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_forecast}
-\end{frame}
-
-\begin{frame}{Step 9: Rolling Forecast -- VAR vs AR}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_rolling_forecast.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_rolling_forecast}
-\end{frame}
-
-\begin{frame}{Step 10: Out-of-Sample Comparison -- AR vs VAR}
-    \begin{center}
-        \includegraphics[width=0.92\textwidth, height=0.70\textheight, keepaspectratio]{ch6_case_oos_comparison.pdf}
-    \end{center}
-    \quantlet{TSA\_ch6\_case\_oos\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch6/TSA_ch6_case_oos_comparison}
+    }
 \end{frame}
 
 %=============================================================================
-\section{References}
+% BIBLIOGRAPHY
 %=============================================================================
+\section{Bibliography}
 
-\begin{frame}{References}
-    \begin{thebibliography}{99}
-        \bibitem{lutkepohl} L\"utkepohl, H. (2005). \textit{New Introduction to Multiple Time Series Analysis}. Springer.
+\begin{frame}{Bibliography I}
+    \begin{block}{Fundamental works on VAR and causality}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Sims, C.A. (1980). Macroeconomics and Reality, \textit{Econometrica}, 48(1), 1--48.
+            \item Granger, C.W.J. (1969). Investigating Causal Relations by Econometric Models and Cross-Spectral Methods, \textit{Econometrica}, 37(3), 424--438.
+            \item Toda, H.Y., \& Yamamoto, T. (1995). Statistical Inference in Vector Autoregressions with Possibly Integrated Processes, \textit{Journal of Econometrics}, 66(1-2), 225--250.
+        \end{itemize}
+        }
+    \end{block}
 
-        \bibitem{hamilton} Hamilton, J.D. (1994). \textit{Time Series Analysis}. Princeton University Press.
-
-        \bibitem{sims} Sims, C.A. (1980). Macroeconomics and Reality. \textit{Econometrica}, 48(1), 1-48.
-
-        \bibitem{granger} Granger, C.W.J. (1969). Investigating Causal Relations by Econometric Models. \textit{Econometrica}, 37(3), 424-438.
-
-        \bibitem{toda} Toda, H.Y. \& Yamamoto, T. (1995). Statistical Inference in Vector Autoregressions with Possibly Integrated Processes. \textit{Journal of Econometrics}, 66(1-2), 225-250.
-    \end{thebibliography}
+    \begin{exampleblock}{VAR Textbooks}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item L\"utkepohl, H. (2005). \textit{New Introduction to Multiple Time Series Analysis}, Springer.
+            \item Kilian, L., \& L\"utkepohl, H. (2017). \textit{Structural Vector Autoregressive Analysis}, Cambridge University Press.
+        \end{itemize}
+        }
+    \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Online Resources and Code}
-    \begin{exampleblock}{}
+\begin{frame}{Bibliography II}
+    \begin{block}{Impulse response functions and variance decomposition}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Pesaran, H.H., \& Shin, Y. (1998). Generalized Impulse Response Analysis in Linear Multivariate Models, \textit{Economics Letters}, 58(1), 17--29.
+            \item Hamilton, J.D. (1994). \textit{Time Series Analysis}, Princeton University Press.
+            \item Tsay, R.S. (2014). \textit{Multivariate Time Series Analysis with R and Financial Applications}, Wiley.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Online resources and code}
         {\small
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Quantlet}: \url{https://quantlet.com} $\rightarrow$ Code repository for statistics
             \item \textbf{Quantinar}: \url{https://quantinar.com} $\rightarrow$ Learning platform for quantitative methods
-            \item \textbf{GitHub TSA\_ch6}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch6}
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch6} $\rightarrow$ Python code for this chapter
         \end{itemize}
         }
     \end{exampleblock}

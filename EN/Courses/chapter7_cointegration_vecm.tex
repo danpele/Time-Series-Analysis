@@ -135,7 +135,7 @@
 \usepackage{hyperref}
 \usepackage{colortbl}
 \hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
-\graphicspath{{../../logos/}{../../charts/}}
+\graphicspath{{../../logos/}{../../charts/}{../../photos/}}
 \hfuzz=2pt  % Suppress tiny overfull warnings (<2pt)
 \vfuzz=2pt  % Suppress tiny vertical overfull warnings (<2pt)
 
@@ -235,6 +235,15 @@
 \newcommand{\bepsilon}{\boldsymbol{\varepsilon}}
 
 %=============================================================================
+% CENTRED MINIPAGE (no extra vertical space)
+%=============================================================================
+\newenvironment{cminipage}[1]{%
+    \par\noindent\hfill\begin{minipage}{#1}\ignorespaces
+}{%
+    \end{minipage}\hfill\null\par
+}
+
+%=============================================================================
 % TITLE INFORMATION
 %=============================================================================
 \title[Time Series Analysis]{Time Series Analysis and Forecasting}
@@ -263,29 +272,36 @@ MSCA Digital Finance}
 % LEARNING OBJECTIVES
 %=============================================================================
 \begin{frame}{Learning Objectives}
+    \vspace{-0.3cm}
+    {\small
 \begin{block}{By the end of this chapter, you will be able to:}
-\begin{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
     \item Understand the problem of spurious regression with non-stationary data
     \item Test for cointegration using Engle-Granger and Johansen methods
     \item Estimate Vector Error Correction Models (VECM)
     \item Interpret error correction mechanisms and adjustment speeds
 \end{itemize}
 \end{block}
+    }
 \end{frame}
 
 %=============================================================================
 % TABLE OF CONTENTS
 %=============================================================================
 \begin{frame}{Outline}
+    \begin{cminipage}{0.95\textwidth}
     \tableofcontents
+    \end{cminipage}
 \end{frame}
 
 \section{Motivation}
 %=============================================================================
 
 \begin{frame}{Why Cointegration Matters}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
     \begin{block}{The Challenge}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Many economic/financial time series are \textbf{non-stationary} (I(1))
             \item GDP, stock prices, exchange rates, interest rates all have unit roots
             \item Standard regression with I(1) variables $\Rightarrow$ \textbf{spurious results}
@@ -304,13 +320,17 @@ MSCA Digital Finance}
     \begin{exampleblock}{Nobel Prize 2003}
         Granger \& Engle received the Nobel Prize for ``methods for analyzing economic time series with common trends.''
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Real-World Applications}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Finance}
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item \textbf{Pairs Trading}: Cointegrated stocks
                     \item \textbf{Term Structure}: Interest rates
                     \item \textbf{Spot-Futures}: Arbitrage
@@ -320,7 +340,7 @@ MSCA Digital Finance}
             \vspace{0.1cm}
 
             \begin{block}{Macroeconomics}
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item \textbf{Consumption \& Income}
                     \item \textbf{Money \& Prices}
                     \item \textbf{PPP}: Exchange rates
@@ -329,7 +349,7 @@ MSCA Digital Finance}
         \end{column}
         \begin{column}{0.48\textwidth}
             \begin{block}{Policy Analysis}
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item \textbf{Fiscal}: Spending \& taxes
                     \item \textbf{Monetary}: Rate pass-through
                     \item \textbf{Labor}: Wages \& productivity
@@ -337,6 +357,8 @@ MSCA Digital Finance}
             \end{block}
         \end{column}
     \end{columns}
+    }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -344,6 +366,7 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{The Spurious Regression Problem}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Granger \& Newbold (1974)}
         Regressing one random walk on another \textbf{independent} random walk:
         $Y_t = \alpha + \beta X_t + u_t$ where $Y_t$ and $X_t$ are independent I(1) processes.
@@ -352,7 +375,7 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{alertblock}{Symptoms of Spurious Regression}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item High $R^2$ (often $> 0.9$) even though variables are \textbf{unrelated}
             \item Highly significant $t$-statistics (reject $H_0: \beta = 0$)
             \item Very low Durbin-Watson statistic ($DW \approx 0$)
@@ -365,20 +388,29 @@ MSCA Digital Finance}
     \begin{exampleblock}{Rule of Thumb}
         If $R^2 > DW$, suspect spurious regression!
     \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Spurious Regression: Visual Example}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{alertblock}{Warning}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Result}: Two completely independent random walks show high correlation ($R^2 > 0.8$) purely by chance! This is why we need cointegration analysis
+        \end{itemize}
+    \end{alertblock}
+    }
 \end{frame}
 
 \begin{frame}{Spurious Regression: Visual Example}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{spurious_regression.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{spurious_regression.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \textbf{Warning}: Two independent random walks show high correlation ($R^2 > 0.8$) by chance! This is why we need cointegration analysis.
-    }
     \quantlet{TSA\_ch7\_spurious\_regression}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_spurious_regression}
 \end{frame}
 
 \begin{frame}{Spurious Correlations in the Real World}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Data Mining Can Produce Meaningless Correlations}
         With enough variables and long time series, purely coincidental patterns emerge:
     \end{block}
@@ -402,6 +434,7 @@ MSCA Digital Finance}
     {\footnotesize
     \faIcon{globe} Explore more examples: \href{https://www.tylervigen.com/spurious-correlations}{\texttt{tylervigen.com/spurious-correlations}}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -409,9 +442,12 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{Definition of Cointegration}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
     \begin{defn}[Cointegration (Engle \& Granger, 1987)]
         Variables $Y_{1t}, Y_{2t}, \ldots, Y_{kt}$ are \textbf{cointegrated of order $(d,b)$}, written $CI(d,b)$, if:
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item All variables are integrated of order $d$: $Y_{it} \sim I(d)$
             \item There exists a linear combination $\bbeta' \bY_t = \beta_1 Y_{1t} + \cdots + \beta_k Y_{kt}$ that is integrated of order $(d-b)$, where $b > 0$
         \end{enumerate}
@@ -420,7 +456,7 @@ MSCA Digital Finance}
     \vspace{0.3cm}
 
     \begin{block}{Most Common Case: $CI(1,1)$}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Variables are $I(1)$ (have unit roots)
             \item Linear combination is $I(0)$ (stationary)
             \item Vector $\bbeta = (\beta_1, \ldots, \beta_k)'$ is the \textbf{cointegrating vector}
@@ -432,22 +468,32 @@ MSCA Digital Finance}
     {\footnotesize
     The cointegrating vector is unique only up to scalar multiplication. Usually normalized: $\beta_1 = 1$.
     }
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Cointegration: Visual Example}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{exampleblock}{Key Insight}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Cointegration}: Both series are I(1) and trend together, but their linear combination (spread) is stationary --- this is cointegration!
+        \end{itemize}
+    \end{exampleblock}
+    }
 \end{frame}
 
 \begin{frame}{Cointegration: Visual Example}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{cointegrated_series.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{cointegrated_series.pdf}
     \end{center}
-
-    \vspace{0.1cm}
-
-    {\footnotesize
-    \textbf{Key insight}: Both series are I(1) and trend together, but their linear combination (spread) is stationary---this is cointegration!
-    }
     \quantlet{TSA\_ch7\_cointegrated\_series}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_cointegrated_series}
 \end{frame}
 
 \begin{frame}{Intuition: Common Stochastic Trends}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    {\small
     \begin{block}{Why Does Cointegration Occur?}
         Cointegrated variables share \textbf{common stochastic trends}:
         $Y_{1t} = \gamma_1 \tau_t + S_{1t}$, $Y_{2t} = \gamma_2 \tau_t + S_{2t}$
@@ -463,18 +509,23 @@ MSCA Digital Finance}
     \vspace{0.1cm}
 
     \begin{alertblock}{Economic Interpretation}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Cointegration = \textbf{long-run equilibrium relationship}
             \item Variables may deviate in the short run, but are ``pulled back''
             \item The cointegrating vector defines the equilibrium
         \end{itemize}
     \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Cointegrating Rank}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    {\small
     \begin{block}{How Many Cointegrating Relationships?}
         For $k$ variables that are $I(1)$:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Maximum possible cointegrating relationships: $r = k - 1$
             \item If $r = 0$: No cointegration (variables drift apart)
             \item If $r = k$: All variables are $I(0)$ (contradiction)
@@ -484,7 +535,7 @@ MSCA Digital Finance}
     \vspace{0.3cm}
 
     \begin{exampleblock}{Example: 3 Variables}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $r = 0$: No cointegration
             \item $r = 1$: One cointegrating relationship
             \item $r = 2$: Two cointegrating relationships (only 1 common trend)
@@ -496,6 +547,8 @@ MSCA Digital Finance}
     {\footnotesize
     The number of common stochastic trends = $k - r$
     }
+    }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -503,6 +556,9 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{Engle-Granger Two-Step Method}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\scriptsize
     \begin{block}{Step 1: Estimate Cointegrating Regression}
         Run OLS: $Y_t = \alpha + \beta X_t + e_t$. Save residuals: $\hat{e}_t = Y_t - \hat{\alpha} - \hat{\beta} X_t$
     \end{block}
@@ -511,7 +567,7 @@ MSCA Digital Finance}
 
     \begin{block}{Step 2: Test Residuals for Stationarity}
         Test if $\hat{e}_t$ is $I(0)$ using ADF: $\Delta \hat{e}_t = \rho \hat{e}_{t-1} + \sum_{j=1}^{p} \gamma_j \Delta \hat{e}_{t-j} + v_t$
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $H_0$: $\rho = 0$ (unit root $\Rightarrow$ no cointegration)
             \item $H_1$: $\rho < 0$ (stationary $\Rightarrow$ cointegration)
         \end{itemize}
@@ -522,9 +578,12 @@ MSCA Digital Finance}
     \begin{alertblock}{Important}
         Use \textbf{Engle-Granger critical values}, not standard ADF! (More negative because residuals are estimated)
     \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Engle-Granger Critical Values}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Critical Values for Cointegration Test}
         {\small
         \begin{center}
@@ -546,21 +605,53 @@ MSCA Digital Finance}
     \vspace{0.15cm}
 
     \begin{alertblock}{Limitations of Engle-Granger}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Only tests for \textbf{one} cointegrating relationship
             \item Results depend on choice of dependent variable
             \item Small sample bias; cannot test hypotheses on cointegrating vector
         \end{itemize}
     \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
 \section{Johansen Method}
 %=============================================================================
 
+\begin{frame}{Researcher Spotlight: Søren Johansen}
+    \vspace{-0.2cm}
+    \begin{columns}[T]
+        \begin{column}{0.28\textwidth}
+            \centering
+            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{photo_soren_johansen.jpg}
+            \\[0.2cm]
+            {\footnotesize\textcolor{MediumGray}{*1939}}\\[0.1cm]
+            \href{https://en.wikipedia.org/wiki/S\%C3\%B8ren_Johansen}{\faWikipediaW\ \textcolor{MainBlue}{\small Wikipedia}}
+        \end{column}
+        \begin{column}{0.70\textwidth}
+            \begin{block}{Biography}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Danish statistician and econometrician, Professor Emeritus at University of Copenhagen
+                    \item Known for his rigorous mathematical approach to econometrics
+                    \item Fellow of the Econometric Society; recipient of numerous honors in statistical science
+                \end{itemize}
+            \end{block}
+            \begin{exampleblock}{Key Contributions}
+                \begin{itemize}\setlength{\itemsep}{1pt}
+                    \item \textbf{Johansen cointegration test} (1988, 1991) --- maximum likelihood approach to testing for multiple cointegrating vectors
+                    \item \textbf{Trace and maximum eigenvalue} statistics for determining cointegration rank
+                    \item \textbf{VECM estimation} --- linking cointegration with error correction models
+                    \item Standard framework for multivariate cointegration analysis in economics and finance
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{Johansen Cointegration Test}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Advantages over Engle-Granger}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Tests for \textbf{multiple} cointegrating relationships
             \item Maximum likelihood estimation (more efficient)
             \item Can test restrictions on cointegrating vectors
@@ -577,12 +668,13 @@ MSCA Digital Finance}
     \vspace{0.2cm}
 
     Rewrite in \textbf{Vector Error Correction} form...
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{VECM Representation}
     \begin{block}{Vector Error Correction Model}
         $\Delta \bY_t = \mathbf{c} + \bPi \bY_{t-1} + \sum_{j=1}^{p-1} \bGamma_j \Delta \bY_{t-j} + \bepsilon_t$
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $\bPi = \sum_i \bA_i - \mathbf{I}$ (long-run impact); $\bGamma_j$ (short-run dynamics)
         \end{itemize}
     \end{block}
@@ -591,7 +683,7 @@ MSCA Digital Finance}
 
     \begin{alertblock}{Key Insight: Rank of $\bPi$}
         The \textbf{rank of $\bPi$} determines cointegration:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $\text{rank}(\bPi) = 0$: No cointegration (VAR in differences)
             \item $\text{rank}(\bPi) = k$: All variables are $I(0)$ (VAR in levels)
             \item $0 < \text{rank}(\bPi) = r < k$: $r$ cointegrating vectors
@@ -600,6 +692,8 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Derivation: From VAR to VECM}
+    \vspace{-0.3cm}
+    {\scriptsize
     \begin{block}{Starting Point: VAR(p) in Levels}
         $$\bY_t = \bA_1\bY_{t-1} + \bA_2\bY_{t-2} + \cdots + \bA_p\bY_{t-p} + \bepsilon_t$$
     \end{block}
@@ -617,34 +711,33 @@ MSCA Digital Finance}
     \begin{alertblock}{Goal}
         Rewrite so that all terms are either in \textbf{levels} ($\bY_{t-1}$) or \textbf{differences} ($\Delta\bY_{t-j}$).
     \end{alertblock}
+    }
 \end{frame}
 
 \begin{frame}{Derivation: From VAR to VECM (cont.)}
-    {\small
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Step 2: Add and Subtract Terms Strategically}
         Add $\bA_2\bY_{t-1}$ and subtract $\bA_2\bY_{t-1}$:
-        $$\Delta\bY_t = (\bA_1 + \bA_2 - \mathbf{I})\bY_{t-1} - \bA_2(\bY_{t-1} - \bY_{t-2}) + \bA_3\bY_{t-3} + \cdots + \bepsilon_t$$
+        $\Delta\bY_t = (\bA_1 + \bA_2 - \mathbf{I})\bY_{t-1} - \bA_2(\bY_{t-1} - \bY_{t-2}) + \bA_3\bY_{t-3} + \cdots + \bepsilon_t$
 
         Continue adding $\bA_3\bY_{t-1}$, etc., until all lagged \textbf{levels} are collected in one term.
     \end{block}
 
-    \vspace{0.1cm}
-
     \begin{block}{Step 3: General Pattern}
-        After algebraic manipulation, we obtain:
-        $$\Delta\bY_t = \bPi\bY_{t-1} + \sum_{j=1}^{p-1}\bGamma_j\Delta\bY_{t-j} + \bepsilon_t$$
+        After algebraic manipulation: $\Delta\bY_t = \bPi\bY_{t-1} + \sum_{j=1}^{p-1}\bGamma_j\Delta\bY_{t-j} + \bepsilon_t$
     \end{block}
 
-    \vspace{0.1cm}
-
     \begin{alertblock}{The Key Matrices}
-        $$\boxed{\bPi = \sum_{i=1}^{p}\bA_i - \mathbf{I} = -(\mathbf{I} - \bA_1 - \bA_2 - \cdots - \bA_p)}$$
-        $$\boxed{\bGamma_j = -\sum_{i=j+1}^{p}\bA_i \quad \text{for } j = 1, \ldots, p-1}$$
+        $\boxed{\bPi = \sum_{i=1}^{p}\bA_i - \mathbf{I} = -(\mathbf{I} - \bA_1 - \bA_2 - \cdots - \bA_p)}$ \quad
+        $\boxed{\bGamma_j = -\sum_{i=j+1}^{p}\bA_i \text{ for } j = 1, \ldots, p-1}$
     \end{alertblock}
     }
 \end{frame}
 
 \begin{frame}{Derivation: Verifying the $\bGamma_j$ Formula}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
     {\small
     \begin{block}{Example: VAR(2)}
         Starting from: $\bY_t = \bA_1\bY_{t-1} + \bA_2\bY_{t-2} + \bepsilon_t$
@@ -666,34 +759,34 @@ MSCA Digital Finance}
         Using our formula: $\bGamma_1 = -\sum_{i=2}^{2}\bA_i = -\bA_2$ \quad $\checkmark$
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Economic Interpretation of Error Correction}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{The VECM with Cointegration}
         When $\text{rank}(\bPi) = r$, we write $\bPi = \balpha\bbeta'$:
-        $$\Delta\bY_t = \balpha\underbrace{(\bbeta'\bY_{t-1})}_{\text{equilibrium error}} + \sum_{j=1}^{p-1}\bGamma_j\Delta\bY_{t-j} + \bepsilon_t$$
+        $\Delta\bY_t = \balpha\underbrace{(\bbeta'\bY_{t-1})}_{\text{equilibrium error}} + \sum_{j=1}^{p-1}\bGamma_j\Delta\bY_{t-j} + \bepsilon_t$
     \end{block}
 
-    \vspace{0.1cm}
-
     \begin{exampleblock}{Economic Interpretation}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $\bbeta'\bY_{t-1}$ = \textbf{equilibrium error}: deviation from long-run relationship
             \item $\balpha$ = \textbf{adjustment speeds}: how fast variables correct deviations
             \item $\bGamma_j$ = \textbf{short-run dynamics}: transitory effects
         \end{itemize}
     \end{exampleblock}
 
-    \vspace{0.1cm}
-
     \begin{alertblock}{Error Correction Mechanism}
         If $\bbeta'\bY_{t-1} > 0$ (above equilibrium) and $\alpha_i < 0$, then $\Delta Y_{it}$ decreases.
-
         \textbf{The system self-corrects toward equilibrium!}
     \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Decomposition of $\bPi$}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
     \begin{block}{When $\text{rank}(\bPi) = r < k$}
         $\bPi = \balpha \bbeta'$ where $\bbeta$ ($k \times r$) = \textbf{cointegrating vectors}, $\balpha$ ($k \times r$) = \textbf{adjustment coefficients}
     \end{block}
@@ -701,7 +794,7 @@ MSCA Digital Finance}
     \vspace{0.1cm}
 
     \begin{exampleblock}{Interpretation}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $\bbeta' \bY_{t-1}$ = deviations from equilibrium (error correction terms)
             \item $\balpha$ = speed of adjustment; rows show each variable's response
         \end{itemize}
@@ -712,9 +805,12 @@ MSCA Digital Finance}
     {\footnotesize
     VECM: $\Delta \bY_t = \mathbf{c} + \balpha(\bbeta' \bY_{t-1}) + \sum_{j=1}^{p-1} \bGamma_j \Delta \bY_{t-j} + \bepsilon_t$
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Johansen Test Statistics}
+    \vspace{-0.2cm}
+    {\footnotesize
     \begin{block}{Two Test Statistics}
         Based on eigenvalues $\hat{\lambda}_1 > \hat{\lambda}_2 > \cdots > \hat{\lambda}_k$ of a certain matrix:
 
@@ -735,16 +831,17 @@ MSCA Digital Finance}
 
     {\footnotesize
     Critical values from Johansen \& Juselius (1990), depend on:
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Number of variables $k$
         \item Deterministic components (constant, trend)
     \end{itemize}
+    }
     }
 \end{frame}
 
 \begin{frame}{Johansen Test: Visual Interpretation}
     \begin{center}
-        \includegraphics[width=0.9\textwidth, height=0.7\textheight, keepaspectratio]{johansen_eigenvalues.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.7\textheight, keepaspectratio]{johansen_eigenvalues.pdf}
     \end{center}
 
     {\footnotesize
@@ -754,8 +851,11 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Testing Procedure}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\footnotesize
     \begin{block}{Sequential Testing (Trace Test)}
-        \begin{enumerate}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
             \item Test $H_0$: $r = 0$. If rejected $\Rightarrow$ continue
             \item Test $H_0$: $r \leq 1$. If not rejected $\Rightarrow$ $r = 1$
             \item Continue until $H_0$ is not rejected
@@ -765,13 +865,15 @@ MSCA Digital Finance}
     \vspace{0.1cm}
 
     \begin{alertblock}{Deterministic Components}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item No constant, no trend (rarely used)
             \item Constant in cointegrating relation only
             \item \textbf{Constant in both} (most common)
             \item Constant + trend in cointegrating relation
         \end{itemize}
     \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -779,6 +881,7 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{VECM Structure}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Full VECM Specification}
         For $k = 2$ variables with $r = 1$ cointegrating relation:
         \begin{align*}
@@ -790,35 +893,43 @@ MSCA Digital Finance}
     \vspace{0.2cm}
 
     \begin{exampleblock}{Components}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $(Y_{1,t-1} - \beta Y_{2,t-1})$ = error correction term (deviation from equilibrium)
             \item $\alpha_1, \alpha_2$ = adjustment speeds (should have opposite signs)
             \item $\gamma_{ij}$ = short-run dynamics
             \item $\varepsilon_{it}$ = innovations
         \end{itemize}
     \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Error Correction Mechanism: Visual}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Error correction}: When series deviate from equilibrium (shaded regions), the adjustment mechanism pulls them back. Positive deviations lead to downward adjustment, negative deviations lead to upward adjustment
+        \end{itemize}
+    \end{exampleblock}
+    }
 \end{frame}
 
 \begin{frame}{Error Correction Mechanism: Visual}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{error_correction.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{error_correction.pdf}
     \end{center}
-
-    \vspace{0.1cm}
-
-    {\footnotesize
-    \textbf{Error correction in action}: When series deviate from equilibrium (shaded regions), the adjustment mechanism pulls them back. Positive deviations lead to downward adjustment, negative deviations lead to upward adjustment.
-    }
     \quantlet{TSA\_ch7\_error\_correction}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_error_correction}
 \end{frame}
 
 \begin{frame}{Interpreting Adjustment Coefficients}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
     \begin{block}{The $\alpha$ Coefficients}
         If the cointegrating relation is $Y_1 - \beta Y_2 = 0$ (equilibrium):
 
         \vspace{0.2cm}
 
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $\alpha_1 < 0$: $Y_1$ adjusts downward when above equilibrium
             \item $\alpha_2 > 0$: $Y_2$ adjusts upward when $Y_1$ is above equilibrium
         \end{itemize}
@@ -828,7 +939,7 @@ MSCA Digital Finance}
 
     \begin{alertblock}{Weak Exogeneity}
         If $\alpha_i = 0$, variable $Y_i$ does \textbf{not} respond to disequilibrium.
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $Y_i$ is \textbf{weakly exogenous} for the long-run parameters
             \item The other variable does all the adjusting
             \item Can simplify estimation (single-equation approach)
@@ -840,9 +951,12 @@ MSCA Digital Finance}
     {\footnotesize
     Test weak exogeneity: $H_0: \alpha_i = 0$ using likelihood ratio test.
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{VECM vs VAR in Differences}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
     \begin{block}{When Variables are Cointegrated}
         \begin{center}
         \begin{tabular}{lcc}
@@ -864,18 +978,24 @@ MSCA Digital Finance}
     \begin{alertblock}{Granger Representation Theorem}
         If variables are cointegrated, there \textbf{must} exist an error correction representation. Ignoring cointegration = model misspecification!
     \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VECM Impulse Response Functions}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{IRF Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Permanent effects}: In a cointegrated system, shocks have permanent effects on levels, but the system returns to equilibrium --- they converge to a new long-run value
+        \end{itemize}
+    \end{block}
+    }
 \end{frame}
 
 \begin{frame}{VECM Impulse Response Functions}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{vecm_irf.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{vecm_irf.pdf}
     \end{center}
-
-    \vspace{0.1cm}
-
-    {\footnotesize
-    \textbf{IRF interpretation}: In a cointegrated system, shocks have \textbf{permanent effects} on levels but the system returns to equilibrium. Unlike stationary VAR, effects don't decay to zero---they converge to a new long-run value.
-    }
     \quantlet{TSA\_ch7\_vecm\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_vecm_irf}
 \end{frame}
 
@@ -884,6 +1004,7 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{Practical Workflow}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Step-by-Step Procedure}
         \begin{enumerate}
             \item \textbf{Unit Root Tests}: Verify all variables are $I(1)$
@@ -906,11 +1027,13 @@ MSCA Digital Finance}
             \item \textbf{Analysis}: IRF, FEVD, hypothesis tests
         \end{enumerate}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Common Pitfalls}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Things to Watch Out For}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Structural breaks}: Cause spurious unit roots or cointegration
             \item \textbf{Near-unit-root}: Tests have low power
             \item \textbf{Lag selection}: Too many/few lags bias results
@@ -923,6 +1046,7 @@ MSCA Digital Finance}
     \begin{exampleblock}{Recommendation}
         Always check: residual diagnostics, stability of cointegrating relationship, sensitivity to specification
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -930,42 +1054,121 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{Example 1: Term Structure of Interest Rates}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{interest_rates_coint.pdf}
-    \end{center}
-
-    \vspace{0.1cm}
-
+    \vspace{-0.2cm}
     {\footnotesize
-    \textbf{Expectations Hypothesis}: Short and long rates share common trend. The spread (term premium) is stationary---evidence of cointegration!
+    \begin{exampleblock}{Expectations Hypothesis}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Conclusion}: Short and long rates share a common trend. The spread (term premium) is stationary --- evidence of cointegration!
+        \end{itemize}
+    \end{exampleblock}
     }
+\end{frame}
+
+\begin{frame}{Example 1: Term Structure of Interest Rates}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{interest_rates_coint.pdf}
+    \end{center}
     \quantlet{TSA\_ch7\_interest\_rates\_coint}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_interest_rates_coint}
+\end{frame}
+
+\begin{frame}{Interest Rates: Economic Theory}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Expectations Hypothesis of the Term Structure}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Formula}: Long-term rate as average of expected future rates
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $R_t^{(n)} = \frac{1}{n} \sum_{i=0}^{n-1} E_t[r_{t+i}] + \text{term premium}$
+            \end{itemize}
+            \item \textbf{Implication}: If the term premium is constant, $r_t$ and $R_t$ are cointegrated
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Cointegrating vector: $(1, -1)$
+            \end{itemize}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Empirical Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Unit root tests}: Both rates are $I(1)$
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item One cointegrating relationship (Johansen test)
+            \end{itemize}
+            \item \textbf{Cointegrating vector}: $\approx (1, -1)$, the spread is stationary
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The short rate adjusts to disequilibrium (the long rate is weakly exogenous)
+            \end{itemize}
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Example 2: Pairs Trading in Finance}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{exampleblock}{Strategy}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Pairs trading}: Find cointegrated stock pairs (e.g., Coca-Cola \& Pepsi). When the spread deviates from the mean, trade expecting mean reversion
+        \end{itemize}
+    \end{exampleblock}
+    }
 \end{frame}
 
 \begin{frame}{Example 2: Pairs Trading in Finance}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{pairs_trading.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{pairs_trading.pdf}
     \end{center}
-
-    \vspace{0.1cm}
-
-    {\footnotesize
-    \textbf{Strategy}: Find cointegrated stock pairs (e.g., Coca-Cola \& Pepsi). When spread deviates from mean, trade expecting mean reversion. Sell spread when high, buy when low.
-    }
     \quantlet{TSA\_ch7\_pairs\_trading}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_pairs_trading}
 \end{frame}
 
 \begin{frame}{Example 3: Purchasing Power Parity (PPP)}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ppp_cointegration.pdf}
-    \end{center}
-
-    \vspace{0.1cm}
-
+    \vspace{-0.2cm}
     {\footnotesize
-    \textbf{PPP Theory}: $e_t = p_t - p_t^*$ (log exchange rate equals price differential). Real exchange rate should be stationary in the long run.
+    \begin{block}{PPP Theory}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Formula}: $e_t = p_t - p_t^*$ (log exchange rate equals price differential). The real exchange rate should be stationary in the long run
+        \end{itemize}
+    \end{block}
     }
+\end{frame}
+
+\begin{frame}{Example 3: Purchasing Power Parity (PPP)}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ppp_cointegration.pdf}
+    \end{center}
     \quantlet{TSA\_ch7\_ppp\_cointegration}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_ppp_cointegration}
+\end{frame}
+
+\begin{frame}{VECM Results for Interest Rates}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.15cm}
+    \begin{block}{Typical Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Integration}: Both rates are $I(1)$, one cointegrating relationship identified
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Cointegrating vector close to $(1, -1)$: the spread is stationary
+            \end{itemize}
+            \item \textbf{Adjustment}: The short rate adjusts to the long rate
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The long rate does not adjust (weakly exogenous)
+            \end{itemize}
+        \end{itemize}
+    \end{block}
+
+    \begin{exampleblock}{VECM Equations (Stylized)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Estimated system}:
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\Delta r_t = 0.02 - 0.15(r_{t-1} - R_{t-1}) + \text{lags} + \varepsilon_{1t}$
+                \item $\Delta R_t = 0.01 - 0.02(r_{t-1} - R_{t-1}) + \text{lags} + \varepsilon_{2t}$
+            \end{itemize}
+            \item \textbf{Interpretation}: The short rate adjusts faster ($\alpha_1 = -0.15$)
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The long rate is nearly weakly exogenous ($\alpha_2 \approx 0$)
+            \end{itemize}
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -973,72 +1176,113 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{Case Study: Cointegration of Interest Rates}
-    \begin{block}{Research Question}
-        Are short-term and long-term interest rates cointegrated?
-        Does the expectations hypothesis of the term structure hold?
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Data}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{US Interest Rates}: Long-term (10 years) and short-term (3 months)
+            \item \textbf{Observation}: Both series are I(1), but the spread appears stationary
+        \end{itemize}
     \end{block}
-
-    \vspace{0.3cm}
-
-    \begin{columns}[T]
-        \begin{column}{0.5\textwidth}
-            \textbf{Data}
-            \begin{itemize}
-                \item US Monthly Data (1962-2023)
-                \item 3-Month Treasury Bill Rate
-                \item 10-Year Treasury Bond Yield
-                \item Source: FRED Database
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \textbf{Methodology}
-            \begin{itemize}
-                \item Unit root tests (ADF, PP)
-                \item Engle-Granger cointegration test
-                \item Johansen procedure
-                \item VECM estimation
-                \item Impulse response analysis
-            \end{itemize}
-        \end{column}
-    \end{columns}
+    }
 \end{frame}
 
-\begin{frame}{Step 1: Data Visualization}
+\begin{frame}{Case Study: Cointegration of Interest Rates}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch7_case_raw_data.pdf}
     \end{center}
     \quantlet{TSA\_ch7\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_case_raw_data}
 \end{frame}
 
-\begin{frame}{Step 2: Unit Root Tests}
+\begin{frame}{Step 1: Unit Root Tests}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{ACF levels}: Slow decay --- non-stationarity; after differencing: rapid decay --- I(1)
+            \item \textbf{ACF spread}: Stationary --- possible cointegration!
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 1: Unit Root Tests}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch7_case_unit_root.pdf}
     \end{center}
     \quantlet{TSA\_ch7\_case\_unit\_root}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_case_unit_root}
 \end{frame}
 
-\begin{frame}{Step 3: Engle-Granger Cointegration Test}
+\begin{frame}{Step 2: Engle-Granger Cointegration Test}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Results}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Engle-Granger regression}: Short rate = $\alpha$ + $\beta$ $\times$ Long rate + $\varepsilon_t$
+            \item \textbf{Conclusion}: The series are cointegrated --- a long-run equilibrium relationship exists
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 2: Engle-Granger Cointegration Test}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch7_case_cointegration.pdf}
     \end{center}
     \quantlet{TSA\_ch7\_case\_cointegration}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_case_cointegration}
 \end{frame}
 
-\begin{frame}{Step 4: VECM Estimation}
+\begin{frame}{Step 3: VECM Estimation}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Model}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{VECM(2)}: Cointegration rank = 1
+            \item \textbf{Adjustment}: The $\alpha$ coefficients indicate the speed of return to equilibrium
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 3: VECM Estimation}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch7_case_vecm.pdf}
     \end{center}
     \quantlet{TSA\_ch7\_case\_vecm}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_case_vecm}
 \end{frame}
 
-\begin{frame}{Step 5: Impulse Response Functions}
+\begin{frame}{Step 4: Impulse Response Functions}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Permanent effects}: Shocks to the long rate persistently affect both rates
+            \item \textbf{Cointegration}: Effects do not converge to zero --- characteristic of cointegrated series
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 4: Impulse Response Functions}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch7_case_irf.pdf}
     \end{center}
     \quantlet{TSA\_ch7\_case\_irf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_case_irf}
 \end{frame}
 
-\begin{frame}{Step 6: Forecasting}
+\begin{frame}{Step 5: VECM Forecast}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Forecast}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Horizon}: 24 months for both rates simultaneously
+            \item \textbf{Advantage}: VECM maintains the cointegrating relationship in the forecast
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Step 5: VECM Forecast}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch7_case_forecast.pdf}
     \end{center}
@@ -1046,12 +1290,45 @@ MSCA Digital Finance}
 \end{frame}
 
 %=============================================================================
+\section{AI Use Case}
+%=============================================================================
+
+\begin{frame}{AI Exercise: Critical Thinking}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Download daily prices for gold and silver using yfinance. Test for cointegration and estimate a VECM model. Analyze the speed of adjustment parameters. Give me complete Python code.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercise}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Run the prompt in an LLM of your choice and critically analyze the response.
+        \item Does it verify that each series is I(1) before testing for cointegration?
+        \item Does it use both Engle-Granger and Johansen tests? What are the trade-offs?
+        \item How does it determine the cointegration rank? Trace vs max-eigenvalue statistics?
+        \item Does it correctly interpret the $\alpha$ (adjustment) coefficients?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
 \section{Summary}
 %=============================================================================
 
 \begin{frame}{Key Takeaways}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\scriptsize
     \begin{block}{Main Concepts}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Cointegration}: $I(1)$ variables with stationary linear combination
             \item \textbf{Spurious regression}: High $R^2$ with unrelated $I(1)$ variables
             \item \textbf{VECM}: VAR with error correction for cointegrated systems
@@ -1061,7 +1338,7 @@ MSCA Digital Finance}
     \vspace{0.1cm}
 
     \begin{block}{Testing Methods}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Engle-Granger}: Simple, one vector only
             \item \textbf{Johansen}: Multiple vectors, MLE-based
         \end{itemize}
@@ -1072,11 +1349,14 @@ MSCA Digital Finance}
     \begin{alertblock}{Remember}
         Tests have low power in small samples. Theory should guide specification.
     \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{What's Next?}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Extensions and Related Topics}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Structural VECM}: Identifying structural shocks
             \item \textbf{Threshold cointegration}: Nonlinear adjustment
             \item \textbf{Panel cointegration}: Multiple cross-sections
@@ -1085,70 +1365,296 @@ MSCA Digital Finance}
         \end{itemize}
     \end{block}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
-    \begin{center}
-        \Large\textcolor{MainBlue}{Questions?}
-    \end{center}
+    \begin{exampleblock}{}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Questions?}
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Key Formulas -- Summary}
+    \vspace{-0.3cm}
+    {\scriptsize
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Cointegration}
+                \begin{itemize}\setlength{\itemsep}{-1pt}
+                    \item \textbf{Definition}: $Y_t - \beta X_t = u_t \sim I(0)$
+                    \item \textbf{Interpretation}: Long-run equilibrium
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Engle-Granger Test}
+                \begin{itemize}\setlength{\itemsep}{-1pt}
+                    \item \textbf{Step 1}: $Y_t = \alpha + \beta X_t + u_t$
+                    \item \textbf{Step 2}: ADF test on $\hat{u}_t$
+                    \item \textbf{Note}: Special critical values
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Cointegration Rank}
+                \begin{itemize}\setlength{\itemsep}{-1pt}
+                    \item \textbf{Rank $r$}: $0 \leq r \leq K-1$ relationships
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{block}{VECM Model}
+                \begin{itemize}\setlength{\itemsep}{-1pt}
+                    \item \textbf{Equation}: $\Delta\bY_t = \bPi\bY_{t-1} + \sum_{i=1}^{p-1}\bGamma_i\Delta\bY_{t-i} + \bepsilon_t$
+                    \item \textbf{Factorization}: $\bPi = \balpha\bbeta'$
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Interpretation of $\balpha$ and $\bbeta$}
+                \begin{itemize}\setlength{\itemsep}{-1pt}
+                    \item \textbf{$\bbeta$}: Cointegrating vectors
+                    \item \textbf{$\balpha$}: Speed of adjustment
+                \end{itemize}
+            \end{block}
+
+            \begin{block}{Johansen Test}
+                \begin{itemize}\setlength{\itemsep}{-1pt}
+                    \item \textbf{Trace}: $\lambda_{trace} = -T\sum_{i=r+1}^{K}\ln(1-\hat{\lambda}_i)$
+                    \item \textbf{Max-Eigen}: $\lambda_{max} = -T\ln(1-\hat{\lambda}_{r+1})$
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+    }
 \end{frame}
 
 %=============================================================================
 \section{Quiz}
 %=============================================================================
 
-\begin{frame}{Quick Quiz}
-    \begin{enumerate}
-        \item What does it mean for two $I(1)$ variables to be cointegrated?
-
-        \vspace{0.3cm}
-
-        \item What is the ``spurious regression'' problem?
-
-        \vspace{0.3cm}
-
-        \item In a VECM, what do the $\alpha$ coefficients represent?
-
-        \vspace{0.3cm}
-
-        \item What is the main advantage of Johansen over Engle-Granger?
-
-        \vspace{0.3cm}
-
-        \item If $\alpha_i = 0$ for variable $Y_i$, what does this imply?
-    \end{enumerate}
-\end{frame}
-
-\begin{frame}{Quiz Answers}
-    {\small
-    \begin{enumerate}
-        \item \textbf{Cointegration}: A linear combination of the variables is $I(0)$ (stationary). They share a common stochastic trend.
-
-        \vspace{0.2cm}
-
-        \item \textbf{Spurious regression}: Regressing one $I(1)$ variable on another unrelated $I(1)$ variable gives high $R^2$ and significant coefficients even though there's no true relationship.
-
-        \vspace{0.2cm}
-
-        \item \textbf{$\alpha$ coefficients}: Speed of adjustment---how quickly each variable responds to deviations from long-run equilibrium.
-
-        \vspace{0.2cm}
-
-        \item \textbf{Johansen advantage}: Can test for multiple cointegrating relationships, uses MLE (more efficient), doesn't require choosing dependent variable.
-
-        \vspace{0.2cm}
-
-        \item \textbf{$\alpha_i = 0$}: Variable $Y_i$ is weakly exogenous---it doesn't respond to disequilibrium. Other variables do all the adjusting.
-    \end{enumerate}
-    }
-\end{frame}
-
-\begin{frame}{Online Resources and Code}
-    \begin{exampleblock}{}
-        {\small
+\begin{frame}{Question 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
         \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Analyze the two pairs of I(1) series below. Which pair is cointegrated?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{block}{Answer choices}
+        \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
+            \item Pair A, because the series have the same trend
+            \item Pair B, because the series are uncorrelated
+            \item Pair A, because their spread is stationary
+            \item Both pairs are cointegrated
+        \end{enumerate}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 1: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch7_quiz1_cointegration_concept.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Correct answer: (C) Pair A -- stationary spread}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Cointegration = stationary linear combination, not just correlation
+            \item Pair B's spread is non-stationary $\rightarrow$ not cointegrated
+        \end{itemize}
+    \end{exampleblock}
+    \quantlet{TSA\_ch7\_quiz1\_cointegration\_concept}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_quiz1_cointegration_concept}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Both regressions below have high $R^2$. How can you distinguish a spurious regression from a genuine one?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{block}{Answer choices}
+        \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
+            \item Cannot distinguish -- both have high $R^2$
+            \item Test the residuals: stationary residuals = genuine cointegration
+            \item Check the significance of the $\beta$ coefficient
+            \item Compare $R^2$ values: higher = more real relationship
+        \end{enumerate}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 2: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch7_quiz2_spurious_regression.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Correct answer: (B) Test the stationarity of residuals}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Engle-Granger test: if OLS residuals are stationary (ADF), the relationship is genuine
+            \item High $R^2$ does NOT imply a real relationship between $I(1)$ variables!
+        \end{itemize}
+    \end{exampleblock}
+    \quantlet{TSA\_ch7\_quiz2\_spurious\_regression}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_quiz2_spurious_regression}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item In which scenario is the long rate weakly exogenous (does not adjust to disequilibrium)?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{block}{Answer choices}
+        \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
+            \item Scenario A: $\alpha_1 = -0.15$, $\alpha_2 = 0.02$
+            \item Scenario B: $\alpha_1 = -0.05$, $\alpha_2 = -0.08$
+            \item Scenario C: $\alpha_1 = 0.00$, $\alpha_2 = 0.20$
+            \item No scenario -- both variables must adjust
+        \end{enumerate}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 3: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch7_quiz3_error_correction.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Correct answer: (C) Scenario C -- $\alpha_1 = 0$}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\alpha_1 = 0$: the long rate does not respond to disequilibrium (weakly exogenous)
+            \item All adjustment is done by the short rate ($\alpha_2 = 0.20$)
+        \end{itemize}
+    \end{exampleblock}
+    \quantlet{TSA\_ch7\_quiz3\_error\_correction}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_quiz3_error_correction}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Given the Johansen Trace test results for $K=3$ variables, what is the cointegrating rank?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{block}{Answer choices}
+        \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
+            \item $r = 0$ (no cointegrating relationships)
+            \item $r = 1$ (one cointegrating relationship)
+            \item $r = 2$ (two cointegrating relationships)
+            \item $r = 3$ (fully stationary system)
+        \end{enumerate}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 4: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch7_quiz4_johansen_rank.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Correct answer: (C) $r = 2$ cointegrating relationships}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Reject $H_0: r=0$ (45.2 > 29.8) and $H_0: r \leq 1$ (18.7 > 15.5)
+            \item Cannot reject $H_0: r \leq 2$ (3.1 < 3.8) $\rightarrow$ rank is $r = 2$
+        \end{itemize}
+    \end{exampleblock}
+    \quantlet{TSA\_ch7\_quiz4\_johansen\_rank}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_quiz4_johansen_rank}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item What is the main advantage of VECM over VAR in differences for forecasting?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{block}{Answer choices}
+        \begin{enumerate}[(A)]\setlength{\itemsep}{0pt}
+            \item VECM has fewer parameters to estimate
+            \item VECM preserves the cointegrating relationship in long-run forecasts
+            \item VAR in differences cannot produce forecasts
+            \item No advantage -- both are equivalent
+        \end{enumerate}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 5: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{0.3cm}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch7_quiz5_vecm_forecast.pdf}
+    \end{center}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Correct answer: (B) VECM preserves cointegration}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VAR($\Delta$) loses the level relationship $\rightarrow$ spread diverges
+            \item VECM incorporates long-run equilibrium $\rightarrow$ forecast stays coherent
+        \end{itemize}
+    \end{exampleblock}
+    \quantlet{TSA\_ch7\_quiz5\_vecm\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch7/TSA_ch7_quiz5_vecm_forecast}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliography I}
+    \begin{block}{Fundamental Cointegration Papers}
+        {\small
+        \begin{itemize}
+            \item Engle, R.F., \& Granger, C.W.J. (1987). Co-Integration and Error Correction: Representation, Estimation, and Testing, \textit{Econometrica}, 55(2), 251--276.
+            \item Johansen, S. (1988). Statistical Analysis of Cointegration Vectors, \textit{Journal of Economic Dynamics and Control}, 12(2-3), 231--254.
+            \item Johansen, S. (1991). Estimation and Hypothesis Testing of Cointegration Vectors in Gaussian Vector Autoregressive Models, \textit{Econometrica}, 59(6), 1551--1580.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{VECM and Cointegration Textbooks}
+        {\small
+        \begin{itemize}
+            \item Juselius, K. (2006). \textit{The Cointegrated VAR Model: Methodology and Applications}, Oxford University Press.
+            \item L\"{u}tkepohl, H. (2005). \textit{New Introduction to Multiple Time Series Analysis}, Springer.
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bibliography II}
+    \begin{block}{Tests and Applications}
+        {\small
+        \begin{itemize}
+            \item Phillips, P.C.B., \& Ouliaris, S. (1990). Asymptotic Properties of Residual Based Tests for Cointegration, \textit{Econometrica}, 58(1), 165--193.
+            \item Hamilton, J.D. (1994). \textit{Time Series Analysis}, Princeton University Press.
+            \item Banerjee, A., Dolado, J.J., Galbraith, J.W., \& Hendry, D.F. (1993). \textit{Co-Integration, Error-Correction, and the Econometric Analysis of Non-Stationary Data}, Oxford University Press.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Online Resources and Code}
+        {\small
+        \begin{itemize}
             \item \textbf{Quantlet}: \url{https://quantlet.com} $\rightarrow$ Code repository for statistics
             \item \textbf{Quantinar}: \url{https://quantinar.com} $\rightarrow$ Learning platform for quantitative methods
-            \item \textbf{GitHub TSA\_ch7}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch7}
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA} $\rightarrow$ Python code for this course
         \end{itemize}
         }
     \end{exampleblock}
