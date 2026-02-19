@@ -291,6 +291,12 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Forecasting Methodology}
 
+\begin{frame}{Train/Validation/Test Framework}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{../charts/train_val_test_split.pdf}
+    \end{center}
+\end{frame}
+
 \begin{frame}{The Scientific Approach to Forecasting}
     \begin{cminipage}{0.95\textwidth}
     \begin{block}{Research Question}
@@ -317,12 +323,6 @@ MSCA Digital Finance}
         \hfill --- Standard practice in machine learning and econometrics
     \end{exampleblock}
     \end{cminipage}
-\end{frame}
-
-\begin{frame}{Train/Validation/Test Framework}
-    \begin{center}
-        \includegraphics[width=0.9\textwidth]{../charts/train_val_test_split.pdf}
-    \end{center}
 \end{frame}
 
 \begin{frame}{Train/Validation/Test Framework}
@@ -369,6 +369,21 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Case Study 1: Bitcoin Volatility (GARCH)}
 
+\begin{frame}{Bitcoin: Volatility Clustering}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{exampleblock}{Observation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Large returns follow large returns, small follow small---\textbf{volatility clustering}
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/btc_returns.pdf}
+    \end{center}
+    \quantlet{TSA\_ch10\_btc\_returns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_btc_returns}
+\end{frame}
+
 \begin{frame}{Bitcoin: Problem Statement}
     \begin{block}{Research Question}
         Can we forecast Bitcoin's \textbf{volatility} using GARCH models?
@@ -407,21 +422,6 @@ MSCA Digital Finance}
             $\Rightarrow$ Focus on \textbf{volatility forecasting}
         \end{alertblock}
     \end{columns}
-\end{frame}
-
-\begin{frame}{Bitcoin: Volatility Clustering}
-    \vspace{-0.2cm}
-    {\scriptsize
-    \begin{exampleblock}{Observation}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Large returns follow large returns, small follow small---\textbf{volatility clustering}
-        \end{itemize}
-    \end{exampleblock}
-    }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/btc_returns.pdf}
-    \end{center}
-    \quantlet{TSA\_ch10\_btc\_returns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_btc_returns}
 \end{frame}
 
 \begin{frame}{Bitcoin: Evidence for GARCH}
@@ -497,6 +497,49 @@ MSCA Digital Finance}
     \end{alertblock}
 \end{frame}
 
+\begin{frame}{Bitcoin: Model Selection on Validation Set}
+    \vspace{-0.2cm}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        {\scriptsize
+        \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Methodology}
+            Fit each model on \textbf{training data}, evaluate on \textbf{validation set}.
+        \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{center}
+        \begin{tabular}{lcccl}
+            \toprule
+            \textbf{Model} & \textbf{AIC} & \textbf{BIC} & \textbf{Val MAE} & \textbf{Selection} \\
+            \midrule
+            GARCH(1,1) & 6,994.8 & 7,020.6 & \textbf{2.638} & \cellcolor{Forest!20}\textbf{Best} \\
+            GARCH(2,1) & 6,993.7 & 7,024.6 & 2.640 & \\
+            GJR-GARCH(1,1) & 6,983.7 & 7,014.6 & 2.669 & \\
+            EGARCH(1,1) & --- & --- & --- & Failed$^*$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+
+        \vspace{0.1cm}
+        {\footnotesize $^*$Analytic forecasts not available for $h > 1$}
+
+        \vspace{0.3cm}
+
+        \begin{exampleblock}{Result}
+            \textbf{GARCH(1,1)} selected based on lowest validation MAE for volatility forecasts.
+        \end{exampleblock}
+        \end{cminipage}
+        }
+        \column{0.43\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, keepaspectratio]{../charts/garch_forecast.pdf}
+        \end{center}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{Bitcoin: Data Split and Stationarity}
     \begin{columns}[T]
         \column{0.5\textwidth}
@@ -540,49 +583,6 @@ MSCA Digital Finance}
     \begin{alertblock}{Why Stationarity Matters}
         GARCH requires weakly stationary input. Prices follow random walk; returns are stationary.
     \end{alertblock}
-\end{frame}
-
-\begin{frame}{Bitcoin: Model Selection on Validation Set}
-    \vspace{-0.2cm}
-    \begin{columns}[T]
-        \column{0.55\textwidth}
-        {\scriptsize
-        \begin{cminipage}{0.95\textwidth}
-        \begin{block}{Methodology}
-            Fit each model on \textbf{training data}, evaluate on \textbf{validation set}.
-        \end{block}
-
-        \vspace{0.3cm}
-
-        \begin{center}
-        \begin{tabular}{lcccl}
-            \toprule
-            \textbf{Model} & \textbf{AIC} & \textbf{BIC} & \textbf{Val MAE} & \textbf{Selection} \\
-            \midrule
-            GARCH(1,1) & 6,994.8 & 7,020.6 & \textbf{2.638} & \cellcolor{Forest!20}\textbf{Best} \\
-            GARCH(2,1) & 6,993.7 & 7,024.6 & 2.640 & \\
-            GJR-GARCH(1,1) & 6,983.7 & 7,014.6 & 2.669 & \\
-            EGARCH(1,1) & --- & --- & --- & Failed$^*$ \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-
-        \vspace{0.1cm}
-        {\footnotesize $^*$Analytic forecasts not available for $h > 1$}
-
-        \vspace{0.3cm}
-
-        \begin{exampleblock}{Result}
-            \textbf{GARCH(1,1)} selected based on lowest validation MAE for volatility forecasts.
-        \end{exampleblock}
-        \end{cminipage}
-        }
-        \column{0.43\textwidth}
-        \vspace{-0.3cm}
-        \begin{center}
-            \includegraphics[width=\textwidth, keepaspectratio]{../charts/garch_forecast.pdf}
-        \end{center}
-    \end{columns}
 \end{frame}
 
 \begin{frame}{Bitcoin: Final Test Set Evaluation}
@@ -699,6 +699,13 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch10\_fourier\_terms}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_fourier_terms}
 \end{frame}
 
+\begin{frame}{Sunspots: Forecast Results}
+    \begin{center}
+        \includegraphics[width=0.68\textwidth]{../charts/sunspot_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+\end{frame}
+
 \begin{frame}{Sunspots: Model Selection}
     \begin{block}{Methodology}
         Compare $K = 1, 2, 3, 4$ Fourier harmonics on validation set.
@@ -744,13 +751,6 @@ MSCA Digital Finance}
     \begin{exampleblock}{Result}
         \textbf{K = 3} Fourier harmonics selected (6 parameters for 11-year cycle).
     \end{exampleblock}
-\end{frame}
-
-\begin{frame}{Sunspots: Forecast Results}
-    \begin{center}
-        \includegraphics[width=0.68\textwidth]{../charts/sunspot_forecast.pdf}
-    \end{center}
-    \vspace{-0.2cm}
 \end{frame}
 
 \begin{frame}{Sunspots: Forecast Results}
@@ -976,6 +976,22 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{Unemployment: Prophet Forecast Results}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Key Finding}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Prophet adapts via changepoint detection
+            \item \textbf{Test RMSE = 0.58}
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/unemployment_forecast.pdf}
+    \end{center}
+    \quantlet{TSA\_ch10\_unemployment\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_unemployment_forecast}
+\end{frame}
+
 \begin{frame}{Unemployment: Model Tuning}
     \vspace{-0.1cm}
     {\footnotesize
@@ -1025,22 +1041,6 @@ MSCA Digital Finance}
         Scale = 0.10 balances flexibility (capturing COVID shock) with stability.
     \end{alertblock}
     }
-\end{frame}
-
-\begin{frame}{Unemployment: Prophet Forecast Results}
-    \vspace{-0.2cm}
-    {\scriptsize
-    \begin{block}{Key Finding}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Prophet adapts via changepoint detection
-            \item \textbf{Test RMSE = 0.58}
-        \end{itemize}
-    \end{block}
-    }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/unemployment_forecast.pdf}
-    \end{center}
-    \quantlet{TSA\_ch10\_unemployment\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_unemployment_forecast}
 \end{frame}
 
 \begin{frame}{Unemployment: SARIMA vs Prophet Comparison}
@@ -1229,26 +1229,6 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Granger Causality: Formal Definition}
-    \begin{defn}[Granger Causality]
-        $X$ \textbf{Granger-causes} $Y$ if, for some $h > 0$:
-        \[
-        \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{X,Y}]\right] < \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{Y}]\right]
-        \]
-        where $\mathcal{F}_t^{X,Y}$ includes past values of both $X$ and $Y$, while $\mathcal{F}_t^{Y}$ includes only past $Y$.
-    \end{defn}
-
-    \vspace{0.2cm}
-
-    \begin{alertblock}{Important Caveat}
-        Granger causality is \textbf{predictive causality}, not true causality. ``$X$ Granger-causes $Y$'' means $X$ contains useful information for forecasting $Y$, not that $X$ causes $Y$ in a structural sense.
-    \end{alertblock}
-
-    \begin{exampleblock}{Test Procedure}
-        Use F-test (or Wald test) to test $H_0$: coefficients on lagged $X$ are jointly zero in the $Y$ equation.
-    \end{exampleblock}
-\end{frame}
-
 \begin{frame}{Granger Causality: Empirical Results}
     \vspace{-0.2cm}
     \begin{columns}[T]
@@ -1272,6 +1252,26 @@ MSCA Digital Finance}
         \end{center}
         \quantlet{TSA\_ch10\_granger\_heatmap}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_granger_heatmap}
     \end{columns}
+\end{frame}
+
+\begin{frame}{Granger Causality: Formal Definition}
+    \begin{defn}[Granger Causality]
+        $X$ \textbf{Granger-causes} $Y$ if, for some $h > 0$:
+        \[
+        \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{X,Y}]\right] < \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{Y}]\right]
+        \]
+        where $\mathcal{F}_t^{X,Y}$ includes past values of both $X$ and $Y$, while $\mathcal{F}_t^{Y}$ includes only past $Y$.
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Important Caveat}
+        Granger causality is \textbf{predictive causality}, not true causality. ``$X$ Granger-causes $Y$'' means $X$ contains useful information for forecasting $Y$, not that $X$ causes $Y$ in a structural sense.
+    \end{alertblock}
+
+    \begin{exampleblock}{Test Procedure}
+        Use F-test (or Wald test) to test $H_0$: coefficients on lagged $X$ are jointly zero in the $Y$ equation.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Impulse Response Functions (IRF)}

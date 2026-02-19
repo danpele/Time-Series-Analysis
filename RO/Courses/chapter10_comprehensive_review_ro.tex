@@ -311,6 +311,12 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Metodologia Prognozei}
 
+\begin{frame}{Cadrul Train/Validation/Test}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{../charts/train_val_test_split.pdf}
+    \end{center}
+\end{frame}
+
 \begin{frame}{Abordarea științifică a prognozei}
     \begin{cminipage}{0.95\textwidth}
     \begin{block}{Întrebarea de Cercetare}
@@ -338,12 +344,6 @@ MSCA Digital Finance}
         \end{itemize}
     \end{exampleblock}
     \end{cminipage}
-\end{frame}
-
-\begin{frame}{Cadrul Train/Validation/Test}
-    \begin{center}
-        \includegraphics[width=0.9\textwidth]{../charts/train_val_test_split.pdf}
-    \end{center}
 \end{frame}
 
 \begin{frame}{Cadrul Train/Validation/Test}
@@ -392,6 +392,22 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Studiu de Caz 1: Volatilitatea Bitcoin (GARCH)}
 
+\begin{frame}{Bitcoin: volatility clustering}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{exampleblock}{Observație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Randamentele mari tind să urmeze randamente mari, cele mici urmează cele mici
+            \item Acesta este \textbf{volatility clustering} $\succ$ fenomenul pe care GARCH îl captează
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/btc_returns.pdf}
+    \end{center}
+    \quantlet{TSA\_ch10\_btc\_returns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_btc_returns}
+\end{frame}
+
 \begin{frame}{Bitcoin: definirea problemei}
     \begin{block}{Întrebarea de Cercetare}
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -432,22 +448,6 @@ MSCA Digital Finance}
             \end{itemize}
         \end{alertblock}
     \end{columns}
-\end{frame}
-
-\begin{frame}{Bitcoin: volatility clustering}
-    \vspace{-0.2cm}
-    {\scriptsize
-    \begin{exampleblock}{Observație}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Randamentele mari tind să urmeze randamente mari, cele mici urmează cele mici
-            \item Acesta este \textbf{volatility clustering} $\succ$ fenomenul pe care GARCH îl captează
-        \end{itemize}
-    \end{exampleblock}
-    }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/btc_returns.pdf}
-    \end{center}
-    \quantlet{TSA\_ch10\_btc\_returns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_btc_returns}
 \end{frame}
 
 \begin{frame}{Bitcoin: dovezi pentru GARCH}
@@ -531,6 +531,54 @@ MSCA Digital Finance}
     \end{alertblock}
 \end{frame}
 
+\begin{frame}{Bitcoin: selectarea modelului pe setul de validare}
+    \vspace{-0.2cm}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        {\scriptsize
+        \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Metodologie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Estimăm fiecare model pe \textbf{datele de antrenament}, evaluăm pe \textbf{setul de validare}
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.1cm}
+
+        \begin{center}
+        \begin{tabular}{lcccl}
+            \toprule
+            \textbf{Model} & \textbf{AIC} & \textbf{BIC} & \textbf{Val MAE} & \textbf{Selectare} \\
+            \midrule
+            GARCH(1,1) & 6.994,8 & 7.020,6 & \textbf{2,638} & \cellcolor{Forest!20}\textbf{Cel mai bun} \\
+            GARCH(2,1) & 6.993,7 & 7.024,6 & 2,640 & \\
+            GJR-GARCH(1,1) & 6.983,7 & 7.014,6 & 2,669 & \\
+            EGARCH(1,1) & --- & --- & --- & Eșuat$^*$ \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+
+        \vspace{0.1cm}
+        {\footnotesize $^*$Prognoze analitice indisponibile pentru $h > 1$}
+
+        \vspace{0.2cm}
+
+        \begin{exampleblock}{Rezultat}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{GARCH(1,1)} selectat pe baza celui mai mic MAE de validare pentru prognozele de volatilitate
+            \end{itemize}
+        \end{exampleblock}
+        \end{cminipage}
+        }
+        \column{0.43\textwidth}
+        \vspace{-0.3cm}
+        \begin{center}
+            \includegraphics[width=\textwidth, keepaspectratio]{../charts/garch_forecast.pdf}
+        \end{center}
+        \quantlet{TSA\_ch10\_garch\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_garch_forecast}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{Bitcoin: împărțirea datelor și staționaritate}
     \vspace{-0.1cm}
     \begin{columns}[T]
@@ -580,54 +628,6 @@ MSCA Digital Finance}
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{Bitcoin: selectarea modelului pe setul de validare}
-    \vspace{-0.2cm}
-    \begin{columns}[T]
-        \column{0.55\textwidth}
-        {\scriptsize
-        \begin{cminipage}{0.95\textwidth}
-        \begin{block}{Metodologie}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Estimăm fiecare model pe \textbf{datele de antrenament}, evaluăm pe \textbf{setul de validare}
-            \end{itemize}
-        \end{block}
-
-        \vspace{0.1cm}
-
-        \begin{center}
-        \begin{tabular}{lcccl}
-            \toprule
-            \textbf{Model} & \textbf{AIC} & \textbf{BIC} & \textbf{Val MAE} & \textbf{Selectare} \\
-            \midrule
-            GARCH(1,1) & 6.994,8 & 7.020,6 & \textbf{2,638} & \cellcolor{Forest!20}\textbf{Cel mai bun} \\
-            GARCH(2,1) & 6.993,7 & 7.024,6 & 2,640 & \\
-            GJR-GARCH(1,1) & 6.983,7 & 7.014,6 & 2,669 & \\
-            EGARCH(1,1) & --- & --- & --- & Eșuat$^*$ \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-
-        \vspace{0.1cm}
-        {\footnotesize $^*$Prognoze analitice indisponibile pentru $h > 1$}
-
-        \vspace{0.2cm}
-
-        \begin{exampleblock}{Rezultat}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{GARCH(1,1)} selectat pe baza celui mai mic MAE de validare pentru prognozele de volatilitate
-            \end{itemize}
-        \end{exampleblock}
-        \end{cminipage}
-        }
-        \column{0.43\textwidth}
-        \vspace{-0.3cm}
-        \begin{center}
-            \includegraphics[width=\textwidth, keepaspectratio]{../charts/garch_forecast.pdf}
-        \end{center}
-        \quantlet{TSA\_ch10\_garch\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_garch_forecast}
-    \end{columns}
-\end{frame}
-
 \begin{frame}{GARCH: prognozele multi-step converg}
     \vspace{-0.2cm}
     {\scriptsize
@@ -655,6 +655,12 @@ MSCA Digital Finance}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/rolling_vs_multistep.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_rolling\_vs\_multistep}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_rolling_vs_multistep}
+\end{frame}
+
+\begin{frame}{Bitcoin: Fapte stilizate GARCH}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/btc_squared_returns.pdf}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Bitcoin: Concluzii cheie}
@@ -700,12 +706,6 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Bitcoin: Fapte stilizate GARCH}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/btc_squared_returns.pdf}
-    \end{center}
-\end{frame}
-
 %=============================================================================
 % SECTION 3: SUNSPOTS
 %=============================================================================
@@ -734,6 +734,13 @@ MSCA Digital Finance}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/fourier_terms.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_fourier\_terms}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_fourier_terms}
+\end{frame}
+
+\begin{frame}{Pete solare: rezultate prognoză}
+    \begin{center}
+        \includegraphics[width=0.68\textwidth]{../charts/sunspot_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
 \end{frame}
 
 \begin{frame}{Pete solare: selectarea modelului}
@@ -786,13 +793,6 @@ MSCA Digital Finance}
             \item \textbf{K = 3} armonici Fourier selectate (6 parametri pentru ciclul de 11 ani)
         \end{itemize}
     \end{exampleblock}
-\end{frame}
-
-\begin{frame}{Pete solare: rezultate prognoză}
-    \begin{center}
-        \includegraphics[width=0.68\textwidth]{../charts/sunspot_forecast.pdf}
-    \end{center}
-    \vspace{-0.2cm}
 \end{frame}
 
 \begin{frame}{Pete solare: rezultate prognoză}
@@ -1028,6 +1028,22 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{Șomajul: rezultate prognoză Prophet}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Concluzie Cheie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Prophet}: se adaptează prin detectare changepoint
+            \item \textbf{Test RMSE} = 0,58
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/unemployment_forecast.pdf}
+    \end{center}
+    \quantlet{TSA\_ch10\_unemployment\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_unemployment_forecast}
+\end{frame}
+
 \begin{frame}{Șomajul: Ajustarea modelului}
     \vspace{-0.1cm}
     {\footnotesize
@@ -1083,22 +1099,6 @@ MSCA Digital Finance}
         \end{itemize}
     \end{alertblock}
     }
-\end{frame}
-
-\begin{frame}{Șomajul: rezultate prognoză Prophet}
-    \vspace{-0.2cm}
-    {\scriptsize
-    \begin{block}{Concluzie Cheie}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Prophet}: se adaptează prin detectare changepoint
-            \item \textbf{Test RMSE} = 0,58
-        \end{itemize}
-    \end{block}
-    }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/unemployment_forecast.pdf}
-    \end{center}
-    \quantlet{TSA\_ch10\_unemployment\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_unemployment_forecast}
 \end{frame}
 
 \begin{frame}{Șomaj: comparație SARIMA vs Prophet}
@@ -1301,26 +1301,6 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Cauzalitatea Granger: Definiție Formală}
-    \begin{defn}[Cauzalitatea Granger]
-        $X$ \textbf{Granger-cauzează} $Y$ dacă, pentru un $h > 0$:
-        \[
-        \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{X,Y}]\right] < \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{Y}]\right]
-        \]
-        unde $\mathcal{F}_t^{X,Y}$ include valorile trecute ale lui $X$ și $Y$, iar $\mathcal{F}_t^{Y}$ include doar trecutul lui $Y$.
-    \end{defn}
-
-    \vspace{0.2cm}
-
-    \begin{alertblock}{Observație Importantă}
-        Cauzalitatea Granger este \textbf{cauzalitate predictivă}, nu cauzalitate reală. ``$X$ Granger-cauzează $Y$'' înseamnă că $X$ conține informație utilă pentru prognoza lui $Y$, nu că $X$ cauzează $Y$ structural.
-    \end{alertblock}
-
-    \begin{exampleblock}{Procedura de Testare}
-        Folosim testul F (sau Wald) pentru a testa $H_0$: coeficienții lag-urilor lui $X$ sunt simultan zero în ecuația lui $Y$.
-    \end{exampleblock}
-\end{frame}
-
 \begin{frame}{Cauzalitatea Granger: Rezultate Empirice}
     \vspace{-0.2cm}
     \begin{columns}[T]
@@ -1344,6 +1324,26 @@ MSCA Digital Finance}
         \end{center}
         \quantlet{TSA\_ch10\_granger\_heatmap}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_granger_heatmap}
     \end{columns}
+\end{frame}
+
+\begin{frame}{Cauzalitatea Granger: Definiție Formală}
+    \begin{defn}[Cauzalitatea Granger]
+        $X$ \textbf{Granger-cauzează} $Y$ dacă, pentru un $h > 0$:
+        \[
+        \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{X,Y}]\right] < \text{MSE}\left[\E[Y_{t+h} | \mathcal{F}_t^{Y}]\right]
+        \]
+        unde $\mathcal{F}_t^{X,Y}$ include valorile trecute ale lui $X$ și $Y$, iar $\mathcal{F}_t^{Y}$ include doar trecutul lui $Y$.
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{Observație Importantă}
+        Cauzalitatea Granger este \textbf{cauzalitate predictivă}, nu cauzalitate reală. ``$X$ Granger-cauzează $Y$'' înseamnă că $X$ conține informație utilă pentru prognoza lui $Y$, nu că $X$ cauzează $Y$ structural.
+    \end{alertblock}
+
+    \begin{exampleblock}{Procedura de Testare}
+        Folosim testul F (sau Wald) pentru a testa $H_0$: coeficienții lag-urilor lui $X$ sunt simultan zero în ecuația lui $Y$.
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Funcții de răspuns la impuls (IRF)}
