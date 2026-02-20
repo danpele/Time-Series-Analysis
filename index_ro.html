@@ -3926,6 +3926,21 @@
             }
 
             userAnswers[questionNum] = selectedAnswer;
+
+            // Visually check the radio button
+            const qId = prefix ? prefix + 'q' + questionNum : 'q' + questionNum;
+            const qDiv = document.getElementById(qId);
+            if (qDiv) {
+                qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+                const lis = qDiv.querySelectorAll('.quiz-options li');
+                lis.forEach(li => {
+                    const text = li.textContent.trim();
+                    if (text.match(new RegExp('^' + selectedAnswer + '\\)'))) {
+                        const radio = li.querySelector('input[type="radio"]');
+                        if (radio) radio.checked = true;
+                    }
+                });
+            }
         }
 
         function calculateScore(chapter) {
@@ -4053,18 +4068,27 @@
                 return letter;
             }
 
+            // Helper: get question text from DOM
+            function getQuestionText(qId) {
+                const qDiv = document.getElementById(qId);
+                if (!qDiv) return '';
+                const p = qDiv.querySelector('p');
+                return p ? p.textContent.trim() : '';
+            }
+
             let keyHtml = '<h4 style="margin-bottom: 0.8rem; color: var(--main-blue);">Rezultate detaliate</h4>';
             keyHtml += '<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">';
-            keyHtml += '<tr style="background: var(--main-blue); color: white;"><th style="padding: 0.4rem 0.6rem; text-align: center; border: 1px solid #dee2e6; width: 3%;">Nr.</th><th style="padding: 0.4rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">Răspuns corect</th><th style="padding: 0.4rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">Răspunsul tău</th><th style="padding: 0.4rem 0.6rem; text-align: center; border: 1px solid #dee2e6; width: 3%;">✓/✗</th></tr>';
+            keyHtml += '<tr style="background: var(--main-blue); color: white;"><th style="padding: 0.4rem 0.6rem; text-align: center; border: 1px solid #dee2e6; width: 3%;">Nr.</th><th style="padding: 0.4rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">Întrebare</th><th style="padding: 0.4rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">Răspuns corect</th><th style="padding: 0.4rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">Răspunsul tău</th><th style="padding: 0.4rem 0.6rem; text-align: center; border: 1px solid #dee2e6; width: 3%;">✓/✗</th></tr>';
             for (let i = 1; i <= total; i++) {
                 const qId = qPrefix ? qPrefix + 'q' + i : 'q' + i;
                 const ua = userAnswers[i] || '—';
                 const isCorrect = userAnswers[i] === correctAnswers[i];
                 const bgColor = !userAnswers[i] ? '#f8f9fa' : (isCorrect ? '#e8f5e9' : '#ffebee');
                 const resultText = !userAnswers[i] ? '<span style="color:#999;">—</span>' : (isCorrect ? '<span style="color:#2E7D32; font-weight:bold;">✓</span>' : '<span style="color:#DC3545; font-weight:bold;">✗</span>');
+                const questionText = getQuestionText(qId);
                 const correctText = getOptionText(qId, correctAnswers[i]);
                 const userText = userAnswers[i] ? getOptionText(qId, userAnswers[i]) : '—';
-                keyHtml += `<tr style="background: ${bgColor};"><td style="padding: 0.3rem 0.6rem; text-align: center; border: 1px solid #dee2e6;"><strong>${i}</strong></td><td style="padding: 0.3rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">${correctText}</td><td style="padding: 0.3rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">${userText}</td><td style="padding: 0.3rem 0.6rem; text-align: center; border: 1px solid #dee2e6;">${resultText}</td></tr>`;
+                keyHtml += `<tr style="background: ${bgColor};"><td style="padding: 0.3rem 0.6rem; text-align: center; border: 1px solid #dee2e6;"><strong>${i}</strong></td><td style="padding: 0.3rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">${questionText}</td><td style="padding: 0.3rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">${correctText}</td><td style="padding: 0.3rem 0.6rem; text-align: left; border: 1px solid #dee2e6;">${userText}</td><td style="padding: 0.3rem 0.6rem; text-align: center; border: 1px solid #dee2e6;">${resultText}</td></tr>`;
             }
             keyHtml += '</table>';
             existingKey.innerHTML = keyHtml;
