@@ -812,6 +812,20 @@
         <section id="quizzes">
             <h2>Interactive Quizzes</h2>
 
+            <!-- Student Info -->
+            <div id="student-info" style="margin-bottom: 1.5rem; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; justify-content: center;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <label for="student-name" style="font-weight: bold; color: var(--main-blue);">Name:</label>
+                    <input type="text" id="student-name" placeholder="e.g. John Smith" style="padding: 0.5rem 1rem; border: 2px solid #dee2e6; border-radius: 6px; font-size: 1rem; width: 200px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <label for="student-group" style="font-weight: bold; color: var(--main-blue);">Group:</label>
+                    <input type="text" id="student-group" placeholder="e.g. A1" style="padding: 0.5rem 1rem; border: 2px solid #dee2e6; border-radius: 6px; font-size: 1rem; width: 120px;">
+                </div>
+                <button onclick="saveStudentInfo()" style="padding: 0.5rem 1.5rem; background: var(--main-blue); color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;">Save</button>
+                <span id="student-saved" style="color: var(--forest); font-weight: bold; display: none;">✓ Saved</span>
+            </div>
+
             <!-- Chapter Selector Tabs -->
             <div class="chapter-tabs" style="margin-bottom: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; padding: 1rem; background: var(--light-gray); border-radius: 8px;">
                 <button class="tab-btn active" onclick="showChapter(0)" id="tab-ch0" style="padding: 1rem 2rem; font-size: 1.1rem; cursor: pointer; border: 3px solid var(--main-blue); background: var(--main-blue); color: white; border-radius: 8px; font-weight: bold; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">Chapter 0</button>
@@ -3969,6 +3983,72 @@
     </footer>
 
     <script>
+        // Google Sheets API
+        const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzUXvY_eBFHG0ZGLy_jK3X9UPfpJciIszkZrDel-g8rymlyt2g3QXAljcqT8Ftkw7k66Q/exec';
+
+        // Chapter names for results
+        const chapterNames = {
+            0: 'Ch. 0 - Fundamentals',
+            1: 'Ch. 1 - Introduction',
+            2: 'Ch. 2 - ARMA',
+            3: 'Ch. 3 - ARIMA',
+            4: 'Ch. 4 - SARIMA',
+            5: 'Ch. 5 - GARCH',
+            6: 'Ch. 6 - VAR',
+            7: 'Ch. 7 - Cointegration',
+            8: 'Ch. 8 - Modern Extensions',
+            9: 'Ch. 9 - Prophet/TBATS',
+            10: 'Ch. 10 - Review'
+        };
+
+        // Save/load student info
+        function saveStudentInfo() {
+            const name = document.getElementById('student-name').value.trim();
+            const group = document.getElementById('student-group').value.trim();
+            if (name) {
+                localStorage.setItem('tsa-student-name', name);
+                localStorage.setItem('tsa-student-group', group);
+                const saved = document.getElementById('student-saved');
+                saved.style.display = 'inline';
+                setTimeout(() => saved.style.display = 'none', 2000);
+            }
+        }
+
+        // Load student info on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const name = localStorage.getItem('tsa-student-name');
+            const group = localStorage.getItem('tsa-student-group');
+            if (name) document.getElementById('student-name').value = name;
+            if (group) document.getElementById('student-group').value = group;
+        });
+
+        // Send results to Google Sheets
+        function sendResults(chapterNum, score, total) {
+            const name = document.getElementById('student-name').value.trim();
+            const group = document.getElementById('student-group').value.trim();
+            if (!name) {
+                alert('Please enter your name before checking the score!');
+                document.getElementById('student-name').focus();
+                return false;
+            }
+            const nota = Math.round((score / total) * 10 * 100) / 100;
+            const data = {
+                nume: name,
+                grupa: group,
+                capitol: chapterNames[chapterNum] || 'Ch. ' + chapterNum,
+                scor: score + '/' + total,
+                total: Math.round((score / total) * 100) + '%',
+                nota: nota.toFixed(2)
+            };
+            fetch(SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(data)
+            });
+            return true;
+        }
+
         // Chapter 0 answers (5 questions)
         const ch0Answers = {
             1: 'B',   // Additive when seasonal amplitude is constant
@@ -4367,6 +4447,12 @@
             }
 
             document.getElementById(displayId).textContent = message;
+
+            // Send results to Google Sheets
+            const chapterNum = (chapter === 'ch0' || chapter === 0) ? 0 :
+                               (chapter === 'garch' || chapter === 5) ? 5 :
+                               (typeof chapter === 'number') ? chapter : parseInt(chapter);
+            sendResults(chapterNum, score, total);
 
             // Show answer key
             const keyId = displayId.replace('score-display', 'answer-key');
