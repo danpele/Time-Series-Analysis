@@ -381,6 +381,73 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{Evaluarea prognozelor dincolo de RMSE}
+    \begin{alertblock}{RMSE nu este universal optim}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Metrica trebuie aleasă în funcție de \textbf{obiectivul economic}
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Alte metrici relevante}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{MASE} (Mean Absolute Scaled Error) --- comparație cu naïve
+            \item \textbf{Directional Accuracy} --- direcția corectă a schimbării
+            \item \textbf{Quantile Loss} --- pentru VaR și prognoze probabilistice
+            \item \textbf{CRPS} (Continuous Ranked Probability Score) --- distribuție completă
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{exampleblock}{Exemplu: Quantile Loss}
+        \vspace{-0.2cm}
+        \[
+        QL_{\alpha}(y_t, \hat{q}_t) =
+        \begin{cases}
+        \alpha (y_t - \hat{q}_t), & y_t > \hat{q}_t \\
+        (1-\alpha)(\hat{q}_t - y_t), & y_t \le \hat{q}_t
+        \end{cases}
+        \]
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Compararea formală a prognozelor: Diebold--Mariano}
+    \vspace{-0.2cm}
+    \begin{alertblock}{Problemă}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item RMSE mai mic $\neq$ diferență statistic semnificativă
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{-0.1cm}
+
+    \begin{defn}[Testul Diebold--Mariano]
+        Diferența de pierdere: $d_t = L(e_{1t}) - L(e_{2t})$, \quad Statistica: $DM = \frac{\bar{d}}{\sqrt{\widehat{\text{Var}}(\bar{d})}} \xrightarrow{d} N(0,1)$
+    \end{defn}
+
+    \vspace{-0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Ipoteze}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $H_0$: performanță predictivă egală
+                \item $H_1$: performanță diferită
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Mesaj cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $|DM|$ mare $\Rightarrow$ diferență semnificativă
+                \item Compararea modelelor trebuie să fie \textbf{statistic fundamentată}
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
 %=============================================================================
 % SECTION 2: BITCOIN VOLATILITY
 %=============================================================================
@@ -645,6 +712,146 @@ MSCA Digital Finance}
     \end{center}
 \end{frame}
 
+\begin{frame}{GARCH: Distribuții pentru inovații}
+    \begin{block}{Model}
+        \vspace{-0.2cm}
+        \[
+        r_t = \mu + \sigma_t z_t
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Variante pentru $z_t$: $\mathcal{N}(0,1)$ (normală) sau $t_{\nu}$ (cozi groase)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{Crypto: de ce contează}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Kurtosis $> 3$ (cozi groase)
+                \item Evenimente extreme frecvente
+                \item Normalitatea \textbf{subestimează} riscul extrem
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Implicație practică}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Distribuția Student-t produce estimări VaR \textbf{mai realiste}
+                \item Numărul de grade de libertate $\nu$ controlează grosimea cozilor
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Aplicație: Value-at-Risk condiționat}
+    \begin{defn}[VaR condiționat la nivel $\alpha$]
+        \vspace{-0.2cm}
+        \[
+        \text{VaR}_{t+1}^{\alpha} = \mu_{t+1} + \sigma_{t+1} \cdot z_{\alpha}
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\sigma_{t+1}^2$ provine din modelul GARCH
+            \item $z_{\alpha}$ = cuantila distribuției alese (Normal sau Student-t)
+        \end{itemize}
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Insight cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Randamentele sunt greu predictibile
+                \item Volatilitatea este \textbf{predictibilă}
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Concluzie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GARCH este \textbf{model de risc}, nu model de randament
+                \item VaR = aplicația directă
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Validarea modelului de risc: Backtesting}
+    \vspace{-0.2cm}
+    \begin{block}{Kupiec Test (Unconditional Coverage)}
+        \vspace{-0.2cm}
+        \[
+        LR_{uc} = -2 \ln \left(
+        \frac{(1-\alpha)^{T-x} \alpha^x}
+        {(1-\hat{p})^{T-x} \hat{p}^x}
+        \right) \sim \chi^2(1), \quad x = \text{încălcări}, \; \hat{p} = x/T
+        \]
+    \end{block}
+
+    \vspace{-0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Christoffersen Test}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Verifică \textbf{independența} încălcărilor
+                \item $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Interpretare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Prea multe încălcări $\Rightarrow$ risc subestimat
+                \item Prea puține $\Rightarrow$ model prea conservator
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Principiu}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Un model de risc trebuie \textbf{validat}, nu doar estimat
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Limitările GARCH și extensii moderne}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{Limitări}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Nu captează \textbf{jump-uri} (salturi bruște)
+                \item Parametri constanți în timp
+                \item Sensibil la distribuția aleasă
+                \item Nu modelează \textbf{regimuri} diferite
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Extensii}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{GJR-GARCH}: efect de levier
+                \item \textbf{EGARCH}: șocuri asimetrice
+                \item \textbf{Markov-Switching GARCH}: regimuri
+                \item Volatilitate realizată (HAR)
+                \item Hybrid GARCH + ML
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Mesaj cheie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item GARCH este un \textbf{punct de plecare}, nu finalul modelării riscului
+        \end{itemize}
+    \end{block}
+\end{frame}
+
 \begin{frame}{Bitcoin: Concluzii cheie}
     \begin{columns}[T]
         \column{0.6\textwidth}
@@ -762,6 +969,47 @@ MSCA Digital Finance}
     \end{exampleblock}
 \end{frame}
 
+\begin{frame}{Overfitting în alegerea lui $K$}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{Riscul de overfitting}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $K$ prea mare $=$ memorare ciclu istoric
+                \item Modelul se potrivește pe zgomot, nu pe semnal
+                \item Performanța pe test se \textbf{degradează}
+            \end{itemize}
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Fourier $\approx$ regresie periodică}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Fiecare armonic adaugă 2 parametri ($\sin$, $\cos$)
+                \item $K = 3$: 6 parametri suplimentari
+                \item $K = 6$: 12 parametri --- risc supraajustare
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Soluția: validare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Selectăm $K$ pe setul de \textbf{validare}
+                \item Evaluăm pe \textbf{test} --- neatins
+                \item Trade-off: complexitate vs generalizare
+            \end{itemize}
+        \end{exampleblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{La noi}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $K = 3$ minimizează Val RMSE
+                \item $K = 4$ crește eroarea $\succ$ overfitting
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{Pete solare: rezultate prognoză}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/sunspot_forecast.pdf}
@@ -853,6 +1101,44 @@ MSCA Digital Finance}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/unemployment_stationarity.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_unemployment\_stationarity}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_unemployment_stationarity}
+\end{frame}
+
+\begin{frame}{Rupturi structurale: abordare formală}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Metode clasice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Chow Test}: ruptură la punct cunoscut
+                \item \textbf{Bai--Perron}: rupturi multiple, necunoscute
+                \item \textbf{CUSUM}: detectare secvențială
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{alertblock}{Problemă}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item ADF poate confunda \textbf{break} cu \textbf{unit root}
+                \item Test Zivot--Andrews: ADF cu ruptură endogenă
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Trade-off practic}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{SARIMA}: stabil, parcimonios, dar presupune parametri constanți
+                \item \textbf{Prophet}: flexibil, detectează changepoints automat
+            \end{itemize}
+        \end{exampleblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Mesaj cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Modelul trebuie adaptat la \textbf{stabilitatea parametrilor}
+            \end{itemize}
+        \end{block}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Șomajul: selecția modelului (set validare)}
@@ -1224,6 +1510,66 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{Stabilitatea modelului VAR}
+    \begin{block}{Condiția de stabilitate}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Toate valorile proprii ale \textbf{matricei companion} trebuie să fie în interiorul cercului unitate:
+        \end{itemize}
+        \[
+        |\lambda_i| < 1, \quad \forall\, i
+        \]
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{Dacă nu este îndeplinită}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Model instabil
+                \item IRF explozive
+                \item Prognoze nesustenabile
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Verificare practică}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \texttt{results.is\_stable()} în statsmodels
+                \item Verificarea stabilității este \textbf{obligatorie} înainte de IRF
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR vs VECM: cointegrare}
+    \vspace{-0.2cm}
+    \begin{block}{Problemă}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Dacă variabilele sunt $I(1)$ $\succ$ VAR pe niveluri produce regresii spurioase
+            \item Test Johansen: verifică existența relațiilor de cointegrare
+        \end{itemize}
+    \end{block}
+
+    \vspace{-0.1cm}
+
+    \begin{defn}[VECM --- Vector Error Correction Model]
+        \vspace{-0.3cm}
+        \[
+        \Delta y_t = \Pi y_{t-1} + \sum_{i=1}^{p-1} \Gamma_i \Delta y_{t-i} + u_t, \quad \Pi = \alpha \beta'
+        \]
+    \end{defn}
+
+    \vspace{-0.1cm}
+
+    \begin{alertblock}{Mesaj cheie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VAR este adecvat doar pentru serii \textbf{staționare}
+            \item Ignorarea cointegrării produce \textbf{regresii spurioase}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}{Cauzalitatea Granger: Rezultate empirice}
     \vspace{-0.2cm}
     {\scriptsize
@@ -1496,6 +1842,33 @@ MSCA Digital Finance}
 %=============================================================================
 % CONCLUSION
 %=============================================================================
+
+\begin{frame}{Prognoză vs Cauzalitate vs Decizie}
+    \begin{center}
+    \footnotesize
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Obiectiv} & \textbf{Model} & \textbf{Focalizare} \\
+        \midrule
+        Predicție pură & ARIMA / ML & Acuratețe out-of-sample \\
+        Risc financiar & GARCH & Volatilitate, VaR \\
+        Dinamici macro & VAR & Interacțiuni multivariate \\
+        Relații structurale & SVAR / VECM & Identificare cauzală \\
+        Regimuri & Markov Switching & Schimbări de regim \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Mesaj cheie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Nu există model universal
+            \item Există \textbf{potrivire între model și problemă}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}{Concluzii cheie}
     \begin{cminipage}{0.95\textwidth}
     \small
@@ -1531,6 +1904,39 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Utilizare IA}
 %=============================================================================
+
+\begin{frame}{Rolul AI în modelarea seriilor de timp}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{AI poate}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Genera cod pentru estimare și prognoză
+                \item Selecta modele (AutoML, grid search)
+                \item Combina prognoze (ensemble)
+                \item Detecta anomalii și pattern-uri
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Dar nu poate}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Înlocui validarea statistică
+                \item Detecta automat \textbf{data leakage}
+                \item Garanta interpretare economică corectă
+                \item Verifica ipotezele modelului
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Principiu}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item AI este \textbf{instrument}, nu autoritate
+            \item Validarea statistică rămâne responsabilitatea cercetătorului
+        \end{itemize}
+    \end{block}
+\end{frame}
 
 \begin{frame}{Exercițiu AI: Gândire critică}
     \begin{cminipage}{0.95\textwidth}

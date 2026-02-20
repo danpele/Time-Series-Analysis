@@ -364,6 +364,79 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{Forecast Evaluation Beyond RMSE}
+    \begin{alertblock}{RMSE is not universally optimal}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item The metric must be chosen based on the \textbf{economic objective}
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Other relevant metrics}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{MASE} (Mean Absolute Scaled Error) --- comparison with naïve
+            \item \textbf{Directional Accuracy} --- correct direction of change
+            \item \textbf{Quantile Loss} --- for VaR and probabilistic forecasts
+            \item \textbf{CRPS} (Continuous Ranked Probability Score) --- full distribution
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{exampleblock}{Example: Quantile Loss}
+        \vspace{-0.2cm}
+        \[
+        QL_{\alpha}(y_t, \hat{q}_t) =
+        \begin{cases}
+        \alpha (y_t - \hat{q}_t), & y_t > \hat{q}_t \\
+        (1-\alpha)(\hat{q}_t - y_t), & y_t \le \hat{q}_t
+        \end{cases}
+        \]
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Formal Forecast Comparison: Diebold--Mariano}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Lower RMSE $\neq$ statistically significant difference
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{defn}[Diebold--Mariano Test]
+        Define the loss differential: $d_t = L(e_{1t}) - L(e_{2t})$
+
+        \vspace{0.1cm}
+        Test statistic:
+        \vspace{-0.2cm}
+        \[
+        DM = \frac{\bar{d}}{\sqrt{\widehat{\text{Var}}(\bar{d})}} \xrightarrow{d} N(0,1)
+        \]
+    \end{defn}
+
+    \vspace{0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Hypotheses}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $H_0$: equal predictive performance
+                \item $H_1$: different performance
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Key message}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Large $|DM|$ $\Rightarrow$ significant difference
+                \item Model comparison must be \textbf{statistically grounded}
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
 %=============================================================================
 % SECTION 2: BITCOIN VOLATILITY
 %=============================================================================
@@ -469,7 +542,7 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{GARCH: Stationarity and Unconditional Variance}
-    \vspace{-0.5cm}
+    \vspace{-0.2cm}
     \begin{thm}[Covariance Stationarity of GARCH(1,1)]
         If $\alpha_1 + \beta_1 < 1$, then $\{\varepsilon_t\}$ is covariance stationary with:
         \[
@@ -620,7 +693,145 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch10\_rolling\_vs\_multistep}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_rolling_vs_multistep}
 \end{frame}
 
-% Removed duplicate slide - content merged into "Bitcoin: Final Test Set Evaluation"
+\begin{frame}{GARCH: Innovation Distributions}
+    \begin{block}{Model}
+        \vspace{-0.2cm}
+        \[
+        r_t = \mu + \sigma_t z_t
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Choices for $z_t$: $\mathcal{N}(0,1)$ (normal) or $t_{\nu}$ (heavy tails)
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{Crypto: why it matters}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Kurtosis $> 3$ (heavy tails)
+                \item Frequent extreme events
+                \item Normality \textbf{underestimates} tail risk
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Practical implication}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Student-t distribution produces \textbf{more realistic} VaR estimates
+                \item Degrees of freedom $\nu$ control tail thickness
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Application: Conditional Value-at-Risk}
+    \begin{defn}[Conditional VaR at level $\alpha$]
+        \vspace{-0.2cm}
+        \[
+        \text{VaR}_{t+1}^{\alpha} = \mu_{t+1} + \sigma_{t+1} \cdot z_{\alpha}
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\sigma_{t+1}^2$ comes from the GARCH model
+            \item $z_{\alpha}$ = quantile of the chosen distribution (Normal or Student-t)
+        \end{itemize}
+    \end{defn}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Key insight}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Returns are hard to predict
+                \item Volatility is \textbf{predictable}
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Conclusion}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GARCH is a \textbf{risk model}, not a return model
+                \item VaR = the direct application
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Risk Model Validation: Backtesting}
+    \vspace{-0.2cm}
+    \begin{block}{Kupiec Test (Unconditional Coverage)}
+        \vspace{-0.2cm}
+        \[
+        LR_{uc} = -2 \ln \left(
+        \frac{(1-\alpha)^{T-x} \alpha^x}
+        {(1-\hat{p})^{T-x} \hat{p}^x}
+        \right) \sim \chi^2(1), \quad x = \text{violations}, \; \hat{p} = x/T
+        \]
+    \end{block}
+
+    \vspace{-0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Christoffersen Test}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Checks \textbf{independence} of violations
+                \item $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Interpretation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Too many violations $\Rightarrow$ risk underestimated
+                \item Too few $\Rightarrow$ model too conservative
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Principle}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item A risk model must be \textbf{validated}, not just estimated
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{GARCH Limitations and Modern Extensions}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{Limitations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Does not capture \textbf{jumps}
+                \item Constant parameters over time
+                \item Sensitive to chosen distribution
+                \item Does not model different \textbf{regimes}
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Extensions}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{GJR-GARCH}: leverage effect
+                \item \textbf{EGARCH}: asymmetric shocks
+                \item \textbf{Markov-Switching GARCH}: regimes
+                \item Realized volatility (HAR)
+                \item Hybrid GARCH + ML
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Key message}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item GARCH is a \textbf{starting point}, not the end of risk modeling
+        \end{itemize}
+    \end{block}
+\end{frame}
 
 \begin{frame}{Bitcoin: Key Findings}
     \begin{columns}[T]
@@ -749,6 +960,47 @@ MSCA Digital Finance}
     \end{exampleblock}
 \end{frame}
 
+\begin{frame}{Overfitting in Choosing $K$}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{Overfitting risk}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $K$ too large $=$ memorizing historical cycle
+                \item Model fits noise, not signal
+                \item Test performance \textbf{degrades}
+            \end{itemize}
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Fourier $\approx$ periodic regression}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Each harmonic adds 2 parameters ($\sin$, $\cos$)
+                \item $K = 3$: 6 extra parameters
+                \item $K = 6$: 12 parameters --- overfitting risk
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Solution: validation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Select $K$ on \textbf{validation} set
+                \item Evaluate on \textbf{test} --- untouched
+                \item Trade-off: complexity vs generalization
+            \end{itemize}
+        \end{exampleblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Our results}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $K = 3$ minimizes Val RMSE
+                \item $K = 4$ increases error $\rightarrow$ overfitting
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{Sunspots: Forecast Results}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/sunspot_forecast.pdf}
@@ -850,6 +1102,44 @@ MSCA Digital Finance}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/unemployment_stationarity.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_unemployment\_stationarity}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_unemployment_stationarity}
+\end{frame}
+
+\begin{frame}{Structural Breaks: Formal Approach}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{Classical methods}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Chow Test}: break at known point
+                \item \textbf{Bai--Perron}: multiple unknown breaks
+                \item \textbf{CUSUM}: sequential detection
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{alertblock}{Problem}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item ADF can confuse \textbf{break} with \textbf{unit root}
+                \item Zivot--Andrews test: ADF with endogenous break
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Practical trade-off}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{SARIMA}: stable, parsimonious, but assumes constant parameters
+                \item \textbf{Prophet}: flexible, detects changepoints automatically
+            \end{itemize}
+        \end{exampleblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Key message}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Model must be adapted to \textbf{parameter stability}
+            \end{itemize}
+        \end{block}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Unemployment: Model Selection (Validation Set)}
@@ -1213,6 +1503,66 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{VAR Model Stability}
+    \begin{block}{Stability Condition}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item All eigenvalues of the \textbf{companion matrix} must lie inside the unit circle:
+        \end{itemize}
+        \[
+        |\lambda_i| < 1, \quad \forall\, i
+        \]
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{alertblock}{If not satisfied}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Unstable model
+                \item Explosive IRFs
+                \item Unsustainable forecasts
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Practical check}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \texttt{results.is\_stable()} in statsmodels
+                \item Stability verification is \textbf{mandatory} before IRF
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{VAR vs VECM: Cointegration}
+    \vspace{-0.2cm}
+    \begin{block}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item If variables are $I(1)$ $\rightarrow$ VAR on levels produces spurious regressions
+            \item Johansen test: checks for cointegration relationships
+        \end{itemize}
+    \end{block}
+
+    \vspace{-0.1cm}
+
+    \begin{defn}[VECM --- Vector Error Correction Model]
+        \vspace{-0.3cm}
+        \[
+        \Delta y_t = \Pi y_{t-1} + \sum_{i=1}^{p-1} \Gamma_i \Delta y_{t-i} + u_t, \quad \Pi = \alpha \beta'
+        \]
+    \end{defn}
+
+    \vspace{-0.1cm}
+
+    \begin{alertblock}{Key message}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VAR is appropriate only for \textbf{stationary} series
+            \item Ignoring cointegration produces \textbf{spurious regressions}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}{Granger Causality: Empirical Results}
     \vspace{-0.2cm}
     {\scriptsize
@@ -1507,6 +1857,33 @@ MSCA Digital Finance}
 %=============================================================================
 % CONCLUSION
 %=============================================================================
+
+\begin{frame}{Forecasting vs Causality vs Decision}
+    \begin{center}
+    \footnotesize
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Objective} & \textbf{Model} & \textbf{Focus} \\
+        \midrule
+        Pure prediction & ARIMA / ML & Out-of-sample accuracy \\
+        Financial risk & GARCH & Volatility, VaR \\
+        Macro dynamics & VAR & Multivariate interactions \\
+        Structural relations & SVAR / VECM & Causal identification \\
+        Regimes & Markov Switching & Regime changes \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{Key Message}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item There is no universal model
+            \item There is \textbf{fit between model and problem}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}{Key Takeaways}
     \begin{cminipage}{0.95\textwidth}
     \small
@@ -1542,6 +1919,39 @@ MSCA Digital Finance}
 %=============================================================================
 \section{AI Use Case}
 %=============================================================================
+
+\begin{frame}{The Role of AI in Time Series Modeling}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{AI can}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Generate code for estimation and forecasting
+                \item Select models (AutoML, grid search)
+                \item Combine forecasts (ensemble)
+                \item Detect anomalies and patterns
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{But cannot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Replace statistical validation
+                \item Automatically detect \textbf{data leakage}
+                \item Guarantee correct economic interpretation
+                \item Verify model assumptions
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Principle}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item AI is a \textbf{tool}, not an authority
+            \item Statistical validation remains the researcher's responsibility
+        \end{itemize}
+    \end{block}
+\end{frame}
 
 \begin{frame}{AI Exercise: Critical Thinking}
     \begin{cminipage}{0.95\textwidth}
