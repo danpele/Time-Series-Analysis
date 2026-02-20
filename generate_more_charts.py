@@ -29,20 +29,20 @@ OUTPUT_DIR = 'charts/'
 print("Creating train/val/test split diagram...")
 fig, ax = plt.subplots(figsize=(10, 2.5))
 
-# Draw bars - 70% / 20% / 10%
+# Draw bars - 70% / 15% / 15%
 ax.barh(0, 70, left=0, height=0.6, color=COLORS['blue'], alpha=0.7, label='Training (70%)')
-ax.barh(0, 20, left=70, height=0.6, color=COLORS['orange'], alpha=0.7, label='Validation (20%)')
-ax.barh(0, 10, left=90, height=0.6, color=COLORS['red'], alpha=0.7, label='Test (10%)')
+ax.barh(0, 15, left=70, height=0.6, color=COLORS['orange'], alpha=0.7, label='Validation (15%)')
+ax.barh(0, 15, left=85, height=0.6, color=COLORS['red'], alpha=0.7, label='Test (15%)')
 
 # Add text labels
 ax.text(35, 0, 'Training\n70%', ha='center', va='center', fontsize=14, fontweight='bold', color='white')
-ax.text(80, 0, 'Val\n20%', ha='center', va='center', fontsize=12, fontweight='bold', color='white')
-ax.text(95, 0, 'Test\n10%', ha='center', va='center', fontsize=11, fontweight='bold', color='white')
+ax.text(77.5, 0, 'Val\n15%', ha='center', va='center', fontsize=11, fontweight='bold', color='white')
+ax.text(92.5, 0, 'Test\n15%', ha='center', va='center', fontsize=11, fontweight='bold', color='white')
 
 # Add arrows and labels below
 ax.annotate('Fit parameters', xy=(35, -0.5), ha='center', fontsize=11, color=COLORS['blue'])
-ax.annotate('Select model', xy=(80, -0.5), ha='center', fontsize=11, color=COLORS['orange'])
-ax.annotate('Final evaluation', xy=(95, -0.5), ha='center', fontsize=11, color=COLORS['red'])
+ax.annotate('Select model', xy=(77.5, -0.5), ha='center', fontsize=11, color=COLORS['orange'])
+ax.annotate('Final evaluation', xy=(92.5, -0.5), ha='center', fontsize=11, color=COLORS['red'])
 
 ax.set_xlim(0, 100)
 ax.set_ylim(-1, 0.8)
