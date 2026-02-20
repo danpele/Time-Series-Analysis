@@ -240,51 +240,50 @@ def plot_interest_rates():
 # 5. Real Example: Stock Prices (Pairs Trading)
 # =============================================================================
 def plot_pairs_trading():
-    """Two related stock prices for pairs trading"""
-    T = 250
+    """Two related stock prices for pairs trading (real KO/PEP data)"""
+    import yfinance as yf
+    import matplotlib.dates as mdates
 
-    # Common market factor
-    market = np.cumsum(np.random.normal(0.0005, 0.015, T))
+    # Download real data
+    ko = yf.download('KO', start='2020-01-01', end='2024-01-01', progress=False)['Close'].squeeze()
+    pep = yf.download('PEP', start='2020-01-01', end='2024-01-01', progress=False)['Close'].squeeze()
 
-    # Two correlated stocks (e.g., Coca-Cola and Pepsi)
-    stock1 = 100 * np.exp(market + np.cumsum(np.random.normal(0, 0.005, T)))
-    stock2 = 80 * np.exp(0.9 * market + np.cumsum(np.random.normal(0, 0.005, T)))
-
-    # Log prices
-    log_p1 = np.log(stock1)
-    log_p2 = np.log(stock2)
-
-    # Spread (hedge ratio estimated)
-    beta = np.cov(log_p1, log_p2)[0,1] / np.var(log_p2)
-    spread = log_p1 - beta * log_p2
+    # Log prices and spread
+    log_ko = np.log(ko)
+    log_pep = np.log(pep)
+    beta = np.cov(log_ko, log_pep)[0, 1] / np.var(log_pep)
+    spread = log_ko - beta * log_pep
     spread = spread - spread.mean()
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
     # Stock prices
     ax1 = axes[0]
-    ax1.plot(stock1, color=MAIN_BLUE, linewidth=1.5, label='Stock A (e.g., Coca-Cola)')
-    ax1.plot(stock2, color=IDA_RED, linewidth=1.5, label='Stock B (e.g., Pepsi)')
-    ax1.set_xlabel('Trading Days')
+    ax1.plot(ko.index, ko.values, color=MAIN_BLUE, linewidth=1.5, label='Coca-Cola (KO)')
+    ax1.plot(pep.index, pep.values, color=IDA_RED, linewidth=1.5, label='PepsiCo (PEP)')
+    ax1.set_xlabel('Date')
     ax1.set_ylabel('Price ($)')
     ax1.set_title('Related Stocks: Share Common Market Factor')
-    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False, ncol=2)
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), frameon=False, ncol=2)
+    ax1.xaxis.set_major_locator(mdates.YearLocator())
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
     # Spread for pairs trading
     ax2 = axes[1]
-    ax2.plot(spread, color=FOREST, linewidth=1.5)
+    ax2.plot(spread.index, spread.values, color=FOREST, linewidth=1.5)
     ax2.axhline(y=0, color='gray', linestyle='--', linewidth=1)
     ax2.axhline(y=2*spread.std(), color=IDA_RED, linestyle=':', linewidth=1, alpha=0.7)
     ax2.axhline(y=-2*spread.std(), color=IDA_RED, linestyle=':', linewidth=1, alpha=0.7)
-    ax2.fill_between(range(T), spread, 0, alpha=0.3, color=FOREST)
-    ax2.set_xlabel('Trading Days')
+    ax2.fill_between(spread.index, spread.values, 0, alpha=0.3, color=FOREST)
+    ax2.set_xlabel('Date')
     ax2.set_ylabel('Spread (log prices)')
     ax2.set_title('Pairs Trading: Spread Mean-Reverts')
-    ax2.annotate('Sell spread', xy=(T*0.7, 2*spread.std()), fontsize=9, color=IDA_RED)
-    ax2.annotate('Buy spread', xy=(T*0.7, -2*spread.std()), fontsize=9, color=FOREST)
+    ax2.xaxis.set_major_locator(mdates.YearLocator())
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
     plt.tight_layout()
     plt.savefig(f'{output_dir}/pairs_trading.pdf', bbox_inches='tight', transparent=True)
+    plt.savefig(f'{output_dir}/pairs_trading.png', bbox_inches='tight', transparent=True, dpi=150)
     plt.close()
 
 # =============================================================================
