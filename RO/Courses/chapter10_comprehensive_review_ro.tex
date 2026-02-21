@@ -641,9 +641,20 @@ MSCA Digital Finance}
             \end{itemize}
         \end{exampleblock}
     }
-    \vspace{-0.25cm}
+\end{frame}
+
+\begin{frame}{Bitcoin: prognoza volatilității}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Interpretare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Zona umbrită: interval de încredere 95\% al prognozei de volatilitate
+            \item GARCH(1,1) captează bine dinamica volatilității Bitcoin
+        \end{itemize}
+    \end{block}
+    }
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.18\textheight, keepaspectratio]{../charts/garch_forecast.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{../charts/garch_forecast.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_garch\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_garch_forecast}
 \end{frame}
@@ -762,6 +773,262 @@ MSCA Digital Finance}
         \end{exampleblock}
     \end{columns}
 \end{frame}
+
+%=============================================================================
+% VALUE-AT-RISK: TEORIE ȘI METODOLOGIE
+%=============================================================================
+
+\begin{frame}{VaR și ES: ilustrație grafică}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Interpretare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VaR 1\% = pierderea depășită doar în 1\% din cazuri
+            \item Zona roșie = pierderi extreme (dincolo de VaR)
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{garch_var_illustration.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_var\_plot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_plot}
+\end{frame}
+
+\begin{frame}{VaR vs expected shortfall: normal vs Student-t}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Interpretare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item ES măsoară pierderea medie când VaR este depășit
+            \item Student-t: VaR și ES mai mari decât sub distribuția normală
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{garch_var_es_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_var\_es}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_es}
+\end{frame}
+
+\begin{frame}{Value at risk $\succ$ exemplu numeric}
+\small
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Calculul VaR: Portofoliu 1M EUR, $\hat{\sigma}_{T+1} = 1.5\%$}
+        \begin{center}
+            \begin{tabular}{lccc}
+                \toprule
+                \textbf{Nivel} & $\bm{z_\alpha}$ & \textbf{VaR (\%)} & \textbf{VaR (EUR)} \\
+                \midrule
+                5\% (1 zi) & 1.645 & 2.47\% & 24.675 \\
+                1\% (1 zi) & 2.326 & 3.49\% & 34.890 \\
+                1\% (10 zile) & $2.326 \cdot \sqrt{10}$ & 11.03\% & 110.314 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{exampleblock}
+    \vspace{-0.1cm}
+    \begin{alertblock}{Scalare pentru perioade mai lungi}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\text{VaR}_{h\text{ zile}} = \text{VaR}_{1\text{ zi}} \cdot \sqrt{h}$ \quad (presupune randamente i.i.d.)
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Value at risk $\succ$ distribuție Student-t}
+\small
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{De ce Student-t?}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Normala \textbf{subestimează} riscul de coadă; randamentele au \textbf{cozi groase} (kurtosis $> 3$)
+            \item Student-t capturează mai bine extremele
+        \end{itemize}
+    \end{block}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{Comparație VaR 1\% (1 zi) pentru $\sigma = 1.5\%$, portofoliu = 1M EUR}
+        \begin{center}
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Distribuție} & \textbf{Cuantilă} & \textbf{VaR (EUR)} \\
+                \midrule
+                Normal & 2.326 & 34.890 \\
+                Student-t ($\nu = 10$) & 2.764 & 41.460 \\
+                Student-t ($\nu = 6$) & 3.143 & 47.145 \\
+                Student-t ($\nu = 4$) & 3.747 & 56.205 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Cu $\nu = 6$ (tipic pentru acțiuni), VaR este cu \textbf{35\% mai mare} decât cel normal!
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VaR $\succ$ exemplu complet cu GARCH}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Procedura de calcul VaR}
+        \begin{enumerate}
+            \item Estimează modelul GARCH(1,1) cu distribuție Student-t
+            \item Obține prognoza volatilității: $\hat{\sigma}_{T+1}$
+            \item Calculează VaR: $\text{VaR}_\alpha = t_\alpha(\nu) \cdot \hat{\sigma}_{T+1} \cdot \sqrt{\frac{\nu-2}{\nu}}$
+        \end{enumerate}
+    \end{block}
+
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Exemplu: S\&P 500}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Parametri estimați: $\alpha = 0.088$, $\beta = 0.900$, $\nu = 6.4$
+            \item Volatilitate prognozată: $\hat{\sigma}_{T+1} = 1.2\%$, Portofoliu: 10.000.000 EUR
+            \item \textbf{VaR 1\% (1 zi):} $\text{VaR} = 3.05 \times 0.012 \times 10.000.000 = \textbf{366.000 EUR}$
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ce este VaR backtesting?}
+\small
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Definiție}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Backtesting} = verificarea ex-post a calității modelului VaR
+            \item Compară pierderile realizate cu pragul VaR prognozat
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item O \textbf{încălcare} (violation) apare când $r_t < -\text{VaR}_t$
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+    \vspace{-0.2cm}
+    \begin{block}{Principiul Backtesting-ului}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Indicatorul de încălcare: $I_t = \mathbf{1}(r_t < -\text{VaR}_{\alpha,t})$
+            \item Pentru un model corect la nivel $\alpha$:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Frecvența: $\hat{p} = \frac{1}{T}\sum I_t \approx \alpha$; încălcări \textbf{independente}
+                \end{itemize}
+            \item VaR 1\% pe 250 zile $\succ$ așteptăm $\sim$2.5 încălcări/an
+        \end{itemize}
+    \end{block}
+    \vspace{-0.2cm}
+    \begin{alertblock}{Importanță}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Cerință regulamentară \textbf{Basel III/IV} pentru bănci: backtesting obligatoriu
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Testul Kupiec (1995) $\succ$ acoperire necondiționată}
+\small
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Ipoteze}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: Rata de încălcare este egală cu nivelul VaR ($p = \alpha$)
+            \item $H_1$: Rata de încălcare diferă de nivelul VaR ($p \neq \alpha$)
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{block}{Statistica de test (Likelihood Ratio)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Formula}:
+            $LR_{uc} = -2 \ln \left[ \frac{\alpha^x (1-\alpha)^{T-x}}{\hat{p}^x (1-\hat{p})^{T-x}} \right] \sim \chi^2(1)$
+            \item \textbf{Notație}: $x$ = nr. încălcări, $T$ = nr. observații, $\hat{p} = x/T$
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Exemplu}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VaR 1\%, $T = 250$ zile, $x = 5$ încălcări: $\hat{p} = 2\%$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Prea multe încălcări $\succ$ modelul \textbf{subestimează} riscul
+                \end{itemize}
+            \item VaR 1\%, $T = 250$ zile, $x = 1$ încălcare: $\hat{p} = 0.4\%$ $\succ$ acceptabil
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Testul Christoffersen (1998) $\succ$ acoperire condiționată}
+\small
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Motivație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Kupiec testează doar \textbf{frecvența} încălcărilor
+            \item Nu detectează \textbf{clusterizarea} încălcărilor (încălcări consecutive)
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Dacă încălcările apar în clustere $\succ$ modelul nu captează dinamica volatilității
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{block}{Testul de independență + acoperire condiționată}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Formula}: $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
+            \item $LR_{ind}$ testează dacă $P(I_t = 1 | I_{t-1} = 1) = P(I_t = 1 | I_{t-1} = 0)$
+            \item Un model bun: încălcări rare \textbf{și} distribuite uniform în timp
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{alertblock}{Recomandare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Folosește \textbf{ambele} teste: Kupiec (frecvență) + Christoffersen (independență)
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VaR backtesting: vizualizare}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Interpretare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Linia roșie: pragul VaR 1\% estimat cu GARCH(1,1)
+                \item Punctele roșii: 13 încălcări din 250 zile ($\hat{p} = 5.2\%$)
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item \textcolor{Crimson}{\textbf{Zonă roșie Basel}} $\succ$ modelul subestimează semnificativ riscul
+                        \item Soluții: distribuție Student-t, model EGARCH, sau nivel VaR mai conservator
+                    \end{itemize}
+            \end{itemize}
+        \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.47\textheight, keepaspectratio]{garch_var_backtesting.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_backtest}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_backtest}
+\end{frame}
+
+\begin{frame}{Backtesting VaR: semaforul Basel}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Zonele de semaforizare Basel III/IV}
+        \begin{center}
+            \begin{tabular}{lccc}
+                \toprule
+                \textbf{Zonă} & \textbf{Încălcări/250 zile} & \textbf{Interpretare} & \textbf{Penalizare} \\
+                \midrule
+                \cellcolor{Forest!15}\textcolor{Forest}{\textbf{Verde}} & 0--4 & Model acceptabil & Fără penalizare \\
+                \cellcolor{Amber!15}\textcolor{Amber}{\textbf{Galben}} & 5--9 & Necesită investigare & Factor $k$ crește \\
+                \cellcolor{Crimson!15}\textcolor{Crimson}{\textbf{Roșu}} & $\geq 10$ & Model inadecvat & Penalizare maximă \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Exemplu practic}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Portofoliu cu VaR 1\%: 250 zile de backtesting
+            \item 3 încălcări $\succ$ \textcolor{Forest}{\textbf{Zonă verde}} $\succ$ model acceptabil
+            \item 7 încălcări $\succ$ \textcolor{Amber}{\textbf{Zonă galbenă}} $\succ$ revizuire necesară
+            \item 13 încălcări $\succ$ \textcolor{Crimson}{\textbf{Zonă roșie}} $\succ$ model respins
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% VALUE-AT-RISK: APLICAȚIE EMPIRICĂ BITCOIN
+%=============================================================================
 
 \begin{frame}{Aplicație: Value-at-Risk condiționat}
     \vspace{-0.2cm}

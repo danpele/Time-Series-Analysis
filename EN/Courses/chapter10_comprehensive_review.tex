@@ -291,12 +291,6 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Forecasting Methodology}
 
-\begin{frame}{Train/Validation/Test Framework}
-    \begin{center}
-        \includegraphics[width=0.9\textwidth]{../charts/train_val_test_split.pdf}
-    \end{center}
-\end{frame}
-
 \begin{frame}{The Scientific Approach to Forecasting}
     \begin{cminipage}{0.95\textwidth}
     \begin{block}{Research Question}
@@ -609,9 +603,6 @@ MSCA Digital Finance}
             \textbf{GARCH(1,1)} selected based on lowest validation MAE for volatility forecasts.
         \end{exampleblock}
     }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.18\textheight, keepaspectratio]{../charts/garch_forecast.pdf}
-    \end{center}
 \end{frame}
 
 \begin{frame}{Bitcoin: Data Split and Stationarity}
@@ -662,14 +653,20 @@ MSCA Digital Finance}
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{Bitcoin: Final Test Set Evaluation}
+\begin{frame}{Bitcoin: Volatility Forecast}
     \vspace{-0.2cm}
-    {\footnotesize
+    {\scriptsize
+    \begin{block}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Shaded area: 95\% confidence interval of the volatility forecast
+            \item GARCH(1,1) captures Bitcoin's volatility dynamics well
+        \end{itemize}
+    \end{block}
+    }
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/garch_forecast.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{../charts/garch_forecast.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_garch\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_garch_forecast}
-    }
 \end{frame}
 
 \begin{frame}{GARCH: Multi-Step Forecasts Converge}
@@ -686,12 +683,6 @@ MSCA Digital Finance}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/garch_convergence.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_garch\_convergence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_garch_convergence}
-\end{frame}
-
-\begin{frame}{GARCH: Rolling One-Step-Ahead Solution}
-    \begin{center}
-        \includegraphics[width=0.85\textwidth]{../charts/rolling_vs_multistep.pdf}
-    \end{center}
 \end{frame}
 
 \begin{frame}{GARCH: Rolling One-Step-Ahead Solution}
@@ -737,6 +728,269 @@ MSCA Digital Finance}
         \end{exampleblock}
     \end{columns}
 \end{frame}
+
+%=============================================================================
+% VALUE-AT-RISK: THEORY AND METHODOLOGY
+%=============================================================================
+
+\begin{frame}{VaR and ES: Graphical Illustration}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VaR 1\% = loss exceeded only in 1\% of cases
+            \item Red area = extreme losses (beyond VaR)
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{garch_var_illustration.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_var\_plot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_plot}
+\end{frame}
+
+\begin{frame}{VaR vs Expected Shortfall: Normal vs Student-t}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item ES measures average loss when VaR is exceeded
+            \item Student-t: VaR and ES are larger than under normal distribution
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{garch_var_es_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_var\_es}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_var_es}
+\end{frame}
+
+\begin{frame}{Value at Risk --- Numerical Example}
+    \begin{cminipage}{0.95\textwidth}
+    \small
+    \begin{exampleblock}{VaR Calculation}
+        Portfolio: \textbf{1,000,000 EUR}, forecasted volatility $\hat{\sigma}_{T+1} = 1.5\%$
+    \end{exampleblock}
+
+    \begin{block}{VaR with Normal Distribution}
+        \begin{center}
+            \small
+            \begin{tabular}{lccc}
+                \toprule
+                \textbf{Level} & $\bm{z_\alpha}$ & \textbf{VaR (\%)} & \textbf{VaR (EUR)} \\
+                \midrule
+                5\% (1 day) & 1.645 & 2.47\% & 24,675 \\
+                1\% (1 day) & 2.326 & 3.49\% & 34,890 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{block}
+
+    \begin{alertblock}{Scaling for Longer Periods}
+        $\text{VaR}_{h\text{ days}} = \text{VaR}_{1\text{ day}} \cdot \sqrt{h}$ --- assumes i.i.d. returns
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Value at Risk --- Student-t Distribution}
+    \begin{cminipage}{0.95\textwidth}
+    \small
+    \begin{block}{Why Student-t?}
+        Normal distribution \textbf{underestimates} tail risk. Student-t with $\nu$ degrees of freedom better captures fat tails (kurtosis $> 3$).
+    \end{block}
+
+    \begin{exampleblock}{VaR 1\% (1 day) Comparison: $\sigma = 1.5\%$, Portfolio = 1M EUR}
+        \begin{center}
+            \small
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Distribution} & \textbf{Quantile} & \textbf{VaR (EUR)} \\
+                \midrule
+                Normal & 2.326 & 34,890 \\
+                Student-t ($\nu = 6$) & 3.143 & 47,145 \\
+                Student-t ($\nu = 4$) & 3.747 & 56,205 \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{exampleblock}
+
+    \begin{alertblock}{Observation}
+        With $\nu = 6$ (typical for stocks), VaR is \textbf{35\% higher} than normal!
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VaR --- Complete Example with GARCH}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{VaR Calculation Procedure}
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item Estimate GARCH(1,1) model with Student-t distribution
+            \item Obtain volatility forecast: $\hat{\sigma}_{T+1}$
+            \item Calculate VaR: $\text{VaR}_\alpha = t_\alpha(\nu) \cdot \hat{\sigma}_{T+1} \cdot \sqrt{\frac{\nu-2}{\nu}}$
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Example: S\&P 500}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Estimated parameters: $\alpha = 0.088$, $\beta = 0.900$, $\nu = 6.4$
+            \item Forecasted volatility: $\hat{\sigma}_{T+1} = 1.2\%$
+            \item Portfolio: 10,000,000 EUR
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{VaR 1\% (1 day):}
+        $\text{VaR} = 3.05 \times 0.012 \times 10{,}000{,}000 = \textbf{366{,}000 EUR}$
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{What is VaR Backtesting?}
+    \begin{cminipage}{0.95\textwidth}
+\small
+    \begin{block}{Definition}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Backtesting} = ex-post verification of VaR model quality
+            \item Compares realized losses with the forecasted VaR threshold
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item A \textbf{violation} occurs when $r_t < -\text{VaR}_t$
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+    \vspace{-0.2cm}
+    \begin{block}{Backtesting Principle}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Violation indicator: $I_t = \mathbf{1}(r_t < -\text{VaR}_{\alpha,t})$
+            \item For a correctly specified model at level $\alpha$:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Frequency: $\hat{p} = \frac{1}{T}\sum I_t \approx \alpha$; violations \textbf{independent}
+                \end{itemize}
+            \item VaR 1\% over 250 days $\Rightarrow$ expect $\sim$2.5 violations/year
+        \end{itemize}
+    \end{block}
+    \vspace{-0.2cm}
+    \begin{alertblock}{Importance}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Regulatory requirement under \textbf{Basel III/IV} for banks: backtesting is mandatory
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Kupiec Test (1995) --- Unconditional Coverage}
+\small
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Hypotheses}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: Violation rate equals the VaR level ($p = \alpha$)
+            \item $H_1$: Violation rate differs from the VaR level ($p \neq \alpha$)
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{block}{Test Statistic (Likelihood Ratio)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Formula}:
+            $LR_{uc} = -2 \ln \left[ \frac{\alpha^x (1-\alpha)^{T-x}}{\hat{p}^x (1-\hat{p})^{T-x}} \right] \sim \chi^2(1)$
+            \item \textbf{Notation}: $x$ = no. violations, $T$ = no. observations, $\hat{p} = x/T$
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{exampleblock}{Example}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VaR 1\%, $T = 250$ days, $x = 5$ violations: $\hat{p} = 2\%$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Too many violations $\Rightarrow$ model \textbf{underestimates} risk
+                \end{itemize}
+            \item VaR 1\%, $T = 250$ days, $x = 1$ violation: $\hat{p} = 0.4\%$ $\Rightarrow$ acceptable
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Christoffersen Test (1998) --- Conditional Coverage}
+\small
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Motivation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Kupiec only tests the \textbf{frequency} of violations
+            \item Does not detect \textbf{clustering} of violations (consecutive violations)
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item If violations cluster $\Rightarrow$ model fails to capture volatility dynamics
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{block}{Independence + Conditional Coverage Test}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Formula}: $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
+            \item $LR_{ind}$ tests whether $P(I_t = 1 | I_{t-1} = 1) = P(I_t = 1 | I_{t-1} = 0)$
+            \item A good model: violations are rare \textbf{and} uniformly distributed over time
+        \end{itemize}
+    \end{block}
+    \vspace{-0.1cm}
+    \begin{alertblock}{Recommendation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Use \textbf{both} tests: Kupiec (frequency) + Christoffersen (independence)
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VaR Backtesting: Visualization}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Interpretation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Red line: VaR 1\% threshold estimated with GARCH(1,1)
+                \item Red dots: 13 violations out of 250 days ($\hat{p} = 5.2\%$)
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item \textcolor{Crimson}{\textbf{Basel red zone}} $\Rightarrow$ model significantly underestimates risk
+                        \item Solutions: Student-t distribution, EGARCH model, or more conservative VaR level
+                    \end{itemize}
+            \end{itemize}
+        \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.47\textheight, keepaspectratio]{garch_var_backtesting.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_backtest}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_backtest}
+\end{frame}
+
+\begin{frame}{VaR Backtesting: Basel Traffic Light}
+    \begin{cminipage}{0.95\textwidth}
+    \small
+    \begin{block}{Basel III/IV Traffic Light Zones}
+        \begin{center}
+            \begin{tabular}{lccc}
+                \toprule
+                \textbf{Zone} & \textbf{Violations/250 days} & \textbf{Interpretation} & \textbf{Penalty} \\
+                \midrule
+                \cellcolor{Forest!15}\textcolor{Forest}{\textbf{Green}} & 0--4 & Model acceptable & No penalty \\
+                \cellcolor{Amber!15}\textcolor{Amber}{\textbf{Yellow}} & 5--9 & Needs investigation & Factor $k$ increases \\
+                \cellcolor{Crimson!15}\textcolor{Crimson}{\textbf{Red}} & $\geq 10$ & Model inadequate & Maximum penalty \\
+                \bottomrule
+            \end{tabular}
+        \end{center}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Practical Example}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Portfolio with VaR 1\%: 250 days of backtesting
+            \item 3 violations $\Rightarrow$ \textcolor{Forest}{\textbf{Green zone}} $\Rightarrow$ model acceptable
+            \item 7 violations $\Rightarrow$ \textcolor{Amber}{\textbf{Yellow zone}} $\Rightarrow$ revision needed
+            \item 13 violations $\Rightarrow$ \textcolor{Crimson}{\textbf{Red zone}} $\Rightarrow$ model rejected
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% VALUE-AT-RISK: BITCOIN EMPIRICAL APPLICATION
+%=============================================================================
 
 \begin{frame}{Application: Conditional Value-at-Risk}
     \vspace{-0.2cm}
@@ -905,14 +1159,6 @@ MSCA Digital Finance}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/sunspots.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_sunspots\_acf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_sunspots_acf}
-\end{frame}
-
-\begin{frame}{Fourier Terms for Seasonality}
-    \vspace{-0.5cm}
-    \begin{center}
-        \includegraphics[width=0.78\textwidth, height=0.75\textheight, keepaspectratio]{../charts/fourier_terms.pdf}
-    \end{center}
-    \vspace{-0.3cm}
 \end{frame}
 
 \begin{frame}{Fourier Terms for Seasonality}
@@ -1093,24 +1339,9 @@ MSCA Digital Finance}
 
 \begin{frame}{Unemployment: Preliminary Analysis}
     \begin{center}
-        \includegraphics[width=0.75\textwidth]{../charts/unemployment_acf_pacf.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-\end{frame}
-
-\begin{frame}{Unemployment: Preliminary Analysis}
-    \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/unemployment_acf_pacf.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_unemployment\_acf\_pacf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_unemployment_acf_pacf}
-\end{frame}
-
-\begin{frame}{Unemployment: Stationarity Tests}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[height=0.55\textheight, keepaspectratio]{../charts/unemployment_stationarity.pdf}
-    \end{center}
-    \vspace{-0.2cm}
 \end{frame}
 
 \begin{frame}{Unemployment: Stationarity Tests}
@@ -1337,13 +1568,6 @@ MSCA Digital Finance}
 
 \begin{frame}{Unemployment: SARIMA vs Prophet Comparison}
     \begin{center}
-        \includegraphics[height=0.52\textheight, keepaspectratio]{../charts/prophet_vs_sarima_unemployment.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-\end{frame}
-
-\begin{frame}{Unemployment: SARIMA vs Prophet Comparison}
-    \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{../charts/prophet_vs_sarima_unemployment.pdf}
     \end{center}
     \quantlet{TSA\_ch10\_prophet\_vs\_sarima\_unemployment}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_prophet_vs_sarima_unemployment}
@@ -1397,13 +1621,6 @@ MSCA Digital Finance}
 % SECTION 5: VAR
 %=============================================================================
 \section{Case Study 4: Multivariate Analysis (VAR)}
-
-\begin{frame}{VAR: Multivariate Economic Data}
-    \begin{center}
-        \includegraphics[width=0.45\textwidth]{../charts/economic_vars.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-\end{frame}
 
 \begin{frame}{VAR: Multivariate Economic Data}
     \begin{center}
@@ -1784,30 +2001,6 @@ MSCA Digital Finance}
         \draw[arrow] (q3) -- node[right] {\footnotesize Level} (arima);
     \end{tikzpicture}
     \end{center}
-\end{frame}
-
-\begin{frame}{Summary: Model Comparison}
-    \vspace{-0.2cm}
-    \vspace{0.3cm}
-    \vspace{-0.1cm}
-    \begin{block}{Results}
-        \begin{center}
-        \footnotesize
-        \begin{tabular}{llll}
-            \toprule
-            \textbf{Case} & \textbf{Challenge} & \textbf{Model} & \textbf{RMSE} \\
-            \midrule
-            Bitcoin & Volatility & GARCH & 2.15 \\
-            Sunspots & Seasonality & Fourier & 31.10 \\
-            Unemp & Break & SARIMA & 0.12 \\
-            Economic & Multi-var & VAR & 1.53 \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-    \end{block}
-    \begin{exampleblock}{Key Principle}
-        \textbf{Match model to data characteristics}---no single model dominates.
-    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Summary: Model Comparison}
