@@ -296,12 +296,14 @@ def christoffersen_test(violations):
     p_val = 1 - stats.chi2.cdf(lr_ind, 1)
     return float(lr_ind), float(p_val)
 
-# Run Christoffersen on all 4 models
-print(f"\n   Christoffersen Independence Test (5% VaR):")
+# Run Christoffersen on all 4 models (5% and 1%)
+print(f"\n   Christoffersen Independence Test:")
 for name, md in models_data.items():
     lr_cc, p_cc = christoffersen_test(md['viol05'])
     md['chr_lr05'], md['chr_p05'] = lr_cc, p_cc
-    print(f"   {name:10s} LR_ind={lr_cc:.2f}, p={p_cc:.4f}")
+    lr_cc1, p_cc1 = christoffersen_test(md['viol01'])
+    md['chr_lr01'], md['chr_p01'] = lr_cc1, p_cc1
+    print(f"   {name:10s} 5%: LR_ind={lr_cc:.2f}, p={p_cc:.4f}   1%: LR_ind={lr_cc1:.2f}, p={p_cc1:.4f}")
 
 lr_cc_n05, p_cc_n05 = models_data['GARCH-N']['chr_lr05'], models_data['GARCH-N']['chr_p05']
 lr_cc_t05, p_cc_t05 = models_data['GARCH-t']['chr_lr05'], models_data['GARCH-t']['chr_p05']
@@ -401,6 +403,38 @@ ax.set_title('Rolling VaR 5%: Multi-Model Comparison on Bitcoin Test Set', fontw
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, fontsize=7, frameon=False)
 plt.tight_layout()
 save_fig('ch10_btc_var_overlay')
+
+# =============================================================================
+# CHART 4: Multi-model VaR 1% comparison (2x2 grid)
+# =============================================================================
+print("\n   Generating multi-model VaR 1% backtest chart (2x2)...")
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 6), sharex=True, sharey=True)
+axes = axes.flatten()
+
+for j, (name, title) in enumerate(zip(model_list, titles)):
+    ax = axes[j]
+    md = models_data[name]
+    ax.plot(dates, test_vals, color='#333333', linewidth=0.4, alpha=0.7)
+    ax.plot(dates, md['var01'], color=md['color'], linewidth=0.8, linestyle='--')
+    ax.fill_between(dates, md['var01'], test_vals.min() - 2,
+                    alpha=0.10, color=md['color'])
+    # Mark violations
+    vdates = dates[md['viol01']]
+    vvals = test_vals[md['viol01']]
+    ax.scatter(vdates, vvals, color=md['color'], s=10, zorder=5, marker='v')
+    ax.axhline(0, color='gray', linewidth=0.3)
+    pct = md['n_viol01'] / T * 100
+    kupiec_ok = 'Pass' if md['kupiec_p01'] > 0.05 else 'Fail'
+    ax.set_title(f'{title}\nViol: {md["n_viol01"]}/{T} ({pct:.1f}%)  Kupiec: {kupiec_ok}',
+                 fontweight='bold', fontsize=8)
+    if j >= 2:
+        ax.set_xlabel('Date')
+    if j % 2 == 0:
+        ax.set_ylabel('Return (%)')
+
+plt.tight_layout()
+save_fig('ch10_btc_var_multimodel_1pct')
 
 # =============================================================================
 # 2. DIEBOLD-MARIANO TEST

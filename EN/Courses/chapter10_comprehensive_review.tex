@@ -1064,6 +1064,64 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{Application: Rolling VaR 1\% on Multiple Models}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Methodology}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Rolling one-step-ahead VaR at $\alpha = 1\%$ (extreme risk)
+            \item Same 4 models; expected: $T \times 0.01 = 3.3$ violations
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{ch10_btc_var_multimodel_1pct.pdf}
+    \end{center}
+    \quantlet{TSA\_ch10\_empirical\_slides}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_empirical_slides}
+\end{frame}
+
+\begin{frame}{VaR 1\% Backtesting: Model Comparison}
+    \vspace{-0.1cm}
+    {\footnotesize
+    \begin{block}{Bitcoin Results --- VaR 1\% (T = 329 days, expected: 3.3 violations)}
+        \begin{center}
+        \begin{tabular}{lcccccc}
+            \toprule
+            \textbf{Model} & \textbf{AIC} & \textbf{Violations} & \textbf{Rate} & \textbf{Kupiec $p$} & \textbf{Chr.\ $p$} & \textbf{Conclusion} \\
+            \midrule
+            GARCH(1,1)-N & 9769 & 1 & 0.3\% & 0.137 & 1.000 & Too conservative \\
+            GARCH(1,1)-t & \textbf{9260} & 0 & 0.0\% & 1.000 & 1.000 & Too conservative \\
+            GJR-GARCH(1,1)-t & 9260 & 0 & 0.0\% & 1.000 & 1.000 & Too conservative \\
+            \rowcolor{Forest!15} Hist.\ Simulation & --- & \textbf{4} & \textbf{1.2\%} & \textbf{0.704} & 1.000 & \textcolor{Forest}{\textbf{Most accurate}} \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    }
+
+    \vspace{0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{VaR 1\% Conclusions}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Parametric models: \textbf{too conservative} at 1\%
+                \item GARCH-t/GJR-t: 0 violations $\succ$ tails too heavy
+                \item Hist.\ Simulation: 1.2\% $\approx$ 1\% --- best fit
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Lesson: 5\% vs 1\%}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item At 5\%: Student-t excels (perfect coverage)
+                \item At 1\%: Hist.\ Simulation more accurate
+                \item \textbf{Conclusion}: optimal model depends on $\alpha$!
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{GARCH Limitations and Modern Extensions}
     \begin{columns}[T]
         \column{0.5\textwidth}
@@ -1853,11 +1911,18 @@ MSCA Digital Finance}
     \vspace{0.2cm}
 
     \begin{alertblock}{Important Caveat}
-        Granger causality is \textbf{predictive causality}, not true causality. ``$X$ Granger-causes $Y$'' means $X$ contains useful information for forecasting $Y$, not that $X$ causes $Y$ in a structural sense.
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Granger causality $=$ \textbf{predictive causality}, not true causality
+            \item ``$X$ Granger-causes $Y$'' $\Rightarrow$ $X$ contains useful info for forecasting $Y$
+            \item Does \textbf{not} imply $X$ causes $Y$ in a structural sense
+        \end{itemize}
     \end{alertblock}
 
     \begin{exampleblock}{Test Procedure}
-        Use F-test (or Wald test) to test $H_0$: coefficients on lagged $X$ are jointly zero in the $Y$ equation.
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item F-test (or Wald): $H_0$: coefficients on lagged $X$ are jointly zero in $Y$ equation
+            \item Reject $H_0$ $\Rightarrow$ $X$ Granger-causes $Y$
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
@@ -2029,18 +2094,22 @@ MSCA Digital Finance}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Our Results}
+        \begin{block}{Empirical Conclusions}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item GARCH: MAE=1.82 (volatility)
-                \item Fourier: RMSE=31.10 (cycles)
-                \item SARIMA: RMSE=0.12 (breaks)
-                \item VAR: Avg RMSE=1.53 (multi)
+                \item \textbf{GARCH}: Student-t $\succ$ Normal ($\Delta$AIC = 509)
+                \item \textbf{Fourier}: $K=3$ harmonics, validated on test set
+                \item \textbf{Prophet}: adapts to breaks via changepoints
+                \item \textbf{VAR}: significant macro interactions (Granger)
             \end{itemize}
         \end{block}
 
         \column{0.5\textwidth}
         \begin{exampleblock}{Key Insight}
-            Each model excels in its domain. The art is matching the model to the data characteristics.
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item RMSE cannot be compared across different datasets!
+                \item Each model excels in its domain
+                \item The art: matching model $\leftrightarrow$ data
+            \end{itemize}
         \end{exampleblock}
     \end{columns}
 \end{frame}

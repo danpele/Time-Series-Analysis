@@ -1102,6 +1102,64 @@ MSCA Digital Finance}
     \end{columns}
 \end{frame}
 
+\begin{frame}{Aplicație: VaR 1\% rolling pe multiple modele}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{block}{Metodologie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VaR rolling one-step-ahead la nivel $\alpha = 1\%$ (risc extrem)
+            \item Aceleași 4 modele; așteptat: $T \times 0{,}01 = 3{,}3$ încălcări
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{ch10_btc_var_multimodel_1pct.pdf}
+    \end{center}
+    \quantlet{TSA\_ch10\_empirical\_slides}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_empirical_slides}
+\end{frame}
+
+\begin{frame}{VaR 1\% Backtesting: comparație modele}
+    \vspace{-0.1cm}
+    {\footnotesize
+    \begin{block}{Rezultate Bitcoin --- VaR 1\% (T = 329 zile, așteptat: 3,3 încălcări)}
+        \begin{center}
+        \begin{tabular}{lcccccc}
+            \toprule
+            \textbf{Model} & \textbf{AIC} & \textbf{Încălcări} & \textbf{Rată} & \textbf{Kupiec $p$} & \textbf{Chr.\ $p$} & \textbf{Concluzie} \\
+            \midrule
+            GARCH(1,1)-N & 9769 & 1 & 0,3\% & 0,137 & 1,000 & Prea conservator \\
+            GARCH(1,1)-t & \textbf{9260} & 0 & 0,0\% & 1,000 & 1,000 & Prea conservator \\
+            GJR-GARCH(1,1)-t & 9260 & 0 & 0,0\% & 1,000 & 1,000 & Prea conservator \\
+            \rowcolor{Forest!15} Hist.\ Simulation & --- & \textbf{4} & \textbf{1,2\%} & \textbf{0,704} & 1,000 & \textcolor{Forest}{\textbf{Cel mai precis}} \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    }
+
+    \vspace{0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Concluzii VaR 1\%}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Modelele parametrice: \textbf{prea conservatoare} la 1\%
+                \item GARCH-t/GJR-t: 0 încălcări $\succ$ cozi prea groase
+                \item Hist.\ Simulation: 1,2\% $\approx$ 1\% --- cel mai bun
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Lecție: 5\% vs 1\%}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item La 5\%: Student-t excelează (acoperire perfectă)
+                \item La 1\%: Hist.\ Simulation mai precisă
+                \item \textbf{Concluzie}: modelul optim depinde de $\alpha$!
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{Limitările GARCH și extensii moderne}
     \begin{columns}[T]
         \column{0.5\textwidth}
@@ -1916,11 +1974,18 @@ MSCA Digital Finance}
     \vspace{0.2cm}
 
     \begin{alertblock}{Observație importantă}
-        Cauzalitatea Granger este \textbf{cauzalitate predictivă}, nu cauzalitate reală. ``$X$ Granger-cauzează $Y$'' înseamnă că $X$ conține informație utilă pentru prognoza lui $Y$, nu că $X$ cauzează $Y$ structural.
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Cauzalitatea Granger $=$ \textbf{cauzalitate predictivă}, nu cauzalitate reală
+            \item ``$X$ Granger-cauzează $Y$'' $\Rightarrow$ $X$ conține informație utilă pentru prognoza lui $Y$
+            \item \textbf{Nu} implică faptul că $X$ cauzează $Y$ în sens structural
+        \end{itemize}
     \end{alertblock}
 
     \begin{exampleblock}{Procedura de testare}
-        Folosim testul F (sau Wald) pentru a testa $H_0$: coeficienții lag-urilor lui $X$ sunt simultan zero în ecuația lui $Y$.
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Testul F (sau Wald): $H_0$: coeficienții lag-urilor lui $X$ sunt simultan zero în ecuația lui $Y$
+            \item Respingem $H_0$ $\Rightarrow$ $X$ Granger-cauzează $Y$
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
@@ -2093,20 +2158,21 @@ MSCA Digital Finance}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Rezultatele noastre}
-            \begin{itemize}
-                \item GARCH: MAE=1,82 (volatilitate)
-                \item Fourier: RMSE=31,10 (cicluri)
-                \item SARIMA: RMSE=0,12 (rupturi)
-                \item VAR: RMSE mediu=1,53 (multi)
+        \begin{block}{Concluzii empirice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{GARCH}: Student-t $\succ$ Normal ($\Delta$AIC = 509)
+                \item \textbf{Fourier}: $K=3$ armonici, validat pe set de test
+                \item \textbf{Prophet}: adaptare la rupturi via changepoints
+                \item \textbf{VAR}: interacțiuni macro semnificative (Granger)
             \end{itemize}
         \end{block}
 
         \column{0.5\textwidth}
         \begin{exampleblock}{Insight cheie}
             \begin{itemize}\setlength{\itemsep}{0pt}
+                \item RMSE nu se compară între seturi de date diferite!
                 \item Fiecare model excelează în domeniul său
-                \item Arta constă în alegerea modelului potrivit caracteristicilor datelor
+                \item Alegerea: potrivirea model $\leftrightarrow$ date
             \end{itemize}
         \end{exampleblock}
     \end{columns}
