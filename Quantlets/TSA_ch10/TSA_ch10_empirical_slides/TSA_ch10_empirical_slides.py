@@ -82,7 +82,11 @@ train_val = returns.iloc[:val_end]
 print(f"   Data: {len(returns)} obs, Test: {len(test)} obs")
 print(f"   Test period: {test.index[0].strftime('%Y-%m-%d')} to {test.index[-1].strftime('%Y-%m-%d')}")
 
-# --- Fit GARCH(1,1) with Normal innovations ---
+# =============================================================================
+# FIT 4 MODELS: GARCH-N, GARCH-t, GJR-GARCH-t, Historical Simulation
+# =============================================================================
+
+# --- Model 1: GARCH(1,1) Normal ---
 print("\n   Fitting GARCH(1,1) Normal...")
 garch_norm = arch_model(train_val, vol='Garch', p=1, q=1, dist='normal', mean='Constant')
 fit_norm = garch_norm.fit(disp='off')
@@ -90,7 +94,7 @@ omega_n, alpha_n, beta_n = fit_norm.params['omega'], fit_norm.params['alpha[1]']
 mu_n = fit_norm.params['mu']
 print(f"   Normal: mu={mu_n:.4f}, omega={omega_n:.6f}, alpha={alpha_n:.4f}, beta={beta_n:.4f}")
 
-# --- Fit GARCH(1,1) with Student-t innovations ---
+# --- Model 2: GARCH(1,1) Student-t ---
 print("   Fitting GARCH(1,1) Student-t...")
 garch_t = arch_model(train_val, vol='Garch', p=1, q=1, dist='t', mean='Constant')
 fit_t = garch_t.fit(disp='off')
@@ -99,6 +103,18 @@ mu_t = fit_t.params['mu']
 nu = fit_t.params['nu']
 print(f"   Student-t: mu={mu_t:.4f}, omega={omega_t:.6f}, alpha={alpha_t:.4f}, beta={beta_t:.4f}, nu={nu:.2f}")
 
+# --- Model 3: GJR-GARCH(1,1) Student-t (leverage effect) ---
+print("   Fitting GJR-GARCH(1,1) Student-t...")
+gjr_model = arch_model(train_val, vol='Garch', p=1, o=1, q=1, dist='t', mean='Constant')
+fit_gjr = gjr_model.fit(disp='off')
+omega_g = fit_gjr.params['omega']
+alpha_g = fit_gjr.params['alpha[1]']
+gamma_g = fit_gjr.params['gamma[1]']
+beta_g = fit_gjr.params['beta[1]']
+mu_g = fit_gjr.params['mu']
+nu_g = fit_gjr.params['nu']
+print(f"   GJR: mu={mu_g:.4f}, omega={omega_g:.6f}, alpha={alpha_g:.4f}, gamma={gamma_g:.4f}, beta={beta_g:.4f}, nu={nu_g:.2f}")
+
 # --- Innovation distribution statistics ---
 resid_norm = fit_norm.resid / fit_norm.conditional_volatility
 resid_t = fit_t.resid / fit_t.conditional_volatility
@@ -106,72 +122,115 @@ kurt_resid = float(stats.kurtosis(resid_norm.dropna(), fisher=False))
 skew_resid = float(stats.skew(resid_norm.dropna()))
 print(f"\n   Standardized residuals: kurtosis={kurt_resid:.2f}, skew={skew_resid:.2f}")
 
-# --- Rolling 1-step VaR on test set ---
-print("\n   Computing rolling VaR on test set...")
-alpha_levels = [0.05, 0.01]  # 5% and 1% VaR
+# =============================================================================
+# ROLLING 1-STEP VaR ON TEST SET (all 4 models)
+# =============================================================================
+print("\n   Computing rolling VaR on test set (4 models)...")
 
-# Normal quantiles
+# Quantiles
 z_05_norm = stats.norm.ppf(0.05)
 z_01_norm = stats.norm.ppf(0.01)
-
-# Student-t quantiles (scaled for unit variance)
 z_05_t = stats.t.ppf(0.05, df=nu) * np.sqrt((nu - 2) / nu)
 z_01_t = stats.t.ppf(0.01, df=nu) * np.sqrt((nu - 2) / nu)
+z_05_gjr = stats.t.ppf(0.05, df=nu_g) * np.sqrt((nu_g - 2) / nu_g)
+z_01_gjr = stats.t.ppf(0.01, df=nu_g) * np.sqrt((nu_g - 2) / nu_g)
 
-# Rolling forecast: refit every step using expanding window
+# Allocate arrays for all models
 var_norm_05 = np.zeros(len(test))
 var_norm_01 = np.zeros(len(test))
 var_t_05 = np.zeros(len(test))
 var_t_01 = np.zeros(len(test))
+var_gjr_05 = np.zeros(len(test))
+var_gjr_01 = np.zeros(len(test))
+var_hs_05 = np.zeros(len(test))
+var_hs_01 = np.zeros(len(test))
 sigma_norm = np.zeros(len(test))
 sigma_t = np.zeros(len(test))
+sigma_gjr = np.zeros(len(test))
 
-# Use fitted model parameters and roll volatility forward
 all_ret = returns.values.astype(float)
 
-# Initialize with last conditional variance from train_val
+# Initialize with last conditional variance
 cv_norm = fit_norm.conditional_volatility.values
 cv_t = fit_t.conditional_volatility.values
+cv_gjr = fit_gjr.conditional_volatility.values
 last_sigma2_n = cv_norm[-1] ** 2
 last_sigma2_t = cv_t[-1] ** 2
+last_sigma2_g = cv_gjr[-1] ** 2
+
+HS_WINDOW = 250  # Historical simulation window
 
 for i in range(len(test)):
     idx = val_end + i
     r_prev = all_ret[idx - 1]
+    eps_prev_n = r_prev - mu_n
+    eps_prev_t = r_prev - mu_t
+    eps_prev_g = r_prev - mu_g
 
-    # Update sigma^2: omega + alpha * r_{t-1}^2 + beta * sigma^2_{t-1}
-    last_sigma2_n = omega_n + alpha_n * (r_prev - mu_n) ** 2 + beta_n * last_sigma2_n
-    last_sigma2_t = omega_t + alpha_t * (r_prev - mu_t) ** 2 + beta_t * last_sigma2_t
-
+    # Model 1: GARCH(1,1) Normal
+    last_sigma2_n = omega_n + alpha_n * eps_prev_n ** 2 + beta_n * last_sigma2_n
     sig_n = np.sqrt(last_sigma2_n)
-    sig_t = np.sqrt(last_sigma2_t)
     sigma_norm[i] = sig_n
-    sigma_t[i] = sig_t
-
     var_norm_05[i] = mu_n + sig_n * z_05_norm
     var_norm_01[i] = mu_n + sig_n * z_01_norm
+
+    # Model 2: GARCH(1,1) Student-t
+    last_sigma2_t = omega_t + alpha_t * eps_prev_t ** 2 + beta_t * last_sigma2_t
+    sig_t = np.sqrt(last_sigma2_t)
+    sigma_t[i] = sig_t
     var_t_05[i] = mu_t + sig_t * z_05_t
     var_t_01[i] = mu_t + sig_t * z_01_t
 
+    # Model 3: GJR-GARCH(1,1) Student-t
+    leverage = gamma_g * eps_prev_g ** 2 * (1 if eps_prev_g < 0 else 0)
+    last_sigma2_g = omega_g + alpha_g * eps_prev_g ** 2 + leverage + beta_g * last_sigma2_g
+    sig_g = np.sqrt(last_sigma2_g)
+    sigma_gjr[i] = sig_g
+    var_gjr_05[i] = mu_g + sig_g * z_05_gjr
+    var_gjr_01[i] = mu_g + sig_g * z_01_gjr
+
+    # Model 4: Historical Simulation (rolling 250-day window)
+    start_hs = max(0, idx - HS_WINDOW)
+    window_rets = all_ret[start_hs:idx]
+    var_hs_05[i] = np.percentile(window_rets, 5)
+    var_hs_01[i] = np.percentile(window_rets, 1)
+
 test_vals = test.values.astype(float)
 
-# Count violations
-viol_norm_05 = test_vals < var_norm_05
-viol_norm_01 = test_vals < var_norm_01
-viol_t_05 = test_vals < var_t_05
-viol_t_01 = test_vals < var_t_01
+# Count violations for all models
+models_data = {
+    'GARCH-N': {'var05': var_norm_05, 'var01': var_norm_01, 'sigma': sigma_norm,
+                'color': '#DC3545', 'aic': fit_norm.aic, 'bic': fit_norm.bic},
+    'GARCH-t': {'var05': var_t_05, 'var01': var_t_01, 'sigma': sigma_t,
+                'color': '#1A3A6E', 'aic': fit_t.aic, 'bic': fit_t.bic},
+    'GJR-t':   {'var05': var_gjr_05, 'var01': var_gjr_01, 'sigma': sigma_gjr,
+                'color': '#2E7D32', 'aic': fit_gjr.aic, 'bic': fit_gjr.bic},
+    'HistSim': {'var05': var_hs_05, 'var01': var_hs_01, 'sigma': None,
+                'color': '#E67E22', 'aic': None, 'bic': None},
+}
 
-n_viol_norm_05 = int(viol_norm_05.sum())
-n_viol_norm_01 = int(viol_norm_01.sum())
-n_viol_t_05 = int(viol_t_05.sum())
-n_viol_t_01 = int(viol_t_01.sum())
+for name, md in models_data.items():
+    md['viol05'] = test_vals < md['var05']
+    md['viol01'] = test_vals < md['var01']
+    md['n_viol05'] = int(md['viol05'].sum())
+    md['n_viol01'] = int(md['viol01'].sum())
 
 T = len(test)
 print(f"\n   VaR Violations (T={T}):")
-print(f"   Normal 5%: {n_viol_norm_05} ({n_viol_norm_05/T*100:.1f}%), expected: {T*0.05:.0f} ({5.0:.1f}%)")
-print(f"   Normal 1%: {n_viol_norm_01} ({n_viol_norm_01/T*100:.1f}%), expected: {T*0.01:.0f} ({1.0:.1f}%)")
-print(f"   Student-t 5%: {n_viol_t_05} ({n_viol_t_05/T*100:.1f}%), expected: {T*0.05:.0f} ({5.0:.1f}%)")
-print(f"   Student-t 1%: {n_viol_t_01} ({n_viol_t_01/T*100:.1f}%), expected: {T*0.01:.0f} ({1.0:.1f}%)")
+for name, md in models_data.items():
+    pct05 = md['n_viol05'] / T * 100
+    pct01 = md['n_viol01'] / T * 100
+    print(f"   {name:10s} 5%: {md['n_viol05']:3d} ({pct05:4.1f}%)   1%: {md['n_viol01']:3d} ({pct01:4.1f}%)")
+
+# Keep backward-compatible variables
+viol_norm_05 = models_data['GARCH-N']['viol05']
+viol_norm_01 = models_data['GARCH-N']['viol01']
+viol_t_05 = models_data['GARCH-t']['viol05']
+viol_t_01 = models_data['GARCH-t']['viol01']
+n_viol_norm_05 = models_data['GARCH-N']['n_viol05']
+n_viol_norm_01 = models_data['GARCH-N']['n_viol01']
+n_viol_t_05 = models_data['GARCH-t']['n_viol05']
+n_viol_t_01 = models_data['GARCH-t']['n_viol01']
 
 # --- Kupiec Test ---
 def kupiec_test(violations, T, alpha):
@@ -187,16 +246,19 @@ def kupiec_test(violations, T, alpha):
     p_val = 1 - stats.chi2.cdf(lr, 1)
     return float(lr), float(p_val)
 
-lr_n05, p_n05 = kupiec_test(viol_norm_05, T, 0.05)
-lr_n01, p_n01 = kupiec_test(viol_norm_01, T, 0.01)
-lr_t05, p_t05 = kupiec_test(viol_t_05, T, 0.05)
-lr_t01, p_t01 = kupiec_test(viol_t_01, T, 0.01)
-
+# Run Kupiec on all 4 models
 print(f"\n   Kupiec Test (H0: correct coverage):")
-print(f"   Normal 5%:    LR={lr_n05:.2f}, p={p_n05:.4f} {'REJECT' if p_n05 < 0.05 else 'OK'}")
-print(f"   Normal 1%:    LR={lr_n01:.2f}, p={p_n01:.4f} {'REJECT' if p_n01 < 0.05 else 'OK'}")
-print(f"   Student-t 5%: LR={lr_t05:.2f}, p={p_t05:.4f} {'REJECT' if p_t05 < 0.05 else 'OK'}")
-print(f"   Student-t 1%: LR={lr_t01:.2f}, p={p_t01:.4f} {'REJECT' if p_t01 < 0.05 else 'OK'}")
+for name, md in models_data.items():
+    lr05, p05 = kupiec_test(md['viol05'], T, 0.05)
+    lr01, p01 = kupiec_test(md['viol01'], T, 0.01)
+    md['kupiec_lr05'], md['kupiec_p05'] = lr05, p05
+    md['kupiec_lr01'], md['kupiec_p01'] = lr01, p01
+    print(f"   {name:10s} 5%: LR={lr05:.2f}, p={p05:.4f} {'REJECT' if p05 < 0.05 else 'OK'}   "
+          f"1%: LR={lr01:.2f}, p={p01:.4f} {'REJECT' if p01 < 0.05 else 'OK'}")
+
+# Backward-compatible variables
+lr_n05, p_n05 = models_data['GARCH-N']['kupiec_lr05'], models_data['GARCH-N']['kupiec_p05']
+lr_t05, p_t05 = models_data['GARCH-t']['kupiec_lr05'], models_data['GARCH-t']['kupiec_p05']
 
 # --- Christoffersen Independence Test ---
 def christoffersen_test(violations):
@@ -234,19 +296,58 @@ def christoffersen_test(violations):
     p_val = 1 - stats.chi2.cdf(lr_ind, 1)
     return float(lr_ind), float(p_val)
 
-lr_cc_n05, p_cc_n05 = christoffersen_test(viol_norm_05)
-lr_cc_t05, p_cc_t05 = christoffersen_test(viol_t_05)
+# Run Christoffersen on all 4 models
+print(f"\n   Christoffersen Independence Test (5% VaR):")
+for name, md in models_data.items():
+    lr_cc, p_cc = christoffersen_test(md['viol05'])
+    md['chr_lr05'], md['chr_p05'] = lr_cc, p_cc
+    print(f"   {name:10s} LR_ind={lr_cc:.2f}, p={p_cc:.4f}")
 
-print(f"\n   Christoffersen Independence Test:")
-print(f"   Normal 5%:    LR_ind={lr_cc_n05:.2f}, p={p_cc_n05:.4f}")
-print(f"   Student-t 5%: LR_ind={lr_cc_t05:.2f}, p={p_cc_t05:.4f}")
+lr_cc_n05, p_cc_n05 = models_data['GARCH-N']['chr_lr05'], models_data['GARCH-N']['chr_p05']
+lr_cc_t05, p_cc_t05 = models_data['GARCH-t']['chr_lr05'], models_data['GARCH-t']['chr_p05']
 
-# --- VaR Backtest Chart ---
-print("\n   Generating VaR backtest chart...")
-
-fig, axes = plt.subplots(2, 1, figsize=(12, 5), sharex=True)
+# =============================================================================
+# CHART 1: Multi-model VaR comparison (2x2 grid)
+# =============================================================================
+print("\n   Generating multi-model VaR backtest chart (2x2)...")
 
 dates = test.index
+model_list = ['GARCH-N', 'GARCH-t', 'GJR-t', 'HistSim']
+titles = ['GARCH(1,1) Normal', 'GARCH(1,1) Student-t', 'GJR-GARCH(1,1) Student-t', 'Historical Simulation']
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 6), sharex=True, sharey=True)
+axes = axes.flatten()
+
+for j, (name, title) in enumerate(zip(model_list, titles)):
+    ax = axes[j]
+    md = models_data[name]
+    ax.plot(dates, test_vals, color='#333333', linewidth=0.4, alpha=0.7)
+    ax.plot(dates, md['var05'], color=md['color'], linewidth=0.8, linestyle='--')
+    ax.fill_between(dates, md['var05'], test_vals.min() - 2,
+                    alpha=0.10, color=md['color'])
+    # Mark violations
+    vdates = dates[md['viol05']]
+    vvals = test_vals[md['viol05']]
+    ax.scatter(vdates, vvals, color=md['color'], s=10, zorder=5, marker='v')
+    ax.axhline(0, color='gray', linewidth=0.3)
+    pct = md['n_viol05'] / T * 100
+    kupiec_ok = 'Pass' if md['kupiec_p05'] > 0.05 else 'Fail'
+    ax.set_title(f'{title}\nViol: {md["n_viol05"]}/{T} ({pct:.1f}%)  Kupiec: {kupiec_ok}',
+                 fontweight='bold', fontsize=8)
+    if j >= 2:
+        ax.set_xlabel('Date')
+    if j % 2 == 0:
+        ax.set_ylabel('Return (%)')
+
+plt.tight_layout()
+save_fig('ch10_btc_var_multimodel')
+
+# =============================================================================
+# CHART 2: Original 2-panel chart (backward compatible)
+# =============================================================================
+print("   Generating original 2-panel VaR chart...")
+
+fig, axes = plt.subplots(2, 1, figsize=(12, 5), sharex=True)
 
 # Top: Normal VaR
 axes[0].plot(dates, test_vals, color='#333333', linewidth=0.5, alpha=0.8, label='BTC Returns')
@@ -254,7 +355,6 @@ axes[0].fill_between(dates, var_norm_05, min(test_vals.min(), var_norm_01.min())
                       alpha=0.15, color='#DC3545', label='VaR 5% zone')
 axes[0].plot(dates, var_norm_05, color='#DC3545', linewidth=0.8, linestyle='--', label='VaR 5%')
 axes[0].plot(dates, var_norm_01, color='#8B0000', linewidth=0.8, linestyle=':', label='VaR 1%')
-# Mark violations
 viol_dates_05 = dates[viol_norm_05]
 viol_vals_05 = test_vals[viol_norm_05]
 axes[0].scatter(viol_dates_05, viol_vals_05, color='#DC3545', s=12, zorder=5, marker='v', label=f'Violations ({n_viol_norm_05})')
@@ -282,6 +382,25 @@ axes[1].axhline(0, color='gray', linewidth=0.3)
 
 plt.tight_layout()
 save_fig('ch10_btc_var_backtest')
+
+# =============================================================================
+# CHART 3: All VaR lines overlaid on single panel
+# =============================================================================
+print("   Generating single-panel overlay chart...")
+
+fig, ax = plt.subplots(figsize=(12, 4))
+ax.plot(dates, test_vals, color='#333333', linewidth=0.4, alpha=0.6, label='BTC Returns')
+for name, title in zip(model_list, titles):
+    md = models_data[name]
+    ax.plot(dates, md['var05'], color=md['color'], linewidth=0.9, linestyle='--',
+            label=f'{title} ({md["n_viol05"]}/{T})')
+ax.axhline(0, color='gray', linewidth=0.3)
+ax.set_ylabel('Return (%)')
+ax.set_xlabel('Date')
+ax.set_title('Rolling VaR 5%: Multi-Model Comparison on Bitcoin Test Set', fontweight='bold')
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, fontsize=7, frameon=False)
+plt.tight_layout()
+save_fig('ch10_btc_var_overlay')
 
 # =============================================================================
 # 2. DIEBOLD-MARIANO TEST
@@ -556,20 +675,26 @@ print("\n" + "=" * 70)
 print("SUMMARY: VALUES FOR SLIDE UPDATES")
 print("=" * 70)
 
+print("\n--- Multi-Model VaR Comparison (5%) ---")
+print(f"   {'Model':15s} {'Viol':>5s} {'Rate':>7s} {'Kupiec p':>10s} {'Chr. p':>10s} {'AIC':>10s} {'Basel':>8s}")
+for name in model_list:
+    md = models_data[name]
+    pct = md['n_viol05'] / T * 100
+    aic_str = f"{md['aic']:.1f}" if md['aic'] is not None else "---"
+    # Basel zone (scaled to 250 days)
+    viol_250 = md['n_viol05'] / T * 250
+    if viol_250 <= 4:
+        basel = 'Green'
+    elif viol_250 <= 9:
+        basel = 'Yellow'
+    else:
+        basel = 'Red'
+    print(f"   {name:15s} {md['n_viol05']:5d} {pct:6.1f}% {md['kupiec_p05']:10.4f} {md['chr_p05']:10.4f} {aic_str:>10s} {basel:>8s}")
+
 print(f"""
 --- VaR Slide ---
 VaR formula: VaR_{{t+1}}^α = μ + σ_{{t+1}} · z_α
 Normal z_0.05 = {z_05_norm:.4f}, Student-t z_0.05 = {z_05_t:.4f} (ν={nu:.1f})
-Violations 5%: Normal {n_viol_norm_05}/{T} ({n_viol_norm_05/T*100:.1f}%), Student-t {n_viol_t_05}/{T} ({n_viol_t_05/T*100:.1f}%)
-Violations 1%: Normal {n_viol_norm_01}/{T} ({n_viol_norm_01/T*100:.1f}%), Student-t {n_viol_t_01}/{T} ({n_viol_t_01/T*100:.1f}%)
-
---- Backtesting Slide ---
-Kupiec (5% VaR):
-  Normal:    LR={lr_n05:.2f}, p={p_n05:.4f}
-  Student-t: LR={lr_t05:.2f}, p={p_t05:.4f}
-Christoffersen Independence:
-  Normal:    LR={lr_cc_n05:.2f}, p={p_cc_n05:.4f}
-  Student-t: LR={lr_cc_t05:.2f}, p={p_cc_t05:.4f}
 
 --- DM Test Slide ---
 Normal vs Student-t GARCH (volatility MSE):
@@ -581,7 +706,7 @@ MASE = {mase:.2f}, DA = {da:.1f}%, QL(5%) = {ql_05:.4f}
 --- Innovation Distribution Slide ---
 Kurtosis = {kurt:.2f}, Skewness = {skew:.2f}
 Student-t ν = {nu:.2f}
-AIC: Normal={fit_norm.aic:.1f}, Student-t={fit_t.aic:.1f}
+AIC: Normal={fit_norm.aic:.1f}, Student-t={fit_t.aic:.1f}, GJR-t={fit_gjr.aic:.1f}
 
 --- Chow Test ---
 F = {F_chow:.2f}, p = {p_chow:.6f}

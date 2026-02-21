@@ -535,6 +535,12 @@ MSCA Digital Finance}
 \begin{frame}{Bitcoin: dovezi pentru GARCH}
     \vspace{-0.2cm}
     {\scriptsize
+    \begin{block}{Observație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Randamentele pătrate $r_t^2$ prezintă autocorelație semnificativă $\succ$ efecte GARCH
+            \item ACF descreștere lentă $\succ$ persistență ridicată a volatilității
+        \end{itemize}
+    \end{block}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/btc_squared_returns.pdf}
@@ -1034,85 +1040,66 @@ MSCA Digital Finance}
 \end{frame}
 
 %=============================================================================
-% VALUE-AT-RISK: APLICAȚIE EMPIRICĂ BITCOIN
+% VALUE-AT-RISK: APLICAȚIE EMPIRICĂ BITCOIN (rolling window, 4 modele)
 %=============================================================================
 
-\begin{frame}{Aplicație: Value-at-Risk}
+\begin{frame}{Aplicație: VaR rolling pe multiple modele}
     \vspace{-0.2cm}
-    \begin{columns}[T]
-    \begin{column}{0.45\textwidth}
-    {\footnotesize
-    \begin{defn}[VaR condiționat la nivel $\alpha$]
-        \vspace{-0.2cm}
-        \[
-        \text{VaR}_{t+1}^{\alpha} = \mu_{t+1} + \sigma_{t+1} \cdot z_{\alpha}
-        \]
-    \end{defn}
-    \vspace{-0.2cm}
-    \begin{exampleblock}{Rezultate Bitcoin (test: 329 zile)}
-        \begin{tabular}{lcc}
-            & \textbf{Normal} & \textbf{Student-t} \\
-            \midrule
-            Încălcări 5\% & 12 (3.6\%) & \textbf{17 (5.2\%)} \\
-            Încălcări 1\% & 1 (0.3\%) & 0 (0.0\%) \\
-            Kupiec $p$ (5\%) & 0.238 & \textbf{0.890} \\
-        \end{tabular}
-    \end{exampleblock}
-    \vspace{-0.1cm}
-    {\scriptsize Student-t: 5.2\% $\approx$ 5\% --- acoperire perfectă. Normal: prea conservator (3.6\%).}
+    {\scriptsize
+    \begin{block}{Metodologie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VaR rolling one-step-ahead: $\text{VaR}_{t+1}^{\alpha} = \mu + \hat{\sigma}_{t+1} \cdot z_{\alpha}$
+            \item 4 modele comparate pe setul de test Bitcoin (329 zile, 2024)
+        \end{itemize}
+    \end{block}
     }
-    \end{column}
-    \begin{column}{0.53\textwidth}
-        \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{ch10_btc_var_backtest.pdf}
-    \end{column}
-    \end{columns}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{ch10_btc_var_multimodel.pdf}
+    \end{center}
     \quantlet{TSA\_ch10\_empirical\_slides}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_empirical_slides}
 \end{frame}
 
-\begin{frame}{Validarea modelului de risc: Backtesting}
-    \vspace{-0.2cm}
+\begin{frame}{VaR Backtesting: comparație modele}
+    \vspace{-0.1cm}
     {\footnotesize
-    \begin{columns}[T]
-        \column{0.48\textwidth}
-        \begin{block}{Kupiec Test (Unconditional Coverage)}
-            \vspace{-0.2cm}
-            \[
-            LR_{uc} = -2 \ln \left(
-            \frac{(1-\alpha)^{T-x} \alpha^x}
-            {(1-\hat{p})^{T-x} \hat{p}^x}
-            \right) \sim \chi^2(1)
-            \]
-        \end{block}
-        \vspace{-0.15cm}
-        \begin{block}{Christoffersen (Independență)}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Verifică \textbf{independența} încălcărilor
-                \item $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
-            \end{itemize}
-        \end{block}
+    \begin{block}{Rezultate Bitcoin --- VaR 5\% (T = 329 zile, așteptat: 16,5 încălcări)}
+        \begin{center}
+        \begin{tabular}{lcccccc}
+            \toprule
+            \textbf{Model} & \textbf{AIC} & \textbf{Încălcări} & \textbf{Rată} & \textbf{Kupiec $p$} & \textbf{Chr.\ $p$} & \textbf{Concluzie} \\
+            \midrule
+            GARCH(1,1)-N & 9769 & 12 & 3,6\% & 0,238 & 1,000 & Prea conservator \\
+            \rowcolor{Forest!15} GARCH(1,1)-t & \textbf{9260} & \textbf{17} & \textbf{5,2\%} & \textbf{0,890} & 0,272 & \textcolor{Forest}{\textbf{Cel mai bun}} \\
+            GJR-GARCH(1,1)-t & 9260 & 17 & 5,2\% & 0,890 & 0,272 & $\gamma \approx 0$ (simetric) \\
+            Hist.\ Simulation & --- & 16 & 4,9\% & 0,909 & 0,216 & Bun, non-parametric \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    }
 
-        \column{0.50\textwidth}
-        \begin{exampleblock}{Rezultate Bitcoin (VaR 5\%)}
-            \begin{tabular}{lcc}
-                & \textbf{Normal} & \textbf{Student-t} \\
-                \midrule
-                Încălcări & 12/329 & 17/329 \\
-                Rata & 3.6\% & \textbf{5.2\%} \\
-                Kupiec $LR$ & 1.39 & \textbf{0.02} \\
-                Kupiec $p$ & 0.238 & \textbf{0.890} \\
-                Chr. $LR_{ind}$ & 0.00 & 1.20 \\
-                Chr. $p$ & 1.000 & 0.272 \\
-            \end{tabular}
-        \end{exampleblock}
-        \vspace{-0.15cm}
-        \begin{alertblock}{Concluzie}
+    \vspace{0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Concluzii}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Ambele trec Kupiec ($p > 0.05$)
-                \item Student-t: acoperire \textbf{mai precisă}
+                \item \textbf{Student-t}: acoperire perfectă (5,2\% $\approx$ 5\%)
+                \item Normal: prea conservator (3,6\% $<$ 5\%)
+                \item GJR $\approx$ GARCH: levier absent pt.\ Bitcoin
+                \item Toate trec Kupiec \textbf{și} Christoffersen
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Lecții practice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Distribuția inovațiilor contează: \textbf{$\Delta$AIC = 509}
+                \item Simularea istorică: alternativă simplă și eficientă
+                \item Testarea statistică formală (Kupiec, Christoffersen) este \textbf{obligatorie}
             \end{itemize}
         \end{alertblock}
     \end{columns}
-    }
 \end{frame}
 
 \begin{frame}{Limitările GARCH și extensii moderne}
@@ -1199,6 +1186,12 @@ MSCA Digital Finance}
 \begin{frame}{Pete solare: ciclul solar de 11 ani}
     \vspace{-0.2cm}
     {\scriptsize
+    \begin{block}{Observație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Ciclu solar clar de $\approx 11$ ani; amplitudine variabilă între cicluri
+            \item ACF periodică $\succ$ sezonalitate lungă, ideală pentru termeni Fourier
+        \end{itemize}
+    \end{block}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/sunspots.pdf}
@@ -1934,6 +1927,11 @@ MSCA Digital Finance}
 \begin{frame}{Funcții de răspuns la impuls (IRF)}
     \vspace{-0.2cm}
     {\scriptsize
+    \begin{block}{Efecte}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\uparrow$ PIB $\succ$ $\downarrow$ Șomaj (Okun), $\uparrow$ Inflație (cerere), Fed crește rata
+        \end{itemize}
+    \end{block}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/irf_gdp_shock.pdf}

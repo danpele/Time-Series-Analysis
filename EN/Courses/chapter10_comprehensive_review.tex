@@ -509,6 +509,12 @@ MSCA Digital Finance}
 \begin{frame}{Bitcoin: Evidence for GARCH}
     \vspace{-0.2cm}
     {\scriptsize
+    \begin{block}{Observation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Squared returns $r_t^2$ exhibit significant autocorrelation $\succ$ GARCH effects
+            \item Slow ACF decay $\succ$ high volatility persistence
+        \end{itemize}
+    \end{block}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/btc_squared_returns.pdf}
@@ -996,85 +1002,66 @@ MSCA Digital Finance}
 \end{frame}
 
 %=============================================================================
-% VALUE-AT-RISK: BITCOIN EMPIRICAL APPLICATION
+% VALUE-AT-RISK: BITCOIN EMPIRICAL APPLICATION (rolling window, 4 models)
 %=============================================================================
 
-\begin{frame}{Application: Value-at-Risk}
+\begin{frame}{Application: Rolling VaR with Multiple Models}
     \vspace{-0.2cm}
-    \begin{columns}[T]
-    \begin{column}{0.45\textwidth}
-    {\footnotesize
-    \begin{defn}[Conditional VaR at level $\alpha$]
-        \vspace{-0.2cm}
-        \[
-        \text{VaR}_{t+1}^{\alpha} = \mu_{t+1} + \sigma_{t+1} \cdot z_{\alpha}
-        \]
-    \end{defn}
-    \vspace{-0.2cm}
-    \begin{exampleblock}{Bitcoin Results (test: 329 days)}
-        \begin{tabular}{lcc}
-            & \textbf{Normal} & \textbf{Student-t} \\
-            \midrule
-            Violations 5\% & 12 (3.6\%) & \textbf{17 (5.2\%)} \\
-            Violations 1\% & 1 (0.3\%) & 0 (0.0\%) \\
-            Kupiec $p$ (5\%) & 0.238 & \textbf{0.890} \\
-        \end{tabular}
-    \end{exampleblock}
-    \vspace{-0.1cm}
-    {\scriptsize Student-t: 5.2\% $\approx$ 5\% --- perfect coverage. Normal: too conservative (3.6\%).}
+    {\scriptsize
+    \begin{block}{Methodology}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Rolling one-step-ahead VaR: $\text{VaR}_{t+1}^{\alpha} = \mu + \hat{\sigma}_{t+1} \cdot z_{\alpha}$
+            \item 4 models compared on Bitcoin test set (329 days, 2024)
+        \end{itemize}
+    \end{block}
     }
-    \end{column}
-    \begin{column}{0.53\textwidth}
-        \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{ch10_btc_var_backtest.pdf}
-    \end{column}
-    \end{columns}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{ch10_btc_var_multimodel.pdf}
+    \end{center}
     \quantlet{TSA\_ch10\_empirical\_slides}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_empirical_slides}
 \end{frame}
 
-\begin{frame}{Risk Model Validation: Backtesting}
-    \vspace{-0.2cm}
+\begin{frame}{VaR Backtesting: Model Comparison}
+    \vspace{-0.1cm}
     {\footnotesize
-    \begin{columns}[T]
-        \column{0.48\textwidth}
-        \begin{block}{Kupiec Test (Unconditional Coverage)}
-            \vspace{-0.2cm}
-            \[
-            LR_{uc} = -2 \ln \left(
-            \frac{(1-\alpha)^{T-x} \alpha^x}
-            {(1-\hat{p})^{T-x} \hat{p}^x}
-            \right) \sim \chi^2(1)
-            \]
-        \end{block}
-        \vspace{-0.15cm}
-        \begin{block}{Christoffersen (Independence)}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Tests \textbf{independence} of violations
-                \item $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
-            \end{itemize}
-        \end{block}
+    \begin{block}{Bitcoin Results --- VaR 5\% (T = 329 days, expected: 16.5 violations)}
+        \begin{center}
+        \begin{tabular}{lcccccc}
+            \toprule
+            \textbf{Model} & \textbf{AIC} & \textbf{Violations} & \textbf{Rate} & \textbf{Kupiec $p$} & \textbf{Chr.\ $p$} & \textbf{Conclusion} \\
+            \midrule
+            GARCH(1,1)-N & 9769 & 12 & 3.6\% & 0.238 & 1.000 & Too conservative \\
+            \rowcolor{Forest!15} GARCH(1,1)-t & \textbf{9260} & \textbf{17} & \textbf{5.2\%} & \textbf{0.890} & 0.272 & \textcolor{Forest}{\textbf{Best}} \\
+            GJR-GARCH(1,1)-t & 9260 & 17 & 5.2\% & 0.890 & 0.272 & $\gamma \approx 0$ (symmetric) \\
+            Hist.\ Simulation & --- & 16 & 4.9\% & 0.909 & 0.216 & Good, non-parametric \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    }
 
-        \column{0.50\textwidth}
-        \begin{exampleblock}{Bitcoin Results (VaR 5\%)}
-            \begin{tabular}{lcc}
-                & \textbf{Normal} & \textbf{Student-t} \\
-                \midrule
-                Violations & 12/329 & 17/329 \\
-                Rate & 3.6\% & \textbf{5.2\%} \\
-                Kupiec $LR$ & 1.39 & \textbf{0.02} \\
-                Kupiec $p$ & 0.238 & \textbf{0.890} \\
-                Chr. $LR_{ind}$ & 0.00 & 1.20 \\
-                Chr. $p$ & 1.000 & 0.272 \\
-            \end{tabular}
-        \end{exampleblock}
-        \vspace{-0.15cm}
-        \begin{alertblock}{Conclusion}
+    \vspace{0.1cm}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Conclusions}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Both pass Kupiec ($p > 0.05$)
-                \item Student-t: \textbf{more precise} coverage
+                \item \textbf{Student-t}: perfect coverage (5.2\% $\approx$ 5\%)
+                \item Normal: too conservative (3.6\% $<$ 5\%)
+                \item GJR $\approx$ GARCH: no leverage for Bitcoin
+                \item All pass both Kupiec \textbf{and} Christoffersen
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{Practical Lessons}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Innovation distribution matters: \textbf{$\Delta$AIC = 509}
+                \item Historical simulation: simple and effective alternative
+                \item Formal statistical testing (Kupiec, Christoffersen) is \textbf{mandatory}
             \end{itemize}
         \end{alertblock}
     \end{columns}
-    }
 \end{frame}
 
 \begin{frame}{GARCH Limitations and Modern Extensions}
@@ -1161,6 +1148,12 @@ MSCA Digital Finance}
 \begin{frame}{Sunspots: The 11-Year Solar Cycle}
     \vspace{-0.2cm}
     {\scriptsize
+    \begin{block}{Observation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Clear $\approx 11$-year solar cycle; variable amplitude across cycles
+            \item Periodic ACF $\succ$ long seasonality, ideal for Fourier terms
+        \end{itemize}
+    \end{block}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/sunspots.pdf}
@@ -1871,6 +1864,11 @@ MSCA Digital Finance}
 \begin{frame}{Impulse Response Functions (IRF)}
     \vspace{-0.2cm}
     {\scriptsize
+    \begin{block}{Effects}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\uparrow$ GDP $\succ$ $\downarrow$ Unemployment (Okun), $\uparrow$ Inflation (demand), Fed raises rate
+        \end{itemize}
+    \end{block}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{../charts/irf_gdp_shock.pdf}
