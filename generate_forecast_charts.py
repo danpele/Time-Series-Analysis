@@ -8,8 +8,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams['font.size'] = 11
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False

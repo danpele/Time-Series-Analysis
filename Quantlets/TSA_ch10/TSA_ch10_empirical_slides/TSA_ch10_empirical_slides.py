@@ -261,7 +261,7 @@ axes[0].scatter(viol_dates_05, viol_vals_05, color='#DC3545', s=12, zorder=5, ma
 axes[0].set_ylabel('Return (%)')
 axes[0].set_title(f'GARCH(1,1) Normal — VaR Backtest (violations 5%: {n_viol_norm_05}/{T} = {n_viol_norm_05/T*100:.1f}%)',
                    fontweight='bold')
-axes[0].legend(loc='lower left', ncol=5, fontsize=6)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=5, fontsize=6, frameon=False)
 axes[0].axhline(0, color='gray', linewidth=0.3)
 
 # Bottom: Student-t VaR
@@ -277,7 +277,7 @@ axes[1].set_ylabel('Return (%)')
 axes[1].set_xlabel('Date')
 axes[1].set_title(f'GARCH(1,1) Student-t (ν={nu:.1f}) — VaR Backtest (violations 5%: {n_viol_t_05}/{T} = {n_viol_t_05/T*100:.1f}%)',
                    fontweight='bold')
-axes[1].legend(loc='lower left', ncol=5, fontsize=6)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=5, fontsize=6, frameon=False)
 axes[1].axhline(0, color='gray', linewidth=0.3)
 
 plt.tight_layout()
