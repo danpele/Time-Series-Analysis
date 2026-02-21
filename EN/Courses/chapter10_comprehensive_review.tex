@@ -365,76 +365,84 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Forecast Evaluation Beyond RMSE}
-    \begin{alertblock}{RMSE is not universally optimal}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item The metric must be chosen based on the \textbf{economic objective}
-        \end{itemize}
-    \end{alertblock}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Alternative metrics}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{MASE}: comparison with naïve forecast
+                \item \textbf{Directional Accuracy}: correct direction
+                \item \textbf{Quantile Loss}: for VaR
+                \item \textbf{CRPS}: full distribution
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.1cm}
+        \vspace{0.1cm}
 
-    \begin{block}{Other relevant metrics}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{MASE} (Mean Absolute Scaled Error) --- comparison with naïve
-            \item \textbf{Directional Accuracy} --- correct direction of change
-            \item \textbf{Quantile Loss} --- for VaR and probabilistic forecasts
-            \item \textbf{CRPS} (Continuous Ranked Probability Score) --- full distribution
-        \end{itemize}
-    \end{block}
+        \begin{exampleblock}{Example: Quantile Loss}
+            \vspace{-0.2cm}
+            \[
+            QL_{\alpha} =
+            \begin{cases}
+            \alpha (y_t - \hat{q}_t), & y_t > \hat{q}_t \\
+            (1-\alpha)(\hat{q}_t - y_t), & y_t \le \hat{q}_t
+            \end{cases}
+            \]
+        \end{exampleblock}
 
-    \vspace{0.1cm}
-
-    \begin{exampleblock}{Example: Quantile Loss}
-        \vspace{-0.2cm}
-        \[
-        QL_{\alpha}(y_t, \hat{q}_t) =
-        \begin{cases}
-        \alpha (y_t - \hat{q}_t), & y_t > \hat{q}_t \\
-        (1-\alpha)(\hat{q}_t - y_t), & y_t \le \hat{q}_t
-        \end{cases}
-        \]
-    \end{exampleblock}
+        \column{0.50\textwidth}
+        \begin{alertblock}{Bitcoin Results (GARCH volatility)}
+            \begin{tabular}{lc}
+                \textbf{Metric} & \textbf{Value} \\
+                \midrule
+                RMSE & 2.21 \\
+                MAE & 1.89 \\
+                MASE & 0.98 \\
+                Dir. Accuracy & 28.7\% \\
+            \end{tabular}
+            \vspace{0.1cm}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item MASE $< 1$: GARCH beats naïve
+                \item DA 28.7\%: volatility direction is hard
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Formal Forecast Comparison: Diebold--Mariano}
-    \begin{alertblock}{Problem}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Lower RMSE $\neq$ statistically significant difference
-        \end{itemize}
-    \end{alertblock}
-
-    \vspace{0.1cm}
-
+    \vspace{-0.2cm}
     \begin{defn}[Diebold--Mariano Test]
-        Define the loss differential: $d_t = L(e_{1t}) - L(e_{2t})$
-
-        \vspace{0.1cm}
-        Test statistic:
-        \vspace{-0.2cm}
-        \[
-        DM = \frac{\bar{d}}{\sqrt{\widehat{\text{Var}}(\bar{d})}} \xrightarrow{d} N(0,1)
-        \]
+        Loss differential: $d_t = L(e_{1t}) - L(e_{2t})$, \quad Statistic: $DM = \frac{\bar{d}}{\sqrt{\widehat{\text{Var}}(\bar{d})}} \xrightarrow{d} N(0,1)$
     \end{defn}
 
-    \vspace{0.1cm}
+    \vspace{-0.1cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
         \begin{block}{Hypotheses}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item $H_0$: equal predictive performance
-                \item $H_1$: different performance
+                \item $H_0$: equal predictive accuracy
+                \item $H_1$: one model is significantly better
+                \item Large $|DM|$ $\Rightarrow$ reject $H_0$
             \end{itemize}
         \end{block}
 
         \column{0.5\textwidth}
-        \begin{exampleblock}{Key message}
+        \begin{exampleblock}{Bitcoin Result (GARCH volatility)}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Large $|DM|$ $\Rightarrow$ significant difference
-                \item Model comparison must be \textbf{statistically grounded}
+                \item Normal vs Student-t: $DM = -0.51$
+                \item $p = 0.612$ --- \textbf{do not reject} $H_0$
+                \item Similar accuracy, but Student-t preferred by AIC ($\Delta = 509$)
             \end{itemize}
         \end{exampleblock}
     \end{columns}
+
+    \vspace{0.1cm}
+
+    \begin{alertblock}{Key message}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Lower RMSE $\neq$ significant difference --- formal testing is \textbf{mandatory}
+        \end{itemize}
+    \end{alertblock}
 \end{frame}
 
 %=============================================================================
@@ -694,110 +702,118 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{GARCH: Innovation Distributions}
+    \vspace{-0.2cm}
     \begin{block}{Model}
         \vspace{-0.2cm}
         \[
         r_t = \mu + \sigma_t z_t
         \]
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Choices for $z_t$: $\mathcal{N}(0,1)$ (normal) or $t_{\nu}$ (heavy tails)
+            \item Options for $z_t$: $\mathcal{N}(0,1)$ (normal) or $t_{\nu}$ (fat tails)
         \end{itemize}
-    \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{alertblock}{Crypto: why it matters}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Kurtosis $> 3$ (heavy tails)
-                \item Frequent extreme events
-                \item Normality \textbf{underestimates} tail risk
-            \end{itemize}
-        \end{alertblock}
-
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Practical implication}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Student-t distribution produces \textbf{more realistic} VaR estimates
-                \item Degrees of freedom $\nu$ control tail thickness
-            \end{itemize}
-        \end{exampleblock}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Application: Conditional Value-at-Risk}
-    \begin{defn}[Conditional VaR at level $\alpha$]
-        \vspace{-0.2cm}
-        \[
-        \text{VaR}_{t+1}^{\alpha} = \mu_{t+1} + \sigma_{t+1} \cdot z_{\alpha}
-        \]
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\sigma_{t+1}^2$ comes from the GARCH model
-            \item $z_{\alpha}$ = quantile of the chosen distribution (Normal or Student-t)
-        \end{itemize}
-    \end{defn}
-
-    \vspace{0.2cm}
-
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{block}{Key insight}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Returns are hard to predict
-                \item Volatility is \textbf{predictable}
-            \end{itemize}
-        \end{block}
-
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Conclusion}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item GARCH is a \textbf{risk model}, not a return model
-                \item VaR = the direct application
-            \end{itemize}
-        \end{exampleblock}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{Risk Model Validation: Backtesting}
-    \vspace{-0.2cm}
-    \begin{block}{Kupiec Test (Unconditional Coverage)}
-        \vspace{-0.2cm}
-        \[
-        LR_{uc} = -2 \ln \left(
-        \frac{(1-\alpha)^{T-x} \alpha^x}
-        {(1-\hat{p})^{T-x} \hat{p}^x}
-        \right) \sim \chi^2(1), \quad x = \text{violations}, \; \hat{p} = x/T
-        \]
     \end{block}
 
     \vspace{-0.1cm}
 
     \begin{columns}[T]
         \column{0.5\textwidth}
-        \begin{block}{Christoffersen Test}
+        \begin{alertblock}{Bitcoin: empirical evidence}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Checks \textbf{independence} of violations
+                \item Residual kurtosis: \textbf{13.81} (Normal = 3)
+                \item Skewness: $-0.29$
+                \item Jarque-Bera: $9085$, $p < 0.001$
+                \item Normality \textbf{underestimates} tail risk
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{Student-t: the right choice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\hat{\nu} = 2.96$ degrees of freedom
+                \item AIC Normal: 9769 vs Student-t: \textbf{9260}
+                \item $\Delta$AIC = 509 --- \textbf{overwhelming} evidence
+                \item Fat tails = \textbf{more realistic} VaR estimates
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Application: Conditional Value-at-Risk}
+    \vspace{-0.2cm}
+    \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+    {\footnotesize
+    \begin{defn}[Conditional VaR at level $\alpha$]
+        \vspace{-0.2cm}
+        \[
+        \text{VaR}_{t+1}^{\alpha} = \mu_{t+1} + \sigma_{t+1} \cdot z_{\alpha}
+        \]
+    \end{defn}
+    \vspace{-0.2cm}
+    \begin{exampleblock}{Bitcoin Results (test: 329 days)}
+        \begin{tabular}{lcc}
+            & \textbf{Normal} & \textbf{Student-t} \\
+            \midrule
+            Violations 5\% & 12 (3.6\%) & \textbf{17 (5.2\%)} \\
+            Violations 1\% & 1 (0.3\%) & 0 (0.0\%) \\
+            Kupiec $p$ (5\%) & 0.238 & \textbf{0.890} \\
+        \end{tabular}
+    \end{exampleblock}
+    \vspace{-0.1cm}
+    {\scriptsize Student-t: 5.2\% $\approx$ 5\% --- perfect coverage. Normal: too conservative (3.6\%).}
+    }
+    \end{column}
+    \begin{column}{0.53\textwidth}
+        \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{ch10_btc_var_backtest.pdf}
+    \end{column}
+    \end{columns}
+    \quantlet{TSA\_ch10\_empirical\_slides}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_empirical_slides}
+\end{frame}
+
+\begin{frame}{Risk Model Validation: Backtesting}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Kupiec Test (Unconditional Coverage)}
+            \vspace{-0.2cm}
+            \[
+            LR_{uc} = -2 \ln \left(
+            \frac{(1-\alpha)^{T-x} \alpha^x}
+            {(1-\hat{p})^{T-x} \hat{p}^x}
+            \right) \sim \chi^2(1)
+            \]
+        \end{block}
+        \vspace{-0.15cm}
+        \begin{block}{Christoffersen (Independence)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Tests \textbf{independence} of violations
                 \item $LR_{cc} = LR_{uc} + LR_{ind} \sim \chi^2(2)$
             \end{itemize}
         \end{block}
 
-        \column{0.5\textwidth}
-        \begin{alertblock}{Interpretation}
+        \column{0.50\textwidth}
+        \begin{exampleblock}{Bitcoin Results (VaR 5\%)}
+            \begin{tabular}{lcc}
+                & \textbf{Normal} & \textbf{Student-t} \\
+                \midrule
+                Violations & 12/329 & 17/329 \\
+                Rate & 3.6\% & \textbf{5.2\%} \\
+                Kupiec $LR$ & 1.39 & \textbf{0.02} \\
+                Kupiec $p$ & 0.238 & \textbf{0.890} \\
+                Chr. $LR_{ind}$ & 0.00 & 1.20 \\
+                Chr. $p$ & 1.000 & 0.272 \\
+            \end{tabular}
+        \end{exampleblock}
+        \vspace{-0.15cm}
+        \begin{alertblock}{Conclusion}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Too many violations $\Rightarrow$ risk underestimated
-                \item Too few $\Rightarrow$ model too conservative
+                \item Both pass Kupiec ($p > 0.05$)
+                \item Student-t: \textbf{more precise} coverage
             \end{itemize}
         \end{alertblock}
     \end{columns}
-
-    \vspace{0.2cm}
-
-    \begin{exampleblock}{Principle}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item A risk model must be \textbf{validated}, not just estimated
-        \end{itemize}
-    \end{exampleblock}
+    }
 \end{frame}
 
 \begin{frame}{GARCH Limitations and Modern Extensions}
@@ -1115,7 +1131,7 @@ MSCA Digital Finance}
             \end{itemize}
         \end{block}
 
-        \vspace{0.2cm}
+        \vspace{0.1cm}
 
         \begin{alertblock}{Problem}
             \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1125,14 +1141,16 @@ MSCA Digital Finance}
         \end{alertblock}
 
         \column{0.5\textwidth}
-        \begin{exampleblock}{Practical trade-off}
+        \begin{exampleblock}{Result: Unemployment at COVID (March 2020)}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{SARIMA}: stable, parsimonious, but assumes constant parameters
-                \item \textbf{Prophet}: flexible, detects changepoints automatically
+                \item Chow Test: $F = 21.73$, $p < 0.001$
+                \item Structural break \textbf{confirmed}
+                \item SARIMA: constant parameters --- risk
+                \item Prophet: detects changepoints automatically
             \end{itemize}
         \end{exampleblock}
 
-        \vspace{0.2cm}
+        \vspace{0.1cm}
 
         \begin{block}{Key message}
             \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1504,61 +1522,84 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{VAR Model Stability}
-    \begin{block}{Stability Condition}
+    \vspace{-0.2cm}
+    \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+    {\footnotesize
+    \begin{block}{Stability condition}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item All eigenvalues of the \textbf{companion matrix} must lie inside the unit circle:
+            \item All eigenvalues of the \textbf{companion matrix}:
         \end{itemize}
+        \vspace{-0.2cm}
         \[
         |\lambda_i| < 1, \quad \forall\, i
         \]
     \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{alertblock}{If not satisfied}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Unstable model
-                \item Explosive IRFs
-                \item Unsustainable forecasts
-            \end{itemize}
-        \end{alertblock}
-
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Practical check}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \texttt{results.is\_stable()} in statsmodels
-                \item Stability verification is \textbf{mandatory} before IRF
-            \end{itemize}
-        \end{exampleblock}
+    \vspace{-0.15cm}
+    \begin{exampleblock}{VAR(2) Results --- economic data}
+        \begin{tabular}{lc}
+            $|\lambda_1|, |\lambda_2|$ & 0.324 \\
+            $|\lambda_3|, |\lambda_4|$ & 0.463 \\
+            $|\lambda_5|$ & 0.461 \\
+            $|\lambda_6|$ & \textbf{0.872} \\
+            $|\lambda_7|, |\lambda_8|$ & 0.810 \\
+        \end{tabular}
+        \vspace{0.1cm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Max $|\lambda| = 0.872 < 1$ --- \textbf{stable}
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{column}
+    \begin{column}{0.53\textwidth}
+        \includegraphics[width=\textwidth, height=0.70\textheight, keepaspectratio]{ch10_var_eigenvalues.pdf}
+    \end{column}
     \end{columns}
+    \quantlet{TSA\_ch10\_empirical\_slides}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_empirical_slides}
 \end{frame}
 
 \begin{frame}{VAR vs VECM: Cointegration}
     \vspace{-0.2cm}
-    \begin{block}{Problem}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item If variables are $I(1)$ $\rightarrow$ VAR on levels produces spurious regressions
-            \item Johansen test: checks for cointegration relationships
-        \end{itemize}
-    \end{block}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Problem}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item If variables are $I(1)$ $\succ$ VAR on levels produces spurious regressions
+            \end{itemize}
+        \end{block}
+        \vspace{-0.15cm}
+        \begin{defn}[VECM]
+            \vspace{-0.3cm}
+            \[
+            \Delta y_t = \Pi y_{t-1} + \sum_{i=1}^{p-1} \Gamma_i \Delta y_{t-i} + u_t, \quad \Pi = \alpha \beta'
+            \]
+        \end{defn}
 
-    \vspace{-0.1cm}
+        \column{0.50\textwidth}
+        \begin{exampleblock}{Johansen Test --- economic data}
+            {\footnotesize
+            \begin{tabular}{cccc}
+                $r$ & Trace & CV 5\% & Reject? \\
+                \midrule
+                0 & \textbf{64.09} & 47.85 & \textbf{Yes} \\
+                1 & 24.03 & 29.80 & No \\
+                2 & 11.89 & 15.49 & No \\
+                3 & 1.28 & 3.84 & No \\
+            \end{tabular}
+            }
+            \vspace{0.1cm}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{1 cointegrating relation} found
+                \item VECM more appropriate than VAR on levels
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
 
-    \begin{defn}[VECM --- Vector Error Correction Model]
-        \vspace{-0.3cm}
-        \[
-        \Delta y_t = \Pi y_{t-1} + \sum_{i=1}^{p-1} \Gamma_i \Delta y_{t-i} + u_t, \quad \Pi = \alpha \beta'
-        \]
-    \end{defn}
-
-    \vspace{-0.1cm}
+    \vspace{0.1cm}
 
     \begin{alertblock}{Key message}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item VAR is appropriate only for \textbf{stationary} series
-            \item Ignoring cointegration produces \textbf{spurious regressions}
+            \item VAR on differences: loses long-run relationship; VECM: preserves it through $\Pi = \alpha \beta'$
         \end{itemize}
     \end{alertblock}
 \end{frame}
