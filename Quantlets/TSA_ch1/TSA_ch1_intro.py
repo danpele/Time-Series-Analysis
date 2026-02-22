@@ -80,29 +80,29 @@ fig, axes = plt.subplots(5, 1, figsize=(12, 12), sharex=True)
 axes[0].plot(dates, y, color='#1A3A6E', linewidth=1.5, label='Observed')
 axes[0].set_title('Observed Time Series', fontweight='bold')
 axes[0].set_ylabel('Value')
-axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[1].plot(dates, trend, color='#DC3545', linewidth=2, label='Trend')
 axes[1].set_title('Trend Component', fontweight='bold')
 axes[1].set_ylabel('Value')
-axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[2].plot(dates, seasonality, color='#2E7D32', linewidth=2, label='Seasonality')
 axes[2].set_title('Seasonal Component (Period = 12)', fontweight='bold')
 axes[2].set_ylabel('Value')
-axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[3].plot(dates, cycle, color='#E67E22', linewidth=2, label='Cycle')
 axes[3].set_title('Cyclical Component (Period = 36)', fontweight='bold')
 axes[3].set_ylabel('Value')
-axes[3].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[3].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[4].plot(dates, noise, color='#666666', linewidth=1, label='Noise')
 axes[4].axhline(y=0, color='red', linestyle='--', linewidth=1)
 axes[4].set_title('Random Component (Noise)', fontweight='bold')
 axes[4].set_ylabel('Value')
 axes[4].set_xlabel('Date')
-axes[4].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[4].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 plt.tight_layout()
 save_fig('ch1_components')
@@ -136,23 +136,23 @@ axes[0, 0].plot(stationary, color='#2E7D32', linewidth=1, label='Stationary')
 axes[0, 0].axhline(y=0, color='red', linestyle='--', linewidth=1)
 axes[0, 0].set_title('Stationary Series', fontweight='bold')
 axes[0, 0].set_xlabel('Time')
-axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[0, 1].plot(random_walk, color='#DC3545', linewidth=1, label='Random Walk')
 axes[0, 1].set_title('Non-Stationary: Random Walk', fontweight='bold')
 axes[0, 1].set_xlabel('Time')
-axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[1, 0].plot(trend_series, color='#DC3545', linewidth=1, label='Trend')
 axes[1, 0].set_title('Non-Stationary: Trend', fontweight='bold')
 axes[1, 0].set_xlabel('Time')
-axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[1, 1].plot(changing_var, color='#DC3545', linewidth=1, label='Changing Variance')
 axes[1, 1].axvline(x=n_stat//2, color='gray', linestyle=':', linewidth=2)
 axes[1, 1].set_title('Non-Stationary: Changing Variance', fontweight='bold')
 axes[1, 1].set_xlabel('Time')
-axes[1, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[1, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 plt.tight_layout()
 save_fig('ch1_stationarity')
@@ -182,13 +182,13 @@ axes[0, 0].plot(white_noise, color='#1A3A6E', linewidth=0.8, label='εₜ ~ N(0,
 axes[0, 0].axhline(y=0, color='red', linestyle='--', linewidth=1)
 axes[0, 0].set_title('White Noise: εₜ ~ iid N(0,1)', fontweight='bold')
 axes[0, 0].set_xlabel('Time')
-axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 # Random walk
 axes[0, 1].plot(random_walk, color='#DC3545', linewidth=1, label='Yₜ = Yₜ₋₁ + εₜ')
 axes[0, 1].set_title('Random Walk: Yₜ = Yₜ₋₁ + εₜ', fontweight='bold')
 axes[0, 1].set_xlabel('Time')
-axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 # White noise histogram
 axes[1, 0].hist(white_noise, bins=40, density=True, color='#1A3A6E', alpha=0.7, edgecolor='white', label='White Noise')
@@ -196,7 +196,7 @@ x = np.linspace(-4, 4, 100)
 axes[1, 0].plot(x, 1/np.sqrt(2*np.pi) * np.exp(-x**2/2), 'r-', linewidth=2, label='N(0,1)')
 axes[1, 0].set_title('White Noise Distribution', fontweight='bold')
 axes[1, 0].set_xlabel('Value')
-axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
+axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=2, frameon=False, fontsize=7)
 
 # Multiple random walks
 for i in range(10):
@@ -230,7 +230,7 @@ fig, axes = plt.subplots(2, 3, figsize=(14, 8))
 axes[0, 0].plot(ar1, color='#1A3A6E', linewidth=1, label='AR(1): φ=0.8')
 axes[0, 0].set_title('AR(1) Process: φ = 0.8', fontweight='bold')
 axes[0, 0].set_xlabel('Time')
-axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[0, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 # AR(1) ACF
 plot_acf(ar1, lags=20, ax=axes[0, 1], color='#1A3A6E', title='')
@@ -244,7 +244,7 @@ axes[0, 2].set_title('PACF of AR(1): Cuts off at lag 1', fontweight='bold')
 axes[1, 0].plot(ma1, color='#DC3545', linewidth=1, label='MA(1): θ=0.8')
 axes[1, 0].set_title('MA(1) Process: θ = 0.8', fontweight='bold')
 axes[1, 0].set_xlabel('Time')
-axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 # MA(1) ACF
 plot_acf(ma1, lags=20, ax=axes[1, 1], color='#DC3545', title='')
@@ -273,21 +273,21 @@ fig, axes = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
 
 axes[0].plot(decomposition.observed, color='#1A3A6E', linewidth=1.5, label='Observed')
 axes[0].set_title('Observed', fontweight='bold')
-axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[1].plot(decomposition.trend, color='#DC3545', linewidth=2, label='Trend')
 axes[1].set_title('Trend', fontweight='bold')
-axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[2].plot(decomposition.seasonal, color='#2E7D32', linewidth=1.5, label='Seasonal')
 axes[2].set_title('Seasonal', fontweight='bold')
-axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 axes[3].plot(decomposition.resid, color='#666666', linewidth=1, label='Residual')
 axes[3].axhline(y=0, color='red', linestyle='--', linewidth=1)
 axes[3].set_title('Residual', fontweight='bold')
 axes[3].set_xlabel('Date')
-axes[3].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=1, frameon=False)
+axes[3].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=7)
 
 plt.suptitle('Additive Decomposition: Y = T + S + R', fontweight='bold', fontsize=14, y=1.02)
 plt.tight_layout()
@@ -313,7 +313,7 @@ for window, color in zip(windows, colors):
 ax.set_title('Moving Average Smoothing', fontweight='bold', fontsize=14)
 ax.set_xlabel('Date')
 ax.set_ylabel('Value')
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=4, frameon=False)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=4, frameon=False, fontsize=7)
 
 plt.tight_layout()
 save_fig('ch1_moving_average')

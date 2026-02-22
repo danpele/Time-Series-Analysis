@@ -122,7 +122,7 @@ ax.set_title('Time Series Forecasting: Historical Data and Predictions', fontwei
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
-ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.22), ncol=3, frameon=False, fontsize=11)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=3, frameon=False, fontsize=11)
 plt.savefig('ch1_motivation_forecast.pdf', bbox_inches='tight', transparent=True, dpi=300)
 plt.close()
 print("Generated: ch1_motivation_forecast.pdf")
@@ -287,7 +287,7 @@ ax.set_title('Moving Average Smoothing: Effect of Window Size', fontweight='bold
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
-ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.22), ncol=4, frameon=False, fontsize=11)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=4, frameon=False, fontsize=11)
 plt.savefig('ch1_moving_average.pdf', bbox_inches='tight', transparent=True, dpi=300)
 plt.close()
 print("Generated: ch1_moving_average.pdf")
@@ -324,7 +324,7 @@ ax.set_title('Exponential Smoothing: Effect of α Parameter', fontweight='bold',
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
-ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.22), ncol=4, frameon=False, fontsize=11)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=4, frameon=False, fontsize=11)
 plt.savefig('ch1_exponential_smoothing.pdf', bbox_inches='tight', transparent=True, dpi=300)
 plt.close()
 print("Generated: ch1_exponential_smoothing.pdf")
@@ -346,7 +346,7 @@ axes[0].fill_between(t, 40, 60, color=MAIN_BLUE, alpha=0.1, label='±2σ')
 axes[0].set_title('Stationary Process', fontweight='bold', color=MAIN_BLUE, fontsize=13)
 axes[0].set_xlabel('Time')
 axes[0].set_ylabel('Value')
-axes[0].legend(loc='lower center', bbox_to_anchor=(0.5, -0.25), ncol=2, frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=2, frameon=False, fontsize=11)
 
 # Non-stationary (random walk)
 random_walk = np.cumsum(np.random.randn(n)) + 50
@@ -482,7 +482,7 @@ axes[0].plot(t, actual, color=MAIN_BLUE, lw=2, label='Actual')
 axes[0].plot(t, forecast, color=IDA_RED, lw=2, ls='--', label='Forecast')
 axes[0].set_ylabel('Value', fontsize=12)
 axes[0].set_title('Forecast vs Actual Values', fontweight='bold', color=MAIN_BLUE, fontsize=14)
-axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
+axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), frameon=False, fontsize=11)
 
 colors = [FOREST if r >= 0 else IDA_RED for r in residuals]
 axes[1].bar(t, residuals, color=colors, width=0.8, alpha=0.7)
@@ -533,7 +533,7 @@ ax.set_title('HP Filter: Effect of Smoothing Parameter λ', fontweight='bold', c
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
-ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.22), ncol=4, frameon=False, fontsize=11)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=4, frameon=False, fontsize=11)
 plt.savefig('ch1_hp_filter_lambda.pdf', bbox_inches='tight', transparent=True, dpi=300)
 plt.close()
 print("Generated: ch1_hp_filter_lambda.pdf")

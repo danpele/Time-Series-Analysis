@@ -122,8 +122,9 @@ plt.tight_layout()
 
 # Add legend outside bottom
 fig.legend(['Series', 'Mean/Reference', 'Rolling Statistics'],
-           loc='upper center', bbox_to_anchor=(0.5, 0.02), ncol=4, frameon=False)
-plt.subplots_adjust(bottom=0.1)
+           loc='upper center', bbox_to_anchor=(0.5, 0.01), ncol=3, frameon=True,
+           facecolor='white', edgecolor='none', framealpha=0.7, fontsize=9)
+plt.subplots_adjust(bottom=0.08)
 
 # Set transparent background
 fig.patch.set_facecolor('none')
