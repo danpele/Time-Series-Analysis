@@ -236,11 +236,14 @@ n_viol_t_01 = models_data['GARCH-t']['n_viol01']
 def kupiec_test(violations, T, alpha):
     """Kupiec unconditional coverage test."""
     x = int(np.sum(violations))
-    p_hat = x / T if x > 0 else 1e-10
-    if x == 0:
-        return 0.0, 1.0
     if x == T:
         return np.inf, 0.0
+    if x == 0:
+        # LR = -2 * ln[(1-alpha)^T / 1^T] = -2 * T * ln(1-alpha)
+        lr = -2 * T * np.log(1 - alpha)
+        p_val = 1 - stats.chi2.cdf(lr, 1)
+        return float(lr), float(p_val)
+    p_hat = x / T
     lr = -2 * (np.log((1 - alpha) ** (T - x) * alpha ** x) -
                np.log((1 - p_hat) ** (T - x) * p_hat ** x))
     p_val = 1 - stats.chi2.cdf(lr, 1)
