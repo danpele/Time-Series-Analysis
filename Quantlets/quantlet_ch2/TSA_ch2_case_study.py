@@ -42,7 +42,7 @@ ax1.plot(y, 'b-', linewidth=0.8)
 ax1.set_title('Sunspot Numbers (1700-2008)', fontsize=11)
 ax1.set_xlabel('Year')
 ax1.set_ylabel('Sunspot Count')
-ax1.grid(True, alpha=0.3)
+ax1.grid(False)
 
 # Plot 2: ACF
 ax2 = fig.add_subplot(2, 2, 2)
@@ -70,7 +70,7 @@ ax4.fill_between(range(len(y[-50:]), len(y[-50:]) + 20),
                   color='red', alpha=0.2, label='95% CI')
 ax4.set_title('20-Year Forecast', fontsize=11)
 ax4.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax4.grid(True, alpha=0.3)
+ax4.grid(False)
 
 plt.tight_layout()
 plt.savefig('../../charts/ch2_case_study.pdf', bbox_inches='tight', transparent=True)

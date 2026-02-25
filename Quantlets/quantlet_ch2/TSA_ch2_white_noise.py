@@ -43,7 +43,7 @@ ax1.axhline(y=-2*sigma, color='gray', linestyle=':', alpha=0.7)
 ax1.set_title('White Noise Process', fontsize=12)
 ax1.set_xlabel('Time')
 ax1.set_ylabel(r'$\varepsilon_t$')
-ax1.grid(True, alpha=0.3)
+ax1.grid(False)
 
 # Plot 2: ACF
 ax2 = axes[1]

@@ -304,7 +304,7 @@ MSCA Digital Finance}
     \begin{block}{Key Observations}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Stock prices, GDP, exchange rates all exhibit \textbf{trends} or \textbf{wandering behavior}
-            \item The sample mean (red line) is meaningless for a random walk
+            \item The sample mean (red line) is not a consistent estimator for a non-stationary process
             \item Standard ARMA models \textbf{cannot} handle these series directly
         \end{itemize}
     \end{block}
@@ -312,19 +312,6 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch3\_motivation\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_nonstationary}
 \end{frame}
 
-\begin{frame}{Real-World Applications}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{alertblock}{The Challenge}
-        Financial/economic data are typically I(1): stock prices, exchange rates, interest rates.
-    \end{alertblock}
-    }
-    \quantlet{TSA\_ch3\_motivation\_realworld}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_realworld}
-\end{frame}
 
 \begin{frame}{The Solution: Differencing}
     \vspace{-0.2cm}
@@ -341,25 +328,6 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch3\_motivation\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_differencing}
 \end{frame}
 
-\begin{frame}{What We'll Learn Today}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Core Concepts}
-        \begin{enumerate}
-            \item \textbf{Non-Stationarity}: Why it matters and how to detect it
-            \item \textbf{Unit Root Tests}: ADF, PP, KPSS tests
-            \item \textbf{Differencing}: The key transformation
-            \item \textbf{ARIMA Models}: Combining differencing with ARMA
-            \item \textbf{Box-Jenkins Methodology}: Identify $\to$ Estimate $\to$ Diagnose
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{exampleblock}{By the End of This Lecture}
-        You will be able to model and forecast non-stationary time series like stock prices, GDP, and exchange rates using ARIMA models.
-    \end{exampleblock}
-    \end{cminipage}
-\end{frame}
 
 %=============================================================================
 % SECTION 1: NON-STATIONARITY
@@ -483,20 +451,6 @@ MSCA Digital Finance}
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Random Walk: Visual Illustration}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{alertblock}{Key Properties}
-        \textbf{Left}: Paths wander unpredictably, no mean reversion.
-        \textbf{Right}: $\Var(Y_t) = t\sigma^2$ grows linearly $\Rightarrow$ non-stationary.
-    \end{alertblock}
-    }
-    \quantlet{TSA\_ch3\_def\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk}
-\end{frame}
 
 \begin{frame}{Proof: Random Walk Variance}
     \begin{cminipage}{0.95\textwidth}
@@ -539,39 +493,21 @@ MSCA Digital Finance}
 
 \begin{frame}{Random Walk with Drift}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{defn}[Random Walk with Drift]
-        A random walk with drift includes a constant term:
-        $$Y_t = \mu + Y_{t-1} + \varepsilon_t$$
-        Equivalently: $Y_t = Y_0 + \mu t + \sum_{i=1}^{t} \varepsilon_i$
-    \end{defn}
-
-    \vspace{0.1cm}
-
-    \begin{block}{Properties}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.45\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
+    \end{center}
+    \vspace{-0.4cm}
+    {\scriptsize
+    \begin{block}{$Y_t = \mu + Y_{t-1} + \varepsilon_t$ \quad $\Leftrightarrow$ \quad $Y_t = Y_0 + \mu t + \sum_{i=1}^{t} \varepsilon_i$}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\E[Y_t] = Y_0 + \mu t$ (mean grows linearly)
-            \item $\Var(Y_t) = t\sigma^2$ (variance still grows)
-            \item The drift $\mu$ creates an upward or downward trend
-            \item Still non-stationary despite having a ``trend''
+            \item $\E[Y_t] = Y_0 + \mu t$ (mean grows linearly); \quad $\Var(Y_t) = t\sigma^2$ (variance still grows)
+            \item \textbf{Without drift} (blue): wanders around zero; \textbf{With drift} $\mu > 0$ (red): systematic upward trend
+            \item Both are non-stationary --- drift adds deterministic trend to stochastic wandering
         \end{itemize}
     \end{block}
     }
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Random Walk with Drift: Visual Illustration}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{exampleblock}{Comparison}
-        Without drift (blue): wanders around zero with no direction. With drift $\mu > 0$ (red): systematic upward trend. Both are non-stationary --- drift adds deterministic trend to stochastic wandering.
-    \end{exampleblock}
-    }
     \quantlet{TSA\_ch3\_def\_random\_walk\_drift}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk_drift}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Simulating Random Walks}
@@ -592,23 +528,6 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch3\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_random_walk}
 \end{frame}
 
-\begin{frame}{Variance Growth: Why Random Walks Are Non-Stationary}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.51\textheight, keepaspectratio]{ch3_variance_growth.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Key Observations}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Left}: Fan of paths shows uncertainty growing over time
-            \item \textbf{Right}: Variance grows linearly: $\Var(Y_t) = t\sigma^2$
-            \item This violates stationarity (variance should be constant)
-        \end{itemize}
-    \end{block}
-    }
-    \quantlet{TSA\_ch3\_variance\_growth}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_variance_growth}
-\end{frame}
 
 \begin{frame}{Integrated Processes}
     \begin{cminipage}{0.95\textwidth}
@@ -826,34 +745,20 @@ MSCA Digital Finance}
 
 \begin{frame}{Definition of ARIMA}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{defn}[ARIMA(p,d,q)]
-        A time series $\{Y_t\}$ follows an \textbf{ARIMA(p,d,q)} process if:
-        $$\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$$
-        where:
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.42\textheight, keepaspectratio]{ch3_def_arima.pdf}
+    \end{center}
+    \vspace{-0.4cm}
+    {\scriptsize
+    \begin{defn}[ARIMA(p,d,q): $\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$]
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\phi(L) = 1 - \phi_1 L - \phi_2 L^2 - \cdots - \phi_p L^p$ (AR polynomial)
-            \item $\theta(L) = 1 + \theta_1 L + \theta_2 L^2 + \cdots + \theta_q L^q$ (MA polynomial)
-            \item $d$ is the order of integration (number of differences)
-            \item $\varepsilon_t \sim WN(0, \sigma^2)$
+            \item \textbf{AR}: $\phi(L) = 1 - \phi_1 L - \cdots - \phi_p L^p$; \quad \textbf{MA}: $\theta(L) = 1 + \theta_1 L + \cdots + \theta_q L^q$; \quad \textbf{I}: $d$ differences
+            \item \textbf{Top}: original ARIMA series (non-stationary); \textbf{Bottom}: after differencing --- ACF/PACF reveal $p$, $q$
         \end{itemize}
     \end{defn}
     }
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{ARIMA: Visual Illustration}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_arima.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Interpretation}
-        Top: original ARIMA series (non-stationary). Bottom: after differencing $d$ times, ACF/PACF reveal the AR and MA orders for the stationary component.
-    \end{block}
-    }
     \quantlet{TSA\_ch3\_def\_arima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_arima}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{ARIMA Components}
@@ -1054,29 +959,6 @@ MSCA Digital Finance}
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Dickey-Fuller Test Variants}
-    \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{block}{Three Specifications}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{No constant, no trend}: $\Delta Y_t = \gamma Y_{t-1} + \varepsilon_t$
-            \item \textbf{With constant (drift)}: $\Delta Y_t = \alpha + \gamma Y_{t-1} + \varepsilon_t$
-            \item \textbf{With constant and trend}: $\Delta Y_t = \alpha + \beta t + \gamma Y_{t-1} + \varepsilon_t$
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{alertblock}{Choosing the Right Specification}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Examine the data: does it have a visible trend?
-            \item Including unnecessary terms reduces power
-            \item Excluding necessary terms leads to incorrect inference
-        \end{itemize}
-    \end{alertblock}
-    }
-    \end{cminipage}
-\end{frame}
 
 \begin{frame}{Augmented Dickey-Fuller (ADF) Test}
     \begin{cminipage}{0.95\textwidth}
@@ -1532,34 +1414,7 @@ MSCA Digital Finance}
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Rolling Forecasting: Concept}
-    \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{block}{What is Rolling Forecasting?}
-        A technique to evaluate forecast accuracy out-of-sample:
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item Fix a \textbf{training window} of size $w$
-            \item Estimate model on observations $t = 1, \ldots, w$
-            \item Forecast $h$ steps ahead: $\hat{Y}_{w+h|w}$
-            \item \textbf{Roll} the window forward by one period
-            \item Repeat until end of sample
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.1cm}
-
-    \begin{exampleblock}{Why Rolling Forecasts?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Mimics real-time forecasting scenario
-            \item Provides multiple forecast errors for evaluation
-            \item Avoids overfitting to full sample
-        \end{itemize}
-    \end{exampleblock}
-    }
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Fixed vs Expanding Window}
+\begin{frame}{Rolling Forecasting: Fixed vs Expanding Window}
     \begin{center}
     \begin{tikzpicture}[scale=0.85, transform shape]
         % Title for Fixed Window
@@ -1592,12 +1447,16 @@ MSCA Digital Finance}
         \draw[->, thick, color=MediumGray] (5.5, -1) -- (10.5, -1) node[right, font=\tiny] {Time};
     \end{tikzpicture}
     \end{center}
-    \begin{block}{Comparison}
+    \vspace{-0.4cm}
+    {\scriptsize
+    \begin{block}{Out-of-sample forecast accuracy evaluation}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Fixed}: Window slides forward, constant size --- adapts to regime changes
-            \item \textbf{Expanding}: Window grows over time --- uses all historical data
+            \item \textbf{Fixed}: window slides forward, constant size $w$ --- adapts to regime changes
+            \item \textbf{Expanding}: window grows over time --- uses all historical data
+            \item Mimics real-time forecasting scenario; provides multiple forecast errors for evaluation
         \end{itemize}
     \end{block}
+    }
 \end{frame}
 
 \begin{frame}{1-Step vs Multi-Step Forecasting}
@@ -1900,6 +1759,24 @@ MSCA Digital Finance}
     \end{block}
     }
     \quantlet{TSA\_ch3\_case\_rolling\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_rolling_forecast}
+\end{frame}
+
+\begin{frame}{Step 7: Forecast Evaluation}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.51\textheight, keepaspectratio]{ch3_case_forecast.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Out-of-sample performance (last 12 quarters)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item RMSE = 0.0486 $\approx$ 4.86\% error
+            \item MAE = 0.0430 $\approx$ 4.30\% error
+            \item Direction accuracy = 91\% --- correctly predicted growth/decline
+        \end{itemize}
+    \end{block}
+    }
+    \quantlet{TSA\_ch3\_case\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_case_forecast}
 \end{frame}
 
 %=============================================================================
@@ -2235,7 +2112,7 @@ MSCA Digital Finance}
 
     \begin{exampleblock}{Online Resources and Code}
         \begin{itemize}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Code repository for statistics
+            \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Code platform for quantitative methods
             \item \textbf{Quantinar}: \url{https://quantinar.com} $\succ$ Learning platform for quantitative methods
             \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch3} $\succ$ Python code for this chapter
         \end{itemize}

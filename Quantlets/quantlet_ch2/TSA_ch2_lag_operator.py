@@ -86,7 +86,7 @@ ax1.plot(X, 'b-', linewidth=1)
 ax1.set_title('Original Series $X_t$', fontsize=12)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('Value')
-ax1.grid(True, alpha=0.3)
+ax1.grid(False)
 
 # First difference
 ax2 = axes[0, 1]
@@ -97,7 +97,7 @@ ax2.set_title('First Difference $\\Delta X_t = (1-L)X_t$', fontsize=12)
 ax2.set_xlabel('Time')
 ax2.set_ylabel('Value')
 ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax2.grid(True, alpha=0.3)
+ax2.grid(False)
 
 # Second difference
 ax3 = axes[1, 0]
@@ -106,7 +106,7 @@ ax3.axhline(y=0, color='black', linestyle='--')
 ax3.set_title('Second Difference $\\Delta^2 X_t = (1-L)^2 X_t$', fontsize=12)
 ax3.set_xlabel('Time')
 ax3.set_ylabel('Value')
-ax3.grid(True, alpha=0.3)
+ax3.grid(False)
 
 # Summary
 ax4 = axes[1, 1]

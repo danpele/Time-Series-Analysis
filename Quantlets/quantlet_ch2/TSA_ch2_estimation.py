@@ -59,7 +59,7 @@ ax1.set_title('AR(2) Series with Fitted Values', fontsize=12)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('Value')
 ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax1.grid(True, alpha=0.3)
+ax1.grid(False)
 
 # Plot 2: Parameter comparison
 ax2 = axes[1]
@@ -78,7 +78,7 @@ ax2.set_title('Parameter Estimates Comparison', fontsize=12)
 ax2.set_xticks(x_pos)
 ax2.set_xticklabels(methods)
 ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax2.grid(True, alpha=0.3, axis='y')
+ax2.grid(False)
 
 plt.tight_layout()
 plt.savefig('../../charts/estimation_comparison.pdf', bbox_inches='tight', transparent=True)

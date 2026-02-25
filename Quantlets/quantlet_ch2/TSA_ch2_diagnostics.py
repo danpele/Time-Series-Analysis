@@ -99,14 +99,14 @@ axes[0, 0].axhline(y=0, color='red', linestyle='--')
 axes[0, 0].set_title('ARMA(1,1) Residuals', fontsize=11)
 axes[0, 0].set_xlabel('Time')
 axes[0, 0].set_ylabel('Residual')
-axes[0, 0].grid(True, alpha=0.3)
+axes[0, 0].grid(False)
 
 plot_acf(resid_correct, ax=axes[0, 1], lags=20, alpha=0.05)
 axes[0, 1].set_title('ARMA(1,1) Residual ACF', fontsize=11)
 
 stats.probplot(resid_correct, dist="norm", plot=axes[0, 2])
 axes[0, 2].set_title('ARMA(1,1) Q-Q Plot', fontsize=11)
-axes[0, 2].grid(True, alpha=0.3)
+axes[0, 2].grid(False)
 
 # Residual histogram
 axes[0, 3].hist(resid_correct, bins=30, density=True, alpha=0.7, color='blue', edgecolor='black')
@@ -122,14 +122,14 @@ axes[1, 0].axhline(y=0, color='black', linestyle='--')
 axes[1, 0].set_title('AR(1) Residuals (Wrong Model)', fontsize=11)
 axes[1, 0].set_xlabel('Time')
 axes[1, 0].set_ylabel('Residual')
-axes[1, 0].grid(True, alpha=0.3)
+axes[1, 0].grid(False)
 
 plot_acf(resid_wrong, ax=axes[1, 1], lags=20, alpha=0.05)
 axes[1, 1].set_title('AR(1) Residual ACF', fontsize=11)
 
 stats.probplot(resid_wrong, dist="norm", plot=axes[1, 2])
 axes[1, 2].set_title('AR(1) Q-Q Plot', fontsize=11)
-axes[1, 2].grid(True, alpha=0.3)
+axes[1, 2].grid(False)
 
 axes[1, 3].hist(resid_wrong, bins=30, density=True, alpha=0.7, color='red', edgecolor='black')
 x = np.linspace(resid_wrong.min(), resid_wrong.max(), 100)

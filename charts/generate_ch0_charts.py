@@ -490,29 +490,35 @@ fig.legend(handles=legend_elements, loc='lower center', ncol=3, fontsize=11, fra
 save_fig('ch1_cyclical_component')
 
 # =============================================================================
-# 14. Time Series Definition
+# 14. Time Series Definition — S&P 500 real data
 # =============================================================================
 print("Generating timeseries_definition...")
+import yfinance as yf
+sp = yf.download('^GSPC', start='2024-01-01', end='2024-12-31', progress=False)
+sp_close = sp['Close'].squeeze()
+
 fig, ax = plt.subplots(figsize=(12, 7))
+ax.plot(sp_close.index, sp_close.values, color=MAIN_BLUE, lw=1.5, marker='o', markersize=2, alpha=0.8)
+ax.set_xlabel('Date', fontsize=12)
+ax.set_ylabel('Price (\\$)', fontsize=12)
+ax.set_title('S\\&P 500 Daily Close Price (2024)', fontweight='bold', color=MAIN_BLUE, fontsize=14)
 
-n = 100
-t = np.arange(n)
-y = 100 + 0.3 * t + np.random.randn(n) * 5
+# Annotate a few representative points
+idx_list = [50, 125, 200]
+for i in idx_list:
+    if i < len(sp_close):
+        date_i = sp_close.index[i]
+        val_i = sp_close.iloc[i]
+        ax.annotate(f'${val_i:,.0f}',
+                    xy=(date_i, val_i), xytext=(date_i + pd.Timedelta(days=10), val_i + 80),
+                    fontsize=10, color=IDA_RED,
+                    arrowprops=dict(arrowstyle='->', color=IDA_RED, lw=1))
 
-ax.plot(t, y, color=MAIN_BLUE, lw=1.5, marker='o', markersize=3, alpha=0.8)
-ax.set_xlabel('Time (t)', fontsize=12)
-ax.set_ylabel('$X_t$', fontsize=12)
-ax.set_title('Time Series: Sequence of Observations Indexed by Time', fontweight='bold', color=MAIN_BLUE, fontsize=14)
-
-# Annotate a few points
-for i in [20, 50, 80]:
-    ax.annotate(f'$X_{{{i}}}$', xy=(i, y[i]), xytext=(i+3, y[i]+8),
-                fontsize=10, color=IDA_RED, arrowprops=dict(arrowstyle='->', color=IDA_RED, lw=1))
-
-legend_elements = [Line2D([0], [0], color=MAIN_BLUE, lw=2, marker='o', label='Observations $X_t$')]
+legend_elements = [Line2D([0], [0], color=MAIN_BLUE, lw=2, marker='o', label='S\\&P 500 Close')]
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
 ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.22), ncol=1, frameon=False, fontsize=11)
+fig.autofmt_xdate(rotation=30)
 save_fig('timeseries_definition')
 
 # =============================================================================

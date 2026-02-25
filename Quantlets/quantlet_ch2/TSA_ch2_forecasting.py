@@ -85,7 +85,7 @@ ax1.set_title(f'AR(1) Forecast: φ = {model_ar.params[1]:.2f}', fontsize=12)
 ax1.set_xlabel('Time')
 ax1.set_ylabel('Value')
 ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax1.grid(True, alpha=0.3)
+ax1.grid(False)
 ax1.set_xlim(n-50, n+h)
 
 # Plot 2: Forecast convergence to mean
@@ -102,7 +102,7 @@ ax2.set_title('AR(1) Mean Reversion', fontsize=12)
 ax2.set_xlabel('Forecast Horizon (h)')
 ax2.set_ylabel('E[X_{n+h}|X_n]')
 ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax2.grid(True, alpha=0.3)
+ax2.grid(False)
 
 # Plot 3: Forecast variance growth
 ax3 = axes[1, 0]
@@ -117,7 +117,7 @@ ax3.set_title('Forecast Uncertainty Grows with Horizon', fontsize=12)
 ax3.set_xlabel('Forecast Horizon (h)')
 ax3.set_ylabel('Standard Deviation')
 ax3.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax3.grid(True, alpha=0.3)
+ax3.grid(False)
 
 # Plot 4: Comparison with MA(1)
 ax4 = axes[1, 1]
@@ -139,7 +139,7 @@ ax4.set_title('Forecast Decay: AR(1) vs MA(1)', fontsize=12)
 ax4.set_xlabel('Forecast Horizon (h)')
 ax4.set_ylabel('Deviation from Mean')
 ax4.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax4.grid(True, alpha=0.3)
+ax4.grid(False)
 
 plt.tight_layout()
 plt.savefig('../../charts/ch2_forecasting.png', dpi=150, bbox_inches='tight', transparent=True)

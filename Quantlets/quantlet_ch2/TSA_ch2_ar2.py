@@ -97,7 +97,7 @@ ax1.set_xlabel('$\\phi_1$', fontsize=12)
 ax1.set_ylabel('$\\phi_2$', fontsize=12)
 ax1.set_title('AR(2) Stationarity Triangle', fontsize=12)
 ax1.text(0, 0.5, 'STATIONARY', ha='center', fontsize=11, color='green', fontweight='bold')
-ax1.grid(True, alpha=0.3)
+ax1.grid(False)
 
 # Plots 2-4: AR(2) simulations with different parameters
 params = [
@@ -120,7 +120,7 @@ for idx, (phi1, phi2, title) in enumerate(params):
     ax.set_title(f'AR(2): φ₁={phi1}, φ₂={phi2}\nRoots: {np.abs(roots).round(2)}', fontsize=10)
     ax.set_xlabel('Time')
     ax.set_ylabel('X_t')
-    ax.grid(True, alpha=0.3)
+    ax.grid(False)
 
     # Check if complex roots (pseudo-cyclical behavior)
     if np.any(np.iscomplex(roots)):

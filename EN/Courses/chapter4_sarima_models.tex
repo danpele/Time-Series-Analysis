@@ -373,45 +373,6 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch4\_motivation\_why\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_motivation_why_sarima}
 \end{frame}
 
-\begin{frame}{What We'll Learn Today}
-    \vspace{-0.2cm}
-    {\small
-    \begin{cminipage}{0.95\textwidth}
-        \begin{columns}[T]
-            \begin{column}{0.48\textwidth}
-                \begin{block}{Concepts}
-                    \begin{itemize}\setlength{\itemsep}{0pt}
-                        \item Identifying seasonal patterns
-                        \item Seasonal differencing operator
-                        \item SARIMA$(p,d,q)(P,D,Q)_s$ notation
-                        \item The famous ``Airline Model''
-                        \item Model selection for seasonal data
-                    \end{itemize}
-                \end{block}
-            \end{column}
-            \begin{column}{0.48\textwidth}
-                \begin{block}{Skills}
-                    \begin{itemize}\setlength{\itemsep}{0pt}
-                        \item Diagnose seasonality from ACF/PACF
-                        \item Determine seasonal period $s$
-                        \item Choose $(P, D, Q)$ seasonal orders
-                        \item Implement SARIMA in Python/R
-                        \item Forecast seasonal time series
-                    \end{itemize}
-                \end{block}
-            \end{column}
-        \end{columns}
-
-    \vspace{0.05cm}
-
-    \begin{alertblock}{Key Insight}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item SARIMA = ARIMA applied at \textbf{two frequencies}: non-seasonal (short-term) and seasonal (long-term)
-        \end{itemize}
-    \end{alertblock}
-    \end{cminipage}
-    }
-\end{frame}
 
 %=============================================================================
 % SECTION 1: SEASONALITY IN TIME SERIES
@@ -436,22 +397,24 @@ MSCA Digital Finance}
             \end{itemize}
         \end{exampleblock}
     }
+\end{frame}
+
+\begin{frame}{What is Seasonality?}
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.24\textheight, keepaspectratio]{ch4_def_seasonality.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch4_def_seasonality.pdf}
     \end{center}
     \quantlet{TSA\_ch4\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_seasonality}
 \end{frame}
 
 \begin{frame}{Example: Airline Passengers Data}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.3cm}
     \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.57\textheight, keepaspectratio]{ch4_airline_data.pdf}
+        \includegraphics[width=0.88\textwidth, height=0.48\textheight, keepaspectratio]{ch4_airline_data.pdf}
     \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
+    \vspace{-0.4cm}
+    {\scriptsize
     \begin{exampleblock}{}
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Monthly international airline passengers (1949--1960)
         \item Clear \textbf{upward trend} and \textbf{growing seasonal amplitude}
         \item Summer peaks reflect vacation travel patterns
@@ -720,22 +683,36 @@ MSCA Digital Finance}
     \begin{block}{What does this test do?}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Non-parametric test}: checks whether observations from different seasons come from the same distribution
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item No assumptions needed about the shape of the data distribution
+                \end{itemize}
             \item \textbf{Mechanism}: ranks all observations from smallest to largest
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Replaces original values with ranks (1, 2, \ldots, $N$)
+                \end{itemize}
             \item \textbf{Check}: whether ranks are uniformly distributed across seasons
-            \item \textbf{Conclusion}: if one season consistently has higher/lower ranks $\Rightarrow$ seasonality
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Computes sum of ranks per season and compares with expected distribution
+                \end{itemize}
+            \item \textbf{Conclusion}: if one season consistently has higher/lower ranks $\succ$ seasonality
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Example: if summer always has high ranks $\succ$ seasonal energy consumption
+                \end{itemize}
         \end{itemize}
     \end{block}
-
-    \vspace{0.05cm}
 
     \begin{exampleblock}{Why use it instead of the F-test?}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{No normality assumption} -- works with any distribution
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Ideal for financial data with heavy tails or skewed distributions
+                \end{itemize}
             \item \textbf{Robust to outliers} -- extreme values do not distort results
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Ranks bound the influence of any single observation
+                \end{itemize}
         \end{itemize}
     \end{exampleblock}
-
-    \vspace{0.05cm}
 
     \begin{alertblock}{Limitation}
         \begin{itemize}\setlength{\itemsep}{0pt}
@@ -780,14 +757,23 @@ MSCA Digital Finance}
     \begin{block}{Key question}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Problem}: given a seasonal series, we need to determine the type of differencing
-            \item \textbf{Regular differencing} $(1-L)$? $\Rightarrow$ set $d=1$; \textbf{Seasonal differencing} $(1-L^s)$? $\Rightarrow$ set $D=1$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Wrong choice leads to over-differencing or under-differencing
+                \end{itemize}
+            \item \textbf{Regular differencing} $(1-L)$? $\succ$ set $d=1$; \textbf{Seasonal differencing} $(1-L^s)$? $\succ$ set $D=1$
             \item \textbf{HEGY}: tests for both types of unit roots simultaneously!
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Proposed by Hylleberg, Engle, Granger and Yoo (1990)
+                \end{itemize}
         \end{itemize}
     \end{block}
     \vspace{-0.1cm}
     \begin{exampleblock}{Why not just use ADF?}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{ADF}: tests only for a regular unit root at frequency zero
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Completely ignores the seasonal components of the series
+                \end{itemize}
             \item \textbf{Limitation}: seasonal data may have unit roots at seasonal frequencies that ADF misses!
         \end{itemize}
     \end{exampleblock}
@@ -795,7 +781,13 @@ MSCA Digital Finance}
     \begin{alertblock}{HEGY tests multiple frequencies}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Quarterly}: tests at 0, $\pi$, $\pm\pi/2$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item 3 frequencies $\succ$ one regular root + two seasonal roots
+                \end{itemize}
             \item \textbf{Monthly}: tests at 0, $\pi$, $\pm\pi/6$, $\pm\pi/3$, $\pm\pi/2$, $\pm 2\pi/3$, $\pm 5\pi/6$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item 6 frequencies $\succ$ one regular root + five seasonal roots
+                \end{itemize}
         \end{itemize}
     \end{alertblock}
     }
@@ -809,23 +801,31 @@ MSCA Digital Finance}
     \begin{block}{HEGY auxiliary regression}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Quarterly data} ($s=4$): $\Delta_4 y_t = \pi_1 z_{1,t-1} + \pi_2 z_{2,t-1} + \pi_3 z_{3,t-2} + \pi_4 z_{4,t-2} + \sum_{j=1}^{k} \phi_j \Delta_4 y_{t-j} + \varepsilon_t$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Lags $k$ chosen by AIC/BIC to eliminate residual autocorrelation
+                \end{itemize}
         \end{itemize}
     \end{block}
     \vspace{-0.1cm}
     \begin{block}{Transformed variables}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{$z_{1t}$}: $(1+L+L^2+L^3)y_t = y_t + y_{t-1} + y_{t-2} + y_{t-3}$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Captures the zero-frequency component (trend)
+                \end{itemize}
             \item \textbf{$z_{2t}$}: $-(1-L+L^2-L^3)y_t = -y_t + y_{t-1} - y_{t-2} + y_{t-3}$
-            \item \textbf{$z_{3t}$}: $-(1-L^2)y_t = -y_t + y_{t-2}$
-            \item \textbf{$z_{4t}$}: $-(L-L^3)y_t = -y_{t-1} + y_{t-3}$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Captures the frequency-$\pi$ component (semi-annual alternation)
+                \end{itemize}
+            \item \textbf{$z_{3t}$, $z_{4t}$}: capture the frequency $\pm\pi/2$ components (annual cycle)
         \end{itemize}
     \end{block}
     \vspace{-0.1cm}
     \begin{alertblock}{Hypotheses}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{$H_0: \pi_1=0$}: unit root at frequency 0
-            \item \textbf{$H_0: \pi_2=0$}: unit root at frequency $\pi$
-            \item \textbf{$H_0: \pi_3=\pi_4=0$}: unit root at frequency $\pm\pi/2$
+            \item \textbf{$H_0: \pi_1=0$}: unit root at frequency 0 $\succ$ requires $d=1$
+            \item \textbf{$H_0: \pi_2=0$}: unit root at frequency $\pi$ $\succ$ requires $D=1$
+            \item \textbf{$H_0: \pi_3=\pi_4=0$}: unit root at frequency $\pm\pi/2$ $\succ$ requires $D=1$
         \end{itemize}
     \end{alertblock}
     }
@@ -965,13 +965,22 @@ MSCA Digital Finance}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Formula}: $Y_t^{(\lambda)} = \begin{cases} \frac{Y_t^\lambda - 1}{\lambda} & \text{if } \lambda \neq 0 \\ \ln(Y_t) & \text{if } \lambda = 0 \end{cases}$
             \item \textbf{Special cases}: $\lambda=1$ (no transformation), $\lambda=0$ (logarithm), $\lambda=0.5$ (square root)
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $\lambda < 1$ compresses large values; $\lambda > 1$ amplifies them
+                \end{itemize}
         \end{itemize}
     \end{block}
     \vspace{-0.1cm}
     \begin{exampleblock}{Automatic Selection of $\lambda$}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Profile likelihood}: maximizes the log-likelihood as a function of $\lambda$
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Most commonly used method; provides confidence interval for $\lambda$
+                \end{itemize}
             \item \textbf{Guerrero method (1993)}: minimizes the coefficient of variation of seasonal sub-series
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Preferred for seasonal data with varying amplitude
+                \end{itemize}
             \item \textbf{Python}: \texttt{boxcox(y)} from \texttt{scipy.stats} or \texttt{BoxCox.lambda\_(y)} in R
         \end{itemize}
     \end{exampleblock}
@@ -979,6 +988,9 @@ MSCA Digital Finance}
     \begin{alertblock}{Why not just logarithm?}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Log ($\lambda=0$) assumes variance proportional to level --- not always the case
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Example: data with moderate variance may require $\lambda = 0.3$, not $\lambda = 0$
+                \end{itemize}
             \item Box-Cox chooses the optimal transformation based on data, not assumptions
         \end{itemize}
     \end{alertblock}
@@ -1056,6 +1068,28 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Seasonal Differencing}
 
+\begin{frame}{Seasonal Difference: Visual Illustration}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.62\textheight, keepaspectratio]{ch4_def_seasonal_diff.pdf}
+    \end{center}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{exampleblock}{}
+    \begin{itemize}
+        \item \textbf{Left}: Original series with clear seasonal pattern
+        \item \textbf{Right}: After $\Delta_{12} = (1-L^{12})$, the seasonal pattern is removed
+            \begin{itemize}
+                \item Year-over-year comparison eliminates seasonal effects
+            \end{itemize}
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_seasonal\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_seasonal_diff}
+\end{frame}
+
 \begin{frame}{The Seasonal Difference Operator}
     \vspace{-0.2cm}
     {\scriptsize
@@ -1089,8 +1123,11 @@ MSCA Digital Finance}
     \vspace{-0.3cm}
     {\footnotesize
     \textbf{Claim:} If $Y_t = \mu_t + \varepsilon_t$ where $\mu_t = \mu_{t-s}$ (periodic mean), then $\Delta_s Y_t$ removes the seasonal mean.
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item The condition $\mu_t = \mu_{t-s}$ means the mean repeats exactly every $s$ periods
+    \end{itemize}
 
-    \vspace{0.1cm}
+    \vspace{0.05cm}
     \textbf{Proof:} Let $Y_t = \mu_t + \varepsilon_t$ where $\mu_t$ has period $s$. Apply seasonal difference:
     \vspace{-0.1cm}
     \begin{align*}
@@ -1102,9 +1139,14 @@ MSCA Digital Finance}
 
     \textbf{Properties of $\Delta_s Y_t = \varepsilon_t - \varepsilon_{t-s}$:}
     \begin{itemize}\setlength{\itemsep}{0pt}
-        \item $\E[\Delta_s Y_t] = 0$ (constant mean)
-        \item $\Var(\Delta_s Y_t) = 2\sigma^2$ (constant variance)
+        \item $\E[\Delta_s Y_t] = 0$ (constant mean); $\Var(\Delta_s Y_t) = 2\sigma^2$ (constant variance)
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Both properties are required for second-order stationarity
+            \end{itemize}
         \item Autocovariance: $\gamma(s) = -\sigma^2$, $\gamma(k) = 0$ for $k \neq 0, s$
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item ACF shows a single spike at lag $s$, then zero
+            \end{itemize}
     \end{itemize}
 
     \begin{exampleblock}{Result}
@@ -1798,31 +1840,16 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Data Splitting Strategy}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{train_val_test_split.pdf}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Data Splitting Strategy}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.3cm}
-    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.42\textheight, keepaspectratio]{train_val_test_split.pdf}
+    \end{center}
+    \vspace{-0.4cm}
     {\scriptsize
     \begin{itemize}\setlength{\itemsep}{0pt}
-        \item \textbf{Training set (70\%)} --- Fit model parameters
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Estimate SARIMA coefficients ($\phi$, $\theta$, $\Phi$, $\Theta$)
-                \item Largest portion ensures reliable parameter estimates
-            \end{itemize}
-        \item \textbf{Validation set (15\%)} --- Select best model
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Compare candidate models (different orders)
-                \item Choose model with lowest validation error
-            \end{itemize}
-        \item \textbf{Test set (15\%)} --- Final evaluation
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Unbiased out-of-sample performance; never used during development
-            \end{itemize}
+        \item \textbf{Training set (70\%)} --- Fit model parameters; estimate SARIMA coefficients ($\phi$, $\theta$, $\Phi$, $\Theta$)
+        \item \textbf{Validation set (15\%)} --- Select best model; compare candidates, choose lowest validation error
+        \item \textbf{Test set (15\%)} --- Final evaluation; unbiased out-of-sample performance, never used during development
     \end{itemize}
     }
     \end{cminipage}
@@ -2388,7 +2415,7 @@ MSCA Digital Finance}
     \begin{exampleblock}{Online Resources and Code}
         {\small
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Code platform for statistics
+            \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Code platform for quantitative methods
             \item \textbf{Quantinar}: \url{https://quantinar.com} $\succ$ Learning platform for quantitative methods
             \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch4} $\succ$ Python code for this chapter
         \end{itemize}

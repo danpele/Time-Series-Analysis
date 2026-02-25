@@ -73,7 +73,7 @@ for i, (phi, theta, title) in enumerate(params):
     axes[0, i].set_title(title, fontsize=10)
     axes[0, i].set_xlabel('Time')
     axes[0, i].set_ylabel('X_t')
-    axes[0, i].grid(True, alpha=0.3)
+    axes[0, i].grid(False)
 
     # ACF plot
     acf_values = acf(x, nlags=15)
@@ -83,7 +83,7 @@ for i, (phi, theta, title) in enumerate(params):
     axes[1, i].set_title('ACF: decays (mixed pattern)', fontsize=10)
     axes[1, i].set_xlabel('Lag')
     axes[1, i].set_ylabel('ACF')
-    axes[1, i].grid(True, alpha=0.3)
+    axes[1, i].grid(False)
 
     # PACF plot
     pacf_values = pacf(x, nlags=15)
@@ -93,7 +93,7 @@ for i, (phi, theta, title) in enumerate(params):
     axes[2, i].set_title('PACF: decays (mixed pattern)', fontsize=10)
     axes[2, i].set_xlabel('Lag')
     axes[2, i].set_ylabel('PACF')
-    axes[2, i].grid(True, alpha=0.3)
+    axes[2, i].grid(False)
 
 plt.tight_layout()
 plt.savefig('../../charts/ch2_arma_properties.png', dpi=150, bbox_inches='tight', transparent=True)

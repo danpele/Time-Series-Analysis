@@ -123,7 +123,7 @@ ax1.barh(df['Model'], df['AIC'], color=colors, alpha=0.7, edgecolor='black')
 ax1.axvline(x=best_aic['AIC'], color='green', linestyle='--', linewidth=2)
 ax1.set_xlabel('AIC (lower is better)')
 ax1.set_title('AIC Comparison')
-ax1.grid(True, alpha=0.3, axis='x')
+ax1.grid(False)
 
 # BIC comparison
 ax2 = axes[1]
@@ -132,7 +132,7 @@ ax2.barh(df['Model'], df['BIC'], color=colors, alpha=0.7, edgecolor='black')
 ax2.axvline(x=best_bic['BIC'], color='green', linestyle='--', linewidth=2)
 ax2.set_xlabel('BIC (lower is better)')
 ax2.set_title('BIC Comparison')
-ax2.grid(True, alpha=0.3, axis='x')
+ax2.grid(False)
 
 # Parameter count vs fit
 ax3 = axes[2]
@@ -145,7 +145,7 @@ ax3.set_xlabel('Number of Parameters (k)')
 ax3.set_ylabel('Information Criterion')
 ax3.set_title('Complexity vs Fit Trade-off')
 ax3.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
-ax3.grid(True, alpha=0.3)
+ax3.grid(False)
 
 plt.tight_layout()
 plt.savefig('../../charts/ch2_model_selection.png', dpi=150, bbox_inches='tight', transparent=True)

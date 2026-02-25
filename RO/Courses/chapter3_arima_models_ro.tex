@@ -306,7 +306,7 @@ MSCA Digital Finance}
     \begin{exampleblock}{}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Prețurile acțiunilor, PIB, cursurile de schimb prezintă \textbf{trenduri} sau \textbf{mers aleatoriu}
-            \item Media din eșantion (linia roșie) este lipsită de sens pentru un mers aleator ($\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$)
+            \item Media din eșantion (linia roșie) nu este un estimator consistent pentru un proces nestaționar
             \item Modelele ARMA standard \textbf{nu pot} gestiona aceste serii direct
         \end{itemize}
     \end{exampleblock}
@@ -314,23 +314,6 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch3\_motivation\_nonstationary}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_nonstationary}
 \end{frame}
 
-\begin{frame}{Aplicații practice}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.51\textheight, keepaspectratio]{ch3_motivation_realworld.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{alertblock}{Provocarea}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-            \item Prețuri de acțiuni: mers aleator (preț logaritmic)
-            \item Cursuri de schimb: mers aleator
-            \item Rate ale dobânzii: foarte persistente, aproape de rădăcină unitate
-        \end{itemize}
-    \end{alertblock}
-    }
-    \quantlet{TSA\_ch3\_motivation\_realworld}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_realworld}
-\end{frame}
 
 \begin{frame}{Soluția: diferențierea}
     \vspace{-0.2cm}
@@ -349,25 +332,6 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch3\_motivation\_differencing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_motivation_differencing}
 \end{frame}
 
-\begin{frame}{Ce vom învăța astăzi}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Concepte fundamentale}
-        \begin{enumerate}
-            \item \textbf{Nestaționaritatea}: de ce contează și cum o detectăm
-            \item \textbf{Teste de rădăcină unitate}: ADF, PP, KPSS
-            \item \textbf{Diferențierea}: transformarea cheie
-            \item \textbf{Modele ARIMA}: combinarea diferențierii cu ARMA
-            \item \textbf{Metodologia Box-Jenkins}: Identificare $\to$ Estimare $\to$ Diagnoză
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.2cm}
-
-    \begin{exampleblock}{La sfârșitul acestui curs}
-        Veți putea modela și prognoza serii de timp nestaționare precum prețurile acțiunilor, PIB-ul și cursurile de schimb folosind modele ARIMA.
-    \end{exampleblock}
-    \end{cminipage}
-\end{frame}
 
 %=============================================================================
 % SECȚIUNEA 1: NESTAȚIONARITATEA
@@ -500,22 +464,6 @@ MSCA Digital Finance}
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Mers aleatoriu}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_random_walk.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{alertblock}{Proprietăți cheie}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Stânga}: Traiectorii rătăcesc imprevizibil, fără revenire la medie
-            \item \textbf{Dreapta}: $\Var(Y_t) = t\sigma^2$ crește liniar --- caracteristica definitorie a nestaționarității
-        \end{itemize}
-    \end{alertblock}
-    }
-    \quantlet{TSA\_ch3\_def\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk}
-\end{frame}
 
 \begin{frame}{Demonstrație: varianța mersului aleatoriu}
     \begin{cminipage}{0.95\textwidth}
@@ -582,44 +530,21 @@ MSCA Digital Finance}
 
 \begin{frame}{Mers aleatoriu cu drift}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{defn}[Mers aleatoriu cu drift]
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.45\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
+    \end{center}
+    \vspace{-0.4cm}
+    {\scriptsize
+    \begin{block}{$Y_t = \mu + Y_{t-1} + \varepsilon_t$ \quad $\Leftrightarrow$ \quad $Y_t = Y_0 + \mu t + \sum_{i=1}^{t} \varepsilon_i$}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Model}: $Y_t = \mu + Y_{t-1} + \varepsilon_t$
-            \item \textbf{Echivalent}: $Y_t = Y_0 + \mu t + \sum_{i=1}^{t} \varepsilon_i$
-        \end{itemize}
-    \end{defn}
-
-    \vspace{0.1cm}
-
-    \begin{block}{Proprietăți}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\E[Y_t] = Y_0 + \mu t$ (media crește liniar)
-            \item $\Var(Y_t) = t\sigma^2$ (varianța tot crește)
-            \item Drift-ul $\mu$ creează un trend ascendent sau descendent
-            \item Tot nestaționar în ciuda faptului că are un ``trend''
+            \item $\E[Y_t] = Y_0 + \mu t$ (media crește liniar); \quad $\Var(Y_t) = t\sigma^2$ (varianța tot crește)
+            \item \textbf{Fără drift} (albastru): rătăcește în jurul lui zero; \textbf{Cu drift} $\mu > 0$ (roșu): trend ascendent
+            \item Ambele sunt nestaționare --- drift-ul adaugă trend determinist la rătăcirea stochastică
         \end{itemize}
     \end{block}
     }
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Mers aleatoriu cu drift}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_random_walk_drift.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{exampleblock}{Comparație}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Fără drift} (albastru): rătăcește în jurul lui zero
-            \item \textbf{Cu drift} $\mu > 0$ (roșu): trend ascendent sistematic
-            \item Ambele sunt nestaționare --- drift-ul adaugă trend determinist la rătăcirea stochastică
-        \end{itemize}
-    \end{exampleblock}
-    }
     \quantlet{TSA\_ch3\_def\_random\_walk\_drift}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_random_walk_drift}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Simularea mersurilor aleatorii}
@@ -640,23 +565,6 @@ MSCA Digital Finance}
     \quantlet{TSA\_ch3\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_random_walk}
 \end{frame}
 
-\begin{frame}{Creșterea varianței: de ce mersurile aleatorii sunt nestaționare}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.51\textheight, keepaspectratio]{ch3_variance_growth.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Observații}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Stânga}: Evantaiul de traiectorii arată incertitudinea crescând
-            \item \textbf{Dreapta}: Varianța crește liniar: $\Var(Y_t) = t\sigma^2$
-            \item Aceasta violează staționaritatea --- varianța ar trebui să fie constantă
-        \end{itemize}
-    \end{block}
-    }
-    \quantlet{TSA\_ch3\_variance\_growth}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_variance_growth}
-\end{frame}
 
 \begin{frame}{Procese integrate}
     \begin{cminipage}{0.95\textwidth}
@@ -884,35 +792,20 @@ MSCA Digital Finance}
 
 \begin{frame}{Definiția ARIMA}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{defn}[ARIMA(p,d,q)]
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.42\textheight, keepaspectratio]{ch3_def_arima.pdf}
+    \end{center}
+    \vspace{-0.4cm}
+    {\scriptsize
+    \begin{defn}[ARIMA(p,d,q): $\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$]
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Model}: $\phi(L)(1-L)^d Y_t = c + \theta(L)\varepsilon_t$
-            \item \textbf{Polinom AR}: $\phi(L) = 1 - \phi_1 L - \phi_2 L^2 - \cdots - \phi_p L^p$
-            \item \textbf{Polinom MA}: $\theta(L) = 1 + \theta_1 L + \theta_2 L^2 + \cdots + \theta_q L^q$
-            \item \textbf{Integrare}: $d$ este ordinul de integrare (numărul de diferențe)
-            \item \textbf{Inovații}: $\varepsilon_t \sim WN(0, \sigma^2)$
+            \item \textbf{AR}: $\phi(L) = 1 - \phi_1 L - \cdots - \phi_p L^p$; \quad \textbf{MA}: $\theta(L) = 1 + \theta_1 L + \cdots + \theta_q L^q$; \quad \textbf{I}: $d$ diferențe
+            \item \textbf{Sus}: seria ARIMA originală (nestaționară); \textbf{Jos}: după diferențiere --- ACF/PACF dezvăluie $p$, $q$
         \end{itemize}
     \end{defn}
     }
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{ARIMA}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch3_def_arima.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Interpretare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Sus}: seria ARIMA originală (nestaționară)
-            \item \textbf{Jos}: după diferențiere de $d$ ori --- ACF/PACF dezvăluie ordinele AR și MA
-        \end{itemize}
-    \end{block}
-    }
     \quantlet{TSA\_ch3\_def\_arima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch3/TSA_ch3_def_arima}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Componentele ARIMA}
@@ -1123,32 +1016,6 @@ MSCA Digital Finance}
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Variante ale testului Dickey-Fuller}
-    \begin{cminipage}{0.95\textwidth}
-    {\small
-    \vspace{-0.2cm}
-    {\small
-    \begin{block}{Trei specificări}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{Fără constantă, fără trend}: $\Delta Y_t = \gamma Y_{t-1} + \varepsilon_t$
-            \item \textbf{Cu constantă (drift)}: $\Delta Y_t = \alpha + \gamma Y_{t-1} + \varepsilon_t$
-            \item \textbf{Cu constantă și trend}: $\Delta Y_t = \alpha + \beta t + \gamma Y_{t-1} + \varepsilon_t$
-        \end{enumerate}
-    \end{block}
-
-    \vspace{0.05cm}
-
-    \begin{alertblock}{Alegerea specificării corecte}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Examinați datele: au un trend vizibil?
-            \item Includerea termenilor inutili reduce puterea
-            \item Excluderea termenilor necesari duce la inferență incorectă
-        \end{itemize}
-    \end{alertblock}
-    }
-    }
-    \end{cminipage}
-\end{frame}
 
 \begin{frame}{Testul Augmented Dickey-Fuller (ADF)}
     \begin{cminipage}{0.95\textwidth}
@@ -1652,39 +1519,7 @@ MSCA Digital Finance}
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Prognoza rolling: concept}
-    \begin{cminipage}{0.95\textwidth}
-    {\small
-    \vspace{-0.2cm}
-    {\small
-    \begin{block}{Ce este prognoza Rolling?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Tehnică pentru evaluarea acurateții prognozei în afara eșantionului:
-            \begin{enumerate}\setlength{\itemsep}{0pt}
-                \item Fixăm o \textbf{fereastră de antrenament} de dimensiune $w$
-                \item Estimăm modelul pe observațiile $t = 1, \ldots, w$
-                \item Prognozăm $h$ pași înainte: $\hat{Y}_{w+h|w}$
-                \item \textbf{Deplasăm} fereastra înainte cu o perioadă
-                \item Repetăm până la sfârșitul eșantionului
-            \end{enumerate}
-        \end{itemize}
-    \end{block}
-
-    \vspace{0.05cm}
-
-    \begin{exampleblock}{De ce prognoze Rolling?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Mimează scenariul de prognoză în timp real
-            \item Oferă multiple erori de prognoză pentru evaluare
-            \item Evită supraajustarea pe întregul eșantion
-        \end{itemize}
-    \end{exampleblock}
-    }
-    }
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Fereastră fixă vs expandabilă}
+\begin{frame}{Prognoza rolling: fereastră fixă vs expandabilă}
     \begin{center}
     \begin{tikzpicture}[scale=0.85, transform shape]
         % Title for Fixed Window
@@ -1717,13 +1552,16 @@ MSCA Digital Finance}
         \draw[->, thick, color=MediumGray] (5.5, -1) -- (10.5, -1) node[right, font=\tiny] {Timp};
     \end{tikzpicture}
     \end{center}
-    \vspace{-0.2cm}
-    \begin{block}{Comparație}
+    \vspace{-0.4cm}
+    {\scriptsize
+    \begin{block}{Evaluarea acurateții prognozei în afara eșantionului}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Fixă}: Fereastra alunecă înainte, dimensiune constantă --- se adaptează la schimbări de regim
-            \item \textbf{Expandabilă}: Fereastra crește în timp --- folosește toate datele istorice
+            \item \textbf{Fixă}: fereastra alunecă, dimensiune constantă $w$ --- se adaptează la schimbări de regim
+            \item \textbf{Expandabilă}: fereastra crește --- folosește toate datele istorice
+            \item Mimează scenariul de prognoză în timp real; oferă multiple erori pentru evaluare
         \end{itemize}
     \end{block}
+    }
 \end{frame}
 
 \begin{frame}{Prognoză 1-pas vs multi-pas}
@@ -2483,8 +2321,8 @@ MSCA Digital Finance}
     \begin{exampleblock}{Resurse online și cod}
         {\small
         \begin{itemize}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Platformă de cod pentru statistică
-            \item \textbf{Quantinar}: \url{https://quantinar.com} $\succ$ Platformă de învățare metode cantitative
+            \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Platformă de cod pentru metode cantitative
+            \item \textbf{Quantinar}: \url{https://quantinar.com} $\succ$ Platformă de învățare pentru metode cantitative
             \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch3} $\succ$ Cod Python pentru acest capitol
         \end{itemize}
         }

@@ -47,7 +47,7 @@ ax1.set_xlabel(r'$\phi_1$', fontsize=12)
 ax1.set_ylabel(r'$\phi_2$', fontsize=12)
 ax1.set_title('AR(2) Stationarity Triangle', fontsize=12)
 ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False, fontsize=9)
-ax1.grid(True, alpha=0.3)
+ax1.grid(False)
 ax1.set_aspect('equal')
 
 # Plot 2: Unit circle
@@ -73,7 +73,7 @@ ax2.set_ylabel('Imaginary', fontsize=12)
 ax2.set_title('Unit Circle: Roots Must Be Outside', fontsize=12)
 ax2.axhline(y=0, color='gray', linewidth=0.5)
 ax2.axvline(x=0, color='gray', linewidth=0.5)
-ax2.grid(True, alpha=0.3)
+ax2.grid(False)
 ax2.set_aspect('equal')
 
 plt.tight_layout()

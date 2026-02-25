@@ -52,7 +52,7 @@ for ax, phi in zip(axes.flatten(), phi_values):
     ax.set_title(f'AR(1) with $\\phi$ = {phi}', fontsize=11)
     ax.set_xlabel('Time')
     ax.set_ylabel('$X_t$')
-    ax.grid(True, alpha=0.3)
+    ax.grid(False)
 
 plt.tight_layout()
 plt.savefig('../../charts/ch2_ar1_simulations.pdf', bbox_inches='tight', transparent=True)

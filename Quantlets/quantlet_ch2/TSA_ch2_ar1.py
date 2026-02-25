@@ -63,7 +63,7 @@ for i, phi in enumerate(phi_values):
     axes[0, i].set_title(f'AR(1): φ = {phi}', fontsize=11)
     axes[0, i].set_xlabel('Time')
     axes[0, i].set_ylabel('X_t')
-    axes[0, i].grid(True, alpha=0.3)
+    axes[0, i].grid(False)
 
     # Theoretical variance
     if abs(phi) < 1:
@@ -82,8 +82,8 @@ for i, phi in enumerate(phi_values):
     axes[1, i].set_title(f'ACF: ρ(h) = φ^h = {phi}^h', fontsize=10)
     axes[1, i].set_xlabel('Lag')
     axes[1, i].set_ylabel('ACF')
-    axes[1, i].legend(fontsize=8)
-    axes[1, i].grid(True, alpha=0.3)
+    axes[1, i].legend(fontsize=8, loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2)
+    axes[1, i].grid(False)
 
 plt.tight_layout()
 plt.savefig('../../charts/ch2_ar1_properties.png', dpi=150, bbox_inches='tight', transparent=True)
