@@ -4386,7 +4386,12 @@
                 });
 
                 html += `</ul>`;
-                html += `<div class="feedback" id="ch0-feedback${qNum}"></div>`;
+                html += `<div class="answer-reveal answer-correct" id="ch0answer${qNum}-correct">`;
+                html += `<strong>Correct!</strong> The answer is ${newCorrectLetter}.`;
+                html += `</div>`;
+                html += `<div class="answer-reveal answer-incorrect" id="ch0answer${qNum}-incorrect">`;
+                html += `<strong>Incorrect.</strong> The correct answer is ${newCorrectLetter}.`;
+                html += `</div>`;
                 html += `</div>\n`;
             });
 
@@ -4665,6 +4670,9 @@
                 prefix = '';
             }
 
+            // If already answered, don't allow changes
+            if (userAnswers[questionNum] !== undefined) return;
+
             userAnswers[questionNum] = selectedAnswer;
 
             // Visually check the radio button
@@ -4679,6 +4687,22 @@
                         const radio = li.querySelector('input[type="radio"]');
                         if (radio) radio.checked = true;
                     }
+                });
+            }
+
+            // Show answer feedback
+            const isCorrect = selectedAnswer === correctAnswers[questionNum];
+            const answerPrefix = prefix || '';
+            const correctDiv = document.getElementById(answerPrefix + 'answer' + questionNum + '-correct');
+            const incorrectDiv = document.getElementById(answerPrefix + 'answer' + questionNum + '-incorrect');
+            if (correctDiv) correctDiv.style.display = isCorrect ? 'block' : 'none';
+            if (incorrectDiv) incorrectDiv.style.display = isCorrect ? 'none' : 'block';
+
+            // Lock the question - disable all options
+            if (qDiv) {
+                qDiv.querySelectorAll('.quiz-options li').forEach(li => {
+                    li.style.pointerEvents = 'none';
+                    li.style.opacity = '0.7';
                 });
             }
         }
@@ -4908,6 +4932,12 @@
             // Uncheck radio buttons for this chapter
             document.querySelectorAll(`#${container} input[type="radio"]`).forEach(radio => {
                 radio.checked = false;
+            });
+
+            // Unlock all quiz options (reset pointer-events and opacity)
+            document.querySelectorAll(`#${container} .quiz-options li`).forEach(li => {
+                li.style.pointerEvents = '';
+                li.style.opacity = '';
             });
 
             document.getElementById(displayId).textContent = '';
