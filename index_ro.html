@@ -797,19 +797,35 @@
         <section id="quizzes">
             <h2>Teste Interactive</h2>
 
-            <!-- Student Info -->
-            <div id="student-info" style="margin-bottom: 1.5rem; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; justify-content: center;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <label for="student-name" style="font-weight: bold; color: var(--main-blue);">Nume:</label>
-                    <input type="text" id="student-name" placeholder="ex: Ion Popescu" style="padding: 0.5rem 1rem; border: 2px solid #dee2e6; border-radius: 6px; font-size: 1rem; width: 200px;">
+            <!-- GitHub Login Section (shown when NOT logged in) -->
+            <div id="github-login-section" style="margin-bottom: 1.5rem; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+                <p style="margin-bottom: 1rem; color: #555; font-size: 1.05rem;">Te rog autentifică-te cu contul tău GitHub pentru a accesa testele.</p>
+                <button onclick="loginWithGitHub()" style="padding: 0.75rem 2rem; background: #24292f; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; transition: background 0.2s;">
+                    <svg height="20" width="20" viewBox="0 0 16 16" fill="white"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    Autentificare cu GitHub
+                </button>
+            </div>
+
+            <!-- Logged-in Section (shown AFTER login) -->
+            <div id="github-logged-in-section" style="margin-bottom: 1.5rem; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none; align-items: center; flex-wrap: wrap; justify-content: center; gap: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <img id="github-avatar" src="" alt="avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--main-blue);">
+                    <div>
+                        <strong id="github-display-name" style="color: var(--main-blue);"></strong>
+                        <span id="github-username" style="color: #666; font-size: 0.9rem; margin-left: 0.3rem;"></span>
+                    </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <label for="student-group" style="font-weight: bold; color: var(--main-blue);">Grupa:</label>
                     <input type="text" id="student-group" placeholder="ex: A1" style="padding: 0.5rem 1rem; border: 2px solid #dee2e6; border-radius: 6px; font-size: 1rem; width: 120px;">
                 </div>
-                <button onclick="saveStudentInfo()" style="padding: 0.5rem 1.5rem; background: var(--main-blue); color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;">Salvează</button>
-                <span id="student-saved" style="color: var(--forest); font-weight: bold; display: none;">✓ Salvat</span>
+                <button onclick="saveGroup()" style="padding: 0.5rem 1.5rem; background: var(--main-blue); color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;">Salvează</button>
+                <span id="student-saved" style="color: var(--forest); font-weight: bold; display: none;">&#10003; Salvat</span>
+                <button onclick="logoutGitHub()" style="padding: 0.5rem 1.2rem; background: #dc3545; color: white; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer;">Deconectare</button>
             </div>
+
+            <!-- Quiz content (hidden until logged in) -->
+            <div id="quiz-content" style="display: none;">
 
             <!-- Chapter Selector Tabs -->
             <div class="chapter-tabs" style="margin-bottom: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; padding: 1rem; background: var(--light-gray); border-radius: 8px;">
@@ -4687,6 +4703,8 @@
                     <button onclick="resetQuiz(10)" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1rem; cursor: pointer; border: none;">Resetează Testul</button>
                 </div>
             </div>
+
+            </div><!-- end quiz-content -->
         </section>
 
         <section id="resources">
@@ -4775,39 +4793,68 @@
             10: 'Cap. 10 - Recapitulare'
         };
 
-        // Save/load student info
-        function saveStudentInfo() {
-            const name = document.getElementById('student-name').value.trim();
-            const group = document.getElementById('student-group').value.trim();
-            if (name) {
-                localStorage.setItem('tsa-student-name', name);
-                localStorage.setItem('tsa-student-group', group);
-                const saved = document.getElementById('student-saved');
-                saved.style.display = 'inline';
-                setTimeout(() => saved.style.display = 'none', 2000);
-            }
+        // GitHub OAuth Client ID (public — safe to embed)
+        const GITHUB_CLIENT_ID = 'Ov23liJNDMSO6UzqPjZp';
+
+        // Redirect to GitHub OAuth
+        function loginWithGitHub() {
+            localStorage.setItem('tsa-login-return', 'index_ro.html');
+            const redirectUri = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'callback.html';
+            window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + GITHUB_CLIENT_ID + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=read:user';
         }
 
-        // Load student info on page load
+        // Show logged-in state
+        function showLoggedInState(user) {
+            document.getElementById('github-login-section').style.display = 'none';
+            document.getElementById('github-logged-in-section').style.display = 'flex';
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('github-avatar').src = user.avatar_url;
+            document.getElementById('github-display-name').textContent = user.name;
+            document.getElementById('github-username').textContent = '@' + user.login;
+        }
+
+        // Logout
+        function logoutGitHub() {
+            localStorage.removeItem('tsa-github-user');
+            localStorage.removeItem('tsa-student-group');
+            document.getElementById('github-login-section').style.display = 'block';
+            document.getElementById('github-logged-in-section').style.display = 'none';
+            document.getElementById('quiz-content').style.display = 'none';
+        }
+
+        // Save group
+        function saveGroup() {
+            const group = document.getElementById('student-group').value.trim();
+            localStorage.setItem('tsa-student-group', group);
+            const saved = document.getElementById('student-saved');
+            saved.style.display = 'inline';
+            setTimeout(() => saved.style.display = 'none', 2000);
+        }
+
+        // Load state on page load
         window.addEventListener('DOMContentLoaded', function() {
-            const name = localStorage.getItem('tsa-student-name');
+            const userData = localStorage.getItem('tsa-github-user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                showLoggedInState(user);
+            }
             const group = localStorage.getItem('tsa-student-group');
-            if (name) document.getElementById('student-name').value = name;
             if (group) document.getElementById('student-group').value = group;
         });
 
         // Send results to Google Sheets
         function sendResults(chapterNum, score, total) {
-            const name = document.getElementById('student-name').value.trim();
-            const group = document.getElementById('student-group').value.trim();
-            if (!name) {
-                alert('Te rog completează numele înainte de a verifica scorul!');
-                document.getElementById('student-name').focus();
+            const userData = localStorage.getItem('tsa-github-user');
+            if (!userData) {
+                alert('Te rog autentifică-te cu GitHub înainte de a verifica scorul!');
                 return false;
             }
+            const user = JSON.parse(userData);
+            const group = document.getElementById('student-group').value.trim();
             const nota = Math.round((score / total) * 10 * 100) / 100;
             const data = {
-                nume: name,
+                nume: user.name,
+                github_username: user.login,
                 grupa: group,
                 capitol: chapterNames[chapterNum] || 'Cap. ' + chapterNum,
                 scor: score + '/' + total,
