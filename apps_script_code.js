@@ -1,3 +1,14 @@
+// appsscript.json manifest (set in Project Settings):
+// {
+//   "timeZone": "Europe/Bucharest",
+//   "dependencies": {},
+//   "exceptionLogging": "STACKDRIVER",
+//   "oauthScopes": [
+//     "https://www.googleapis.com/auth/spreadsheets",
+//     "https://www.googleapis.com/auth/script.external_request"
+//   ]
+// }
+
 // Configuration
 var GITHUB_CLIENT_ID     = 'Ov23liJNDMSO6UzqPjZp';
 var GITHUB_CLIENT_SECRET = 'bbddf00768f1c2d91a58c970aa8e16a7968c0e1b';
