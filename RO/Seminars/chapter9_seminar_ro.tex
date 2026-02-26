@@ -1,51 +1,37 @@
-% Seminar 9: Prophet și TBATS
-% Prezentare academică de calitate Harvard
+% Capitolul 9: Seminar - Prophet și TBATS
+% Sezonalități Multiple
 % Program de licență, Academia de Studii Economice din București
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
 
-% Standard 8mm margins for seminar slides
+% Ensure content fits on slides
 \setbeamersize{text margin left=8mm, text margin right=8mm}
 
 %=============================================================================
-% CONFIGURARE TEMĂ ȘI STIL
+% THEME AND STYLE CONFIGURATION
 %=============================================================================
-\usetheme{default}
+\usetheme{Madrid}
+\usecolortheme{seahorse}
 
-% Color Palette (matching Redispatch PDF)
+% IDA-Inspired Color Palette
 \definecolor{MainBlue}{RGB}{26, 58, 110}
-\definecolor{AccentBlue}{RGB}{26, 58, 110}
-\definecolor{IDAred}{RGB}{205, 0, 0}
+\definecolor{AccentBlue}{RGB}{42, 82, 140}
+\definecolor{IDAred}{RGB}{220, 53, 69}
 \definecolor{DarkGray}{RGB}{51, 51, 51}
 \definecolor{MediumGray}{RGB}{128, 128, 128}
 \definecolor{LightGray}{RGB}{248, 248, 248}
 \definecolor{VeryLightGray}{RGB}{235, 235, 235}
-\definecolor{KeynoteGray}{RGB}{218, 218, 218}
-\definecolor{SectionGray}{RGB}{120, 120, 120}
-\definecolor{FooterGray}{RGB}{100, 100, 100}
 \definecolor{Crimson}{RGB}{220, 53, 69}
 \definecolor{Forest}{RGB}{46, 125, 50}
 \definecolor{Amber}{RGB}{181, 133, 63}
 \definecolor{Orange}{RGB}{230, 126, 34}
-\definecolor{Purple}{RGB}{142, 68, 173}
-
-% Gradient background (exact Keynote 315 gradient: white to RGB 218,218,218)
-\setbeamertemplate{background}{%
-    \begin{tikzpicture}[remember picture, overlay]
-        \shade[shading=axis, shading angle=315,
-        top color=white, bottom color=KeynoteGray]
-        (current page.south west) rectangle (current page.north east);
-    \end{tikzpicture}%
-}
-% Fallback solid color for compatibility
-\setbeamercolor{background canvas}{bg=}
 
 \setbeamercolor{palette primary}{bg=MainBlue, fg=white}
 \setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
 \setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
 \setbeamercolor{structure}{fg=MainBlue}
-\setbeamercolor{title}{fg=IDAred}
-\setbeamercolor{frametitle}{fg=IDAred, bg=}
+\setbeamercolor{title}{fg=MainBlue}
+\setbeamercolor{frametitle}{fg=MainBlue, bg=white}
 \setbeamercolor{block title}{bg=MainBlue, fg=white}
 \setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
 \setbeamercolor{block title alerted}{bg=Crimson, fg=white}
@@ -54,221 +40,109 @@
 \setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
 \setbeamercolor{item}{fg=MainBlue}
 
-% Footer colors (override Madrid theme blue)
-\setbeamercolor{author in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{title in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{date in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{section in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{subsection in head/foot}{fg=FooterGray, bg=}
-
-% Bullet styles (apply everywhere including blocks)
-\setbeamertemplate{itemize item}{\color{MainBlue}$\boxdot$}
-\setbeamertemplate{itemize subitem}{\color{MainBlue}$\blacktriangleright$}
-\setbeamertemplate{itemize subsubitem}{\color{MainBlue}\tiny$\bullet$}
-\setbeamertemplate{itemize/enumerate body begin}{\normalsize}
-\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
-
-% Item spacing - compact style
-\setlength{\leftmargini}{10pt}       % Level 1: minimal indent
-\setlength{\leftmarginii}{10pt}      % Level 2: minimal additional indent
-% Compact list spacing (zero extra space before/after lists in blocks)
-\makeatletter
-\def\@listi{\leftmargin\leftmargini \topsep 0pt \parsep 0pt \itemsep 0pt}
-\def\@listii{\leftmargin\leftmarginii \topsep 0pt \parsep 0pt \itemsep 0pt}
-\makeatother
-
 \setbeamertemplate{navigation symbols}{}
 
-%=============================================================================
-% CUSTOM HEADLINE
-%=============================================================================
-\setbeamertemplate{headline}{%
-    \vskip10pt%
-    \hbox to \paperwidth{%
-        \hskip0.5cm%
-        {\small\color{FooterGray}\renewcommand{\hyperlink}[2]{##2}\insertsectionhead}%
-        \hfill%
-        \textcolor{FooterGray}{\small\insertframenumber}%
-        \hskip0.5cm%
-    }%
-    \vskip4pt%
-    {\color{FooterGray}\hrule height 0.4pt}%
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+            \usebeamerfont{author in head/foot}\insertshortauthor
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+            \usebeamerfont{title in head/foot}\insertshorttitle
+        \end{beamercolorbox}%
+        \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+            \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+            \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+        \end{beamercolorbox}}%
+    \vskip0pt%
 }
 
 %=============================================================================
-% CUSTOM FOOTER
-%=============================================================================
-\usepackage{fontawesome5}
-
-\setbeamertemplate{footline}{%
-    {\color{FooterGray}\hrule height 0.4pt}%
-    \vskip4pt%
-    \hbox to \paperwidth{%
-        \hskip0.5cm%
-        \textcolor{FooterGray}{\small Analiza și Prognoza seriilor de timp}%
-        \hfill%
-        \raisebox{-0.1em}{%
-            \begin{tikzpicture}[x=0.08em, y=0.08em, line width=0.4pt]
-                \draw[FooterGray] (0,3) -- (1,4) -- (2,3.5) -- (3,5) -- (4,4) -- (5,6) -- (6,5.5) -- (7,4) -- (8,5) -- (9,7) -- (10,6) -- (11,5) -- (12,6.5) -- (13,8) -- (14,7) -- (15,6) -- (16,7.5) -- (17,9) -- (18,8) -- (19,7) -- (20,8.5) -- (21,10) -- (22,9) -- (23,8) -- (24,9.5);
-            \end{tikzpicture}%
-        }%
-        \hskip0.5cm%
-    }%
-    \vskip6pt%
-}
-
-%=============================================================================
-% PACHETE
+% PACKAGES
 %=============================================================================
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[romanian]{babel}
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{mathtools}
 \usepackage{bm}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing, shadings}
-\usepackage{enumerate}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage{colortbl}
-\hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
+\hypersetup{colorlinks=false, pdfborder={0 0 0}}
 \graphicspath{{../../logos/}{../../charts/}}
-\hfuzz=2pt  % Suppress tiny overfull warnings (<2pt)
-\vfuzz=2pt  % Suppress tiny vertical overfull warnings (<2pt)
 
 %=============================================================================
-% COMANDA QUANTLET
-%=============================================================================
-\newcommand{\quantlet}[2]{%
-    \hfill\href{#2}{%
-        \raisebox{-0.15em}{\includegraphics[height=0.7em]{ql_logo.png}}%
-        \textcolor{MainBlue}{\tiny\ #1}%
-    }%
-}
-
-%=============================================================================
-% CENTRED MINIPAGE (fara spatiu vertical suplimentar)
-%=============================================================================
-\newenvironment{cminipage}[1]{%
-    \par\noindent\hfill\begin{minipage}{#1}\ignorespaces
-}{%
-    \end{minipage}\hfill\null\par
-}
-
-%=============================================================================
-% COMENZI PERSONALIZATE
+% CUSTOM COMMANDS
 %=============================================================================
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Var}{\text{Var}}
 \newcommand{\Cov}{\text{Cov}}
-\newcommand{\Corr}{\text{Corr}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\RMSE}{\text{RMSE}}
-\newcommand{\MAE}{\text{MAE}}
-\newcommand{\MAPE}{\text{MAPE}}
-
-\newcommand{\correct}{\textcolor{Forest}{\checkmark}}
-\newcommand{\incorrect}{\textcolor{Crimson}{\texttimes}}
 
 %=============================================================================
-% PAGINA TITLU PERSONALIZATA
+% TITLE INFORMATION
 %=============================================================================
-\defbeamertemplate*{title page}{hybrid}[1][]
-{
-    \vspace{0.2cm}
-    \begin{center}
-        \href{https://www.ase.ro}{\includegraphics[height=1.0cm]{ase_logo.png}}\hspace{0.3cm}%
-        \href{https://theida.net}{\includegraphics[height=1.0cm]{ida_logo.png}}\hspace{0.3cm}%
-        \href{https://blockchain-research-center.com}{\includegraphics[height=1.0cm]{brc_logo.png}}\hspace{0.3cm}%
-        \href{https://www.ai4efin.ase.ro}{\includegraphics[height=1.0cm]{ai4efin_logo.png}}\hspace{0.3cm}%
-        \href{https://ipe.ro/new}{\includegraphics[height=1.0cm]{acad_logo.png}}\hspace{0.3cm}%
-        \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.0cm]{msca_logo.png}}%
-    \end{center}
-
-    \vspace{0.6cm}
-
-    \begin{center}
-        \begin{minipage}{0.1\textwidth}
-            \centering
-            \href{https://quantlet.com}{\includegraphics[height=1.1cm]{ql_logo.png}}
-        \end{minipage}%
-        \begin{minipage}{0.78\textwidth}
-            \centering
-            {\LARGE\bfseries\usebeamercolor[fg]{title}\inserttitle}
-
-            \vspace{0.3cm}
-
-            {\usebeamerfont{subtitle}\usebeamercolor[fg]{title}\insertsubtitle}
-        \end{minipage}%
-        \begin{minipage}{0.1\textwidth}
-            \centering
-            \href{https://quantinar.com}{\includegraphics[height=1.1cm]{qr_logo.png}}
-        \end{minipage}
-    \end{center}
-
-    \vspace{0.6cm}
-
-    \hspace{0.5cm}{\usebeamerfont{author}\insertauthor}
-
-    \vspace{0.3cm}
-
-    \hspace{0.5cm}\begin{minipage}[t]{0.9\textwidth}
-        \raggedright\small\insertinstitute
-    \end{minipage}
-}
-
-%=============================================================================
-% INFORMATII TITLU
-%=============================================================================
-\title[Analiza Seriilor de Timp]{Analiza și Prognoza seriilor de timp}
-\subtitle{Seminar 9: Prophet și TBATS}
-\author[D.T. Pele]{Daniel Traian PELE}
-\institute{Academia de Studii Economice din București\\
-IDA Institute Digital Assets\\
-Blockchain Research Center\\
-AI4EFin Artificial Intelligence for Energy Finance\\
-Academia Română, Institutul de Prognoză Economică\\
-MSCA Digital Finance}
-\date{}
+\title[Capitolul 9: Seminar]{Capitolul 9: Seminar --- Prophet și TBATS}
+\subtitle{Program de licență, Facultatea de Cibernetică, Statistică și Informatică Economică, Academia de Studii Economice din București}
+\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
+\institute{Academia de Studii Economice din București}
+\date{An Universitar 2025--2026}
 
 \begin{document}
 
-% Title page (no header/footer)
-{
-\setbeamertemplate{headline}{}
-\setbeamertemplate{footline}{}
-\begin{frame}
-    \titlepage
+%=============================================================================
+% TITLE SLIDE
+%=============================================================================
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.north west) rectangle ([yshift=-0.15cm]current page.north east);
+        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
+            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
+        };
+        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
+            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
+        };
+        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
+            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
+        };
+    \end{tikzpicture}
+    \vfill
+    \begin{center}
+        {\Large\textcolor{MediumGray}{Analiza și Prognoza Seriilor de Timp}}\\[0.3cm]
+        {\Huge\textbf{\textcolor{MainBlue}{Capitolul 9: Prophet și TBATS}}}\\[0.5cm]
+        {\Large\textcolor{IDAred}{Seminar}}
+    \end{center}
+    \vfill
+
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.south west) rectangle ([yshift=0.15cm]current page.south east);
+        \node[anchor=south west] at ([xshift=0.5cm, yshift=0.8cm]current page.south west) {
+            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
+        };
+        \node[anchor=south] at ([xshift=-3cm, yshift=0.8cm]current page.south) {
+            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
+        };
+        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
+            \href{https://quantinar.com}{\includegraphics[height=0.9cm]{qr_logo.png}}
+        };
+        \node[anchor=south] at ([xshift=3cm, yshift=0.8cm]current page.south) {
+            \href{https://quantlet.com}{\includegraphics[height=0.9cm]{ql_logo.png}}
+        };
+        \node[anchor=south east] at ([xshift=-0.5cm, yshift=0.8cm]current page.south east) {
+            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
+        };
+    \end{tikzpicture}
 \end{frame}
-}
 
 %=============================================================================
 % OUTLINE
 %=============================================================================
 \begin{frame}{Cuprins Seminar}
-    \begin{cminipage}{0.95\textwidth}
-    \textbf{\large Structura seminarului:}
-
-    \vspace{0.4cm}
-
-    \begin{enumerate}
-        \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Test de Recapitulare} -- Verificarea cunoștințelor
-        \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Întrebări Adevărat/Fals} -- Verificări conceptuale
-        \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Probleme Practice} -- Practică aplicată
-        \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Exemple Rezolvate} -- Soluții detaliate
-        \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Subiecte de Discuție} -- Gândire critică
-        \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Exerciții cu asistență AI} -- Inteligență artificială aplicată
-    \end{enumerate}
-    \end{cminipage}
+    \tableofcontents
 \end{frame}
 
 %=============================================================================
@@ -295,10 +169,9 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Test 1: Răspuns}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
     \begin{exampleblock}{Răspuns: B -- SARIMA permite o singură perioadă sezonieră}
         \begin{center}
-            \includegraphics[width=0.88\textwidth, height=0.55\textheight, keepaspectratio]{ch9_quiz1_multiple_seasonality.pdf}
+            \includegraphics[width=0.85\textwidth, height=0.60\textheight, keepaspectratio]{ch9_quiz1_multiple_seasonality.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
@@ -326,22 +199,22 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Test 2: Răspuns}
-    \vspace{0.1cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.38\textheight, keepaspectratio]{ch9_quiz2_tbats_components.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \begin{block}{Observații}
-    {\small
-        \begin{itemize}\setlength{\itemsep}{2pt}
+    \begin{exampleblock}{Răspuns: B -- Trigonometric, Box-Cox, ARMA, Trend, Seasonal}
+        \begin{center}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz2_tbats_components.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Componentele TBATS}:
+        \begin{itemize}
             \item \textbf{T}rigonometric: Termeni Fourier pentru sezonalitate
             \item \textbf{B}ox-Cox: Stabilizarea varianței
             \item \textbf{A}RMA: Autocorelația erorilor
             \item \textbf{T}rend: Trend local amortizat
             \item \textbf{S}easonal: Perioade sezoniere multiple
         \end{itemize}
-    }
-    \end{block}
+        }
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Test 3: Termenii Fourier}
@@ -365,7 +238,7 @@ MSCA Digital Finance}
 \begin{frame}{Test 3: Răspuns}
     \begin{exampleblock}{Răspuns: B -- Permite forme sezoniere mai flexibile}
         \begin{center}
-            \includegraphics[width=0.88\textwidth, height=0.48\textheight, keepaspectratio]{ch9_quiz3_fourier_harmonics.pdf}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz3_fourier_harmonics.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
@@ -394,21 +267,21 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Test 4: Răspuns}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.40\textheight, keepaspectratio]{ch9_quiz4_prophet_decomposition.pdf}
-    \end{center}
-    \vspace{-0.1cm}
-    \begin{block}{Observații}
-    {\small
-        \begin{itemize}\setlength{\itemsep}{2pt}
+    \begin{exampleblock}{Răspuns: B -- Trend, sezonalitate, sărbători și eroare}
+        \begin{center}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz4_prophet_decomposition.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Modelul Prophet}: $y(t) = g(t) + s(t) + h(t) + \varepsilon_t$
+        \begin{itemize}
             \item $g(t)$: Trend (liniar pe porțiuni sau creștere logistică)
             \item $s(t)$: Sezonalitate (serii Fourier)
             \item $h(t)$: Efecte de sărbători
             \item $\varepsilon_t$: Termen de eroare
         \end{itemize}
-    }
-    \end{block}
+        }
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Test 5: Prophet vs TBATS}
@@ -432,7 +305,7 @@ MSCA Digital Finance}
 \begin{frame}{Test 5: Răspuns}
     \begin{exampleblock}{Răspuns: B -- Sărbători și puncte de schimbare cunoscute}
         \begin{center}
-            \includegraphics[width=0.88\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz5_prophet_vs_tbats.pdf}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz5_prophet_vs_tbats.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
@@ -463,7 +336,7 @@ MSCA Digital Finance}
 \begin{frame}{Test 6: Răspuns}
     \begin{exampleblock}{Răspuns: B -- Sezonalitate multiplicativă}
         \begin{center}
-            \includegraphics[width=0.88\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz6_seasonality_mode.pdf}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz6_seasonality_mode.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
@@ -495,7 +368,7 @@ MSCA Digital Finance}
 \begin{frame}{Test 7: Răspuns}
     \begin{exampleblock}{Răspuns: B -- Ajustează panta trendului în puncte specifice}
         \begin{center}
-            \includegraphics[width=0.88\textwidth, height=0.52\textheight, keepaspectratio]{ch9_quiz7_changepoints.pdf}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz7_changepoints.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
@@ -506,7 +379,7 @@ MSCA Digital Finance}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Test 8: Selecția modelului}
+\begin{frame}{Test 8: Selecția Modelului}
     \begin{alertblock}{Întrebare}
         Aveți date zilnice de call center cu doar sezonalitate săptămânală. Ce model este cel mai potrivit?
     \end{alertblock}
@@ -527,7 +400,7 @@ MSCA Digital Finance}
 \begin{frame}{Test 8: Răspuns}
     \begin{exampleblock}{Răspuns: C -- SARIMA standard este suficient}
         \begin{center}
-            \includegraphics[width=0.88\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz8_model_decision.pdf}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz8_model_decision.pdf}
         \end{center}
         \vspace{-0.2cm}
         {\footnotesize
@@ -557,20 +430,20 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Test 9: Răspuns}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.42\textheight, keepaspectratio]{ch9_quiz9_prophet_uncertainty.pdf}
-    \end{center}
-    \vspace{-0.1cm}
-    \begin{block}{Observații}
-    {\small
-        \begin{itemize}\setlength{\itemsep}{2pt}
+    \begin{exampleblock}{Răspuns: B -- Eșantionează din distribuția posterioară}
+        \begin{center}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz9_prophet_uncertainty.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Prophet folosește estimare Bayesiană}: \\
+        \begin{itemize}
             \item Estimare MAP pentru prognoze punctuale
             \item MCMC sau simulare pentru intervale de incertitudine
             \item Incertitudine atât din trend (changepoints) cât și din zgomotul observațiilor
         \end{itemize}
-    }
-    \end{block}
+        }
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Test 10: Aplicație Practică}
@@ -592,20 +465,20 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Test 10: Răspuns}
-    \vspace{0.3cm}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth, height=0.42\textheight, keepaspectratio]{ch9_quiz10_energy_example.pdf}
-    \end{center}
-    \vspace{-0.1cm}
-    \begin{block}{Observații}
-    {\small
-        \begin{itemize}\setlength{\itemsep}{2pt}
+    \begin{exampleblock}{Răspuns: D -- TBATS sau Prophet în funcție de necesități}
+        \begin{center}
+            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz10_energy_example.pdf}
+        \end{center}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \textbf{Ambele pot gestiona sezonalitate multiplă}: \\
+        \begin{itemize}
             \item Dacă efectele sărbătorilor sunt cruciale $\Rightarrow$ \textbf{Prophet} (modelare explicită)
             \item Dacă preferați selecție automată $\Rightarrow$ \textbf{TBATS}
             \item Adesea: Încercați ambele și comparați prin validare încrucișată
         \end{itemize}
-    }
-    \end{block}
+        }
+    \end{exampleblock}
 \end{frame}
 
 %=============================================================================
@@ -631,20 +504,31 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Adevărat/Fals: Soluții}
-    {\scriptsize
-    \begin{enumerate}\setlength{\itemsep}{0pt}
+    {\small
+    \begin{enumerate}\setlength{\itemsep}{1pt}
         \item Prophet a fost dezvoltat de Facebook (Meta) pentru prognoza de business. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
-        \\ \textcolor{MediumGray}{Lansat în 2017, proiectat pentru prognoză „analyst in the loop" la scară largă.}
+
+        {\footnotesize \textcolor{MediumGray}{Lansat în 2017, proiectat pentru prognoză „analyst in the loop" la scară largă.}}
+
         \item TBATS poate gestiona cel mult două perioade sezoniere. \hfill \textcolor{Crimson}{\textbf{FALS}}
-        \\ \textcolor{MediumGray}{TBATS poate gestiona orice număr de perioade sezoniere (ex. zilnic, săptămânal, anual).}
+
+        {\footnotesize \textcolor{MediumGray}{TBATS poate gestiona orice număr de perioade sezoniere (ex. zilnic, săptămânal, anual).}}
+
         \item În Prophet, trendul implicit este creștere logistică. \hfill \textcolor{Crimson}{\textbf{FALS}}
-        \\ \textcolor{MediumGray}{Implicit este liniar pe porțiuni. Creșterea logistică trebuie specificată explicit.}
+
+        {\footnotesize \textcolor{MediumGray}{Implicit este liniar pe porțiuni. Creșterea logistică trebuie specificată explicit.}}
+
         \item Termenii Fourier aproximează sezonalitatea folosind funcții sinus și cosinus. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
-        \\ \textcolor{MediumGray}{$s(t) = \sum_{k=1}^{K}[a_k \cos(2\pi kt/m) + b_k \sin(2\pi kt/m)]$}
+
+        {\footnotesize \textcolor{MediumGray}{$s(t) = \sum_{k=1}^{K}[a_k \cos(2\pi kt/m) + b_k \sin(2\pi kt/m)]$}}
+
         \item Prophet necesită date de serii de timp echidistante. \hfill \textcolor{Crimson}{\textbf{FALS}}
-        \\ \textcolor{MediumGray}{Prophet gestionează elegant datele lipsă și timestamp-urile neregulate.}
+
+        {\footnotesize \textcolor{MediumGray}{Prophet gestionează elegant datele lipsă și timestamp-urile neregulate.}}
+
         \item Transformarea Box-Cox din TBATS stabilizează varianța. \hfill \textcolor{Forest}{\textbf{ADEVĂRAT}}
-        \\ \textcolor{MediumGray}{$y^{(\lambda)} = (y^\lambda - 1)/\lambda$ pentru $\lambda \neq 0$; $\log(y)$ pentru $\lambda = 0$.}
+
+        {\footnotesize \textcolor{MediumGray}{$y^{(\lambda)} = (y^\lambda - 1)/\lambda$ pentru $\lambda \neq 0$; $\log(y)$ pentru $\lambda = 0$.}}
     \end{enumerate}
     }
 \end{frame}
@@ -730,7 +614,7 @@ MSCA Digital Finance}
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Problemă 3: interpretarea Modelului TBATS}
+\begin{frame}{Problemă 3: Interpretarea Modelului TBATS}
     \begin{block}{Enunț}
         Un model TBATS ajustat pe date orare de electricitate raportează:
         \begin{itemize}
@@ -747,7 +631,6 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Problemă 3: Soluție}
-    \vspace{-0.4cm}
     \begin{exampleblock}{Soluție}
         \textbf{Box-Cox $\lambda = 0.5$}:
         \begin{itemize}
@@ -816,9 +699,7 @@ MSCA Digital Finance}
 \section{Exemple Rezolvate}
 
 \begin{frame}{Exemplu: Prognoza Vânzărilor Retail cu Prophet}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
-    \vspace{-0.3cm}
-    {\footnotesize
+    {\small
     \begin{block}{Scenariu}
         Date lunare de vânzări retail (2018-2023) cu:
         \begin{itemize}
@@ -843,9 +724,7 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Exemplu: Cererea de Energie cu TBATS}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
-    \vspace{-0.3cm}
-    {\footnotesize
+    {\small
     \begin{block}{Scenariu}
         Cerere orară de electricitate cu:
         \begin{itemize}
@@ -869,9 +748,7 @@ MSCA Digital Finance}
     }
 \end{frame}
 
-\begin{frame}{Exemplu: comparație prin Validare Încrucișată}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
-    \vspace{-0.4cm}
+\begin{frame}{Exemplu: Comparație prin Validare Încrucișată}
     {\footnotesize
     \begin{block}{Obiectiv}
         Comparați Prophet, TBATS și SARIMA pe 2 ani de date zilnice de vânzări.
@@ -905,7 +782,7 @@ MSCA Digital Finance}
 %=============================================================================
 \section{Subiecte de Discuție}
 
-\begin{frame}{Discuție: Când să folosim Care Model?}
+\begin{frame}{Discuție: Când să Folosim Care Model?}
     {\small
     \begin{alertblock}{Întrebare Cheie}
         Aveți o nouă sarcină de prognoză. Cum alegeți între SARIMA, TBATS și Prophet?
@@ -933,8 +810,7 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Discuție: Supraajustare cu Termeni Fourier}
-    \vspace{-0.3cm}
-    {\scriptsize
+    {\small
     \begin{alertblock}{Întrebare Cheie}
         Puteți avea prea mulți termeni Fourier? Care sunt simptomele?
     \end{alertblock}
@@ -971,9 +847,9 @@ MSCA Digital Finance}
         \end{enumerate}
     \end{block}
     \begin{exampleblock}{Abordare Prophet}
-        {\scriptsize\ttfamily
-        model = Prophet(changepoints=['2020-03-15', '2021-06-01'])\\
-        df['covid'] = (df['ds'] >= '2020-03-15') \& (df['ds'] < '2021-06-01')\\
+        {\footnotesize\ttfamily
+        model = Prophet(changepoints=[...])\\
+        df['covid'] = (df['ds'] >= '2020-03-15') \& ...\\
         model.add\_regressor('covid')
         }
     \end{exampleblock}
@@ -983,12 +859,10 @@ MSCA Digital Finance}
 %=============================================================================
 % SECTION 5: EXERCISES
 %=============================================================================
-\section{Exerciții cu asistență AI}
+\section{Exerciții pentru Studiu Individual}
 
 \begin{frame}{Exerciții de Lucru Acasă}
-    \vspace{-0.3cm}
     {\footnotesize
-    \begin{block}{Exerciții}
     \begin{enumerate}\setlength{\itemsep}{2pt}
         \item \textbf{Teoretic}: Demonstrați că $K = m/2$ termeni Fourier pot reprezenta orice funcție periodică cu perioada $m$ (pentru $m$ par).
 
@@ -1006,13 +880,11 @@ MSCA Digital Finance}
 
         \item \textbf{Gândire Critică}: De ce ar putea Prophet să performeze slab pe date financiare de înaltă frecvență (ex. prețuri de acțiuni minut cu minut)?
     \end{enumerate}
-    \end{block}
     }
 \end{frame}
 
-\begin{frame}[shrink=5]{Indicii pentru Soluții}
-    \vspace{-0.3cm}
-    {\scriptsize
+\begin{frame}{Indicii pentru Soluții}
+    {\footnotesize
     \begin{block}{Indicii}
         \begin{enumerate}\setlength{\itemsep}{1pt}
             \item Prin teorema Fourier, orice funcție periodică poate fi reprezentată ca sumă de sinusuri și cosinusuri. Cu perioada $m$, frecvențele sunt $k/m$ pentru $k = 1, \ldots, m/2$.
@@ -1045,10 +917,7 @@ MSCA Digital Finance}
 %=============================================================================
 % SUMMARY
 %=============================================================================
-\section{Concluzii}
-
-\begin{frame}{Concluzii cheie din acest seminar}
-    \vspace{-0.2cm}
+\begin{frame}{Concluzii Cheie din Acest Seminar}
     {\footnotesize
     \begin{block}{Modele pentru Sezonalitate Multiplă}
         \begin{enumerate}\setlength{\itemsep}{0pt}
@@ -1072,106 +941,22 @@ MSCA Digital Finance}
 \end{frame}
 
 %=============================================================================
-% EXERCIȚII CU ASISTENȚĂ AI
-%=============================================================================
-\section{Exerciții cu asistență AI}
-
-\begin{frame}{Exercițiu AI: Gândire critică}
-    \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.3cm}
-    \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
-        {\footnotesize
-        ``Folosind Prophet, prognozează traficul lunar pe Wikipedia pentru pagina 'Bitcoin'. Adaugă sărbători și puncte de schimbare. Cât de bună e prognoza?''
-        }
-    \end{block}
-    \vspace{-2mm}
-    {\footnotesize
-    \textbf{Exercițiu}:
-    \begin{enumerate}\setlength{\itemsep}{0pt}
-        \item Rulați prompt-ul într-un LLM la alegere și analizați critic răspunsul.
-        \item AI validează pe un set de test separat sau evaluează doar pe date de antrenare?
-        \item Punctele de schimbare sunt detectate automat sau specificate manual?
-        \item Sezonalitatea multiplă (săptămânală + anuală) este configurată corect?
-        \item Intervalele de incertitudine din Prophet sunt calibrate? AI le verifică?
-    \end{enumerate}
-    }
-    \vspace{-2mm}
-    \begin{alertblock}{}
-        {\footnotesize \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Asta nu înseamnă că e corect.}}
-    \end{alertblock}
-    \end{cminipage}
-\end{frame}
-
-%=============================================================================
 % THANK YOU SLIDE
 %=============================================================================
-\begin{frame}{}
-    \begin{cminipage}{0.95\textwidth}
-    \centering
-    \Huge\textcolor{IDAred}{Vă mulțumim!}
-
-    \vspace{1cm}
-
-    \Large\textcolor{MainBlue}{Întrebări?}
-
-    \vspace{0.8cm}
-
-    \normalsize
-    Materialele seminarului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
-
-    \vspace{0.2cm}
-
-    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
-    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
-    \end{cminipage}
-\end{frame}
-
-%=============================================================================
-% BIBLIOGRAFIE
-%=============================================================================
-\section{Bibliografie}
-
-\begin{frame}{Bibliografie I}
-    \begin{block}{Manuale fundamentale}
-        {\small
-        \begin{itemize}
-            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
-            \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
-            \item Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}, 3rd ed., Springer.
-        \end{itemize}
-        }
-    \end{block}
-
-    \begin{exampleblock}{Serii de timp financiare}
-        {\small
-        \begin{itemize}
-            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
-            \item Franke, J., Härdle, W.K., \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
-        \end{itemize}
-        }
-    \end{exampleblock}
-\end{frame}
-
-\begin{frame}{Bibliografie II}
-    \begin{block}{Abordari moderne si Machine Learning}
-        {\small
-        \begin{itemize}
-            \item Nielsen, A. (2019). \textit{Practical Time Series Analysis}, O'Reilly Media.
-            \item Petropoulos, F., et al. (2022). \textit{Forecasting: Theory and Practice}, International Journal of Forecasting.
-            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, International Journal of Forecasting.
-        \end{itemize}
-        }
-    \end{block}
-
-    \begin{exampleblock}{Resurse online si cod}
-        {\small
-        \begin{itemize}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Repository de cod pentru statistica
-            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Platforma de invatare metode cantitative
-            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA} --- Cod Python pentru fiecare capitol
-        \end{itemize}
-        }
-    \end{exampleblock}
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.north west) rectangle ([yshift=-0.15cm]current page.north east);
+    \end{tikzpicture}
+    \vfill
+    \begin{center}
+        {\Huge\textbf{\textcolor{MainBlue}{Vă Mulțumesc!}}}\\[1cm]
+        {\Large Întrebări?}\\[0.5cm]
+        {\large\texttt{danpele@ase.ro}}
+    \end{center}
+    \vfill
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[IDAred] (current page.south west) rectangle ([yshift=0.15cm]current page.south east);
+    \end{tikzpicture}
 \end{frame}
 
 \end{document}
