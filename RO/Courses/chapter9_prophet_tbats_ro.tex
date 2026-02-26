@@ -265,14 +265,14 @@ MSCA Digital Finance}
 %=============================================================================
 \begin{frame}{Obiective de învățare}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{La finalul acestui capitol, veți fi capabili să:}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item Gestionați serii de timp cu \textbf{sezonalități multiple}
-            \item Utilizați \textbf{Facebook Prophet} pentru prognoză flexibilă cu sărbători
-            \item Aplicați modele \textbf{TBATS} pentru sezonalitate complexă
-            \item Comparați și selectați între metodele moderne de prognoză
-        \end{enumerate}
-    \end{block}
+        \begin{block}{La finalul acestui capitol, veți fi capabili să:}
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item Gestionați serii de timp cu \textbf{sezonalități multiple}
+                \item Utilizați \textbf{Facebook Prophet} pentru prognoză flexibilă cu sărbători
+                \item Aplicați modele \textbf{TBATS} (Trigonometric Box-Cox ARMA Trend Seasonal) pentru sezonalitate complexă
+                \item Comparați și selectați între metodele moderne de prognoză
+            \end{enumerate}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
@@ -312,23 +312,23 @@ MSCA Digital Finance}
 
 \begin{frame}{Problema: tipare sezoniere complexe}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Exemple din lumea reală}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Cerere de electricitate pe oră}: Tipare zilnice + săptămânale + anuale
-            \item \textbf{Trafic web}: Zilnic + săptămânal + efecte de sărbători
-            \item \textbf{Vânzări retail}: Săptămânal + lunar + anual + sărbători
-            \item \textbf{Volum call center}: Pe oră + zilnic + săptămânal
-        \end{itemize}
-    \end{block}
+        \begin{block}{Exemple din lumea reală}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Cerere de electricitate pe oră}: Tipare zilnice + săptămânale + anuale
+                \item \textbf{Trafic web}: Zilnic + săptămânal + efecte de sărbători
+                \item \textbf{Vânzări retail}: Săptămânal + lunar + anual + sărbători
+                \item \textbf{Volum call center}: Pe oră + zilnic + săptămânal
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{alertblock}{Limitarea SARIMA}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item SARIMA$(p,d,q)(P,D,Q)_s$ standard gestionează doar \textbf{o singură} perioadă sezonieră $s$
-            \item Pentru date orare cu tipare zilnice ȘI săptămânale, avem nevoie de $s_1 = 24$ și $s_2 = 168$
-        \end{itemize}
-    \end{alertblock}
+        \begin{alertblock}{Limitarea SARIMA (Seasonal ARIMA)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item SARIMA$(p,d,q)(P,D,Q)_s$ standard gestionează doar \textbf{o singură} perioadă sezonieră $s$
+                \item Pentru date orare cu tipare zilnice ȘI săptămânale, avem nevoie de $s_1 = 24$ și $s_2 = 168$
+            \end{itemize}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 
@@ -370,16 +370,16 @@ MSCA Digital Finance}
         \end{itemize}
         \vspace{-0.2cm}
         \begin{center}
-        \begin{tabular}{lcc}
-            \toprule
-            \textbf{Metodă} & \textbf{Nr. Max Sezonalități} & \textbf{Interpretabil} \\
-            \midrule
-            SARIMA & 1 & Da \\
-            Fourier + ARIMA & Multiple & Moderat \\
-            TBATS & Multiple & Moderat \\
-            Prophet & Multiple & Da \\
-            \bottomrule
-        \end{tabular}
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metodă} & \textbf{Nr. Max Sezonalități} & \textbf{Interpretabil} \\
+                \midrule
+                SARIMA & 1 & Da \\
+                Fourier + ARIMA (AutoRegressive Integrated Moving Average) & Multiple & Moderat \\
+                TBATS & Multiple & Moderat \\
+                Prophet & Multiple & Da \\
+                \bottomrule
+            \end{tabular}
         \end{center}
     \end{block}
     }
@@ -427,7 +427,7 @@ MSCA Digital Finance}
             \begin{exampleblock}{Contribuții principale}
                 \begin{itemize}\setlength{\itemsep}{0pt}
                     \item \textbf{Modelul TBATS} (2011) --- Box-Cox trigonometric ARMA cu perioade sezoniere multiple
-                    \item \textbf{Cadrul ETS} --- modele spațiu-stare de netezire exponențială cu selecție automată
+                    \item \textbf{Cadrul ETS} (Error, Trend, Seasonality) --- modele spațiu-stare de netezire exponențială cu selecție automată
                     \item \textbf{Pachetul forecast} pentru R --- setul standard de instrumente pentru prognoza seriilor de timp
                     \item \textbf{Prognoza ierarhică} și metode de reconciliere a prognozelor
                 \end{itemize}
@@ -439,110 +439,110 @@ MSCA Digital Finance}
 
 \begin{frame}{TBATS: ce înseamnă?}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Componentele TBATS}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{T} $\succ$ Sezonalitate \textbf{Trigonometrică} folosind termeni Fourier
-            \item \textbf{B} $\succ$ Transformare \textbf{Box-Cox} pentru stabilizarea varianței
-            \item \textbf{A} $\succ$ Erori \textbf{ARMA} pentru autocorelația reziduală
-            \item \textbf{T} $\succ$ Componentă de \textbf{Trend} (posibil amortizat)
-            \item \textbf{S} $\succ$ Componente \textbf{Sezoniere} (multiple permise)
-        \end{itemize}
-    \end{block}
+        \begin{block}{Componentele TBATS}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{T} $\succ$ Sezonalitate \textbf{Trigonometrică} folosind termeni Fourier
+                \item \textbf{B} $\succ$ Transformare \textbf{Box-Cox} pentru stabilizarea varianței
+                \item \textbf{A} $\succ$ Erori \textbf{ARMA} (AutoRegressive Moving Average) pentru autocorelația reziduală
+                \item \textbf{T} $\succ$ Componentă de \textbf{Trend} (posibil amortizat)
+                \item \textbf{S} $\succ$ Componente \textbf{Sezoniere} (multiple permise)
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.1cm}
+        \vspace{0.1cm}
 
-    \begin{exampleblock}{Inovația cheie}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item TBATS folosește \textbf{reprezentare trigonometrică} pentru sezonalitate:
-            \[
-            s_t^{(i)} = \sum_{j=1}^{k_i} \left[ s_j^{(i)} \cos\left(\frac{2\pi j t}{m_i}\right) + s_j^{*(i)} \sin\left(\frac{2\pi j t}{m_i}\right) \right]
-            \]
-            \item $m_i$ este perioadă sezonieră $i$ și $k_i$ este numărul de armonici
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Inovația cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item TBATS folosește \textbf{reprezentare trigonometrică} pentru sezonalitate:
+                \[
+                s_t^{(i)} = \sum_{j=1}^{k_i} \left[ s_j^{(i)} \cos\left(\frac{2\pi j t}{m_i}\right) + s_j^{*(i)} \sin\left(\frac{2\pi j t}{m_i}\right) \right]
+                \]
+                \item $m_i$ este perioadă sezonieră $i$ și $k_i$ este numărul de armonici
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Transformarea Box-Cox}
     \begin{cminipage}{0.95\textwidth}
-    \begin{defn}[Transformarea Box-Cox]
-        Transformarea Box-Cox cu parametrul $\omega$ este definită astfel:
-        \[
-        y_t^{(\omega)} = \begin{cases}
-            \dfrac{y_t^{\omega} - 1}{\omega} & \text{dacă } \omega \neq 0 \\[0.3cm]
-            \ln(y_t) & \text{dacă } \omega = 0
-        \end{cases}
-        \]
-    \end{defn}
+        \begin{defn}[Transformarea Box-Cox]
+            Transformarea Box-Cox cu parametrul $\omega$ este definită astfel:
+            \[
+            y_t^{(\omega)} = \begin{cases}
+                \dfrac{y_t^{\omega} - 1}{\omega} & \text{dacă } \omega \neq 0 \\[0.3cm]
+                \ln(y_t) & \text{dacă } \omega = 0
+            \end{cases}
+            \]
+        \end{defn}
 
-    \vspace{0.2cm}
+        \vspace{0.2cm}
 
-    \begin{exampleblock}{Scop}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Stabilizarea varianței}: Face varianța constantă în timp
-            \item \textbf{Normalizare}: Reduce asimetria în date
-            \item Valori uzuale: $\omega = 0$ (log), $\omega = 0.5$ (rădăcină pătrată), $\omega = 1$ (fără transformare)
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Scop}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Stabilizarea varianței}: Face varianța constantă în timp
+                \item \textbf{Normalizare}: Reduce asimetria în date
+                \item Valori uzuale: $\omega = 0$ (log), $\omega = 0.5$ (rădăcină pătrată), $\omega = 1$ (fără transformare)
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Structura modelului TBATS}
     \vspace{-0.3cm}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{block}{Specificația completă a modelului}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ecuațiile modelului TBATS:
-        {\footnotesize
-        \begin{align}
-            y_t^{(\omega)} &= \ell_{t-1} + \phi b_{t-1} + \sum_{i=1}^{M} s_t^{(i)} + d_t \\[0.05cm]
-            \ell_t &= \ell_{t-1} + \phi b_{t-1} + \alpha d_t \\[0.05cm]
-            b_t &= \phi b_{t-1} + \beta d_t \\[0.05cm]
-            d_t &= \sum_{i=1}^{p} \varphi_i d_{t-i} + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t
-        \end{align}
+        {\small
+        \begin{block}{Specificația completă a modelului}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ecuațiile modelului TBATS:
+                {\footnotesize
+                \begin{align}
+                    y_t^{(\omega)} &= \ell_{t-1} + \phi b_{t-1} + \sum_{i=1}^{M} s_t^{(i)} + d_t \\[0.05cm]
+                    \ell_t &= \ell_{t-1} + \phi b_{t-1} + \alpha d_t \\[0.05cm]
+                    b_t &= \phi b_{t-1} + \beta d_t \\[0.05cm]
+                    d_t &= \sum_{i=1}^{p} \varphi_i d_{t-i} + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t
+                \end{align}
+                }
+            \end{itemize}
+        \end{block}
         }
-        \end{itemize}
-    \end{block}
-    }
 
-    \vspace{-0.2cm}
+        \vspace{-0.2cm}
 
-    {\scriptsize
-    \begin{block}{Notații}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $y_t^{(\omega)}$ $\succ$ seria transformată Box-Cox (dacă $\omega \neq 1$)
-            \item $\ell_t$ $\succ$ nivelul local, $b_t$ $\succ$ trendul cu amortizare $\phi$
-            \item $s_t^{(i)}$ $\succ$ $M$ componente sezoniere cu perioade $m_1, \ldots, m_M$
-            \item $d_t$ $\succ$ procesul de eroare ARMA$(p,q)$
-        \end{itemize}
-    \end{block}
-    }
+        {\scriptsize
+        \begin{block}{Notații}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $y_t^{(\omega)}$ $\succ$ seria transformată Box-Cox (dacă $\omega \neq 1$)
+                \item $\ell_t$ $\succ$ nivelul local, $b_t$ $\succ$ trendul cu amortizare $\phi$
+                \item $s_t^{(i)}$ $\succ$ $M$ componente sezoniere cu perioade $m_1, \ldots, m_M$
+                \item $d_t$ $\succ$ procesul de eroare ARMA$(p,q)$
+            \end{itemize}
+        \end{block}
+        }
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{TBATS: evoluția stărilor sezonalității trigonometrice}
     \begin{cminipage}{0.95\textwidth}
-    \begin{defn}[Recursia trigonometrică în spațiul stărilor]
-        Pentru fiecare componentă sezonieră cu perioada $m_i$ și $k_i$ armonici, definim stările:
-        \[
-        \begin{pmatrix} s_{j,t}^{(i)} \\ s_{j,t}^{*(i)} \end{pmatrix} =
-        \begin{pmatrix} \cos(\lambda_j) & \sin(\lambda_j) \\ -\sin(\lambda_j) & \cos(\lambda_j) \end{pmatrix}
-        \begin{pmatrix} s_{j,t-1}^{(i)} \\ s_{j,t-1}^{*(i)} \end{pmatrix} +
-        \begin{pmatrix} \gamma_1^{(i)} \\ \gamma_2^{(i)} \end{pmatrix} d_t
-        \]
-        unde $\lambda_j = \frac{2\pi j}{m_i}$ este frecvența armonicii $j$.
-    \end{defn}
+        \begin{defn}[Recursia trigonometrică în spațiul stărilor]
+            Pentru fiecare componentă sezonieră cu perioada $m_i$ și $k_i$ armonici, definim stările:
+            \[
+            \begin{pmatrix} s_{j,t}^{(i)} \\ s_{j,t}^{*(i)} \end{pmatrix} =
+            \begin{pmatrix} \cos(\lambda_j) & \sin(\lambda_j) \\ -\sin(\lambda_j) & \cos(\lambda_j) \end{pmatrix}
+            \begin{pmatrix} s_{j,t-1}^{(i)} \\ s_{j,t-1}^{*(i)} \end{pmatrix} +
+            \begin{pmatrix} \gamma_1^{(i)} \\ \gamma_2^{(i)} \end{pmatrix} d_t
+            \]
+            unde $\lambda_j = \frac{2\pi j}{m_i}$ este frecvența armonicii $j$.
+        \end{defn}
 
-    \vspace{0.2cm}
+        \vspace{0.2cm}
 
-    \begin{block}{Interpretare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Matricea de rotație păstrează structura periodică
-            \item Sezonalitatea totală: $s_t^{(i)} = \sum_{j=1}^{k_i} s_{j,t}^{(i)}$
-            \item Parametri: $2k_i$ stări per perioadă sezonieră
-        \end{itemize}
-    \end{block}
+        \begin{block}{Interpretare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Matricea de rotație păstrează structura periodică
+                \item Sezonalitatea totală: $s_t^{(i)} = \sum_{j=1}^{k_i} s_{j,t}^{(i)}$
+                \item Parametri: $2k_i$ stări per perioadă sezonieră
+            \end{itemize}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
@@ -589,40 +589,41 @@ MSCA Digital Finance}
 \begin{frame}{TBATS în practică}
     \vspace{-0.35cm}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{block}{Implementare Python}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Pachet \texttt{tbats}}: Oferă selecție automată a modelului
+        {\small
+        \begin{block}{Implementare Python}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Selectează automat parametrul Box-Cox $\omega$
-                \item Alege numărul de armonici $k_i$ pentru fiecare perioadă sezonieră
-                \item Selectează ordinele ARMA $(p,q)$
-                \item Testează trend amortizat vs neamortizat
+                \item \textbf{Pachet \texttt{tbats}}: Oferă selecție automată a modelului
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Selectează automat parametrul Box-Cox $\omega$
+                    \item Alege numărul de armonici $k_i$ pentru fiecare perioadă sezonieră
+                    \item Selectează ordinele ARMA $(p,q)$
+                    \item Testează trend amortizat vs neamortizat
+                \end{itemize}
             \end{itemize}
-        \end{itemize}
-    \end{block}
+        \end{block}
 
-    \vspace{0.1cm}
+        \vspace{0.1cm}
 
-    \begin{exampleblock}{Exemplu de cod}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Cod Python:
-        \footnotesize
-        \texttt{from tbats import TBATS}\\
-        \texttt{estimator = TBATS(seasonal\_periods=[7, 365.25])}\\
-        \texttt{model = estimator.fit(y)}\\
-        \texttt{forecast = model.forecast(steps=30)}
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Exemplu de cod}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Cod Python:
+                \footnotesize
+                \texttt{from tbats import TBATS}\\
+                \texttt{estimator = TBATS(seasonal\_periods=[7, 365.25])}\\
+                \texttt{model = estimator.fit(y)}\\
+                \texttt{forecast = model.forecast(steps=30)}
+            \end{itemize}
+        \end{exampleblock}
 
-    \vspace{0.1cm}
+        \vspace{0.1cm}
 
-    \begin{alertblock}{Notă}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item BATS este versiunea mai simplă fără termeni trigonometrici (folosește stări sezoniere tradiționale)
-        \end{itemize}
-    \end{alertblock}
-    }
+        \begin{alertblock}{Notă}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item BATS (Box-Cox ARMA Trend Seasonal) este versiunea mai simplă fără termeni trigonometrici
+                \item BATS folosește stări sezoniere tradiționale în loc de reprezentare Fourier
+            \end{itemize}
+        \end{alertblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -635,30 +636,30 @@ MSCA Digital Finance}
 
 \begin{frame}{TBATS: avantaje și limitări}
     \begin{cminipage}{0.95\textwidth}
-    \small
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Avantaje}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Gestionează \textbf{multiple} perioade sezoniere
-                \item Selecție \textbf{automată} a modelului
-                \item Gestionează perioade \textbf{non-întregi} (365.25)
-                \item \textbf{Box-Cox} pentru heteroscedasticitate
-                \item Bun pentru date de \textbf{frecvență înaltă}
-            \end{itemize}
-        \end{exampleblock}
+        \small
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{exampleblock}{Avantaje}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Gestionează \textbf{multiple} perioade sezoniere
+                    \item Selecție \textbf{automată} a modelului
+                    \item Gestionează perioade \textbf{non-întregi} (365.25)
+                    \item \textbf{Box-Cox} pentru heteroscedasticitate
+                    \item Bun pentru date de \textbf{frecvență înaltă}
+                \end{itemize}
+            \end{exampleblock}
 
-        \column{0.5\textwidth}
-        \begin{alertblock}{Limitări}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Intensiv computațional}
-                \item Fără \textbf{regresori externi}
-                \item Mai puțin \textbf{interpretabil} decât Prophet
-                \item Poate fi \textbf{lent} pentru serii foarte lungi
-                \item Necesită \textbf{suficiente date} per sezon
-            \end{itemize}
-        \end{alertblock}
-    \end{columns}
+            \column{0.5\textwidth}
+            \begin{alertblock}{Limitări}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Intensiv computațional}
+                    \item Fără \textbf{regresori externi}
+                    \item Mai puțin \textbf{interpretabil} decât Prophet
+                    \item Poate fi \textbf{lent} pentru serii foarte lungi
+                    \item Necesită \textbf{suficiente date} per sezon
+                \end{itemize}
+            \end{alertblock}
+        \end{columns}
     \end{cminipage}
 \end{frame}
 
@@ -669,27 +670,28 @@ MSCA Digital Finance}
 
 \begin{frame}{Prophet: prezentare generală}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Ce este Prophet?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Origine}: Procedură de prognoză dezvoltată de Facebook (Meta) în 2017
-            \item \textbf{Proiectat pentru serii de timp de business} cu:
+        \begin{block}{Ce este Prophet?}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Efecte sezoniere puternice (zilnice, săptămânale, anuale)
-                \item Efecte de sărbători
-                \item Schimbări de trend (changepoints)
-                \item Date lipsă și outlieri
+                \item \textbf{Origine}: Procedură de prognoză dezvoltată de Facebook (Meta) în 2017
+                \item \textbf{Proiectat pentru serii de timp de business} cu:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Efecte sezoniere puternice (zilnice, săptămânale, anuale)
+                    \item Efecte de sărbători
+                    \item Schimbări de trend (changepoints)
+                    \item Date lipsă și outlieri
+                \end{itemize}
             \end{itemize}
-        \end{itemize}
-    \end{block}
+        \end{block}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{exampleblock}{Filosofia cheie}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textit{``Analyst-in-the-loop'' forecasting}
-            \item Prophet este proiectat pentru a fi ajustat de analiști cu cunoștințe de domeniu, dar care nu sunt neapărat experți în serii de timp
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Filosofia cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textit{``Analyst-in-the-loop'' forecasting}
+                \item Prophet este proiectat pentru a fi ajustat de analiști cu cunoștințe de domeniu
+                \item Nu necesită experiență avansată în modelarea seriilor de timp
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
@@ -738,34 +740,34 @@ MSCA Digital Finance}
 \begin{frame}{Prophet: componenta de trend}
     \vspace{-0.2cm}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{block}{Trend liniar cu Changepoints}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Ecuația}: $g(t) = (k + \bm{a}(t)^T \bm{\delta}) \cdot t + (m + \bm{a}(t)^T \bm{\gamma})$
-            \item \textbf{Parametri}:
+        {\small
+        \begin{block}{Trend liniar cu Changepoints}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item $k$ $\succ$ rata de creștere de bază
-                \item $\bm{\delta}$ $\succ$ vector de ajustări de rată la changepoints
-                \item $\bm{a}(t)$ $\succ$ indică ce changepoints sunt active la momentul $t$
-                \item $m$ $\succ$ offset-ul, $\bm{\gamma}$ asigură continuitatea
+                \item \textbf{Ecuația}: $g(t) = (k + \bm{a}(t)^T \bm{\delta}) \cdot t + (m + \bm{a}(t)^T \bm{\gamma})$
+                \item \textbf{Parametri}:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $k$ $\succ$ rata de creștere de bază
+                    \item $\bm{\delta}$ $\succ$ vector de ajustări de rată la changepoints
+                    \item $\bm{a}(t)$ $\succ$ indică ce changepoints sunt active la momentul $t$
+                    \item $m$ $\succ$ offset-ul, $\bm{\gamma}$ asigură continuitatea
+                \end{itemize}
             \end{itemize}
-        \end{itemize}
-    \end{block}
-    }
+        \end{block}
+        }
 
-    \vspace{-0.1cm}
+        \vspace{-0.1cm}
 
-    {\footnotesize
-    \begin{exampleblock}{Creștere logistică (pentru trenduri cu saturație)}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ecuația de creștere logistică:
-            \[
-            g(t) = \frac{C(t)}{1 + \exp(-(k + \bm{a}(t)^T \bm{\delta})(t - (m + \bm{a}(t)^T \bm{\gamma})))}
-            \]
-            \item $C(t)$ este capacitatea maximă (posibil variabilă în timp)
-        \end{itemize}
-    \end{exampleblock}
-    }
+        {\footnotesize
+        \begin{exampleblock}{Creștere logistică (pentru trenduri cu saturație)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ecuația de creștere logistică:
+                \[
+                g(t) = \frac{C(t)}{1 + \exp(-(k + \bm{a}(t)^T \bm{\delta})(t - (m + \bm{a}(t)^T \bm{\gamma})))}
+                \]
+                \item $C(t)$ este capacitatea maximă (posibil variabilă în timp)
+            \end{itemize}
+        \end{exampleblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -779,36 +781,36 @@ MSCA Digital Finance}
 \begin{frame}{Prophet: componenta de sezonalitate}
     \vspace{-0.3cm}
     \begin{cminipage}{0.95\textwidth}
-    {\small
-    \begin{block}{Reprezentare prin serii Fourier}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Pentru o perioadă sezonieră $P$, Prophet folosește:
-            \vspace{-0.1cm}
-            \[
-            s(t) = \sum_{n=1}^{N} \left[ a_n \cos\!\left(\frac{2\pi n t}{P}\right) + b_n \sin\!\left(\frac{2\pi n t}{P}\right) \right]
-            \]
-            \vspace{-0.3cm}
-        \end{itemize}
-    \end{block}
+        {\small
+        \begin{block}{Reprezentare prin serii Fourier}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Pentru o perioadă sezonieră $P$, Prophet folosește:
+                \vspace{-0.1cm}
+                \[
+                s(t) = \sum_{n=1}^{N} \left[ a_n \cos\!\left(\frac{2\pi n t}{P}\right) + b_n \sin\!\left(\frac{2\pi n t}{P}\right) \right]
+                \]
+                \vspace{-0.3cm}
+            \end{itemize}
+        \end{block}
 
-    \vspace{-0.1cm}
+        \vspace{-0.1cm}
 
-    \begin{exampleblock}{Setări implicite}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Anuală}: perioadă 365.25 zile, ordin Fourier 10
-            \item \textbf{Săptămânală}: perioadă 7 zile, ordin Fourier 3
-            \item \textbf{Zilnică}: perioadă 1 zi, ordin Fourier 4
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Setări implicite}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Anuală}: perioadă 365.25 zile, ordin Fourier 10
+                \item \textbf{Săptămânală}: perioadă 7 zile, ordin Fourier 3
+                \item \textbf{Zilnică}: perioadă 1 zi, ordin Fourier 4
+            \end{itemize}
+        \end{exampleblock}
 
-    \vspace{-0.1cm}
+        \vspace{-0.1cm}
 
-    \begin{alertblock}{Atenție}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ordin Fourier $N$ mai mare $\succ$ mai multă flexibilitate (tipare mai complexe) dar risc mai mare de supraajustare
-        \end{itemize}
-    \end{alertblock}
-    }
+        \begin{alertblock}{Atenție}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ordin Fourier $N$ mai mare $\succ$ mai multă flexibilitate (tipare mai complexe) dar risc mai mare de supraajustare
+            \end{itemize}
+        \end{alertblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -822,66 +824,66 @@ MSCA Digital Finance}
 \begin{frame}{Prophet: efecte de sărbători}
     \vspace{-0.35cm}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Modelul de sărbători}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ecuația efectelor de sărbătoare:
-            \[
-            h(t) = Z(t) \cdot \bm{\kappa}
-            \]
-            \item $Z(t)$ este o matrice indicător pentru sărbători și $\bm{\kappa}$ sunt efectele sărbătorilor
-        \end{itemize}
-    \end{block}
+        \begin{block}{Modelul de sărbători}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ecuația efectelor de sărbătoare:
+                \[
+                h(t) = Z(t) \cdot \bm{\kappa}
+                \]
+                \item $Z(t)$ este o matrice indicător pentru sărbători și $\bm{\kappa}$ sunt efectele sărbătorilor
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.0cm}
+        \vspace{0.0cm}
 
-    \begin{exampleblock}{Caracteristici}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Sărbători integrate}: 60+ țări suportate
-            \item \textbf{Sărbători custom}: Adăugați propriile evenimente (Black Friday, evenimente companie)
-            \item \textbf{Efecte de fereastră}: Sărbătorile pot afecta zilele înainte/după
-            \item \textbf{Prior scale}: Controlează regularizarea efectelor de sărbătoare
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Caracteristici}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Sărbători integrate}: 60+ țări suportate
+                \item \textbf{Sărbători custom}: Adăugați propriile evenimente (Black Friday, evenimente companie)
+                \item \textbf{Efecte de fereastră}: Sărbătorile pot afecta zilele înainte/după
+                \item \textbf{Prior scale}: Controlează regularizarea efectelor de sărbătoare
+            \end{itemize}
+        \end{exampleblock}
 
-    \begin{block}{Exemplu de cod}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Cod Python:
-        \footnotesize
-        \texttt{holidays = pd.DataFrame(\{'holiday': 'black\_friday', ....\})}\\
-        \texttt{model = Prophet(holidays=holidays)}
-        \end{itemize}
-    \end{block}
+        \begin{block}{Exemplu de cod}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Cod Python:
+                \footnotesize
+                \texttt{holidays = pd.DataFrame(\{'holiday': 'black\_friday', ....\})}\\
+                \texttt{model = Prophet(holidays=holidays)}
+            \end{itemize}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Prophet în practică}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Utilizare de bază}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Cod Python:
-        \small
-        \texttt{from prophet import Prophet}\\
-        \texttt{import pandas as pd}\\[0.2cm]
-        \texttt{\# Datele trebuie să aibă coloane 'ds' (dată) și 'y' (valoare)}\\
-        \texttt{df = pd.DataFrame(\{'ds': dates, 'y': values\})}\\[0.2cm]
-        \texttt{model = Prophet()}\\
-        \texttt{model.fit(df)}\\[0.2cm]
-        \texttt{future = model.make\_future\_dataframe(periods=365)}\\
-        \texttt{forecast = model.predict(future)}
-        \end{itemize}
-    \end{block}
+        \begin{block}{Utilizare de bază}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Cod Python:
+                \small
+                \texttt{from prophet import Prophet}\\
+                \texttt{import pandas as pd}\\[0.2cm]
+                \texttt{\# Datele trebuie să aibă coloane 'ds' (dată) și 'y' (valoare)}\\
+                \texttt{df = pd.DataFrame(\{'ds': dates, 'y': values\})}\\[0.2cm]
+                \texttt{model = Prophet()}\\
+                \texttt{model.fit(df)}\\[0.2cm]
+                \texttt{future = model.make\_future\_dataframe(periods=365)}\\
+                \texttt{forecast = model.predict(future)}
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{exampleblock}{Adăugare sezonalitate Custom}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Cod Python:
-        \small
-        \texttt{model = Prophet(weekly\_seasonality=False)}\\
-        \texttt{model.add\_seasonality(name='monthly', period=30.5, fourier\_order=5)}\\
-        \texttt{model.add\_seasonality(name='quarterly', period=91.25, fourier\_order=3)}
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Adăugare sezonalitate Custom}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Cod Python:
+                \small
+                \texttt{model = Prophet(weekly\_seasonality=False)}\\
+                \texttt{model.add\_seasonality(name='monthly', period=30.5, fourier\_order=5)}\\
+                \texttt{model.add\_seasonality(name='quarterly', period=91.25, fourier\_order=3)}
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
@@ -913,7 +915,8 @@ MSCA Digital Finance}
         \column{0.4\textwidth}
         \begin{alertblock}{Notă}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Incertitudinea crește cu orizontul de prognoză, în special pentru incertitudinea de trend
+                \item Incertitudinea crește cu orizontul de prognoză
+                \item Efectul este cel mai pronunțat pentru componenta de trend
             \end{itemize}
         \end{alertblock}
     \end{columns}
@@ -921,65 +924,65 @@ MSCA Digital Finance}
 
 \begin{frame}{Prophet: parametri de ajustare}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Parametri cheie}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{\texttt{changepoint\_prior\_scale}}: Flexibilitate trend (implicit: 0.05)
-            \item \textbf{\texttt{seasonality\_prior\_scale}}: Flexibilitate sezonalitate (implicit: 10)
-            \item \textbf{\texttt{holidays\_prior\_scale}}: Mărime efect sărbători (implicit: 10)
-            \item \textbf{\texttt{seasonality\_mode}}: 'additive' sau 'multiplicative'
-            \item \textbf{\texttt{changepoint\_range}}: Porțiune din istoric pentru changepoints
-        \end{itemize}
-    \end{block}
+        \begin{block}{Parametri cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{\texttt{changepoint\_prior\_scale}}: Flexibilitate trend (implicit: 0.05)
+                \item \textbf{\texttt{seasonality\_prior\_scale}}: Flexibilitate sezonalitate (implicit: 10)
+                \item \textbf{\texttt{holidays\_prior\_scale}}: Mărime efect sărbători (implicit: 10)
+                \item \textbf{\texttt{seasonality\_mode}}: 'additive' sau 'multiplicative'
+                \item \textbf{\texttt{changepoint\_range}}: Porțiune din istoric pentru changepoints
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{exampleblock}{Sfaturi practice}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Supraajustare pe trend?} Micșorați \texttt{changepoint\_prior\_scale}
-            \item \textbf{Subajustare pe sezonalitate?} Măriți \texttt{seasonality\_prior\_scale}
-            \item \textbf{Amplitudinea sezonieră variază?} Folosiți \texttt{seasonality\_mode='multiplicative'}
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Sfaturi practice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Supraajustare pe trend?} Micșorați \texttt{changepoint\_prior\_scale}
+                \item \textbf{Subajustare pe sezonalitate?} Măriți \texttt{seasonality\_prior\_scale}
+                \item \textbf{Amplitudinea sezonieră variază?} Folosiți \texttt{seasonality\_mode='multiplicative'}
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Sezonalitate aditivă vs multiplicativă}
     \begin{cminipage}{0.95\textwidth}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_additive_vs_multiplicative.pdf}
-    \end{center}
-    \quantlet{TSA\_ch9\_additive\_vs\_multiplicative}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_additive_vs_multiplicative}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_additive_vs_multiplicative.pdf}
+        \end{center}
+        \quantlet{TSA\_ch9\_additive\_vs\_multiplicative}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_additive_vs_multiplicative}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Prophet: avantaje și limitări}
     \begin{cminipage}{0.95\textwidth}
-    \small
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{exampleblock}{Avantaje}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Ușor de folosit}: Ajustare minimă necesară
-                \item \textbf{Interpretabil}: Descompunere clară
-                \item \textbf{Gestionează date lipsă} bine
-                \item \textbf{Efecte sărbători} integrate
-                \item \textbf{Sezonalități multiple}
-                \item \textbf{Regresori externi} suportați
-                \item \textbf{Ajustare rapidă}
-            \end{itemize}
-        \end{exampleblock}
+        \small
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{exampleblock}{Avantaje}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Ușor de folosit}: Ajustare minimă necesară
+                    \item \textbf{Interpretabil}: Descompunere clară
+                    \item \textbf{Gestionează date lipsă} bine
+                    \item \textbf{Efecte sărbători} integrate
+                    \item \textbf{Sezonalități multiple}
+                    \item \textbf{Regresori externi} suportați
+                    \item \textbf{Ajustare rapidă}
+                \end{itemize}
+            \end{exampleblock}
 
-        \column{0.5\textwidth}
-        \begin{alertblock}{Limitări}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Nu bazat pe ARIMA}: Fără modelare autocorelație
-                \item \textbf{Focus pe date zilnice}: Mai puțin potrivit pentru frecvență foarte înaltă
-                \item \textbf{Ipoteze de trend}: Liniar/logistic poate să nu se potrivească
-                \item \textbf{CV integrat}: \texttt{cross\_validation()} disponibil, dar necesită configurare atentă
-                \item \textbf{Risc supraajustare} cu multe sezonalități
-            \end{itemize}
-        \end{alertblock}
-    \end{columns}
+            \column{0.5\textwidth}
+            \begin{alertblock}{Limitări}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Nu bazat pe ARIMA}: Fără modelare autocorelație
+                    \item \textbf{Focus pe date zilnice}: Mai puțin potrivit pentru frecvență foarte înaltă
+                    \item \textbf{Ipoteze de trend}: Liniar/logistic poate să nu se potrivească
+                    \item \textbf{CV (Cross-Validation) integrat}: \texttt{cross\_validation()} disponibil, dar necesită configurare atentă
+                    \item \textbf{Risc supraajustare} cu multe sezonalități
+                \end{itemize}
+            \end{alertblock}
+        \end{columns}
     \end{cminipage}
 \end{frame}
 
@@ -998,32 +1001,32 @@ MSCA Digital Finance}
 \begin{frame}{TBATS vs Prophet: comparație directă}
     \vspace{-0.2cm}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Comparație detaliată}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Rezumat al diferențelor cheie:
-        \end{itemize}
-        \vspace{-0.2cm}
-        {\small
-        \begin{center}
-        \begin{tabular}{p{3.8cm}p{4.2cm}p{4.2cm}}
-            \toprule
-            \textbf{Caracteristică} & \textbf{TBATS} & \textbf{Prophet} \\
-            \midrule
-            Sezonalități multiple & Da (automat) & Da (manual sau auto) \\
-            Efecte sărbători & Nu & Da (integrat) \\
-            Regresori externi & Nu & Da \\
-            Changepoints trend & Nu (neted) & Da (automat) \\
-            Date lipsă & Necesită interpolare & Gestionează nativ \\
-            Interpretabilitate & Moderată & Înaltă \\
-            Viteză calcul & Lent & Rapid \\
-            Date frecvență înaltă & Bun & Moderat \\
-            Perioade non-întregi & Da (ex: 365.25) & Da \\
-            Intervale incertitudine & Da & Da \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-        }
-    \end{block}
+        \begin{block}{Comparație detaliată}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Rezumat al diferențelor cheie:
+            \end{itemize}
+            \vspace{-0.2cm}
+            {\small
+            \begin{center}
+                \begin{tabular}{p{3.8cm}p{4.2cm}p{4.2cm}}
+                    \toprule
+                    \textbf{Caracteristică} & \textbf{TBATS} & \textbf{Prophet} \\
+                    \midrule
+                    Sezonalități multiple & Da (automat) & Da (manual sau auto) \\
+                    Efecte sărbători & Nu & Da (integrat) \\
+                    Regresori externi & Nu & Da \\
+                    Changepoints trend & Nu (neted) & Da (automat) \\
+                    Date lipsă & Necesită interpolare & Gestionează nativ \\
+                    Interpretabilitate & Moderată & Înaltă \\
+                    Viteză calcul & Lent & Rapid \\
+                    Date frecvență înaltă & Bun & Moderat \\
+                    Perioade non-întregi & Da (ex: 365.25) & Da \\
+                    Intervale incertitudine & Da & Da \\
+                    \bottomrule
+                \end{tabular}
+            \end{center}
+            }
+        \end{block}
     \end{cminipage}
 \end{frame}
 
@@ -1036,67 +1039,67 @@ MSCA Digital Finance}
 
 \begin{frame}{Când să folosim fiecare model}
     \begin{cminipage}{0.95\textwidth}
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-        \begin{block}{Folosiți TBATS când:}
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{block}{Folosiți TBATS când:}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Date de frecvență înaltă (orare, sub-zilnice)
+                    \item Multiple perioade sezoniere complexe
+                    \item Nu sunt necesari regresori externi
+                    \item Se preferă selecție automată a modelului
+                    \item Se dorește framework tradițional state-space
+                \end{itemize}
+            \end{block}
+
+            \column{0.5\textwidth}
+            \begin{block}{Folosiți Prophet când:}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Prognoză de business (zilnic/săptămânal)
+                    \item Efectele sărbătorilor sunt importante
+                    \item Trendul are rupturi structurale
+                    \item Sunt prezente date lipsă
+                    \item Interpretabilitatea este cheie
+                    \item Sunt disponibili regresori externi
+                \end{itemize}
+            \end{block}
+        \end{columns}
+
+        \vspace{0.5cm}
+
+        \begin{exampleblock}{Ghid general}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Date de frecvență înaltă (orare, sub-zilnice)
-                \item Multiple perioade sezoniere complexe
-                \item Nu sunt necesari regresori externi
-                \item Se preferă selecție automată a modelului
-                \item Se dorește framework tradițional state-space
+                \item \textbf{Prophet}: pentru aplicații de business cu date zilnice
+                \item \textbf{TBATS}: pentru aplicații tehnice cu date de frecvență înaltă
             \end{itemize}
-        \end{block}
-
-        \column{0.5\textwidth}
-        \begin{block}{Folosiți Prophet când:}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Prognoză de business (zilnic/săptămânal)
-                \item Efectele sărbătorilor sunt importante
-                \item Trendul are rupturi structurale
-                \item Sunt prezente date lipsă
-                \item Interpretabilitatea este cheie
-                \item Sunt disponibili regresori externi
-            \end{itemize}
-        \end{block}
-    \end{columns}
-
-    \vspace{0.5cm}
-
-    \begin{exampleblock}{Ghid general}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Prophet}: pentru aplicații de business cu date zilnice
-            \item \textbf{TBATS}: pentru aplicații tehnice cu date de frecvență înaltă
-        \end{itemize}
-    \end{exampleblock}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Diagramă de decizie}
     \vspace{-0.2cm}
     \begin{center}
-    \begin{tikzpicture}[
-        scale=0.70, transform shape,
-        node distance=1.0cm,
-        decision/.style={diamond, draw, fill=MainBlue!20, text width=2.5cm, text centered, inner sep=1pt, font=\small},
-        block/.style={rectangle, draw, fill=Forest!20, text width=2.5cm, text centered, rounded corners, minimum height=0.8cm, font=\small},
-        line/.style={draw, ->, thick}
-    ]
-        \node [decision] (q1) {Perioade sezoniere multiple?};
-        \node [block, below left=1cm and 2cm of q1] (sarima) {SARIMA};
-        \node [decision, below right=1cm and 2cm of q1] (q2) {Efecte sărbători importante?};
-        \node [block, below left=1cm and 1cm of q2] (tbats) {TBATS};
-        \node [decision, below right=1cm and 1cm of q2] (q3) {Regresori externi?};
-        \node [block, below left=0.8cm and 0.5cm of q3] (prophet1) {Prophet};
-        \node [block, below right=0.8cm and 0.5cm of q3] (prophet2) {Prophet + Regresori};
+        \begin{tikzpicture}[
+            scale=0.70, transform shape,
+            node distance=1.0cm,
+            decision/.style={diamond, draw, fill=MainBlue!20, text width=2.5cm, text centered, inner sep=1pt, font=\small},
+            block/.style={rectangle, draw, fill=Forest!20, text width=2.5cm, text centered, rounded corners, minimum height=0.8cm, font=\small},
+            line/.style={draw, ->, thick}
+        ]
+            \node [decision] (q1) {Perioade sezoniere multiple?};
+            \node [block, below left=1cm and 2cm of q1] (sarima) {SARIMA};
+            \node [decision, below right=1cm and 2cm of q1] (q2) {Efecte sărbători importante?};
+            \node [block, below left=1cm and 1cm of q2] (tbats) {TBATS};
+            \node [decision, below right=1cm and 1cm of q2] (q3) {Regresori externi?};
+            \node [block, below left=0.8cm and 0.5cm of q3] (prophet1) {Prophet};
+            \node [block, below right=0.8cm and 0.5cm of q3] (prophet2) {Prophet + Regresori};
 
-        \path [line] (q1) -- node[above left, font=\scriptsize] {Nu} (sarima);
-        \path [line] (q1) -- node[above right, font=\scriptsize] {Da} (q2);
-        \path [line] (q2) -- node[above left, font=\scriptsize] {Nu} (tbats);
-        \path [line] (q2) -- node[above right, font=\scriptsize] {Da} (q3);
-        \path [line] (q3) -- node[above left, font=\scriptsize] {Nu} (prophet1);
-        \path [line] (q3) -- node[above right, font=\scriptsize] {Da} (prophet2);
-    \end{tikzpicture}
+            \path [line] (q1) -- node[above left, font=\scriptsize] {Nu} (sarima);
+            \path [line] (q1) -- node[above right, font=\scriptsize] {Da} (q2);
+            \path [line] (q2) -- node[above left, font=\scriptsize] {Nu} (tbats);
+            \path [line] (q2) -- node[above right, font=\scriptsize] {Da} (q3);
+            \path [line] (q3) -- node[above left, font=\scriptsize] {Nu} (prophet1);
+            \path [line] (q3) -- node[above right, font=\scriptsize] {Da} (prophet2);
+        \end{tikzpicture}
     \end{center}
 \end{frame}
 
@@ -1108,89 +1111,83 @@ MSCA Digital Finance}
 \begin{frame}{Metrici de evaluare}
     \vspace{-0.5cm}
     \begin{cminipage}{0.95\textwidth}
-    \begin{defn}[Metrici de acuratețe a prognozei]
-        Fie $y_t$ valorile reale, $\hat{y}_t$ prognozele și $n$ orizontul de prognoză:
-        \begin{align*}
-            \RMSE &= \sqrt{\frac{1}{n}\sum_{t=1}^{n}(y_t - \hat{y}_t)^2} \quad \text{(penalizează erorile mari)} \\
-            \MAE &= \frac{1}{n}\sum_{t=1}^{n}|y_t - \hat{y}_t| \quad \text{(robust la outlieri)} \\
-            \MAPE &= \frac{100\%}{n}\sum_{t=1}^{n}\left|\frac{y_t - \hat{y}_t}{y_t}\right| \quad \text{(independent de scară)}
-        \end{align*}
-    \end{defn}
+        \begin{defn}[Metrici de acuratețe a prognozei]
+            Fie $y_t$ valorile reale, $\hat{y}_t$ prognozele și $n$ orizontul de prognoză:
+            \begin{align*}
+                \RMSE &= \sqrt{\frac{1}{n}\sum_{t=1}^{n}(y_t - \hat{y}_t)^2} \quad \text{(penalizează erorile mari)} \\
+                \MAE &= \frac{1}{n}\sum_{t=1}^{n}|y_t - \hat{y}_t| \quad \text{(robust la outlieri)} \\
+                \MAPE &= \frac{100\%}{n}\sum_{t=1}^{n}\left|\frac{y_t - \hat{y}_t}{y_t}\right| \quad \text{(independent de scară)}
+            \end{align*}
+        \end{defn}
 
-    \begin{exampleblock}{Acoperire}
-        Pentru intervalele de predicție $[\hat{y}_t^L, \hat{y}_t^U]$, rata de acoperire este proporția valorilor reale care se încadrează în interval. Țintă: să corespundă nivelului nominal (ex: 80\%).
-    \end{exampleblock}
+        \begin{exampleblock}{Acoperire}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Pentru intervalele de predicție $[\hat{y}_t^L, \hat{y}_t^U]$, rata de acoperire este proporția valorilor reale care se încadrează în interval
+                \item Țintă: rata de acoperire să corespundă nivelului nominal (ex: 80\%)
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Studiu de caz: prognoza cererii de energie}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Problema}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Obiectiv}: Prognozați cererea de electricitate pe oră
-            \item \textbf{Provocări}:
+        \begin{block}{Problema}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Tipar zilnic $\succ$ vârf la prânz și seara
-                \item Tipar săptămânal $\succ$ mai scăzut în weekend
-                \item Tipar anual $\succ$ mai mare vara (AC) și iarna (încălzire)
-                \item Efecte sărbători $\succ$ cerere mai mică în sărbători
+                \item \textbf{Obiectiv}: Prognozați cererea de electricitate pe oră
+                \item \textbf{Provocări}:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Tipar zilnic $\succ$ vârf la prânz și seara
+                    \item Tipar săptămânal $\succ$ mai scăzut în weekend
+                    \item Tipar anual $\succ$ mai mare vara (aer condiționat) și iarna (încălzire)
+                    \item Efecte sărbători $\succ$ cerere mai mică în sărbători
+                \end{itemize}
             \end{itemize}
-        \end{itemize}
-    \end{block}
+        \end{block}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{exampleblock}{Abordare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Pas 1}: Încercați TBATS cu perioade [24, 168, 8766]
-            \item \textbf{Pas 2}: Încercați Prophet cu sezonalitate zilnică, săptămânală, anuală + sărbători
-            \item \textbf{Pas 3}: Comparați folosind cross-validation
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Abordare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Pas 1}: Încercați TBATS cu perioade [24, 168, 8766]
+                \item \textbf{Pas 2}: Încercați Prophet cu sezonalitate zilnică, săptămânală, anuală + sărbători
+                \item \textbf{Pas 3}: Comparați folosind cross-validation
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Studiu de caz: interpretarea rezultatelor}
     \vspace{-0.55cm}
     \begin{cminipage}{0.95\textwidth}
-    {\footnotesize
-    \begin{block}{Metrici de evaluare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{MAPE}: Mean Absolute Percentage Error
-            \item \textbf{RMSE}: Root Mean Square Error
-            \item \textbf{Acoperire}: \% din valori reale în intervalul de predicție
-        \end{itemize}
-    \end{block}
+        {\footnotesize
+        \begin{exampleblock}{Rezultate tipice (metrici definite anterior)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Comparație performanță:
+            \end{itemize}
+            \vspace{-0.2cm}
+            \begin{center}
+                \begin{tabular}{lccc}
+                    \toprule
+                    \textbf{Model} & \textbf{MAPE} & \textbf{RMSE} & \textbf{Acoperire} \\
+                    \midrule
+                    SARIMA (doar zilnic) & 8.5\% & 450 MW & 75\% \\
+                    TBATS & 4.2\% & 220 MW & 82\% \\
+                    Prophet & 4.8\% & 250 MW & 85\% \\
+                    Prophet + sărbători & 3.9\% & 200 MW & 88\% \\
+                    \bottomrule
+                \end{tabular}
+            \end{center}
+        \end{exampleblock}
 
-    \vspace{0.05cm}
+        \vspace{-0.1cm}
 
-    \begin{exampleblock}{Rezultate tipice}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Comparație performanță:
-        \end{itemize}
-        \vspace{-0.2cm}
-        \begin{center}
-        \begin{tabular}{lccc}
-            \toprule
-            \textbf{Model} & \textbf{MAPE} & \textbf{RMSE} & \textbf{Acoperire} \\
-            \midrule
-            SARIMA (doar zilnic) & 8.5\% & 450 MW & 75\% \\
-            TBATS & 4.2\% & 220 MW & 82\% \\
-            Prophet & 4.8\% & 250 MW & 85\% \\
-            Prophet + sărbători & 3.9\% & 200 MW & 88\% \\
-            \bottomrule
-        \end{tabular}
-        \end{center}
-    \end{exampleblock}
-
-    \vspace{-0.1cm}
-
-    \begin{alertblock}{Concluzie}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Modelele cu sezonalități multiple depășesc semnificativ SARIMA cu o singură sezonalitate
-        \end{itemize}
-    \end{alertblock}
-    }
+        \begin{alertblock}{Concluzie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Modelele cu sezonalități multiple depășesc semnificativ SARIMA
+                \item Gestionarea unei singure perioade sezoniere este insuficientă pentru date complexe
+            \end{itemize}
+        \end{alertblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -1201,26 +1198,27 @@ MSCA Digital Finance}
 \begin{frame}{Exercițiu AI: Gândire critică}
     \vspace{-3mm}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
+        \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
+            {\footnotesize
+            ``Descarcă setul de date Peyton Manning Wikipedia pageviews din Prophet (sau folosește date zilnice de consum de electricitate din 2020-01-01 până în 2024-12-31, aprox.\ 1.800 observații). Folosește Facebook Prophet pentru a prognoza următoarele 30 de zile. Include sărbătorile din SUA și componentele de sezonalitate săptămânală/anuală. Compară cu TBATS. Vreau cod Python complet.''
+            }
+        \end{block}
+        \vspace{-2mm}
         {\footnotesize
-        ``Descarcă setul de date Peyton Manning Wikipedia pageviews din Prophet (sau folosește date zilnice de consum de electricitate din 2020-01-01 până în 2024-12-31, aprox.\ 1.800 observații). Folosește Facebook Prophet pentru a prognoza următoarele 30 de zile. Include sărbătorile din SUA și componentele de sezonalitate săptămânală/anuală. Compară cu TBATS. Vreau cod Python complet.''
+        \begin{block}{Exercițiu}
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item Rulați prompt-ul într-un LLM (Large Language Model) la alegere și analizați critic răspunsul.
+                \item Prophet detectează automat sezonalitățile multiple (zilnică, săptămânală)?
+                \item Cum sunt specificate sărbătorile? Specifice țării sau evenimente personalizate?
+                \item Folosește cross-validation cu puncte de referință (performance\_metrics)?
+                \item TBATS ar fi mai potrivit pentru această frecvență? De ce sau de ce nu?
+            \end{enumerate}
+        \end{block}
         }
-    \end{block}
-    \vspace{-2mm}
-    {\footnotesize
-    \textbf{Exercițiu}:
-    \begin{enumerate}\setlength{\itemsep}{0pt}
-        \item Rulați prompt-ul într-un LLM la alegere și analizați critic răspunsul.
-        \item Prophet detectează automat sezonalitățile multiple (zilnică, săptămânală)?
-        \item Cum sunt specificate sărbătorile? Specifice țării sau evenimente personalizate?
-        \item Folosește cross-validation cu puncte de referință (performance\_metrics)?
-        \item TBATS ar fi mai potrivit pentru această frecvență? De ce sau de ce nu?
-    \end{enumerate}
-    }
-    \vspace{-2mm}
-    \begin{alertblock}{}
-        {\footnotesize \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Asta nu înseamnă că e corect.}}
-    \end{alertblock}
+        \vspace{-2mm}
+        \begin{alertblock}{}
+            {\footnotesize \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Asta nu înseamnă că e corect.}}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 
@@ -1231,50 +1229,50 @@ MSCA Digital Finance}
 
 \begin{frame}{Concluzii cheie}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Sezonalități multiple}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Datele din lumea reală au adesea tipare sezoniere multiple
-            \item SARIMA standard gestionează doar o perioadă sezonieră
-            \item TBATS și Prophet sunt proiectate pentru această provocare
-        \end{itemize}
-    \end{block}
+        \begin{block}{Sezonalități multiple}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Datele din lumea reală au adesea tipare sezoniere multiple
+                \item SARIMA standard gestionează doar o perioadă sezonieră
+                \item TBATS și Prophet sunt proiectate pentru această provocare
+            \end{itemize}
+        \end{block}
 
-    \vspace{0.1cm}
+        \vspace{0.1cm}
 
-    \begin{exampleblock}{Selecția modelului}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{TBATS}: Automat, gestionează frecvență înaltă, fără regresori externi
-            \item \textbf{Prophet}: Interpretabil, efecte sărbători, regresori externi
-            \item Ambele folosesc termeni Fourier pentru reprezentare eficientă a sezonalității
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Selecția modelului}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{TBATS}: Automat, gestionează frecvență înaltă, fără regresori externi
+                \item \textbf{Prophet}: Interpretabil, efecte sărbători, regresori externi
+                \item Ambele folosesc termeni Fourier pentru reprezentare eficientă a sezonalității
+            \end{itemize}
+        \end{exampleblock}
 
-    \vspace{0.2cm}
+        \vspace{0.2cm}
 
-    \begin{alertblock}{De reținut}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Validare}: Folosiți întotdeauna cross-validation adecvat pentru serii de timp!
-        \end{itemize}
-    \end{alertblock}
+        \begin{alertblock}{De reținut}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Validare}: Folosiți întotdeauna cross-validation adecvat pentru serii de timp!
+            \end{itemize}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebări?}
     \vspace{0.5cm}
     \begin{cminipage}{0.95\textwidth}
-    \begin{center}
-        \Large\textcolor{MainBlue}{Întrebări?}
-    \end{center}
+        \begin{center}
+            \Large\textcolor{MainBlue}{Întrebări?}
+        \end{center}
 
-    \vspace{0.5cm}
+        \vspace{0.5cm}
 
-    \begin{exampleblock}{Pași următori}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Exersați cu notebook-ul Jupyter
-            \item Încercați Prophet pe propriile date
-            \item Explorați NeuralProphet pentru extensia deep learning
-        \end{itemize}
-    \end{exampleblock}
+        \begin{exampleblock}{Pași următori}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Exersați cu notebook-ul Jupyter
+                \item Încercați Prophet pe propriile date
+                \item Explorați NeuralProphet pentru extensia deep learning
+            \end{itemize}
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
@@ -1286,211 +1284,198 @@ MSCA Digital Finance}
 
 \begin{frame}{Întrebarea 1}
     \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item De ce nu poate SARIMA$(p,d,q)(P,D,Q)_s$ standard să modeleze date orare de electricitate cu tipare zilnice și săptămânale?
-        \end{itemize}
-    \end{alertblock}
+        \begin{alertblock}{Întrebare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item De ce nu poate SARIMA$(p,d,q)(P,D,Q)_s$ standard să modeleze date orare de electricitate cu tipare zilnice și săptămânale?
+            \end{itemize}
+        \end{alertblock}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{block}{Variante de răspuns}
-
-        \textcolor{MainBlue}{\textbf{(A)}} SARIMA poate gestiona doar o singură perioadă sezonieră $s$ la un moment dat\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(B)}} SARIMA necesită erori normal distribuite pentru sezonalități multiple\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(C)}} SARIMA poate gestiona sezonalități multiple, dar necesită mai multe date\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(D)}} SARIMA funcționează doar cu date lunare sau trimestriale
-
-    \end{block}
+        \begin{block}{Variante de răspuns}
+            \begin{itemize}\setlength{\itemsep}{3pt}
+                \item[\textcolor{MainBlue}{\textbf{(A)}}] SARIMA poate gestiona doar o singură perioadă sezonieră $s$ la un moment dat
+                \item[\textcolor{MainBlue}{\textbf{(B)}}] SARIMA necesită erori normal distribuite pentru sezonalități multiple
+                \item[\textcolor{MainBlue}{\textbf{(C)}}] SARIMA poate gestiona sezonalități multiple, dar necesită mai multe date
+                \item[\textcolor{MainBlue}{\textbf{(D)}}] SARIMA funcționează doar cu date lunare sau trimestriale
+            \end{itemize}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 1: Răspuns}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz1_multiple_seasonality.pdf}
-    \end{center}
-    \vspace{-3mm}
-    {\small
-    \begin{exampleblock}{Răspuns: (A)}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item SARIMA gestionează doar \textbf{o singură} perioadă sezonieră $s$. Nu se pot seta $s=24$ (zilnic) și $s=168$ (săptămânal) simultan într-un singur model SARIMA.
-    \end{itemize}
-    \end{exampleblock}
-    }
-    \hfill\quantlet{TSA\_ch9\_quiz1\_multiple\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz1_multiple_seasonality}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz1_multiple_seasonality.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\small
+        \begin{exampleblock}{Răspuns: (A)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item SARIMA gestionează doar \textbf{o singură} perioadă sezonieră $s$
+                \item Nu se pot seta $s=24$ (zilnic) și $s=168$ (săptămânal) simultan într-un singur model SARIMA
+            \end{itemize}
+        \end{exampleblock}
+        }
+        \hfill\quantlet{TSA\_ch9\_quiz1\_multiple\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz1_multiple_seasonality}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 2}
     \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ce reprezintă fiecare literă din TBATS?
-        \end{itemize}
-    \end{alertblock}
+        \begin{alertblock}{Întrebare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ce reprezintă fiecare literă din TBATS?
+            \end{itemize}
+        \end{alertblock}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{block}{Variante de răspuns}
-
-        \textcolor{MainBlue}{\textbf{(A)}} Trend, Bayes, Autoregresiv, Timp, Staționaritate\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(B)}} Sezonalitate Trigonometrică, Box-Cox, erori ARMA, Trend, componente Sezoniere\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(C)}} Taylor, Box-Cox, ARIMA, Transformare, Smoothing\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(D)}} Trigonometric, Bayesian, ARMA, Trend, Analiză spectrală
-
-    \end{block}
+        \begin{block}{Variante de răspuns}
+            \begin{itemize}\setlength{\itemsep}{3pt}
+                \item[\textcolor{MainBlue}{\textbf{(A)}}] Trend, Bayes, Autoregresiv, Timp, Staționaritate
+                \item[\textcolor{MainBlue}{\textbf{(B)}}] Sezonalitate Trigonometrică, Box-Cox, erori ARMA, Trend, componente Sezoniere
+                \item[\textcolor{MainBlue}{\textbf{(C)}}] Taylor, Box-Cox, ARIMA, Transformare, Smoothing
+                \item[\textcolor{MainBlue}{\textbf{(D)}}] Trigonometric, Bayesian, ARMA, Trend, Analiză spectrală
+            \end{itemize}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 2: Răspuns}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz2_tbats_components.pdf}
-    \end{center}
-    \vspace{-3mm}
-    {\small
-    \begin{exampleblock}{Răspuns: (B)}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Sezonalitate \textbf{T}rigonometrică, transformare \textbf{B}ox-Cox, erori \textbf{A}RMA, \textbf{T}rend, componente \textbf{S}ezoniere.
-    \end{itemize}
-    \end{exampleblock}
-    }
-    \hfill\quantlet{TSA\_ch9\_quiz2\_tbats\_components}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz2_tbats_components}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz2_tbats_components.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\small
+        \begin{exampleblock}{Răspuns: (B)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Sezonalitate \textbf{T}rigonometrică, transformare \textbf{B}ox-Cox, erori \textbf{A}RMA, \textbf{T}rend, componente \textbf{S}ezoniere.
+            \end{itemize}
+        \end{exampleblock}
+        }
+        \hfill\quantlet{TSA\_ch9\_quiz2\_tbats\_components}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz2_tbats_components}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 3}
     \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ce se întâmplă când creștem numărul de armonici Fourier $K$?
-        \end{itemize}
-    \end{alertblock}
+        \begin{alertblock}{Întrebare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ce se întâmplă când creștem numărul de armonici Fourier $K$?
+            \end{itemize}
+        \end{alertblock}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{block}{Variante de răspuns}
-
-        \textcolor{MainBlue}{\textbf{(A)}} Modelul devine mai simplu și mai robust\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(B)}} Modelul captează tipare sezoniere mai complexe, dar riscă supraajustarea\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(C)}} Orizontul de prognoză crește proporțional\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(D)}} Perioada sezonieră $s$ se schimbă automat
-
-    \end{block}
+        \begin{block}{Variante de răspuns}
+            \begin{itemize}\setlength{\itemsep}{3pt}
+                \item[\textcolor{MainBlue}{\textbf{(A)}}] Modelul devine mai simplu și mai robust
+                \item[\textcolor{MainBlue}{\textbf{(B)}}] Modelul captează tipare sezoniere mai complexe, dar riscă supraajustarea
+                \item[\textcolor{MainBlue}{\textbf{(C)}}] Orizontul de prognoză crește proporțional
+                \item[\textcolor{MainBlue}{\textbf{(D)}}] Perioada sezonieră $s$ se schimbă automat
+            \end{itemize}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 3: Răspuns}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz3_fourier_harmonics.pdf}
-    \end{center}
-    \vspace{-3mm}
-    {\small
-    \begin{exampleblock}{Răspuns: (B)}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Un $K$ mai mare captează tipare sezoniere mai complexe, dar crește riscul de supraajustare. Maximul este $K \leq s/2$.
-    \end{itemize}
-    \end{exampleblock}
-    }
-    \hfill\quantlet{TSA\_ch9\_quiz3\_fourier\_harmonics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz3_fourier_harmonics}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz3_fourier_harmonics.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\small
+        \begin{exampleblock}{Răspuns: (B)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Un $K$ mai mare captează tipare sezoniere mai complexe, dar crește riscul de supraajustare. Maximul este $K \leq s/2$.
+            \end{itemize}
+        \end{exampleblock}
+        }
+        \hfill\quantlet{TSA\_ch9\_quiz3\_fourier\_harmonics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz3_fourier_harmonics}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 4}
     \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Care sunt componentele principale în modelul Prophet $y(t) = g(t) + s(t) + h(t) + \varepsilon_t$?
-        \end{itemize}
-    \end{alertblock}
+        \begin{alertblock}{Întrebare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Care sunt componentele principale în modelul Prophet $y(t) = g(t) + s(t) + h(t) + \varepsilon_t$?
+            \end{itemize}
+        \end{alertblock}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{block}{Variante de răspuns}
-
-        \textcolor{MainBlue}{\textbf{(A)}} $g(t)$ = volatilitate GARCH, $s(t)$ = test de staționaritate, $h(t)$ = heteroscedasticitate\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(B)}} $g(t)$ = creștere (trend cu changepoints), $s(t)$ = sezonalitate, $h(t)$ = efecte de sărbători\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(C)}} $g(t)$ = zgomot gaussian, $s(t)$ = netezire, $h(t)$ = termeni armonici\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(D)}} $g(t)$ = gradient, $s(t)$ = densitate spectrală, $h(t)$ = exponent Hurst
-
-    \end{block}
+        \begin{block}{Variante de răspuns}
+            \begin{itemize}\setlength{\itemsep}{3pt}
+                \item[\textcolor{MainBlue}{\textbf{(A)}}] $g(t)$ = volatilitate GARCH, $s(t)$ = test de staționaritate, $h(t)$ = heteroscedasticitate
+                \item[\textcolor{MainBlue}{\textbf{(B)}}] $g(t)$ = creștere (trend cu changepoints), $s(t)$ = sezonalitate, $h(t)$ = efecte de sărbători
+                \item[\textcolor{MainBlue}{\textbf{(C)}}] $g(t)$ = zgomot gaussian, $s(t)$ = netezire, $h(t)$ = termeni armonici
+                \item[\textcolor{MainBlue}{\textbf{(D)}}] $g(t)$ = gradient, $s(t)$ = densitate spectrală, $h(t)$ = exponent Hurst
+            \end{itemize}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 4: Răspuns}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz4_prophet_decomposition.pdf}
-    \end{center}
-    \vspace{-3mm}
-    {\small
-    \begin{exampleblock}{Răspuns: (B)}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item $g(t)$ = trend cu changepoints, $s(t)$ = sezonalitate (termeni Fourier), $h(t)$ = efecte de sărbători, $\varepsilon_t$ = termen de eroare.
-    \end{itemize}
-    \end{exampleblock}
-    }
-    \hfill\quantlet{TSA\_ch9\_quiz4\_prophet\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz4_prophet_decomposition}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz4_prophet_decomposition.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\small
+        \begin{exampleblock}{Răspuns: (B)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $g(t)$ = trend cu changepoints, $s(t)$ = sezonalitate (termeni Fourier), $h(t)$ = efecte de sărbători, $\varepsilon_t$ = termen de eroare.
+            \end{itemize}
+        \end{exampleblock}
+        }
+        \hfill\quantlet{TSA\_ch9\_quiz4\_prophet\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz4_prophet_decomposition}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 5}
     \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Ce caracteristici cheie are Prophet pe care TBATS nu le are?
-        \end{itemize}
-    \end{alertblock}
+        \begin{alertblock}{Întrebare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ce caracteristici cheie are Prophet pe care TBATS nu le are?
+            \end{itemize}
+        \end{alertblock}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \begin{block}{Variante de răspuns}
-
-        \textcolor{MainBlue}{\textbf{(A)}} Sezonalitate trigonometrică și transformare Box-Cox\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(B)}} Selecție automată a parametrilor și netezire exponențială\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(C)}} Efecte de sărbători, regresori externi, changepoints în trend și gestionare nativă a datelor lipsă\\[3pt]
-
-        \textcolor{MainBlue}{\textbf{(D)}} Formulare spațiu-stare și modelare erori ARMA
-
-    \end{block}
+        \begin{block}{Variante de răspuns}
+            \begin{itemize}\setlength{\itemsep}{3pt}
+                \item[\textcolor{MainBlue}{\textbf{(A)}}] Sezonalitate trigonometrică și transformare Box-Cox
+                \item[\textcolor{MainBlue}{\textbf{(B)}}] Selecție automată a parametrilor și netezire exponențială
+                \item[\textcolor{MainBlue}{\textbf{(C)}}] Efecte de sărbători, regresori externi, changepoints în trend și gestionare nativă a datelor lipsă
+                \item[\textcolor{MainBlue}{\textbf{(D)}}] Formulare spațiu-stare și modelare erori ARMA
+            \end{itemize}
+        \end{block}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Întrebarea 5: Răspuns}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz5_prophet_vs_tbats.pdf}
-    \end{center}
-    \vspace{-3mm}
-    {\small
-    \begin{exampleblock}{Răspuns: (C)}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Prophet oferă efecte de sărbători, regresori externi, changepoints în trend și gestionare nativă a datelor lipsă---caracteristici indisponibile în TBATS.
-    \end{itemize}
-    \end{exampleblock}
-    }
-    \hfill\quantlet{TSA\_ch9\_quiz5\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz5_prophet_vs_tbats}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz5_prophet_vs_tbats.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\small
+        \begin{exampleblock}{Răspuns: (C)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Prophet oferă efecte de sărbători, regresori externi, changepoints în trend și gestionare nativă a datelor lipsă
+                \item Aceste caracteristici sunt indisponibile în TBATS
+            \end{itemize}
+        \end{exampleblock}
+        }
+        \hfill\quantlet{TSA\_ch9\_quiz5\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz5_prophet_vs_tbats}
     \end{cminipage}
 \end{frame}
 
@@ -1502,72 +1487,74 @@ MSCA Digital Finance}
 \begin{frame}{Bibliografie I}
     \vspace{-0.3cm}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Prophet}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Taylor, S.J., \& Letham, B. (2018). Forecasting at Scale, \textit{The American Statistician}, 72(1), 37--45.
-            \item Harvey, A.C. (1989). \textit{Forecasting, Structural Time Series Models and the Kalman Filter}, Cambridge University Press.
-        \end{itemize}
-        }
-    \end{block}
+        \begin{block}{Prophet}
+            {\small
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Taylor, S.J., \& Letham, B. (2018). Forecasting at Scale, \textit{The American Statistician}, 72(1), 37--45.
+                \item Harvey, A.C. (1989). \textit{Forecasting, Structural Time Series Models and the Kalman Filter}, Cambridge University Press.
+            \end{itemize}
+            }
+        \end{block}
 
-    \begin{exampleblock}{TBATS și netezire exponențială}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item De Livera, A.M., Hyndman, R.J., \& Snyder, R.D. (2011). Forecasting Time Series with Complex Seasonal Patterns Using Exponential Smoothing, \textit{JASA}, 106(496), 1513--1527.
-            \item Hyndman, R.J., Koehler, A.B., Ord, J.K., \& Snyder, R.D. (2008). \textit{Forecasting with Exponential Smoothing: The State Space Approach}, Springer.
-            \item Taylor, J.W. (2003). Short-term Electricity Demand Forecasting Using Double Seasonal Exponential Smoothing, \textit{Journal of the Operational Research Society}, 54(8), 799--805.
-        \end{itemize}
-        }
-    \end{exampleblock}
+        \begin{exampleblock}{TBATS și netezire exponențială}
+            {\small
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item De Livera, A.M., Hyndman, R.J., \& Snyder, R.D. (2011). Forecasting Time Series with Complex Seasonal Patterns Using Exponential Smoothing, \textit{JASA}, 106(496), 1513--1527.
+                \item Hyndman, R.J., Koehler, A.B., Ord, J.K., \& Snyder, R.D. (2008). \textit{Forecasting with Exponential Smoothing: The State Space Approach}, Springer.
+                \item Taylor, J.W. (2003). Short-term Electricity Demand Forecasting Using Double Seasonal Exponential Smoothing, \textit{Journal of the Operational Research Society}, 54(8), 799--805.
+            \end{itemize}
+            }
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{Bibliografie II}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Comparații și competiții de prognoză}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, \textit{International Journal of Forecasting}, 36(1), 54--74.
-            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
-            \item Petropoulos, F., et al. (2022). Forecasting: Theory and Practice, \textit{International Journal of Forecasting}, 38(3), 845--1054.
-        \end{itemize}
-        }
-    \end{block}
+        \begin{block}{Comparații și competiții de prognoză}
+            {\small
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, \textit{International Journal of Forecasting}, 36(1), 54--74.
+                \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
+                \item Petropoulos, F., et al. (2022). Forecasting: Theory and Practice, \textit{International Journal of Forecasting}, 38(3), 845--1054.
+            \end{itemize}
+            }
+        \end{block}
 
-    \begin{exampleblock}{Resurse online și cod}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Platformă de cod pentru metode cantitative
-            \item \textbf{Quantinar}: \url{https://quantinar.com} $\succ$ Platformă de învățare pentru metode cantitative
-            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch9} $\succ$ Cod Python pentru acest capitol
-        \end{itemize}
-        }
-    \end{exampleblock}
+        \begin{exampleblock}{Resurse online și cod}
+            {\small
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Quantlet}: \url{https://quantlet.com} $\succ$ Platformă de cod pentru metode cantitative
+                \item \textbf{Quantinar}: \url{https://quantinar.com} $\succ$ Platformă de învățare pentru metode cantitative
+                \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch9} $\succ$ Cod Python pentru acest capitol
+            \end{itemize}
+            }
+        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
 \begin{frame}{}
     \begin{cminipage}{0.95\textwidth}
-    \centering
-    \vspace{1cm}
+        \centering
+        \vspace{1cm}
 
-    \Huge\textcolor{MainBlue}{Vă Mulțumim!}
+        \Huge\textcolor{MainBlue}{Vă Mulțumim!}
 
-    \vspace{0.8cm}
+        \vspace{0.8cm}
 
-    \Large Întrebări?
+        \Large Întrebări?
 
-    \vspace{1cm}
+        \vspace{1cm}
 
-    \normalsize
-    Materialele cursului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+        \normalsize
+        Materialele cursului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
-    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+        \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+        \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
     \end{cminipage}
 \end{frame}
 
 \end{document}
+
+
