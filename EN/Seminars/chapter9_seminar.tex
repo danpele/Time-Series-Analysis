@@ -1,678 +1,624 @@
-% Chapter 9: Seminar - Prophet and TBATS
-% Quizzes, Practice Problems, and Discussion
-% Bachelor program, Bucharest University of Economic Studies
+% Seminar 9: Prophet and TBATS
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
-
-% Ensure content fits on slides
-\setbeamersize{text margin left=8mm, text margin right=8mm}
-
-%=============================================================================
-% THEME AND STYLE CONFIGURATION
-%=============================================================================
-\usetheme{default}
-% Using default theme for clean header/footer control
-
-% Color Palette (matching Redispatch PDF)
-\definecolor{MainBlue}{RGB}{26, 58, 110}
-\definecolor{AccentBlue}{RGB}{26, 58, 110}
-\definecolor{IDAred}{RGB}{205, 0, 0}
-\definecolor{DarkGray}{RGB}{51, 51, 51}
-\definecolor{MediumGray}{RGB}{128, 128, 128}
-\definecolor{LightGray}{RGB}{248, 248, 248}
-\definecolor{VeryLightGray}{RGB}{235, 235, 235}
-\definecolor{KeynoteGray}{RGB}{218, 218, 218}
-\definecolor{SectionGray}{RGB}{120, 120, 120}
-\definecolor{FooterGray}{RGB}{100, 100, 100}
-\definecolor{Crimson}{RGB}{220, 53, 69}
-\definecolor{Forest}{RGB}{46, 125, 50}
-\definecolor{Amber}{RGB}{181, 133, 63}
-\definecolor{Orange}{RGB}{230, 126, 34}
-\definecolor{Purple}{RGB}{142, 68, 173}
-
-% Gradient background (exact Keynote 315° gradient: white to RGB 218,218,218)
-\setbeamertemplate{background}{%
-    \begin{tikzpicture}[remember picture, overlay]
-        \shade[shading=axis, shading angle=315,
-        top color=white, bottom color=KeynoteGray]
-        (current page.south west) rectangle (current page.north east);
-    \end{tikzpicture}%
-}
-% Fallback solid color for compatibility
-\setbeamercolor{background canvas}{bg=}
-
-\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
-\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
-\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
-\setbeamercolor{structure}{fg=MainBlue}
-\setbeamercolor{title}{fg=IDAred}
-\setbeamercolor{frametitle}{fg=IDAred, bg=}
-\setbeamercolor{block title}{bg=MainBlue, fg=white}
-\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
-\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
-\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
-\setbeamercolor{block title example}{bg=Forest, fg=white}
-\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
-\setbeamercolor{item}{fg=MainBlue}
-
-% Footer colors (override Madrid theme blue)
-\setbeamercolor{author in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{title in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{date in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{section in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{subsection in head/foot}{fg=FooterGray, bg=}
-
-% Bullet styles (apply everywhere including blocks)
-\setbeamertemplate{itemize item}{\color{MainBlue}$\boxdot$}
-\setbeamertemplate{itemize subitem}{\color{MainBlue}$\blacktriangleright$}
-\setbeamertemplate{itemize subsubitem}{\color{MainBlue}\tiny$\bullet$}
-\setbeamertemplate{itemize/enumerate body begin}{\normalsize}
-\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
-
-% Item spacing - compact style
-\setlength{\leftmargini}{10pt}       % Level 1: minimal indent
-\setlength{\leftmarginii}{10pt}      % Level 2: minimal additional indent
-% Compact list spacing (zero extra space before/after lists in blocks)
-\makeatletter
-\def\@listi{\leftmargin\leftmargini \topsep 0pt \parsep 0pt \itemsep 0pt}
-\def\@listii{\leftmargin\leftmarginii \topsep 0pt \parsep 0pt \itemsep 0pt}
-\makeatother
-
-\setbeamertemplate{navigation symbols}{}
-
-%=============================================================================
-% CUSTOM HEADLINE
-%=============================================================================
-\setbeamertemplate{headline}{%
-    \vskip10pt%
-    \hbox to \paperwidth{%
-        \hskip0.5cm%
-        {\small\color{FooterGray}\renewcommand{\hyperlink}[2]{##2}\insertsectionhead}%
-        \hfill%
-        \textcolor{FooterGray}{\small\insertframenumber}%
-        \hskip0.5cm%
-    }%
-    \vskip4pt%
-    {\color{FooterGray}\hrule height 0.4pt}%
-}
-
-%=============================================================================
-% CUSTOM FOOTER
-%=============================================================================
-\usepackage{fontawesome5}
-
-\setbeamertemplate{footline}{%
-    {\color{FooterGray}\hrule height 0.4pt}%
-    \vskip4pt%
-    \hbox to \paperwidth{%
-        \hskip0.5cm%
-        \textcolor{FooterGray}{\small Time Series Analysis and Forecasting}%
-        \hfill%
-        \raisebox{-0.1em}{%
-            \begin{tikzpicture}[x=0.08em, y=0.08em, line width=0.4pt]
-                \draw[FooterGray] (0,3) -- (1,4) -- (2,3.5) -- (3,5) -- (4,4) -- (5,6) -- (6,5.5) -- (7,4) -- (8,5) -- (9,7) -- (10,6) -- (11,5) -- (12,6.5) -- (13,8) -- (14,7) -- (15,6) -- (16,7.5) -- (17,9) -- (18,8) -- (19,7) -- (20,8.5) -- (21,10) -- (22,9) -- (23,8) -- (24,9.5);
-            \end{tikzpicture}%
-        }%
-        \hskip0.5cm%
-    }%
-    \vskip6pt%
-}
-
-%=============================================================================
-% PACKAGES
-%=============================================================================
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[english]{babel}
-\usepackage{amsmath, amssymb, amsthm}
-\usepackage{mathtools}
-\usepackage{bm}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing, shadings}
-\usepackage{enumerate}
-\usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{array}
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{colortbl}
-\hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
-\graphicspath{{../../logos/}{../../charts/}}
-\hfuzz=2pt  % Suppress tiny overfull warnings (<2pt)
-\vfuzz=2pt  % Suppress tiny vertical overfull warnings (<2pt)
-
-%=============================================================================
-% QUANTLET COMMAND
-%=============================================================================
-\newcommand{\quantlet}[2]{%
-    \hfill\href{#2}{%
-        \raisebox{-0.15em}{\includegraphics[height=0.7em]{ql_logo.png}}%
-        \textcolor{MainBlue}{\tiny\ #1}%
-    }%
-}
-
-%=============================================================================
-% CENTRED MINIPAGE
-%=============================================================================
-\newenvironment{cminipage}[1]{%
-    \par\noindent\hfill\begin{minipage}{#1}\ignorespaces
-}{%
-    \end{minipage}\hfill\null\par
-}
-
-%=============================================================================
-% CUSTOM COMMANDS
-%=============================================================================
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\text{Var}}
-\newcommand{\Cov}{\text{Cov}}
-
-%=============================================================================
-% TITLE INFORMATION
-%=============================================================================
-\title[Chapter 9: Seminar]{Chapter 9: Seminar --- Prophet \& TBATS}
-\subtitle{Bachelor program Faculty of Cybernetics, Statistics and Economic Informatics, Bucharest University of Economic Studies, Romania}
-\author[Prof. dr. Daniel Traian Pele]{Prof. dr. Daniel Traian Pele\\[0.2cm]\footnotesize\texttt{danpele@ase.ro}}
-\institute{Bucharest University of Economic Studies}
-\date{Academic Year 2025--2026}
+\input{preamble}
+\subtitle{Seminar 9: Prophet and TBATS}
 
 \begin{document}
 
-%=============================================================================
-% TITLE SLIDE
-%=============================================================================
-\begin{frame}[plain]
-    \begin{tikzpicture}[remember picture, overlay]
-        \fill[IDAred] (current page.north west) rectangle ([yshift=-0.15cm]current page.north east);
-        \node[anchor=north west] at ([xshift=0.5cm, yshift=-0.3cm]current page.north west) {
-            \href{https://www.ase.ro}{\includegraphics[height=1.1cm]{ase_logo.png}}
-        };
-        \node[anchor=north] at ([yshift=-0.3cm]current page.north) {
-            \href{https://ai4efin.ase.ro}{\includegraphics[height=1.1cm]{ai4efin_logo.png}}
-        };
-        \node[anchor=north east] at ([xshift=-0.5cm, yshift=-0.3cm]current page.north east) {
-            \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.1cm]{msca_logo.png}}
-        };
-    \end{tikzpicture}
-    \vfill
-    \begin{center}
-        {\Large\textcolor{MediumGray}{Time Series Analysis and Forecasting}}\\[0.3cm]
-        {\Huge\textbf{\textcolor{MainBlue}{Chapter 9: Prophet \& TBATS}}}\\[0.5cm]
-        {\Large\textcolor{IDAred}{Seminar}}
-    \end{center}
-    \vfill
-
-    \begin{tikzpicture}[remember picture, overlay]
-        \fill[IDAred] (current page.south west) rectangle ([yshift=0.15cm]current page.south east);
-        \node[anchor=south west] at ([xshift=0.5cm, yshift=0.8cm]current page.south west) {
-            \href{https://theida.net}{\includegraphics[height=0.9cm]{ida_logo.png}}
-        };
-        \node[anchor=south] at ([xshift=-3cm, yshift=0.8cm]current page.south) {
-            \href{https://blockchain-research-center.com}{\includegraphics[height=0.9cm]{brc_logo.png}}
-        };
-        \node[anchor=south] at ([yshift=0.8cm]current page.south) {
-            \href{https://quantinar.com}{\includegraphics[height=0.9cm]{qr_logo.png}}
-        };
-        \node[anchor=south] at ([xshift=3cm, yshift=0.8cm]current page.south) {
-            \href{https://quantlet.com}{\includegraphics[height=0.9cm]{ql_logo.png}}
-        };
-        \node[anchor=south east] at ([xshift=-0.5cm, yshift=0.8cm]current page.south east) {
-            \href{https://ipe.ro/new}{\includegraphics[height=0.9cm]{acad_logo.png}}
-        };
-    \end{tikzpicture}
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
 \end{frame}
+}
 
-%=============================================================================
-% OUTLINE
-%=============================================================================
+
 \begin{frame}{Seminar Outline}
     \begin{cminipage}{0.95\textwidth}
-    \textbf{\large Seminar structure:}
-    \vspace{0.4cm}
-    \begin{enumerate}
-        \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Review Quiz} -- Knowledge check
+    \begin{itemize}
+        \item \textbf{Multiple Choice Quiz} -- Knowledge check
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{True/False Questions} -- Conceptual checks
+        \item \textbf{True/False} -- Conceptual checks
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Practice Problems} -- Applied practice
+        \item \textbf{Calculation Exercises} -- Applied practice
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Worked Examples} -- Detailed solutions
+        \item \textbf{Worked Examples} -- Detailed solutions
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Discussion Topics} -- Critical thinking
+        \item \textbf{AI-Assisted Exercise} -- Critical thinking
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{AI-Assisted Exercises} -- Applied artificial intelligence
-    \end{enumerate}
+        \item \textbf{Summary} -- Key takeaways
+    \end{itemize}
     \end{cminipage}
 \end{frame}
 
 %=============================================================================
-% SECTION 1: REVIEW QUIZ
+% MULTIPLE CHOICE QUIZ
 %=============================================================================
-\section{Review Quiz}
+\section{Multiple Choice Quiz}
 
 \begin{frame}{Quiz 1: Multiple Seasonality Challenge}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         Why can't standard SARIMA handle hourly electricity demand data?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item SARIMA can only handle monthly data
-        \item SARIMA allows only one seasonal period ($m$ parameter)
-        \item SARIMA doesn't support trend components
-        \item SARIMA requires normally distributed data
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} SARIMA can only handle monthly data\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} SARIMA allows only one seasonal period ($m$ parameter)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} SARIMA doesn't support trend components\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} SARIMA requires normally distributed data
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 1: Answer}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- SARIMA allows only one seasonal period}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch9_quiz1_multiple_seasonality.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Key}: Hourly data has daily (24h), weekly (168h), and annual (8760h) patterns. SARIMA's single $m$ parameter cannot capture all these simultaneously.
-        }
+        \textbf{Question:} Why can't standard SARIMA handle hourly electricity demand data?
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} SARIMA can only handle monthly data \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{SARIMA allows only one seasonal period ($m$ parameter)}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} SARIMA doesn't support trend components \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} SARIMA requires normally distributed data \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item Hourly data has daily (24h), weekly (168h), and annual (8760h) patterns
+            \item SARIMA's single $m$ parameter cannot capture all these simultaneously
+            \item Use TBATS or Prophet for \textbf{multiple seasonality}
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_quiz1\_multiple\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz1_multiple_seasonality}
 \end{frame}
 
 \begin{frame}{Quiz 2: TBATS Acronym}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         What does TBATS stand for?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Trend, Baseline, ARMA, Transform, Seasonal
-        \item Trigonometric, Box-Cox, ARMA, Trend, Seasonal
-        \item Time-Based Automatic Time Series
-        \item Temporal Bayesian Adaptive Trend System
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Trend, Baseline, ARMA, Transform, Seasonal\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Trigonometric, Box-Cox, ARMA, Trend, Seasonal\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Time-Based Automatic Time Series\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Temporal Bayesian Adaptive Trend System
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 2: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Trigonometric, Box-Cox, ARMA, Trend, Seasonal}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.48\textheight, keepaspectratio]{ch9_quiz2_tbats_components.pdf}
-        \end{center}
-        \vspace{-0.3cm}
-        {\scriptsize
-        \textbf{TBATS}: \textbf{T}rigonometric (Fourier for seasonality), \textbf{B}ox-Cox (variance stabilization), \textbf{A}RMA (error autocorrelation), \textbf{T}rend (damped local), \textbf{S}easonal (multiple periods).
-        }
+        \textbf{Question:} What does TBATS stand for?
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Trend, Baseline, ARMA, Transform, Seasonal \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Trigonometric, Box-Cox, ARMA, Trend, Seasonal}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Time-Based Automatic Time Series \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Temporal Bayesian Adaptive Trend System \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item \textbf{T}rigonometric (Fourier for seasonality), \textbf{B}ox-Cox (variance stabilization)
+            \item \textbf{A}RMA (error autocorrelation), \textbf{T}rend (damped local), \textbf{S}easonal (multiple periods)
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_quiz2\_tbats\_components}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz2_tbats_components}
 \end{frame}
 
 \begin{frame}{Quiz 3: Fourier Terms}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         In TBATS, increasing the number of Fourier harmonics ($K$) for a seasonal pattern:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Always improves forecast accuracy
-        \item Allows more flexible (complex) seasonal shapes
-        \item Reduces the model complexity
-        \item Eliminates the need for Box-Cox transformation
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Always improves forecast accuracy\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Allows more flexible (complex) seasonal shapes\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Reduces the model complexity\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Eliminates the need for Box-Cox transformation
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 3: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Allows more flexible seasonal shapes}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.51\textheight, keepaspectratio]{ch9_quiz3_fourier_harmonics.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Trade-off}: More harmonics = more flexibility but also more parameters.
-        $$s_t^{(i)} = \sum_{j=1}^{K_i} \left[ a_j^{(i)} \cos\left(\frac{2\pi j t}{m_i}\right) + b_j^{(i)} \sin\left(\frac{2\pi j t}{m_i}\right) \right]$$
-        }
+        \textbf{Question:} In TBATS, increasing the number of Fourier harmonics ($K$) for a seasonal pattern:
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Always improves forecast accuracy \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Allows more flexible (complex) seasonal shapes}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Reduces the model complexity \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Eliminates the need for Box-Cox transformation \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item \textbf{Trade-off}: More harmonics = more flexibility but also more parameters
+            \item $s_t^{(i)} = \sum_{j=1}^{K_i} \left[ a_j^{(i)} \cos\left(\frac{2\pi j t}{m_i}\right) + b_j^{(i)} \sin\left(\frac{2\pi j t}{m_i}\right) \right]$
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_quiz3\_fourier\_harmonics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz3_fourier_harmonics}
 \end{frame}
 
 \begin{frame}{Quiz 4: Prophet Decomposition}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         Prophet decomposes a time series into which components?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item AR, MA, and seasonal components
-        \item Trend, seasonality, holidays, and error
-        \item Mean, variance, and autocorrelation
-        \item Level, slope, and curvature
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} AR, MA, and seasonal components\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Trend, seasonality, holidays, and error\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Mean, variance, and autocorrelation\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Level, slope, and curvature
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 4: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Trend, seasonality, holidays, and error}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.50\textheight, keepaspectratio]{ch9_quiz4_prophet_decomposition.pdf}
-        \end{center}
-        \vspace{-0.3cm}
-        {\scriptsize
-        \textbf{Prophet}: $y(t) = g(t) + s(t) + h(t) + \varepsilon_t$ where $g(t)$ = trend, $s(t)$ = seasonality (Fourier), $h(t)$ = holidays, $\varepsilon_t$ = error.
-        }
+        \textbf{Question:} Prophet decomposes a time series into which components?
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} AR, MA, and seasonal components \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Trend, seasonality, holidays, and error}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Mean, variance, and autocorrelation \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Level, slope, and curvature \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item $y(t) = g(t) + s(t) + h(t) + \varepsilon_t$
+            \item $g(t)$ = trend, $s(t)$ = seasonality (Fourier), $h(t)$ = holidays, $\varepsilon_t$ = error
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_quiz4\_prophet\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz4_prophet_decomposition}
 \end{frame}
 
 \begin{frame}{Quiz 5: Prophet vs TBATS}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         When would you choose Prophet over TBATS?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item When you need automatic model selection
-        \item When you have known holidays and changepoints to incorporate
-        \item When you need the most parsimonious model
-        \item When your data has no trend
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} When you need automatic model selection\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} When you have known holidays and changepoints to incorporate\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} When you need the most parsimonious model\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} When your data has no trend
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 5: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Known holidays and changepoints}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz5_prophet_vs_tbats.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Prophet advantages}: Easy holiday integration, analyst-in-the-loop, handles missing data, interpretable components. \\
-        \textbf{TBATS advantages}: Automatic model selection, handles complex seasonality without domain expertise.
-        }
+        \textbf{Question:} When would you choose Prophet over TBATS?
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} When you need automatic model selection \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{When you have known holidays and changepoints to incorporate}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} When you need the most parsimonious model \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} When your data has no trend \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item \textbf{Prophet}: Easy holiday integration, analyst-in-the-loop, handles missing data, interpretable
+            \item \textbf{TBATS}: Automatic model selection, handles complex seasonality without domain expertise
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_quiz5\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_quiz5_prophet_vs_tbats}
 \end{frame}
 
 \begin{frame}{Quiz 6: Seasonality Mode}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For retail sales data where December sales are 3x the monthly average, which seasonality mode is more appropriate in Prophet?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Additive seasonality
-        \item Multiplicative seasonality
-        \item Both work equally well
-        \item Neither---use ARIMA instead
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Additive seasonality\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Multiplicative seasonality\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Both work equally well\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Neither---use ARIMA instead
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 6: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Multiplicative seasonality}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz6_seasonality_mode.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Key}: When seasonal amplitude scales with the level, use multiplicative. \\
-        \textbf{Additive}: $y = g(t) + s(t)$ (constant seasonal effect) \\
-        \textbf{Multiplicative}: $y = g(t) \cdot (1 + s(t))$ (proportional seasonal effect)
-        }
+
+        \vspace{0.1cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Additive seasonality \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Multiplicative seasonality}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Both work equally well \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Neither---use ARIMA instead \incorrect
+    \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item When seasonal amplitude scales with the level, use multiplicative
+            \item \textbf{Additive}: $y = g(t) + s(t)$ (constant seasonal effect)
+            \item \textbf{Multiplicative}: $y = g(t) \cdot (1 + s(t))$ (proportional seasonal effect)
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_additive\_vs\_multiplicative}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_additive_vs_multiplicative}
 \end{frame}
 
 \begin{frame}{Quiz 7: Prophet Changepoints}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         In Prophet, changepoints allow the model to:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Change the seasonal period automatically
-        \item Adjust the trend slope at specific points in time
-        \item Switch between additive and multiplicative modes
-        \item Detect and remove outliers
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Change the seasonal period automatically\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Adjust the trend slope at specific points in time\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Switch between additive and multiplicative modes\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Detect and remove outliers
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 7: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Adjust trend slope at specific points}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.53\textheight, keepaspectratio]{ch9_quiz7_changepoints.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Changepoints}: Allow piecewise linear trend with different slopes.
-        $$g(t) = (k + \mathbf{a}(t)^\top \boldsymbol{\delta}) \cdot t + (m + \mathbf{a}(t)^\top \boldsymbol{\gamma})$$
-        Prophet automatically detects changepoints or you can specify them manually.
-        }
+        \textbf{Question:} In Prophet, changepoints allow the model to:
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Change the seasonal period automatically \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Adjust the trend slope at specific points in time}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Switch between additive and multiplicative modes \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Detect and remove outliers \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item Changepoints allow piecewise linear trend with different slopes
+            \item $g(t) = (k + \mathbf{a}(t)^\top \boldsymbol{\delta}) \cdot t + (m + \mathbf{a}(t)^\top \boldsymbol{\gamma})$
+            \item Prophet automatically detects changepoints or you can specify them manually
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_changepoint\_detection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_changepoint_detection}
 \end{frame}
 
 \begin{frame}{Quiz 8: Model Selection}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         You have daily call center data with weekly seasonality only. Which model is most appropriate?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item TBATS (designed for multiple seasonality)
-        \item Prophet (handles any seasonality well)
-        \item Standard SARIMA (simpler and sufficient)
-        \item LSTM neural network (most flexible)
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} TBATS (designed for multiple seasonality)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Prophet (handles any seasonality well)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Standard SARIMA (simpler and sufficient)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} LSTM neural network (most flexible)
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 8: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: C -- Standard SARIMA is sufficient}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.58\textheight, keepaspectratio]{ch9_quiz8_model_decision.pdf}
-        \end{center}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \textbf{Principle of parsimony}: Use the simplest model that fits the data. \\
-        With only weekly seasonality ($m=7$), SARIMA works fine. \\
-        Use TBATS/Prophet when you \textit{need} multiple seasonalities or special features.
-        }
+        \textbf{Question:} You have daily call center data with weekly seasonality only. Which model is most appropriate?
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} TBATS (designed for multiple seasonality) \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Prophet (handles any seasonality well) \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Standard SARIMA (simpler and sufficient)}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} LSTM neural network (most flexible) \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item \textbf{Principle of parsimony}: Use the simplest model that fits the data
+            \item With only weekly seasonality ($m=7$), SARIMA works fine
+            \item Use TBATS/Prophet when you \textit{need} multiple seasonalities or special features
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_model\_selection\_guide}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_model_selection_guide}
 \end{frame}
 
 \begin{frame}{Quiz 9: Prophet Uncertainty}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         Prophet generates prediction intervals by:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Assuming normally distributed residuals
-        \item Sampling from the posterior distribution of parameters
-        \item Using bootstrap resampling of historical errors
-        \item Applying a fixed multiplier to point forecasts
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Assuming normally distributed residuals\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Sampling from the posterior distribution of parameters\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Using bootstrap resampling of historical errors\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Applying a fixed multiplier to point forecasts
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 9: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Sampling from posterior distribution}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.52\textheight, keepaspectratio]{ch9_quiz9_prophet_uncertainty.pdf}
-        \end{center}
-        \vspace{-0.3cm}
-        {\scriptsize
-        \textbf{Prophet uses Bayesian estimation}: MAP for point forecasts, MCMC/simulation for intervals. Uncertainty from both trend (changepoints) and observation noise.
-        }
+        \textbf{Question:} Prophet generates prediction intervals by:
+
+        \vspace{0.3cm}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Assuming normally distributed residuals \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Sampling from the posterior distribution of parameters}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Using bootstrap resampling of historical errors \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Applying a fixed multiplier to point forecasts \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item Prophet uses \textbf{Bayesian estimation}: MAP for point forecasts, MCMC/simulation for intervals
+            \item Uncertainty from both trend (changepoints) and observation noise
+        \end{itemize}
+        Note: by default, Prophet uses MAP estimation. Prediction intervals come from simulating future trend changepoints and adding historical residual variability, not from full posterior sampling (MCMC is optional via \texttt{mcmc\_samples > 0}).
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_prophet\_components}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_components}
 \end{frame}
 
 \begin{frame}{Quiz 10: Practical Application}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For forecasting hourly energy demand with daily, weekly, and annual patterns plus holiday effects, which approach is best?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item SARIMA with $m=24$
-        \item TBATS with three seasonal periods
-        \item Prophet with custom holidays
-        \item Either TBATS or Prophet, depending on whether holidays are important
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} SARIMA with $m=24$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} TBATS with three seasonal periods\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Prophet with custom holidays\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Either TBATS or Prophet, depending on whether holidays are important
+    \end{block}
 
     \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 10: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: D -- TBATS or Prophet depending on needs}
-        \begin{center}
-            \includegraphics[width=0.85\textwidth, height=0.52\textheight, keepaspectratio]{ch9_quiz10_energy_example.pdf}
-        \end{center}
-        \vspace{-0.3cm}
-        {\scriptsize
-        \textbf{Both handle multiple seasonality}: Holiday effects crucial $\Rightarrow$ Prophet; automatic selection $\Rightarrow$ TBATS. Often try both and compare via cross-validation.
-        }
-    \end{exampleblock}
-\end{frame}
-
-%=============================================================================
-% TRUE/FALSE QUESTIONS
-%=============================================================================
-\section{True/False Questions}
-
-\begin{frame}{True/False Questions}
-    Determine if each statement is True or False:
-
-    \vspace{0.3cm}
-    \begin{enumerate}
-        \item Prophet was developed by Facebook (Meta) for business forecasting.
-        \item TBATS can only handle two seasonal periods at most.
-        \item In Prophet, the default trend is logistic growth.
-        \item Fourier terms approximate seasonality using sine and cosine functions.
-        \item Prophet requires equally spaced time series data.
-        \item The Box-Cox transformation in TBATS stabilizes variance.
-    \end{enumerate}
-
-    \vspace{0.3cm}
-    \begin{flushright}\textit{Answers on next slide...}\end{flushright}
-\end{frame}
-
-\begin{frame}{True/False: Solutions}
-    {\small
-    \begin{enumerate}\setlength{\itemsep}{1pt}
-        \item Prophet was developed by Facebook (Meta) for business forecasting. \hfill \textcolor{Forest}{\textbf{TRUE}}
-
-        {\footnotesize \textcolor{MediumGray}{Released in 2017, designed for ``analyst in the loop'' forecasting at scale.}}
-
-        \item TBATS can only handle two seasonal periods at most. \hfill \textcolor{Crimson}{\textbf{FALSE}}
-
-        {\footnotesize \textcolor{MediumGray}{TBATS can handle any number of seasonal periods (e.g., daily, weekly, annual).}}
-
-        \item In Prophet, the default trend is logistic growth. \hfill \textcolor{Crimson}{\textbf{FALSE}}
-
-        {\footnotesize \textcolor{MediumGray}{Default is piecewise linear. Logistic growth must be explicitly specified.}}
-
-        \item Fourier terms approximate seasonality using sine and cosine functions. \hfill \textcolor{Forest}{\textbf{TRUE}}
-
-        {\footnotesize \textcolor{MediumGray}{$s(t) = \sum_{k=1}^{K}[a_k \cos(2\pi kt/m) + b_k \sin(2\pi kt/m)]$}}
-
-        \item Prophet requires equally spaced time series data. \hfill \textcolor{Crimson}{\textbf{FALSE}}
-
-        {\footnotesize \textcolor{MediumGray}{Prophet handles missing data and irregular timestamps gracefully.}}
-
-        \item The Box-Cox transformation in TBATS stabilizes variance. \hfill \textcolor{Forest}{\textbf{TRUE}}
-
-        {\footnotesize \textcolor{MediumGray}{$y^{(\lambda)} = (y^\lambda - 1)/\lambda$ for $\lambda \neq 0$; $\log(y)$ for $\lambda = 0$.}}
-    \end{enumerate}
-    }
-\end{frame}
-
-%=============================================================================
-% SECTION 2: PRACTICE PROBLEMS
-%=============================================================================
-\section{Practice Problems}
-
-\begin{frame}{Problem 1: Fourier Terms Calculation}
-    \begin{block}{Exercise}
-        For daily data with weekly seasonality ($m=7$), you want to use Fourier terms with $K=3$ harmonics.
-
-        \vspace{0.2cm}
-        How many parameters does this add to the model?
-    \end{block}
-
-    \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
-\end{frame}
-
-\begin{frame}[fragile]{Problem 1: Solution}
-    \vspace{-0.6cm}
-    \begin{exampleblock}{Solution: 6 parameters}
-        \textbf{Each harmonic} requires 2 parameters (sine and cosine coefficients):
-        $$s(t) = \sum_{k=1}^{K} \left[ a_k \cos\left(\frac{2\pi k t}{m}\right) + b_k \sin\left(\frac{2\pi k t}{m}\right) \right]$$
 
         \vspace{0.1cm}
-        With $K=3$ harmonics:
-        \begin{itemize}
+
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} SARIMA with $m=24$ \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} TBATS with three seasonal periods \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Prophet with custom holidays \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} \textbf{\textcolor{Forest}{Either TBATS or Prophet, depending on whether holidays are important}} \correct
+    \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Both handle multiple seasonality
+            \item Holiday effects crucial $\Rightarrow$ Prophet; automatic selection $\Rightarrow$ TBATS
+            \item Often try both and compare via cross-validation
+        \end{itemize}
+    \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_electricity\_demand}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_electricity_demand}
+\end{frame}
+
+%=============================================================================
+% TRUE/FALSE
+%=============================================================================
+\section{True/False}
+
+\begin{frame}{True or False? --- Questions}
+    \begin{cminipage}{0.95\textwidth}
+    \footnotesize
+    \begin{center}
+    \begin{tabular}{p{9cm}c}
+        \toprule
+        \textbf{Statement} & \textbf{T/F?} \\
+        \midrule
+        1. Prophet was developed by Facebook (Meta) for business forecasting. & ? \\[0.15cm]
+        2. TBATS can only handle two seasonal periods at most. & ? \\[0.15cm]
+        3. In Prophet, the default trend is logistic growth. & ? \\[0.15cm]
+        4. Fourier terms approximate seasonality using sine and cosine functions. & ? \\[0.15cm]
+        5. Prophet requires equally spaced time series data. & ? \\[0.15cm]
+        6. The Box-Cox transformation in TBATS stabilizes variance. & ? \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{True or False? --- Answers}
+    \begin{cminipage}{0.95\textwidth}
+    \scriptsize
+    \begin{center}
+    \begin{tabular}{p{7.5cm}cc}
+        \toprule
+        \textbf{Statement} & \textbf{T/F} & \textbf{Explanation} \\
+        \midrule
+        1. Prophet was developed by Facebook (Meta) for business forecasting. & \textcolor{Forest}{\textbf{T}} & {\tiny Released 2017, analyst-in-the-loop} \\[0.08cm]
+        2. TBATS can only handle two seasonal periods at most. & \textcolor{Crimson}{\textbf{F}} & {\tiny Any number of periods} \\[0.08cm]
+        3. In Prophet, the default trend is logistic growth. & \textcolor{Crimson}{\textbf{F}} & {\tiny Default is piecewise linear} \\[0.08cm]
+        4. Fourier terms approximate seasonality using sine and cosine functions. & \textcolor{Forest}{\textbf{T}} & {\tiny $\sum[a_k\cos + b_k\sin]$} \\[0.08cm]
+        5. Prophet requires equally spaced time series data. & \textcolor{Crimson}{\textbf{F}} & {\tiny Handles missing/irregular} \\[0.08cm]
+        6. The Box-Cox transformation in TBATS stabilizes variance. & \textcolor{Forest}{\textbf{T}} & {\tiny $y^{(\lambda)}$ transformation} \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% CALCULATION EXERCISES
+%=============================================================================
+\section{Calculation Exercises}
+
+\begin{frame}{Exercise 1: Fourier Terms Calculation}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data}: Daily data with weekly seasonality ($m=7$), using $K=3$ Fourier harmonics
+            \item \textbf{Calculate}: How many parameters does this add to the model?
+            \item \textbf{Formula}: $s(t) = \sum_{k=1}^{K} \left[ a_k \cos\left(\frac{2\pi k t}{m}\right) + b_k \sin\left(\frac{2\pi k t}{m}\right) \right]$
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{Solution}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Each harmonic requires 2 parameters (sine and cosine coefficients)
             \item $k=1$: $a_1, b_1$ (fundamental frequency $1/7$ cycles per day)
             \item $k=2$: $a_2, b_2$ (first overtone, $2/7$ cycles per day)
             \item $k=3$: $a_3, b_3$ (second overtone, $3/7$ cycles per day)
+            \item \textbf{Total}: $2 \times K = 2 \times 3 = \textbf{6}$ parameters
         \end{itemize}
-
-        \vspace{0.1cm}
-        \textbf{Total}: $2 \times K = 2 \times 3 = 6$ parameters
     \end{exampleblock}
-
-    \begin{alertblock}{Nyquist Limit}
-        Maximum useful $K = \lfloor m/2 \rfloor$. With $m$ discrete observations per period, we can identify at most $m/2$ distinct frequencies. For $m=7$: $K_{\max} = 3$.
-    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_fourier\_approximation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_fourier_approximation}
 \end{frame}
 
-\begin{frame}{Problem 2: Choosing Seasonality Mode}
-    \begin{block}{Exercise}
-        You're forecasting monthly hotel bookings. The data shows:
-        \begin{itemize}
-            \item July 2020: 1000 bookings (peak season)
-            \item January 2020: 400 bookings (off-season)
-            \item July 2023: 2000 bookings (peak season)
-            \item January 2023: 800 bookings (off-season)
+\begin{frame}{Exercise 2: Choosing Seasonality Mode}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data}: Monthly hotel bookings --- July 2020: 1000, Jan 2020: 400, July 2023: 2000, Jan 2023: 800
+            \item \textbf{Question}: Should you use additive or multiplicative seasonality? Why?
         \end{itemize}
+    \end{alertblock}
 
-        Should you use additive or multiplicative seasonality? Why?
-    \end{block}
-
-    \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
-\end{frame}
-
-\begin{frame}[fragile]{Problem 2: Solution}
-    \begin{exampleblock}{Solution: Multiplicative seasonality}
-        \textbf{Analysis}: Check if seasonal amplitude is proportional to level.
-
-        \vspace{0.2cm}
+    \vspace{0.2cm}
+    \begin{exampleblock}{Solution}
+        \begin{center}
+        \small
         \begin{tabular}{lccc}
             \toprule
             Year & July & January & Ratio (Jul/Jan) \\
@@ -681,117 +627,76 @@
             2023 & 2000 & 800 & 2.5 \\
             \bottomrule
         \end{tabular}
-
-        \vspace{0.3cm}
-        \textbf{Key observation}: The \textit{ratio} stays constant (2.5), not the difference!
-        \begin{itemize}
-            \item Additive would mean: July always +600 above January
-            \item But 2020: $1000 - 400 = 600$; 2023: $2000 - 800 = 1200$
+        \end{center}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item The \textit{ratio} stays constant (2.5), not the difference!
+            \item Additive: $1000 - 400 = 600$ vs $2000 - 800 = 1200$ (not constant)
+            \item \textbf{Conclusion}: Use multiplicative: \texttt{seasonality\_mode='multiplicative'}
         \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Conclusion}: Use multiplicative: \texttt{seasonality\_mode='multiplicative'}
     \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_additive\_vs\_multiplicative}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_additive_vs_multiplicative}
 \end{frame}
 
-\begin{frame}{Problem 3: TBATS Model Interpretation}
-    \begin{block}{Exercise}
-        A TBATS model fitted to hourly electricity data reports:
-        \begin{itemize}
-            \item Box-Cox $\lambda = 0.5$
-            \item Seasonal periods: $m_1 = 24$, $m_2 = 168$
-            \item Fourier terms: $K_1 = 5$, $K_2 = 3$
+\begin{frame}{Exercise 3: TBATS Model Interpretation}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{TBATS model}: Box-Cox $\lambda = 0.5$, seasonal periods $m_1 = 24$, $m_2 = 168$, Fourier terms $K_1 = 5$, $K_2 = 3$
+            \item \textbf{Calculate}: What does each component tell you? Total seasonal parameters?
         \end{itemize}
+    \end{alertblock}
 
-        What does each component tell you about the data?
-    \end{block}
-
-    \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
-\end{frame}
-
-\begin{frame}[fragile]{Problem 3: Solution}
-    \vspace{-0.3cm}
+    \vspace{0.2cm}
     \begin{exampleblock}{Solution}
-        \textbf{Box-Cox $\lambda = 0.5$}:
-        \begin{itemize}
-            \item Square root transformation applied
-            \item Data had increasing variance with level
-            \item Transformation: $y^{(0.5)} = \sqrt{y}$
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Box-Cox $\lambda = 0.5$}: Square root transformation ($y^{(0.5)} = \sqrt{y}$), data had increasing variance
+            \item \textbf{$m_1 = 24$}: Daily pattern (24 hours); \textbf{$m_2 = 168$}: Weekly pattern ($7 \times 24$)
+            \item \textbf{$K_1 = 5$}: Complex intraday pattern (5 harmonics for peaks, valleys)
+            \item \textbf{$K_2 = 3$}: Simpler weekly pattern (weekday vs weekend)
+            \item \textbf{Total seasonal parameters}: $2(K_1 + K_2) = 2(5+3) = \textbf{16}$
         \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Seasonal periods}:
-        \begin{itemize}
-            \item $m_1 = 24$: Daily pattern (24 hours)
-            \item $m_2 = 168$: Weekly pattern ($7 \times 24 = 168$ hours)
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Fourier terms}:
-        \begin{itemize}
-            \item $K_1 = 5$ for daily: Complex intraday pattern (5 harmonics capture peaks, valleys)
-            \item $K_2 = 3$ for weekly: Simpler weekly pattern (weekday vs weekend)
-        \end{itemize}
-
-        \vspace{0.2cm}
-        \textbf{Total seasonal parameters}: $2(K_1 + K_2) = 2(5+3) = 16$
     \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_tbats\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_tbats_decomposition}
 \end{frame}
 
-\begin{frame}{Problem 4: Prophet Holiday Effects}
-    \begin{block}{Exercise}
-        You're forecasting daily restaurant revenue. You want to add these holiday effects to Prophet:
-        \begin{itemize}
-            \item Valentine's Day (Feb 14) -- major boost
-            \item Easter (variable date) -- restaurant closed
-            \item Christmas (Dec 25) -- restaurant closed
+\begin{frame}{Exercise 4: Prophet Holiday Effects}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Task}: Forecast daily restaurant revenue with holiday effects
+            \item \textbf{Holidays}: Valentine's Day (Feb 14, boost), Easter (variable, closed), Christmas (Dec 25, closed)
+            \item \textbf{Write}: Python code to create the holidays dataframe for 2024--2025
         \end{itemize}
+    \end{alertblock}
 
-        Write the Python code to create the holidays dataframe for 2024-2025.
-    \end{block}
-
-    \vspace{0.5cm}
-    \begin{flushright}\textit{Answer on next slide...}\end{flushright}
-\end{frame}
-
-\begin{frame}{Problem 4: Solution}
-    \vspace{-0.5cm}
+    \vspace{0.1cm}
     \begin{exampleblock}{Solution}
         {\scriptsize\ttfamily
-        import pandas as pd\\
-        from prophet import Prophet\\[0.2em]
-        \# Create holidays dataframe with window effects\\
         holidays = pd.DataFrame(\{\\
         \quad 'holiday': ['valentines', 'valentines', 'easter', 'easter',\\
         \quad\quad\quad\quad\quad\quad 'christmas', 'christmas'],\\
         \quad 'ds': pd.to\_datetime(['2024-02-14', '2025-02-14',\\
-        \quad\quad\quad\quad\quad '2024-03-31', '2025-04-20',\\
-        \quad\quad\quad\quad\quad '2024-12-25', '2025-12-25']),\\
-        \quad 'lower\_window': [-1, -1, 0, 0, -1, -1],  \# days before\\
-        \quad 'upper\_window': [0, 0, 0, 0, 0, 0]  \# days after\\
-        \})\\[0.2em]
-        model = Prophet(holidays=holidays)\\
-        model.fit(df)  \# df must have 'ds' and 'y' columns
+        \quad\quad\quad '2024-03-31', '2025-04-20', '2024-12-25', '2025-12-25']),\\
+        \quad 'lower\_window': [-1, -1, 0, 0, -1, -1],\\
+        \quad 'upper\_window': [0, 0, 0, 0, 0, 0]\})\\
+        model = Prophet(holidays=holidays)
         }
     \end{exampleblock}
-
-    \begin{block}{Key Points}
-        \begin{itemize}
-            \item \texttt{lower\_window=-1}: Effect starts 1 day before
-            \item Easter: closed = zero revenue (handled by model as large negative effect)
-            \item Valentine's: expect positive effect coefficient
-        \end{itemize}
-    \end{block}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_prophet\_components}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_components}
 \end{frame}
 
 %=============================================================================
-% SECTION 3: WORKED EXAMPLES
+% WORKED EXAMPLES
 %=============================================================================
 \section{Worked Examples}
 
-\begin{frame}{Example: Retail Sales Forecasting with Prophet}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
+\begin{frame}{Visual: Retail Sales Forecasting with Prophet}
+    \begin{cminipage}{0.95\textwidth}
     {\footnotesize
     \begin{block}{Scenario}
         Monthly retail sales (2018-2023): December peaks, COVID-19 break in 2020, growing trend.
@@ -807,10 +712,13 @@
         Multiplicative seasonality: December effect proportional to baseline level.
     \end{alertblock}
     }
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_retail\_sales}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_retail_sales}
 \end{frame}
 
-\begin{frame}{Example: Energy Demand with TBATS}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
+\begin{frame}{Visual: Energy Demand with TBATS}
+    \begin{cminipage}{0.95\textwidth}
     {\footnotesize
     \begin{block}{Scenario}
         Hourly electricity: intraday (24h), weekly (168h), annual (8760h) patterns.
@@ -826,10 +734,13 @@
         TBATS automatically selects $K$ for each seasonal period via AIC.
     \end{alertblock}
     }
+
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_electricity\_demand}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_electricity_demand}
 \end{frame}
 
-\begin{frame}{Example: Cross-Validation Comparison}
-    \quantlet{TSA\_ch9\_prophet\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_tbats}
+\begin{frame}{Visual: Cross-Validation Comparison}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     {\footnotesize
     \begin{block}{Objective}
@@ -858,14 +769,17 @@
         \end{center}
     \end{block}
     }
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_vs_tbats}
 \end{frame}
 
 %=============================================================================
-% SECTION 4: DISCUSSION TOPICS
+% DISCUSSION
 %=============================================================================
 \section{Discussion Topics}
 
 \begin{frame}{Discussion: When to Use Which Model?}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{alertblock}{Key Question}
         You have a new forecasting task. How do you choose between SARIMA, TBATS, and Prophet?
@@ -873,26 +787,29 @@
     \begin{block}{Decision Framework}
         \begin{enumerate}\setlength{\itemsep}{0pt}
             \item \textbf{How many seasonal periods?}
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item One $\Rightarrow$ SARIMA may suffice
                     \item Multiple $\Rightarrow$ TBATS or Prophet
                 \end{itemize}
             \item \textbf{Do you have domain knowledge to encode?}
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Holidays, events, changepoints $\Rightarrow$ Prophet
                     \item Let the data speak $\Rightarrow$ TBATS
                 \end{itemize}
             \item \textbf{Interpretability requirements?}
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Need to explain components $\Rightarrow$ Prophet
                     \item Just need forecasts $\Rightarrow$ Either
                 \end{itemize}
         \end{enumerate}
     \end{block}
     }
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_model\_selection\_guide}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_model_selection_guide}
 \end{frame}
 
 \begin{frame}{Discussion: Overfitting with Fourier Terms}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     {\scriptsize
     \begin{alertblock}{Key Question}
@@ -915,9 +832,12 @@
         \end{itemize}
     \end{exampleblock}
     }
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_fourier\_approximation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_fourier_approximation}
 \end{frame}
 
 \begin{frame}{Discussion: Handling Structural Breaks}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{alertblock}{Scenario}
         Your historical data includes COVID-19 period (2020-2021). How do you handle this when forecasting 2024?
@@ -938,14 +858,48 @@
         }
     \end{exampleblock}
     }
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_changepoint\_detection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_changepoint_detection}
 \end{frame}
 
 %=============================================================================
-% SECTION 5: EXERCISES
+% AI-ASSISTED EXERCISE
 %=============================================================================
-\section{AI-Assisted Exercises}
+\section{AI-Assisted Exercise}
+
+\begin{frame}{AI Exercise: Critical Thinking}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Use Prophet to forecast daily Wikipedia page views for the 'Bitcoin' article. Include holiday effects, identify changepoints, and compare with a TBATS model. Evaluate using time series cross-validation.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercise}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Did the AI correctly specify the seasonality periods (weekly, yearly)?
+        \item Are the changepoints reasonable? Do they correspond to real events?
+        \item Is the cross-validation properly implemented (expanding window)?
+        \item How does Prophet handle the extreme spikes in Bitcoin-related traffic?
+        \item Does the TBATS comparison use the same evaluation metrics?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_vs_tbats}
+\end{frame}
+
+%=============================================================================
+% TAKE-HOME EXERCISES
+%=============================================================================
 
 \begin{frame}{Take-Home Exercises}
+    \begin{cminipage}{0.95\textwidth}
     {\footnotesize
     \begin{enumerate}\setlength{\itemsep}{2pt}
         \item \textbf{Theoretical}: Prove that $K = m/2$ Fourier terms can represent any periodic function with period $m$ (for even $m$).
@@ -965,9 +919,12 @@
         \item \textbf{Critical Thinking}: Why might Prophet perform poorly on high-frequency financial data (e.g., minute-by-minute stock prices)?
     \end{enumerate}
     }
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_tbats\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_tbats_decomposition}
 \end{frame}
 
 \begin{frame}{Exercise Solutions Hints}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     {\footnotesize
     \begin{block}{Hints}
@@ -997,64 +954,87 @@
         \end{enumerate}
     \end{block}
     }
+    \end{cminipage}
+    \quantlet{TSA\_ch9\_fourier\_approximation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_fourier_approximation}
 \end{frame}
 
 %=============================================================================
-% SUMMARY
+% END
 %=============================================================================
-\begin{frame}{Key Takeaways from This Seminar}
-    \vspace{-0.4cm}
-    {\footnotesize
-    \begin{block}{Multiple Seasonality Models}
-        \begin{enumerate}\setlength{\itemsep}{0pt}
-            \item \textbf{TBATS}: Automatic, Fourier-based, handles any number of seasonal periods
-            \item \textbf{Prophet}: Analyst-friendly, explicit holiday/event handling, interpretable
-            \item \textbf{Use SARIMA} when only one seasonal period exists
-        \end{enumerate}
-    \end{block}
-    \begin{block}{Key Decisions}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Seasonality mode}: Additive (constant amplitude) vs Multiplicative (proportional)
-            \item \textbf{Fourier terms}: More = flexible but risk overfitting; use CV to select
-            \item \textbf{Changepoints}: Allow trend to adapt to structural breaks
-        \end{itemize}
-    \end{block}
-    \begin{alertblock}{Remember}
-        \textbf{Prophet}: Great when you have domain knowledge to encode \\
-        \textbf{TBATS}: Great for automatic modeling of complex seasonality
-    \end{alertblock}
-    }
-\end{frame}
+\section{Summary}
 
-\begin{frame}{AI Exercise: Critical Thinking}
+\begin{frame}{Summary: Chapter 9}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.3cm}
-    \begin{block}{\footnotesize Test this prompt in ChatGPT / Claude / Copilot}
-        {\footnotesize
-        ``Use Prophet to forecast daily Wikipedia page views for the 'Bitcoin' article. Include holiday effects, identify changepoints, and compare with a TBATS model. Evaluate using time series cross-validation.''
-        }
-    \end{block}
-    \vspace{-2mm}
-    {\footnotesize
-    \textbf{Exercise}:
-    \begin{enumerate}\setlength{\itemsep}{0pt}
-        \item Did the AI correctly specify the seasonality periods (weekly, yearly)?
-        \item Are the changepoints reasonable? Do they correspond to real events?
-        \item Is the cross-validation properly implemented (expanding window)?
-        \item How does Prophet handle the extreme spikes in Bitcoin-related traffic?
-        \item Does the TBATS comparison use the same evaluation metrics?
-    \end{enumerate}
-    }
-    \vspace{-2mm}
-    \begin{alertblock}{}
-        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
-    \end{alertblock}
+    \begin{exampleblock}{Key Concepts}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{TBATS}: Automatic, Fourier-based, handles any number of seasonal periods
+            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Prophet}: Analyst-friendly, explicit holiday/event handling, interpretable
+            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Seasonality mode}: Additive (constant amplitude) vs Multiplicative (proportional)
+            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Fourier terms}: More = flexible but risk overfitting; use CV to select
+            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Changepoints}: Allow trend to adapt to structural breaks
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Questions?}
+    \end{center}
     \end{cminipage}
 \end{frame}
 
+
 %=============================================================================
-% THANK YOU SLIDE
+% BIBLIOGRAPHY (same references as in the course)
 %=============================================================================
+\section{Bibliography}
+
+\begin{frame}{Bibliography I}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Time Series Fundamentals}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
+            \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
+            \item Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}, 3rd ed., Springer.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Financial Time Series}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
+            \item Franke, J., H\"ardle, W.K., \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliography II}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Modern Approaches and Machine Learning}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Nielsen, A. (2019). \textit{Practical Time Series Analysis}, O'Reilly Media.
+            \item Petropoulos, F., et al. (2022). \textit{Forecasting: Theory and Practice}, International Journal of Forecasting.
+            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, International Journal of Forecasting.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Online Resources and Code}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Code repository for statistics
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Quantitative methods learning platform
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch9} --- Python code for this seminar
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{}
     \begin{cminipage}{0.95\textwidth}
     \centering
@@ -1074,54 +1054,6 @@
     \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
     \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
     \end{cminipage}
-\end{frame}
-
-%=============================================================================
-% BIBLIOGRAPHY
-%=============================================================================
-\section{Bibliography}
-
-\begin{frame}{Bibliography I}
-    \begin{block}{Fundamental textbooks}
-        {\small
-        \begin{itemize}
-            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
-            \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
-            \item Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}, 3rd ed., Springer.
-        \end{itemize}
-        }
-    \end{block}
-
-    \begin{exampleblock}{Financial time series}
-        {\small
-        \begin{itemize}
-            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
-            \item Franke, J., H\"{a}rdle, W.K., \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
-        \end{itemize}
-        }
-    \end{exampleblock}
-\end{frame}
-
-\begin{frame}{Bibliography II}
-    \begin{block}{Modern approaches and Machine Learning}
-        {\small
-        \begin{itemize}
-            \item Nielsen, A. (2019). \textit{Practical Time Series Analysis}, O'Reilly Media.
-            \item Petropoulos, F., et al. (2022). \textit{Forecasting: Theory and Practice}, International Journal of Forecasting.
-            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, International Journal of Forecasting.
-        \end{itemize}
-        }
-    \end{block}
-
-    \begin{exampleblock}{Online resources and code}
-        {\small
-        \begin{itemize}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Code repository for statistics
-            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Platform for learning quantitative methods
-            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch9} --- Python code for this seminar
-        \end{itemize}
-        }
-    \end{exampleblock}
 \end{frame}
 
 \end{document}

@@ -26,11 +26,11 @@
             \begin{itemize}\setlength{\itemsep}{2pt}
                 \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Înțelegeți} conceptul de memorie lungă în seriile de timp
                 \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Estimați} și interpretați modele ARFIMA (AutoRegressive Fractionally Integrated Moving Average)
-                \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Aplicați} Random Forest (RF -- ansamblu de arbori de decizie) pentru prognoză seriilor de timp
-                \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Construiți} rețele LSTM (Long Short-Term Memory) pentru serii temporale
-                \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Comparați} performanța modelelor clasice vs ML (Machine Learning)
-                \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Alegeți} metoda potrivită în funcție de context
-                \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Implementați} aceste metode în Python
+                \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Aplicați} Random Forest, XGBoost și LSTM pentru prognoza seriilor de timp
+                \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Analizați} arhitectura Temporal Fusion Transformer (TFT) și mecanismele sale de interpretabilitate
+                \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Evaluați} modelele fundaționale (TimeGPT, Chronos) și paradigma zero-shot
+                \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Comparați} ML vs.\ econometrie clasică în lumina competițiilor M4/M5
+                \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Alegeți} metoda potrivită în funcție de context și \textbf{implementați} în Python
             \end{itemize}
         \end{block}
     \end{cminipage}
@@ -64,8 +64,9 @@
         \begin{alertblock}{Soluții moderne}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{ARFIMA}: Captează memoria lungă (autocorelații care scad lent)
-                \item \textbf{Random Forest}: Relații neliniare, robustețe la outlieri
-                \item \textbf{LSTM}: Tipare secvențiale complexe, dependențe pe termen lung
+                \item \textbf{Random Forest / XGBoost}: Relații neliniare, robustețe la outlieri
+                \item \textbf{LSTM / TFT}: Tipare secvențiale complexe, atenție interpretabilă
+                \item \textbf{Foundation Models}: TimeGPT, Chronos --- prognoză zero-shot
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -74,18 +75,20 @@
 \begin{frame}{Când să folosim fiecare metodă?}
     \begin{cminipage}{0.95\textwidth}
         \begin{center}
-            \begin{tabular}{l|c|c|c|c}
+            {\footnotesize
+            \begin{tabular}{l|c|c|c|c|c|c}
                 \toprule
-                \textbf{Caracteristică} & \textbf{ARIMA} & \textbf{ARFIMA} & \textbf{RF} & \textbf{LSTM} \\
+                \textbf{Caracteristică} & \textbf{ARIMA} & \textbf{ARFIMA} & \textbf{RF/XGB} & \textbf{LSTM} & \textbf{TFT} & \textbf{Found.} \\
                 \midrule
-                Memorie lungă & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
-                Relații neliniare & $\times$ & $\times$ & $\checkmark$ & $\checkmark$ \\
-                Interpretabilitate & $\checkmark$ & $\checkmark$ & $\sim$ & $\times$ \\
-                Date puține & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ \\
-                Variabile exogene & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
-                Incertitudine & $\checkmark$ & $\checkmark$ & $\sim$ & $\times$ \\
+                Memorie lungă & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+                Relații neliniare & $\times$ & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+                Interpretabilitate & $\checkmark$ & $\checkmark$ & $\sim$ & $\times$ & $\checkmark$ & $\times$ \\
+                Date puține & $\checkmark$ & $\checkmark$ & $\times$ & $\times$ & $\times$ & $\checkmark$ \\
+                Variabile exogene & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\sim$ \\
+                Incertitudine & $\checkmark$ & $\checkmark$ & $\sim$ & $\times$ & $\checkmark$ & $\checkmark$ \\
                 \bottomrule
             \end{tabular}
+            }
         \end{center}
 
         \vspace{0.1cm}
@@ -125,7 +128,7 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Autocorelațiile $\rho_k$ scad \textbf{exponențial}: $|\rho_k| \leq C \cdot r^k$, $r < 1$
                 \item Efectele șocurilor dispar \textbf{rapid}
-                \item Sumă finită: $\sum_{k=0}^{\infty} |\rho_k| < \infty$
+                \item Sumă finită: $\sum_{k=0}^{\infty} |\rho_k| < \infty$ (mai precis, condiția este pe autocovarianțe: $\sum_{k=0}^{\infty} |\gamma(k)| < \infty$)
             \end{itemize}
         \end{block}
 
@@ -212,7 +215,7 @@
                 $0 < d < 0.5$ & Scădere hiperbolică & Memorie lungă, staționară \\
                 $d = 0.5$ & ACF nesumabilă & La limită \\
                 $0.5 < d < 1$ & Scădere foarte lentă & Memorie lungă, nestaționară \\
-                $d = 1$ & ACF = 1 (constant) & Random walk \\
+                $d = 1$ & ACF eșantionară scade foarte lent (proces nestaționar) & Random walk \\
                 \bottomrule
             \end{tabular}
         \end{center}
@@ -224,7 +227,7 @@
                 \item \textbf{Relația}: $d = H - 0.5$
                 \begin{itemize}\setlength{\itemsep}{0pt}
                     \item $H = 0.5$: Fără memorie lungă (comportament ARMA standard)
-                    \item $H > 0.5$: Persistență (urmărirea trendului)
+                    \item $H > 0.5$: Persistență (continuarea direcției, \emph{trend-following})
                     \item $H < 0.5$: Anti-persistență (revenire la medie)
                 \end{itemize}
             \end{itemize}
@@ -239,7 +242,7 @@
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Date}: Mișcare Browniană fracționară simulată cu $H \in \{0.3, 0.5, 0.7\}$
             \item \textbf{H $<$ 0.5}: Revenire la medie \quad \textbf{H = 0.5}: Fără memorie lungă
-            \item \textbf{H $>$ 0.5}: Persistentă (urmărirea trendului)
+            \item \textbf{H $>$ 0.5}: Persistență (continuarea direcției, \emph{trend-following})
         \end{itemize}
     \end{block}
     }
@@ -294,7 +297,7 @@
     \vspace{-1mm}
     \begin{alertblock}{Observație}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Volatilitatea are \textbf{memorie lungă} -- folosiți ARFIMA sau FIGARCH (Fractionally Integrated GARCH)!
+            \item Volatilitatea are \textbf{memorie lungă} -- folosiți ARFIMA sau FIGARCH (Fractionally Integrated GARCH).
         \end{itemize}
     \end{alertblock}
     }
@@ -327,7 +330,7 @@
         {\footnotesize
         \begin{exampleblock}{Implementare}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item În Python: pachetul \texttt{arch}, sau \texttt{statsmodels.tsa.arfima.ARFIMA}
+                \item În Python: pachetul \texttt{arch}, sau \texttt{statsmodels.tsa.arfima.ARFIMA} (clasa dedicată pentru $d$ fracționar)
                 \item Se specifică \texttt{order=(p,d,q)} unde $d$ poate fi fracționar
             \end{itemize}
         \end{exampleblock}
@@ -361,7 +364,7 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{Ansamblu} de arbori de decizie
                 \item Fiecare arbore antrenat pe un \textbf{subset bootstrap} al datelor
-                \item La fiecare nod, se selectează \textbf{aleator} un subset de features
+                \item La fiecare nod, se selectează \textbf{aleator} un subset de variabile predictoare (\emph{features})
                 \item Predicția finală = \textbf{media} predicțiilor tuturor arborilor
             \end{itemize}
         \end{block}
@@ -373,7 +376,7 @@
                 \item Captează \textbf{relații neliniare}
                 \item \textbf{Robust} la outlieri și zgomot
                 \item Nu necesită \textbf{staționaritate}
-                \item Oferă \textbf{importanța features} (interpretabilitate)
+                \item Oferă \textbf{importanța variabilelor predictoare} (interpretabilitate)
                 \item Funcționează bine cu \textbf{multe variabile}
             \end{itemize}
         \end{exampleblock}
@@ -386,7 +389,7 @@
     \begin{block}{Interpretare}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Date}: Consum zilnic de electricitate Germania (OPSD -- Open Power System Data, 2012--2017)
-            \item Transformăm seria temporală în features: lag-uri, statistici rolling
+            \item Transformăm seria temporală în variabile predictoare: lag-uri, statistici pe fereastră mobilă (rolling)
             \item Modelul RF învață relațiile dintre acestea și valorile viitoare
         \end{itemize}
     \end{block}
@@ -402,7 +405,7 @@
         \begin{block}{Feature Engineering pentru serii de timp}
             \begin{enumerate}\setlength{\itemsep}{0pt}
                 \item \textbf{Lag features}: $Y_{t-1}, Y_{t-2}, \ldots, Y_{t-p}$
-                \item \textbf{Rolling statistics}: medie mobilă, deviație standard
+                \item \textbf{Statistici pe fereastră mobilă} (\emph{rolling statistics}): medie mobilă, deviație standard
                 \item \textbf{Calendar features}: ziua săptămânii, luna, sezon
                 \item \textbf{Trend features}: timp, trend pătratic
                 \item \textbf{Variabile exogene}: indicători economici, evenimente
@@ -411,9 +414,9 @@
 
         \vspace{0.2cm}
 
-        \begin{alertblock}{Atenție: Data Leakage!}
+        \begin{alertblock}{Atenție: Scurgere informațională (\emph{data leakage})}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Nu folosi informații din viitor în features
+                \item Nu folosiți informații din viitor în features
                 \item Train/test split: \textbf{temporal}, nu aleator!
                 \item Rolling statistics: calculează doar pe date \textbf{anterioare}
             \end{itemize}
@@ -439,11 +442,11 @@
     \quantlet{TSA\_ch8\_rf\_prediction}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_rf_prediction}
 \end{frame}
 
-\begin{frame}{Importanța features și interpretare}
+\begin{frame}{Importanța variabilelor predictoare și interpretare}
     \begin{cminipage}{0.95\textwidth}
-        \begin{block}{Feature importance}
+        \begin{block}{Importanța variabilelor predictoare (\emph{feature importance})}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Mean Decrease Impurity (MDI)}: Reducerea impurității la fiecare split
+                \item \textbf{Scăderea medie a impurității} (\emph{Mean Decrease Impurity}, MDI): Reducerea impurității la fiecare split
                 \item \textbf{Permutation Importance}: Cât scade performanța când feature-ul e permutat aleator
             \end{itemize}
         \end{block}
@@ -452,7 +455,7 @@
 
         \begin{block}{Interpretare tipică pentru serii de timp}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \texttt{lag\_1} foarte important $\Rightarrow$ Autocorelare puternică
+                \item \texttt{lag\_1} foarte important $\Rightarrow$ Autocorelație puternică
                 \item \texttt{rolling\_mean} important $\Rightarrow$ Trend local contează
                 \item \texttt{month} important $\Rightarrow$ Sezonalitate prezentă
             \end{itemize}
@@ -470,8 +473,33 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Gradient Boosting și XGBoost pentru serii de timp}
+    \begin{cminipage}{0.95\textwidth}
+        {\small
+        \begin{block}{De la Random Forest la Gradient Boosting}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Random Forest}: construiește arbori \emph{independenți} și face media (bagging)
+                \item \textbf{Gradient Boosting}: construiește arbori \emph{secvențial}, fiecare corectând erorile precedentului
+                \item \textbf{XGBoost} (Chen \& Guestrin, 2016): implementare optimizată cu regularizare $L_1$/$L_2$
+            \end{itemize}
+        \end{block}
+        \begin{block}{Avantaje pentru serii de timp}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item Captează \textbf{interacțiuni neliniare} între variabile predictoare (lag-uri, calendar, exogene)
+                \item \textbf{Importanța variabilelor}: identificarea automată a lag-urilor relevante
+                \item \textbf{Performanță}: câștigător frecvent în competițiile M5 (Makridakis et al., 2022)
+                \item \textbf{Limitare}: nu modelează dependența temporală nativ $\Rightarrow$ necesită ingineria variabilelor predictoare
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{Implementare Python}
+            \texttt{from xgboost import XGBRegressor} --- aceleași variabile predictoare ca pentru Random Forest
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
+
 %=============================================================================
-\section{LSTM: Deep Learning pentru serii de timp}
+\section{LSTM: Învățare profundă (\emph{Deep Learning}) pentru serii de timp}
 %=============================================================================
 
 \begin{frame}{Portret de cercetător: Hochreiter \& Schmidhuber}
@@ -537,7 +565,7 @@
     \begin{block}{Ideea de bază}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Rețele care procesează \textbf{secvențe} de date
-            \item Au \textbf{memorie internă} (hidden state)
+            \item Au \textbf{memorie internă} (stare ascunsă, \emph{hidden state})
             \item Starea curentă depinde de input + starea anterioară
         \end{itemize}
     \end{block}
@@ -578,7 +606,7 @@
     \end{tikzpicture}
     \end{center}
 
-    \begin{alertblock}{Problema: Vanishing Gradient}
+    \begin{alertblock}{Problema gradientului care dispare (\emph{vanishing gradient})}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item RNN simple ``uită'' informația din trecut îndepărtat.
         \end{itemize}
@@ -602,21 +630,21 @@
     \begin{columns}[T]
         \begin{column}{0.32\textwidth}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Forget Gate} $f_t$
+                \item \textbf{Poarta de uitare} (\emph{Forget Gate}) $f_t$
                 \item $\sigma(W_f[h_{t-1}, x_t] + b_f)$
                 \item Ce să uităm?
             \end{itemize}
         \end{column}
         \begin{column}{0.32\textwidth}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Input Gate} $i_t$
+                \item \textbf{Poarta de intrare} (\emph{Input Gate}) $i_t$
                 \item $\sigma(W_i[h_{t-1}, x_t] + b_i)$
                 \item Ce să stocăm?
             \end{itemize}
         \end{column}
         \begin{column}{0.32\textwidth}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Output Gate} $o_t$
+                \item \textbf{Poarta de ieșire} (\emph{Output Gate}) $o_t$
                 \item $\sigma(W_o[h_{t-1}, x_t] + b_o)$
                 \item Ce să transmitem?
             \end{itemize}
@@ -688,15 +716,198 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Necesită \textbf{multe date} pentru antrenare
                 \item \textbf{Computațional intensiv}
-                \item ``\textbf{Black box}'' - greu de interpretat
+                \item model de tip \emph{cutie neagră} -- interpretabilitate redusă
                 \item Sensibil la \textbf{hiperparametri}
-                \item Poate face \textbf{overfitting} ușor
+                \item Poate face \textbf{supraajustare} (\emph{overfitting}) ușor
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Temporal Fusion Transformer (TFT)}
+    \quantlet{TSA\_ch8\_tft}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_tft}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{block}{Arhitectura TFT (Lim, Ar{\i}k, Loeff \& Pfister, 2021)}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Variable Selection Networks}: importanța automată a variabilelor predictoare via \emph{Graded Residual Networks} (GRN) --- fiecare variabilă primește o pondere învățată, eliminând features irelevante
+                \item \textbf{Static covariate encoders}: codificarea variabilelor invariante în timp (ex: ID magazin, categorie produs) care condiționează întreaga procesare temporală
+                \item \textbf{Procesare temporală}: encoder--decoder LSTM pentru captarea tiparelor locale și secvențiale
+                \item \textbf{Atenție multi-head interpretabilă}: mecanism de atenție care identifică explicit care pași temporali din trecut contribuie la prognoza fiecărui orizont viitor
+                \item \textbf{Ieșiri de regresie cuantilică}: predicția simultană a mai multor cuantile ($\tau = 0.1, 0.5, 0.9$), oferind intervale de incertitudine native
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Inovația cheie: interpretabilitate încorporată în arhitectură}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Ponderile de atenție $\Rightarrow$ care momente din trecut contează cel mai mult
+                \item Scoruri de selecție a variabilelor $\Rightarrow$ care features sunt relevante
+                \item Performanță \emph{state-of-the-art} pe benchmark-uri: electricitate, trafic, retail
+            \end{itemize}
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
 
+\begin{frame}{TFT --- Interpretabilitate și Comparație}
+    \quantlet{TSA\_ch8\_tft\_architecture}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_tft_architecture}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{block}{Mecanisme de interpretabilitate TFT}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Scoruri de importanță a variabilelor}: învățate automat prin Variable Selection Networks; indică contribuția fiecărui input (lag-uri, covariate cunoscute, covariate observate)
+                \item \textbf{Tipare de atenție temporală}: heatmap-uri care arată ce pași din trecut influențează fiecare orizont de prognoză --- util pentru înțelegerea cauzală
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Comparație cu alte arhitecturi deep learning}
+            \begin{center}
+            \begin{tabular}{l|c|c|c|c}
+                \toprule
+                \textbf{Model} & \textbf{Interpretabil} & \textbf{Covariate} & \textbf{Multi-orizont} & \textbf{Cuantile} \\
+                \midrule
+                N-BEATS (Oreshkin+, 2020) & Parțial & Nu & Da & Nu \\
+                DeepAR (Salinas+, 2020) & Nu & Da & Da & Da \\
+                \textbf{TFT} (Lim+, 2021) & \textbf{Da} & \textbf{Da (3 tipuri)} & \textbf{Da} & \textbf{Da} \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+        \vspace{-1mm}
+        \begin{alertblock}{Perspectivă critică}
+            Studii recente arată că modelele simple (ETS, ARIMA) rămân competitive cu deep learning pe multe tipuri de date (Zeng et al., 2023: ``Are Transformers Effective for Time Series Forecasting?'').
+        \end{alertblock}
+        {\tiny Ref: Lim, Ar{\i}k, Loeff \& Pfister (2021), \textit{International Journal of Forecasting}, 37(4), 1748--1764.}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Modele fundaționale pentru serii de timp}
+    \quantlet{TSA\_ch8\_foundation\_models}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_foundation_models}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{block}{Schimbare de paradigmă: pre-antrenare masivă, apoi zero-shot sau fine-tuning}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Analog cu GPT/BERT din NLP: un singur model pre-antrenat pe corpus masiv de serii de timp diverse, utilizabil direct pe serii noi fără re-antrenare
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{TimeGPT (Garza \& Mergenthaler-Canseco, 2024)}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item Antrenat pe \textbf{100+ miliarde} de puncte temporale din domenii diverse (finanțe, energie, retail, meteorologie)
+                \item Arhitectură bazată pe Transformer, prognoză \emph{zero-shot}
+                \item Acces prin API (Nixtla) --- nu necesită antrenare sau infrastructură GPU
+                \item Competitiv cu modele statistice ajustate pe benchmark-uri standard
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Chronos (Ansari et al., 2024, Amazon)}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Tokenizarea} valorilor seriilor de timp în intervale discrete (\emph{bins})
+                \item Arhitectură de model lingvistic T5 pre-antrenat, adaptat pentru serii temporale
+                \item Dimensiuni multiple: Mini (20M), Small (46M), Base (200M), Large (710M parametri)
+                \item Prognoză \emph{zero-shot} prin predicție probabilistică de token-uri
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Foundation Models: Avantaje, Limite și Perspective}
+    \quantlet{TSA\_ch8\_chronos}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_chronos}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{exampleblock}{Avantaje}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Fără expertiză de domeniu necesară}: modelul a ``văzut'' deja mii de tipuri de serii
+                \item \textbf{Implementare instantanee}: un singur apel API / model pre-descărcat, fără pipeline de antrenare
+                \item \textbf{Transfer learning cross-domain}: cunoștințele din retail se transferă parțial la energie, finanțe etc.
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-1mm}
+        \begin{alertblock}{Limitări}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Cutie neagră}: mai puțin interpretabile decât ARIMA/ARFIMA --- greu de justificat în reglementare
+                \item \textbf{Cost computațional} al pre-antrenării: sute de mii de ore GPU (dar inferența e ieftină)
+                \item \textbf{Tipare specifice domeniului}: microstructura piețelor financiare, sezonalități locale pot fi ratate
+                \item \textbf{Sensibilitate la schimbări de distribuție} (\emph{distribution shift}): performanța degradează pe date cu regimuri noi
+            \end{itemize}
+        \end{alertblock}
+        \vspace{-1mm}
+        \begin{block}{Întrebare deschisă și modele emergente}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textit{Vor înlocui foundation models econometria tradițională?} --- probabil nu complet, dar complementar
+                \item Modele emergente: \textbf{Lag-Llama} (Rasul et al., 2024), \textbf{Moirai} (Woo et al., 2024), \textbf{TimeFM} (Google, 2024)
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Competiția M5: ML vs.\ Econometrie}
+    \quantlet{TSA\_ch8\_m5\_competition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_m5_competition}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{block}{Competiția M5 (Makridakis, Spiliotis \& Assimakopoulos, 2022)}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{42.840 serii de timp} (date vânzări Walmart, 30.490 participanți)
+                \item \textbf{Câștigător}: gradient boosting (\textbf{LightGBM}) cu inginerie intensivă a variabilelor predictoare
+                \item Constatare cheie: metodele ML au \textbf{dominat} primele poziții
+                \item Dar: modele statistice simple (ETS, ARIMA) au rămas \textbf{competitive per serie individuală}
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Context: evoluția competițiilor M}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{M4} (2018): câștigător --- hibridul \textbf{ES-RNN} (Smyl, 2020): exponential smoothing + RNN
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Observație: metodele ML \emph{pure} au performat slab fără cunoștințe statistice integrate
+                \end{itemize}
+                \item \textbf{M3} (2000) $\to$ \textbf{M4} (2018) $\to$ \textbf{M5} (2022): avantajul ML crește progresiv
+                \item Factorul decisiv în M5: \textbf{cross-learning} --- un singur model antrenat pe mii de serii simultan
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{alertblock}{Lecție}
+            Abordările hibride (cunoștințe statistice + puterea computațională ML) au depășit atât metodele clasice \emph{pure}, cât și ML \emph{pur}.
+        \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{ML vs.\ Econometrie: Sinteză}
+    \quantlet{TSA\_ch8\_timegpt}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_timegpt}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{block}{Comparație sistematică}
+            \begin{center}
+            \begin{tabular}{l|c|c}
+                \toprule
+                \textbf{Criteriu} & \textbf{Econometrie clasică} & \textbf{Machine Learning} \\
+                \midrule
+                Interpretabilitate & Ridicată & Variabilă (scăzută pt.\ DL) \\
+                Date necesare & Puține (30--100 obs.) & Multe (1.000+) \\
+                Incertitudine & Intervale analitice & Bootstrap / conformal \\
+                Cauzalitate & Da (Granger, SVAR) & Nu (doar predicție) \\
+                Cross-learning & Nu & Da (avantajul din M5) \\
+                Schimbări de regim & STAR, Markov & Automat (atenție) \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Recomandare: abordări hibride}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Ensemble statistic + ML}: media ponderată ARIMA + LightGBM reduce varianța prognozei
+                \item \textbf{Features statistice pentru ML}: reziduurile ARIMA, exponentul Hurst, parametrul $d$ ca variabile predictoare suplimentare pentru gradient boosting
+                \item \textbf{Reconciliere ierarhică}: modele statistice la nivel agregat + ML la nivel granular
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-1mm}
+        {\tiny Ref: Makridakis, Spiliotis \& Assimakopoulos (2022), \textit{International Journal of Forecasting}, 38(4), 1325--1346.}
+        }
+    \end{cminipage}
+\end{frame}
 
 %=============================================================================
 \section{Comparație și Selecția modelului}
@@ -719,11 +930,9 @@
 
 \begin{frame}{Metrici de evaluare}
     \begin{cminipage}{0.95\textwidth}
-        \begin{block}{Metrici comune (cf.\ Capitolul 0 pentru definiții detaliate)}
+        \begin{block}{Metrici comune}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{RMSE}: $\sqrt{\frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2}$ $\Rightarrow$ Eroare în unități originale
-                \item \textbf{MAE}: $\frac{1}{n}\sum_{i=1}^n |y_i - \hat{y}_i|$ $\Rightarrow$ Robust la outlieri
-                \item \textbf{MAPE}: $\frac{100}{n}\sum_{i=1}^n \left|\frac{y_i - \hat{y}_i}{y_i}\right|$ $\Rightarrow$ Eroare procentuală
+                \item \textit{(Metricile RMSE, MAE, MAPE --- definite în Capitolul 0)}
                 \item \textbf{MASE} (Mean Absolute Scaled Error): Comparat cu benchmark naiv --- metric suplimentar pentru comparații între serii
             \end{itemize}
         \end{block}
@@ -732,7 +941,7 @@
 
         \begin{alertblock}{Validare pentru serii de timp}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Nu} folosiți cross-validation standard!
+                \item \textbf{Nu} folosiți cross-validation standard.
                 \item Folosiți \textbf{Time series cross-validation} (walk-forward)
                 \item Sau \textbf{train/validation/test} split temporal
             \end{itemize}
@@ -773,225 +982,39 @@
 \section{Aplicații practice}
 %=============================================================================
 
-\begin{frame}{Bitcoin: evoluția prețului și randamentele}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Observații}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Creștere exponențială a prețului $\Rightarrow$ distribuție puternic \textbf{leptokurtotică}
-            \item Randamentele zilnice: medie $\approx 0.15\%$, volatilitate $\approx 3.5\%$
-            \item Volatility clustering evident $\Rightarrow$ perioadele de criză (2018, 2020, 2022)
-            \item Kurtosis $\approx 10$--$15$ (mult peste 3 al normalei)
-        \end{itemize}
-    \end{block}
-    }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.46\textheight, keepaspectratio]{ch10_bitcoin_overview.pdf}
-    \end{center}
-    \quantlet{TSA\_ch10\_btc\_returns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_btc_returns}
-\end{frame}
-
-\begin{frame}{Studiu de caz: prognoza prețului Bitcoin}
+\begin{frame}{Studiu de caz: Bitcoin --- volatilitate și memorie lungă}
     \begin{cminipage}{0.95\textwidth}
-        \begin{block}{De ce Bitcoin?}
+        \begin{alertblock}{Acest studiu de caz este prezentat în detaliu în Capitolul 10}
+            Analiza completă a Bitcoin (teste de staționaritate, modelare GARCH, exponent Hurst, comparație modele) este disponibilă în \textbf{Capitolul 10: Recapitulare Cuprinzătoare}.
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Relevanța pentru Capitolul 8}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Volatilitate \textbf{extremă} și tipare complexe
-                \item Potențială \textbf{memorie lungă} în volatilitate
-                \item Relații \textbf{neliniare} cu variabile exogene
-                \item Date disponibile la \textbf{frecvență înaltă}
+                \item Bitcoin ilustrează \textbf{memorie lungă} în volatilitate ($H \approx 0.65$--$0.70$)
+                \item ARFIMA captează persistența șocurilor mai bine decât ARMA
+                \item Combinație optimă: ARFIMA-GARCH + features exogene via Random Forest
             \end{itemize}
         \end{block}
-        \vspace{0.1cm}
-        \begin{exampleblock}{Abordare comparativă}
-            \begin{enumerate}\setlength{\itemsep}{0pt}
-                \item ARIMA pe randamente
-                \item ARFIMA pentru memorie lungă
-                \item Random Forest cu features tehnice
-                \item LSTM pe secvențe de prețuri
-            \end{enumerate}
-        \end{exampleblock}
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Bitcoin: ACF și evidența pentru memorie lungă}
-    \vspace{-0.2cm}
-    {\footnotesize
-    \begin{block}{Analiză ACF}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item ACF randamente: scădere rapidă $\Rightarrow$ memorie scurtă în medie
-            \item ACF randamente pătrate: scădere \textbf{lentă, hiperbolică}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item[$\blacktriangleright$] Indică \textbf{memorie lungă în volatilitate}
-                \item[$\blacktriangleright$] Hurst $H \approx 0.65$--$0.70$ ($d \approx 0.15$--$0.20$)
-            \end{itemize}
-            \item ARFIMA pe volatilitate $>$ ARMA $\Rightarrow$ captează persistența șocurilor
-        \end{itemize}
-    \end{block}
-    }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.42\textheight, keepaspectratio]{btc_acf_squared.pdf}
-    \end{center}
-    \quantlet{TSA\_ch10\_btc\_acf\_squared}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_btc_acf_squared}
-\end{frame}
-
-\begin{frame}{Bitcoin: GARCH și managementul riscului}
-    \vspace{-3mm}
-    {\footnotesize
-    \begin{alertblock}{Concluzii -- Studiu Bitcoin}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Diferențele între modele sunt \textbf{mici} pentru media randamentelor
-            \item Valoarea adăugată majoră: \textbf{modelarea volatilității} cu GARCH/EGARCH
-            \item ARFIMA captează persistența în volatilitate; RF util pentru features neliniare
-            \item Combinație optimă: ARFIMA-GARCH + features exogene via RF
-        \end{itemize}
-    \end{alertblock}
-    }
-    \vspace{-1mm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.42\textheight, keepaspectratio]{ch10_bitcoin_garch.pdf}
-    \end{center}
-    \quantlet{TSA\_ch10\_garch\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_garch_forecast}
-\end{frame}
-
-\begin{frame}{Bitcoin: estimare ARFIMA și comparație modele}
-    \vspace{-3mm}
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            {\footnotesize
-            \begin{exampleblock}{Randamente BTC-USD (2019--2024)}
-                \begin{tabular}{lccc}
-                    \toprule
-                    \textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{Interpr.?} \\
-                    \midrule
-                    ARIMA(1,0,1) & 2.81 & 2.05 & Da \\
-                    ARFIMA(1,$d$,1) & 2.81 & 2.06 & Da \\
-                    Random Forest & 2.84 & 2.07 & Parțial \\
-                    LSTM & 2.94 & 2.13 & Nu \\
-                    \bottomrule
-                \end{tabular}
-            \end{exampleblock}
-            \vspace{-2mm}
-            {\scriptsize
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Hurst $\hat{d} = 0.13$; test: 2024-02--12; split 70/15/15
-            \end{itemize}
-            }
-            }
-        \end{column}
-        \begin{column}{0.50\textwidth}
-            \includegraphics[width=\textwidth, height=0.46\textheight, keepaspectratio]{ch8_btc_model_comparison.pdf}
-        \end{column}
-    \end{columns}
-    \quantlet{TSA\_ch8\_btc\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_btc_model_comparison}
-\end{frame}
-
-\begin{frame}{Energie: vizualizarea cererii și sezonalitatea multiplă}
-    \vspace{-3mm}
-    {\footnotesize
-    \begin{block}{Tipare identificate}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Zilnic} (24h): vârf dimineață și seara, minim noaptea; \textbf{Săptămânal} (168h): consum redus în weekend
-            \item \textbf{Anual} (8766h): vârf vara și iarna; SARIMA nu poate modela simultan 3 perioade!
-        \end{itemize}
-    \end{block}
-    }
-    \vspace{-1mm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.48\textheight, keepaspectratio]{ch9_electricity_demand.pdf}
-    \end{center}
-    \quantlet{TSA\_ch9\_electricity\_demand}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_electricity_demand}
-\end{frame}
-
-\begin{frame}{Studiu de caz: prognoza consumului de energie}
+\begin{frame}{Studiu de caz: Consum de energie --- sezonalități multiple}
     \begin{cminipage}{0.95\textwidth}
-        \begin{block}{Caracteristici}
+        \begin{alertblock}{Acest studiu de caz este prezentat în detaliu în Capitolul 9}
+            Analiza completă a consumului de energie (sezonalități multiple, TBATS, Prophet, comparație modele) este disponibilă în \textbf{Capitolul 9: Prophet și TBATS}.
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{Relevanța pentru Capitolul 8}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Sezonalitate multiplă}: zilnică, săptămânală, anuală
-                \item \textbf{Tendință} de creștere pe termen lung
-                \item \textbf{Variabile exogene}: temperatură, zi liberă, preț
-                \item \textbf{Anomalii}: evenimente speciale, defecțiuni
+                \item Sezonalitate multiplă (zilnică, săptămânală, anuală) --- SARIMA nu poate modela simultan
+                \item Prophet + regresori reduc MAPE cu $\sim$50\% față de SARIMA
+                \item LSTM/RF: utile dacă ai $>$100.000 observații și tipare neliniare complexe
             \end{itemize}
         \end{block}
-        \vspace{0.1cm}
-        \begin{alertblock}{Provocări}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Tipare la scale temporale diferite
-                \item Interacțiuni complexe între variabile
-                \item Necesitatea prognozelor pe orizonturi diferite
-            \end{itemize}
-        \end{alertblock}
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Energie: de ce Prophet și TBATS?}
-    \vspace{-3mm}
-    {\footnotesize
-    \begin{block}{Soluția: modele cu sezonalitate multiplă}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{TBATS}: perioade $[24, 168, 8766]$ $\Rightarrow$ Fourier pentru fiecare sezon; automat, bun pentru producție
-            \item \textbf{Prophet}: sezonalitate aditivă/multiplicativă + regresori (temperatură, zile libere)
-            \item \textbf{ARIMA clasic}: poate doar 1 sezon $\Rightarrow$ MAPE $\approx 8$--$10\%$
-        \end{itemize}
-    \end{block}
-    }
-    \vspace{-1mm}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.42\textheight, keepaspectratio]{ch9_multiple_seasonality.pdf}
-    \end{center}
-    \quantlet{TSA\_ch9\_multiple\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_multiple_seasonality}
-\end{frame}
-
-\begin{frame}{Energie: descompunere Prophet și rezultate}
-    \vspace{-0.2cm}
-    {\footnotesize
-    {\small
-    \begin{exampleblock}{Rezultate comparație pe date energie (MAPE)}
-        \begin{center}
-            \begin{tabular}{lcccc}
-                \toprule
-                \textbf{Model} & \textbf{MAPE} & \textbf{RMSE (MW)} & \textbf{Acoperire 95\%} \\
-                \midrule
-                SARIMA (1 sezon) & 8.5\% & 450 & 75\% \\
-                TBATS & 4.2\% & 220 & 82\% \\
-                Prophet & 4.8\% & 250 & 85\% \\
-                Prophet + regresori & \textbf{3.9\%} & \textbf{200} & \textbf{88\%} \\
-                \bottomrule
-            \end{tabular}
-        \end{center}
-    \end{exampleblock}
-    }
-    }
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.38\textheight, keepaspectratio]{ch9_prophet_vs_tbats.pdf}
-    \end{center}
-    \quantlet{TSA\_ch9\_prophet\_vs\_tbats}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_prophet_vs_tbats}
-\end{frame}
-
-\begin{frame}{Energie: concluzii și recomandări practice}
-    \begin{cminipage}{0.95\textwidth}
-        \begin{block}{Lecții învățate}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Modelele cu \textbf{sezonalitate multiplă} reduc MAPE cu $\sim$50\% față de SARIMA
-                \item \textbf{Variabilele exogene} (temperatură) aduc câștig suplimentar de 10--15\%
-                \item Prophet excelează la \textbf{interpretabilitate}: descompunere trend + sezon + holiday
-                \item TBATS: cel mai bun \textbf{out-of-the-box} $\Rightarrow$ fără reglaj de hiperparametri
-            \end{itemize}
-        \end{block}
-        \vspace{0.1cm}
-        \begin{alertblock}{Ce model alegem?}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Prophet}: când ai regresori externi + interpretare pentru management
-                \item \textbf{TBATS}: automatizare, producție, fără intervenție umană
-                \item \textbf{LSTM/RF}: dacă ai $>$100.000 observații și tipare neliniare complexe
-            \end{itemize}
-        \end{alertblock}
-        {\footnotesize
-        \begin{exampleblock}{}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textit{Detalii complete despre Prophet și TBATS $\Rightarrow$ Capitolul 9}
-            \end{itemize}
-        \end{exampleblock}
-        }
     \end{cminipage}
 \end{frame}
 
@@ -1004,7 +1027,7 @@
         {\scriptsize
         \begin{block}{ARFIMA(p,d,q) \& Memorie lungă}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item $\phi(L)(1-L)^d Y_t = \theta(L)\varepsilon_t$, \; $d \in \mathbb{R}$ ($d < 0.5$ pt.\ staționaritate)
+                \item $\phi(L)(1-L)^d Y_t = \theta(L)\varepsilon_t$, \; $d \in \mathbb{R}$ ($d < 0.5$ pentru staționaritate)
                 \item ACF: $\rho_k \sim C \cdot k^{2d-1}$ \quad Hurst: $d = H - 0.5$ \quad $H > 0.5$: persistență
             \end{itemize}
         \end{block}
@@ -1018,7 +1041,7 @@
         \vspace{-2mm}
         \begin{block}{Metrici evaluare \& Time Series CV}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item RMSE $= \sqrt{\frac{1}{n}\sum(y_i - \hat{y}_i)^2}$ \quad MAPE $= \frac{100}{n}\sum\left|\frac{y_i - \hat{y}_i}{y_i}\right|$
+                \item RMSE, MAE, MAPE \textit{(vezi Capitolul 0 pentru definițiile complete)}
                 \item Walk-forward validation --- Train $\Rightarrow$ Test (temporal split)
             \end{itemize}
         \end{block}
@@ -1108,7 +1131,7 @@
                 \item Randamentele EUR/RON sunt \textbf{staționare} (p-value $< 0.05$)
                 \item $H \approx 0.47 < 0.5$: ușoară tendință de revenire la medie
                 \item $d \approx 0$: \textbf{memorie scurtă} -- ARMA poate fi suficient
-                \item Totuși, \textbf{volatilitatea} poate avea memorie lungă!
+                \item Totuși, \textbf{volatilitatea} poate avea memorie lungă.
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -1182,6 +1205,7 @@
                 \bottomrule
             \end{tabular}
         \end{center}
+        {\scriptsize \textit{Notă: MLP: perceptron multistrat; LSTM: rețea recurentă --- grupate deoarece au performanțe similare pe aceste date.}}
 
         \vspace{0.1cm}
 
@@ -1348,7 +1372,7 @@
         {\footnotesize
         \begin{exampleblock}{}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Lecție}: Pentru serii lunare cu puține date, modelele clasice (ARFIMA) sunt superioare!
+                \item \textbf{Lecție}: Pentru serii lunare cu puține date, modelele clasice (ARFIMA) sunt superioare.
             \end{itemize}
         \end{exampleblock}
         }
@@ -1360,8 +1384,8 @@
         \begin{block}{Fluxul recomandat de modelare}
             \begin{enumerate}\setlength{\itemsep}{2pt}
                 \item Începeți cu \textbf{ARIMA} ca baseline (simplu, rapid, interpretabil)
-                \item Testează \textbf{memorie lungă} $\Rightarrow$ ARFIMA dacă $d$ semnificativ
-                \item Adaugă \textbf{features} $\Rightarrow$ Random Forest pentru relații neliniare
+                \item Testați \textbf{memorie lungă} $\Rightarrow$ ARFIMA dacă $d$ semnificativ
+                \item Adăugați \textbf{features} $\Rightarrow$ Random Forest pentru relații neliniare
                 \item Doar cu date multe ($>10.000$ obs.) și resurse $\Rightarrow$ LSTM
             \end{enumerate}
         \end{block}
@@ -1406,7 +1430,7 @@
         \vspace{-2mm}
         \begin{alertblock}{}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Asta nu înseamnă că e corect.}
+                \item \textbf{Atenție}: Codul generat de AI poate produce cod funcțional cu aparență de corectitudine. \textit{Asta nu înseamnă că e corect.}
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -1418,25 +1442,27 @@
 
 \begin{frame}{Rezumat}
     \begin{cminipage}{0.95\textwidth}
+        {\small
         \begin{block}{Ce am învățat}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{ARFIMA}: Extinde ARIMA pentru memorie lungă ($d$ fracționar)
-                \item \textbf{Random Forest}: Ansamblu de arbori, relații neliniare, interpretabil
-                \item \textbf{LSTM}: Deep learning pentru secvențe, dependențe complexe
-                \item \textbf{Trade-offs}: Complexitate vs interpretabilitate vs date necesare
+                \item \textbf{Random Forest / XGBoost}: Relații neliniare, câștigătoare M5
+                \item \textbf{LSTM / TFT}: Deep learning cu atenție interpretabilă și regresie cuantilică
+                \item \textbf{Foundation Models}: TimeGPT, Chronos --- paradigma zero-shot
+                \item \textbf{Lecția M4/M5}: abordările hibride (statistică + ML) sunt cele mai robuste
             \end{itemize}
         \end{block}
-
-        \vspace{0.2cm}
 
         \begin{alertblock}{Recomandări practice}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Începeți cu modele \textbf{simple} (ARIMA) ca baseline
-                \item Folosește \textbf{Time Series CV} pentru evaluare corectă
-                \item ML necesită \textbf{feature engineering} atent
-                \item LSTM: doar cu \textbf{multe date} și resurse computaționale
+                \item Folosiți \textbf{Time Series CV} pentru evaluare corectă
+                \item ML necesită \textbf{feature engineering} atent (lag-uri, calendar, rolling stats)
+                \item Considerați \textbf{foundation models} pentru prototipare rapidă (zero-shot)
+                \item Abordarea hibridă: features statistice + ML = cel mai bun compromis
             \end{itemize}
         \end{alertblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -1661,10 +1687,10 @@
     \begin{cminipage}{0.95\textwidth}
         \begin{block}{Extensii și subiecte avansate}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Transformer} pentru serii de timp (Temporal Fusion Transformer)
-                \item \textbf{Prophet} (Facebook/Meta) pentru sezonalitate
+                \item \textbf{Prophet} (Facebook/Meta) pentru sezonalitate multiplă
                 \item \textbf{Neural Prophet}: Prophet + rețele neuronale
-                \item \textbf{Ensemble methods}: Combinarea mai multor modele
+                \item \textbf{Conformal prediction}: intervale de incertitudine model-agnostice
+                \item \textbf{Reconciliere ierarhică}: prognoze coerente la multiple niveluri de agregare
                 \item \textbf{Anomaly detection} cu ML
             \end{itemize}
         \end{block}
@@ -1709,12 +1735,28 @@
 
 \begin{frame}{Bibliografie II}
     \begin{cminipage}{0.95\textwidth}
-        \begin{block}{Modele cu prag și regim-switching}
+        \begin{block}{Transformers, Foundation Models și Competiții}
+            {\small
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Lim, B., Ar{\i}k, S.\"O., Loeff, N., \& Pfister, T. (2021). Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting, \textit{International Journal of Forecasting}, 37(4), 1748--1764.
+                \item Garza, A., \& Mergenthaler-Canseco, M. (2024). TimeGPT-1, arXiv:2310.03589.
+                \item Ansari, A.F., et al. (2024). Chronos: Learning the Language of Time Series, arXiv:2403.07815.
+                \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2022). M5 Accuracy Competition: Results, Findings, and Conclusions, \textit{International Journal of Forecasting}, 38(4), 1325--1346.
+            \end{itemize}
+            }
+        \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliografie III}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Modele cu prag, regim-switching și referințe suplimentare}
             {\small
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Hansen, B.E. (2011). Threshold Autoregression in Economics, \textit{Statistics and Its Interface}, 4(2), 123--127.
                 \item Hamilton, J.D. (1989). A New Approach to the Economic Analysis of Nonstationary Time Series and the Business Cycle, \textit{Econometrica}, 57(2), 357--384.
                 \item Petropoulos, F., et al. (2022). Forecasting: Theory and Practice, \textit{International Journal of Forecasting}, 38(3), 845--1054.
+                \item Smyl, S. (2020). A Hybrid Method of Exponential Smoothing and Recurrent Neural Networks for Time Series Forecasting, \textit{International Journal of Forecasting}, 36(1), 75--85.
             \end{itemize}
             }
         \end{block}

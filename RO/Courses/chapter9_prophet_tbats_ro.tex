@@ -54,6 +54,7 @@
                 \begin{itemize}\setlength{\itemsep}{3pt}
                     \item Comparație și Ghid de Selecție
                     \item Studiu de Caz
+                    \item NeuralProphet și Predicție Conformală
                     \item Rezumat și Quiz
                 \end{itemize}
             \end{exampleblock}
@@ -149,7 +150,7 @@
     \quantlet{TSA\_ch9\_electricity\_demand}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_electricity_demand}
 \end{frame}
 
-\begin{frame}{Exemplu real: vânzări cu amănuntul cu sărbători}
+\begin{frame}{Exemplu real: vânzări cu amănuntul --- influența sărbătorilor}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.70\textheight, keepaspectratio]{ch9_retail_sales.pdf}
     \end{center}
@@ -214,7 +215,7 @@
                 \[
                 s_t^{(i)} = \sum_{j=1}^{k_i} \left[ s_j^{(i)} \cos\left(\frac{2\pi j t}{m_i}\right) + s_j^{*(i)} \sin\left(\frac{2\pi j t}{m_i}\right) \right]
                 \]
-                \item $m_i$ este perioadă sezonieră $i$ și $k_i$ este numărul de armonici
+                \item $m_i$ este perioada sezonieră de index $i$, iar $k_i$ este numărul de armonici
             \end{itemize}
         \end{exampleblock}
     \end{cminipage}
@@ -223,11 +224,11 @@
 \begin{frame}{Transformarea Box-Cox}
     \begin{cminipage}{0.95\textwidth}
         \begin{defn}[Transformarea Box-Cox]
-            Transformarea Box-Cox cu parametrul $\omega$ este definită astfel:
+            Transformarea Box-Cox cu parametrul $\lambda$ este definită astfel:
             \[
-            y_t^{(\omega)} = \begin{cases}
-                \dfrac{y_t^{\omega} - 1}{\omega} & \text{dacă } \omega \neq 0 \\[0.3cm]
-                \ln(y_t) & \text{dacă } \omega = 0
+            y_t^{(\lambda)} = \begin{cases}
+                \dfrac{y_t^{\lambda} - 1}{\lambda} & \text{dacă } \lambda \neq 0 \\[0.3cm]
+                \ln(y_t) & \text{dacă } \lambda = 0
             \end{cases}
             \]
         \end{defn}
@@ -238,7 +239,7 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{Stabilizarea varianței}: Face varianța constantă în timp
                 \item \textbf{Normalizare}: Reduce asimetria în date
-                \item Valori uzuale: $\omega = 0$ (log), $\omega = 0.5$ (rădăcină pătrată), $\omega = 1$ (fără transformare)
+                \item Valori uzuale: $\lambda = 0$ (log), $\lambda = 0.5$ (rădăcină pătrată), $\lambda = 1$ (fără transformare)
             \end{itemize}
         \end{exampleblock}
     \end{cminipage}
@@ -252,12 +253,12 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Ecuațiile modelului TBATS:
                 {\footnotesize
-                \begin{align}
-                    y_t^{(\omega)} &= \ell_{t-1} + \phi b_{t-1} + \sum_{i=1}^{M} s_t^{(i)} + d_t \\[0.05cm]
+                \begin{align*}
+                    y_t^{(\lambda)} &= \ell_{t-1} + \phi b_{t-1} + \sum_{i=1}^{M} s_{t-1}^{(i)} + d_t \\[0.05cm]
                     \ell_t &= \ell_{t-1} + \phi b_{t-1} + \alpha d_t \\[0.05cm]
                     b_t &= \phi b_{t-1} + \beta d_t \\[0.05cm]
                     d_t &= \sum_{i=1}^{p} \varphi_i d_{t-i} + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t
-                \end{align}
+                \end{align*}
                 }
             \end{itemize}
         \end{block}
@@ -268,7 +269,7 @@
         {\scriptsize
         \begin{block}{Notații}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item $y_t^{(\omega)}$ $\Rightarrow$ seria transformată Box-Cox (dacă $\omega \neq 1$)
+                \item $y_t^{(\lambda)}$ $\Rightarrow$ seria transformată Box-Cox (dacă $\lambda \neq 1$)
                 \item $\ell_t$ $\Rightarrow$ nivelul local, $b_t$ $\Rightarrow$ trendul cu amortizare $\phi$
                 \item $s_t^{(i)}$ $\Rightarrow$ $M$ componente sezoniere cu perioade $m_1, \ldots, m_M$
                 \item $d_t$ $\Rightarrow$ procesul de eroare ARMA$(p,q)$
@@ -284,11 +285,11 @@
             Pentru fiecare componentă sezonieră cu perioada $m_i$ și $k_i$ armonici, definim stările:
             \[
             \begin{pmatrix} s_{j,t}^{(i)} \\ s_{j,t}^{*(i)} \end{pmatrix} =
-            \begin{pmatrix} \cos(\lambda_j) & \sin(\lambda_j) \\ -\sin(\lambda_j) & \cos(\lambda_j) \end{pmatrix}
+            \begin{pmatrix} \cos(\omega_j) & \sin(\omega_j) \\ -\sin(\omega_j) & \cos(\omega_j) \end{pmatrix}
             \begin{pmatrix} s_{j,t-1}^{(i)} \\ s_{j,t-1}^{*(i)} \end{pmatrix} +
             \begin{pmatrix} \gamma_1^{(i)} \\ \gamma_2^{(i)} \end{pmatrix} d_t
             \]
-            unde $\lambda_j = \frac{2\pi j}{m_i}$ este frecvența armonicii $j$.
+            unde $\omega_j = \frac{2\pi j}{m_i}$ este frecvența armonicii $j$.
         \end{defn}
 
         \vspace{0.2cm}
@@ -349,7 +350,7 @@
         {\footnotesize
         \begin{block}{Implementare Python}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Pachet \texttt{tbats}}: Oferă selecție automată a modelului --- selectează automat Box-Cox $\omega$, numărul de armonici $k_i$, ordinele ARMA $(p,q)$, trend amortizat vs neamortizat
+                \item \textbf{Pachet \texttt{tbats}}: Oferă selecție automată a modelului --- selectează automat Box-Cox $\lambda$, numărul de armonici $k_i$, ordinele ARMA $(p,q)$, trend amortizat vs neamortizat
             \end{itemize}
         \end{block}
 
@@ -428,7 +429,7 @@
                 \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Efecte sezoniere puternice (zilnice, săptămânale, anuale)
                     \item Efecte de sărbători
-                    \item Schimbări de trend (changepoints)
+                    \item Puncte de schimbare în trend (\emph{changepoints})
                     \item Date lipsă și outlieri
                 \end{itemize}
             \end{itemize}
@@ -438,7 +439,7 @@
 
         \begin{exampleblock}{Principiul de bază}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textit{``Analyst-in-the-loop'' forecasting}
+                \item \textit{Prognoză cu analistul implicat activ în proces (\emph{analyst-in-the-loop})}
                 \item Prophet este proiectat pentru a fi ajustat de analiști cu cunoștințe de domeniu
                 \item Nu necesită experiență avansată în modelarea seriilor de timp
             \end{itemize}
@@ -473,7 +474,7 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Serii Fourier
                 \item Perioade multiple
-                \item Sezonalitate custom
+                \item Sezonalitate personalizată
             \end{itemize}
         \end{block}
 
@@ -592,7 +593,7 @@
                 \item \textbf{Sărbători integrate}: 60+ țări suportate
                 \item \textbf{Sărbători custom}: Adăugați propriile evenimente (Black Friday, evenimente companie)
                 \item \textbf{Efecte de fereastră}: Sărbătorile pot afecta zilele înainte/după
-                \item \textbf{Prior scale}: Controlează regularizarea efectelor de sărbătoare
+                \item \textbf{Scala distribuției \emph{a priori}}: Controlează regularizarea efectelor de sărbătoare
             \end{itemize}
         \end{exampleblock}
 
@@ -600,7 +601,7 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Cod Python:
                 \footnotesize
-                \texttt{holidays = pd.DataFrame(\{'holiday': 'black\_friday', ....\})}\\
+                \texttt{holidays = pd.DataFrame(\{'holiday': 'black\_friday', ...\})}\\
                 \texttt{model = Prophet(holidays=holidays)}
             \end{itemize}
         \end{block}
@@ -626,7 +627,7 @@
 
         \vspace{0.3cm}
 
-        \begin{exampleblock}{Adăugare sezonalitate Custom}
+        \begin{exampleblock}{Adăugare sezonalitate personalizată}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Cod Python:
                 \small
@@ -738,7 +739,7 @@
             \column{0.5\textwidth}
             \begin{exampleblock}{Avantaje}
                 \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item \textbf{Ușor de folosit}: Ajustare minimă necesară
+                    \item \textbf{Accesibil}: Ajustare minimă necesară
                     \item \textbf{Interpretabil}: Descompunere clară
                     \item \textbf{Gestionează date lipsă} bine
                     \item \textbf{Efecte sărbători} integrate
@@ -823,7 +824,7 @@
                     \item Multiple perioade sezoniere complexe
                     \item Nu sunt necesari regresori externi
                     \item Se preferă selecție automată a modelului
-                    \item Se dorește framework tradițional state-space
+                    \item Se dorește cadrul tradițional de tip spațiu al stărilor (\emph{state-space})
                 \end{itemize}
             \end{block}
 
@@ -888,15 +889,11 @@
     \vspace{-0.5cm}
     \begin{cminipage}{0.95\textwidth}
         {\small
-        \begin{defn}[Metrici de acuratețe a prognozei (cf.\ Capitolul 0)]
-            Fie $y_t$ valorile reale, $\hat{y}_t$ prognozele și $n$ orizontul de prognoză:
-            \vspace{-2mm}
-            \begin{align*}
-                \RMSE &= \sqrt{\frac{1}{n}\sum_{t=1}^{n}(y_t - \hat{y}_t)^2} \quad \text{(penalizează erorile mari)} \\
-                \MAE &= \frac{1}{n}\sum_{t=1}^{n}|y_t - \hat{y}_t| \quad \text{(robust la outlieri)} \\
-                \MAPE &= \frac{100\%}{n}\sum_{t=1}^{n}\left|\frac{y_t - \hat{y}_t}{y_t}\right| \quad \text{(independent de scară)}
-            \end{align*}
-        \end{defn}
+        \begin{block}{Metrici de acuratețe a prognozei}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textit{(Metricile RMSE, MAE, MAPE --- definite în Capitolul 0)}
+            \end{itemize}
+        \end{block}
         }
         \vspace{-2mm}
         \begin{exampleblock}{Acoperire}
@@ -981,7 +978,7 @@
         \begin{block}{Exercițiu}
             \begin{enumerate}\setlength{\itemsep}{0pt}
                 \item Rulați prompt-ul într-un LLM (Large Language Model) la alegere și analizați critic răspunsul.
-                \item Prophet detectează automat sezonalitățile multiple (zilnică, săptămânală)?
+                \item Prophet detectează automat sezonalitățile multiple (zilnice, săptămânale)?
                 \item Cum sunt specificate sărbătorile? Specifice țării sau evenimente personalizate?
                 \item Folosește cross-validation cu puncte de referință (performance\_metrics)?
                 \item TBATS ar fi mai potrivit pentru această frecvență? De ce sau de ce nu?
@@ -990,8 +987,184 @@
         }
         \vspace{-2mm}
         \begin{alertblock}{}
-            {\footnotesize \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Asta nu înseamnă că e corect.}}
+            {\footnotesize \textbf{Atenție}: Codul generat de AI poate produce cod funcțional cu aparență de corectitudine. \textit{Asta nu înseamnă că e corect.}}
         \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SECȚIUNEA: NEURALPROPHET ȘI PREDICȚIE CONFORMALĂ
+%=============================================================================
+\section{NeuralProphet și Predicție Conformală}
+
+\begin{frame}{NeuralProphet (Triebe et al., 2021)}
+    \quantlet{TSA\_ch9\_neural\_prophet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_neural_prophet}
+    \begin{cminipage}{0.95\textwidth}
+        {\small
+        \begin{block}{Arhitectură: descompunere Prophet + AR-Net}
+            Modelul extinde descompunerea Prophet cu componente neuronale:
+            \vspace{-2mm}
+            \[
+                y(t) = T(t) + S(t) + E(t) + F(t) + A(t) + L(t)
+            \]
+            \vspace{-5mm}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $T(t)$: trend liniar sau logistic pe segmente (\emph{piecewise}) --- ca în Prophet
+                \item $S(t)$: sezonalitate Fourier --- ca în Prophet
+                \item $E(t)$: evenimente speciale / sărbători
+                \item $F(t)$: regresori viitori (\emph{future regressors} --- covariabile cunoscute)
+                \item $A(t)$: \textbf{AR-Net} --- rețea neuronală \emph{feedforward} pe lag-uri $y_{t-1}, \ldots, y_{t-p}$
+                \item $L(t)$: \textbf{regresori cu lag} --- covariabile externe procesate prin NN separat
+            \end{itemize}
+        \end{block}
+        \begin{block}{Training și avantaje}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Backend \textbf{PyTorch}: mini-batch SGD, selecție automată a ratei de învățare
+                \item \textbf{Avantaj cheie} față de Prophet: captează tipare autoregresive pe care Prophet le ignoră
+                \item Sezonalitate locală: coeficienți Fourier variabili în timp
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{NeuralProphet: Comparație și Rezultate}
+    \quantlet{TSA\_ch9\_neural\_prophet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_neural_prophet}
+    \vspace{-2mm}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Prophet vs.\ NeuralProphet}
+            \vspace{0.5mm}
+            \centering
+            \begin{tabular}{@{}l c c@{}}
+                \toprule
+                \textbf{Caracteristică} & \textbf{Prophet} & \textbf{NeuralProphet} \\
+                \midrule
+                Backend         & Stan (MCMC/MAP)    & PyTorch (SGD) \\
+                Autoregresie    & Nu                 & Da (AR-Net) \\
+                Covariabile lag & Nu                 & Da (\emph{Lagged Regressors}) \\
+                Viteză training & Lentă (MCMC)       & Rapidă (SGD) \\
+                Interpretabilitate & Ridicată         & Ridicată (componente) \\
+                Intervale de predicție & Bayesiene     & Bootstrap / Conformal \\
+                \bottomrule
+            \end{tabular}
+            \vspace{0.5mm}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Rezultate empirice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Depășește Prophet pe seturi de date cu \textbf{structură AR puternică}
+                \item Performanță comparabilă pe date cu trend dominant, sezonalitate stabilă
+                \item NeuralProphet mai potrivit pentru volume mari de date și covariabile multiple
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Software}
+            \texttt{pip install neuralprophet} --- API similar cu Prophet, tranziție ușoară\\
+            \texttt{from neuralprophet import NeuralProphet; m = NeuralProphet()}
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Predicție conformală (\emph{Conformal Prediction})}
+    \quantlet{TSA\_ch9\_conformal\_prediction}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_conformal_prediction}
+    \begin{cminipage}{0.95\textwidth}
+        {\small
+        \begin{alertblock}{Problema}
+            Intervalele tradiționale de predicție presupun o distribuție parametrică (de ex.\ gaussiană). În practică, această ipoteză este adesea încălcată.
+        \end{alertblock}
+        \begin{block}{Predicție conformală (Vovk, Gammerman \& Shafer, 2005)}
+            Metodă \textbf{distribution-free} cu garanție de acoperire pe eșantioane finite:
+            \begin{enumerate}\setlength{\itemsep}{1pt}
+                \item \textbf{Scor de neconformitate}: $\alpha_t = |y_t - \hat{y}_t|$ (sau orice scor bazat pe reziduuri)
+                \item \textbf{Set de calibrare}: se calculează scorurile pe date rezervate $\{\alpha_1, \ldots, \alpha_n\}$
+                \item \textbf{Interval de predicție}:
+                    \vspace{-2mm}
+                    \[
+                        \hat{C}_{T+1} = \hat{y}_{T+1} \pm Q_{1-\alpha}\!\bigl(\{\alpha_1, \ldots, \alpha_n\}\bigr)
+                    \]
+                    \vspace{-4mm}
+
+                    unde $Q_{1-\alpha}$ este cuantila empirică de ordin $\lceil (1-\alpha)(1+1/n) \rceil / n$
+            \end{enumerate}
+        \end{block}
+        \begin{exampleblock}{Garanție de acoperire}
+            Sub ipoteza de \textbf{interschimbabilitate} (\emph{exchangeability}):
+            $\;\mathbb{P}\bigl(y_{T+1} \in \hat{C}_{T+1}\bigr) \geq 1 - \alpha\;$ --- \textbf{exact}, nu asimptotic.
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Predicție conformală adaptivă pentru serii de timp}
+    \quantlet{TSA\_ch9\_aci}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_aci}
+    \vspace{-3mm}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{alertblock}{Problema}
+            Seriile de timp \textbf{încalcă} ipoteza de interschimbabilitate $\Rightarrow$ garanția clasică nu se aplică direct.
+        \end{alertblock}
+        \vspace{-1mm}
+        \begin{block}{Adaptive Conformal Inference --- ACI (Gibbs \& Candès, 2021)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Nivel de semnificație \textbf{variabil în timp}:
+                    $\alpha_t = \alpha + \gamma\bigl(\text{err}_{t-1} - \alpha\bigr)$, \; $\text{err}_{t-1} = \mathbf{1}\{y_{t-1} \notin \hat{C}_{t-1}\}$
+                \item Ajustează intervalele pe baza erorilor recente de acoperire
+                \item Menține acoperire \textbf{asimptotică} chiar și sub deplasare de distribuție (\emph{distribution shift})
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{EnbPI --- Ensemble Batch Prediction Intervals (Xu \& Xie, 2022)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Folosește \textbf{ansamblu bootstrap} de modele de bază
+                \item Actualizează secvențial distribuția reziduurilor
+                \item Acoperire validă fără ipoteză de interschimbabilitate
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Software}
+            \texttt{MAPIE} (Python) --- intervale de predicție model-agnostice: \texttt{pip install mapie}
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Aplicații: Intervale de predicție model-agnostice}
+    \quantlet{TSA\_ch9\_enbpi}{https://github.com/QuantLet/TSA/tree/main/TSA_ch9/TSA_ch9_enbpi}
+    \vspace{-2mm}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Flux de lucru}
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item Antrenați \textbf{orice} model de prognoză (ARIMA, GARCH, XGBoost, LSTM, Prophet\ldots)
+                \item Calculați reziduurile pe setul de calibrare
+                \item Aplicați calibrare conformală $\Rightarrow$ intervale cu \textbf{garanție de acoperire}
+            \end{enumerate}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Comparație cu abordările tradiționale}
+            \vspace{0.5mm}
+            \centering
+            \begin{tabular}{@{}l c c c@{}}
+                \toprule
+                \textbf{Metodă} & \textbf{Distribuție} & \textbf{Acoperire} & \textbf{Model-agnostic} \\
+                \midrule
+                Parametrică (ARIMA) & Gaussiană       & Asimptotică & Nu \\
+                Bootstrap           & Empirică        & Asimptotică & Parțial \\
+                Conformală          & Fără ipoteze    & Finită (exactă) & Da \\
+                \bottomrule
+            \end{tabular}
+            \vspace{0.5mm}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Aplicații practice și software}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Domenii}: risc financiar (VaR), prognoză energetică, planificarea cererii
+                \item \textbf{Biblioteci Python}: \texttt{mapie}, \texttt{conformal-tights}, \texttt{crepes}
+            \end{itemize}
+        \end{exampleblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -1001,7 +1174,9 @@
 \section{Rezumat}
 
 \begin{frame}{Concluzii}
+    \vspace{-2mm}
     \begin{cminipage}{0.95\textwidth}
+        {\small
         \begin{block}{Sezonalități multiple}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Datele din lumea reală au adesea tipare sezoniere multiple
@@ -1009,24 +1184,21 @@
                 \item TBATS și Prophet sunt proiectate pentru această provocare
             \end{itemize}
         \end{block}
-
-        \vspace{0.1cm}
-
+        \vspace{-1mm}
         \begin{exampleblock}{Selecția modelului}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{TBATS}: Automat, gestionează frecvență înaltă, fără regresori externi
                 \item \textbf{Prophet}: Interpretabil, efecte sărbători, regresori externi
-                \item Ambele folosesc termeni Fourier pentru reprezentare eficientă a sezonalității
+                \item \textbf{NeuralProphet}: Extinde Prophet cu AR-Net și covariabile lag (PyTorch)
             \end{itemize}
         \end{exampleblock}
-
-        \vspace{0.2cm}
-
+        \vspace{-1mm}
         \begin{alertblock}{De reținut}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Validare}: Folosiți întotdeauna cross-validation adecvat pentru serii de timp!
+                \item \textbf{Predicție conformală}: intervale distribution-free, model-agnostice, cu garanție finită de acoperire --- complementează orice model de prognoză.
             \end{itemize}
         \end{alertblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -1042,8 +1214,8 @@
         \begin{exampleblock}{Pași următori}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Exersați cu notebook-ul Jupyter
-                \item Încercați Prophet pe propriile date
-                \item Explorați NeuralProphet pentru extensia deep learning
+                \item Încercați Prophet și NeuralProphet pe propriile date
+                \item Aplicați predicție conformală (MAPIE) pentru intervale model-agnostice
             \end{itemize}
         \end{exampleblock}
     \end{cminipage}

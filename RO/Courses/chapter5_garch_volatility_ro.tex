@@ -83,11 +83,11 @@
 %=============================================================================
 \section{Introducere în Modelarea Volatilității}
 
-\begin{frame}{Volatility clustering (gruparea volatilității)}
+\begin{frame}{Volatility clustering}
     \vspace{-0.2cm}
     {\scriptsize
     \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Perioadele de volatilitate mare sunt urmate de perioade de volatilitate mare; perioade calme
+        \item Perioadele de volatilitate mare sunt urmate de perioade de volatilitate mare, iar perioadele de volatilitate redusă sunt urmate de perioade de volatilitate redusă
         \item Acest lucru sugerează că \textbf{varianța condiționată} este predictibilă
     \end{itemize}
     }
@@ -114,7 +114,7 @@
         \begin{alertblock}{Limitarea modelelor ARIMA (Autoregressive Integrated Moving Average)}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Modelele ARIMA presupun \textbf{varianță constantă} (homoscedasticitate)
-                \item Această presupunere nu este realistă pentru seriile financiare!
+                \item Această ipoteză nu este realistă pentru seriile financiare.
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -258,7 +258,7 @@
             \begin{exampleblock}{Contribuții principale}
                 {\footnotesize
                 \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item \textbf{Modelul ARCH} (Engle, 1982) --- heteroskedasticitate condiționată autoregresivă
+                    \item \textbf{Modelul ARCH} (Engle, 1982) --- heteroscedasticitate condiționată autoregresivă
                     \item \textbf{Modelul GARCH} (Bollerslev, 1986) --- ARCH generalizat cu volatilitate persistentă
                     \item \textbf{Volatilitatea realizată} și econometria de înaltă frecvență
                     \item Fundamentul managementului modern al riscului financiar (VaR, ES)
@@ -310,8 +310,9 @@
         \begin{block}{ARCH(1): $\sigma_t^2 = \omega + \alpha_1 \varepsilon_{t-1}^2$}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{Varianța necondiționată}: $\E[\varepsilon_t^2] = \dfrac{\omega}{1 - \alpha_1}$ (dacă $\alpha_1 < 1$)
-                \item \textbf{Kurtosis}: $\kappa = 3 \cdot \dfrac{1 - \alpha_1^2}{1 - 3\alpha_1^2}$ (dacă $\alpha_1^2 < 1/3$)
+                \item \textbf{Kurtosis}: $\kappa = 3 \cdot \dfrac{1 - \alpha_1^2}{1 - 3\alpha_1^2}$ (dacă $\alpha_1^2 < 1/3$; sub ipoteza $z_t \sim N(0,1)$)
                 \item Kurtosis $> 3$ pentru $\alpha_1 > 0$ $\Rightarrow$ \textbf{cozi groase}!
+                \item \textbf{Notă}: Formula presupune inovații gaussiene ($z_t \sim N(0,1)$); sub alte distribuții (e.g., Student-$t$), kurtosisul necondiționat se modifică
             \end{itemize}
         \end{block}
 
@@ -338,21 +339,28 @@
         \begin{proof}[Demonstrație]
             Fie $\varepsilon_t = \sigma_t z_t$ cu $z_t \sim N(0,1)$ și $\sigma_t^2 = \omega + \alpha_1 \varepsilon_{t-1}^2$.
 
-            \vspace{0.2cm}
+            \vspace{0.1cm}
             \textbf{Pasul 1}: Aplicăm speranța necondiționată:
-            \[
-                \E[\varepsilon_t^2] = \E[\sigma_t^2 z_t^2] = \E[\sigma_t^2] \cdot \E[z_t^2] = \E[\sigma_t^2]
-            \]
+            \vspace{-2mm}
+            \begin{multline*}
+                \E[\varepsilon_t^2] = \E[\sigma_t^2 z_t^2] = \E[\sigma_t^2] \cdot \E[z_t^2] = \E[\sigma_t^2] \\
+                \text{(independență: $\sigma_t^2$ este $\mathcal{F}_{t-1}$-măsurabil, $z_t \perp \mathcal{F}_{t-1}$)}
+            \end{multline*}
+            \vspace{-3mm}
 
             \textbf{Pasul 2}: Aplicăm speranța ecuației varianței:
+            \vspace{-2mm}
             \[
                 \E[\sigma_t^2] = \E[\omega + \alpha_1 \varepsilon_{t-1}^2] = \omega + \alpha_1 \E[\varepsilon_{t-1}^2]
             \]
+            \vspace{-3mm}
 
             \textbf{Pasul 3}: Prin staționaritate, $\E[\varepsilon_t^2] = \E[\varepsilon_{t-1}^2] = \sigma^2$:
+            \vspace{-2mm}
             \[
                 \sigma^2 = \omega + \alpha_1 \sigma^2 \quad \Rightarrow \quad \sigma^2 (1 - \alpha_1) = \omega
             \]
+            \vspace{-3mm}
 
             \textbf{Rezultat}: $\boxed{\sigma^2 = \dfrac{\omega}{1 - \alpha_1}}$ \quad (necesită $\alpha_1 < 1$ pentru staționaritate)
         \end{proof}
@@ -380,8 +388,8 @@
         \begin{block}{Interpretare}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item $\kappa > 3$ pentru orice $\alpha_1 > 0$ $\Rightarrow$ \textbf{cozi groase} (leptokurtosis)
-                \item Necesită $\alpha_1 < 0.577$ pentru moment de ordin 4 finit
-                \item ARCH generează în mod natural distribuții cu cozi groase!
+                \item Necesită $\alpha_1 < 1/\sqrt{3} \approx 0.577$ pentru moment de ordin 4 finit
+                \item ARCH generează în mod natural distribuții cu cozi groase.
             \end{itemize}
         \end{block}
     \end{cminipage}
@@ -391,7 +399,7 @@
     \begin{cminipage}{0.95\textwidth}
         \small
         \vspace{-0.3cm}
-        \begin{block}{Kurtosis ARCH(1): prea mică!}
+        \begin{block}{Kurtosis ARCH(1): prea mică.}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Pentru randamente tipice de acțiuni: $\alpha_1 \approx 0.09$ (S\&P 500)
                 \item Kurtosis teoretică: $\kappa = 3 \cdot \frac{1 - 0.09^2}{1 - 3 \times 0.09^2} \approx \textbf{3.05}$; \quad kurtosis empirică S\&P 500: $\kappa \approx \textbf{13.8}$
@@ -460,7 +468,7 @@
 
         \begin{block}{Soluția}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Modelul GARCH} --- introduce lag-uri ale varianței condiționate pentru a captura persistența cu mai puțini parametri!
+                \item \textbf{Modelul GARCH} --- introduce lag-uri ale varianței condiționate pentru a captura persistența cu mai puțini parametri.
             \end{itemize}
         \end{block}
     \end{cminipage}
@@ -572,7 +580,7 @@
             \[
                 \varepsilon_t^2 = \omega + (\alpha + \beta) \varepsilon_{t-1}^2 + \nu_t - \beta \nu_{t-1}
             \]
-            \item Aceasta este un \textbf{ARMA(1,1)} pentru $\varepsilon_t^2$!
+            \item Aceasta este un \textbf{ARMA(1,1)} pentru $\varepsilon_t^2$.
         \end{itemize}
     \end{block}
 
@@ -692,7 +700,7 @@
         \vspace{-0.3cm}
         \begin{exampleblock}{QMLE vs MLE complet}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{QMLE}: implicit sigur --- consistent chiar sub specificare greșită
+                \item \textbf{QMLE}: implicit robust --- consistent chiar sub specificare greșită
                 \item \textbf{MLE complet} (Student-$t$): mai \textit{eficient} dacă distribuția este corectă
             \end{itemize}
         \end{exampleblock}
@@ -771,6 +779,7 @@
 \end{frame}
 
 \begin{frame}{IGARCH --- integrated GARCH}
+    \quantlet{TSA\_ch5\_igarch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_igarch}
     \begin{cminipage}{0.95\textwidth}
         \small
         \begin{defn}[IGARCH(1,1)]
@@ -784,7 +793,7 @@
 
         \begin{block}{Proprietăți}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Varianța necondiționată nu există (infinită)
+                \item Varianța necondiționată nu există (infinită) (dar procesul rămâne strict staționar, cf.\ Nelson, 1990)
                 \item Șocurile au efect \textbf{permanent} asupra volatilității
                 \item Folosit pentru serii cu persistență extremă
                 \item Util pentru \textbf{RiskMetrics} (J.P. Morgan): $\alpha = 0.06$, $\beta = 0.94$
@@ -793,9 +802,74 @@
 
         \begin{rmk}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item IGARCH este analog cu o rădăcină unitară în varianță!
+                \item IGARCH este analog cu o rădăcină unitară în varianță.
             \end{itemize}
         \end{rmk}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Teorema lui Nelson (1990): Staționaritate strictă IGARCH}
+    \quantlet{TSA\_ch5\_nelson\_theorem}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_nelson_theorem}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-2mm}
+        {\scriptsize
+        \begin{thm}[Nelson, 1990]
+            Fie procesul IGARCH(1,1):
+            $\varepsilon_t = \sigma_t z_t$, \; $\sigma_t^2 = \omega + \alpha\,\varepsilon_{t-1}^2 + (1 - \alpha)\,\sigma_{t-1}^2$, \; $z_t$ i.i.d., $\E[z_t^2] = 1$.
+            Dacă $\omega > 0$ și $\E\bigl[\ln\!\bigl(\alpha z_t^2 + (1 - \alpha)\bigr)\bigr] < 0$, atunci procesul $\{\varepsilon_t\}$ este \textbf{strict staționar} și \textbf{ergodic}, deși varianța necondiționată este infinită.
+        \end{thm}
+        \vspace{-1mm}
+        \begin{block}{Condiția Lyapunov}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Condiția $\E[\ln(\alpha z_t^2 + (1-\alpha))] < 0$ este echivalentă cu \textbf{exponentul Lyapunov de vârf negativ}
+                \item Se verifică pentru distribuții standard ($z_t \sim \mathcal{N}(0,1)$, $t$-Student) când $\alpha \in (0,1)$
+                \item Interpretare: log-volatilitatea $\ln \sigma_t^2$ are o tendință medie de contracție
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Schiță de demonstrație}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Se rescrie $\sigma_t^2$ ca recurență stocastică: $Y_t = A_t Y_{t-1} + B_t$, unde $A_t = \alpha z_{t-1}^2 + (1-\alpha)$, $B_t = \omega$
+                \item Se aplică teorema Bougerol \& Picard (1992): dacă $\E[\ln A_t] < 0$ și $\E[\ln^+ B_t] < \infty$, seria $Y_t$ converge în distribuție
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{IGARCH: Staționaritate strictă vs.\ staționaritate în covarianță}
+    \quantlet{TSA\_ch5\_igarch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_igarch}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-2mm}
+        {\scriptsize
+        \begin{block}{Contrast fundamental}
+            \renewcommand{\arraystretch}{1.2}
+            \begin{center}
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Proprietate} & \textbf{GARCH} ($\alpha + \beta < 1$) & \textbf{IGARCH} ($\alpha + \beta = 1$) \\
+                \midrule
+                Strict staționar & Da & \textbf{Da} (Nelson, 1990) \\
+                Staționar în covarianță & Da & \textbf{Nu} ($\Var[\varepsilon_t] = \infty$) \\
+                Varianță necondiționată & $\bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}$ & Nu există (infinită) \\
+                Persistența șocurilor & Geometrică (se estompează) & Permanentă \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+        \vspace{-1mm}
+        \begin{alertblock}{Implicație practică}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item IGARCH este un \textbf{model valid}, în ciuda rădăcinii unitare în varianță
+                \item Prognoza varianței condiționate: $\E_t[\sigma_{t+h}^2] = \sigma_t^2 + h\omega$ (creștere liniară)
+                \item Nu implică explozie a procesului: $\varepsilon_t$ rămâne bine definit
+            \end{itemize}
+        \end{alertblock}
+        \vspace{-1mm}
+        \begin{rmk}
+            Distincția strict staționar / staționar în covarianță este analogă cu procesele cu cozi grele: un proces poate avea distribuția marginală bine definită fără a avea momente finite de ordin superior.
+        \end{rmk}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -827,7 +901,7 @@
         \vspace{-0.25cm}
         \begin{alertblock}{Implicații practice}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Dacă rupturile sunt prezente, persistența GARCH ($\alpha + \beta$) este \textbf{biasată în sus} $\Rightarrow$ IGARCH fals
+                \item Dacă rupturile sunt prezente, persistența GARCH ($\alpha + \beta$) este \textbf{distorsionată în sus} $\Rightarrow$ IGARCH fals
                 \item Soluție: estimare GARCH separată per regim, ferestre rulante, sau GARCH Markov ($K=2$)
             \end{itemize}
         \end{alertblock}
@@ -849,8 +923,8 @@
         \end{block}
         \begin{alertblock}{Problema GARCH standard}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item GARCH standard: $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$ --- doar $\varepsilon_{t-1}^2$ contează, semnul se pierde!
-                \item Intuiție economică: Vești proaste $\Rightarrow$ prețul scade $\Rightarrow$ levierul crește $\Rightarrow$ volatilitatea crește
+                \item GARCH standard: $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$ --- doar $\varepsilon_{t-1}^2$ contează, semnul se pierde.
+                \item Intuiție economică: Semnale negative de piață $\Rightarrow$ prețul scade $\Rightarrow$ levierul crește $\Rightarrow$ volatilitatea crește
             \end{itemize}
         \end{alertblock}
         \begin{exampleblock}{Evidență empirică}
@@ -1150,7 +1224,7 @@
         \begin{alertblock}{Recomandări practice}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item GARCH(1,1) este suficient în \textbf{90\% din cazuri}
-                \item Verifică dacă modelul asimetric îmbunătățește semnificativ ajustarea
+                \item Verificați dacă modelul asimetric îmbunătățește semnificativ ajustarea
                 \item Alege distribuția inovațiilor care minimizează AIC/BIC
             \end{itemize}
         \end{alertblock}
@@ -1327,7 +1401,7 @@
 
         \begin{exampleblock}{Convergență}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item $\lim_{h \to \infty} \E_T[\sigma_{T+h}^2] = \bar{\sigma}^2$ --- prognoza converge către varianța necondiționată!
+                \item $\lim_{h \to \infty} \E_T[\sigma_{T+h}^2] = \bar{\sigma}^2$ --- prognoza converge către varianța necondiționată.
             \end{itemize}
         \end{exampleblock}
     \end{cminipage}
@@ -1364,7 +1438,7 @@
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Volatilitate condiționată} $\sigma_t$ (GARCH): variabilă în timp, reacționează la informații noi
             \item \textbf{Volatilitate necondiționată} $\bar{\sigma} = \sqrt{\omega/(1-\alpha-\beta)}$: nivel constant pe termen lung
-            \item Zone roșii: $\sigma_t > \bar{\sigma}$ (perioade de stres); zone albastre: $\sigma_t < \bar{\sigma}$ (perioade calme)
+            \item Zone roșii: $\sigma_t > \bar{\sigma}$ (perioade de stres); zone albastre: $\sigma_t < \bar{\sigma}$ (perioade de volatilitate redusă)
         \end{itemize}
     \end{block}
     }
@@ -1560,7 +1634,7 @@
 
         \begin{alertblock}{Observație}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Cu $\nu = 6$ (tipic pentru acțiuni), VaR este cu \textbf{35\% mai mare} decât cel normal!
+                \item Cu $\nu = 6$ (tipic pentru acțiuni), VaR este cu \textbf{35\% mai mare} decât cel normal.
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -1744,7 +1818,7 @@
     \begin{block}{Rezultat}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Obținem seria $\{\text{VaR}_{\alpha,t}\}_{t=W+1}^{T}$ $\Rightarrow$ un prag \textbf{diferit} în fiecare zi
-            \item VaR-ul se adaptează la regimul curent: crește în perioadele volatile, scade în cele calme
+            \item VaR-ul se adaptează la regimul curent: crește în perioadele volatile, scade în perioadele de volatilitate redusă
             \item Comparăm $r_t$ cu $-\text{VaR}_{\alpha,t}$ pentru a identifica încălcările
         \end{itemize}
     \end{block}
@@ -1837,7 +1911,7 @@
         \begin{block}{Testul acoperirii condiționate}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Testează atât \textbf{acoperirea necondiționată} cât și \textbf{independența} încălcărilor
-                \item Încălcările trebuie să fie independente --- fără clusterizare a excepțiilor!
+                \item Încălcările trebuie să fie independente --- fără clusterizare a excepțiilor.
             \end{itemize}
         \end{block}
         \vspace{-0.1cm}
@@ -1852,7 +1926,7 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Respinge $LR_{uc}$: frecvență greșită
                 \item Respinge $LR_{ind}$: încălcări clusterizate
-                \item Respinge $LR_{cc}$: modelul eșuează
+                \item Respinge $LR_{cc}$: modelul nu este validat
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -1954,9 +2028,15 @@
         \end{block}
         \vspace{-0.1cm}
         \begin{defn}[ARMA(p,q)-GARCH(r,s)]
-            \textbf{Ecuația mediei}: $r_t = \mu + \sum_{i=1}^{p} \phi_i (r_{t-i} - \mu) + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t$
+            \textbf{Ecuația mediei}:
+            \vspace{-2mm}
+            $$r_t = \mu + \sum_{i=1}^{p} \phi_i (r_{t-i} - \mu) + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j} + \varepsilon_t$$
+            \vspace{-4mm}
 
-            \textbf{Ecuația varianței}: $\varepsilon_t = \sigma_t z_t$, \quad $\sigma_t^2 = \omega + \sum_{i=1}^{r} \alpha_i \varepsilon_{t-i}^2 + \sum_{j=1}^{s} \beta_j \sigma_{t-j}^2$
+            \textbf{Ecuația varianței}: $\varepsilon_t = \sigma_t z_t$,
+            \vspace{-2mm}
+            $$\sigma_t^2 = \omega + \sum_{i=1}^{r} \alpha_i \varepsilon_{t-i}^2 + \sum_{j=1}^{s} \beta_j \sigma_{t-j}^2$$
+            \vspace{-4mm}
         \end{defn}
     \end{cminipage}
 \end{frame}
@@ -2153,7 +2233,7 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
         \begin{exampleblock}{Decizia}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{EGARCH(1,1)-t câștigă}: cel mai mic AIC \textbf{și} BIC
-                \item Student-t superior normalei ($\Delta$AIC $\approx 120$) $\Rightarrow$ cozi groase contează!
+                \item Student-t superior normalei ($\Delta$AIC $\approx 120$) $\Rightarrow$ cozi groase contează.
                 \item Leverage effect justifică modele asimetrice ($\Delta$AIC $\approx 33$ față de GARCH-t)
             \end{itemize}
         \end{exampleblock}
@@ -2296,7 +2376,7 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Ljung-Box pe $z_t^2$: p-value $= 0.41$ $\Rightarrow$ \textbf{efecte ARCH eliminate}
                 \item Vârfuri volatilitate: martie 2020 (COVID), mai 2022 (Terra/Luna)
-                \item Volatilitate zilnică: de la 1\% (perioadele calme) la $>$15\% (crize)
+                \item Volatilitate zilnică: de la 1\% (perioadele de volatilitate redusă) la $>$15\% (crize)
             \end{itemize}
         \end{block}
     }
@@ -2454,6 +2534,100 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Modelul DCC-GARCH multivariat}
+    \quantlet{TSA\_ch5\_dcc\_garch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_garch}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-3mm}
+        {\scriptsize
+        \setlength{\abovedisplayskip}{2pt}\setlength{\belowdisplayskip}{2pt}
+        \begin{block}{Motivație: De la volatilitate univariată la corelații dinamice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GARCH univariat modelează volatilitatea \textbf{unei singure} serii
+                \item În practică, portofoliile conțin \textbf{multiple active} cu corelații variabile în timp
+                \item DCC-GARCH (Engle, 2002) modelează simultan volatilitățile \emph{și} corelațiile
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{block}{Structura DCC în două etape}
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item \textbf{Etapa 1}: Estimarea GARCH univariat pentru fiecare serie $\Rightarrow$ $\mathbf{D}_t = \text{diag}(\sigma_{1,t}, \ldots, \sigma_{K,t})$
+                \item \textbf{Etapa 2}: Modelarea corelațiilor condiționate:
+                $\mathbf{Q}_t = (1 - a - b)\bar{\mathbf{Q}} + a\,\mathbf{u}_{t-1}\mathbf{u}_{t-1}' + b\,\mathbf{Q}_{t-1}$,
+                unde $\mathbf{u}_t = \mathbf{D}_t^{-1}\boldsymbol{\varepsilon}_t$ sunt reziduurile standardizate
+            \end{enumerate}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{block}{Matricea de corelație și covarianță condiționate}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Corelație: $\mathbf{R}_t = \mathbf{Q}_t^{*-1}\,\mathbf{Q}_t\,\mathbf{Q}_t^{*-1}$, cu $\mathbf{Q}_t^{*} = \text{diag}\!\bigl(\sqrt{q_{11,t}},\, \ldots,\, \sqrt{q_{KK,t}}\bigr)$
+                \item Covarianță: $\mathbf{H}_t = \mathbf{D}_t\,\mathbf{R}_t\,\mathbf{D}_t$
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Estimare DCC-GARCH}
+    \quantlet{TSA\_ch5\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_estimation}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-2mm}
+        {\scriptsize
+        \begin{block}{Estimare QML în două etape (Engle, 2002; Engle \& Sheppard, 2001)}
+            \begin{enumerate}\setlength{\itemsep}{1pt}
+                \item \textbf{Etapa 1} --- Estimarea parametrilor GARCH univariați:
+                \vspace{-1mm}
+                \[
+                    \mathcal{L}_1(\boldsymbol{\theta}) = -\frac{1}{2}\sum_{t=1}^{T}\sum_{k=1}^{K}\bigl(\ln \sigma_{k,t}^2 + \varepsilon_{k,t}^2 / \sigma_{k,t}^2\bigr) \;\longrightarrow\; \hat{\mathbf{D}}_t
+                \]
+                \vspace{-3mm}
+                \item \textbf{Etapa 2} --- Estimarea parametrilor de corelație $(a, b)$:
+                \vspace{-1mm}
+                \[
+                    \mathcal{L}_2(a, b) = -\frac{1}{2}\sum_{t=1}^{T}\bigl(\ln|\mathbf{R}_t| + \mathbf{u}_t'\,\mathbf{R}_t^{-1}\,\mathbf{u}_t - \mathbf{u}_t'\mathbf{u}_t\bigr)
+                \]
+                \vspace{-3mm}
+            \end{enumerate}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Proprietăți ale estimatorului}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Estimatorul QML este \textbf{consistent} chiar și sub misspecificarea distribuției condiționate
+                \item Erori standard robuste via \textbf{sandwich estimator} (Bollerslev \& Wooldridge, 1992)
+                \item Avantaj computațional: reduce dimensiunea problemei de la $O(K^2)$ la $O(K) + O(2)$
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Proprietăți și extensii DCC}
+    \quantlet{TSA\_ch5\_dcc\_extensions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_extensions}
+    \begin{cminipage}{0.95\textwidth}
+        {\small
+        \begin{block}{Pozitiv-definire}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item $\mathbf{H}_t$ este \textbf{pozitiv definită} dacă $\bar{\mathbf{Q}}$ este pozitiv definită și $a + b < 1$, $a \geq 0$, $b \geq 0$
+                \item Normalizarea prin $\mathbf{Q}_t^{*}$ garantează $\rho_{ij,t} \in [-1, 1]$
+            \end{itemize}
+        \end{block}
+        \begin{block}{DCC asimetric (Cappiello, Engle \& Sheppard, 2006)}
+            Extensie cu \textbf{termen de levier} pentru a capta creșterea corelațiilor în perioade de criză:
+            \[
+                \mathbf{Q}_t = (1-a-b)\bar{\mathbf{Q}} - g\bar{\mathbf{N}} + a\,\mathbf{u}_{t-1}\mathbf{u}_{t-1}' + b\,\mathbf{Q}_{t-1} + g\,\mathbf{n}_{t-1}\mathbf{n}_{t-1}'
+            \]
+            unde $\mathbf{n}_t = \mathbb{I}(\mathbf{u}_t < 0) \odot \mathbf{u}_t$ (componenta negativă), $\bar{\mathbf{N}} = \E[\mathbf{n}_t \mathbf{n}_t']$
+        \end{block}
+        \begin{exampleblock}{Aplicații}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{Optimizarea portofoliului}: ponderi Markowitz cu $\mathbf{H}_t$ variabilă în timp
+                \item \textbf{Risc sistemic}: corelații condiționate ca măsură de contagiune financiară
+                \item \textbf{Hedging dinamic}: rapoarte optime de acoperire $h_t^{*} = \sigma_{12,t} / \sigma_{22,t}$
+            \end{itemize}
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
+
 %=============================================================================
 \section{Utilizare IA}
 %=============================================================================
@@ -2526,7 +2700,7 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
         \vspace{-0.2cm}
         \begin{alertblock}{Sfat practic}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Începe cu GARCH(1,1), verifică leverage effect, alege distribuția care minimizează AIC/BIC!
+                \item Începe cu GARCH(1,1), verifică leverage effect, alege distribuția care minimizează AIC/BIC.
                     \begin{itemize}\setlength{\itemsep}{0pt}
                         \item Student-t adesea superior distribuției normale
                     \end{itemize}
@@ -2736,16 +2910,17 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
         {\small
         \begin{exampleblock}{Rezolvare}
             \begin{itemize}\setlength{\itemsep}{1pt}
-                \item[(a)] $\bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta} = \frac{0.05}{1 - 0.97} = 1.667$ \quad $\Rightarrow$ $\bar{\sigma} = 1.291\%$ zilnic
-                    \quad $\sigma_{\text{an}} = 1.291\% \times \sqrt{252} \approx 20.5\%$
-                \item[(b)] $HL = \frac{\ln 0.5}{\ln(\alpha + \beta)} = \frac{-0.693}{\ln(0.97)} = \frac{-0.693}{-0.0305} \approx \textbf{23 zile}$
+                \item[(a)] $\bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta} = \frac{0.05}{1 - 0.97} = 1.667$ $\Rightarrow$ $\bar{\sigma} = 1.291\%$ zilnic
+
+                    $\sigma_{\text{an}} = 1.291\% \times \sqrt{252} \approx 20.5\%$
+                \item[(b)] $HL = \frac{\ln 0.5}{\ln(\alpha + \beta)} = \frac{-0.693}{\ln(0.97)} = \frac{-0.693}{-0.0305}$ $\approx \textbf{23 zile}$
                 \item[(c)] Valoare portofoliu $V = 2{,}000{,}000$ EUR, $\sigma_{T+1} = 1.291\%$:
 
                     \textbf{Normal}: $\text{VaR}_{1\%} = 2.326 \times 0.01291 \times 2{,}000{,}000 = \textbf{60\,066}$ EUR
 
                     \textbf{Student-$t$(5)}: $t_{0.01,5} = 3.365$ scalat cu $\sqrt{(\nu-2)/\nu} = \sqrt{3/5}$:
 
-                    $\text{VaR}_{1\%} = \frac{3.365}{\sqrt{5/3}} \times 0.01291 \times 2{,}000{,}000 = \textbf{67\,300}$ EUR \quad (\textbf{+12\%} vs Normal!)
+                    $\text{VaR}_{1\%} = \frac{3.365}{\sqrt{5/3}} \times 0.01291 \times 2{,}000{,}000$ $= \textbf{67\,300}$ EUR (\textbf{+12\%} vs Normal!)
             \end{itemize}
         \end{exampleblock}
         }

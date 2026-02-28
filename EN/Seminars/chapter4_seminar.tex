@@ -1,251 +1,11 @@
-% Chapter 4: Seminar - SARIMA Models
-% Harvard-quality academic presentation
-% Bachelor program, Bucharest University of Economic Studies
+% Seminar 4: SARIMA Models
 
 \documentclass[9pt, aspectratio=169, t]{beamer}
-
-% Ensure content fits on slides
-\setbeamersize{text margin left=8mm, text margin right=8mm}
-
-%=============================================================================
-% THEME AND STYLE CONFIGURATION
-%=============================================================================
-\usetheme{default}
-% Using default theme for clean header/footer control
-
-% Color Palette (matching Redispatch PDF)
-\definecolor{MainBlue}{RGB}{26, 58, 110}
-\definecolor{AccentBlue}{RGB}{26, 58, 110}
-\definecolor{IDAred}{RGB}{205, 0, 0}
-\definecolor{DarkGray}{RGB}{51, 51, 51}
-\definecolor{MediumGray}{RGB}{128, 128, 128}
-\definecolor{LightGray}{RGB}{248, 248, 248}
-\definecolor{VeryLightGray}{RGB}{235, 235, 235}
-\definecolor{KeynoteGray}{RGB}{218, 218, 218}
-\definecolor{SectionGray}{RGB}{120, 120, 120}
-\definecolor{FooterGray}{RGB}{100, 100, 100}
-\definecolor{Crimson}{RGB}{220, 53, 69}
-\definecolor{Forest}{RGB}{46, 125, 50}
-\definecolor{Amber}{RGB}{181, 133, 63}
-\definecolor{Orange}{RGB}{230, 126, 34}
-\definecolor{Purple}{RGB}{142, 68, 173}
-
-% Gradient background (exact Keynote 315° gradient: white to RGB 218,218,218)
-\setbeamertemplate{background}{%
-    \begin{tikzpicture}[remember picture, overlay]
-        \shade[shading=axis, shading angle=315,
-        top color=white, bottom color=KeynoteGray]
-        (current page.south west) rectangle (current page.north east);
-    \end{tikzpicture}%
-}
-% Fallback solid color for compatibility
-\setbeamercolor{background canvas}{bg=}
-
-\setbeamercolor{palette primary}{bg=MainBlue, fg=white}
-\setbeamercolor{palette secondary}{bg=MainBlue!85, fg=white}
-\setbeamercolor{palette tertiary}{bg=MainBlue!70, fg=white}
-\setbeamercolor{structure}{fg=MainBlue}
-\setbeamercolor{title}{fg=IDAred}
-\setbeamercolor{frametitle}{fg=IDAred, bg=}
-\setbeamercolor{block title}{bg=MainBlue, fg=white}
-\setbeamercolor{block body}{bg=VeryLightGray, fg=DarkGray}
-\setbeamercolor{block title alerted}{bg=Crimson, fg=white}
-\setbeamercolor{block body alerted}{bg=Crimson!8, fg=DarkGray}
-\setbeamercolor{block title example}{bg=Forest, fg=white}
-\setbeamercolor{block body example}{bg=Forest!8, fg=DarkGray}
-\setbeamercolor{item}{fg=MainBlue}
-
-% Footer colors (override Madrid theme blue)
-\setbeamercolor{author in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{title in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{date in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{section in head/foot}{fg=FooterGray, bg=}
-\setbeamercolor{subsection in head/foot}{fg=FooterGray, bg=}
-
-% Bullet styles (apply everywhere including blocks)
-\setbeamertemplate{itemize item}{\color{MainBlue}$\boxdot$}
-\setbeamertemplate{itemize subitem}{\color{MainBlue}$\blacktriangleright$}
-\setbeamertemplate{itemize subsubitem}{\color{MainBlue}\tiny$\bullet$}
-\setbeamertemplate{itemize/enumerate body begin}{\normalsize}
-\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
-
-% Item spacing - compact style
-\setlength{\leftmargini}{10pt}       % Level 1: minimal indent
-\setlength{\leftmarginii}{10pt}      % Level 2: minimal additional indent
-% Compact list spacing (zero extra space before/after lists in blocks)
-\makeatletter
-\def\@listi{\leftmargin\leftmargini \topsep 0pt \parsep 0pt \itemsep 0pt}
-\def\@listii{\leftmargin\leftmarginii \topsep 0pt \parsep 0pt \itemsep 0pt}
-\makeatother
-
-\setbeamertemplate{navigation symbols}{}
-
-%=============================================================================
-% CUSTOM HEADLINE
-%=============================================================================
-\setbeamertemplate{headline}{%
-    \vskip10pt%
-    \hbox to \paperwidth{%
-        \hskip0.5cm%
-        {\small\color{FooterGray}\renewcommand{\hyperlink}[2]{##2}\insertsectionhead}%
-        \hfill%
-        \textcolor{FooterGray}{\small\insertframenumber}%
-        \hskip0.5cm%
-    }%
-    \vskip4pt%
-    {\color{FooterGray}\hrule height 0.4pt}%
-}
-
-%=============================================================================
-% CUSTOM FOOTER
-%=============================================================================
-\usepackage{fontawesome5}
-
-\setbeamertemplate{footline}{%
-    {\color{FooterGray}\hrule height 0.4pt}%
-    \vskip4pt%
-    \hbox to \paperwidth{%
-        \hskip0.5cm%
-        \textcolor{FooterGray}{\small Time Series Analysis and Forecasting}%
-        \hfill%
-        \raisebox{-0.1em}{%
-            \begin{tikzpicture}[x=0.08em, y=0.08em, line width=0.4pt]
-                \draw[FooterGray] (0,3) -- (1,4) -- (2,3.5) -- (3,5) -- (4,4) -- (5,6) -- (6,5.5) -- (7,4) -- (8,5) -- (9,7) -- (10,6) -- (11,5) -- (12,6.5) -- (13,8) -- (14,7) -- (15,6) -- (16,7.5) -- (17,9) -- (18,8) -- (19,7) -- (20,8.5) -- (21,10) -- (22,9) -- (23,8) -- (24,9.5);
-            \end{tikzpicture}%
-        }%
-        \hskip0.5cm%
-    }%
-    \vskip6pt%
-}
-
-%=============================================================================
-% PACKAGES
-%=============================================================================
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[english]{babel}
-\usepackage{amsmath, amssymb, amsthm}
-\usepackage{mathtools}
-\usepackage{bm}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes, calc, decorations.pathreplacing, shadings}
-\usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{array}
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{colortbl}
-\hypersetup{colorlinks=true, linkcolor=MainBlue, urlcolor=MainBlue}
-\graphicspath{{../../logos/}{../../charts/}}
-\hfuzz=2pt  % Suppress tiny overfull warnings (<2pt)
-\vfuzz=2pt  % Suppress tiny vertical overfull warnings (<2pt)
-
-%=============================================================================
-% QUANTLET COMMAND
-%=============================================================================
-\newcommand{\quantlet}[2]{%
-    \hfill\href{#2}{%
-        \raisebox{-0.15em}{\includegraphics[height=0.7em]{ql_logo.png}}%
-        \textcolor{MainBlue}{\tiny\ #1}%
-    }%
-}
-
-%=============================================================================
-% THEOREM ENVIRONMENTS
-%=============================================================================
-\theoremstyle{definition}
-\setbeamertemplate{theorems}[numbered]
-\newtheorem{defn}{Definition}
-\newtheorem{thm}{Theorem}
-\newtheorem{prop}{Proposition}
-\newtheorem{rmk}{Remark}
-
-%=============================================================================
-% CUSTOM COMMANDS
-%=============================================================================
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\text{Var}}
-\newcommand{\Cov}{\text{Cov}}
-\newcommand{\Corr}{\text{Corr}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\RMSE}{\text{RMSE}}
-\newcommand{\MAE}{\text{MAE}}
-\newcommand{\MAPE}{\text{MAPE}}
-
-% Quiz styling
-\newcommand{\correct}{\textcolor{Forest}{\checkmark}}
-\newcommand{\incorrect}{\textcolor{Crimson}{\texttimes}}
-
-%=============================================================================
-% CUSTOM TITLE PAGE
-%=============================================================================
-\defbeamertemplate*{title page}{hybrid}[1][]
-{
-    \vspace{0.2cm}
-    % Logos row - top header (with clickable links)
-    \begin{center}
-        \href{https://www.ase.ro}{\includegraphics[height=1.0cm]{ase_logo.png}}\hspace{0.3cm}%
-        \href{https://theida.net}{\includegraphics[height=1.0cm]{ida_logo.png}}\hspace{0.3cm}%
-        \href{https://blockchain-research-center.com}{\includegraphics[height=1.0cm]{brc_logo.png}}\hspace{0.3cm}%
-        \href{https://www.ai4efin.ase.ro}{\includegraphics[height=1.0cm]{ai4efin_logo.png}}\hspace{0.3cm}%
-        \href{https://ipe.ro/new}{\includegraphics[height=1.0cm]{acad_logo.png}}\hspace{0.3cm}%
-        \href{https://www.digital-finance-msca.com}{\includegraphics[height=1.0cm]{msca_logo.png}}%
-    \end{center}
-
-    \vspace{0.6cm}
-
-    % Main title with Q logos on sides (with clickable links)
-    \begin{center}
-        \begin{minipage}{0.1\textwidth}
-            \centering
-            \href{https://quantlet.com}{\includegraphics[height=1.1cm]{ql_logo.png}}
-        \end{minipage}%
-        \begin{minipage}{0.78\textwidth}
-            \centering
-            {\LARGE\bfseries\usebeamercolor[fg]{title}\inserttitle}
-
-            \vspace{0.3cm}
-
-            {\usebeamerfont{subtitle}\usebeamercolor[fg]{title}\insertsubtitle}
-        \end{minipage}%
-        \begin{minipage}{0.1\textwidth}
-            \centering
-            \href{https://quantinar.com}{\includegraphics[height=1.1cm]{qr_logo.png}}
-        \end{minipage}
-    \end{center}
-
-    \vspace{0.6cm}
-
-    % Authors (left aligned)
-    \hspace{0.5cm}{\usebeamerfont{author}\insertauthor}
-
-    \vspace{0.3cm}
-
-    % Institute/Affiliations (left aligned)
-    \hspace{0.5cm}\begin{minipage}[t]{0.9\textwidth}
-        \raggedright\small\insertinstitute
-    \end{minipage}
-}
-
-%=============================================================================
-% TITLE INFORMATION
-%=============================================================================
-\title[Time Series Analysis]{Time Series Analysis and Forecasting}
+\input{preamble}
 \subtitle{Seminar 4: SARIMA Models}
-\author[D.T. Pele]{Daniel Traian PELE}
-\institute{Bucharest University of Economic Studies\\
-IDA Institute Digital Assets\\
-Blockchain Research Center\\
-AI4EFin -- Artificial Intelligence for Energy Finance\\
-Romanian Academy, Institute for Economic Forecasting\\
-MSCA Digital Finance}
-\date{}
 
 \begin{document}
 
-% Title page (no header/footer)
 {
 \setbeamertemplate{headline}{}
 \setbeamertemplate{footline}{}
@@ -254,466 +14,648 @@ MSCA Digital Finance}
 \end{frame}
 }
 
-%=============================================================================
-% SEMINAR OUTLINE
-%=============================================================================
-\section{Overview}
 
 \begin{frame}{Seminar Outline}
-    \textbf{\large Today's Activities:}
-
-    \vspace{0.4cm}
-
-    \begin{enumerate}
-        \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Review Quiz} --- Checking understanding of SARIMA concepts
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}
+        \item \textbf{Multiple Choice Quiz} -- Knowledge check
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{True/False Questions} --- Conceptual checks
+        \item \textbf{True/False} -- Conceptual checks
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Practice Problems} --- Calculations with SARIMA
+        \item \textbf{Calculation Exercises} -- Applied practice
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Worked Examples} --- Real-world applications
+        \item \textbf{Worked Examples} -- Real-world applications
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Real Data Analysis} --- Case study with airline data
+        \item \textbf{Real Data Analysis} -- Case study with airline data
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Discussion Topics} --- Practical applications
+        \item \textbf{AI-Assisted Exercise} -- Critical thinking
         \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Summary} --- Key takeaways
-        \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{8.}}] \textbf{AI-Assisted Exercises} --- Human vs.\ AI modeling
-        \vspace{0.15cm}
-        \item[\textcolor{MainBlue}{\textbf{9.}}] \textbf{Key Formulas} --- Essential SARIMA formulas
-    \end{enumerate}
+        \item \textbf{Summary} -- Key takeaways
+    \end{itemize}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-% SECTION 1: REVIEW QUIZ
+% MULTIPLE CHOICE QUIZ
 %=============================================================================
-\section{Review Quiz}
+\section{Multiple Choice Quiz}
 
 \begin{frame}{Quiz 1: Seasonal Differencing}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For monthly data with annual seasonality, what does the operator $(1-L^{12})$ do?
     \end{alertblock}
 
-    \vspace{0.15cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Takes 12 consecutive differences
-        \item Computes $Y_t - Y_{t-12}$
-        \item Averages over 12 months
-        \item Removes the first 12 observations
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Takes 12 consecutive differences\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Computes $Y_t - Y_{t-12}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Averages over 12 months\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Removes the first 12 observations
+    \end{block}
 
-    \vspace{0.2cm}
-    \pause
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 1: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Computes $Y_t - Y_{t-12}$}
-        {\small
-        \textbf{Seasonal difference operator}:
-        \vspace{-0.3cm}
-        \[
-        (1-L^{12})Y_t = Y_t - L^{12}Y_t = Y_t - Y_{t-12}
-        \]
-        \vspace{-0.3cm}
+        \textbf{Question:} What does the operator $(1-L^{12})$ do?
 
-        \textbf{Example} (January sales): $Y_{Jan2025} - Y_{Jan2024}$
+        \vspace{0.3cm}
 
-        \textbf{Effect}: Removes stable annual seasonal pattern
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Takes 12 consecutive differences \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Computes $Y_t - Y_{t-12}$}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Averages over 12 months \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Removes the first 12 observations \incorrect
+    \end{block}
 
-        \textbf{Note}: $(1-L^s)$ for any seasonal period $s$ (quarterly: $s=4$, weekly: $s=52$)
-        }
+        \vspace{0.3cm}
+
+        \begin{itemize}
+            \item \textbf{Seasonal difference operator}: $(1-L^{12})Y_t = Y_t - L^{12}Y_t = Y_t - Y_{t-12}$
+            \item \textbf{Example} (January sales): $Y_{Jan2025} - Y_{Jan2024}$
+            \item \textbf{Effect}: Removes stable annual seasonal pattern
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_seasonal\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonal_diff}
 \end{frame}
 
 \begin{frame}{Visual: Seasonal Difference}
+    \begin{cminipage}{0.95\textwidth}
     \begin{center}
         \includegraphics[width=0.92\textwidth, height=0.65\textheight, keepaspectratio]{ch4_def_seasonal_diff.pdf}
     \end{center}
     \vspace{-0.2cm}
     \small Seasonal differencing removes annual patterns by comparing same periods across years.
+
+    \end{cminipage}
     \quantlet{TSA\_ch4\_def\_seasonal\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonal_diff}
 \end{frame}
 
 \begin{frame}{Quiz 2: SARIMA Notation}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         What does SARIMA$(1,1,1) \times (1,1,1)_{12}$ represent?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item 12 different ARIMA models
-        \item ARIMA with 12 AR and 12 MA terms
-        \item ARIMA(1,1,1) with seasonal ARIMA(1,1,1) at period 12
-        \item A model requiring 12 years of data
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} 12 different ARIMA models\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} ARIMA with 12 AR and 12 MA terms\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} ARIMA(1,1,1) with seasonal ARIMA(1,1,1) at period 12\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} A model requiring 12 years of data
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 2: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: C -- ARIMA(1,1,1) with seasonal ARIMA(1,1,1) at period 12}
+        \vspace{-0.2cm}
         \begin{center}
-            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{sem4_sarima_notation.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{sem4_sarima_notation.pdf}
         \end{center}
-        $(1-\phi_1 L)(1-\Phi_1 L^{12})(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $(1-\phi_1 L)(1-\Phi_1 L^{12})(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
+        \end{itemize}
+        }
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Visual: SARIMA Model Structure}
+    \begin{cminipage}{0.95\textwidth}
     \begin{center}
         \includegraphics[width=0.92\textwidth, height=0.65\textheight, keepaspectratio]{ch4_def_sarima.pdf}
     \end{center}
     \vspace{-0.2cm}
     \small SARIMA combines regular ARIMA components with seasonal components at lag $s$.
+
+    \end{cminipage}
     \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 3: The Airline Model}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         The ``airline model'' refers to SARIMA$(0,1,1) \times (0,1,1)_{12}$. How many parameters does it have (excluding variance)?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item 2 parameters
-        \item 4 parameters
-        \item 6 parameters
-        \item 12 parameters
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} 2 parameters\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} 4 parameters\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} 6 parameters\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} 12 parameters
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 3: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: A -- 2 parameters ($\theta_1$ and $\Theta_1$)}
+        \vspace{-0.2cm}
         \begin{center}
-            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{sem4_airline_model.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{sem4_airline_model.pdf}
         \end{center}
-        \textbf{Airline model}: $(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
-
-        Remarkably fits many seasonal economic series (Box \& Jenkins, 1970)
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Airline model}: $(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
+            \item Remarkably fits many seasonal economic series (Box \& Jenkins, 1970)
+        \end{itemize}
+        }
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 4: ACF of Seasonal Data}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For monthly data with strong seasonality, where would you expect to see significant ACF spikes?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Only at lag 1
-        \item Only at lag 12
-        \item At lags 12, 24, 36, ...
-        \item Randomly distributed
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Only at lag 1\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Only at lag 12\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} At lags 12, 24, 36, ...\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Randomly distributed
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 4: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: C -- At lags 12, 24, 36, ...}
-        {\small
-        \textbf{Intuition}: January 2024 is similar to January 2023, 2022, etc.
-
-        \textbf{ACF pattern}: Spikes at lags $s, 2s, 3s, \ldots$ ($\rho_{12}, \rho_{24}, \rho_{36} \neq 0$)
-
-        \textbf{Diagnostic}: Slow decay at seasonal lags $\Rightarrow$ $D=1$; Cutoff after lag $s$ $\Rightarrow$ $Q=1$
-        }
+        \begin{itemize}
+            \item \textbf{Intuition}: January 2024 is similar to January 2023, 2022, etc.
+            \item \textbf{ACF pattern}: Spikes at lags $s, 2s, 3s, \ldots$ ($\rho_{12}, \rho_{24}, \rho_{36} \neq 0$)
+            \item \textbf{Diagnostic}: Slow decay at seasonal lags $\Rightarrow$ $D=1$; Cutoff after lag $s$ $\Rightarrow$ $Q=1$
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonality}
 \end{frame}
 
 \begin{frame}{Visual: Seasonality Patterns}
+    \begin{cminipage}{0.95\textwidth}
     \begin{center}
         \includegraphics[width=0.92\textwidth, height=0.65\textheight, keepaspectratio]{ch4_def_seasonality.pdf}
     \end{center}
     \vspace{-0.2cm}
     \small Seasonal patterns repeat at regular intervals (monthly, quarterly, etc.) and may be additive or multiplicative.
+
+    \end{cminipage}
     \quantlet{TSA\_ch4\_def\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonality}
 \end{frame}
 
 \begin{frame}{Quiz 5: Multiplicative Structure}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         In SARIMA, what does ``multiplicative structure'' mean?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item The seasonal amplitude grows proportionally
-        \item Regular and seasonal polynomials are multiplied
-        \item We multiply the data by seasonal factors
-        \item The model is estimated using multiplication
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} The seasonal amplitude grows proportionally\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Regular and seasonal polynomials are multiplied\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} We multiply the data by seasonal factors\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} The model is estimated using multiplication
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 5: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Regular and seasonal polynomials are multiplied}
-        {\small
-        \textbf{Multiplicative SARIMA}: $\phi(L)\Phi(L^s)(1-L)^d(1-L^s)^D Y_t = \theta(L)\Theta(L^s)\varepsilon_t$
-
-        \textbf{Example}: $(1-\phi_1 L)(1-\Phi_1 L^{12}) = 1 - \phi_1 L - \Phi_1 L^{12} + \phi_1\Phi_1 L^{13}$
-
-        \textbf{Cross-term} $\phi_1\Phi_1 L^{13}$: Captures interaction between short and long dynamics
-        }
+        \begin{itemize}
+            \item \textbf{Multiplicative SARIMA}: $\phi(L)\Phi(L^s)(1-L)^d(1-L^s)^D Y_t = \theta(L)\Theta(L^s)\varepsilon_t$
+            \item \textbf{Example}: $(1-\phi_1 L)(1-\Phi_1 L^{12}) = 1 - \phi_1 L - \Phi_1 L^{12} + \phi_1\Phi_1 L^{13}$
+            \item \textbf{Cross-term} $\phi_1\Phi_1 L^{13}$: Captures interaction between short and long dynamics
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 6: Seasonal vs Regular Differencing}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         When would you apply both regular ($d=1$) and seasonal ($D=1$) differencing?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item When data has only a trend
-        \item When data has only seasonality
-        \item When data has both trend and seasonal non-stationarity
-        \item Never -- they cancel each other
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} When data has only a trend\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} When data has only seasonality\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} When data has both trend and seasonal non-stationarity\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Never -- they cancel each other
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 6: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: C -- Both trend and seasonal non-stationarity}
-        {\small
-        \textbf{Combined}: $W_t = (1-L)(1-L^{12})Y_t = Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13}$
-
-        \textbf{When needed}: ACF slow decay at lags 1,2,3... $\Rightarrow d=1$; at lags 12,24,36... $\Rightarrow D=1$
-
-        \textbf{Examples}: Airline passengers, retail sales, energy demand
-        }
+        \begin{itemize}
+            \item \textbf{Combined}: $W_t = (1-L)(1-L^{12})Y_t = Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13}$
+            \item \textbf{When needed}: ACF slow decay at lags 1,2,3... $\Rightarrow d=1$; at lags 12,24,36... $\Rightarrow D=1$
+            \item \textbf{Examples}: Airline passengers, retail sales, energy demand
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_seasonal\_diff}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonal_diff}
 \end{frame}
 
 \begin{frame}{Quiz 7: Detecting Seasonality from ACF}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         The ACF of a monthly time series shows slow decay at lags 12, 24, and 36. What does this suggest?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item The series is stationary
-        \item The series needs regular differencing only
-        \item The series has a seasonal unit root requiring $D=1$
-        \item The series is white noise
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} The series is stationary\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} The series needs regular differencing only\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} The series has a seasonal unit root requiring $D=1$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} The series is white noise
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 7: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: C -- Seasonal unit root requiring $D=1$}
+        \vspace{-0.2cm}
         \begin{center}
-            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{sem4_seasonal_acf.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{sem4_seasonal_acf.pdf}
         \end{center}
-        \textbf{Left}: Stationary seasonal (fast decay at seasonal lags)
-
-        \textbf{Right}: Seasonal unit root (slow decay $\Rightarrow$ need $D=1$)
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Left}: Stationary seasonal (fast decay at seasonal lags)
+            \item \textbf{Right}: Seasonal unit root (slow decay $\Rightarrow$ need $D=1$)
+        \end{itemize}
+        }
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonality}
 \end{frame}
 
 \begin{frame}{Quiz 8: Multiplicative vs Additive Seasonality}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         If the seasonal amplitude of a time series grows proportionally with the level, this indicates:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Additive seasonality -- use $(1-L^s)$
-        \item Multiplicative seasonality -- use $\log$ transformation
-        \item No seasonality present
-        \item Need for regular differencing only
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Additive seasonality -- use $(1-L^s)$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Multiplicative seasonality -- use $\log$ transformation\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} No seasonality present\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Need for regular differencing only
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Quiz 8: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Multiplicative seasonality, use $\log$ transformation}
+        \vspace{-0.2cm}
         \begin{center}
-            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{sem4_mult_add.pdf}
+            \includegraphics[width=0.95\textwidth, height=0.52\textheight, keepaspectratio]{sem4_mult_add.pdf}
         \end{center}
-        \textbf{Multiplicative}: Seasonal amplitude grows with level (diverging lines)
-
-        \textbf{Solution}: Apply $\log$ transformation before fitting SARIMA
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Multiplicative}: Seasonal amplitude grows with level (diverging lines)
+            \item \textbf{Solution}: Apply $\log$ transformation before fitting SARIMA
+        \end{itemize}
+        }
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonality}
 \end{frame}
 
 \begin{frame}{Quiz 9: Seasonal Subseries Plot}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         In a seasonal subseries plot, what indicates multiplicative seasonality?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Lines for each month are parallel
-        \item Lines for each month diverge (spread increases over time)
-        \item All months have the same mean
-        \item Lines are horizontal
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Lines for each month are parallel\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Lines for each month diverge (spread increases over time)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} All months have the same mean\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Lines are horizontal
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 9: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Lines diverge (spread increases over time)}
-        {\small
-        \textbf{Subseries plot}: Groups data by month, plots each month's values across years
-
-        \textbf{Parallel} $\Rightarrow$ Additive; \textbf{Diverging} $\Rightarrow$ Multiplicative; \textbf{Horizontal} $\Rightarrow$ No trend
-
-        \textbf{Action}: If multiplicative, apply $\log$ before fitting SARIMA
-        }
+        \begin{itemize}
+            \item \textbf{Subseries plot}: Groups data by month, plots each month's values across years
+            \item \textbf{Parallel} $\Rightarrow$ Additive; \textbf{Diverging} $\Rightarrow$ Multiplicative; \textbf{Horizontal} $\Rightarrow$ No trend
+            \item \textbf{Action}: If multiplicative, apply $\log$ before fitting SARIMA
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonality}
 \end{frame}
 
 \begin{frame}{Quiz 10: Invertibility in SARIMA}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For SARIMA$(0,1,1) \times (0,1,1)_{12}$ to be invertible, which condition must hold?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item $|\theta_1| < 1$ only
-        \item $|\Theta_1| < 1$ only
-        \item Both $|\theta_1| < 1$ and $|\Theta_1| < 1$
-        \item No invertibility condition exists for MA models
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} $|\theta_1| < 1$ only\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $|\Theta_1| < 1$ only\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Both $|\theta_1| < 1$ and $|\Theta_1| < 1$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} No invertibility condition exists for MA models
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 10: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: C -- Both $|\theta_1| < 1$ and $|\Theta_1| < 1$}
-        {\small
-        \textbf{Invertibility}: All MA roots outside unit circle
-
-        \textbf{Multiplicative MA}: $(1+\theta_1 L)(1+\Theta_1 L^{12})$
-
-        \textbf{Roots}: Regular $|z| = |{-1}/{\theta_1}| > 1 \Leftrightarrow |\theta_1| < 1$; Seasonal $|\Theta_1| < 1$
-
-        \textbf{Both} conditions required for overall invertibility!
-        }
+        \begin{itemize}
+            \item \textbf{Invertibility}: All MA roots outside unit circle
+            \item \textbf{Multiplicative MA}: $(1+\theta_1 L)(1+\Theta_1 L^{12})$
+            \item \textbf{Roots}: Regular $|z| = |{-1}/{\theta_1}| > 1 \Leftrightarrow |\theta_1| < 1$; Seasonal $|\Theta_1| < 1$
+            \item \textbf{Both} conditions required for overall invertibility!
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 11: HEGY Test}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         The HEGY test is used to:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Estimate SARIMA parameters
-        \item Test for unit roots at different frequencies (trend and seasonal)
-        \item Check residual normality
-        \item Compare SARIMA models using information criteria
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Estimate SARIMA parameters\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Test for unit roots at different frequencies (trend and seasonal)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Check residual normality\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Compare SARIMA models using information criteria
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 11: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Test for unit roots at different frequencies}
-        {\small
-        \textbf{HEGY test} (Hylleberg-Engle-Granger-Yoo, 1990):
-
-        Tests at: Zero freq ($\omega = 0$) $\Rightarrow d = 1$; Nyquist ($\omega = \pi$); Seasonal $\Rightarrow D = 1$
-
-        \textbf{Decision}: Reject all $\Rightarrow$ seasonal dummies; Don't reject seasonal $\Rightarrow$ seasonal differencing
-        }
+        \begin{itemize}
+            \item \textbf{HEGY test} (Hylleberg-Engle-Granger-Yoo, 1990)
+            \item Tests at: Zero freq ($\omega = 0$) $\Rightarrow d = 1$; Nyquist ($\omega = \pi$); Seasonal $\Rightarrow D = 1$
+            \item \textbf{Decision}: Reject all $\Rightarrow$ seasonal dummies; Don't reject seasonal $\Rightarrow$ seasonal differencing
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 12: Seasonal MA Identification}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         After applying $(1-L)(1-L^{12})$, the ACF shows a single significant spike at lag 12 only (no spike at lag 1). The PACF decays at seasonal lags. This suggests:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item SARIMA$(0,1,0) \times (0,1,1)_{12}$
-        \item SARIMA$(0,1,1) \times (0,1,0)_{12}$
-        \item SARIMA$(1,1,0) \times (1,1,0)_{12}$
-        \item SARIMA$(0,1,1) \times (0,1,1)_{12}$
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} SARIMA$(0,1,0) \times (0,1,1)_{12}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} SARIMA$(0,1,1) \times (0,1,0)_{12}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} SARIMA$(1,1,0) \times (1,1,0)_{12}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} SARIMA$(0,1,1) \times (0,1,1)_{12}$
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 12: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: A -- SARIMA$(0,1,0) \times (0,1,1)_{12}$}
-        {\small
-        \textbf{Pattern}: Regular lags -- no spikes in ACF/PACF; Seasonal lags -- ACF cuts off at $s$, PACF decays
-
-        \textbf{Interpretation}: No regular MA ($q = 0$); Seasonal MA(1) indicated ($Q = 1$)
-
-        \textbf{Model}: $(1-L)(1-L^{12})Y_t = (1 + \Theta_1 L^{12})\varepsilon_t$
-        }
+        \begin{itemize}
+            \item \textbf{Pattern}: Regular lags -- no spikes in ACF/PACF; Seasonal lags -- ACF cuts off at $s$, PACF decays
+            \item \textbf{Interpretation}: No regular MA ($q = 0$); Seasonal MA(1) indicated ($Q = 1$)
+            \item \textbf{Model}: $(1-L)(1-L^{12})Y_t = (1 + \Theta_1 L^{12})\varepsilon_t$
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 13: Over-differencing}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         After differencing, the ACF shows a large negative spike at lag 1 or lag $s$. This typically indicates:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item The model needs more AR terms
-        \item The series has been over-differenced
-        \item The series is perfectly stationary
-        \item Heteroskedasticity is present
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} The model needs more AR terms\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} The series has been over-differenced\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} The series is perfectly stationary\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Heteroskedasticity is present
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 13: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- The series has been over-differenced}
-        {\small
-        \textbf{Signature}: ACF at lag 1 $\approx -0.5$ $\Rightarrow$ over-diff at $d$; ACF at lag $s$ $\approx -0.5$ $\Rightarrow$ over-diff at $D$
-
-        \textbf{Why?} $\Delta^2 Y_t = \varepsilon_t - \varepsilon_{t-1}$ is MA(1) with $\theta = -1$, giving $\rho_1 = -0.5$
-
-        \textbf{Fix}: Reduce $d$ or $D$ by one and re-examine ACF/PACF
-        }
+        \begin{itemize}
+            \item \textbf{Signature}: ACF at lag 1 $\approx -0.5$ $\Rightarrow$ over-diff at $d$; ACF at lag $s$ $\approx -0.5$ $\Rightarrow$ over-diff at $D$
+            \item \textbf{Why?} $\Delta^2 Y_t = \varepsilon_t - \varepsilon_{t-1}$ is MA(1) with $\theta = -1$, giving $\rho_1 = -0.5$
+            \item \textbf{Fix}: Reduce $d$ or $D$ by one and re-examine ACF/PACF
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 14: Forecasting Horizon}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         For a SARIMA model with $D=1$, what happens to forecast confidence intervals as the horizon $h \to \infty$?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item They converge to a fixed width
-        \item They grow without bound
-        \item They shrink to zero
-        \item They oscillate seasonally
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} They converge to a fixed width\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} They grow without bound\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} They shrink to zero\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} They oscillate seasonally
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 14: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- They grow without bound}
-        {\small
-        \textbf{Unit root property}: Any unit root causes unbounded forecast variance
-
-        \textbf{For SARIMA with $D=1$}: $\Var(\hat{Y}_{T+h} - Y_{T+h}) \to \infty$ as $h \to \infty$
-
-        \textbf{Intuition}: Seasonal shocks accumulate; long-range forecasts have wide CIs
-        }
+        \begin{itemize}
+            \item \textbf{Unit root property}: Any unit root causes unbounded forecast variance
+            \item \textbf{For SARIMA with $D=1$}: $\Var(\hat{Y}_{T+h} - Y_{T+h}) \to \infty$ as $h \to \infty$
+            \item \textbf{Intuition}: Seasonal shocks accumulate; long-range forecasts have wide CIs
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_sarima\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_sarima_forecast}
 \end{frame}
 
 \begin{frame}{Quiz 15: Seasonal Period Selection}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         You have daily data showing clear weekly patterns. What seasonal period $s$ should you use in a SARIMA model?
     \end{alertblock}
 
-    \vspace{0.15cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item $s = 12$ (monthly)
-        \item $s = 7$ (weekly)
-        \item $s = 365$ (yearly)
-        \item $s = 24$ (hourly)
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} $s = 12$ (monthly)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $s = 7$ (weekly)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} $s = 365$ (yearly)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $s = 24$ (hourly)
+    \end{block}
 
-    \vspace{0.2cm}
-    \pause
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 15: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- $s = 7$ (weekly)}
         {\small
         \begin{center}
@@ -726,199 +668,260 @@ MSCA Digital Finance}
         \end{tabular}
         \end{center}
         \vspace{-0.1cm}
-        \textbf{Rule}: $s$ = observations per cycle of dominant pattern
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Rule}: $s$ = observations per cycle of dominant pattern
+        \end{itemize}
         }
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_seasonality}
 \end{frame}
 
 \begin{frame}{Quiz 16: Seasonal AR Component}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         In the seasonal component $\Phi(L^s) = 1 - \Phi_1 L^s$, what does the coefficient $\Phi_1 = 0.8$ tell us?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item 80\% of this period's value comes from the previous period
-        \item There is 80\% correlation between consecutive observations
-        \item 80\% of this period's value is explained by the same period last year
-        \item The seasonal pattern explains 80\% of variance
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} 80\% of this period's value comes from the previous period\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} There is 80\% correlation between consecutive observations\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Strong seasonal persistence: the conditional expectation depends on 80\% of last year's same-period value\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} The seasonal pattern explains 80\% of variance
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
-    \begin{exampleblock}{Answer: C -- 80\% explained by same period last year}
-        {\small
-        \textbf{SAR(1)}: $Y_t = \Phi_1 Y_{t-12} + \varepsilon_t$
 
-        \textbf{With $\Phi_1 = 0.8$}: $Y_{Jan2024} = 0.8 \cdot Y_{Jan2023} + \varepsilon_t$
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
 
-        \textbf{Interpretation}: Strong seasonal persistence -- 80\% explained by same month last year
-
-        \textbf{Stationarity}: Requires $|\Phi_1| < 1$ (satisfied here)
-        }
+\begin{frame}{Quiz 16: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Answer: C -- Strong seasonal persistence ($\Phi_1 = 0.8$)}
+        \begin{itemize}
+            \item \textbf{SAR(1)}: $Y_t = \Phi_1 Y_{t-12} + \varepsilon_t$
+            \item \textbf{With $\Phi_1 = 0.8$}: $Y_{Jan2024} = 0.8 \cdot Y_{Jan2023} + \varepsilon_t$
+            \item \textbf{Interpretation}: There is strong linear dependence ($\Phi_1 = 0.8$) on the same period last year. Note: $\Phi_1$ is a regression coefficient, not $R^2$; the explained variance would be $\Phi_1^2 = 0.64$
+            \item \textbf{Stationarity}: Requires $|\Phi_1| < 1$ (satisfied here)
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 17: Seasonal Stationarity}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         A seasonal process with $\Phi_1 = 1$ in SARIMA$(0,0,0) \times (1,0,0)_{12}$ is:
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Stationary
-        \item Has a seasonal unit root (seasonally integrated)
-        \item Explosive
-        \item Undefined
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Stationary\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Has a seasonal unit root (seasonally integrated)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Explosive\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Undefined
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 17: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- Has a seasonal unit root}
-        {\small
-        \textbf{Model}: $Y_t = Y_{t-12} + \varepsilon_t$ (seasonal random walk)
-
-        \textbf{Properties}: Variance grows with time; each month follows its own RW; need $D = 1$
-
-        \textbf{Analogy}: Like regular random walk but at seasonal frequency
-        }
+        \begin{itemize}
+            \item \textbf{Model}: $Y_t = Y_{t-12} + \varepsilon_t$ (seasonal random walk)
+            \item \textbf{Properties}: Variance grows with time; each month follows its own RW; need $D = 1$
+            \item \textbf{Analogy}: Like regular random walk but at seasonal frequency
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 18: Model Comparison}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         Model A: SARIMA$(1,1,1) \times (1,1,1)_{12}$ has AIC = 520. Model B: SARIMA$(0,1,1) \times (0,1,1)_{12}$ has AIC = 525. Which statement is most accurate?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Model A is always better since it has lower AIC
-        \item Model B should be preferred due to parsimony despite higher AIC
-        \item The AIC difference of 5 suggests Model A is substantially better
-        \item We cannot compare models with different orders
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Model A is always better since it has lower AIC\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Model B should be preferred due to parsimony despite higher AIC\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} The AIC difference of 5 suggests Model A is substantially better\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} We cannot compare models with different orders
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 18: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: C -- AIC difference of 5 suggests Model A is substantially better}
-        {\small
-        \textbf{Rule of thumb}: $\Delta$AIC $< 2$: equivalent; $2$--$10$: some evidence; $> 10$: strong evidence
-
-        \textbf{Here}: $\Delta$AIC $= 5$ suggests Model A meaningfully better
-
-        \textbf{Always}: Also check residual diagnostics and forecast performance!
-        }
+        \begin{itemize}
+            \item \textbf{Rule of thumb}: $\Delta$AIC $< 2$: equivalent; $2$--$10$: some evidence; $> 10$: strong evidence
+            \item \textbf{Here}: $\Delta$AIC $= 5$ suggests Model A meaningfully better
+            \item \textbf{Always}: Also check residual diagnostics and forecast performance!
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_def\_sarima}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_def_sarima}
 \end{frame}
 
 \begin{frame}{Quiz 19: Seasonal Patterns in Residuals}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         After fitting a SARIMA model, you notice significant ACF spikes at lags 12 and 24 in the residuals. What does this indicate?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item The model is correctly specified
-        \item The seasonal component is inadequate
-        \item The data is not seasonal
-        \item Overfitting has occurred
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} The model is correctly specified\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} The seasonal component is inadequate\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} The data is not seasonal\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Overfitting has occurred
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 19: Answer}
+    \begin{cminipage}{0.95\textwidth}
     \begin{exampleblock}{Answer: B -- The seasonal component is inadequate}
-        {\small
-        \textbf{Diagnostics}: Good residuals should be white noise (no significant ACF)
-
-        \textbf{Seasonal ACF in residuals}: Model hasn't captured seasonal structure; try increasing $P$ or $Q$; verify $D$ is correct
-
-        \textbf{Action}: Try SARIMA with higher seasonal order, check Ljung-Box at seasonal lags
-        }
+        \begin{itemize}
+            \item \textbf{Diagnostics}: Good residuals should be white noise (no significant ACF)
+            \item \textbf{Seasonal ACF in residuals}: Model hasn't captured seasonal structure; try increasing $P$ or $Q$; verify $D$ is correct
+            \item \textbf{Action}: Try SARIMA with higher seasonal order, check Ljung-Box at seasonal lags
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_diagnostics}
 \end{frame}
 
 \begin{frame}{Quiz 20: Practical Forecasting}
+    \begin{cminipage}{0.95\textwidth}
     \begin{alertblock}{Question}
         You're forecasting monthly retail sales with SARIMA$(0,1,1) \times (0,1,1)_{12}$. For the 13-month-ahead forecast, which historical observations are most influential?
     \end{alertblock}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
-    \begin{enumerate}[A)]
-        \item Only the most recent observation
-        \item The observation from the same month last year
-        \item All observations equally
-        \item Only observations from the same month in all previous years
-    \end{enumerate}
+    \begin{block}{Answer choices}
+        \textcolor{MainBlue}{\textbf{(A)}} Only the most recent observation\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} The observation from the same month last year\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} All observations equally\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Only observations from the same month in all previous years
+    \end{block}
 
     \vspace{0.5cm}
-    \pause
-    \begin{exampleblock}{Answer: B -- The observation from the same month last year}
-        {\small
-        \textbf{For 13-month ahead}: Most influential is $Y_{T-11}$ (same month last year), also $Y_T$ and $Y_{T-12}$
 
-        \textbf{Intuition}: ``Next January looks like last January, adjusted for recent trend''
-        }
-    \end{exampleblock}
-\end{frame}
-
-%=============================================================================
-% TRUE/FALSE QUESTIONS
-%=============================================================================
-\section{True/False Questions}
-
-\begin{frame}{True/False Questions (1-6)}
-    \begin{alertblock}{Question}
-        Determine whether each statement is True or False:
-    \end{alertblock}
-
-    \vspace{0.3cm}
-    {\small
-    \begin{enumerate}
-        \item The seasonal period $s$ for quarterly data with annual patterns is $s=4$.
-        \item SARIMA models can only handle one seasonal frequency.
-        \item If AIC selects SARIMA$(1,1,1) \times (1,1,1)_{12}$ and BIC selects the airline model, BIC is always wrong.
-        \item The Kruskal-Wallis test can detect seasonality without assuming normality.
-        \item After fitting a SARIMA model, residuals should show no significant ACF at seasonal lags.
-        \item Log transformation converts multiplicative seasonality to additive.
-    \end{enumerate}
-    }
-
-    \vspace{0.3cm}
     \begin{center}
         \textit{Answer on next slide...}
     \end{center}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{True/False Solutions (1-6)}
-    \begin{exampleblock}{Answers}
-    \begin{enumerate}
-        \item \textcolor{Forest}{\textbf{TRUE}}: Quarterly data with annual cycle has $s=4$ quarters per year.
-        \item \textcolor{Forest}{\textbf{TRUE}}: Standard SARIMA handles one $s$; multiple seasonalities need TBATS or Fourier terms.
-        \item \textcolor{Crimson}{\textbf{FALSE}}: BIC penalizes complexity more; simpler model may be better for interpretation/forecasting.
-        \item \textcolor{Forest}{\textbf{TRUE}}: Kruskal-Wallis is nonparametric, comparing distributions across seasons.
-        \item \textcolor{Forest}{\textbf{TRUE}}: Residual ACF should be within confidence bands at ALL lags including seasonal.
-        \item \textcolor{Forest}{\textbf{TRUE}}: $\log(T \times S \times \varepsilon) = \log T + \log S + \log \varepsilon$ (additive form).
-    \end{enumerate}
+\begin{frame}{Quiz 20: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Answer: B -- The observation from the same month last year}
+        \begin{itemize}
+            \item \textbf{For 13-month ahead}: Most influential is $Y_{T-11}$ (same month last year), also $Y_T$ and $Y_{T-12}$
+            \item \textbf{Intuition}: ``Next January looks like last January, adjusted for recent trend''
+        \end{itemize}
     \end{exampleblock}
+
+    \end{cminipage}
+    \quantlet{TSA\_ch4\_sarima\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_sarima_forecast}
 \end{frame}
 
 %=============================================================================
-% SECTION 2: PRACTICE PROBLEMS
+% TRUE/FALSE
 %=============================================================================
-\section{Practice Problems}
+\section{True/False}
 
-\begin{frame}{Problem 1: Expanding the Seasonal Difference}
-    \begin{block}{Exercise}
-        Expand $(1-L)(1-L^{12})Y_t$ fully. What observations are involved?
-    \end{block}
+\begin{frame}{True or False? --- Questions}
+    \begin{cminipage}{0.95\textwidth}
+    \footnotesize
+    \begin{center}
+    \begin{tabular}{p{9cm}c}
+        \toprule
+        \textbf{Statement} & \textbf{T/F?} \\
+        \midrule
+        1. The seasonal period $s$ for quarterly data with annual patterns is $s=4$. & ? \\[0.15cm]
+        2. SARIMA models can only handle one seasonal frequency. & ? \\[0.15cm]
+        3. If AIC selects SARIMA$(1,1,1) \times (1,1,1)_{12}$ and BIC selects the airline model, BIC is always wrong. & ? \\[0.15cm]
+        4. The Kruskal-Wallis test can detect seasonality without assuming normality. & ? \\[0.15cm]
+        5. After fitting a SARIMA model, residuals should show no significant ACF at seasonal lags. & ? \\[0.15cm]
+        6. Log transformation converts multiplicative seasonality to additive. & ? \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{cminipage}
+\end{frame}
 
-    \vspace{0.3cm}
-    \pause
+\begin{frame}{True or False? --- Answers}
+    \begin{cminipage}{0.95\textwidth}
+    \scriptsize
+    \begin{center}
+    \begin{tabular}{p{7.5cm}cc}
+        \toprule
+        \textbf{Statement} & \textbf{T/F} & \textbf{Explanation} \\
+        \midrule
+        1. The seasonal period $s$ for quarterly data with annual patterns is $s=4$. & \textcolor{Forest}{\textbf{T}} & {\tiny 4 quarters/year} \\[0.08cm]
+        2. SARIMA models can only handle one seasonal frequency. & \textcolor{Forest}{\textbf{T}} & {\tiny Need TBATS for multiple} \\[0.08cm]
+        3. If AIC selects SARIMA$(1,1,1) \times (1,1,1)_{12}$ and BIC selects the airline model, BIC is always wrong. & \textcolor{Crimson}{\textbf{F}} & {\tiny BIC penalizes more} \\[0.08cm]
+        4. The Kruskal-Wallis test can detect seasonality without assuming normality. & \textcolor{Forest}{\textbf{T}} & {\tiny Nonparametric test} \\[0.08cm]
+        5. After fitting a SARIMA model, residuals should show no significant ACF at seasonal lags. & \textcolor{Forest}{\textbf{T}} & {\tiny White noise residuals} \\[0.08cm]
+        6. Log transformation converts multiplicative seasonality to additive. & \textcolor{Forest}{\textbf{T}} & {\tiny $\log(T \times S) = \log T + \log S$} \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% CALCULATION EXERCISES
+%=============================================================================
+\section{Calculation Exercises}
+
+\begin{frame}{Exercise 1: Expanding the Seasonal Difference}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Task}: Expand $(1-L)(1-L^{12})Y_t$ fully. What observations are involved?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
     \begin{exampleblock}{Solution}
         $(1-L)(1-L^{12}) = 1 - L - L^{12} + L^{13}$
 
@@ -927,22 +930,24 @@ MSCA Digital Finance}
         $(1-L)(1-L^{12})Y_t = Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13}$
 
         \vspace{0.2cm}
-        \textbf{Interpretation}: This is the difference of differences:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item First seasonal difference: $Y_t - Y_{t-12}$ (this year vs last year)
             \item Then regular difference: $(Y_t - Y_{t-12}) - (Y_{t-1} - Y_{t-13})$
         \end{itemize}
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{Problem 2: Airline Model Expansion}
-    \begin{block}{Exercise}
-        Write out the full equation for the airline model SARIMA$(0,1,1) \times (0,1,1)_{12}$:
-        $(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
-    \end{block}
+\begin{frame}{Exercise 2: Airline Model Expansion}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Task}: Write out the full equation for the airline model SARIMA$(0,1,1) \times (0,1,1)_{12}$:
+            \item \textbf{Formula}: $(1-L)(1-L^{12})Y_t = (1+\theta_1 L)(1+\Theta_1 L^{12})\varepsilon_t$
+        \end{itemize}
+    \end{alertblock}
 
     \vspace{0.2cm}
-    \pause
     \begin{exampleblock}{Solution}
         Expand the MA side:
         $(1+\theta_1 L)(1+\Theta_1 L^{12}) = 1 + \theta_1 L + \Theta_1 L^{12} + \theta_1 \Theta_1 L^{13}$
@@ -952,19 +957,24 @@ MSCA Digital Finance}
         $Y_t - Y_{t-1} - Y_{t-12} + Y_{t-13} = \varepsilon_t + \theta_1 \varepsilon_{t-1} + \Theta_1 \varepsilon_{t-12} + \theta_1 \Theta_1 \varepsilon_{t-13}$
 
         \vspace{0.2cm}
-        \textbf{Note}: The cross-term $\theta_1 \Theta_1 L^{13}$ is the multiplicative interaction between regular and seasonal MA components.
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Note}: The cross-term $\theta_1 \Theta_1 L^{13}$ is the multiplicative interaction between regular and seasonal MA components.
+        \end{itemize}
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{Problem 3: Parameter Count}
-    \begin{block}{Exercise}
-        How many parameters (excluding $\sigma^2$) are in SARIMA$(2,1,1) \times (1,0,1)_4$?
-    \end{block}
+\begin{frame}{Exercise 3: Parameter Count}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Task}: How many parameters (excluding $\sigma^2$) are in SARIMA$(2,1,1) \times (1,0,1)_4$?
+        \end{itemize}
+    \end{alertblock}
 
-    \vspace{0.3cm}
-    \pause
+    \vspace{0.2cm}
     \begin{exampleblock}{Solution}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Regular AR($p=2$): $\phi_1, \phi_2$ $\Rightarrow$ 2 parameters
             \item Regular MA($q=1$): $\theta_1$ $\Rightarrow$ 1 parameter
             \item Seasonal AR($P=1$): $\Phi_1$ $\Rightarrow$ 1 parameter
@@ -977,19 +987,21 @@ MSCA Digital Finance}
         \vspace{0.2cm}
         Note: The differencing orders ($d=1$, $D=0$) don't add parameters -- they're transformations applied to the data.
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{Problem 4: SARIMA Forecasting}
-    \begin{block}{Exercise}
-        Given the airline model with $\theta_1 = -0.4$ and $\Theta_1 = -0.6$, and:
-        \begin{itemize}
+\begin{frame}{Exercise 4: SARIMA Forecasting}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data}: Airline model with $\theta_1 = -0.4$ and $\Theta_1 = -0.6$
             \item $Y_T = 500$, $Y_{T-1} = 495$, $Y_{T-11} = 480$, $Y_{T-12} = 470$
             \item $\varepsilon_T = 5$, $\varepsilon_{T-11} = -3$, $\varepsilon_{T-12} = 2$
+            \item \textbf{Calculate}: Forecast $Y_{T+1}$
         \end{itemize}
-        Forecast $Y_{T+1}$.
-    \end{block}
+    \end{alertblock}
 
-    \pause
+    \vspace{0.2cm}
     \begin{exampleblock}{Solution}
         From the model: $Y_{T+1} = Y_T + Y_{T-11} - Y_{T-12} + \varepsilon_{T+1} + \theta_1 \varepsilon_T + \Theta_1 \varepsilon_{T-11} + \theta_1 \Theta_1 \varepsilon_{T-12}$
 
@@ -999,44 +1011,44 @@ MSCA Digital Finance}
 
         $= 510 - 2 + 1.8 + 0.48 = \mathbf{510.28}$
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{Problem 5: Identifying Seasonal Period}
-    \begin{block}{Exercise}
-        Match each data type with its typical seasonal period $s$:
-        \begin{enumerate}
-            \item Quarterly GDP data
-            \item Monthly retail sales
-            \item Weekly restaurant reservations
-            \item Daily electricity demand
-        \end{enumerate}
-    \end{block}
+\begin{frame}{Exercise 5: Identifying Seasonal Period}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Task}: Match each data type with its typical seasonal period $s$:
+            \item Quarterly GDP, Monthly retail sales, Weekly restaurant reservations, Daily electricity demand
+        \end{itemize}
+    \end{alertblock}
 
-    \vspace{0.1cm}
-    \pause
+    \vspace{0.2cm}
     \begin{exampleblock}{Solution}
         {\small
-        \begin{enumerate}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Quarterly GDP: $s = 4$ (annual cycle over 4 quarters)
             \item Monthly retail sales: $s = 12$ (annual cycle over 12 months)
             \item Weekly restaurant reservations: $s = 7$ (weekly cycle) or $s = 52$ (annual)
             \item Daily electricity demand: $s = 7$ (weekly pattern) or $s = 365$ (annual)
-        \end{enumerate}
+        \end{itemize}
         \vspace{-0.1cm}
         \textbf{Note}: Some series have multiple seasonal patterns (e.g., daily data may have weekly AND annual cycles).
         }
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-% SECTION 3: WORKED EXAMPLES
+% WORKED EXAMPLES
 %=============================================================================
 \section{Worked Examples}
 
 \begin{frame}{Example: Monthly Retail Sales Analysis}
-    \begin{block}{Scenario}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Scenario}
         You have 5 years of monthly retail sales data showing clear December peaks and January troughs. Build an appropriate SARIMA model.
-    \end{block}
+    \end{alertblock}
 
     \vspace{0.2cm}
 
@@ -1049,19 +1061,21 @@ MSCA Digital Finance}
             \item \textbf{Model selection}: Start with airline model, compare via AIC
         \end{enumerate}
     \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Example: ACF/PACF Interpretation for Seasonal Data}
-    \begin{block}{Observed Patterns (after differencing)}
-        \begin{itemize}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Observed Patterns (after differencing)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item ACF: Significant at lags 1, 12; cuts off after lag 1 and lag 12
             \item PACF: Significant at lags 1, 12, 13; decays at multiples of 12
         \end{itemize}
-    \end{block}
+    \end{alertblock}
 
     \vspace{0.2cm}
 
-    \begin{block}{Interpretation}
+    \begin{exampleblock}{Interpretation}
         \textbf{Regular component}: ACF cuts off at 1 $\Rightarrow$ MA(1)
 
         \textbf{Seasonal component}: ACF significant only at lag 12 $\Rightarrow$ seasonal MA(1)
@@ -1070,10 +1084,12 @@ MSCA Digital Finance}
 
         \vspace{0.2cm}
         \textbf{Alternative check}: If PACF showed cutoff at seasonal lags instead of ACF, consider seasonal AR terms.
-    \end{block}
+    \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}[fragile]{Example: Python Implementation}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Fitting SARIMA in Python}
         \small
         \begin{verbatim}
@@ -1093,9 +1109,11 @@ auto_model = pm.auto_arima(y, seasonal=True, m=12,
                            trace=True)
         \end{verbatim}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}[fragile]{Example: Interpreting SARIMA Output}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Sample statsmodels Output}
         \scriptsize
         \begin{verbatim}
@@ -1114,55 +1132,63 @@ sigma2      1254.3201    142.856    8.78    0.000
     \vspace{-0.15cm}
     \begin{block}{Interpretation}
         {\small
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item $\hat{\theta}_1 = -0.40$: Negative MA means positive shocks reduce next period's value
             \item $\hat{\Theta}_1 = -0.55$: Same-season correlation is captured
             \item Both coefficients significant $(p < 0.001)$; $|\theta|, |\Theta| < 1$ -- invertible
         \end{itemize}
         }
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-% SECTION 4: REAL DATA ANALYSIS
+% REAL DATA ANALYSIS
 %=============================================================================
 \section{Real Data Analysis}
 
 \begin{frame}{Case Study: Airline Passengers (1949--1960)}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     \begin{center}
         \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch4_airline_data.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Classic Box-Jenkins dataset: 144 monthly observations
         \item Clear \textbf{upward trend} and \textbf{seasonal pattern} (summer peaks)
         \item Seasonal amplitude \textbf{grows with level} $\Rightarrow$ multiplicative seasonality
         \item Suggests: log transformation + SARIMA modeling
     \end{itemize}
     }
+
+    \end{cminipage}
     \quantlet{TSA\_ch4\_airline\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_airline_data}
 \end{frame}
 
 \begin{frame}{ACF/PACF Analysis After Differencing}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     \begin{center}
         \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch4_acf_pacf.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item After $(1-L)(1-L^{12})\log(Y_t)$: series appears stationary
         \item Significant spike at lag 1 in ACF $\Rightarrow$ MA(1) component
         \item Significant spike at lag 12 in ACF $\Rightarrow$ Seasonal MA(1) component
         \item Pattern suggests: \textbf{SARIMA$(0,1,1)(0,1,1)_{12}$} (airline model)
     \end{itemize}
     }
+
+    \end{cminipage}
     \quantlet{TSA\_ch4\_acf\_pacf}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_acf_pacf}
 \end{frame}
 
 \begin{frame}{SARIMA Estimation Results: Airline Data}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{block}{Model: SARIMA$(0,1,1)(0,1,1)_{12}$ on $\log(\text{Passengers})$}
         \begin{center}
@@ -1181,55 +1207,63 @@ sigma2      1254.3201    142.856    8.78    0.000
     \vspace{0.2cm}
 
     \begin{exampleblock}{Model Fit Statistics}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Log-Likelihood: $244.70$
             \item AIC: $-483.40$, BIC: $-474.53$
             \item Both MA coefficients significant and within invertibility bounds
         \end{itemize}
     \end{exampleblock}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Forecast: 24 Months Ahead}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     \begin{center}
         \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch4_sarima_forecast.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Forecasts capture both trend and seasonal pattern
         \item 95\% confidence intervals widen over forecast horizon
         \item Seasonal peaks (July-August) and troughs (February) clearly visible
         \item Model successfully extrapolates the multiplicative seasonal pattern
     \end{itemize}
     }
+
+    \end{cminipage}
     \quantlet{TSA\_ch4\_sarima\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_sarima_forecast}
 \end{frame}
 
 \begin{frame}{Model Diagnostics}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     \begin{center}
         \includegraphics[width=0.85\textwidth, height=0.55\textheight, keepaspectratio]{ch4_diagnostics.pdf}
     \end{center}
     \vspace{-0.2cm}
     {\footnotesize
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Residuals appear random with no systematic patterns
         \item Distribution approximately normal (Q-Q plot close to diagonal)
         \item ACF of residuals within confidence bounds -- no significant autocorrelation
         \item Ljung-Box test: $p > 0.05$ at all tested lags $\Rightarrow$ adequate model
     \end{itemize}
     }
+
+    \end{cminipage}
     \quantlet{TSA\_ch4\_diagnostics}{https://github.com/QuantLet/TSA/tree/main/TSA_ch4/TSA_ch4_diagnostics}
 \end{frame}
 
 %=============================================================================
-% SECTION 5: DISCUSSION TOPICS
+% DISCUSSION TOPICS
 %=============================================================================
 \section{Discussion Topics}
 
 \begin{frame}{Discussion: Deterministic vs Stochastic Seasonality}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Key Question}
         When should you use seasonal dummies vs SARIMA for seasonal data?
     \end{block}
@@ -1238,7 +1272,7 @@ sigma2      1254.3201    142.856    8.78    0.000
 
     \begin{block}{Considerations}
         \textbf{Seasonal dummies} (deterministic):
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Fixed, repeating pattern each year
             \item Same December effect every year
             \item Appropriate when seasonality is stable
@@ -1246,15 +1280,17 @@ sigma2      1254.3201    142.856    8.78    0.000
 
         \vspace{0.2cm}
         \textbf{SARIMA} (stochastic):
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Evolving seasonal pattern
             \item This year's December depends on last year's December
             \item Better when seasonal amplitude varies
         \end{itemize}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Discussion: Log Transformation}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Key Question}
         When should you take logarithms before fitting SARIMA?
     \end{block}
@@ -1264,7 +1300,7 @@ sigma2      1254.3201    142.856    8.78    0.000
     \begin{block}{Guidelines}
         {\small
         \textbf{Use log transformation when}:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Seasonal fluctuations grow with the level (multiplicative seasonality)
             \item Variance increases over time
             \item Data is strictly positive (prices, sales, counts)
@@ -1272,7 +1308,7 @@ sigma2      1254.3201    142.856    8.78    0.000
 
         \vspace{0.05cm}
         \textbf{Avoid log when}:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Seasonal pattern is additive (constant amplitude)
             \item Data contains zeros or negatives
             \item Already on a rate/ratio scale
@@ -1282,9 +1318,11 @@ sigma2      1254.3201    142.856    8.78    0.000
         \textbf{Tip}: Compare AIC of models with and without log transformation.
         }
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Discussion: Multiple Seasonalities}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Challenge}
         Daily sales data may have both weekly (7-day) and annual (365-day) seasonal patterns. How do you handle this?
     \end{block}
@@ -1302,9 +1340,11 @@ sigma2      1254.3201    142.856    8.78    0.000
         \vspace{0.2cm}
         \textbf{Note}: Standard SARIMA handles only one seasonal period. For complex seasonality, consider specialized methods.
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Discussion: Forecasting Seasonal Data}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Key Question}
         What are the unique challenges of forecasting seasonal time series?
     \end{block}
@@ -1312,7 +1352,7 @@ sigma2      1254.3201    142.856    8.78    0.000
     \vspace{0.2cm}
 
     \begin{block}{Challenges and Solutions}
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Horizon matters}: 12-month forecast means predicting a full cycle
             \item \textbf{Uncertainty grows}: Seasonal forecasts compound regular uncertainty
             \item \textbf{Turning points}: Capturing when seasons peak/trough
@@ -1321,15 +1361,17 @@ sigma2      1254.3201    142.856    8.78    0.000
 
         \vspace{0.2cm}
         \textbf{Best practices}:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Use rolling-origin cross-validation
             \item Compare against seasonal naive benchmark
             \item Report forecast intervals, especially at seasonal horizons
         \end{itemize}
     \end{block}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Take-Home Exercises}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{enumerate}
         \item \textbf{Theoretical}: Show that $(1-L)(1-L^4)$ can be written as $(1 - L - L^4 + L^5)$ and explain what this transformation does to quarterly data with annual seasonality.
@@ -1339,7 +1381,7 @@ sigma2      1254.3201    142.856    8.78    0.000
 
         \vspace{0.2cm}
         \item \textbf{Applied}: Download monthly airline passenger data and:
-            \begin{itemize}
+            \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Plot the series and identify trend/seasonality
                 \item Apply appropriate transformations
                 \item Fit the airline model and interpret coefficients
@@ -1350,9 +1392,11 @@ sigma2      1254.3201    142.856    8.78    0.000
         \item \textbf{Comparison}: Fit both SARIMA$(0,1,1) \times (0,1,1)_{12}$ and SARIMA$(1,1,0) \times (1,1,0)_{12}$ to the airline data. Compare using AIC, BIC, and residual diagnostics. Which is preferred?
     \end{enumerate}
     }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Exercise Solutions Hints}
+    \begin{cminipage}{0.95\textwidth}
     {\small
     \begin{block}{Hints}
         \begin{enumerate}
@@ -1363,7 +1407,7 @@ sigma2      1254.3201    142.856    8.78    0.000
 
             \vspace{0.1cm}
             \item For airline data:
-                \begin{itemize}
+                \begin{itemize}\setlength{\itemsep}{0pt}
                     \item Use log transformation (multiplicative seasonality)
                     \item Both $d=1$ and $D=1$ needed
                     \item Typical estimates: $\theta_1 \approx -0.4$, $\Theta_1 \approx -0.6$
@@ -1374,65 +1418,45 @@ sigma2      1254.3201    142.856    8.78    0.000
         \end{enumerate}
     \end{block}
     }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-% SECTION 5: SUMMARY
+% AI-ASSISTED EXERCISE
 %=============================================================================
-\section{Summary}
+\section{AI-Assisted Exercise}
 
-\begin{frame}{Key Points from Today's Seminar}
-    \begin{block}{What We Covered}
-        {\small
-        \begin{enumerate}
-            \item \textbf{Seasonal differencing}: $(1-L^s)$ removes stochastic seasonality
-            \item \textbf{SARIMA notation}: $(p,d,q) \times (P,D,Q)_s$ separates regular and seasonal
-            \item \textbf{The airline model}: SARIMA$(0,1,1)(0,1,1)_{12}$ is surprisingly effective
-            \item \textbf{Multiplicative structure}: Creates interaction terms between components
-            \item \textbf{ACF/PACF diagnostics}: Patterns at both regular and seasonal lags
-            \item \textbf{Log transformation}: Often needed for multiplicative seasonality
-        \end{enumerate}
+\begin{frame}{AI Exercise: Critical Thinking}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Download the classic airline passenger dataset (Box-Jenkins, 1970). Check if seasonality is multiplicative (log transform if so), apply seasonal differencing, fit SARIMA using AIC, check residual ACF at seasonal lags. Compare against a seasonal naive benchmark using rolling 1-step forecasts on the last 24 observations. Show plots and a comparison table with RMSE and MAPE.''
         }
     \end{block}
-
-    \vspace{-0.05cm}
-
-    \begin{exampleblock}{Next Seminar}
-        {\small
-        GARCH and Volatility Modeling: volatility clustering, ARCH/GARCH estimation, financial risk applications (VaR).
-        }
-    \end{exampleblock}
-\end{frame}
-
-%=============================================================================
-% AI-ASSISTED EXERCISES
-%=============================================================================
-\section{AI-Assisted Exercises}
-
-\begin{frame}{AI in SARIMA Modeling}
-    \begin{block}{Context}
-        {\small
-        AI tools can fit SARIMA models and generate seasonal forecasts automatically.
-        The critical skill is \textbf{evaluating whether the seasonal methodology is correct}.
-        }
-    \end{block}
-
-    \vspace{0.3cm}
-
-    \textbf{Key questions to ask about any AI-generated SARIMA analysis:}
-    \begin{enumerate}
-        \item Did it check for multiplicative seasonality and apply log if needed?
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercise}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Run the prompt in an LLM of your choice and critically analyze the response.
+        \item Did the AI check for multiplicative seasonality and apply log if needed?
         \item Is the seasonal period $s$ correctly identified from the data frequency?
         \item Did it test for both regular and seasonal unit roots before choosing $d$ and $D$?
         \item Are residuals free of seasonal patterns (check ACF at lags $s, 2s, 3s$)?
-        \item Did it compare against a seasonal naive benchmark?
     \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
+    \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{AI Exercise 1: Critique an AI SARIMA Analysis}
+\begin{frame}{AI Exercise: Critique an AI SARIMA Analysis}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Scenario}
         You asked an AI: ``Fit the best SARIMA model to this monthly retail sales data.'' It returned:
-        \begin{itemize}
+        \begin{itemize}\setlength{\itemsep}{0pt}
             \item Fitted SARIMA$(2,1,2)(2,1,2)_{12}$ with AIC = 1520
             \item No check for multiplicative vs additive seasonality
             \item Applied $D=1$ ``because the data is monthly''
@@ -1450,9 +1474,11 @@ sigma2      1254.3201    142.856    8.78    0.000
         \item Why is Ljung-Box p = 0.03 \textbf{not} acceptable at 5\% level?
         \item Why must SARIMA confidence intervals widen (not stay constant)?
     \end{enumerate}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{AI Exercise 2: Prompt Refinement for SARIMA}
+\begin{frame}{AI Exercise: Prompt Refinement for SARIMA}
+    \begin{cminipage}{0.95\textwidth}
     \begin{block}{Task}
         Iteratively improve prompts for fitting a SARIMA model to monthly airline data.
     \end{block}
@@ -1460,28 +1486,30 @@ sigma2      1254.3201    142.856    8.78    0.000
     \vspace{0.2cm}
 
     \textbf{Round 1} (vague): \textit{``Fit a seasonal model to monthly airline passengers''}
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item What did the AI produce? Did it check for multiplicative seasonality?
     \end{itemize}
 
     \textbf{Round 2} (better): \textit{``Check if seasonality is multiplicative (log transform if so), apply seasonal differencing, fit SARIMA using AIC, check residual ACF at seasonal lags''}
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Did the AI follow the seasonal Box-Jenkins methodology?
     \end{itemize}
 
     \textbf{Round 3} (expert): \textit{``(1) Plot series, check if amplitude grows with level, (2) if multiplicative, apply log, (3) test ADF on levels \& seasonal differences, (4) fit airline model + 2 alternatives, (5) compare AIC/BIC, (6) Ljung-Box on residuals, (7) 24-month rolling forecast with RMSE''}
-    \begin{itemize}
+    \begin{itemize}\setlength{\itemsep}{0pt}
         \item Compare results across all three rounds
     \end{itemize}
+    \end{cminipage}
 \end{frame}
 
-\begin{frame}{AI Exercise 3: Model Selection Competition}
-    \small
+\begin{frame}{AI Exercise: Model Selection Competition}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
     \begin{block}{Task}
         Download the classic airline passenger dataset (Box-Jenkins, 1970).
     \end{block}
 
-    \vspace{0.1cm}
+    \vspace{0.05cm}
 
     \textbf{Your approach (manual):}
     \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1492,14 +1520,14 @@ sigma2      1254.3201    142.856    8.78    0.000
         \item Rolling 1-step forecast on last 24 observations
     \end{itemize}
 
-    \vspace{0.1cm}
+    \vspace{0.05cm}
 
     \textbf{AI approach:}
     \begin{itemize}\setlength{\itemsep}{0pt}
         \item Ask AI to ``find the best SARIMA model and forecast airline passengers''
     \end{itemize}
 
-    \vspace{0.1cm}
+    \vspace{0.05cm}
 
     \textbf{Compare:}
     \begin{itemize}\setlength{\itemsep}{0pt}
@@ -1507,14 +1535,37 @@ sigma2      1254.3201    142.856    8.78    0.000
         \item Compare out-of-sample RMSE; did the AI check seasonal residual patterns?
         \item \textbf{Submit:} 1-page reflection on AI strengths and weaknesses
     \end{itemize}
+    }
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-% KEY FORMULAS SUMMARY
+% SUMMARY
 %=============================================================================
-\section{Key Formulas}
+\section{Summary}
+
+\begin{frame}{Summary: Chapter 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Key Concepts}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Seasonal differencing}: $(1-L^s)$ removes stochastic seasonality
+            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{SARIMA notation}: $(p,d,q) \times (P,D,Q)_s$ separates regular and seasonal
+            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{The airline model}: SARIMA$(0,1,1)(0,1,1)_{12}$ is surprisingly effective
+            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Multiplicative structure}: Creates interaction terms between components
+            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{ACF/PACF diagnostics}: Patterns at both regular and seasonal lags
+            \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Log transformation}: Often needed for multiplicative seasonality
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Questions?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
 
 \begin{frame}{Key Formulas Summary}
+    \begin{cminipage}{0.95\textwidth}
     \small
     \begin{center}
     \begin{tabular}{ll}
@@ -1538,36 +1589,63 @@ sigma2      1254.3201    142.856    8.78    0.000
     \end{center}
 
     {\scriptsize \textbf{Notation:} $s$ = seasonal period, $\phi/\Phi$ = regular/seasonal AR, $\theta/\Theta$ = regular/seasonal MA, $d/D$ = regular/seasonal differencing order}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
-% WHAT'S NEXT
+% BIBLIOGRAPHY
 %=============================================================================
-\begin{frame}{What's Next?}
-    \begin{center}
-    \begin{minipage}{0.85\textwidth}
-    \begin{block}{Seminar 5: GARCH and Volatility Modeling}
+\section{Bibliography}
+
+\begin{frame}{Bibliography I}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Time Series Fundamentals}
+        {\small
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Volatility clustering}: Why financial returns show time-varying variance
-            \item \textbf{ARCH/GARCH models}: Modeling conditional heteroskedasticity
-            \item \textbf{Extensions}: EGARCH, GJR-GARCH, leverage effects
-            \item \textbf{Applications}: Value-at-Risk and risk management
+            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
+            \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
+            \item Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}, 3rd ed., Springer.
         \end{itemize}
+        }
     \end{block}
-    \end{minipage}
-    \end{center}
 
-    \vspace{0.3cm}
-    \begin{center}
-        \Large\textcolor{MainBlue}{Questions?}
-    \end{center}
+    \begin{exampleblock}{Financial Time Series}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
+            \item Franke, J., H\"ardle, W.K., \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
+\begin{frame}{Bibliography II}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Modern Approaches and Machine Learning}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Nielsen, A. (2019). \textit{Practical Time Series Analysis}, O'Reilly Media.
+            \item Petropoulos, F., et al. (2022). \textit{Forecasting: Theory and Practice}, International Journal of Forecasting.
+            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, International Journal of Forecasting.
+        \end{itemize}
+        }
+    \end{block}
 
-%=============================================================================
-% THANK YOU
-%=============================================================================
+    \begin{exampleblock}{Online Resources and Code}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Code repository for statistics
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Quantitative methods learning platform
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch4} --- Python code for this seminar
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
     \centering
     \Huge\textcolor{IDAred}{Thank You!}
 
@@ -1584,54 +1662,7 @@ sigma2      1254.3201    142.856    8.78    0.000
 
     \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
     \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
-\end{frame}
-
-%=============================================================================
-% BIBLIOGRAPHY
-%=============================================================================
-\section{Bibliography}
-
-\begin{frame}{Bibliography I}
-    \begin{block}{Fundamental textbooks}
-        {\small
-        \begin{itemize}
-            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
-            \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
-            \item Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}, 3rd ed., Springer.
-        \end{itemize}
-        }
-    \end{block}
-
-    \begin{exampleblock}{Financial time series}
-        {\small
-        \begin{itemize}
-            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
-            \item Franke, J., H\"ardle, W.K., \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
-        \end{itemize}
-        }
-    \end{exampleblock}
-\end{frame}
-
-\begin{frame}{Bibliography II}
-    \begin{block}{Modern approaches and Machine Learning}
-        {\small
-        \begin{itemize}
-            \item Nielsen, A. (2019). \textit{Practical Time Series Analysis}, O'Reilly Media.
-            \item Petropoulos, F., et al. (2022). \textit{Forecasting: Theory and Practice}, International Journal of Forecasting.
-            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, International Journal of Forecasting.
-        \end{itemize}
-        }
-    \end{block}
-
-    \begin{exampleblock}{Online resources and code}
-        {\small
-        \begin{itemize}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Code repository for statistics
-            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Learning platform for quantitative methods
-            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch4} --- Python code for this seminar
-        \end{itemize}
-        }
-    \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \end{document}
