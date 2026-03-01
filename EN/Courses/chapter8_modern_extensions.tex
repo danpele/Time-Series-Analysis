@@ -29,9 +29,9 @@
             \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Estimate} the fractional parameter $d$ using GPH, Local Whittle, and MLE
             \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Apply} Random Forest for time series forecasting
             \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Build} LSTM networks for sequential data
-            \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Compare} classical vs ML model performance
-            \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Choose} the appropriate method based on data characteristics
-            \item[\textcolor{MainBlue}{\textbf{8.}}] \textbf{Implement} ARFIMA, Random Forest, and LSTM in Python
+            \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Evaluate} foundation models (Chronos, TimesFM) and the zero-shot paradigm
+            \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Compare} classical vs ML vs foundation model performance
+            \item[\textcolor{MainBlue}{\textbf{8.}}] \textbf{Choose} the appropriate method based on data characteristics
         \end{itemize}
     \end{block}
     \end{cminipage}
@@ -64,7 +64,7 @@
 
     \vspace{0.1cm}
 
-    \begin{alertblock}{Three Paradigm Shifts}
+    \begin{alertblock}{Four Paradigm Shifts}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{ARFIMA} (Granger \& Joyeux, 1980)
             \begin{itemize}\setlength{\itemsep}{0pt}
@@ -78,6 +78,7 @@
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Deep learning for complex sequential patterns
             \end{itemize}
+            \item \textbf{Foundation Models}: TimeGPT, Chronos --- zero-shot forecasting
         \end{itemize}
     \end{alertblock}
     \end{cminipage}
@@ -135,27 +136,21 @@
 
 \begin{frame}{What is Long Memory?}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.2cm}
+    \vspace{-0.3cm}
     \begin{block}{Short Memory (ARMA)}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{ACF Behavior}:
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Autocorrelations $\rho_k$ decay \textbf{exponentially}: $|\rho_k| \leq C \cdot r^k$, $r < 1$
-                \item Finite sum: $\sum_{k=0}^{\infty} |\rho_k| < \infty$ (more precisely, the condition is on autocovariances: $\sum_{k=0}^{\infty} |\gamma(k)| < \infty$)
-            \end{itemize}
-            \item \textbf{Implication}: Shock effects disappear quickly
+            \item Autocorrelations $\rho_k$ decay \textbf{exponentially}: $|\rho_k| \leq C \cdot r^k$, $r < 1$
+            \item Finite sum: $\sum_{k=0}^{\infty} |\gamma(k)| < \infty$ --- shock effects disappear quickly
         \end{itemize}
     \end{block}
+    \vspace{-1mm}
     \begin{alertblock}{Long Memory (ARFIMA)}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{ACF Behavior}:
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Autocorrelations decay \textbf{hyperbolically}: $\rho_k \sim C \cdot k^{2d-1}$ as $k \to \infty$
-                \item Infinite sum: $\sum_{k=0}^{\infty} |\rho_k| = \infty$
-            \end{itemize}
-            \item \textbf{Implication}: Shock effects persist for a long time
+            \item Autocorrelations decay \textbf{hyperbolically}: $\rho_k \sim C \cdot k^{2d-1}$ as $k \to \infty$
+            \item Infinite sum: $\sum_{k=0}^{\infty} |\rho_k| = \infty$ --- shock effects persist for a long time
         \end{itemize}
     \end{alertblock}
+    \vspace{-1mm}
     \begin{exampleblock}{Examples}
         Financial volatility, river flows, network traffic, inflation, climate data
     \end{exampleblock}
@@ -221,7 +216,7 @@
         $0 < d < 0.5$ & Hyperbolic decay & Long memory, stationary \\
         $d = 0.5$ & Non-summable ACF & At the boundary \\
         $0.5 < d < 1$ & Very slow decay & Long memory, non-stationary \\
-        $d = 1$ & Sample ACF decays very slowly (nonstationary process) & Random walk \\
+        $d = 1$ & Very slow sample ACF decay & Random walk \\
         \bottomrule
     \end{tabular}
     \end{center}
@@ -277,9 +272,9 @@
     {\footnotesize
     \begin{block}{Interpretation}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Data}: EUR/RON daily exchange rate (Yahoo Finance, 2015--2025)
-                \item \textbf{Returns}: $H \approx 0.50$, $d \approx 0$ -- short memory
-                \item \textbf{Squared returns}: $H \approx 0.65$, $d \approx 0.15$ -- long memory in volatility
+                \item \textbf{Data}: EUR/RON daily exchange rate (Yahoo Finance, 2019--2025)
+                \item \textbf{Returns}: $H \approx 0.55$, $d \approx 0.05$ -- near boundary, essentially short memory
+                \item \textbf{Squared returns}: $H \approx 0.69$, $d \approx 0.19$ -- long memory in volatility
             \end{itemize}
         \end{block}
     }
@@ -702,6 +697,71 @@
 
 
 %=============================================================================
+\section{Foundation Models for Time Series}
+%=============================================================================
+
+\begin{frame}{Foundation Models for Time Series}
+    \vspace{-4mm}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{block}{Paradigm: massive pre-training, zero-shot or fine-tuning}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Analogous to GPT/BERT: pre-trained on massive corpus, usable directly without retraining
+            \end{itemize}
+        \end{block}
+        \vspace{-3mm}
+        \begin{block}{TimeGPT (Garza \& Mergenthaler-Canseco, 2024)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{100+ billion} time points (finance, energy, retail); Transformer; \emph{zero-shot} via API
+            \end{itemize}
+        \end{block}
+        \vspace{-3mm}
+        \begin{block}{Chronos (Ansari et al., 2024, Amazon)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Tokenises values into discrete bins; T5; Mini (20M) $\to$ Large (710M); \emph{zero-shot}
+            \end{itemize}
+        \end{block}
+        \vspace{-3mm}
+        \begin{block}{TimesFM (Google, 2024)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{200M params}, 100B real + synthetic points; decoder-only with patching; \emph{zero-shot}
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Foundation Models: Advantages, Limits, and Perspectives}
+    \vspace{-2mm}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{exampleblock}{Advantages}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{No domain expertise needed}: the model has already ``seen'' thousands of series types
+                \item \textbf{Instant deployment}: a single API call, no training pipeline required
+                \item \textbf{Cross-domain transfer learning}: knowledge transferable across domains
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{alertblock}{Limitations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Black box}: less interpretable --- hard to justify in regulated settings
+                \item \textbf{Computational cost} of pre-training (but inference is cheap)
+                \item \textbf{Distribution shift sensitivity}: performance degrades on novel regimes
+            \end{itemize}
+        \end{alertblock}
+        \vspace{-2mm}
+        \begin{block}{Emerging Models}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Lag-Llama} (Rasul+, 2024), \textbf{Moirai} (Woo+, 2024), \textbf{TimesFM} (Google, 2024)
+                \item Complementary to traditional econometrics, not a replacement
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
 \section{Comparison and Model Selection}
 %=============================================================================
 
@@ -810,7 +870,7 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_case_comparison.pdf}
     \end{center}
-    \quantlet{TSA\_ch8\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_model_comparison}
+    \quantlet{TSA\_ch8\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_eurron_foundation}
 \end{frame}
 
 %=============================================================================
@@ -922,7 +982,7 @@
         \includegraphics[width=\textwidth, height=0.50\textheight, keepaspectratio]{ch8_btc_model_comparison.pdf}
     \end{column}
     \end{columns}
-    \quantlet{TSA\_ch8\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_model_comparison}
+    \quantlet{TSA\_ch8\_btc\_model\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_btc_model_comparison}
 \end{frame}
 
 \begin{frame}{Energy: Demand Visualization and Multiple Seasonality}
@@ -1110,7 +1170,7 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_case_raw_data.pdf}
     \end{center}
-    \quantlet{TSA\_ch8\_case\_raw\_data}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_case_raw_data}
+    \quantlet{TSA\_ch8\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_eurron_foundation}
 \end{frame}
 
 \begin{frame}{ACF Analysis: Returns vs Squared Returns}
@@ -1127,18 +1187,18 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_case_acf_analysis.pdf}
     \end{center}
-    \quantlet{TSA\_ch8\_case\_acf\_analysis}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_case_acf_analysis}
+    \quantlet{TSA\_ch8\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_eurron_foundation}
 \end{frame}
 
 \begin{frame}{Long Memory Test Results -- EUR/RON}
     \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Typical Output}
+    \begin{block}{Script Output (\texttt{generate\_ch8\_eurron\_foundation.py})}
         {\footnotesize
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \texttt{Phillips-Perron p-value: 0.0001} (returns are stationary)
-            \item \texttt{Hurst Exponent (H): 0.47}
-            \item \texttt{Estimated parameter d: -0.03}
-            \item \texttt{Slightly ANTI-PERSISTENT series (mean-reverting)}
+            \item \texttt{Phillips-Perron p-value: 0.0000} (returns are stationary)
+            \item \texttt{Hurst Exponent (H): 0.5476}
+            \item \texttt{Estimated parameter d: 0.0476}
+            \item \texttt{Hurst squared returns: H = 0.6896, d = 0.1896}
         \end{itemize}
         }
     \end{block}
@@ -1148,9 +1208,9 @@
     \begin{alertblock}{Interpretation}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item EUR/RON returns are \textbf{stationary} (p-value $< 0.05$)
-            \item $H \approx 0.47 < 0.5$: slight mean-reversion tendency
-            \item $d \approx 0$: \textbf{short memory} -- ARMA may be sufficient
-            \item However, \textbf{volatility} may have long memory!
+            \item $H \approx 0.55$: near the boundary, slight persistence
+            \item $d \approx 0.05$: essentially \textbf{short memory} -- ARMA may be sufficient
+            \item \textbf{Squared returns}: $H \approx 0.69$, $d \approx 0.19$ -- long memory in volatility!
         \end{itemize}
     \end{alertblock}
     \end{cminipage}
@@ -1170,7 +1230,7 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_case_feature_importance.pdf}
     \end{center}
-    \quantlet{TSA\_ch8\_case\_feature\_importance}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_case_feature_importance}
+    \quantlet{TSA\_ch8\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_eurron_foundation}
 \end{frame}
 
 \begin{frame}{LSTM: Learning Curve}
@@ -1187,7 +1247,7 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.47\textheight, keepaspectratio]{ch8_case_lstm_training.pdf}
     \end{center}
-    \quantlet{TSA\_ch8\_case\_lstm\_training}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_case_lstm_training}
+    \quantlet{TSA\_ch8\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_eurron_foundation}
 \end{frame}
 
 %=============================================================================
@@ -1208,32 +1268,35 @@
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_case_predictions.pdf}
     \end{center}
-    \quantlet{TSA\_ch8\_case\_predictions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_case_predictions}
+    \quantlet{TSA\_ch8\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_eurron_foundation}
 \end{frame}
 
 \begin{frame}{Comparison: Results on EUR/RON}
     \begin{cminipage}{0.95\textwidth}
     \begin{center}
+    {\small
     \begin{tabular}{l|c|c|c|c}
         \toprule
         \textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{Time (s)} & \textbf{Interpretable?} \\
         \midrule
-        ARIMA(1,1,1) & 0.0069 & 0.0062 & 0.08 & Yes \\
-        Random Forest & 0.0057 & 0.0050 & 0.51 & Yes (features) \\
-        MLP/LSTM & 0.0071 & 0.0059 & 0.47 & No \\
+        ARIMA(1,1,1) & 0.0139 & 0.0038 & 24.32 & Yes \\
+        ARFIMA(1,$d$,1) & 0.0172 & 0.0088 & 0.16 & Yes \\
+        Random Forest & 0.0314 & 0.0104 & 0.58 & Partial \\
+        MLP/LSTM & 0.0162 & 0.0072 & 0.52 & No \\
         \bottomrule
     \end{tabular}
+    }
     \end{center}
-    {\scriptsize \textit{Note: MLP: Multi-Layer Perceptron; LSTM: Long Short-Term Memory --- grouped due to similar performance on these data.}}
+    {\scriptsize \textit{Rolling 1-step-ahead forecast on price levels; 70/15/15 temporal split; $d = 0.048$ (Hurst).}}
 
     \vspace{0.1cm}
 
     \begin{alertblock}{Conclusions}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item For EUR/RON, the differences are \textbf{small} -- the market is efficient
-            \item Random Forest offers the best \textbf{accuracy/interpretability} trade-off
-            \item LSTM has high computational cost for marginal gain
-            \item ARIMA remains a solid choice for \textbf{baseline}
+            \item ARIMA achieves the \textbf{lowest RMSE} --- hard to beat on an efficient market
+            \item ARFIMA and MLP/LSTM are close, but \textbf{not better} than ARIMA
+            \item Random Forest overfits slightly on price levels
+            \item For EUR/RON, simplicity wins --- \textbf{parsimony principle} confirmed
         \end{itemize}
     \end{alertblock}
     \end{cminipage}
@@ -1244,16 +1307,87 @@
     {\footnotesize
     \begin{block}{Interpretation}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Data}: EUR/RON exchange rate (Yahoo Finance, 2019--2025) --- ARIMA vs RF vs MLP/LSTM
-                \item \textbf{Left}: Error metrics (lower = better) --- RF achieves the lowest RMSE and MAE
-                \item \textbf{Right}: Training time (log scale) --- ML models require more computational resources
+                \item \textbf{Data}: EUR/RON exchange rate (Yahoo Finance, 2019--2025) --- ARIMA vs ARFIMA vs RF vs MLP/LSTM
+                \item \textbf{Left}: RMSE (lower = better) --- ARIMA achieves the lowest RMSE
+                \item \textbf{Right}: Training time (log scale) --- trade-off between accuracy and computation
             \end{itemize}
         \end{block}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_case_comparison.pdf}
     \end{center}
-    \quantlet{TSA\_ch8\_case\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_case_comparison}
+    \quantlet{TSA\_ch8\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_eurron_foundation}
+\end{frame}
+
+%=============================================================================
+\section{Foundation Models: EUR/RON Use Case}
+%=============================================================================
+
+\begin{frame}{Foundation Models: Zero-Shot on EUR/RON}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Interpretation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Data}: EUR/RON (2019--2025) --- Classical models vs Chronos/TimesFM (zero-shot, no training)
+                \item \textbf{Left}: RMSE and MAE comparison across all models
+                \item \textbf{Right}: Relative improvement vs ARIMA baseline
+            \end{itemize}
+        \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_foundation_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch8\_foundation\_comparison}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_foundation_comparison}
+\end{frame}
+
+\begin{frame}{Chronos and TimesFM: Prediction Detail}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{block}{Interpretation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Chronos} (Amazon): T5-based, tokenises values into discrete bins; 80\% confidence interval shown
+                \item \textbf{TimesFM} (Google): decoder-only with patching; zero-shot point forecast
+                \item Both models applied \emph{without any training} on EUR/RON data --- pure transfer learning
+            \end{itemize}
+        \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch8_foundation_predictions.pdf}
+    \end{center}
+    \quantlet{TSA\_ch8\_foundation\_predictions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch8/TSA_ch8_foundation_predictions}
+\end{frame}
+
+\begin{frame}{Final Comparison: Classical vs Foundation Models}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{center}
+    {\small
+    \begin{tabular}{l|c|c|c|c}
+        \toprule
+        \textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{Time (s)} & \textbf{Interpretable?} \\
+        \midrule
+        ARIMA(1,1,1) & 0.0139 & 0.0038 & 24.32 & Yes \\
+        ARFIMA(1,$d$,1) & 0.0172 & 0.0088 & 0.16 & Yes \\
+        Random Forest & 0.0314 & 0.0104 & 0.58 & Partial \\
+        MLP/LSTM & 0.0162 & 0.0072 & 0.52 & No \\
+        \midrule
+        Chronos (zero-shot) & \multicolumn{4}{c}{\textit{Run script to obtain results}} \\
+        TimesFM (zero-shot) & \multicolumn{4}{c}{\textit{Run script to obtain results}} \\
+        \bottomrule
+    \end{tabular}
+    }
+    \end{center}
+    {\scriptsize \textit{Foundation model rows populated by \texttt{generate\_ch8\_eurron\_foundation.py} when packages are installed.}}
+
+    \vspace{0.1cm}
+
+    \begin{alertblock}{Key Takeaways}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Foundation models offer \textbf{zero-shot} forecasting --- no training pipeline needed
+            \item On efficient markets (EUR/RON), classical ARIMA is a \textbf{strong baseline}
+            \item Foundation models shine on \textbf{cross-domain} tasks and rapid prototyping
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 %=============================================================================
@@ -1357,12 +1491,12 @@
 
     \vspace{0.2cm}
 
-    \begin{exampleblock}{Typical Results (RMSE on returns)}
+    \begin{exampleblock}{Results on BVB.RO Returns (2019--2025, RMSE in \%)}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item GARCH(1,1): 1.45 -- best for volatility
-            \item ARFIMA for volatility: 1.52
-            \item Random Forest: 1.48
-            \item LSTM: 1.51
+            \item ARFIMA(1,$d$,1): 1.35 -- captures long memory ($H = 0.67$, $d = 0.17$)
+            \item ARIMA(1,0,1): 1.38
+            \item MLP/LSTM: 1.40
+            \item Random Forest: 1.44
         \end{itemize}
     \end{exampleblock}
     \end{cminipage}
@@ -1749,18 +1883,18 @@
 
 \begin{frame}{Bibliography II}
     \begin{block}{Threshold, Regime-Switching, and Structural Change Models}
-        {\small
+        {\footnotesize
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Bai, J., \& Perron, P. (2003). Computation and Analysis of Multiple Structural Change Models, \textit{Journal of Applied Econometrics}, 18(1), 1--22.
+            \item Bai, J., \& Perron, P. (2003). Computation and Analysis of Multiple Structural Change Models, \textit{J.\ Applied Econometrics}, 18(1), 1--22.
             \item Hansen, B.E. (2011). Threshold Autoregression in Economics, \textit{Statistics and Its Interface}, 4(2), 123--127.
-            \item Hamilton, J.D. (1989). A New Approach to the Economic Analysis of Nonstationary Time Series and the Business Cycle, \textit{Econometrica}, 57(2), 357--384.
-            \item Petropoulos, F., et al. (2022). Forecasting: Theory and Practice, \textit{International Journal of Forecasting}, 38(3), 845--1054.
+            \item Hamilton, J.D. (1989). A New Approach to the Economic Analysis of Nonstationary Time Series, \textit{Econometrica}, 57(2), 357--384.
+            \item Petropoulos, F., et al. (2022). Forecasting: Theory and Practice, \textit{Int.\ J.\ Forecasting}, 38(3), 845--1054.
         \end{itemize}
         }
     \end{block}
-
+    \vspace{-1mm}
     \begin{exampleblock}{Online Resources and Code}
-        {\small
+        {\footnotesize
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Quantlet}: \url{https://quantlet.com} -- Code platform for quantitative methods
             \item \textbf{Quantinar}: \url{https://quantinar.com} -- Learning platform for quantitative methods
