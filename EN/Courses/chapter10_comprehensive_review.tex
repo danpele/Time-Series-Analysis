@@ -145,7 +145,7 @@
                 RMSE & 2.21 \\
                 MAE & 1.89 \\
                 MASE & 0.98 \\
-                Dir. Accuracy & 28.7\% (below 50\% -- the model predicts direction worse than a coin flip) \\
+                Dir.\ Accuracy & 28.7\% \\
             \end{tabular}
             \vspace{0.2cm}
             \begin{itemize}\setlength{\itemsep}{2pt}
@@ -2272,6 +2272,298 @@
     \end{exampleblock}
     }
     \hfill\quantlet{TSA\_ch10\_quiz5\_long\_seasonality}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_quiz5_long_seasonality}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Integrative Research Project}
+
+\begin{frame}{Project: Forecasting Inflation in Romania}
+    \quantlet{TSA\_ch10\_inflation\_forecast}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_inflation_forecast}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Objective}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Apply the \textbf{entire methodology} (Ch.\ 0--9) to forecast Romanian CPI inflation
+                \item Complete empirical study: from data collection to forecast evaluation
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        {\footnotesize
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{exampleblock}{Data Sources}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{NBR}: monetary policy rate, EUR/RON exchange rate, M3 money supply
+                    \item \textbf{NIS}: CPI (consumer price index), quarterly GDP, unemployment rate
+                    \item \textbf{Eurostat}: HICP, energy prices, import prices
+                    \item \textbf{BSE}: BET index, financial returns
+                \end{itemize}
+            \end{exampleblock}
+
+            \column{0.5\textwidth}
+            \begin{alertblock}{Experimental Design}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Sample}: 2005M01 -- 2024M12 (240 monthly obs.)
+                    \item \textbf{Training}: 2005M01 -- 2022M12 (216 obs.)
+                    \item \textbf{Out-of-sample}: last 24 months (2023--2024) for evaluation
+                    \item \textbf{Target}: annual CPI inflation rate (\% y-o-y)
+                \end{itemize}
+            \end{alertblock}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Stage 1: Exploratory Analysis (Ch.\ 0--1)}
+    \quantlet{TSA\_ch10\_exploratory}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_exploratory}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{block}{Decomposition and Visualization}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{STL} decomposition of inflation: trend + seasonality + residual
+                    \item Time plots: CPI, GDP, EUR/RON, M3, BET
+                    \item Regime identification: pre-crisis, 2008 crisis, COVID, 2022+ inflation
+                \end{itemize}
+            \end{block}
+
+            \vspace{0.15cm}
+
+            \begin{exampleblock}{Spectral Analysis}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Periodogram: dominant periodicities (12 months, 6 months)
+                    \item Cross-spectrum inflation--exchange rate
+                \end{itemize}
+            \end{exampleblock}
+
+            \column{0.5\textwidth}
+            \begin{alertblock}{Stationarity Tests}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{ADF}: $H_0$: unit root
+                    \item \textbf{KPSS}: $H_0$: stationarity
+                    \item \textbf{Phillips-Perron}: robust to heteroskedasticity
+                    \item Applied to: CPI, GDP, EUR/RON, M3, BET
+                    \item Determine integration order $d$ and $D$
+                \end{itemize}
+            \end{alertblock}
+
+            \vspace{0.15cm}
+
+            \begin{block}{ACF/PACF and Diagnostics}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item ACF/PACF functions: dependence structure
+                    \item Normality tests (Jarque-Bera)
+                    \item Heteroskedasticity tests (ARCH-LM)
+                \end{itemize}
+            \end{block}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Stage 2: Univariate Models (Ch.\ 2--4)}
+    \quantlet{TSA\_ch10\_univariate\_models}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_univariate_models}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{block}{ARIMA --- Box-Jenkins}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Identification}: ACF/PACF + information criteria
+                    \item \textbf{Estimation}: MLE for $\text{ARIMA}(p,d,q)$
+                    \item \textbf{Diagnostics}: Ljung-Box on residuals, Q-Q plot
+                    \item Automatic selection: \texttt{auto\_arima} (minimum AIC)
+                \end{itemize}
+            \end{block}
+
+            \vspace{0.15cm}
+
+            \begin{exampleblock}{SARIMA --- Seasonality}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $\text{SARIMA}(p,d,q)(P,D,Q)_{12}$
+                    \item Capturing monthly seasonality ($s=12$)
+                    \item Seasonal differencing: $(1-L^{12})$
+                \end{itemize}
+            \end{exampleblock}
+
+            \column{0.5\textwidth}
+            \begin{alertblock}{Benchmark Models}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Random walk}: $\hat{y}_{t+h} = y_t$
+                    \item \textbf{Moving average}: MA(12)
+                    \item \textbf{ETS}: Error-Trend-Seasonal (Holt-Winters)
+                    \item \textbf{Drift}: random walk with trend
+                \end{itemize}
+            \end{alertblock}
+
+            \vspace{0.15cm}
+
+            \begin{block}{Out-of-sample Evaluation}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item RMSE, MAE, MAPE on the 2023--2024 window
+                    \item Rolling window vs.\ expanding window
+                    \item \textbf{Exercise}: test if over-differencing degrades the forecast
+                \end{itemize}
+            \end{block}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Stage 3: Multivariate Models (Ch.\ 6--7)}
+    \quantlet{TSA\_ch10\_multivariate\_models}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_multivariate_models}
+    \vspace{-0.4cm}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{block}{VAR: Inflation + Rate + EUR/RON + M3}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Lag selection}: AIC, BIC, HQ
+                    \item \textbf{Granger causality}: which variables predict inflation?
+                    \item \textbf{IRF}: inflation response to NBR rate shock
+                    \item \textbf{FEVD}: inflation variance decomposition
+                    \item Stability: roots $|\lambda_i| < 1$
+                \end{itemize}
+            \end{block}
+
+            \vspace{0.05cm}
+
+            \begin{exampleblock}{VAR Diagnostics}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Portmanteau tests on multivariate residuals
+                    \item Multivariate normality (Jarque-Bera)
+                    \item Multivariate ARCH tests
+                \end{itemize}
+            \end{exampleblock}
+
+            \column{0.5\textwidth}
+            \begin{alertblock}{Johansen Cointegration}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Trace} and \textbf{Max Eigenvalue} tests
+                    \item $H_0$: $r = 0$ (no cointegration)
+                    \item Equilibrium: $\beta' \mathbf{Y}_t = \beta_1 \pi_t + \beta_2 i_t + \beta_3 e_t + \beta_4 m_t$
+                    \item Economic interpretation: Taylor rule?
+                \end{itemize}
+            \end{alertblock}
+
+            \vspace{0.05cm}
+
+            \begin{block}{VECM --- Error Correction}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Cointegration $\Rightarrow$ VECM
+                    \item $\Delta \mathbf{Y}_t = \boldsymbol{\alpha}\boldsymbol{\beta}'\mathbf{Y}_{t-1} + \sum_{i=1}^{p-1}\boldsymbol{\Gamma}_i\Delta\mathbf{Y}_{t-i} + \boldsymbol{\varepsilon}_t$
+                    \item $\boldsymbol{\alpha}$: speed of adjustment to equilibrium
+                \end{itemize}
+            \end{block}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Stage 4: Volatility and Machine Learning (Ch.\ 5, 8--9)}
+    \quantlet{TSA\_ch10\_volatility\_ml}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_volatility_ml}
+    \vspace{-0.2cm}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{block}{GARCH on EUR/RON}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Modeling exchange rate \textbf{uncertainty}
+                    \item GARCH(1,1), EGARCH, GJR-GARCH
+                    \item Distribution: Normal vs.\ Student-$t$ vs.\ Skew-$t$
+                    \item Conditional volatility as inflation predictor
+                \end{itemize}
+            \end{block}
+
+            \vspace{0.1cm}
+
+            \begin{exampleblock}{Prophet / NeuralProphet}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Multiple seasonality + trend
+                    \item Automatic changepoints (inflationary regimes)
+                    \item NeuralProphet: neural AR components
+                \end{itemize}
+            \end{exampleblock}
+
+            \column{0.5\textwidth}
+            \begin{alertblock}{Random Forest / XGBoost}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Features}: inflation lags $(y_{t-1}, \ldots, y_{t-12})$
+                    \item Macro: rate, EUR/RON, M3, unemployment
+                    \item Calendar features: month, quarter
+                    \item Feature importance
+                    \item Hyperparameters: temporal CV (TimeSeriesSplit)
+                \end{itemize}
+            \end{alertblock}
+
+            \vspace{0.1cm}
+
+            \begin{block}{Ensemble and Uncertainty}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Ensemble}: weighted model average
+                    \item Weighting: inverse RMSE
+                    \item \textbf{Conformal prediction}: model-agnostic intervals with coverage guarantee
+                \end{itemize}
+            \end{block}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Stage 5: Evaluation and Conclusions}
+    \quantlet{TSA\_ch10\_evaluation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch10/TSA_ch10_evaluation}
+    \vspace{-0.3cm}
+    \begin{cminipage}{0.95\textwidth}
+        {\scriptsize
+        \begin{block}{``Horse Race'' Comparison --- Out-of-sample 2023--2024}
+            \vspace{-0.1cm}
+            \begin{center}
+            \begin{tabular}{@{}l c c c c@{}}
+                \toprule
+                \textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{MAPE (\%)} & \textbf{DM test $p$-value} \\
+                \midrule
+                Random Walk & \ldots & \ldots & \ldots & --- \\
+                SARIMA$(p,d,q)(P,D,Q)_{12}$ & \ldots & \ldots & \ldots & \ldots \\
+                VAR$(p)$ & \ldots & \ldots & \ldots & \ldots \\
+                VECM & \ldots & \ldots & \ldots & \ldots \\
+                XGBoost & \ldots & \ldots & \ldots & \ldots \\
+                Ensemble & \ldots & \ldots & \ldots & \ldots \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+            \vspace{-0.2cm}
+            \hfill{\tiny \textit{Fill in with your own results. DM test: Diebold-Mariano vs.\ Random Walk.}}
+        \end{block}
+        }
+
+        \vspace{-0.05cm}
+
+        {\scriptsize
+        \begin{columns}[T]
+            \column{0.5\textwidth}
+            \begin{exampleblock}{Formal Testing}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textbf{Diebold-Mariano}: statistical superiority of forecast
+                    \item \textbf{Model Confidence Set} (Hansen, Lunde \& Nason, 2011): set of equivalently superior models
+                    \item Giacomini-White: conditional testing
+                \end{itemize}
+            \end{exampleblock}
+
+            \column{0.5\textwidth}
+            \begin{alertblock}{Conclusions and Deliverable}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Which approach works best for Romanian inflation? Why?
+                    \item Does model combination beat individual models?
+                    \item \textbf{Deliverable}: 15--20 page report + reproducible Python/R code
+                \end{itemize}
+            \end{alertblock}
+        \end{columns}
+        }
     \end{cminipage}
 \end{frame}
 
