@@ -31,6 +31,7 @@ from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.stattools import acf
 import time
 import os
+import sys
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -505,7 +506,19 @@ chronos_preds_arr = None
 chronos_low = chronos_high = None
 HAS_CHRONOS = False
 
+# Pre-check: test if chronos can be imported without segfaulting (ARM Mac issue)
+import subprocess as _sp
+_chk = _sp.run([sys.executable, '-c', 'import torch; from chronos import ChronosPipeline; print("ok")'],
+               capture_output=True, text=True, timeout=30)
+_chronos_importable = _chk.returncode == 0 and 'ok' in _chk.stdout
+
+if not _chronos_importable:
+    print("   Chronos not importable (segfault or missing package)")
+    print("   Run chapter8_foundation_colab.ipynb on Google Colab instead")
+
 try:
+    if not _chronos_importable:
+        raise ImportError("Chronos not importable on this platform")
     import torch
     from chronos import ChronosPipeline
 
@@ -550,7 +563,18 @@ timesfm_rmse = timesfm_mae = timesfm_time = None
 timesfm_preds_arr = None
 HAS_TIMESFM = False
 
+# Pre-check: test if timesfm can be imported
+_chk2 = _sp.run([sys.executable, '-c', 'import timesfm; print("ok")'],
+                capture_output=True, text=True, timeout=30)
+_timesfm_importable = _chk2.returncode == 0 and 'ok' in _chk2.stdout
+
+if not _timesfm_importable:
+    print("   TimesFM not importable (missing package or Python version)")
+    print("   Run chapter8_foundation_colab.ipynb on Google Colab instead")
+
 try:
+    if not _timesfm_importable:
+        raise ImportError("TimesFM not importable on this platform")
     import timesfm
 
     t0 = time.time()
@@ -718,39 +742,45 @@ if HAS_CHRONOS or HAS_TIMESFM:
     plt.tight_layout()
     save_fig('ch8_foundation_comparison')
 else:
-    print("   Skipping ch8_foundation_comparison.pdf (no foundation models available)")
-    # Generate a placeholder with classical models only
-    print("   Generating ch8_foundation_comparison.pdf (classical only) …")
+    print("   Generating ch8_foundation_comparison.pdf (classical models only) …")
+    print("   NOTE: Run chapter8_foundation_colab.ipynb on Google Colab for Chronos/TimesFM charts")
 
-    fm_names  = model_names + ['Chronos*', 'TimesFM*']
-    fm_rmse   = rmse_vals + [np.nan, np.nan]
-    fm_mae    = mae_vals + [np.nan, np.nan]
-    fm_colors = colors_bar + [PURPLE, TEAL]
+    # Show classical models only — clean chart, no ugly placeholders
+    fm_names  = model_names
+    fm_rmse   = rmse_vals
+    fm_mae    = mae_vals
+    fm_colors = colors_bar
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
     x2 = np.arange(len(fm_names))
     w = 0.35
 
-    bars_r = axes[0].bar(x2 - w / 2, [v if not np.isnan(v) else 0 for v in fm_rmse],
-                         w, color=fm_colors, alpha=0.9, edgecolor='white', linewidth=0.5, label='RMSE')
-    bars_m = axes[0].bar(x2 + w / 2, [v if not np.isnan(v) else 0 for v in fm_mae],
-                         w, color=fm_colors, alpha=0.5, edgecolor='white', linewidth=0.5, label='MAE')
+    bars_r = axes[0].bar(x2 - w / 2, fm_rmse, w, color=fm_colors,
+                         alpha=0.9, edgecolor='white', linewidth=0.5, label='RMSE')
+    bars_m = axes[0].bar(x2 + w / 2, fm_mae, w, color=fm_colors,
+                         alpha=0.5, edgecolor='white', linewidth=0.5, label='MAE')
     axes[0].set_ylabel('Error')
-    axes[0].set_title('Classical vs Foundation Models', fontweight='bold')
+    axes[0].set_title('Classical Models: Error Comparison', fontweight='bold')
     axes[0].set_xticks(x2)
     axes[0].set_xticklabels(fm_names, rotation=20, ha='right', fontsize=7)
     for bar in bars_r:
         h = bar.get_height()
-        if h > 0:
-            axes[0].text(bar.get_x() + bar.get_width() / 2, h + 0.0001,
-                         f'{h:.4f}', ha='center', va='bottom', fontsize=6)
+        axes[0].text(bar.get_x() + bar.get_width() / 2, h + 0.0001,
+                     f'{h:.4f}', ha='center', va='bottom', fontsize=6)
     axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.22), ncol=2, frameon=False)
-    axes[0].annotate('* Not installed', xy=(0.95, 0.95), xycoords='axes fraction',
-                     ha='right', va='top', fontsize=7, color='gray')
 
-    axes[1].text(0.5, 0.5, 'Foundation models\nnot available\n\nInstall chronos-forecasting\nor timesfm to compare',
-                 ha='center', va='center', transform=axes[1].transAxes, fontsize=10, color='gray')
+    arima_base = arima_rmse
+    rel_improve = [(arima_base - r) / arima_base * 100 for r in fm_rmse]
+    bar_colors_rel = [FOREST if v > 0 else IDA_RED for v in rel_improve]
+    axes[1].bar(x2, rel_improve, color=bar_colors_rel, alpha=0.8, edgecolor='white', linewidth=0.5)
+    axes[1].axhline(y=0, color='black', linewidth=0.5)
+    axes[1].set_ylabel('RMSE Improvement vs ARIMA (%)')
     axes[1].set_title('Relative Performance', fontweight='bold')
+    axes[1].set_xticks(x2)
+    axes[1].set_xticklabels(fm_names, rotation=20, ha='right', fontsize=7)
+    for i, v in enumerate(rel_improve):
+        axes[1].text(i, v + (0.3 if v >= 0 else -0.6),
+                     f'{v:.1f}%', ha='center', fontsize=7)
 
     plt.tight_layout()
     save_fig('ch8_foundation_comparison')
@@ -788,21 +818,21 @@ if HAS_CHRONOS or HAS_TIMESFM:
     plt.tight_layout()
     save_fig('ch8_foundation_predictions')
 else:
-    print("   Skipping ch8_foundation_predictions.pdf (no foundation models available)")
-    # Generate placeholder
-    print("   Generating ch8_foundation_predictions.pdf (placeholder) …")
+    print("   Generating ch8_foundation_predictions.pdf (classical models only) …")
+    print("   NOTE: Run chapter8_foundation_colab.ipynb on Google Colab for Chronos/TimesFM charts")
+
+    # Show classical predictions only — clean chart, no ugly placeholders
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(test_idx, price_test.values, color='#333333', linewidth=1.5,
             label='Actual EUR/RON', zorder=5)
     ax.plot(test_idx, arima_preds, color=MAIN_BLUE, linewidth=0.8,
-            linestyle='--', alpha=0.6, label='ARIMA (baseline)')
-    ax.text(0.5, 0.5, 'Foundation models not available\n\nInstall chronos-forecasting or timesfm\nto see zero-shot predictions',
-            ha='center', va='center', transform=ax.transAxes, fontsize=12, color='gray',
-            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+            linestyle='--', alpha=0.7, label='ARIMA(1,1,1)')
+    ax.plot(test_idx, arfima_preds, color=IDA_RED, linewidth=0.8,
+            linestyle='--', alpha=0.7, label='ARFIMA(1,d,1)')
     ax.set_xlabel('Date')
     ax.set_ylabel('EUR/RON Exchange Rate')
-    ax.set_title('Foundation Models: Zero-Shot Predictions on EUR/RON', fontweight='bold')
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
+    ax.set_title('Classical Models: Predictions on EUR/RON Test Set', fontweight='bold')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False)
     plt.tight_layout()
     save_fig('ch8_foundation_predictions')
 
