@@ -1,0 +1,1906 @@
+% Capitolul 11: LLM-uri și Modele Fundaționale pentru Serii de Timp
+% Prezentare academică de calitate Harvard
+% Program de licență, Academia de Studii Economice din București
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Capitolul 11: LLM-uri și Modele Fundaționale pentru Serii de Timp}
+
+\begin{document}
+
+% Pagina de titlu (fără antet/subsol)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% OBIECTIVE DE ÎNVĂȚARE
+%=============================================================================
+\begin{frame}{Obiective de învățare}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{La finalul acestui capitol, veți fi capabili să:}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Explicați} arhitectura Transformer și mecanismul de auto-atenție
+            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Distingeți} arhitecturile encoder-only, decoder-only și encoder-decoder
+            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Descrieți} paradigma modelelor fundaționale: pre-antrenare, ajustare fină, implementare
+            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Comparați} strategiile de tokenizare: patching, cuantizare și embedding-uri
+            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Evaluați} principalele modele fundaționale (Chronos, TimesFM, TimeGPT, Lag-Llama, Moirai)
+            \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Decideți} când să utilizați inferența zero-shot vs.\ ajustarea fină
+            \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Aplicați} modele fundaționale la sarcini reale de prognoză în Python
+            \item[\textcolor{MainBlue}{\textbf{8.}}] \textbf{Evaluați critic} limitările, preocupările etice și direcțiile viitoare
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% CUPRINS
+%=============================================================================
+\begin{frame}{Cuprins}
+    \vspace{-0.3cm}
+    {\small
+    \setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$~\inserttocsection}
+    \tableofcontents
+    }
+\end{frame}
+
+%=============================================================================
+\section{Motivație}
+%=============================================================================
+
+\begin{frame}{De la modele specifice la modele fundaționale}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Era 1: Modele statistice clasice (1970--2010)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item ARIMA, ETS, GARCH --- construite manual per serie, ipoteze stricte
+            \item Puncte forte: interpretabile, teorie bine înțeleasă, funcționează cu date puține
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Era 2: Deep Learning (2015--2022)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item LSTM, TCN, DeepAR, N-BEATS --- antrenate pe seturi de date individuale
+            \item Puncte forte: captează dinamici neliniare; Slăbiciune: necesită date etichetate mari per sarcină
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Era 3: Modele Fundaționale (2023--prezent)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item TimeGPT, Chronos, TimesFM, Lag-Llama, Moirai --- pre-antrenate pe miliarde de puncte temporale
+            \item \textbf{Perspectivă cheie}: antrenare \textit{o singură dată} pe date masive și diverse, implementare \textit{oriunde} (zero-shot)
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Avantajul scalei}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\footnotesize
+    \begin{block}{Modele Fundaționale: Comparație de scală}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|r|l|l|c}
+        \toprule
+        \textbf{Model} & \textbf{Parametri} & \textbf{Date pre-antrenare} & \textbf{Arhitectură} & \textbf{Zero-Shot?} \\
+        \midrule
+        TimeGPT & N/A (proprietar) & 100B+ puncte & Transformer enc-dec & Da (API) \\
+        Chronos & 20M--710M & 84B puncte & T5 enc-dec & Da \\
+        TimesFM & 200M & 100B puncte & Decoder-only & Da \\
+        Lag-Llama & 352M & Seturi multiple & LLaMA decoder & Da \\
+        Moirai & 14M--311M & 27B puncte & BERT encoder & Da \\
+        PatchTST & 1M--10M & Specific sarcinii & Transformer enc & Nu (supervizat) \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Observație cheie}
+        {\small Modelele fundaționale valorifică \textbf{transferul de cunoștințe între domenii}: tiparele învățate din date energetice ajută la prognoza vânzărilor cu amănuntul și invers. Aceasta este analogă modului în care GPT-3 învață gramatica din corpusuri textuale diverse.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Harta capitolului}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        \begin{block}{Ce vom acoperi}
+            {\small
+            \begin{enumerate}\setlength{\itemsep}{1pt}
+                \item \textbf{Motivație} --- cele trei ere ale prognozei
+                \item \textbf{Arhitectura Transformer} --- atenție, codificare pozițională
+                \item \textbf{De la Transformers la Modele Fundaționale} --- tokenizare, patching
+                \item \textbf{Analiza Detaliată a Modelelor} --- Chronos, TimesFM, TimeGPT, Lag-Llama, Moirai
+                \item \textbf{Zero-Shot vs Fine-Tuning} --- când și cum
+                \item \textbf{Studii de Caz Practice} --- EUR/RON, energie, volatilitate
+                \item \textbf{Benchmark-uri și Selecția Modelelor} --- Monash, GiftEval
+                \item \textbf{Limitări, Etică și Viitor} --- ce ne rezervă viitorul
+            \end{enumerate}
+            }
+        \end{block}
+
+        \column{0.43\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch11_pretraining_scale.pdf}
+        \end{center}
+        {\scriptsize Scala datelor de pre-antrenare pentru modelele fundaționale (scală logaritmică).}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Arhitectura Transformer}
+%=============================================================================
+
+\begin{frame}{Cercetător în lumina reflectoarelor: Vaswani et al.\ (2017)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{``Attention Is All You Need''}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Publicat la NeurIPS 2017 de cercetători de la Google Brain
+            \item Peste \textbf{130{,}000 de citări} --- una dintre cele mai influente lucrări ML din toate timpurile
+            \item Proiectat inițial pentru \textbf{traducere automată} (NLP)
+            \item Inovația cheie: a înlocuit complet recurența cu \textbf{auto-atenția}
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{De ce contează pentru seriile de timp}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Seriile de timp sunt date \textbf{secvențiale} --- aceeași provocare fundamentală ca în limbaj
+            \item Transformerele gestionează secvențe de \textbf{lungime variabilă} în mod natural
+            \item \textbf{Calcul paralel}: spre deosebire de RNN-uri, toate pozițiile sunt procesate simultan
+            \item Modelele fundaționale (GPT, BERT, T5) sunt toate construite pe această arhitectură
+        \end{itemize}
+        }
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Cronologie de impact}
+        {\small 2017: Attention Is All You Need $\to$ 2018: BERT, GPT $\to$ 2020: GPT-3 $\to$ 2023: TimeGPT, Chronos $\to$ 2024: TimesFM, Moirai}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Auto-atenția: Intuiție}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{De ce atenția înlocuiește recurența}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{RNN-uri}: procesează token-urile secvențial $\Rightarrow$ $O(T)$ pași secvențiali, blocaj informațional
+            \item \textbf{Auto-atenția}: fiecare poziție acordă atenție fiecărei alte poziții \textbf{în paralel}
+            \item Conexiuni directe între poziții îndepărtate: fără gradienți care se estompează
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{RNN: Secvențial}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Calea între $x_1$ și $x_T$: $O(T)$ pași
+                \item Nu se poate paraleliza temporal
+                \item Gradientul: $T$ multiplicări
+                \item Informația se ``comprimă'' prin starea ascunsă
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Atenție: Paralel}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Calea între oricare două poziții: $O(1)$
+                \item Complet paralelizabilă pe GPU-uri
+                \item Fiecare poziție ``vede'' direct toate celelalte
+                \item Învață la care poziții să acorde atenție
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{ch11_quiz1_attention_vs_rnn.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Auto-atenția: Matematica}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Atenția Dot-Product Scalată}
+        Dați fiind embedding-urile de intrare $X \in \mathbb{R}^{T \times d}$, calculăm:
+        \vspace{-2mm}
+        $$Q = XW^Q, \quad K = XW^K, \quad V = XW^V$$
+        \vspace{-4mm}
+        $$\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$$
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        {\scriptsize
+        \begin{exampleblock}{Interpretare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $Q$ (Queries): ``Ce caut?''
+                \item $K$ (Keys): ``Ce conțin?''
+                \item $V$ (Values): ``Ce informație furnizez?''
+                \item $\sqrt{d_k}$: scalarea previne saturarea softmax
+                \item Ieșire: media ponderată a valorilor, ponderi = scoruri de compatibilitate
+            \end{itemize}
+        \end{exampleblock}
+        }
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.38\textheight, keepaspectratio]{ch11_attention_heatmap.pdf}
+        \end{center}
+        {\scriptsize Harta termică a ponderilor de atenție: rândurile acordă atenție coloanelor.}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Atenția Multi-Cap}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Capete multiple de atenție captează tipare diverse}
+        \vspace{-2mm}
+        \begin{align*}
+            \text{MultiHead}(Q,K,V) &= \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\, W^O \\
+            \text{where head}_i &= \text{Attention}(QW_i^Q,\; KW_i^K,\; VW_i^V)
+        \end{align*}
+        \vspace{-4mm}
+        {\small Fiecare cap proiectează într-o dimensiune mai mică: $W_i^Q, W_i^K \in \mathbb{R}^{d \times d_k}$, $W_i^V \in \mathbb{R}^{d \times d_v}$ cu $d_k = d_v = d/h$.}
+    \end{block}
+
+    \vspace{-1mm}
+
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Ce învață diferitele capete}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Capul 1: \textbf{Trend} --- acordă atenție valorilor recente
+                \item Capul 2: \textbf{Sezonalitate} --- acordă atenție aceleiași perioade din ciclul anterior
+                \item Capul 3: \textbf{Valori aberante} --- acordă atenție valorilor extreme
+                \item Capul 4: \textbf{Dependențe pe termen lung} --- acordă atenție corelațiilor îndepărtate
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Cost computațional}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Complexitatea auto-atenției: $O(T^2 \cdot d)$
+                \item Memorie: $O(T^2)$ pentru matricea de atenție
+                \item Pentru secvențe lungi ($T > 4096$): costul pătratic devine prohibitiv
+                \item Soluții: patching, atenție rară, atenție liniară
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Codificarea pozițională}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{De ce contează poziția}
+        {\small Auto-atenția este \textbf{echivariată la permutări}: fără informație pozițională, tratează $\{x_1, x_2, x_3\}$ și $\{x_3, x_1, x_2\}$ identic. Ordinea în seriile de timp \textbf{contează}, deci injectăm poziția.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Codificarea pozițională sinusoidală (Vaswani et al., 2017)}
+        \vspace{-2mm}
+        \begin{align*}
+            PE_{(pos,\, 2i)} &= \sin\!\left(\frac{pos}{10000^{2i/d}}\right) \\
+            PE_{(pos,\, 2i+1)} &= \cos\!\left(\frac{pos}{10000^{2i/d}}\right)
+        \end{align*}
+        \vspace{-4mm}
+        {\small Fiecare dimensiune folosește o frecvență diferită $\Rightarrow$ semnătură pozițională unică. Pozițiile relative pot fi calculate prin produse scalare.}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.28\textheight, keepaspectratio]{ch11_positional_encoding.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Blocul Transformer complet}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{block}{Componentele blocului Transformer}
+            {\scriptsize
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item \textbf{Embedding de intrare} + Codificare pozițională
+                \item \textbf{Normalizare de strat} (varianta pre-norm)
+                \item \textbf{Auto-atenție Multi-Cap}
+                \item \textbf{Conexiune reziduală}: $x + \text{Attn}(x)$
+                \item \textbf{Normalizare de strat}
+                \item \textbf{Rețea Feed-Forward} (FFN): două straturi liniare cu GELU/ReLU
+                $$\text{FFN}(x) = W_2 \cdot \text{GELU}(W_1 x + b_1) + b_2$$
+                \item \textbf{Conexiune reziduală}: $x + \text{FFN}(x)$
+            \end{enumerate}
+            }
+        \end{block}
+        {\scriptsize Stivuirea a $N$ blocuri ($N=6$--$24$) conferă adâncime. Conexiunile reziduale permit fluxul gradientului.}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch11_transformer_block.pdf}
+        \end{center}
+        {\scriptsize Diagramă: blocul Transformer standard cu layout pre-norm.}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Arhitecturi Encoder vs Decoder}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\footnotesize
+    \begin{block}{Trei paradigme arhitecturale}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|p{3cm}|p{3cm}|p{3.5cm}}
+        \toprule
+        & \textbf{Encoder-only} & \textbf{Decoder-only} & \textbf{Encoder-Decoder} \\
+        \midrule
+        \textbf{Origine NLP} & BERT & GPT & T5, BART \\
+        \textbf{Atenție} & Bidirecțională & Cauzală (mascată) & Atenție încrucișată \\
+        \textbf{Modele TS} & Moirai, PatchTST & TimesFM, Lag-Llama & Chronos, TimeGPT \\
+        \textbf{Puncte forte} & Învață reprezentări bogate & Natural pentru generare autoregresivă & Mapare flexibilă intrare-ieșire \\
+        \textbf{Utilizare TS} & Reprezentare, clasificare & Prognoză, generare & Prognoză, seq2seq \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Distincție cheie}
+        {\small \textbf{Mascarea cauzală} (decoder): poziția $t$ poate acorda atenție doar la $\{1, \ldots, t\}$. Previne ``privitul'' în viitor --- potrivire naturală pentru prognoza seriilor de timp. \textbf{Bidirecțional} (encoder): fiecare poziție vede toate celelalte --- util pentru învățarea reprezentărilor și clasificare.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{De la Transformers la Modele Fundaționale}
+%=============================================================================
+
+\begin{frame}{Paradigma modelelor fundaționale}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Pipeline în trei etape}
+        {\scriptsize
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Pre-antrenare}: Antrenare pe corpusuri masive și diverse (miliarde de puncte temporale din diferite domenii)
+            \item \textbf{Ajustare fină} (opțional): Adaptare la un domeniu specific cu o rată de învățare mică
+            \item \textbf{Inferență}: Implementare pe serii noi, nevăzute --- zero-shot sau few-shot
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.35\textheight, keepaspectratio]{ch11_foundation_paradigm.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Perspectivă cheie (Bommasani et al., 2021)}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item ``Un model fundațional este orice model antrenat pe date vaste care poate fi adaptat la sarcini downstream.''
+                \item Pentru TS: antrenare pe \textit{energie + finanțe + retail + sănătate + meteo} $\Rightarrow$ prognoză pentru \textit{orice}
+                \item Ipoteza critică: \textbf{tipare temporale comune} există între domenii
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Strategii de tokenizare pentru serii de timp}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Provocare: Valori continue $\to$ Token-uri discrete}
+        Modelele NLP procesează token-uri discrete. Seriile de timp sunt \textbf{continue} $\Rightarrow$ necesită o strategie de mapare.
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Strategia 1: Embedding-uri de valori brute}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Proiectează $x_t \in \mathbb{R}$ în $\mathbb{R}^d$ prin strat liniar
+                \item Folosită de: modele TS Transformer vanilla
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{exampleblock}{Strategia 2: Scalare + Cuantizare}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Normalizare, apoi mapare în $B$ bin-uri discrete
+                \item Folosită de: \textbf{Chronos} (4096 bin-uri)
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Strategia 3: Patching}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Grupează $P$ puncte consecutive într-un token
+                \item Folosită de: \textbf{PatchTST}, \textbf{TimesFM}
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{exampleblock}{Strategia 4: Canale independente}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Fiecare variabilă procesată independent
+                \item Folosită de: \textbf{PatchTST}, \textbf{Moirai}
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+    }
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.15\textheight, keepaspectratio]{ch11_tokenization_strategies.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Patching: De ce funcționează}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Perspectiva PatchTST (Nie et al., 2023)}
+        {\small Se împarte o serie de timp de lungime $L$ în $N = \lfloor L / P \rfloor$ patch-uri non-suprapuse de dimensiune $P$:
+        $$\mathbf{p}_i = (x_{(i-1)P+1},\; x_{(i-1)P+2},\; \ldots,\; x_{iP}) \in \mathbb{R}^P, \quad i = 1, \ldots, N$$
+        Fiecare patch este proiectat liniar la dimensiunea $d$ și furnizat ca un singur token pentru Transformer.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Beneficii ale patching-ului}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Reduce complexitatea}: atenție $O(T^2) \to O((T/P)^2)$
+                \item \textbf{Semantică locală}: fiecare patch captează un sub-tipar scurt (ex. ciclul zilnic)
+                \item \textbf{Context mai lung}: cu $P=32$, o fereastră de 512 token-uri acoperă 16{,}384 pași temporali
+                \item \textbf{Reprezentări mai bune}: token-urile la nivel de patch sunt mai informative decât cele la nivel de punct
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.45\textheight, keepaspectratio]{ch11_patching_illustration.pdf}
+        \end{center}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Cuantizarea: Abordarea Chronos}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Tokenizare prin scalare și cuantizare (Ansari et al., 2024)}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Normalizare}: $\tilde{x}_t = \frac{x_t - \bar{x}}{s}$ unde $\bar{x}$ este media și $s$ este media valorii absolute
+            \item \textbf{Cuantizare}: mapare în $B$ bin-uri prin CDF: $b_t = \left\lfloor (B-1) \cdot \Phi(\tilde{x}_t) \right\rfloor$ unde $\Phi$ este CDF-ul normal standard
+            \item \textbf{Embedding}: căutare bin $b_t$ în tabelul de embedding T5 ($B = 4096$)
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{De ce cuantizăm?}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Reutilizează \textbf{mecanismele de vocabular NLP}: embedding-uri, strat de ieșire softmax
+                \item Funcția de pierdere cross-entropy (categorială) este bine înțeleasă
+                \item Probabilistică: ieșirea este o distribuție peste bin-uri $\Rightarrow$ distribuție predictivă completă
+                \item Compromis: rezoluția limitată de numărul de bin-uri
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.40\textheight, keepaspectratio]{ch11_chronos_tokenization.pdf}
+        \end{center}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Obiective de pre-antrenare}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Paradigma 1: Predicția următorului token (Autoregresiv, stil GPT)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Prezice $x_{t+1}$ dat fiind $x_1, \ldots, x_t$. Pierdere: $\mathcal{L} = -\sum_{t=1}^{T-1} \log p(x_{t+1} \mid x_1, \ldots, x_t)$
+            \item Folosită de: \textbf{TimesFM}, \textbf{Lag-Llama}, \textbf{TimeGPT}
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Paradigma 2: Predicție mascată (stil BERT)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Se maschează 15--40\% din token-uri, se prezic din context. Pierdere: $\mathcal{L} = -\sum_{t \in \mathcal{M}} \log p(x_t \mid x_{\setminus \mathcal{M}})$
+            \item Folosită de: \textbf{Moirai}, \textbf{PatchTST} (auto-supervizat)
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Paradigma 3: Denoising / Seq2Seq (stil T5)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Encoder procesează contextul, decoder generează prognoza. Pierdere: cross-entropy pe token-uri cuantizate
+            \item Folosită de: \textbf{Chronos}
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.15\textheight, keepaspectratio]{ch11_pretraining_objectives.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Augmentarea datelor pentru pre-antrenare}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{KernelSynth (Ansari et al., 2024)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Generează serii de timp \textbf{sintetice} prin compunerea de kernel-uri de Procese Gaussiene (GP):
+            $$k(t, t') = k_{\text{RBF}}(t,t') + k_{\text{periodic}}(t,t') + k_{\text{linear}}(t,t') + \ldots$$
+            \item Produce tipare realiste: trenduri, sezonalitate, puncte de schimbare, zgomot
+            \item Chronos folosește \textbf{miliarde} de serii sintetice pentru a augmenta datele reale
+        \end{itemize}
+        }
+    \end{block}
+
+    \vspace{-1mm}
+
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{TSMix (TimesFM)}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Mixarea seriilor existente: $\tilde{x} = \lambda x_a + (1-\lambda) x_b$
+                \item Augmentează diversitatea fără a necesita expertiza GP
+                \item Combinat cu tăierea ferestrelor și mixarea frecvențelor
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{De ce contează augmentarea}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Previne supraajustarea la domenii specifice
+                \item Crește diversitatea tiparelor în timpul pre-antrenării
+                \item Chronos: 50\% date reale + 50\% sintetice $\Rightarrow$ \textbf{mai bun} decât 100\% reale
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Analiza Detaliată a Modelelor}
+%=============================================================================
+
+\begin{frame}{Chronos: Arhitectură}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Chronos (Ansari et al., 2024 --- Amazon)}
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Arhitectură}: T5 encoder-decoder (model de limbaj pre-antrenat ca bază)
+            \item \textbf{Dimensiuni}: Mini (20M), Small (46M), Base (200M), Large (710M)
+            \item \textbf{Tokenizare}: Normalizare medie-scală + cuantizare în \textbf{4096 bin-uri}
+            \item \textbf{Pre-antrenare}: 84B puncte din 28 seturi publice + KernelSynth
+            \item \textbf{Ieșire}: Distribuție categorială peste bin-uri $\Rightarrow$ prognoză probabilistică completă
+        \end{itemize}
+        \vspace{-1mm}
+    \end{block}
+    \vspace{-2.5mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Inovații cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Tratează prognoza ca \textbf{modelare de limbaj} peste token-uri cuantizate
+                \item Nicio modificare arhitecturală a T5 --- doar tokenizarea este nouă
+                \item Probabilistic: eșantionează $N$ traiectorii, calculează cuantilele
+                \item Open-source, dimensiuni multiple pentru bugete computaționale diferite
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Limitări}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Rezoluție limitată de 4096 bin-uri (eroare de cuantizare)
+                \item Doar univariat (fiecare variabilă procesată separat)
+                \item Fereastră de context: 512 token-uri
+                \item Inferență mai lentă decât modelele decoder-only (enc+dec)
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_chronos}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_chronos}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Chronos: Cum prognozează}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Pipeline pas cu pas}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Intrare}: seria de timp brută $(x_1, x_2, \ldots, x_T)$
+            \item \textbf{Normalizare}: medie-scală $\tilde{x}_t = x_t / \bar{|x|}$
+            \item \textbf{Cuantizare}: mapează fiecare $\tilde{x}_t$ la unul din 4096 bin-uri prin $\Phi$ (CDF normal)
+            \item \textbf{Codificare}: encoder-ul T5 procesează token-urile de context $\to$ reprezentări ascunse
+            \item \textbf{Decodificare}: decoder-ul T5 generează token-uri de prognoză \textbf{autoregresiv}
+            \item \textbf{Eșantionare}: repetă decodificarea de $N$ ori (ex. $N=20$) cu eșantionare cu temperatură
+            \item \textbf{Decuantizare}: convertește indicii bin-urilor înapoi la valori continue
+            \item \textbf{Ieșire}: prognoza mediană + intervale cuantile (10\%, 90\%)
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.35\textheight, keepaspectratio]{ch11_chronos_pipeline.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Chronos: Rezultate benchmark}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Performanță pe benchmark-ul Monash (Ansari et al., 2024)}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Evaluat pe 27 seturi de date din Monash Time Series Forecasting Archive
+            \item Metrici: \textbf{WQL} (Weighted Quantile Loss) și \textbf{MASE} (Mean Absolute Scaled Error)
+            \item Chronos-Large obține cel mai bun sau al doilea rezultat pe 16/27 seturi de date \textbf{în zero-shot}
+            \item Depășește modelele de deep learning specifice sarcinii (DeepAR, TFT, N-BEATS) în medie
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.45\textheight, keepaspectratio]{ch11_chronos_benchmarks.pdf}
+    \end{center}
+    {\scriptsize Scoruri WQL: mai mic este mai bun. Chronos-Large competitiv cu sau mai bun decât bazele de referință supervizate.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{TimesFM: Arhitectură}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{TimesFM (Das et al., 2024 --- Google Research)}
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Arhitectură}: Transformer Decoder-only (200M parametri)
+            \item \textbf{Patching}: dimensiune patch $P = 32$, proiectare la dimensiunea modelului
+            \item \textbf{Pre-antrenare}: 100B puncte reale + sintetice
+            \item \textbf{Multi-rezoluție}: frecvențe diverse (minutar la anual)
+            \item \textbf{Context}: până la 512 patch-uri ($= 16{,}384$ pași temporali)
+        \end{itemize}
+        \vspace{-1mm}
+    \end{block}
+    \vspace{-2.5mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Inovații cheie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Decoder-only}: mai simplu și mai rapid decât enc-dec
+                \item \textbf{Patch-uri de ieșire}: prezice $P$ valori simultan (nu token cu token)
+                \item \textbf{Token de frecvență}: token special ce codifică frecvența datelor
+                \item Prognoză punctuală + ajustare fină opțională pentru cuantile
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Comparație cu Chronos}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Valori continue (fără cuantizare) $\Rightarrow$ fără eroare de discretizare
+                \item Inferență mai rapidă (decoder-only, ieșire pe patch-uri)
+                \item Mai puțin natural probabilistic (necesită ajustare fină pentru cuantile)
+                \item Ponderi închise până în 2024, acum parțial deschise
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_timesfm}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_timesfm}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{TimesFM: Performanță Zero-Shot}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Rezultate benchmark (Das et al., 2024)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Evaluat pe Monash, M3, M4 și benchmark-uri de orizont lung (ETTh, Weather, Electricity)
+            \item \textbf{Zero-shot} TimesFM depășește modelele supervizate pe majoritatea seturilor Monash
+            \item Deosebit de puternic pe prognoze de \textbf{orizont lung} (96--720 pași)
+            \item Competitiv cu PatchTST și iTransformer specifice sarcinii, chiar fără ajustare fină
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_timesfm_benchmarks.pdf}
+    \end{center}
+    {\scriptsize MAE zero-shot TimesFM pe seturile de date benchmark. Barele arată îmbunătățirea relativă față de cea mai bună bază de referință supervizată.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{TimeGPT: Model fundațional API-First}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{TimeGPT (Garza \& Mergenthaler-Canseco, 2024 --- Nixtla)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Arhitectură}: Transformer encoder-decoder proprietar
+            \item \textbf{Pre-antrenare}: cel mai mare corpus cunoscut --- \textbf{100+ miliarde} de puncte temporale din domenii diverse
+            \item \textbf{Acces}: doar API (fără ponderi deschise), produs comercial
+            \item \textbf{Caracteristici}: prognoză zero-shot, intervale de predicție conformale, detecția anomaliilor, endpoint de ajustare fină, suport variabile exogene
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Avantaje}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Cel mai ușor de folosit}: 3 linii de cod Python
+                \item \textbf{Predicție conformală}: incertitudine calibrată
+                \item \textbf{Variabile exogene}: spre deosebire de majoritatea FM
+                \item Actualizări regulate ale modelului de echipa Nixtla
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Limitări}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Cutie neagră}: proprietar, fără reproductibilitate
+                \item \textbf{Cost API}: tarifare per apel
+                \item \textbf{Confidențialitatea datelor}: datele trimise la serverele Nixtla
+                \item \textbf{Dependență de furnizor}: dependent de disponibilitatea serviciului
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_timegpt}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_timegpt}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Lag-Llama: Bază LLM pentru serii de timp}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Lag-Llama (Rasul et al., 2024)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Arhitectură}: decoder LLaMA adaptat pentru serii de timp (352M parametri)
+            \item \textbf{Inovație cheie}: \textbf{Caracteristici lag ca embedding-uri de token-uri} --- lag-uri $\{1, 2, \ldots, 7, 14, 28, \ldots\}$
+            \item \textbf{Cap de distribuție}: produce parametri Student-$t$ $(\mu, \sigma, \nu)$ în loc de probabilități de token
+            \item \textbf{Pre-antrenare}: Seturi de date de serii de timp disponibile public
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{De ce LLaMA pentru serii de timp?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Baza LLaMA: dovedită la scară în NLP
+                \item RoPE (Rotary Positional Encoding) pentru poziții temporale
+                \item GQA (Grouped Query Attention) pentru inferență eficientă
+                \item Token-urile lag captează structuri temporale cunoscute (săptămânal, lunar)
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Capul de distribuție}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item În loc de softmax peste vocabular:
+                $$p(x_{t+1} \mid \cdot) = \text{Student-}t(\mu, \sigma, \nu)$$
+                \item Gestionează natural cozile groase (date financiare)
+                \item Probabilistic: eșantionare pentru intervale de predicție
+                \item Open-source și ajustabil fin
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_lagllama}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_lagllama}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Moirai: Orice-variabilă, orice-frecvență}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Moirai (Woo et al., 2024 --- Salesforce)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Arhitectură}: encoder mascat stil BERT (14M, 91M, 311M parametri)
+            \item \textbf{Inovație cheie}: gestionează \textbf{orice număr de variabile}, \textbf{orice frecvență}, \textbf{orice lungime de predicție}
+            \item \textbf{Pre-antrenare}: 27 miliarde de observații din \textbf{LOTSA} (Large-scale Open Time Series Archive, 9 domenii)
+            \item \textbf{Ieșire}: distribuție mixtură (parametrii unei distribuții de ieșire flexibile)
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Design universal}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Orice-variabilă}: aplatizează multivariatul în patch-uri, folosește ID-uri de variabilă
+                \item \textbf{Orice-frecvență}: embedding-uri de frecvență (orar, zilnic, etc.)
+                \item \textbf{Orice-lungime}: atenție mascată pentru lungimi de ieșire variabile
+                \item Cel mai apropiat de un model fundațional TS ``universal''
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Setul de date LOTSA}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item 9 domenii: energie, transport, finanțe, sănătate, natură, web, vânzări, climă, social
+                \item 27B observații, curate pentru calitate
+                \item Colecție de date open-source
+                \item Permite pre-antrenare reproductibilă
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_moirai}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_moirai}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{PatchTST: Planul arhitectural}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{PatchTST (Nie et al., 2023)}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Arhitectură}: encoder Transformer cu \textbf{patching independent pe canale}
+            \item A introdus două idei cheie adoptate de toate modelele ulterioare:
+            \textbf{(1)} Patching: grupează $P$ puncte temporale într-un singur token;
+            \textbf{(2)} Independență pe canale: fiecare variabilă procesată independent
+            \item Parametri: 1M--10M (specifici sarcinii, mult mai mici decât FM)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.30\textheight, keepaspectratio]{ch11_patchtst_architecture.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Moștenire}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item PatchTST a arătat că Transformerele pot depăși modelele liniare pe orizont lung
+                \item Patching adoptat de: TimesFM, Moirai, MOMENT
+                \item Independența pe canale: Moirai, iTransformer
+                \item Pre-antrenare auto-supervizată: patching mascat
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \vspace{-2mm}
+    \quantlet{TSA\_ch11\_patchtst}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_patchtst}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Tabelul comparativ al arhitecturilor}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Comparație comprehensivă a modelelor}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|l|r|l|l|l}
+        \toprule
+        \textbf{Model} & \textbf{Arhitectură} & \textbf{Parametri} & \textbf{Tokenizare} & \textbf{Ieșire} & \textbf{Pre-antrenare} \\
+        \midrule
+        Chronos & T5 enc-dec & 20M--710M & Cuantizare (4096) & Dist.\ categorială & 84B pct + KernelSynth \\
+        TimesFM & Decoder-only & 200M & Patching ($P\!=\!32$) & Punct + cuantile & 100B real + sintetic \\
+        TimeGPT & Enc-dec (prop.) & N/A & Proprietar & Punct + conformal & 100B+ (proprietar) \\
+        Lag-Llama & LLaMA decoder & 352M & Caracteristici lag & Student-$t$ & Seturi publice \\
+        Moirai & BERT encoder & 14M--311M & Patching + ID variabilă & Dist.\ mixtură & 27B (LOTSA) \\
+        PatchTST & Transformer enc & 1M--10M & Patching ($P\!=\!16$) & Punct (MSE) & Specific sarcinii \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Concluzie cheie}
+        {\small Nicio arhitectură unică nu domină. Alegerea depinde de: (1)~dacă aveți nevoie de prognoze probabilistice, (2)~suport multivariat, (3)~buget computațional și (4)~dacă open-source contează.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ipoteza scalării pentru serii de timp}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Funcționează scalarea pentru serii de timp?}
+        {\scriptsize În NLP, \textbf{legile de scalare} (Kaplan et al., 2020): pierderea $\propto N^{-\alpha}$ unde $N$ = parametri. Pentru serii de timp: dovezile sunt \textbf{mixte}.}
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.45\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.30\textheight, keepaspectratio]{ch11_scaling_laws.pdf}
+        \end{center}
+
+        \column{0.52\textwidth}
+        {\scriptsize
+        \begin{alertblock}{De ce scalarea TS diferă de NLP}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Mai puțină diversitate}: textul de pe internet $>$ seturile TS
+                \item \textbf{Tipare mai simple}: multe TS descrise de AR + sezonalitate
+                \item \textbf{Randamente descrescătoare}: Chronos-Large $\approx$ Chronos-Base
+                \item \textbf{Calitatea datelor}: TS zgomotoase limitează ce pot învăța modelele
+                \item Chronos 710M $\approx$ 200M; TimesFM 200M competitiv cu modele mari
+                \item Calitatea datelor de pre-antrenare $>$ cantitatea de parametri
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Când modelele fundaționale eșuează}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{alertblock}{Moduri de eșec de monitorizat}
+        {\scriptsize
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Schimbarea distribuției}: Schimbări de regim financiar (criza COVID, creșteri ale ratei dobânzii). Datele de pre-antrenare pot să nu acopere astfel de regimuri.
+            \item \textbf{Variabile exogene lipsă}: Vremea afectează cererea de energie; schimbările de politici afectează economia. Majoritatea FM sunt \textbf{univariate} și ignoră covariatele.
+            \item \textbf{Frecvențe rare}: Eșantionare neregulată, date conduse de evenimente, date tick-by-tick. Pre-antrenarea favorizează frecvențele regulate.
+            \item \textbf{Serii foarte scurte}: Cu $<$50 observații, contextul este insuficient. Metodele clasice (ETS, ARIMA) domină adesea.
+            \item \textbf{Dependențe multivariate}: Corelațiile între variabile (ex.\ dinamici VAR) sunt ignorate de FM univariate. Doar Moirai încearcă suport multivariat.
+        \end{enumerate}
+        }
+    \end{alertblock}
+    \vspace{-3mm}
+    \begin{exampleblock}{Regulă practică}
+        {\scriptsize Dacă datele dvs. au \textbf{structură cauzală cunoscută}, \textbf{caracteristici specifice domeniului} sau \textbf{schimbări de regim}, combinați prognozele FM cu modele informate de domeniu (ansamblu sau ierarhic).}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Zero-Shot vs Fine-Tuning}
+%=============================================================================
+
+\begin{frame}{Zero-Shot: Când și de ce}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Prognoză Zero-Shot}
+        {\scriptsize Se folosește modelul pre-antrenat \textbf{direct} pe o serie nouă fără niciun antrenament.}
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Când să folosiți Zero-Shot}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Date limitate}: lansare produs nou, pornire la rece
+                \item \textbf{Prototipare rapidă}: bază de referință în minute
+                \item \textbf{Cross-domeniu}: același model pentru finanțe, retail, energie
+                \item \textbf{Multe serii}: 10K+ serii, fără antrenare individuală
+                \item \textbf{Fără expertiză ML}: simplu apel API
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.33\textheight, keepaspectratio]{ch11_zeroshot_vs_finetuning.pdf}
+        \end{center}
+    \end{columns}
+    \vspace{-3mm}
+    \begin{alertblock}{Descoperire surprinzătoare}
+        {\scriptsize Ansari et al.\ (2024): Chronos zero-shot depășește modelele specifice sarcinii (DeepAR, N-BEATS) \textit{antrenate pe datele țintă}. Pre-antrenarea transferă cunoștințe temporale eficient.}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ajustare fină: Adaptare la domeniu}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Ajustare fină completă vs LoRA}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Ajustare fină completă}: actualizarea tuturor parametrilor pe date de domeniu (costisitoare, risc de uitare)
+            \item \textbf{LoRA} (Low-Rank Adaptation, Hu et al., 2022): înghețarea ponderilor de bază, adăugarea de matrice mici antrenabile:
+            $W' = W + \Delta W = W + BA, \; B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times d},\; r \ll d$.
+            LoRA: 0.1--1\% din parametri antrenabili, performanță similară, mult mai ieftină
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{Riscurile ajustării fine}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Uitare catastrofală}: modelul pierde cunoștințele pre-antrenate
+                \item \textbf{Supraajustare}: set de date mic $\Rightarrow$ generalizare slabă
+                \item \textbf{Sensibilitate la hiperparametri}: rata de învățare, epoci critice
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Bune practici}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Rată de învățare mică} ($10^{-5}$--$10^{-4}$)
+                \item \textbf{Încălzire} (500--1000 pași) + \textbf{oprire timpurie}
+                \item \textbf{Înghețați straturile timpurii}, ajustați fin ulterioarele
+                \item Preferați \textbf{LoRA} pentru seturi mici ($<$10K serii)
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Few-Shot și învățare în context}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Lungimea contextului ca ``Few-Shot'' pentru serii de timp}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item În NLP, ``few-shot'' = exemple în prompt. În TS, ``context'' = observații istorice
+            \item \textbf{Context mai lung $\to$ prognoze mai bune} (până la fereastra de context a modelului)
+            \item Modelul condiționează pe tiparele istorice pentru a deduce trend, sezonalitate și zgomot
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.32\textheight, keepaspectratio]{ch11_context_length_effect.pdf}
+        \end{center}
+        {\scriptsize Eroare prognoză vs.\ lungimea contextului: randamente descrescătoare dincolo de fereastra modelului.}
+
+        \column{0.48\textwidth}
+        {\scriptsize
+        \begin{exampleblock}{Ferestre de context per model}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Chronos: 512 token-uri ($\approx$ 512 pași)
+                \item TimesFM: 512 patch-uri ($\approx$ 16K pași)
+                \item Moirai: 5000 token-uri (configurabil)
+                \item Lag-Llama: 1024 pași (cu lag-uri extinse)
+                \item TimeGPT: configurabil prin API
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{alertblock}{Sfat practic}
+            Furnizați cât mai mult context permite modelul. Zilnic: $\geq$1 an. Lunar: $\geq$5 ani.
+        \end{alertblock}
+        }
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Cadru decizional}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Când să alegeți Zero-Shot, Ajustare Fină sau Clasic}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Pasul 1}: Aveți date etichetate de domeniu? Nu $\to$ Zero-shot
+            \item \textbf{Pasul 2}: Performanța zero-shot suficientă? Da $\to$ Implementare; Nu $\to$ Ajustare fină
+            \item \textbf{Pasul 3}: Domeniul foarte diferit de pre-antrenare? Da $\to$ Ajustare fină completă; Nu $\to$ LoRA
+            \item \textbf{Pasul 4}: Nevoie de interpretabilitate/cauzalitate? Da $\to$ Modele clasice (ARIMA, VAR)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.32\textheight, keepaspectratio]{ch11_decision_flowchart.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Reguli practice}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $<$50 observații: ARIMA / ETS
+                \item 50--500 obs.: FM zero-shot
+                \item 500--10K obs.: FM ajustat fin
+                \item $>$10K obs.: DL specific poate egala FM
+                \item Întotdeauna comparați cu ARIMA
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Studii de Caz Practice}
+%=============================================================================
+
+\begin{frame}{Studiu de caz 1: EUR/RON cu toate modelele fundaționale}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Extinderea studiului de caz din Capitolul 8}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Date}: Cursul de schimb zilnic EUR/RON (2020--2024, $\sim$1{,}200 observații)
+            \item \textbf{Sarcină}: Prognoză la 30 de zile, separare temporală 80/20
+            \item \textbf{Modele comparate}: ARIMA, ARFIMA, Random Forest, LSTM, \textbf{Chronos}, \textbf{TimesFM}, \textbf{Lag-Llama}, \textbf{Moirai}, \textbf{TimeGPT}
+            \item Modelele fundaționale folosite în mod \textbf{zero-shot} (fără antrenare pe datele EUR/RON)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_eurron_all_models.pdf}
+    \end{center}
+    \quantlet{TSA\_ch11\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_eurron_foundation}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{EUR/RON: Rezultate detaliate}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Comparație performanță prognoză}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c}
+        \toprule
+        \textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{MAPE (\%)} & \textbf{Timp antrenare} \\
+        \midrule
+        ARIMA(1,1,1) & --- & --- & --- & $<$1s \\
+        ARFIMA & --- & --- & --- & $<$1s \\
+        Random Forest & --- & --- & --- & $\sim$2s \\
+        LSTM (2-layer) & --- & --- & --- & $\sim$60s \\
+        Chronos-Base & --- & --- & --- & 0s (zero-shot) \\
+        TimesFM & --- & --- & --- & 0s (zero-shot) \\
+        Lag-Llama & --- & --- & --- & 0s (zero-shot) \\
+        Moirai-Base & --- & --- & --- & 0s (zero-shot) \\
+        TimeGPT & --- & --- & --- & 0s (apel API) \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    {\scriptsize Notă: Valorile metricilor (---) sunt populate la rulare din codul Quantlet. Consultați notebook-ul companion pentru numere exacte.}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.32\textheight, keepaspectratio]{ch11_eurron_predictions_detail.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Studiu de caz 2: Prognoza cererii de energie}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Cererea de electricitate din Germania (orar, multi-sezonier)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Date}: Consumul orar de electricitate din Germania (2015--2023, 70K+ observații)
+            \item \textbf{Provocare}: sezonalități multiple (24h zilnic + 168h săptămânal + anual)
+            \item \textbf{Modele}: TBATS (Cap9), Prophet (Cap9), LSTM (Cap8), Chronos, TimesFM, Moirai
+            \item Modelele fundaționale gestionează tiparele multi-sezoniere \textbf{fără specificare explicită}
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_energy_foundation.pdf}
+    \end{center}
+    \quantlet{TSA\_ch11\_energy\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_energy_foundation}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Studiu de caz 3: Volatilitate financiară}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Volatilitatea realizată S\&P 500}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Date}: Volatilitatea realizată zilnică S\&P 500 (2000--2024)
+            \item \textbf{Provocare}: Grupare, cozi groase, schimbări de regim (criza din 2008, COVID 2020)
+            \item \textbf{Modele}: GARCH(1,1) (Cap5), HAR-RV, Chronos, TimesFM, Lag-Llama
+            \item \textbf{Întrebare}: Pot modelele fundaționale capta dinamicile de volatilitate fără structura GARCH?
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_volatility_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch11\_volatility\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_volatility_foundation}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}[fragile]{Tipare de cod Python}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Chronos (3 linii)}
+            \begin{verbatim}
+from chronos import ChronosPipeline
+pipe = ChronosPipeline.from_pretrained(
+    "amazon/chronos-t5-base")
+forecast = pipe.predict(
+    context=torch.tensor(data),
+    prediction_length=30)
+            \end{verbatim}
+        \end{block}
+        \vspace{-3mm}
+        \begin{block}{TimesFM (3 linii)}
+            \begin{verbatim}
+import timesfm
+tfm = timesfm.TimesFm(hparams=
+    timesfm.TimesFmHparams())
+tfm.load_from_checkpoint()
+preds = tfm.forecast(data)
+            \end{verbatim}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{TimeGPT (3 linii)}
+            \begin{verbatim}
+from nixtla import NixtlaClient
+nixtla = NixtlaClient(api_key="...")
+fcst = nixtla.forecast(
+    df=df, h=30, model="timegpt-1")
+            \end{verbatim}
+        \end{block}
+        \vspace{-3mm}
+        \begin{block}{Lag-Llama (4 linii)}
+            \begin{verbatim}
+from lag_llama.gluon.estimator import
+    LagLlamaEstimator
+estimator = LagLlamaEstimator(
+    prediction_length=30)
+predictor = estimator.train(train_ds)
+forecasts = list(
+    predictor.predict(test_ds))
+            \end{verbatim}
+        \end{block}
+    \end{columns}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Benchmark-uri și Selecția Modelelor}
+%=============================================================================
+
+\begin{frame}{Benchmark-uri majore}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Monash Time Series Forecasting Archive}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{30K+ serii} din 30 seturi de date (turism, electricitate, trafic, meteo, finanțe, etc.)
+            \item Protocol standard de evaluare: separări fixe antrenare/test, metrici WQL și MASE
+            \item Cel mai utilizat benchmark pentru modelele fundaționale (Chronos, TimesFM, Moirai raportează aici)
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Competițiile M}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{M3} (2000): 3{,}003 serii, lunar/trimestrial/anual
+                \item \textbf{M4} (2018): 100{,}000 serii, 6 frecvențe
+                \item \textbf{M5} (2020): Vânzări Walmart, ierarhice
+                \item Constatare: metodele mai simple deseori competitive
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{GiftEval (2024)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{General Time Series Forecasting Evaluation}
+                \item Proiectat special pentru evaluarea modelelor fundaționale
+                \item Frecvențe, domenii, orizonturi diverse
+                \item Metrici de calibrare și fiabilitate
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Rezultate agregate pe benchmark-uri}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Rezumat performanță cross-benchmark}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Clasamente agregate pe Monash, M3, M4, ETT, Weather, Electricity și Traffic
+            \item Niciun model nu câștigă peste tot --- \textbf{selecția modelului depinde de cazul de utilizare}
+            \item Modelele fundaționale sunt \textbf{cele mai impresionante în zero-shot}, egalând adesea bazele supervizate
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_aggregated_benchmarks.pdf}
+    \end{center}
+    {\scriptsize Hartă termică: model (rânduri) $\times$ benchmark (coloane). Culoare = clasament relativ (verde = sus, roșu = jos).}
+    \quantlet{TSA\_ch11\_benchmarks}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_benchmarks}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Când să folosiți ce: Tabel decizional}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Recomandări bazate pe scenarii}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c|c}
+        \toprule
+        \textbf{Scenariu} & \textbf{ARIMA} & \textbf{Chronos} & \textbf{TimesFM} & \textbf{Moirai} & \textbf{TimeGPT} \\
+        \midrule
+        Date limitate ($<$100 obs) & $\checkmark\checkmark$ & $\checkmark$ & $\checkmark$ & $\sim$ & $\checkmark$ \\
+        Timp real / latență mică & $\checkmark\checkmark$ & $\sim$ & $\checkmark$ & $\sim$ & $\checkmark$ \\
+        Interpretabilitate necesară & $\checkmark\checkmark$ & $\times$ & $\times$ & $\times$ & $\times$ \\
+        Dependențe multivariate & VAR & $\times$ & $\times$ & $\checkmark\checkmark$ & $\sim$ \\
+        Multe serii (10K+) & $\sim$ & $\checkmark\checkmark$ & $\checkmark\checkmark$ & $\checkmark\checkmark$ & $\checkmark$ \\
+        Fără expertiză ML & $\checkmark$ & $\checkmark$ & $\sim$ & $\sim$ & $\checkmark\checkmark$ \\
+        Open source necesar & $\checkmark\checkmark$ & $\checkmark\checkmark$ & $\checkmark$ & $\checkmark\checkmark$ & $\times$ \\
+        Prognoze probabilistice & $\checkmark$ & $\checkmark\checkmark$ & $\sim$ & $\checkmark\checkmark$ & $\checkmark$ \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    {\scriptsize $\checkmark\checkmark$ = excelent, $\checkmark$ = bun, $\sim$ = acceptabil, $\times$ = potrivire slabă}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Analiză cost computațional}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Frontiera Pareto: Acuratețe vs.\ Cost}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Modelele fundaționale schimbă \textbf{calcul pentru comoditate}: nu necesită antrenare, dar inferența este mai grea
+            \item ``Cel mai bun'' model se află pe frontiera Pareto a acurateții și costului
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.40\textheight, keepaspectratio]{ch11_accuracy_vs_cost.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        {\scriptsize
+        \begin{alertblock}{Considerente de cost}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{ARIMA}: CPU, milisecunde, gratuit
+                \item \textbf{Chronos-Mini}: 1 GPU, $\sim$0.1s/serie
+                \item \textbf{Chronos-Large}: 1 GPU (A100), $\sim$1s/serie
+                \item \textbf{TimesFM}: 1 GPU, $\sim$0.05s/serie (rapid)
+                \item \textbf{TimeGPT}: API, \$0.01--\$0.10/apel
+                \item \textbf{Pre-antrenare de la zero}: 100+ GPU-ore (Chronos-Large)
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Limitări, Etică și Viitor}
+%=============================================================================
+
+\begin{frame}{Limitări actuale}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{alertblock}{Cinci limitări cheie ale modelelor fundaționale pentru serii de timp}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item \textbf{Majoritatea modelelor sunt doar univariate}: Nu pot capta interacțiunile între variabile (ex. preț-volum, temperatură-cerere). Doar Moirai încearcă suport multivariat.
+            \item \textbf{Ferestre de context limitate (512--4096 token-uri)}: Nu pot valorifica istorii foarte lungi. Pentru date zilnice cu sezonalitate anuală, 512 pași $\approx$ doar 1.5 ani.
+            \item \textbf{Fără raționament cauzal}: Modelele învață corelații, nu cauzalitate. Nu pot răspunde la ``ce se întâmplă dacă ratele dobânzii cresc cu 1\%?'' --- niciun model structural subiacent.
+            \item \textbf{Natură cutie neagră}: Ponderile de atenție nu sunt ușor interpretabile. Dificil de explicat \textit{de ce} a fost făcută o anumită prognoză --- problematic pentru industrii reglementate.
+            \item \textbf{``Halucinație'' în prognozele probabilistice}: Traiectoriile generate pot prezenta tipare nerealiste (ex. prețuri negative, creștere explozivă) care încalcă constrângerile domeniului.
+        \end{enumerate}
+        }
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Atenuare}
+        {\small Post-procesare (tăiere, reconciliere), ansamblu cu modele clasice, calibrare conformală.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Considerații etice}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Proveniența datelor}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Datele de pre-antrenare pot include serii de timp \textbf{private sau proprietare} (ex. date interne de vânzări colectate din API-uri)
+            \item Lipsa transparenței: majoritatea modelelor nu dezvăluie complet compoziția datelor de antrenare
+            \item LOTSA (Moirai) este un exemplu pozitiv: surse deschise, curate, documentate
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{Echitate și prejudecăți}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Pre-antrenarea se orientează către \textbf{domenii bogate în date} (energie, retail)
+                \item Subreprezentate: sănătatea din țările în curs de dezvoltare, agricultura din Africa
+                \item Antrenare părtinitoare $\to$ prognoze părtinitoare $\to$ decizii părtinitoare
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Mediu și reglementare}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Amprenta de carbon}: pre-antrenarea Chronos-Large $\approx$ 100+ GPU-ore pe A100
+                \item \textbf{EU AI Act}: sistemele AI cu risc ridicat necesită explicabilitate --- modelele fundaționale pot să nu se califice
+                \item \textbf{Responsabilitate}: cine este responsabil când o decizie bazată pe prognoză eșuează?
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Direcții viitoare}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Încotro se îndreaptă domeniul?}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item \textbf{Modele TS multimodale}: Combinarea seriilor de timp cu text (știri, rapoarte), imagini (satelit) și metadate. Exemplu: prognoza vânzărilor folosind atât date istorice cât și descrieri de produse.
+            \item \textbf{Prognoză agentică}: Agenți LLM care \textit{selectează, rulează și evaluează} modele de prognoză autonom. LLM-ul orchestrează pipeline-ul în loc să producă prognoza direct.
+            \item \textbf{Pre-antrenare continuă}: Actualizarea modelelor fundaționale cu date noi fără re-antrenare completă. Critică pentru adaptarea la schimbări de distribuție (post-COVID, post-pandemie).
+            \item \textbf{Modele fundaționale multivariate}: Depășirea universului univariat. Învățarea dinamicilor între variabile, structuri ierarhice și corelații spațiale.
+            \item \textbf{Modele fundaționale specifice domeniului}: FinanceFM, EnergyFM, HealthFM --- mai mici, specializate, mai precise în domeniul lor.
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Următorii 3--5 ani}
+        {\small Modelele fundaționale vor deveni probabil \textbf{punctul de plecare implicit} pentru prognoză, la fel cum embedding-urile de cuvinte pre-antrenate au devenit standard în NLP. Metodele clasice vor rămâne esențiale pentru interpretabilitate, inferență cauzală și regimuri cu date puține.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{O perspectivă echilibrată}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{alertblock}{Când să folosiți modele clasice}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Interpretabilitate necesară}: reglementare, cercetare științifică, analiză de politici
+            \item \textbf{Inferență cauzală}: modele structurale (VAR, SVAR) pentru analize ``ce-ar fi dacă''
+            \item \textbf{Date puține}: $<$50 observații, structură sezonieră cunoscută a priori
+            \item \textbf{Constrângeri computaționale}: dispozitive edge, sisteme real-time, fără GPU
+            \item \textbf{Mandat de explicabilitate}: EU AI Act, MiFID II, Basel III
+        \end{itemize}
+        }
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Când să folosiți modele fundaționale}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Prototipare rapidă}: bază de referință puternică în minute, nu zile
+            \item \textbf{Cross-domeniu}: același model pt.\ retail, energie, finanțe --- fără expertiză necesară
+            \item \textbf{Zero-shot / pornire la rece}: produs nou, piață nouă, fără date istorice
+            \item \textbf{Scară}: 10{,}000+ serii --- FM amortizează costul
+            \item \textbf{Prognoze probabilistice}: cuantificare nativă a incertitudinii
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{block}{}
+        {\scriptsize \textbf{Concluzia}: Modelele clasice și fundaționale sunt \textbf{complementare}, nu concurente. Cei mai buni practicieni le folosesc pe amândouă.}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Utilizare IA}
+%=============================================================================
+
+\begin{frame}{Exercițiu IA: Selecția modelului fundațional}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Compare ARIMA, Prophet, and a foundation model (Chronos) for forecasting monthly airline passengers (the classic Box-Jenkins dataset, 144 observations). For each model: (1)~fit the model, (2)~forecast 24 months ahead, (3)~plot actual vs predicted with 95\% confidence intervals, (4)~compute RMSE and MAPE. Which model would you recommend and why? Provide complete Python code.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercițiu}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Rulați prompt-ul într-un LLM la alegere și analizați critic răspunsul.
+        \item Gestionează codul corect \textbf{sezonalitatea multiplicativă} din datele de pasageri aerieni?
+        \item Cum gestionează Chronos sezonalitatea \textbf{fără a i se spune} că perioada este 12?
+        \item Sunt intervalele de încredere de la Chronos (bazate pe cuantile) comparabile cu cele ale ARIMA (parametrice)?
+        \item Discută LLM-ul \textbf{compromisul}: ARIMA este interpretabil, Chronos este zero-shot?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Avertisment}: Codul generat de IA poate rula fără erori și arăta profesionist. \textit{Aceasta nu înseamnă că este corect.} Validați întotdeauna față de benchmark-uri cunoscute.}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Rezumat}
+%=============================================================================
+
+\begin{frame}{Concluzii cheie}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Ce am învățat}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Transformerele} înlocuiesc recurența cu auto-atenția: paralele, scalabile, dependențe pe termen lung
+            \item \textbf{Modelele fundaționale} sunt pre-antrenate pe miliarde de puncte temporale diverse și implementate zero-shot
+            \item Strategiile de \textbf{tokenizare} (patching, cuantizare) fac punte între TS continue și intrările Transformer
+            \item \textbf{Chronos} (T5, cuantizat), \textbf{TimesFM} (decoder, patched), \textbf{Lag-Llama} (LLaMA), \textbf{Moirai} (BERT, orice-variabilă) --- filozofii de design distincte
+            \item \textbf{Zero-shot} este surprinzător de puternic; \textbf{ajustarea fină} (LoRA) ajută cu date de domeniu
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Recomandări practice}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Comparați întotdeauna cu \textbf{ARIMA/ETS} ca bază de referință clasică
+            \item Folosiți \textbf{modele fundaționale} pentru prototipare rapidă și când expertiza de domeniu este limitată
+            \item Modelele clasice și fundaționale sunt \textbf{complementare} --- combinați-le prin ansambluri
+        \end{itemize}
+        }
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Quiz}
+%=============================================================================
+
+\begin{frame}{Întrebarea 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebarea}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Care este avantajul cheie al auto-atenției față de recurență în modelarea secvențelor?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Auto-atenția folosește mai puțini parametri decât RNN-urile\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Auto-atenția procesează toate pozițiile în paralel cu lungimea căii $O(1)$ între oricare două poziții\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Auto-atenția nu necesită codificare pozițională\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Auto-atenția este întotdeauna mai rapidă decât recurența indiferent de lungimea secvenței
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 1: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.48\textheight, keepaspectratio]{ch11_quiz1_attention_vs_rnn.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Răspuns: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Auto-atenția conectează fiecare poziție cu fiecare altă poziție direct (lungimea căii $O(1)$), permițând paralelizare completă. RNN-urile necesită $O(T)$ pași secvențiali, cauzând gradienți care se estompează și antrenare lentă.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz1\_attention\_vs\_rnn}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz1_attention_vs_rnn}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebarea}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Ce strategie de tokenizare folosește Chronos pentru a converti seriile de timp continue în token-uri discrete?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Patching: gruparea punctelor temporale consecutive în patch-uri\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Scalare și cuantizare în bin-uri discrete folosind CDF-ul normal\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Embedding liniar direct al valorilor brute\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Byte-pair encoding (BPE) împrumutat din NLP
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 2: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.48\textheight, keepaspectratio]{ch11_quiz2_tokenization.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Răspuns: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Chronos normalizează valorile (scalare prin medie), apoi le mapează la 4096 bin-uri prin $b_t = \lfloor (B-1) \cdot \Phi(\tilde{x}_t) \rfloor$. Aceasta permite reutilizarea vocabularului T5 și a funcției de pierdere cross-entropy, transformând prognoza într-o problemă de modelare a limbajului peste token-uri cuantizate.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz2\_tokenization}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz2_tokenization}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebarea}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Când ar trebui să preferați inferența zero-shot în locul ajustării fine a unui model fundațional?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Când aveți milioane de observații etichetate specifice domeniului\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Când aveți nevoie de cea mai mare acuratețe posibilă pe un singur set de date\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Când aveți date etichetate limitate, aveți nevoie de implementare rapidă sau vă confruntați cu probleme de pornire la rece\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Când resursele computaționale nu sunt o preocupare
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 3: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.48\textheight, keepaspectratio]{ch11_quiz3_zeroshot_decision.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Răspuns: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Zero-shot excelează cu date limitate, pornire la rece și prototipare rapidă. Cunoștințele pre-antrenate ale modelului transferă tipare temporale din miliarde de serii diverse. Ajustarea fină este preferată când sunt disponibile suficiente date de domeniu și câștigurile marginale de acuratețe justifică costul.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz3\_zeroshot\_decision}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz3_zeroshot_decision}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebarea}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Ce este ``patching'' în contextul modelelor de serii de timp bazate pe Transformer și de ce ajută?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Patching înseamnă completarea valorilor lipsă din seria de timp\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Patching grupează $P$ puncte consecutive într-un singur token, reducând complexitatea atenției de la $O(T^2)$ la $O((T/P)^2)$ captând în același timp tipare locale\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Patching este o tehnică de augmentare a datelor care creează serii noi de antrenare\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Patching se referă la actualizarea ponderilor modelului după implementare
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 4: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.48\textheight, keepaspectratio]{ch11_quiz4_patching.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Răspuns: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Patching (PatchTST, 2023) grupează $P$ puncte consecutive într-un singur token. Aceasta reduce lungimea efectivă a secvenței pentru atenție, captează tipare temporale locale în fiecare patch și permite modelului să gestioneze ferestre de context mult mai lungi.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz4\_patching}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz4_patching}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebarea}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Trebuie să prognozați un set de date energetice multivariate cu 50 variabile corelate la frecvență orară. Care model fundațional este cel mai potrivit?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Chronos --- deoarece are cele mai multe dimensiuni de model din care să alegeți\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} TimeGPT --- deoarece este cel mai ușor de folosit prin API\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Moirai --- deoarece este singurul model proiectat să gestioneze nativ orice număr de variabile și orice frecvență\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Lag-Llama --- deoarece folosește caracteristici lag care captează dependențele temporale
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 5: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.48\textheight, keepaspectratio]{ch11_quiz5_model_selection.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Răspuns: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Moirai este singurul model fundațional proiectat pentru prognoze \textbf{orice-variabilă}. Folosește ID-uri de variabilă și patching flexibil pentru a gestiona 50 variabile corelate simultan. Chronos și Lag-Llama sunt univariate; ar procesa fiecare variabilă independent, ignorând corelațiile între variabile.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz5\_model\_selection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz5_model_selection}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\begin{frame}{Bibliografie I}
+    \begin{block}{Lucrări fundamentale}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Vaswani, A., Shazeer, N., Parmar, N., et al.\ (2017). Attention Is All You Need, \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 30, 5998--6008.
+            \item Ansari, A.F., Stella, L., Turkmen, C., et al.\ (2024). Chronos: Learning the Language of Time Series, \textit{arXiv preprint arXiv:2403.07815}.
+            \item Das, A., Kong, W., Leber, A., et al.\ (2024). A Decoder-Only Foundation Model for Time-Series Forecasting, \textit{Proceedings of ICML 2024}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Foundation Models}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Garza, A., \& Mergenthaler-Canseco, M.\ (2024). TimeGPT-1, \textit{International Journal of Forecasting}, forthcoming.
+            \item Rasul, K., Ashok, A., Williams, A.R., et al.\ (2024). Lag-Llama: Towards Foundation Models for Probabilistic Time Series Forecasting, \textit{Proceedings of NeurIPS 2024}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bibliografie II}
+    \begin{block}{Arhitectură și pre-antrenare}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Woo, G., Liu, C., Kumar, A., et al.\ (2024). Unified Training of Universal Time Series Forecasting Transformers, \textit{Proceedings of ICML 2024}.
+            \item Nie, Y., Nguyen, N.H., Sinthong, P., \& Kalagnanam, J.\ (2023). A Time Series is Worth 64 Words: Long-term Forecasting with Transformers, \textit{Proceedings of ICLR 2023}.
+            \item Bommasani, R., Hudson, D.A., Adeli, E., et al.\ (2021). On the Opportunities and Risks of Foundation Models, \textit{arXiv preprint arXiv:2108.07258}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{alertblock}{Benchmark-uri și evaluare}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Godahewa, R., Bergmeir, C., Webb, G., et al.\ (2021). Monash Time Series Forecasting Archive, \textit{Proceedings of NeurIPS 2021 Datasets and Benchmarks Track}.
+            \item Hu, E.J., Shen, Y., Wallis, P., et al.\ (2022). LoRA: Low-Rank Adaptation of Large Language Models, \textit{Proceedings of ICLR 2022}.
+        \end{itemize}
+        }
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Bibliografie III}
+    \begin{block}{Referințe suplimentare}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Kaplan, J., McCandlish, S., Henighan, T., et al.\ (2020). Scaling Laws for Neural Language Models, \textit{arXiv preprint arXiv:2001.08361}.
+            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V.\ (2018). The M4 Competition: 100,000 Time Series and 61 Forecasting Methods, \textit{International Journal of Forecasting}, 36(1), 54--74.
+            \item Petropoulos, F., et al.\ (2022). Forecasting: Theory and Practice, \textit{International Journal of Forecasting}, 38(3), 845--1054.
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-1mm}
+    \begin{exampleblock}{Resurse online și cod}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} -- Platformă de cod pentru metode cantitative
+            \item \textbf{Quantinar}: \url{https://quantinar.com} -- Platformă de învățare pentru metode cantitative
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch11} -- Cod Python pentru acest capitol
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{}
+    \centering
+    \Huge\textcolor{MainBlue}{Vă Mulțumim!}
+
+    \vspace{1cm}
+
+    \Large Întrebări?
+
+    \vspace{0.8cm}
+
+    \normalsize
+
+    Materialele cursului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+\end{frame}
+
+\end{document}

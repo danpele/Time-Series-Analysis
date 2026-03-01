@@ -1,0 +1,1917 @@
+% Chapter 11: LLMs and Foundation Models for Time Series
+% Harvard-quality academic presentation
+% Bachelor program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Chapter 11: LLMs and Foundation Models for Time Series}
+
+\begin{document}
+
+% Title page (no header/footer)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% LEARNING OBJECTIVES
+%=============================================================================
+\begin{frame}{Learning Objectives}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{By the end of this chapter, you will be able to:}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Explain} the Transformer architecture and self-attention mechanism
+            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Distinguish} encoder-only, decoder-only, and encoder-decoder architectures
+            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Describe} the foundation model paradigm: pre-train, fine-tune, deploy
+            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Compare} tokenization strategies: patching, quantization, and embeddings
+            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Evaluate} major foundation models (Chronos, TimesFM, TimeGPT, Lag-Llama, Moirai)
+            \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Decide} when to use zero-shot inference vs.\ fine-tuning
+            \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Apply} foundation models to real-world forecasting tasks in Python
+            \item[\textcolor{MainBlue}{\textbf{8.}}] \textbf{Assess} limitations, ethical concerns, and future directions
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% TABLE OF CONTENTS
+%=============================================================================
+\begin{frame}{Outline}
+    \vspace{-0.3cm}
+    {\small
+    \setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$~\inserttocsection}
+    \tableofcontents
+    }
+\end{frame}
+
+%=============================================================================
+\section{Motivation}
+%=============================================================================
+
+\begin{frame}{From Task-Specific to Foundation Models}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Era 1: Classical Statistical Models (1970s--2010s)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item ARIMA, ETS, GARCH --- hand-crafted per series, strong assumptions
+            \item Strengths: interpretable, well-understood theory, works with small data
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Era 2: Deep Learning (2015--2022)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item LSTM, TCN, DeepAR, N-BEATS --- trained on individual datasets
+            \item Strengths: capture nonlinear dynamics; Weakness: require large labeled data per task
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Era 3: Foundation Models (2023--present)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item TimeGPT, Chronos, TimesFM, Lag-Llama, Moirai --- pre-trained on billions of time points
+            \item \textbf{Key insight}: train \textit{once} on massive diverse data, deploy \textit{everywhere} (zero-shot)
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{The Scale Advantage}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\footnotesize
+    \begin{block}{Foundation Models: Scale Comparison}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|r|l|l|c}
+        \toprule
+        \textbf{Model} & \textbf{Params} & \textbf{Pre-training Data} & \textbf{Architecture} & \textbf{Zero-Shot?} \\
+        \midrule
+        TimeGPT & N/A (proprietary) & 100B+ points & Transformer enc-dec & Yes (API) \\
+        Chronos & 20M--710M & 84B points & T5 enc-dec & Yes \\
+        TimesFM & 200M & 100B points & Decoder-only & Yes \\
+        Lag-Llama & 352M & Multiple datasets & LLaMA decoder & Yes \\
+        Moirai & 14M--311M & 27B points & BERT encoder & Yes \\
+        PatchTST & 1M--10M & Task-specific & Transformer enc & No (supervised) \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Key Observation}
+        {\small Foundation models leverage \textbf{cross-domain knowledge transfer}: patterns learned from energy data help forecast retail sales, and vice versa. This is analogous to how GPT-3 learns grammar from diverse text corpora.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Chapter Roadmap}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        \begin{block}{What We Will Cover}
+            {\small
+            \begin{enumerate}\setlength{\itemsep}{1pt}
+                \item \textbf{Motivation} --- the three eras of forecasting
+                \item \textbf{Transformer Architecture} --- attention, positional encoding
+                \item \textbf{From Transformers to Foundation Models} --- tokenization, patching
+                \item \textbf{Deep Dive into Models} --- Chronos, TimesFM, TimeGPT, Lag-Llama, Moirai
+                \item \textbf{Zero-Shot vs Fine-Tuning} --- when and how
+                \item \textbf{Practical Use Cases} --- EUR/RON, energy, volatility
+                \item \textbf{Benchmarks and Model Selection} --- Monash, GiftEval
+                \item \textbf{Limitations, Ethics, and Future} --- what lies ahead
+            \end{enumerate}
+            }
+        \end{block}
+
+        \column{0.43\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{ch11_pretraining_scale.pdf}
+        \end{center}
+        {\scriptsize Pre-training data scale across foundation models (log scale).}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Transformer Architecture}
+%=============================================================================
+
+\begin{frame}{Researcher Spotlight: Vaswani et al.\ (2017)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{``Attention Is All You Need''}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Published at NeurIPS 2017 by researchers at Google Brain
+            \item Over \textbf{130{,}000 citations} --- one of the most influential ML papers ever
+            \item Originally designed for \textbf{machine translation} (NLP)
+            \item Key innovation: replaced recurrence entirely with \textbf{self-attention}
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Why It Matters for Time Series}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Time series are \textbf{sequential} data --- same fundamental challenge as language
+            \item Transformers handle \textbf{variable-length} sequences naturally
+            \item \textbf{Parallel computation}: unlike RNNs, all positions processed simultaneously
+            \item Foundation models (GPT, BERT, T5) all build on this architecture
+        \end{itemize}
+        }
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Impact Timeline}
+        {\small 2017: Attention Is All You Need $\to$ 2018: BERT, GPT $\to$ 2020: GPT-3 $\to$ 2023: TimeGPT, Chronos $\to$ 2024: TimesFM, Moirai}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Self-Attention: Intuition}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Why Attention Replaces Recurrence}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{RNNs}: process tokens sequentially $\Rightarrow$ $O(T)$ sequential steps, information bottleneck
+            \item \textbf{Self-Attention}: every position attends to every other position \textbf{in parallel}
+            \item Direct connections between distant positions: no vanishing gradients
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{RNN: Sequential}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Path length between $x_1$ and $x_T$: $O(T)$ steps
+                \item Cannot parallelize across time steps
+                \item Gradient must flow through $T$ multiplications
+                \item Information ``compresses'' through hidden state
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Attention: Parallel}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Path length between any two positions: $O(1)$
+                \item Fully parallelizable $\Rightarrow$ faster on GPUs
+                \item Each position directly ``sees'' all others
+                \item Learns which positions to attend to (data-driven)
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.90\textwidth, height=0.22\textheight, keepaspectratio]{ch11_quiz1_attention_vs_rnn.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Self-Attention: Mathematics}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Scaled Dot-Product Attention}
+        Given input embeddings $X \in \mathbb{R}^{T \times d}$, compute:
+        \vspace{-2mm}
+        $$Q = XW^Q, \quad K = XW^K, \quad V = XW^V$$
+        \vspace{-4mm}
+        $$\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$$
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        {\scriptsize
+        \begin{exampleblock}{Interpretation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $Q$ (Queries): ``What am I looking for?''
+                \item $K$ (Keys): ``What do I contain?''
+                \item $V$ (Values): ``What information do I provide?''
+                \item $\sqrt{d_k}$: scaling prevents softmax saturation
+                \item Output: weighted average of values, weights = compatibility scores
+            \end{itemize}
+        \end{exampleblock}
+        }
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.38\textheight, keepaspectratio]{ch11_attention_heatmap.pdf}
+        \end{center}
+        {\scriptsize Attention weights heatmap: rows attend to columns.}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Multi-Head Attention}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Multiple Attention Heads Capture Diverse Patterns}
+        \vspace{-2mm}
+        \begin{align*}
+            \text{MultiHead}(Q,K,V) &= \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\, W^O \\
+            \text{where head}_i &= \text{Attention}(QW_i^Q,\; KW_i^K,\; VW_i^V)
+        \end{align*}
+        \vspace{-4mm}
+        {\small Each head projects to a lower dimension: $W_i^Q, W_i^K \in \mathbb{R}^{d \times d_k}$, $W_i^V \in \mathbb{R}^{d \times d_v}$ with $d_k = d_v = d/h$.}
+    \end{block}
+
+    \vspace{-1mm}
+
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{What Different Heads Learn}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Head 1: \textbf{Trend} --- attend to recent values
+                \item Head 2: \textbf{Seasonality} --- attend to same period last cycle
+                \item Head 3: \textbf{Outliers} --- attend to extreme values
+                \item Head 4: \textbf{Long-range} --- attend to distant correlations
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Computational Cost}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Self-attention complexity: $O(T^2 \cdot d)$
+                \item Memory: $O(T^2)$ for the attention matrix
+                \item For long sequences ($T > 4096$): quadratic cost becomes prohibitive
+                \item Solutions: patching, sparse attention, linear attention
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Positional Encoding}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Why Position Matters}
+        {\small Self-attention is \textbf{permutation-equivariant}: without positional info, it treats $\{x_1, x_2, x_3\}$ and $\{x_3, x_1, x_2\}$ identically. Time series \textbf{order matters}, so we inject position.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Sinusoidal Positional Encoding (Vaswani et al., 2017)}
+        \vspace{-2mm}
+        \begin{align*}
+            PE_{(pos,\, 2i)} &= \sin\!\left(\frac{pos}{10000^{2i/d}}\right) \\
+            PE_{(pos,\, 2i+1)} &= \cos\!\left(\frac{pos}{10000^{2i/d}}\right)
+        \end{align*}
+        \vspace{-4mm}
+        {\small Each dimension uses a different frequency $\Rightarrow$ unique positional signature. Relative positions can be computed via dot products.}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.28\textheight, keepaspectratio]{ch11_positional_encoding.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{The Full Transformer Block}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{block}{Transformer Block Components}
+            {\scriptsize
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item \textbf{Input embedding} + Positional encoding
+                \item \textbf{Layer Normalization} (pre-norm variant)
+                \item \textbf{Multi-Head Self-Attention}
+                \item \textbf{Residual connection}: $x + \text{Attn}(x)$
+                \item \textbf{Layer Normalization}
+                \item \textbf{Feed-Forward Network} (FFN): two linear layers with GELU/ReLU
+                $$\text{FFN}(x) = W_2 \cdot \text{GELU}(W_1 x + b_1) + b_2$$
+                \item \textbf{Residual connection}: $x + \text{FFN}(x)$
+            \end{enumerate}
+            }
+        \end{block}
+        {\scriptsize Stacking $N$ blocks ($N=6$--$24$) gives depth. Residual connections enable gradient flow.}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{ch11_transformer_block.pdf}
+        \end{center}
+        {\scriptsize Diagram: the standard Transformer block with pre-norm layout.}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Encoder vs Decoder Architectures}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\footnotesize
+    \begin{block}{Three Architectural Paradigms}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|p{3cm}|p{3cm}|p{3.5cm}}
+        \toprule
+        & \textbf{Encoder-only} & \textbf{Decoder-only} & \textbf{Encoder-Decoder} \\
+        \midrule
+        \textbf{NLP origin} & BERT & GPT & T5, BART \\
+        \textbf{Attention} & Bidirectional & Causal (masked) & Cross-attention \\
+        \textbf{TS models} & Moirai, PatchTST & TimesFM, Lag-Llama & Chronos, TimeGPT \\
+        \textbf{Strengths} & Learns rich representations & Natural for autoregressive generation & Flexible input-output mapping \\
+        \textbf{TS use} & Representation, classification & Forecasting, generation & Forecasting, seq2seq \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Key Distinction}
+        {\small \textbf{Causal masking} (decoder): position $t$ can only attend to $\{1, \ldots, t\}$. Prevents ``peeking'' into the future --- natural fit for time series forecasting. \textbf{Bidirectional} (encoder): every position sees all others --- useful for representation learning and classification.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{From Transformers to Foundation Models}
+%=============================================================================
+
+\begin{frame}{The Foundation Model Paradigm}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Three-Stage Pipeline}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Pre-training}: Train on massive, diverse corpora (billions of time points across domains)
+            \item \textbf{Fine-tuning} (optional): Adapt to a specific domain or dataset with a small learning rate
+            \item \textbf{Inference}: Deploy on new, unseen series --- zero-shot or few-shot
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.40\textheight, keepaspectratio]{ch11_foundation_paradigm.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Key Insight (Bommasani et al., 2021)}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item ``A foundation model is any model trained on broad data that can be adapted to a wide range of downstream tasks.''
+                \item For TS: train on \textit{energy + finance + retail + health + weather} $\Rightarrow$ forecast \textit{anything}
+                \item Critical assumption: \textbf{shared temporal patterns} exist across domains (trend, seasonality, noise)
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Tokenization Strategies for Time Series}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Challenge: Continuous Values $\to$ Discrete Tokens}
+        NLP models process discrete tokens (words). Time series are \textbf{continuous} $\Rightarrow$ need a mapping strategy.
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Strategy 1: Raw Value Embeddings}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Project each $x_t \in \mathbb{R}$ to $\mathbb{R}^d$ via linear layer
+                \item Used by: vanilla Transformer TS models
+                \item Simple but ignores local structure
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{exampleblock}{Strategy 2: Scaling + Quantization}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Normalize, then map to $B$ discrete bins
+                \item Used by: \textbf{Chronos} (4096 bins)
+                \item Leverages NLP machinery directly
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Strategy 3: Patching}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Group $P$ consecutive points into one token
+                \item Used by: \textbf{PatchTST}, \textbf{TimesFM}
+                \item Reduces sequence length by factor $P$
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{exampleblock}{Strategy 4: Variate-Independent Channels}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Each variable processed independently
+                \item Used by: \textbf{PatchTST}, \textbf{Moirai}
+                \item Scales to any number of variates
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+    }
+    \vspace{-1mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.18\textheight, keepaspectratio]{ch11_tokenization_strategies.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Patching: Why It Works}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{PatchTST Insight (Nie et al., 2023)}
+        {\small Divide a time series of length $L$ into $N = \lfloor L / P \rfloor$ non-overlapping patches of size $P$:
+        $$\mathbf{p}_i = (x_{(i-1)P+1},\; x_{(i-1)P+2},\; \ldots,\; x_{iP}) \in \mathbb{R}^P, \quad i = 1, \ldots, N$$
+        Each patch is linearly projected to dimension $d$ and fed as a single token to the Transformer.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Benefits of Patching}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Reduces complexity}: attention $O(T^2) \to O((T/P)^2)$
+                \item \textbf{Local semantics}: each patch captures a short sub-pattern (e.g., daily cycle)
+                \item \textbf{Longer context}: with $P=32$, a 512-token window covers 16{,}384 time steps
+                \item \textbf{Better representations}: patch-level tokens are more informative than point-level
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.45\textheight, keepaspectratio]{ch11_patching_illustration.pdf}
+        \end{center}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quantization: The Chronos Approach}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Scale-and-Quantize Tokenization (Ansari et al., 2024)}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Normalize}: $\tilde{x}_t = \frac{x_t - \bar{x}}{s}$ where $\bar{x}$ is mean and $s$ is the mean absolute value
+            \item \textbf{Quantize}: map to $B$ bins via the CDF: $b_t = \left\lfloor (B-1) \cdot \Phi(\tilde{x}_t) \right\rfloor$ where $\Phi$ is the standard normal CDF
+            \item \textbf{Embed}: look up bin $b_t$ in the T5 embedding table ($B = 4096$)
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{Why Quantize?}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Reuses \textbf{NLP vocabulary machinery}: embeddings, softmax output layer
+                \item Cross-entropy loss (categorical) is well-understood
+                \item Probabilistic: output is a distribution over bins $\Rightarrow$ full predictive distribution
+                \item Trade-off: resolution limited by number of bins
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.40\textheight, keepaspectratio]{ch11_chronos_tokenization.pdf}
+        \end{center}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Pre-Training Objectives}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Paradigm 1: Next-Token Prediction (Autoregressive, GPT-style)}
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Predict $x_{t+1}$ given $x_1, \ldots, x_t$ via causal masking. Loss: $\mathcal{L} = -\sum_{t=1}^{T-1} \log p(x_{t+1} \mid x_1, \ldots, x_t)$
+            \item Used by: \textbf{TimesFM}, \textbf{Lag-Llama}, \textbf{TimeGPT}
+        \end{itemize}
+        \vspace{-1mm}
+    \end{block}
+    \vspace{-2.5mm}
+    \begin{alertblock}{Paradigm 2: Masked Prediction (BERT-style)}
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Randomly mask 15--40\% of tokens, predict masked ones. Loss: $\mathcal{L} = -\sum_{t \in \mathcal{M}} \log p(x_t \mid x_{\setminus \mathcal{M}})$
+            \item Used by: \textbf{Moirai}, \textbf{PatchTST} (self-supervised)
+        \end{itemize}
+        \vspace{-1mm}
+    \end{alertblock}
+    \vspace{-2.5mm}
+    \begin{exampleblock}{Paradigm 3: Denoising / Seq2Seq (T5-style)}
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Encoder processes context, decoder generates forecast. Loss: cross-entropy over quantized tokens
+            \item Used by: \textbf{Chronos}
+        \end{itemize}
+        \vspace{-1mm}
+    \end{exampleblock}
+    }
+    \vspace{-3mm}
+    \begin{center}
+        \includegraphics[width=0.90\textwidth, height=0.13\textheight, keepaspectratio]{ch11_pretraining_objectives.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Data Augmentation for Pre-Training}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{KernelSynth (Ansari et al., 2024)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Generate \textbf{synthetic} time series by composing Gaussian Process (GP) kernels:
+            $$k(t, t') = k_{\text{RBF}}(t,t') + k_{\text{periodic}}(t,t') + k_{\text{linear}}(t,t') + \ldots$$
+            \item Produces realistic patterns: trends, seasonality, changepoints, noise
+            \item Chronos uses \textbf{billions} of synthetic series to augment real data
+        \end{itemize}
+        }
+    \end{block}
+
+    \vspace{-1mm}
+
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{TSMix (TimesFM)}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Mix existing series: $\tilde{x} = \lambda x_a + (1-\lambda) x_b$
+                \item Augments diversity without needing GP expertise
+                \item Combined with window slicing and frequency mixing
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Why Augmentation Matters}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Prevents overfitting to specific domains
+                \item Increases pattern diversity during pre-training
+                \item Chronos: 50\% real data + 50\% synthetic $\Rightarrow$ \textbf{better} than 100\% real
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Deep Dive into Models}
+%=============================================================================
+
+\begin{frame}{Chronos: Architecture}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Chronos (Ansari et al., 2024 --- Amazon)}
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Architecture}: T5 encoder-decoder (pre-trained language model backbone)
+            \item \textbf{Model sizes}: Mini (20M), Small (46M), Base (200M), Large (710M)
+            \item \textbf{Tokenization}: Mean-scale normalization + quantization into \textbf{4096 bins}
+            \item \textbf{Pre-training data}: 84B time points from 28 public datasets + KernelSynth
+            \item \textbf{Output}: Categorical distribution over bins $\Rightarrow$ full probabilistic forecast
+        \end{itemize}
+        \vspace{-1mm}
+    \end{block}
+    \vspace{-2.5mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Key Innovations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Forecasting as \textbf{language modeling} over quantized tokens
+                \item No architecture changes to T5 --- only tokenization is new
+                \item Probabilistic: sample $N$ trajectories, compute quantiles
+                \item Open-source, multiple sizes
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Limitations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Resolution limited by 4096 bins (quantization error)
+                \item Univariate only (each variable separately)
+                \item Context window: 512 tokens
+                \item Slower inference than decoder-only (enc+dec)
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_chronos}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_chronos}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Chronos: How It Forecasts}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Step-by-Step Pipeline}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Input}: raw time series $(x_1, x_2, \ldots, x_T)$
+            \item \textbf{Normalize}: mean-scale $\tilde{x}_t = x_t / \bar{|x|}$
+            \item \textbf{Quantize}: map each $\tilde{x}_t$ to one of 4096 bins via $\Phi$ (normal CDF)
+            \item \textbf{Encode}: T5 encoder processes context tokens $\to$ hidden representations
+            \item \textbf{Decode}: T5 decoder generates forecast tokens \textbf{autoregressively}
+            \item \textbf{Sample}: repeat decoding $N$ times (e.g., $N=20$) with temperature sampling
+            \item \textbf{Dequantize}: convert bin indices back to continuous values
+            \item \textbf{Output}: median forecast + quantile intervals (10\%, 90\%)
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.35\textheight, keepaspectratio]{ch11_chronos_pipeline.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Chronos: Benchmark Results}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Performance on Monash Benchmark (Ansari et al., 2024)}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Evaluated on 27 datasets from the Monash Time Series Forecasting Archive
+            \item Metrics: \textbf{WQL} (Weighted Quantile Loss) and \textbf{MASE} (Mean Absolute Scaled Error)
+            \item Chronos-Large achieves best or second-best on 16/27 datasets \textbf{in zero-shot}
+            \item Outperforms task-specific deep learning models (DeepAR, TFT, N-BEATS) on average
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.45\textheight, keepaspectratio]{ch11_chronos_benchmarks.pdf}
+    \end{center}
+    {\scriptsize WQL scores: lower is better. Chronos-Large competitive with or better than supervised baselines.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{TimesFM: Architecture}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{TimesFM (Das et al., 2024 --- Google Research)}
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Architecture}: Decoder-only Transformer (200M parameters)
+            \item \textbf{Input/output patching}: patch size $P = 32$, projects patch to model dimension
+            \item \textbf{Pre-training data}: 100B real-world + synthetic data points
+            \item \textbf{Multi-resolution}: trained on diverse frequencies (minutely to yearly)
+            \item \textbf{Context window}: up to 512 patches ($= 16{,}384$ time steps)
+        \end{itemize}
+        \vspace{-1mm}
+    \end{block}
+    \vspace{-2.5mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Key Innovations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Decoder-only}: simpler and faster than enc-dec
+                \item \textbf{Output patches}: predict $P$ values at once
+                \item \textbf{Frequency token}: encodes data frequency
+                \item Point forecast + fine-tuning for quantiles
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Comparison with Chronos}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Continuous values (no quantization)
+                \item Faster inference (decoder-only, patch output)
+                \item Less naturally probabilistic
+                \item Closed weights until 2024, now open
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_timesfm}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_timesfm}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{TimesFM: Zero-Shot Performance}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Benchmark Results (Das et al., 2024)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Evaluated on Monash, M3, M4, and long-horizon benchmarks (ETTh, Weather, Electricity)
+            \item \textbf{Zero-shot} TimesFM beats supervised models on the majority of Monash datasets
+            \item Particularly strong on \textbf{long-horizon} forecasting (96--720 steps)
+            \item Competitive with task-specific PatchTST and iTransformer even without fine-tuning
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_timesfm_benchmarks.pdf}
+    \end{center}
+    {\scriptsize TimesFM zero-shot MAE across benchmark datasets. Bars show relative improvement over best supervised baseline.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{TimeGPT: API-First Foundation Model}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{TimeGPT (Garza \& Mergenthaler-Canseco, 2024 --- Nixtla)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Architecture}: Proprietary Transformer encoder-decoder
+            \item \textbf{Pre-training}: largest known corpus --- \textbf{100+ billion} time points from diverse domains
+            \item \textbf{Access}: API-only (no open weights), commercial product
+            \item \textbf{Features}: zero-shot forecasting, conformal prediction intervals, anomaly detection, fine-tuning endpoint, exogenous variable support
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Advantages}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Easiest to use}: 3 lines of Python code
+                \item \textbf{Conformal prediction}: calibrated uncertainty
+                \item \textbf{Exogenous variables}: unlike most FM
+                \item Regular model updates by Nixtla team
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Limitations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Black box}: proprietary, no reproducibility
+                \item \textbf{API cost}: per-call pricing
+                \item \textbf{Data privacy}: data sent to Nixtla servers
+                \item \textbf{Vendor lock-in}: dependent on service availability
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_timegpt}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_timegpt}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Lag-Llama: LLM Backbone for Time Series}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Lag-Llama (Rasul et al., 2024)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Architecture}: LLaMA decoder adapted for time series (352M parameters)
+            \item \textbf{Key innovation}: \textbf{Lag features as token embeddings} --- lags $\{1, 2, \ldots, 7, 14, 28, \ldots\}$
+            \item \textbf{Distribution head}: outputs Student-$t$ parameters $(\mu, \sigma, \nu)$ instead of token probabilities
+            \item \textbf{Pre-training}: Multiple publicly available time series datasets
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Why LLaMA for Time Series?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item LLaMA backbone: proven at scale in NLP
+                \item RoPE (Rotary Positional Encoding) for temporal positions
+                \item GQA (Grouped Query Attention) for efficient inference
+                \item Lag tokens capture known temporal structures (weekly, monthly)
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Distribution Head}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Instead of softmax over vocabulary:
+                $$p(x_{t+1} \mid \cdot) = \text{Student-}t(\mu, \sigma, \nu)$$
+                \item Naturally handles heavy tails (financial data)
+                \item Probabilistic: sample for prediction intervals
+                \item Open-source and fine-tunable
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_lagllama}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_lagllama}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Moirai: Any-Variate, Any-Frequency}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Moirai (Woo et al., 2024 --- Salesforce)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Architecture}: BERT-style masked encoder (14M, 91M, 311M parameters)
+            \item \textbf{Key innovation}: handles \textbf{any number of variates}, \textbf{any frequency}, \textbf{any prediction length}
+            \item \textbf{Pre-training}: 27 billion observations from \textbf{LOTSA} (Large-scale Open Time Series Archive, 9 domains)
+            \item \textbf{Output}: mixture distribution (parameters of a flexible output distribution)
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Universal Design}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Any-variate}: flattens multivariate into patches, uses variate IDs
+                \item \textbf{Any-frequency}: frequency embeddings (hourly, daily, etc.)
+                \item \textbf{Any-length}: masked attention for variable output lengths
+                \item Closest to a ``universal'' TS foundation model
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{LOTSA Dataset}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item 9 domains: energy, transport, finance, healthcare, nature, web, sales, climate, social
+                \item 27B observations, curated for quality
+                \item Open-source dataset collection
+                \item Enables reproducible pre-training
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \quantlet{TSA\_ch11\_moirai}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_moirai}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{PatchTST: The Architectural Blueprint}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{PatchTST (Nie et al., 2023)}
+        {\scriptsize
+        \vspace{-1mm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Architecture}: Transformer encoder with \textbf{channel-independent patching}
+            \item Not a foundation model, but introduced two key ideas adopted by all later models:
+            {\,}\textbf{(1)} Patching: group $P$ consecutive time points into one token;
+            {\,}\textbf{(2)} Channel independence: each variate processed independently
+            \item Parameters: 1M--10M (task-specific, much smaller than foundation models)
+        \end{itemize}
+        \vspace{-1mm}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.24\textheight, keepaspectratio]{ch11_patchtst_architecture.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Legacy}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Showed Transformers can beat linear models on long-horizon forecasting
+                \item Patching adopted by: TimesFM, Moirai, MOMENT
+                \item Channel independence: Moirai, iTransformer
+                \item Self-supervised variant: masked patching
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \quantlet{TSA\_ch11\_patchtst}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_patchtst}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Architecture Comparison Table}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Comprehensive Model Comparison}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|l|r|l|l|l}
+        \toprule
+        \textbf{Model} & \textbf{Architecture} & \textbf{Params} & \textbf{Tokenization} & \textbf{Output} & \textbf{Pre-training} \\
+        \midrule
+        Chronos & T5 enc-dec & 20M--710M & Quantization (4096) & Categorical dist.\ & 84B pts + KernelSynth \\
+        TimesFM & Decoder-only & 200M & Patching ($P\!=\!32$) & Point + quantiles & 100B real + synthetic \\
+        TimeGPT & Enc-dec (prop.) & N/A & Proprietary & Point + conformal & 100B+ (proprietary) \\
+        Lag-Llama & LLaMA decoder & 352M & Lag features & Student-$t$ & Public datasets \\
+        Moirai & BERT encoder & 14M--311M & Patching + variate ID & Mixture dist.\ & 27B (LOTSA) \\
+        PatchTST & Transformer enc & 1M--10M & Patching ($P\!=\!16$) & Point (MSE) & Task-specific \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Key Takeaway}
+        {\small No single architecture dominates. The choice depends on: (1)~whether you need probabilistic forecasts, (2)~multivariate support, (3)~compute budget, and (4)~whether open-source matters.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{The Scaling Hypothesis for Time Series}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Does Scaling Work for Time Series?}
+        {\scriptsize
+        In NLP, \textbf{scaling laws} (Kaplan et al., 2020): loss $\propto N^{-\alpha}$ where $N$ = parameters. For time series: evidence is \textbf{mixed}.
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{columns}[T]
+        \column{0.45\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.30\textheight, keepaspectratio]{ch11_scaling_laws.pdf}
+        \end{center}
+
+        \column{0.52\textwidth}
+        {\scriptsize
+        \begin{alertblock}{Why TS Scaling Differs from NLP}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Less data diversity}: text more diverse than TS
+                \item \textbf{Simpler patterns}: many TS well-described by AR + seasonality
+                \item \textbf{Diminishing returns}: Chronos-Large $\approx$ Chronos-Base
+                \item \textbf{Data quality}: noisy TS limit learning
+                \item \textbf{Evidence}: Chronos 710M $\approx$ 200M; TimesFM 200M competitive with larger models; data quality $>$ parameter count
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{When Foundation Models Fail}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{alertblock}{Failure Modes to Watch For}
+        {\scriptsize
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item \textbf{Distribution shift}: Financial regime changes (COVID crash, rate hikes). Pre-training data may not cover such regimes.
+            \item \textbf{Missing exogenous variables}: Weather affects energy demand; policy changes affect economics. Most foundation models are \textbf{univariate}.
+            \item \textbf{Rare frequencies}: Irregular sampling, event-driven or tick-by-tick data. Pre-training favors regular frequencies.
+            \item \textbf{Very short series}: Fewer than $\sim$50 observations $\Rightarrow$ insufficient context. Classical methods (ETS, ARIMA) often dominate.
+            \item \textbf{Multivariate dependencies}: Cross-variable correlations (e.g., VAR) ignored by univariate models. Only Moirai attempts multivariate support.
+        \end{enumerate}
+        }
+    \end{alertblock}
+    \vspace{-3mm}
+    \begin{exampleblock}{Rule of Thumb}
+        {\scriptsize If your data has \textbf{known causal structure}, \textbf{domain-specific features}, or \textbf{regime changes}, consider combining foundation model forecasts with domain-informed models (ensemble or hierarchical).}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Zero-Shot vs Fine-Tuning}
+%=============================================================================
+
+\begin{frame}{Zero-Shot: When and Why}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Zero-Shot Forecasting}
+        {\small Use the pre-trained model \textbf{directly} on a new series without any training.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{When to Use Zero-Shot}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Limited labeled data}: new product launch, cold-start
+                \item \textbf{Rapid prototyping}: quick baseline in minutes
+                \item \textbf{Cross-domain deployment}: same model for finance, retail, energy
+                \item \textbf{Many series}: 10{,}000+ series to forecast, no time to train each
+                \item \textbf{No ML expertise}: simple API call
+            \end{itemize}
+            }
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.45\textheight, keepaspectratio]{ch11_zeroshot_vs_finetuning.pdf}
+        \end{center}
+    \end{columns}
+    \vspace{-2mm}
+    \begin{alertblock}{Surprising Finding}
+        {\small Ansari et al.\ (2024): Chronos zero-shot outperforms task-specific models (DeepAR, N-BEATS) that were \textit{trained on the target data}. Pre-training transfers temporal knowledge effectively.}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Fine-Tuning: Domain Adaptation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Full Fine-Tuning vs LoRA}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Full fine-tuning}: update all parameters on domain data (expensive, risk of forgetting)
+            \item \textbf{LoRA} (Low-Rank Adaptation, Hu et al., 2022): freeze base weights, add small trainable matrices
+            $$W' = W + \Delta W = W + BA, \quad B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times d},\; r \ll d$$
+            \item LoRA: 0.1--1\% of trainable parameters, similar performance, much cheaper
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{Risks of Fine-Tuning}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Catastrophic forgetting}: model loses pre-trained knowledge
+                \item \textbf{Overfitting}: small domain dataset $\Rightarrow$ poor generalization
+                \item \textbf{Hyperparameter sensitivity}: learning rate, epochs, warmup critical
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Best Practices}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Start with \textbf{low learning rate} ($10^{-5}$--$10^{-4}$)
+                \item Use \textbf{learning rate warmup} (500--1000 steps)
+                \item \textbf{Early stopping} on validation loss
+                \item \textbf{Freeze early layers}, fine-tune later layers
+                \item Prefer \textbf{LoRA} for small datasets ($<$10K series)
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Few-Shot and In-Context Learning}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Context Length as ``Few-Shot'' for Time Series}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item In NLP, ``few-shot'' = provide examples in the prompt. In TS, ``context'' = historical observations
+            \item \textbf{Longer context $\to$ better forecasts} (up to the model's context window)
+            \item The model conditions on historical patterns to infer trend, seasonality, and noise structure
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.38\textheight, keepaspectratio]{ch11_context_length_effect.pdf}
+        \end{center}
+        {\scriptsize Forecast error vs.\ context length: diminishing returns beyond the model's window.}
+
+        \column{0.48\textwidth}
+        {\scriptsize
+        \begin{exampleblock}{Context Windows by Model}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Chronos: 512 tokens ($\approx$ 512 time steps)
+                \item TimesFM: 512 patches ($\approx$ 16{,}384 steps)
+                \item Moirai: 5000 tokens (configurable)
+                \item Lag-Llama: 1024 steps (with lags extending further)
+                \item TimeGPT: configurable via API
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{alertblock}{Practical Tip}
+            Provide as much context as the model allows. For daily data, $\geq$1 year is ideal. For monthly data, $\geq$5 years captures seasonal cycles.
+        \end{alertblock}
+        }
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Decision Framework}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{When to Choose Zero-Shot, Fine-Tuning, or Classical}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Step 1}: Do you have labeled domain data? No $\to$ Zero-shot
+            \item \textbf{Step 2}: Is zero-shot performance sufficient? Yes $\to$ Deploy; No $\to$ Fine-tune
+            \item \textbf{Step 3}: Is the domain very different from pre-training data? Yes $\to$ Full fine-tune; No $\to$ LoRA
+            \item \textbf{Step 4}: Need interpretability or causal reasoning? Yes $\to$ Classical models (ARIMA, VAR)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.38\textheight, keepaspectratio]{ch11_decision_flowchart.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Rules of Thumb}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $<$50 observations: ARIMA / ETS
+                \item 50--500 observations: zero-shot foundation model
+                \item 500--10K observations: fine-tuned foundation model
+                \item $>$10K observations: task-specific deep learning may match or beat FM
+                \item Always benchmark against ARIMA as baseline
+            \end{itemize}
+            }
+        \end{exampleblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Practical Use Cases}
+%=============================================================================
+
+\begin{frame}{Use Case 1: EUR/RON with All Foundation Models}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Extending the Chapter 8 Case Study}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data}: EUR/RON daily exchange rate (2020--2024, $\sim$1{,}200 observations)
+            \item \textbf{Task}: 30-day-ahead forecast, 80/20 temporal split
+            \item \textbf{Models compared}: ARIMA, ARFIMA, Random Forest, LSTM, \textbf{Chronos}, \textbf{TimesFM}, \textbf{Lag-Llama}, \textbf{Moirai}, \textbf{TimeGPT}
+            \item Foundation models used in \textbf{zero-shot} mode (no training on EUR/RON data)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_eurron_all_models.pdf}
+    \end{center}
+    \quantlet{TSA\_ch11\_eurron\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_eurron_foundation}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{EUR/RON: Detailed Results}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Forecast Performance Comparison}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c}
+        \toprule
+        \textbf{Model} & \textbf{RMSE} & \textbf{MAE} & \textbf{MAPE (\%)} & \textbf{Training Time} \\
+        \midrule
+        ARIMA(1,1,1) & --- & --- & --- & $<$1s \\
+        ARFIMA & --- & --- & --- & $<$1s \\
+        Random Forest & --- & --- & --- & $\sim$2s \\
+        LSTM (2-layer) & --- & --- & --- & $\sim$60s \\
+        Chronos-Base & --- & --- & --- & 0s (zero-shot) \\
+        TimesFM & --- & --- & --- & 0s (zero-shot) \\
+        Lag-Llama & --- & --- & --- & 0s (zero-shot) \\
+        Moirai-Base & --- & --- & --- & 0s (zero-shot) \\
+        TimeGPT & --- & --- & --- & 0s (API call) \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    {\scriptsize Note: Metric values (---) populated at runtime from the Quantlet code. See the companion notebook for exact numbers.}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.32\textheight, keepaspectratio]{ch11_eurron_predictions_detail.pdf}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Use Case 2: Energy Demand Forecasting}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{German Electricity Demand (Hourly, Multi-Seasonal)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data}: German hourly electricity consumption (2015--2023, 70K+ observations)
+            \item \textbf{Challenge}: multiple seasonalities (24h daily + 168h weekly + annual)
+            \item \textbf{Models}: TBATS (Ch9), Prophet (Ch9), LSTM (Ch8), Chronos, TimesFM, Moirai
+            \item Foundation models handle multi-seasonal patterns \textbf{without explicit specification}
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_energy_foundation.pdf}
+    \end{center}
+    \quantlet{TSA\_ch11\_energy\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_energy_foundation}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Use Case 3: Financial Volatility}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{S\&P 500 Realized Volatility}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data}: S\&P 500 daily realized volatility (2000--2024)
+            \item \textbf{Challenge}: Clustering, heavy tails, regime changes (2008 crisis, 2020 COVID)
+            \item \textbf{Models}: GARCH(1,1) (Ch5), HAR-RV, Chronos, TimesFM, Lag-Llama
+            \item \textbf{Question}: Can foundation models capture volatility dynamics without GARCH structure?
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_volatility_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch11\_volatility\_foundation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_volatility_foundation}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}[fragile]{Python Code Patterns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Chronos (3 lines)}
+            \begin{verbatim}
+from chronos import ChronosPipeline
+pipe = ChronosPipeline.from_pretrained(
+    "amazon/chronos-t5-base")
+forecast = pipe.predict(
+    context=torch.tensor(data),
+    prediction_length=30)
+            \end{verbatim}
+        \end{block}
+        \vspace{-3mm}
+        \begin{block}{TimesFM (3 lines)}
+            \begin{verbatim}
+import timesfm
+tfm = timesfm.TimesFm(hparams=
+    timesfm.TimesFmHparams())
+tfm.load_from_checkpoint()
+preds = tfm.forecast(data)
+            \end{verbatim}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{TimeGPT (3 lines)}
+            \begin{verbatim}
+from nixtla import NixtlaClient
+nixtla = NixtlaClient(api_key="...")
+fcst = nixtla.forecast(
+    df=df, h=30, model="timegpt-1")
+            \end{verbatim}
+        \end{block}
+        \vspace{-3mm}
+        \begin{block}{Lag-Llama (4 lines)}
+            \begin{verbatim}
+from lag_llama.gluon.estimator import
+    LagLlamaEstimator
+estimator = LagLlamaEstimator(
+    prediction_length=30)
+predictor = estimator.train(train_ds)
+forecasts = list(
+    predictor.predict(test_ds))
+            \end{verbatim}
+        \end{block}
+    \end{columns}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Benchmarks and Model Selection}
+%=============================================================================
+
+\begin{frame}{Major Benchmarks}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Monash Time Series Forecasting Archive}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{30K+ series} across 30 datasets (tourism, electricity, traffic, weather, finance, etc.)
+            \item Standard evaluation protocol: fixed train/test splits, WQL and MASE metrics
+            \item Most widely used benchmark for foundation models (Chronos, TimesFM, Moirai all report here)
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{M-Competitions}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{M3} (2000): 3{,}003 series, monthly/quarterly/yearly
+                \item \textbf{M4} (2018): 100{,}000 series, 6 frequencies
+                \item \textbf{M5} (2020): Walmart sales, hierarchical
+                \item Finding: simpler methods often competitive
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{GiftEval (2024)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{General Time Series Forecasting Evaluation}
+                \item Designed specifically for foundation model evaluation
+                \item Diverse frequencies, domains, horizons
+                \item Calibration and reliability metrics
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Aggregated Results Across Benchmarks}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Cross-Benchmark Performance Summary}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Aggregated rankings across Monash, M3, M4, ETT, Weather, Electricity, and Traffic
+            \item No single model wins everywhere --- \textbf{model selection depends on the use case}
+            \item Foundation models are \textbf{most impressive in zero-shot}, often matching supervised baselines
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.43\textheight, keepaspectratio]{ch11_aggregated_benchmarks.pdf}
+    \end{center}
+    {\scriptsize Heatmap: model (rows) $\times$ benchmark (columns). Color = relative ranking (green = top, red = bottom).}
+    \quantlet{TSA\_ch11\_benchmarks}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_benchmarks}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{When to Use What: Decision Table}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Scenario-Based Recommendations}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c|c}
+        \toprule
+        \textbf{Scenario} & \textbf{ARIMA} & \textbf{Chronos} & \textbf{TimesFM} & \textbf{Moirai} & \textbf{TimeGPT} \\
+        \midrule
+        Limited data ($<$100 obs) & $\checkmark\checkmark$ & $\checkmark$ & $\checkmark$ & $\sim$ & $\checkmark$ \\
+        Real-time / low latency & $\checkmark\checkmark$ & $\sim$ & $\checkmark$ & $\sim$ & $\checkmark$ \\
+        Interpretability needed & $\checkmark\checkmark$ & $\times$ & $\times$ & $\times$ & $\times$ \\
+        Multivariate dependencies & VAR & $\times$ & $\times$ & $\checkmark\checkmark$ & $\sim$ \\
+        Many series (10K+) & $\sim$ & $\checkmark\checkmark$ & $\checkmark\checkmark$ & $\checkmark\checkmark$ & $\checkmark$ \\
+        No ML expertise & $\checkmark$ & $\checkmark$ & $\sim$ & $\sim$ & $\checkmark\checkmark$ \\
+        Open source required & $\checkmark\checkmark$ & $\checkmark\checkmark$ & $\checkmark$ & $\checkmark\checkmark$ & $\times$ \\
+        Probabilistic forecasts & $\checkmark$ & $\checkmark\checkmark$ & $\sim$ & $\checkmark\checkmark$ & $\checkmark$ \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{-2mm}
+    {\scriptsize $\checkmark\checkmark$ = excellent, $\checkmark$ = good, $\sim$ = acceptable, $\times$ = poor fit}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Computational Cost Analysis}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Pareto Frontier: Accuracy vs.\ Cost}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Foundation models trade \textbf{compute for convenience}: no training needed, but inference is heavier
+            \item The ``best'' model lies on the Pareto frontier of accuracy and cost
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.40\textheight, keepaspectratio]{ch11_accuracy_vs_cost.pdf}
+        \end{center}
+
+        \column{0.48\textwidth}
+        {\scriptsize
+        \begin{alertblock}{Cost Considerations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{ARIMA}: CPU, milliseconds, free
+                \item \textbf{Chronos-Mini}: 1 GPU, $\sim$0.1s/series
+                \item \textbf{Chronos-Large}: 1 GPU (A100), $\sim$1s/series
+                \item \textbf{TimesFM}: 1 GPU, $\sim$0.05s/series (fast)
+                \item \textbf{TimeGPT}: API, \$0.01--\$0.10/call
+                \item \textbf{Pre-training from scratch}: 100+ GPU-hours (Chronos-Large)
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Limitations, Ethics, and Future}
+%=============================================================================
+
+\begin{frame}{Current Limitations}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{alertblock}{Five Key Limitations of Foundation Models for Time Series}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item \textbf{Most models are univariate only}: Cannot capture cross-variable interactions (e.g., price-volume, temperature-demand). Only Moirai attempts multivariate.
+            \item \textbf{Limited context windows (512--4096 tokens)}: Cannot leverage very long histories. For daily data with yearly seasonality, 512 steps $\approx$ 1.5 years only.
+            \item \textbf{No causal reasoning}: Models learn correlations, not causation. Cannot answer ``what if interest rates rise by 1\%?'' --- no structural model underneath.
+            \item \textbf{Black box nature}: Attention weights are not easily interpretable. Difficult to explain \textit{why} a particular forecast was made --- problematic for regulated industries.
+            \item \textbf{``Hallucination'' in probabilistic forecasts}: Generated trajectories may exhibit unrealistic patterns (e.g., negative prices, explosive growth) that violate domain constraints.
+        \end{enumerate}
+        }
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Mitigation}
+        {\small Post-processing (clipping, reconciliation), ensemble with classical models, conformal calibration.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ethical Considerations}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Data Provenance}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Pre-training data may include \textbf{private or proprietary} time series (e.g., internal sales data scraped from APIs)
+            \item Lack of transparency: most models do not fully disclose training data composition
+            \item LOTSA (Moirai) is a positive example: open, curated, documented sources
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{alertblock}{Fairness and Bias}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Pre-training skews toward \textbf{data-rich domains} (energy, retail)
+                \item Under-represented: healthcare in developing countries, agriculture in Africa
+                \item Biased training $\to$ biased forecasts $\to$ biased decisions
+            \end{itemize}
+            }
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Environmental and Regulatory}
+            {\scriptsize
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Carbon footprint}: pre-training Chronos-Large $\approx$ 100+ GPU-hours on A100s
+                \item \textbf{EU AI Act}: high-risk AI systems require explainability --- foundation models may not qualify
+                \item \textbf{Accountability}: who is responsible when a forecast-based decision fails?
+            \end{itemize}
+            }
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Future Directions}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Where Is the Field Heading?}
+        {\small
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item \textbf{Multimodal TS models}: Combine time series with text (news, reports), images (satellite), and metadata. Example: forecast sales using both historical data and product descriptions.
+            \item \textbf{Agentic forecasting}: LLM agents that \textit{select, run, and evaluate} forecasting models autonomously. The LLM orchestrates the pipeline rather than producing the forecast directly.
+            \item \textbf{Continual pre-training}: Update foundation models with new data without full retraining. Critical for adapting to distribution shifts (post-COVID, post-pandemic).
+            \item \textbf{Multivariate foundation models}: Move beyond univariate. Learn cross-variable dynamics, hierarchical structures, and spatial correlations.
+            \item \textbf{Domain-specific foundation models}: FinanceFM, EnergyFM, HealthFM --- smaller, specialized, more accurate within their domain.
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{The Next 3--5 Years}
+        {\small Foundation models will likely become the \textbf{default starting point} for forecasting, much as pre-trained word embeddings became standard in NLP. Classical methods will remain essential for interpretability, causal inference, and small-data regimes.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{A Balanced Perspective}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{alertblock}{When to Use Classical Models}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Interpretability required}: regulatory settings, scientific research, policy analysis
+            \item \textbf{Causal inference}: structural models (VAR, SVAR) for ``what if'' analysis
+            \item \textbf{Small data}: fewer than $\sim$50 observations, seasonal structure known a priori
+            \item \textbf{Computational constraints}: edge devices, real-time systems, no GPU access
+            \item \textbf{Explainability mandate}: EU AI Act, financial regulation (MiFID II, Basel III)
+        \end{itemize}
+        }
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{When to Use Foundation Models}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Rapid prototyping}: get a strong baseline in minutes, not days
+            \item \textbf{Cross-domain}: same model for retail, energy, finance --- no domain expertise needed
+            \item \textbf{Zero-shot / cold-start}: new product, new market, no historical data
+            \item \textbf{Scale}: 10{,}000+ series to forecast --- foundation models amortize the cost
+            \item \textbf{Probabilistic forecasts}: native uncertainty quantification (quantiles, prediction intervals)
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{block}{}
+        {\small \textbf{Bottom line}: Classical and foundation models are \textbf{complementary}, not competing. The best practitioners use both.}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{AI Use Case}
+%=============================================================================
+
+\begin{frame}{AI Exercise: Foundation Model Selection}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Compare ARIMA, Prophet, and a foundation model (Chronos) for forecasting monthly airline passengers (the classic Box-Jenkins dataset, 144 observations). For each model: (1)~fit the model, (2)~forecast 24 months ahead, (3)~plot actual vs predicted with 95\% confidence intervals, (4)~compute RMSE and MAPE. Which model would you recommend and why? Provide complete Python code.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercise}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Run the prompt in an LLM of your choice and critically analyze the response.
+        \item Does the code properly handle the \textbf{multiplicative seasonality} in airline data?
+        \item How does Chronos handle seasonality \textbf{without being told} the period is 12?
+        \item Are confidence intervals from Chronos (quantile-based) comparable to ARIMA's (parametric)?
+        \item Does the LLM discuss the \textbf{trade-off}: ARIMA is interpretable, Chronos is zero-shot?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.} Always validate against known benchmarks.}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Summary}
+%=============================================================================
+
+\begin{frame}{Key Takeaways}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{What We Learned}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textbf{Transformers} replace recurrence with self-attention: parallel, scalable, long-range dependencies
+            \item \textbf{Foundation models} are pre-trained on billions of diverse time points and deployed zero-shot
+            \item \textbf{Tokenization} strategies (patching, quantization) bridge continuous TS and discrete Transformer inputs
+            \item \textbf{Chronos} (T5, quantized), \textbf{TimesFM} (decoder, patched), \textbf{Lag-Llama} (LLaMA, lags), \textbf{Moirai} (BERT, any-variate) each have distinct design philosophies
+            \item \textbf{Zero-shot} performance is surprisingly strong --- often matching supervised baselines
+            \item \textbf{Fine-tuning} (especially LoRA) helps when domain data is available but must be done carefully
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{alertblock}{Practical Recommendations}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Always benchmark against \textbf{ARIMA/ETS} as a classical baseline
+            \item Use \textbf{foundation models} for rapid prototyping and when domain expertise is limited
+            \item Classical and foundation models are \textbf{complementary} --- combine them via ensembles
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Quiz}
+%=============================================================================
+
+\begin{frame}{Question 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item What is the key advantage of self-attention over recurrence in sequence modeling?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Self-attention uses fewer parameters than RNNs\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Self-attention processes all positions in parallel with $O(1)$ path length between any two positions\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Self-attention does not require positional encoding\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Self-attention is always faster than recurrence regardless of sequence length
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 1: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch11_quiz1_attention_vs_rnn.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Answer: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Self-attention connects every position to every other position directly (path length $O(1)$), enabling full parallelization. RNNs require $O(T)$ sequential steps, causing vanishing gradients and slow training.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz1\_attention\_vs\_rnn}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz1_attention_vs_rnn}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Which tokenization strategy does Chronos use to convert continuous time series into discrete tokens?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Patching: grouping consecutive time points into patches\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Scaling and quantization into discrete bins using the normal CDF\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Direct linear embedding of raw values\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Byte-pair encoding (BPE) borrowed from NLP
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 2: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch11_quiz2_tokenization.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Answer: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Chronos normalizes values (mean-scaling), then maps to 4096 bins via $b_t = \lfloor (B-1) \cdot \Phi(\tilde{x}_t) \rfloor$. This allows reuse of the T5 vocabulary and cross-entropy loss, making forecasting a language modeling problem over quantized tokens.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz2\_tokenization}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz2_tokenization}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item When should you prefer zero-shot inference over fine-tuning a foundation model?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} When you have millions of labeled domain-specific observations\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} When you need the highest possible accuracy on a single dataset\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} When you have limited labeled data, need rapid deployment, or face cold-start problems\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} When computational resources are not a concern
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 3: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch11_quiz3_zeroshot_decision.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Answer: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Zero-shot excels with limited data, cold-start, and rapid prototyping. The model's pre-trained knowledge transfers temporal patterns from billions of diverse series. Fine-tuning is preferred when sufficient domain data is available and marginal accuracy gains justify the cost.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz3\_zeroshot\_decision}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz3_zeroshot_decision}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item What is ``patching'' in the context of Transformer-based time series models, and why does it help?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Patching means filling missing values in the time series\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Patching groups $P$ consecutive points into one token, reducing attention complexity from $O(T^2)$ to $O((T/P)^2)$ while capturing local patterns\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Patching is a data augmentation technique that creates new training series\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Patching refers to updating model weights after deployment
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 4: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch11_quiz4_patching.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Answer: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Patching (PatchTST, 2023) groups $P$ consecutive points into a single token. This reduces the effective sequence length for attention, captures local temporal patterns within each patch, and enables the model to handle much longer context windows.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz4\_patching}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz4_patching}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item You need to forecast a multivariate energy dataset with 50 correlated variables at hourly frequency. Which foundation model is the best fit?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Chronos --- because it has the most model sizes to choose from\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} TimeGPT --- because it is the easiest to use via API\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Moirai --- because it is the only model designed to handle any number of variates and any frequency natively\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Lag-Llama --- because it uses lag features that capture temporal dependencies
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 5: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[width=0.98\textwidth, height=0.58\textheight, keepaspectratio]{ch11_quiz5_model_selection.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{exampleblock}{Answer: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Moirai is the only foundation model designed for \textbf{any-variate} forecasting. It uses variate IDs and flexible patching to handle 50 correlated variables simultaneously. Chronos and Lag-Llama are univariate; they would process each variable independently, ignoring cross-variable correlations.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch11\_quiz5\_model\_selection}{https://github.com/QuantLet/TSA/tree/main/TSA_ch11/TSA_ch11_quiz5_model_selection}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAPHY
+%=============================================================================
+\begin{frame}{Bibliography I}
+    \begin{block}{Foundational Papers}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Vaswani, A., Shazeer, N., Parmar, N., et al.\ (2017). Attention Is All You Need, \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 30, 5998--6008.
+            \item Ansari, A.F., Stella, L., Turkmen, C., et al.\ (2024). Chronos: Learning the Language of Time Series, \textit{arXiv preprint arXiv:2403.07815}.
+            \item Das, A., Kong, W., Leber, A., et al.\ (2024). A Decoder-Only Foundation Model for Time-Series Forecasting, \textit{Proceedings of ICML 2024}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Foundation Models}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Garza, A., \& Mergenthaler-Canseco, M.\ (2024). TimeGPT-1, \textit{International Journal of Forecasting}, forthcoming.
+            \item Rasul, K., Ashok, A., Williams, A.R., et al.\ (2024). Lag-Llama: Towards Foundation Models for Probabilistic Time Series Forecasting, \textit{Proceedings of NeurIPS 2024}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bibliography II}
+    \begin{block}{Architecture and Pre-Training}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Woo, G., Liu, C., Kumar, A., et al.\ (2024). Unified Training of Universal Time Series Forecasting Transformers, \textit{Proceedings of ICML 2024}.
+            \item Nie, Y., Nguyen, N.H., Sinthong, P., \& Kalagnanam, J.\ (2023). A Time Series is Worth 64 Words: Long-term Forecasting with Transformers, \textit{Proceedings of ICLR 2023}.
+            \item Bommasani, R., Hudson, D.A., Adeli, E., et al.\ (2021). On the Opportunities and Risks of Foundation Models, \textit{arXiv preprint arXiv:2108.07258}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{alertblock}{Benchmarks and Evaluation}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Godahewa, R., Bergmeir, C., Webb, G., et al.\ (2021). Monash Time Series Forecasting Archive, \textit{Proceedings of NeurIPS 2021 Datasets and Benchmarks Track}.
+            \item Hu, E.J., Shen, Y., Wallis, P., et al.\ (2022). LoRA: Low-Rank Adaptation of Large Language Models, \textit{Proceedings of ICLR 2022}.
+        \end{itemize}
+        }
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Bibliography III}
+    \begin{block}{Additional References}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Kaplan, J., McCandlish, S., Henighan, T., et al.\ (2020). Scaling Laws for Neural Language Models, \textit{arXiv preprint arXiv:2001.08361}.
+            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V.\ (2018). The M4 Competition: 100,000 Time Series and 61 Forecasting Methods, \textit{International Journal of Forecasting}, 36(1), 54--74.
+            \item Petropoulos, F., et al.\ (2022). Forecasting: Theory and Practice, \textit{International Journal of Forecasting}, 38(3), 845--1054.
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-1mm}
+    \begin{exampleblock}{Online Resources and Code}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} -- Code platform for quantitative methods
+            \item \textbf{Quantinar}: \url{https://quantinar.com} -- Learning platform for quantitative methods
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch11} -- Python code for this chapter
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{}
+    \centering
+    \Huge\textcolor{MainBlue}{Thank You!}
+
+    \vspace{1cm}
+
+    \Large Questions?
+
+    \vspace{0.8cm}
+
+    \normalsize
+
+    Course materials available at: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+\end{frame}
+
+\end{document}
