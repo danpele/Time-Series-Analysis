@@ -195,7 +195,7 @@ def ch12_sunspot_periodogram():
     ax.set_ylabel('Power (log scale)')
     ax.set_title('Periodogram of Monthly Sunspot Numbers', fontweight='bold')
     ax.set_xlim(0, 2)
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
     ax.text(peak_freq + 0.03, peak_pow * 0.3, f'~{1/peak_freq:.0f} years',
             color=CRIMSON, fontsize=10)
     plt.tight_layout()
@@ -260,7 +260,7 @@ def ch12_aliasing():
     ax.set_ylabel('Amplitude')
     ax.set_title('Aliasing: Two Different Frequencies Appear Identical at Sample Points',
                  fontweight='bold')
-    ax.legend(loc='upper right')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
     ax.text(0.02, 0.05,
             f'Nyquist freq = {fs/2} Hz\n{f_alias} Hz aliases to {f_true} Hz',
             transform=ax.transAxes, fontsize=10, color=CRIMSON,
@@ -319,7 +319,7 @@ def ch12_spectral_density_gallery():
     axes[0, 0].set_title('White Noise', fontweight='bold', fontsize=10.5)
     fig.text(0.5, 1.01, 'Spectral Density Gallery: Four Processes',
              ha='center', fontweight='bold', fontsize=13)
-    axes[1, 1].legend(fontsize=8)
+    axes[1, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=8, frameon=False)
     plt.tight_layout()
     save_chart(fig, 'ch12_spectral_density_gallery')
 
@@ -355,7 +355,7 @@ def ch12_periodogram_inconsistency():
         ax.set_title(title, fontweight='bold', fontsize=11.5)
         ax.set_xlabel('Frequency')
         ax.set_ylabel('Spectral density')
-        ax.legend()
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
 
     fig.suptitle('Periodogram Inconsistency: Raw vs. Smoothed (AR(1), φ = 0.8)',
                  fontweight='bold', fontsize=13)
@@ -413,7 +413,7 @@ def ch12_smoothing_comparison():
     ax.set_ylabel('Spectral density')
     ax.set_title('Spectral Estimation Methods Compared (AR(1), φ = 0.7)',
                  fontweight='bold')
-    ax.legend(loc='upper right')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
     plt.tight_layout()
     save_chart(fig, 'ch12_smoothing_comparison')
 
@@ -446,7 +446,7 @@ def ch12_lag_windows():
     ax.set_xlabel('Lag  τ')
     ax.set_ylabel('Window weight  w(τ)')
     ax.set_title('Common Lag Windows (M = 50)', fontweight='bold')
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
     plt.tight_layout()
     save_chart(fig, 'ch12_lag_windows')
 
@@ -514,7 +514,7 @@ def ch12_estimation_comparison():
     ax.set_ylabel('Spectral density')
     ax.set_title('Spectral Estimators vs. True Spectrum  (AR(2), φ₁=1.0, φ₂=−0.5)',
                  fontweight='bold')
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=4, frameon=False)
     plt.tight_layout()
     save_chart(fig, 'ch12_estimation_comparison')
 
@@ -546,7 +546,7 @@ def ch12_coherence_example():
     ax1.set_ylabel('Squared Coherence')
     ax1.set_title('Coherence and Phase Between Related Processes', fontweight='bold')
     ax1.set_ylim(0, 1.05)
-    ax1.legend()
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False)
 
     ax2.plot(f_p, phase, color=FOREST, linewidth=1.4)
     ax2.axhline(0, color='black', linewidth=0.5, alpha=0.4)
@@ -596,7 +596,7 @@ def ch12_filter_transfer():
     ax.set_title('Filter Transfer Functions', fontweight='bold')
     ax.set_xlim(0, 0.5)
     ax.set_ylim(-0.05, 4.2)
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
     ax.text(0.18, 0.7, 'Business\ncycle band', transform=ax.transAxes,
             fontsize=9.5, color=CRIMSON, ha='center')
     plt.tight_layout()
@@ -646,7 +646,7 @@ def ch12_hp_bk_cf_transfer():
     ax.set_title('Transfer Functions: HP, BK, and CF Filters', fontweight='bold')
     ax.set_xlim(0, 0.5)
     ax.set_ylim(-0.05, 1.15)
-    ax.legend(loc='upper left')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=4, frameon=False)
     ax.text(0.5 * (f_low + f_high), -0.04, '6–32 qtrs', ha='center', fontsize=9,
             color=AMBER, va='top')
     plt.tight_layout()
@@ -686,7 +686,7 @@ def ch12_spectral_leakage():
         ax.set_title(title, fontweight='bold', fontsize=11)
         ax.set_xlabel('Frequency')
         ax.set_ylabel('Power')
-        ax.legend()
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
 
     fig.suptitle('Spectral Leakage: Effect of Tapering', fontweight='bold', fontsize=13)
     plt.tight_layout()
@@ -831,7 +831,7 @@ def ch12_gdp_timeseries():
     for ax in axes:
         ax.axvspan(pd.Timestamp('2020-01-01'), pd.Timestamp('2021-01-01'),
                    alpha=0.15, color=CRIMSON, label='COVID-19')
-    axes[0].legend(loc='upper left')
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False)
 
     plt.tight_layout()
     save_chart(fig, 'ch12_gdp_timeseries')
@@ -858,7 +858,7 @@ def ch12_gdp_periodogram():
     ax.set_xlabel('Frequency (cycles per year)')
     ax.set_ylabel('Spectral density')
     ax.set_title('Spectral Analysis of GDP Growth (Quarterly)', fontweight='bold')
-    ax.legend()
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
     plt.tight_layout()
     save_chart(fig, 'ch12_gdp_periodogram')
 
@@ -913,7 +913,7 @@ def ch12_gdp_bandpass():
                  linestyle='--', label='HP Trend')
     axes[0].set_ylabel('Log GDP')
     axes[0].set_title('HP Filter: Trend Extraction', fontweight='bold')
-    axes[0].legend()
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False)
 
     axes[1].plot(dates, cycle_hp, color=CRIMSON,   linewidth=1.6, label='HP cycle')
     axes[1].plot(dates, cycle_bk, color=FOREST,    linewidth=1.6, label='BK cycle')
@@ -924,7 +924,7 @@ def ch12_gdp_bandpass():
     axes[1].set_ylabel('Cyclical Component')
     axes[1].set_xlabel('Year')
     axes[1].set_title('Business Cycle: HP, BK, and CF Components', fontweight='bold')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
     plt.tight_layout()
     save_chart(fig, 'ch12_gdp_bandpass')
 
@@ -1111,7 +1111,7 @@ def ch12_quiz3_seasonal_spectrum():
     axes[1].set_xlabel('Frequency (cycles per year)')
     axes[1].set_ylabel('Power')
     axes[1].set_title('Periodogram: Seasonal Peaks at Integer Harmonics', fontweight='bold')
-    axes[1].legend()
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
 
     fig.suptitle('Quiz: Seasonal Spectrum — Peaks at f = k / period',
                  fontweight='bold', fontsize=13)
@@ -1153,7 +1153,7 @@ def ch12_quiz4_wavelet_advantage():
     axes[1, 0].set_xlabel('Frequency (Hz)')
     axes[1, 0].set_ylabel('Power')
     axes[1, 0].set_title('Fourier: Clear single peak', fontweight='bold', fontsize=11)
-    axes[1, 0].legend(fontsize=9)
+    axes[1, 0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9, frameon=False)
 
     # Non-stationary time series
     axes[0, 1].plot(t[:n // 2], x_nstat[:n // 2], color=CRIMSON,  linewidth=0.7,
@@ -1161,7 +1161,7 @@ def ch12_quiz4_wavelet_advantage():
     axes[0, 1].plot(t[n // 2:], x_nstat[n // 2:], color=FOREST,   linewidth=0.7,
                     label='40 Hz segment')
     axes[0, 1].set_title('Non-stationary Signal (10 Hz → 40 Hz)', fontweight='bold', fontsize=11)
-    axes[0, 1].legend(fontsize=9)
+    axes[0, 1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, fontsize=9, frameon=False)
 
     # Non-stationary scalogram
     f_st, t_st, Sxx = signal.spectrogram(x_nstat, fs=fs, nperseg=64, noverlap=56)
@@ -1210,7 +1210,7 @@ def ch12_quiz5_hp_filter():
     ax1.set_xlabel('Frequency (cycles per period)')
     ax1.set_ylabel('Gain  |H(ω)|')
     ax1.set_title('HP Filter: High-Pass Gain', fontweight='bold')
-    ax1.legend(fontsize=9.5)
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9.5, frameon=False)
     ax1.set_xlim(0, 0.5)
     ax1.set_ylim(-0.02, 1.05)
 
@@ -1225,7 +1225,7 @@ def ch12_quiz5_hp_filter():
     ax2.set_xlabel('Frequency (cycles per quarter)')
     ax2.set_ylabel('Gain')
     ax2.set_title('HP Filter = High-Pass  (λ=1600)', fontweight='bold')
-    ax2.legend(fontsize=9.5)
+    ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9.5, frameon=False)
     ax2.set_xlim(0, 0.5)
 
     fig.suptitle('Quiz: HP Filter Transfer Function — It IS a High-Pass Filter',
