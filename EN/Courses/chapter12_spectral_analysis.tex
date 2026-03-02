@@ -1,0 +1,2205 @@
+% Chapter 12: Spectral Analysis and Frequency-Domain Methods
+% Harvard-quality academic presentation
+% Master program, Bucharest University of Economic Studies
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Chapter 12: Spectral Analysis and Frequency-Domain Methods}
+
+\begin{document}
+
+% Title page (no header/footer)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% LEARNING OBJECTIVES
+%=============================================================================
+\begin{frame}{Learning Objectives}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{By the end of this chapter, you will be able to:}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Explain} why frequency-domain analysis complements time-domain methods
+            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Derive} the Fourier representation of a stationary process
+            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Compute} and interpret the periodogram and spectral density function
+            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Apply} nonparametric and parametric spectral estimation methods
+            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Interpret} cross-spectral measures: coherence, phase, and gain
+            \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Distinguish} Fourier analysis from wavelet analysis and their use cases
+            \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Use} band-pass filters to extract business cycle components
+            \item[\textcolor{MainBlue}{\textbf{8.}}] \textbf{Implement} spectral analysis in Python for real economic and financial data
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% TABLE OF CONTENTS
+%=============================================================================
+\begin{frame}{Outline}
+    \vspace{-0.3cm}
+    {\small
+    \setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$~\inserttocsection}
+    \tableofcontents
+    }
+\end{frame}
+
+%=============================================================================
+\section{Motivation}
+%=============================================================================
+
+\begin{frame}{Why Frequency-Domain Analysis?}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Time Domain vs.\ Frequency Domain}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Time domain}: describes how a series evolves over time --- ACF, ARIMA, GARCH
+            \item \textbf{Frequency domain}: describes which \textit{periodic components} drive variation
+            \item These are \textbf{dual representations} --- mathematically equivalent, but each reveals different structure
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{When Frequency-Domain Analysis is Essential}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Detecting \textbf{hidden periodicities} (business cycles, seasonal patterns, astronomical cycles)
+            \item Understanding \textbf{which frequencies} carry the most energy (variance)
+            \item Designing \textbf{optimal filters} to extract trend, cycle, or seasonal components
+            \item Analyzing \textbf{co-movement} between series at specific frequencies (coherence)
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Historical Milestones}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Fourier (1807): any periodic function can be decomposed into sine and cosine waves
+            \item Schuster (1898): invented the periodogram for detecting hidden periodicities
+            \item Wiener--Khintchine (1930s): linked autocovariance to spectral density
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Motivating Example: Sunspot Activity}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Time-Domain View}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Monthly sunspot numbers (1749--2024)
+                \item Obvious cyclical pattern visible
+                \item ACF decays slowly --- suggests long memory or cyclical behavior
+                \item But: what is the \textit{exact} period? Are there multiple cycles?
+            \end{itemize}
+        \end{block}
+
+        \column{0.50\textwidth}
+        \begin{block}{Frequency-Domain View}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The periodogram reveals a \textbf{sharp peak} at frequency $f \approx 0.0076$ cycles/month
+                \item Corresponds to period $T = 1/f \approx 131$ months $\approx$ \textbf{11 years}
+                \item Secondary peak at $\approx$ 5.5 years (harmonic)
+                \item Directly identifies: ``which cycles matter?''
+            \end{itemize}
+        \end{block}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Key insight}: The frequency domain \textit{decomposes variance by frequency}, revealing the dominant oscillatory components that drive the series.}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_sunspot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_sunspot}
+\end{frame}
+
+\begin{frame}{Sunspot Time Series}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_sunspot_timeseries.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Monthly sunspot counts (1749--2024) with the $\approx$11-year solar cycle
+        \item Amplitude and shape of cycles vary --- both time- and frequency-domain tools needed
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_sunspot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_sunspot}
+\end{frame}
+
+\begin{frame}{Sunspot Periodogram}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_sunspot_periodogram.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Dominant peak at $f \approx 0.0076$ cycles/month $\Rightarrow$ \textbf{11-year} sunspot cycle
+        \item Secondary harmonic at $\approx$5.5 years confirms non-sinusoidal cycle shape
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_sunspot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_sunspot}
+\end{frame}
+
+\begin{frame}{The Spectral Representation: Big Picture}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Two Equivalent Descriptions of a Stationary Process}
+        {\small
+        \begin{center}
+        \begin{tabular}{l|c|c}
+            \toprule
+            & \textbf{Time Domain} & \textbf{Frequency Domain} \\
+            \midrule
+            Summary statistic & Autocovariance $\gamma(h)$ & Spectral density $f(\omega)$ \\
+            Total variance & $\gamma(0) = \Var(Y_t)$ & $\displaystyle\int_{-\pi}^{\pi} f(\omega)\,d\omega$ \\
+            Relationship & \multicolumn{2}{c}{Fourier transform pair (Wiener--Khintchine)} \\
+            Model class & ARMA$(p,q)$ & Rational spectral density \\
+            Estimation & Sample ACF & Periodogram / spectral estimators \\
+            Filter analysis & Convolution (hard) & Multiplication (easy) \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Why Learn Both?}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Filtering (trend extraction, seasonal adjustment) is \textbf{multiplication} in frequency domain but \textbf{convolution} in time domain
+            \item Spectral density gives a complete, \textbf{visual summary} of the variance structure
+            \item Some phenomena (business cycles, signal interference) are \textit{naturally described} by frequency
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+%=============================================================================
+\section{Fourier Analysis Foundations}
+%=============================================================================
+
+\begin{frame}{Fourier Series: Decomposing Periodic Functions}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Fourier's Fundamental Insight}
+        {\small Any periodic function $g(t)$ with period $T$ can be written as:
+        \[
+            g(t) = a_0 + \sum_{k=1}^{\infty} \left[ a_k \cos\!\left(\frac{2\pi k t}{T}\right) + b_k \sin\!\left(\frac{2\pi k t}{T}\right) \right]
+        \]
+        where the Fourier coefficients are:
+        \[
+            a_0 = \frac{1}{T}\int_0^T g(t)\,dt, \quad a_k = \frac{2}{T}\int_0^T g(t)\cos\!\left(\frac{2\pi k t}{T}\right)dt, \quad b_k = \frac{2}{T}\int_0^T g(t)\sin\!\left(\frac{2\pi k t}{T}\right)dt
+        \]}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Key Terminology}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Frequency}: $f_k = k/T$ cycles per unit time; \textbf{Angular frequency}: $\omega_k = 2\pi f_k$ radians per unit time
+            \item \textbf{Fundamental frequency}: $f_1 = 1/T$; \textbf{Harmonics}: $f_k = k \cdot f_1$ for $k = 2, 3, \ldots$
+            \item \textbf{Amplitude}: $R_k = \sqrt{a_k^2 + b_k^2}$; \textbf{Phase}: $\phi_k = \arctan(b_k / a_k)$
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Fourier Decomposition Illustration}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_fourier_decomposition.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Complex periodic signal (top) decomposed into fundamental + harmonic components
+        \item Each row = one frequency component; the sum reconstructs the original exactly
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_fourier}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_fourier}
+\end{frame}
+
+\begin{frame}{Complex Exponential Form}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Euler's Formula and Complex Fourier Series}
+        {\small Using Euler's formula $e^{i\omega t} = \cos(\omega t) + i\sin(\omega t)$, we can write:
+        \[
+            g(t) = \sum_{k=-\infty}^{\infty} c_k \, e^{i 2\pi k t / T}, \qquad c_k = \frac{1}{T}\int_0^T g(t)\, e^{-i 2\pi k t / T}\,dt
+        \]
+        where $c_k = (a_k - ib_k)/2$ for $k > 0$ and $c_{-k} = \overline{c_k}$ (complex conjugate).}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Why Complex Notation?}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item More compact: one formula instead of separate sine/cosine terms
+            \item Algebraically simpler: convolution becomes multiplication
+            \item Standard in signal processing, physics, and modern time series analysis
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Parseval's Theorem (Energy Conservation)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Total Energy is Preserved Across Representations}
+        {\small
+        \[
+            \frac{1}{T}\int_0^T |g(t)|^2\,dt = \sum_{k=-\infty}^{\infty} |c_k|^2
+        \]
+        Each $|c_k|^2$ measures the \textbf{contribution of frequency $k/T$ to total variance}.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Implication}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Energy in time domain = energy in frequency domain
+            \item This is the foundation for spectral decomposition of variance
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Discrete Fourier Transform (DFT) I: Definition}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{From Continuous to Discrete}
+        {\small Given $n$ observations $y_1, y_2, \ldots, y_n$, the DFT is:
+        \[
+            J(\omega_j) = \frac{1}{\sqrt{n}} \sum_{t=1}^{n} y_t \, e^{-i\omega_j t}, \qquad \omega_j = \frac{2\pi j}{n}, \quad j = 0, 1, \ldots, n-1
+        \]
+        The frequencies $\omega_j$ are called the \textbf{Fourier frequencies} or \textbf{fundamental frequencies}.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Orthogonality of the DFT}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item The Fourier basis vectors are orthogonal: $\sum_{t=1}^n e^{i(\omega_j - \omega_k)t} = n \cdot \mathbf{1}_{j=k}$
+            \item Different frequencies are uncorrelated --- each captures a distinct component of variation
+            \item The DFT is a unitary transformation (up to scaling) of the data vector
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Discrete Fourier Transform (DFT) II: Properties}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Invertibility: Perfect Reconstruction}
+        {\small The DFT is perfectly invertible --- the original data can be exactly reconstructed:
+        \[
+            y_t = \frac{1}{\sqrt{n}} \sum_{j=0}^{n-1} J(\omega_j) \, e^{i\omega_j t}, \qquad t = 1, \ldots, n
+        \]
+        No information is lost in the frequency-domain representation.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{The Nyquist Frequency}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item The highest detectable frequency is $\omega_{n/2} = \pi$ radians per period
+            \item Requires at least 2 observations per cycle --- faster oscillations cannot be resolved
+            \item Frequencies above Nyquist are ``aliased'' (folded back) --- see next slides
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Fast Fourier Transform (FFT)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Na\"ive DFT: $O(n^2)$ operations. FFT (Cooley--Tukey, 1965): $O(n \log n)$
+            \item One of the most important algorithms of the 20th century
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Aliasing and the Nyquist Frequency}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{The Sampling Theorem (Shannon--Nyquist)}
+        {\small A continuous signal with maximum frequency $f_{\max}$ can be perfectly reconstructed from discrete samples if the sampling rate satisfies:
+        \[
+            f_s > 2 f_{\max} \qquad \text{(Nyquist criterion)}
+        \]
+        The \textbf{Nyquist frequency} $f_N = f_s / 2$ is the highest frequency we can detect.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Aliasing: What Goes Wrong}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item If a signal contains frequencies \textit{above} $f_N$, they are ``folded back'' and appear as lower frequencies
+            \item \textbf{Example}: daily data ($f_s = 1$/day, $f_N = 0.5$/day). An intraday cycle at 0.7 cycles/day appears as 0.3 cycles/day
+            \item Aliasing is \textbf{irreversible} --- once data is sampled, aliased frequencies cannot be separated
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Practical Implication for Economic Data}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Monthly GDP data: $f_N = 0.5$ cycles/month $\Rightarrow$ cannot detect cycles shorter than 2 months
+            \item Quarterly data: can only detect cycles $\geq$ 6 months
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Aliasing Illustrated}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_aliasing.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item High-frequency sinusoid (dashed) sampled too sparsely $\Rightarrow$ indistinguishable from lower-frequency alias (solid)
+        \item Anti-aliasing filters must be applied \textit{before} sampling to prevent irreversible distortion
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_aliasing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_aliasing}
+\end{frame}
+
+%=============================================================================
+\section{The Spectral Density Function}
+%=============================================================================
+
+\begin{frame}{Definition and the Wiener--Khintchine Theorem}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{thm}[Wiener--Khintchine Theorem]
+        {\small Let $\{Y_t\}$ be a weakly stationary process with autocovariance function $\gamma(h)$ satisfying $\sum_{h=-\infty}^{\infty} |\gamma(h)| < \infty$. Then the \textbf{spectral density function} (SDF) exists and is given by:
+        \[
+            f(\omega) = \frac{1}{2\pi} \sum_{h=-\infty}^{\infty} \gamma(h) \, e^{-i\omega h}, \qquad -\pi \leq \omega \leq \pi
+        \]
+        The \textbf{inverse} relationship is:
+        \[
+            \gamma(h) = \int_{-\pi}^{\pi} f(\omega) \, e^{i\omega h}\,d\omega
+        \]}
+    \end{thm}
+    \vspace{-2mm}
+    \begin{block}{Properties of the Spectral Density}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $f(\omega) \geq 0$ for all $\omega$ (non-negative --- it represents variance contribution)
+            \item $f(\omega) = f(-\omega)$ (symmetric for real-valued processes)
+            \item $\gamma(0) = \Var(Y_t) = \int_{-\pi}^{\pi} f(\omega)\,d\omega$ (total variance = area under $f$)
+            \item $f$ is \textbf{periodic} with period $2\pi$, so we only need $\omega \in [-\pi, \pi]$ or $[0, \pi]$
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+\begin{frame}{Spectral Density: White Noise and AR(1)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{White Noise: $Y_t = \varepsilon_t$, $\varepsilon_t \sim \text{WN}(0, \sigma^2)$}
+        {\small
+        \[
+            \gamma(h) = \sigma^2 \mathbf{1}_{h=0} \qquad\Longrightarrow\qquad f(\omega) = \frac{\sigma^2}{2\pi} \quad \text{(flat --- equal power at all frequencies)}
+        \]
+        The spectral density is constant: white noise contributes equally at every frequency.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{block}{AR(1): $Y_t = \phi Y_{t-1} + \varepsilon_t$}
+        {\small
+        \[
+            f(\omega) = \frac{\sigma^2}{2\pi} \cdot \frac{1}{|1 - \phi e^{-i\omega}|^2} = \frac{\sigma^2}{2\pi(1 - 2\phi\cos\omega + \phi^2)}
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\phi > 0$: \textbf{red spectrum} --- peaks at $\omega = 0$, power concentrated at low frequencies (trend-like)
+            \item $\phi < 0$: \textbf{blue spectrum} --- peaks at $\omega = \pi$, power at high frequencies (alternating)
+            \item $|\phi| \to 1$: spectrum becomes more concentrated, approaching a spike
+        \end{itemize}}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Spectral Density: MA(1) and General ARMA}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{MA(1): $Y_t = \varepsilon_t + \theta\varepsilon_{t-1}$}
+        {\small
+        \[
+            f(\omega) = \frac{\sigma^2}{2\pi} \cdot |1 + \theta e^{-i\omega}|^2 = \frac{\sigma^2}{2\pi}(1 + 2\theta\cos\omega + \theta^2)
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\theta > 0$: more power at low frequencies; $\theta < 0$: more power at high frequencies
+            \item Spectral shape is a simple cosine modulation of the white noise spectrum
+        \end{itemize}}
+    \end{block}
+    \vspace{-2mm}
+    \begin{block}{General ARMA$(p,q)$: $\phi(B)Y_t = \theta(B)\varepsilon_t$}
+        {\small
+        \[
+            f(\omega) = \frac{\sigma^2}{2\pi} \cdot \frac{|\theta(e^{-i\omega})|^2}{|\phi(e^{-i\omega})|^2} \qquad \text{(rational spectral density)}
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item AR poles $\Rightarrow$ peaks in the spectrum; MA zeros $\Rightarrow$ troughs (spectral zeros)
+            \item The rational form makes parametric spectral estimation natural for ARMA processes
+        \end{itemize}}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Spectral Density Gallery: Visual Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_spectral_density_gallery.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item White noise, AR(1) $(\phi=0.9)$, AR(1) $(\phi=-0.7)$, AR(2), and seasonal processes
+        \item Each model's autocorrelation structure maps to a distinctive spectral shape
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+\begin{frame}{The Spectral Representation Theorem}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{thm}[Spectral Representation / Cram\'er Representation]
+        {\small Any weakly stationary process $\{Y_t\}$ with $\E[Y_t] = 0$ can be represented as:
+        \[
+            Y_t = \int_{-\pi}^{\pi} e^{i\omega t}\,dZ(\omega)
+        \]
+        where $Z(\omega)$ is an orthogonal-increment process satisfying:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\E[dZ(\omega)] = 0$
+            \item $\E[|dZ(\omega)|^2] = dF(\omega)$ where $F(\omega)$ is the spectral distribution function
+            \item $\E[dZ(\omega_1)\,\overline{dZ(\omega_2)}] = 0$ for $\omega_1 \neq \omega_2$
+        \end{itemize}
+        }
+    \end{thm}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Every stationary process is a \textbf{superposition of uncorrelated oscillations} at different frequencies
+            \item $dZ(\omega)$ gives the (random) amplitude and phase at frequency $\omega$
+            \item The spectral density $f(\omega) = dF(\omega)/d\omega$ measures \textbf{variance per unit frequency}
+            \item This is the \textbf{frequency-domain analog of the Wold decomposition}
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{The Periodogram}
+%=============================================================================
+
+\begin{frame}{Definition and Interpretation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{defn}[Periodogram]
+        {\small The \textbf{periodogram} of $\{y_t\}_{t=1}^n$ at frequency $\omega_j = 2\pi j / n$ is:
+        \[
+            I(\omega_j) = \frac{1}{2\pi}|J(\omega_j)|^2 = \frac{1}{2\pi n}\left|\sum_{t=1}^{n} y_t \, e^{-i\omega_j t}\right|^2
+        \]
+        Equivalently, using trigonometric form:
+        \[
+            I(\omega_j) = \frac{n}{4\pi}\left(\hat{a}_j^2 + \hat{b}_j^2\right)
+        \]
+        where $\hat{a}_j = \frac{2}{n}\sum_t y_t \cos(\omega_j t)$ and $\hat{b}_j = \frac{2}{n}\sum_t y_t \sin(\omega_j t)$.}
+    \end{defn}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $I(\omega_j)$ measures the \textbf{contribution of frequency $\omega_j$ to total sample variance}
+            \item Large $I(\omega_j)$ $\Rightarrow$ strong oscillation at period $T_j = 2\pi/\omega_j = n/j$
+            \item The periodogram decomposes variance: $\frac{1}{n}\sum_{t=1}^n (y_t - \bar{y})^2 = \sum_{j=1}^{\lfloor n/2 \rfloor} I(\omega_j)$ (up to constants)
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+\begin{frame}{Periodogram and Sample Autocovariance}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{thm}[Periodogram--Autocovariance Relationship]
+        {\small The periodogram is the Fourier transform of the sample autocovariance function:
+        \[
+            I(\omega) = \frac{1}{2\pi}\sum_{h=-(n-1)}^{n-1} \hat{\gamma}(h) \, e^{-i\omega h}
+        \]
+        where $\hat{\gamma}(h) = \frac{1}{n}\sum_{t=1}^{n-|h|}(y_t - \bar{y})(y_{t+|h|} - \bar{y})$ is the sample autocovariance at lag $h$.}
+    \end{thm}
+    \vspace{-2mm}
+    \begin{block}{This is the Sample Analog of Wiener--Khintchine}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Population: $f(\omega) = \frac{1}{2\pi}\sum_{h=-\infty}^{\infty} \gamma(h)\,e^{-i\omega h}$ (spectral density)
+            \item Sample: $I(\omega) = \frac{1}{2\pi}\sum_{h} \hat{\gamma}(h)\,e^{-i\omega h}$ (periodogram)
+            \item The periodogram is a \textbf{natural estimator} of the spectral density --- but is it a \textit{good} one?
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Key Limitation: The Periodogram is Inconsistent}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\E[I(\omega_j)] \to f(\omega)$ as $n \to \infty$ (asymptotically unbiased)
+            \item But $\Var[I(\omega_j)] \not\to 0$ --- the variance does \textit{not} shrink with more data!
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+\begin{frame}{Reading a Periodogram: Common Patterns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\small
+    \begin{block}{Periodogram Signatures of Common Processes}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|l|l}
+        \toprule
+        \textbf{Process} & \textbf{Spectral Shape} & \textbf{Periodogram Pattern} \\
+        \midrule
+        White noise & Flat: $f(\omega) = \sigma^2/(2\pi)$ & Roughly uniform, no peaks \\
+        AR(1), $\phi > 0$ & Peaks at $\omega = 0$, decays & Large values at low frequencies \\
+        AR(1), $\phi < 0$ & Peaks at $\omega = \pi$, decays & Large values at high frequencies \\
+        AR(2), complex roots & Peak at $\omega_0 = \cos^{-1}\!\bigl(\phi_1/(2\sqrt{-\phi_2})\bigr)$$^{\dagger}$ & Hump at cyclical frequency \\
+        Random walk$^{\ddagger}$ & $f(\omega) \propto \omega^{-2}$ & Strong low-frequency dominance \\
+        Seasonal ($s = 12$) & Peaks at $\omega = 2\pi k/12$ & Spikes at seasonal harmonics \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    {\tiny $^{\dagger}$Approximate --- derived from the characteristic roots of the AR(2) polynomial.\quad $^{\ddagger}$Non-stationary; $f(\omega)\propto\omega^{-2}$ is the pseudo-spectral density.}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Practical Rule of Thumb}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Red spectrum} (power at low $\omega$): trend-dominated, positively autocorrelated
+            \item \textbf{Blue spectrum} (power at high $\omega$): noise-dominated, negatively autocorrelated
+            \item \textbf{Sharp peaks}: deterministic or near-deterministic periodic components
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+
+\begin{frame}{Statistical Properties of the Periodogram}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Asymptotic Distribution (Gaussian Process)}
+        {\small For a stationary Gaussian process with spectral density $f(\omega)$:
+        \[
+            \frac{2\,I(\omega_j)}{f(\omega_j)} \;\xrightarrow{d}\; \chi^2_2 \qquad \text{for } 0 < \omega_j < \pi
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\E[I(\omega_j)] \approx f(\omega_j)$ --- approximately unbiased
+            \item $\Var[I(\omega_j)] \approx f(\omega_j)^2$ --- variance equals the squared mean
+            \item Periodogram values at \textbf{different Fourier frequencies are asymptotically independent}
+        \end{itemize}}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{The Inconsistency Problem}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item The coefficient of variation $\text{CV} = \text{SD}/\text{Mean} = 1$ regardless of sample size
+            \item Adding more data adds more frequencies but does \textbf{not} reduce noise at any given frequency
+            \item The raw periodogram is \textbf{not a consistent estimator} of the spectral density
+            \item \textbf{Solution}: smooth the periodogram (see Section~5)
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Periodogram Inconsistency Illustrated}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_periodogram_inconsistency.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item As $n$ grows, the periodogram (grey) does \textit{not} converge to the true density (red)
+        \item Erratic fluctuations persist $\Rightarrow$ motivates kernel smoothing and multitaper methods
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+\begin{frame}{Fisher's Test for Hidden Periodicities}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Is That Peak Real or Just Noise?}
+        {\small Fisher (1929) proposed testing $H_0$: the series is white noise against $H_1$: there is a hidden periodicity. The test statistic is:
+        \[
+            g = \frac{\max_j I(\omega_j)}{\sum_{j=1}^{\lfloor n/2 \rfloor} I(\omega_j)}
+        \]
+        Under $H_0$, the exact distribution of $g$ is known. For large $n$:
+        \[
+            P(g > x) \approx m(1-x)^{m-1} - \binom{m}{2}(1-2x)_+^{m-1} + \cdots
+        \]
+        where $m = \lfloor n/2 \rfloor$ and $(a)_+ = \max(a, 0)$.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item If the largest periodogram value is significantly larger than expected under white noise, reject $H_0$
+            \item Can be applied iteratively: remove detected frequency, test again
+            \item Modern alternative: test individual frequencies using the $\chi^2_2$ distribution
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Spectral Estimation}
+%=============================================================================
+
+\begin{frame}{The Estimation Problem}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Goal: Estimate $f(\omega)$ from Data}
+        {\small We need a \textbf{consistent} estimator: both bias $\to 0$ and variance $\to 0$ as $n \to \infty$. Two main approaches:}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Nonparametric Methods}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Smooth the raw periodogram
+                \item No model assumptions
+                \item \textbf{Lag-window} (Blackman--Tukey)
+                \item \textbf{Segment-averaging} (Bartlett, Welch)
+                \item \textbf{Multitaper} (Thomson)
+                \item Bias-variance tradeoff via bandwidth
+            \end{itemize}
+        \end{block}
+
+        \column{0.50\textwidth}
+        \begin{alertblock}{Parametric Methods}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Fit a model, derive its spectral density
+                \item Assumes a specific model form
+                \item \textbf{AR spectral estimation}
+                \item Higher resolution for short series
+                \item Risk of misspecification
+                \item AIC/BIC for model selection
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Key insight}: Consistent spectral estimation requires sacrificing frequency resolution. This is a fundamental bias-variance tradeoff --- you cannot have both perfect resolution and low variance.}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_estimation}
+\end{frame}
+
+\begin{frame}{Smoothed Periodogram (Daniell Kernel)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Idea: Average Neighboring Periodogram Values}
+        {\small The \textbf{smoothed periodogram} at frequency $\omega$ is:
+        \[
+            \hat{f}(\omega) = \sum_{k=-m}^{m} w_k \, I(\omega + \omega_k)
+        \]
+        where $\{w_k\}$ are non-negative weights summing to 1 and $m$ is the \textbf{bandwidth}.
+        The simplest choice is the Daniell (uniform) kernel: $w_k = 1/(2m+1)$ for $|k| \leq m$.
+        Equivalent degrees of freedom: $\nu \approx 2(2m+1)$.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Bandwidth Choice: The Fundamental Tradeoff}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Small $m$: low bias, high variance (close to raw periodogram)
+            \item Large $m$: low variance, high bias (oversmoothed, peaks blurred)
+            \item Approximately $\hat{f}(\omega) \sim f(\omega) \cdot \chi^2_\nu / \nu$
+        \end{itemize}
+        {\scriptsize \textbf{Note}: ``Bandwidth'' in smoothing ($m$, the number of averaged frequencies) differs from ``bandwidth'' $W$ in multitaper analysis (the spectral concentration half-width). Context always clarifies which is meant.}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Smoothing Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_smoothing_comparison.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Raw periodogram vs.\ Daniell-smoothed estimates with bandwidth $m=3,\,8,\,20$
+        \item Wider bandwidth reduces variance but blurs peaks --- bias-variance tradeoff
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_smoothing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_smoothing}
+\end{frame}
+
+\begin{frame}{Lag-Window (Blackman--Tukey) Estimation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Alternative: Taper the Autocovariances}
+        {\small Instead of smoothing in frequency domain, apply a window to the sample autocovariances:
+        \[
+            \hat{f}(\omega) = \frac{1}{2\pi}\sum_{h=-(M-1)}^{M-1} w(h/M)\,\hat{\gamma}(h)\,e^{-i\omega h}
+        \]
+        where $w(\cdot)$ is a \textbf{lag window} (kernel) and $M$ is the \textbf{truncation point}.}
+    \end{block}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Common Lag Windows}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|l|l}
+        \toprule
+        \textbf{Window} & \textbf{Formula $w(x)$, $|x| \leq 1$} & \textbf{Properties} \\
+        \midrule
+        Bartlett (triangle) & $1 - |x|$ & Simple, non-negative spectrum \\
+        Parzen & $1 - 6x^2 + 6|x|^3$ for $|x| \leq 1/2$, else $2(1-|x|)^3$ & Smooth, non-negative \\
+        Tukey--Hanning & $\frac{1}{2}(1 + \cos(\pi x))$ & Good resolution \\
+        Bartlett--Priestley & $\frac{3}{(\pi x)^2}\left(\frac{\sin(\pi x)}{\pi x} - \cos(\pi x)\right)$ & Optimal for smooth spectra \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Choosing $M$}
+        {\small Rule of thumb: $M \approx 2\sqrt{n}$. Cross-validation or plug-in selectors for automatic choice.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Lag Windows Illustrated}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_lag_windows.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Bartlett, Parzen, Tukey--Hanning, and Bartlett--Priestley lag windows (left) and spectral windows (right)
+        \item Smoother lag windows $\Rightarrow$ better-behaved spectral estimates with non-negative values
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_lag\_windows}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_lag_windows}
+\end{frame}
+
+\begin{frame}{Welch's Method (Segment Averaging)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Idea: Divide and Average}
+        {\small Welch (1967) proposed:
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item Divide the series of length $n$ into $K$ overlapping segments of length $L$
+            \item Apply a data taper (e.g., Hanning window) to each segment
+            \item Compute the periodogram of each tapered segment
+            \item Average the $K$ periodograms: $\hat{f}_{\text{Welch}}(\omega) = \frac{1}{K}\sum_{k=1}^{K} I^{(k)}(\omega)$
+        \end{enumerate}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Advantages}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Variance reduced by factor $\approx 1/K$
+                \item Tapering reduces spectral leakage
+                \item 50\% overlap is standard
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.50\textwidth}
+        \begin{alertblock}{Tradeoff}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Frequency resolution $\Delta f = 1/L$
+                \item Shorter segments $\Rightarrow$ worse resolution
+                \item Longer segments $\Rightarrow$ fewer averages $\Rightarrow$ higher variance
+                \item Typical: $L = n/4$ to $n/8$ with 50\% overlap
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Multitaper Spectral Estimation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Thomson's Multitaper Method (1982)}
+        {\small Instead of one taper (window), use $K$ \textbf{orthogonal tapers} $\{h_k(t)\}_{k=0}^{K-1}$:
+        \[
+            \hat{f}_{\text{MT}}(\omega) = \frac{1}{2\pi K}\sum_{k=0}^{K-1} \left|\sum_{t=1}^{n} h_k(t)\,y_t\,e^{-i\omega t}\right|^2
+        \]
+        The tapers are \textbf{discrete prolate spheroidal sequences} (DPSS / Slepian sequences), which optimally concentrate energy in the frequency band $[-W, W]$.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Advantages of the Multitaper Method}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Uses \textbf{all the data} (no segmenting) --- maximum frequency resolution
+            \item $K$ orthogonal tapers provide $K$ approximately independent spectral estimates
+            \item Near-optimal bias-variance tradeoff controlled by bandwidth $W$; $K = 2nW - 1$
+            \item $NW = 3$--$4$ is standard ($K = 5$--$8$). Python: \texttt{scipy.signal.windows.dpss()}
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_multitaper}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_multitaper}
+\end{frame}
+
+\begin{frame}{Multitaper DPSS Tapers}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_multitaper_dpss.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item First DPSS (Slepian) tapers for $NW=4$; each successive taper has one extra zero crossing
+        \item Together they provide nearly independent spectral estimates concentrated in $[-W,W]$
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_multitaper}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_multitaper}
+\end{frame}
+
+\begin{frame}{Parametric Spectral Estimation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{AR-Based Spectral Estimation}
+        {\small If we fit an AR($p$) model: $Y_t = \sum_{k=1}^p \hat{\phi}_k Y_{t-k} + \varepsilon_t$, the spectral density is:
+        \[
+            \hat{f}_{\text{AR}}(\omega) = \frac{\hat{\sigma}^2}{2\pi\,|1 - \hat{\phi}_1 e^{-i\omega} - \cdots - \hat{\phi}_p e^{-ip\omega}|^2}
+        \]
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Advantages}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item High resolution even for short series
+                \item Smooth estimate (no erratic fluctuations)
+                \item Can resolve closely-spaced peaks
+                \item Yule--Walker or Burg's algorithm
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.50\textwidth}
+        \begin{alertblock}{Disadvantages}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Assumes AR model is correct
+                \item May miss features not captured by AR
+                \item Order $p$ selection critical (AIC, BIC)
+                \item Cannot represent sharp spectral zeros
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Recommendation}: Use AR spectral estimation for short series ($n < 100$) or when the process is believed to be autoregressive. Use nonparametric methods for longer series or unknown spectral shape.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Comparison of Spectral Estimation Methods}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Method Comparison Summary}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c}
+        \toprule
+        \textbf{Method} & \textbf{Resolution} & \textbf{Variance} & \textbf{Assumptions} & \textbf{Best For} \\
+        \midrule
+        Raw periodogram & Highest & Highest (inconsistent) & None & Initial exploration \\
+        Daniell smoothing & Medium & Medium & Locally smooth $f$ & Quick smoothed estimate \\
+        Blackman--Tukey & Medium & Low--medium & Smooth $f$ & Classical analysis \\
+        Welch's method & Low--medium & Low & Locally stationary & Long series, real-time \\
+        Multitaper & Medium--high & Low & None & Gold standard \\
+        AR parametric & Very high & Very low & AR model correct & Short series \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Practical Workflow}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] Plot the raw periodogram (on log scale) for initial exploration
+            \item[\textcolor{MainBlue}{\textbf{2.}}] Apply multitaper estimation for the primary analysis
+            \item[\textcolor{MainBlue}{\textbf{3.}}] Cross-check with AR spectral estimate if peaks need higher resolution
+            \item[\textcolor{MainBlue}{\textbf{4.}}] Use confidence intervals: $\hat{f}(\omega) \cdot \chi^2_\nu / \nu$ with $\nu$ effective degrees of freedom
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Spectral Estimation Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_estimation_comparison.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Six estimation methods applied to the same AR(2) series for direct comparison
+        \item Multitaper achieves the best resolution-variance balance among nonparametric methods
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_estimation}
+\end{frame}
+
+\begin{frame}{Spectral Leakage and Data Tapering}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{The Leakage Problem}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Computing the DFT implicitly assumes the data is periodic (wraps around)
+            \item If the series does not start and end at the same value, this creates \textbf{discontinuities}
+            \item Energy from strong spectral peaks ``leaks'' into neighboring frequencies
+            \item Result: periodogram shows broad humps instead of sharp peaks
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Solution: Data Tapering (Windowing)}
+        {\small Apply a taper $\{d_t\}$ that smoothly brings the data to zero at both ends:
+        \[
+            y_t^{\text{tapered}} = d_t \cdot y_t, \qquad \text{where } d_1 \approx d_n \approx 0, \quad d_{n/2} \approx 1
+        \]
+        Common tapers:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Hanning}: $d_t = 0.5(1 - \cos(2\pi t / n))$ --- good general-purpose taper
+            \item \textbf{Hamming}: $d_t = 0.54 - 0.46\cos(2\pi t / n)$ --- slightly less leakage reduction
+            \item \textbf{Blackman}: $d_t = 0.42 - 0.5\cos(2\pi t/n) + 0.08\cos(4\pi t/n)$ --- excellent leakage suppression
+            \item \textbf{DPSS (Slepian)}: optimal energy concentration (used in multitaper)
+        \end{itemize}}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Spectral Leakage Illustrated}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_spectral_leakage.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Without tapering (left): severe leakage of spectral energy into nearby frequencies
+        \item With Hanning taper (right): peak is well-concentrated, leakage floor greatly reduced
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_leakage}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_leakage}
+\end{frame}
+
+%=============================================================================
+\section{Long Memory and the Spectrum}
+%=============================================================================
+
+\begin{frame}{Long Memory Processes}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{ARFIMA and Spectral Behavior Near the Origin}
+        {\small An ARFIMA$(p,d,q)$ process with fractional difference parameter $d \in (-0.5, 0.5)$:
+        \[
+            \phi(B)(1-B)^d Y_t = \theta(B)\varepsilon_t
+        \]
+        has spectral density satisfying:
+        \[
+            f(\omega) \sim C_f \, |\omega|^{-2d} \quad \text{as } \omega \to 0
+        \]
+        For $0 < d < 0.5$: long memory --- the spectrum \textbf{diverges} at the origin (unbounded low-frequency power).}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Connection to the Hurst Exponent}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Hurst exponent: $H = d + 1/2$, so $H > 1/2$ indicates long memory
+            \item Autocovariances decay hyperbolically: $\gamma(h) \sim C \, |h|^{2d-1}$ (not summable for $d > 0$)
+            \item The Wiener--Khintchine theorem still applies, but the spectrum is unbounded at $\omega = 0$
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Examples in Economics and Finance}
+        {\small Realized volatility ($d \approx 0.4$), inflation persistence, interest rate spreads, trading volume.}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Spectral Regression Estimators of $d$}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{GPH Estimator (Geweke \& Porter-Hudak, 1983)}
+        {\small Regress $\log I(\omega_j)$ on $\log|2\sin(\omega_j/2)|^2$ at the lowest $m$ Fourier frequencies:
+        \[
+            \log I(\omega_j) = \beta_0 - d \cdot \log\!\big(4\sin^2(\omega_j/2)\big) + \varepsilon_j, \qquad j = 1, \ldots, m
+        \]
+        where $m = n^\alpha$ with $\alpha \in (0,1)$, typically $\alpha = 0.5$--$0.8$.
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Simple log-periodogram regression; consistent but inefficient
+            \item $\hat{d}_{\text{GPH}} \xrightarrow{d} N(d,\; \pi^2/(24m))$ under regularity conditions
+        \end{itemize}}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Local Whittle Estimator (Robinson, 1995)}
+        {\small Maximizes the local Whittle likelihood over the $m$ lowest frequencies:
+        \[
+            \hat{d}_{\text{LW}} = \arg\min_d \left[\log\!\left(\frac{1}{m}\sum_{j=1}^{m} \frac{I(\omega_j)}{\omega_j^{-2d}}\right) - \frac{2d}{m}\sum_{j=1}^{m}\log\omega_j\right]
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item More efficient than GPH; $\sqrt{m}(\hat{d}_{\text{LW}} - d) \xrightarrow{d} N(0,\; 1/4)$
+            \item Extended versions: exact local Whittle (Shimotsu \& Phillips, 2005) handles non-stationarity
+        \end{itemize}}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Whittle Likelihood Estimation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{The Whittle Likelihood}
+        {\small For a parametric spectral model $f_\theta(\omega)$, the Whittle log-likelihood approximation is:
+        \[
+            \ell_W(\theta) = -\sum_{j=1}^{\lfloor n/2 \rfloor} \left[\log f_\theta(\omega_j) + \frac{I(\omega_j)}{f_\theta(\omega_j)}\right], \qquad \hat{\theta}_W = \arg\max_\theta \, \ell_W(\theta)
+        \]}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Asymptotic Properties}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\sqrt{n}(\hat{\theta}_W - \theta_0) \xrightarrow{d} N(0, \Sigma^{-1})$ where $\Sigma = \frac{1}{4\pi}\int_{-\pi}^{\pi} \bigl(\frac{\partial \log f_\theta}{\partial \theta}\bigr)\bigl(\frac{\partial \log f_\theta}{\partial \theta}\bigr)^{\!\top} d\omega$
+            \item Asymptotically equivalent to time-domain Gaussian MLE
+        \end{itemize}}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Advantages Over Time-Domain MLE}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Computation: $O(n \log n)$ vs.\ $O(n^2)$ for exact time-domain likelihood
+            \item Robustness: only requires correct spectral specification, not full distributional assumptions
+            \item Modularity: straightforward for ARFIMA or models with complex spectral structure
+        \end{itemize}}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Long Memory: Practical Application}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Example: Financial Volatility Persistence}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Realized volatility of stock returns exhibits long memory with $d \approx 0.35$--$0.45$
+            \item The spectrum diverges near $\omega = 0$: extremely slow mean-reversion
+            \item Standard ARMA models require very high order $p$ to approximate this behavior
+            \item ARFIMA captures the same dynamics parsimoniously with a single parameter $d$
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Practical Workflow}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] Plot the log-periodogram: if approximately linear near origin, suspect long memory
+            \item[\textcolor{MainBlue}{\textbf{2.}}] Estimate $d$ using GPH and local Whittle; compare for robustness
+            \item[\textcolor{MainBlue}{\textbf{3.}}] Fit ARFIMA$(p,d,q)$; compare AIC/BIC with standard ARMA
+            \item[\textcolor{MainBlue}{\textbf{4.}}] Whittle likelihood for efficient parametric estimation
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    {\small \textbf{Caution}: Structural breaks and deterministic trends can mimic long memory in the periodogram --- always test for both (Qu, 2011; Shimotsu, 2006).}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_long\_memory}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_long_memory}
+\end{frame}
+
+%=============================================================================
+\section{Cross-Spectral Analysis}
+%=============================================================================
+
+\begin{frame}{Bivariate Spectral Analysis}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{From Univariate to Bivariate}
+        {\small For two jointly stationary processes $\{X_t\}$ and $\{Y_t\}$, the \textbf{cross-spectral density} is:
+        \[
+            f_{XY}(\omega) = \frac{1}{2\pi}\sum_{h=-\infty}^{\infty} \gamma_{XY}(h)\,e^{-i\omega h}
+        \]
+        where $\gamma_{XY}(h) = \Cov(X_{t+h}, Y_t)$ is the cross-covariance function.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Key Difference from Univariate}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $f_{XY}(\omega)$ is \textbf{complex-valued}: $f_{XY}(\omega) = c_{XY}(\omega) - i\,q_{XY}(\omega)$
+            \item $c_{XY}(\omega)$: \textbf{co-spectrum} (in-phase co-movement at frequency $\omega$)
+            \item $q_{XY}(\omega)$: \textbf{quadrature spectrum} (out-of-phase co-movement)
+            \item These are harder to interpret directly $\Rightarrow$ use derived measures below
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Squared Coherence}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Squared Coherence: Frequency-Domain $R^2$}
+        {\small
+        \[
+            \kappa^2_{XY}(\omega) = \frac{|f_{XY}(\omega)|^2}{f_X(\omega)\,f_Y(\omega)}, \qquad 0 \leq \kappa^2_{XY}(\omega) \leq 1
+        \]
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Measures the \textbf{strength of linear association} between $X$ and $Y$ at frequency $\omega$
+            \item $\kappa^2 = 1$: perfect linear relationship at this frequency; $\kappa^2 = 0$: no relationship
+            \item Analog of $R^2$ in regression, but \textbf{frequency-specific}
+            \item Unlike time-domain correlation, coherence can reveal that two series are strongly related at business cycle frequencies but unrelated at higher frequencies
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Estimation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Raw cross-periodogram gives $\hat{\kappa}^2 = 1$ everywhere --- must smooth first
+            \item Use multitaper or kernel-smoothed cross-spectral estimates
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+\begin{frame}{Phase Spectrum and Gain}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Phase Spectrum}
+            {\small
+            \[
+                \phi_{XY}(\omega) = \arctan\!\left(\frac{-q_{XY}(\omega)}{c_{XY}(\omega)}\right)
+            \]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Lead/lag} between $X$ and $Y$ at frequency $\omega$
+                \item $\phi > 0$: $X$ leads $Y$
+                \item Time delay: $\tau(\omega) = \phi(\omega)/\omega$
+                \item Phase is meaningful only where coherence is significant
+            \end{itemize}}
+        \end{block}
+
+        \column{0.50\textwidth}
+        \begin{block}{Gain (Amplitude Ratio)}
+            {\small
+            \[
+                G_{XY}(\omega) = \frac{|f_{XY}(\omega)|}{f_X(\omega)}
+            \]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Measures how much frequency $\omega$ in $X$ is \textbf{amplified or attenuated} in $Y$
+                \item If $Y = \beta X + \varepsilon$, the gain is $|\beta|$ at all frequencies
+                \item Useful for assessing frequency-dependent transmission
+            \end{itemize}}
+        \end{block}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Together}: Coherence tells you \textit{how strongly} two series are related at each frequency, phase tells you \textit{who leads}, and gain tells you \textit{by how much} oscillations are amplified.}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+\begin{frame}{Coherence Example}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_coherence_example.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Squared coherence, phase spectrum, and gain between two simulated economic series
+        \item High coherence at BC frequencies (6--32 quarters) with near-zero phase $\Rightarrow$ synchronised co-movement
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+\begin{frame}{Cross-Spectral Analysis: Economic Applications}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Application 1: Business Cycle Synchronization}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Coherence between two countries' GDP at business cycle frequencies ($\omega$ corresponding to 6--32 quarters)
+            \item High coherence $\Rightarrow$ synchronized business cycles (relevant for monetary union)
+            \item Phase $\Rightarrow$ which country leads/lags
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Application 2: Leading Indicators}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Coherence and phase between a leading indicator (e.g., yield curve slope) and GDP
+            \item If coherence is high at business cycle frequencies and phase is positive, the indicator truly ``leads''
+            \item More informative than simple cross-correlation, which mixes all frequencies
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Application 3: Monetary Policy Transmission}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Coherence between policy rate and inflation at different frequencies
+            \item May be high at low frequencies (long-run) but low at high frequencies (short-run noise)
+            \item Phase reveals the \textbf{transmission lag} at each frequency
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Filtering in the Frequency Domain}
+%=============================================================================
+
+\begin{frame}{Linear Filters and Transfer Functions I}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{A Linear Filter}
+        {\small A linear time-invariant filter transforms $\{X_t\}$ into $\{Y_t\}$:
+        \[
+            Y_t = \sum_{j=-\infty}^{\infty} a_j\,X_{t-j} = A(B)\,X_t
+        \]
+        The \textbf{frequency response function} (transfer function) is:
+        \[
+            A(\omega) = \sum_{j=-\infty}^{\infty} a_j\,e^{-i\omega j}
+        \]
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{The Fundamental Result: Filtering = Multiplication}
+        {\small If $X_t$ has spectral density $f_X(\omega)$, then $Y_t = A(B)X_t$ has spectral density:
+        \[
+            f_Y(\omega) = |A(\omega)|^2 \cdot f_X(\omega)
+        \]
+        \textbf{A filter multiplies the spectrum by its squared gain} --- this is why the frequency domain makes filter analysis trivial!}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Linear Filters and Transfer Functions II}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{exampleblock}{Classic Filter Examples}
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item \textbf{First difference} $(1-B)$: \quad $|A(\omega)|^2 = 4\sin^2(\omega/2)$\\
+                  $\Rightarrow$ amplifies high frequencies, kills $\omega = 0$ (removes trend)
+            \item \textbf{Moving average of order $m$}: \quad $|A(\omega)|^2 = \left(\dfrac{\sin(m\omega/2)}{m\sin(\omega/2)}\right)^2$\\
+                  $\Rightarrow$ low-pass filter (passes slow components, kills fast oscillations)
+            \item \textbf{Seasonal difference} $(1-B^{12})$: \quad peaks of $|A(\omega)|^2 = 0$ at seasonal harmonics\\
+                  $\Rightarrow$ removes monthly seasonal pattern
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{block}{Ideal Band-Pass Filter}
+        {\small Passes frequencies in $[\omega_L, \omega_H]$ and blocks all others:
+        \[
+            A(\omega) = \begin{cases} 1 & \text{if } \omega_L \leq |\omega| \leq \omega_H \\ 0 & \text{otherwise} \end{cases}
+            \qquad a_j = \frac{\sin(\omega_H j) - \sin(\omega_L j)}{\pi j}
+        \]
+        \textbf{Problem}: requires infinitely many leads/lags $\Rightarrow$ must truncate in practice.}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_filters}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+\begin{frame}{Filter Transfer Functions}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_filter_transfer.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Squared gain $|A(\omega)|^2$ for four filters: first difference, 12-month MA, ideal band-pass, HP cycle
+        \item Each filter's frequency-selectivity is immediately visible in the frequency domain
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_filters}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+\begin{frame}{Baxter--King and Christiano--Fitzgerald Filters}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Baxter--King (BK) Filter (1999)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Symmetric, fixed-length approximation to the ideal band-pass filter
+            \item Uses $K$ leads and lags (typically $K = 12$ for quarterly data)
+            \item Coefficients: truncated ideal filter + constrained to sum to zero (removes trend)
+            \item \textbf{Drawback}: loses $K$ observations at each end of the series
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Christiano--Fitzgerald (CF) Filter (2003)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Asymmetric, time-varying filter --- uses all observations (no data loss)
+            \item Optimal approximation under the assumption that $X_t$ is a random walk
+            \item Filter weights adapt near the endpoints of the series
+            \item Generally preferred over BK for most economic applications
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \vspace{1mm}
+    {\small \textbf{HP filter} ($\lambda=1600$): high-pass filter with $|A_{\text{HP}}(\omega)|^2 = \frac{4\lambda(1 - \cos\omega)^2}{1 + 4\lambda(1 - \cos\omega)^2}$, passes cycles $< 32$ quarters.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{HP, BK, and CF Transfer Functions}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_hp_bk_cf_transfer.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item HP cycle ($\lambda\!=\!1600$), BK band-pass ($K\!=\!12$, 6--32q), and CF filter on quarterly data
+        \item Ideal band-pass target (grey) shows how closely each filter approximates the ideal
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_filters}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+
+%=============================================================================
+\section{Wavelet Analysis}
+%=============================================================================
+
+\begin{frame}{From Fourier to Wavelets: Motivation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Limitation of Fourier Analysis}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Fourier analysis decomposes a signal into \textit{global} sine/cosine components
+            \item Each frequency component extends over the \textbf{entire} time span
+            \item Problem: \textbf{non-stationary signals} --- the frequency content changes over time!
+            \item Example: financial volatility is calm in some periods, turbulent in others
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{The Uncertainty Principle (Heisenberg--Gabor)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item You \textbf{cannot} have perfect resolution in both time and frequency simultaneously
+            \item $\Delta t \cdot \Delta f \geq \frac{1}{4\pi}$ (time-frequency uncertainty)
+            \item Fourier: $\Delta f$ is minimal but $\Delta t = \infty$ (no time localization at all)
+            \item Wavelets: adaptive --- good time resolution at high $f$, good frequency resolution at low $f$
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Wavelets: Localized in Both Time and Frequency}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Use \textbf{short, oscillatory} basis functions (``wavelets'') instead of infinite sinusoids
+            \item Stretch wavelets for low frequencies, compress for high frequencies
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Continuous Wavelet Transform (CWT)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Definition}
+        {\small The CWT of a signal $x(t)$ with respect to a mother wavelet $\psi(t)$ is:
+        \[
+            W(a, b) = \frac{1}{\sqrt{|a|}}\int_{-\infty}^{\infty} x(t)\,\overline{\psi\!\left(\frac{t-b}{a}\right)}\,dt
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $a$: \textbf{scale} parameter (inversely related to frequency: large $a$ = low frequency)
+            \item $b$: \textbf{translation} parameter (time localization)
+            \item $|W(a,b)|^2$: \textbf{wavelet power} at scale $a$ and time $b$
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Common Mother Wavelets}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Morlet}: $\psi(t) = \pi^{-1/4}e^{i\omega_0 t}e^{-t^2/2}$ (Gaussian-modulated complex exponential, $\omega_0 = 6$)
+            \item \textbf{Mexican hat}: $\psi(t) = (1-t^2)e^{-t^2/2}$ (second derivative of Gaussian)
+            \item \textbf{Haar}: simplest wavelet --- piecewise constant (good for jump detection)
+            \item For time series: \textbf{Morlet is standard} --- good balance of time/frequency resolution
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_morlet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_morlet}
+\end{frame}
+
+\begin{frame}{Morlet Wavelet Illustration}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_morlet_wavelet.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Morlet wavelet at four scales: larger scales capture low-frequency oscillations
+        \item Smaller scales capture high-frequency transients --- adaptive time-frequency resolution
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_morlet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_morlet}
+\end{frame}
+
+\begin{frame}{Wavelet Power Spectrum and Scalogram}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{The Wavelet Power Spectrum}
+        {\small
+        \[
+            \text{WPS}(a, b) = |W(a, b)|^2
+        \]
+        Displayed as a \textbf{scalogram}: a 2D heatmap with time on the $x$-axis and scale (period) on the $y$-axis. Color intensity = power.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Global Wavelet Spectrum}
+            {\small Time-averaged power at each scale:
+            \[
+                \overline{W}^2(a) = \frac{1}{n}\sum_{b=1}^{n} |W(a,b)|^2
+            \]
+            Comparable to the Fourier spectral density. Useful for identifying dominant periodicities.}
+        \end{exampleblock}
+
+        \column{0.50\textwidth}
+        \begin{block}{Cone of Influence (COI)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Near edges of the time series, wavelet coefficients are unreliable (edge effects)
+                \item The COI marks the region where edge effects are significant
+                \item Only interpret power \textbf{inside} the COI
+            \end{itemize}
+        \end{block}
+    \end{columns}
+    \vspace{1mm}
+    {\small \textbf{Significance}: Under $H_0$ of red noise (AR(1)), wavelet power follows a $\chi^2_2$ distribution scaled by the background spectrum. Contour lines at 95\% significance are standard.}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_scalogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_scalogram}
+\end{frame}
+
+\begin{frame}{Scalogram of a Synthetic Series}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_scalogram_synthetic.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Synthetic signal: 4-year cycle (first half) + 10-year cycle (second half)
+        \item Scalogram reveals time-varying frequency content; COI (dashed) delimits reliable region
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_scalogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_scalogram}
+\end{frame}
+
+\begin{frame}{Wavelet Coherence}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Cross-Wavelet Transform and Coherence}
+        {\small For two series $X_t$ and $Y_t$ with CWTs $W_X(a,b)$ and $W_Y(a,b)$:
+        \[
+            W_{XY}(a,b) = W_X(a,b)\,\overline{W_Y(a,b)} \qquad \text{(cross-wavelet spectrum)}
+        \]
+        The \textbf{wavelet coherence} is:
+        \[
+            R^2_{XY}(a,b) = \frac{|S(W_{XY}(a,b))|^2}{S(|W_X(a,b)|^2) \cdot S(|W_Y(a,b)|^2)}
+        \]
+        where $S(\cdot)$ is a smoothing operator in both time and scale.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretation and Applications}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $R^2_{XY}(a,b) \in [0, 1]$: time-varying, scale-varying measure of co-movement
+            \item \textbf{Phase arrows} on the coherence plot indicate lead/lag relationships
+            \item Application: oil prices and stock markets --- coherence high at business cycle frequencies during crises
+            \item Application: inflation and money supply --- coherence varies across historical regimes
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_wavelet\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet_coherence}
+\end{frame}
+
+\begin{frame}{Wavelet Coherence: Scalogram}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_wavelet_vs_fourier.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Wavelet coherence between two synthetic series with phase arrows
+        \item Rightward = in-phase, leftward = anti-phase, upward = first series leads
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_wavelet\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet_coherence}
+\end{frame}
+
+\begin{frame}{Locally Stationary Processes}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Dahlhaus (1997): A Framework for Non-Stationary Spectra}
+        {\small A \textbf{locally stationary process} has the representation:
+        \[
+            X_{t,T} = \int_{-\pi}^{\pi} A\!\left(\frac{t}{T},\,\omega\right) e^{i\omega t}\,dZ(\omega)
+        \]
+        where $A(u,\omega)$ is the \textbf{time-varying transfer function} and $Z(\omega)$ is orthogonal-increment.
+        The \textbf{time-varying spectral density} is:
+        \[
+            f(u,\,\omega) = |A(u,\,\omega)|^2, \qquad u \in [0,1],\; \omega \in [-\pi,\pi]
+        \]
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Key Idea}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item At each rescaled time point $u = t/T$, the process ``looks'' stationary with spectrum $f(u,\omega)$
+            \item Generalizes the classical Cram\'er representation to allow time-varying structure
+            \item Estimation via local periodogram or wavelet-based methods
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Spectral Change-Point Detection}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Testing for Spectral Stationarity}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: $f(u, \omega) = f(\omega)$ for all $u$ \quad (spectrum is time-invariant)
+            \item $H_1$: $f(u, \omega)$ changes at one or more time points (spectral change-points)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Approaches}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{CUSUM on local periodograms}: Compare spectral estimates from sub-segments
+            \item \textbf{Wavelet-based tests}: Use scale-by-scale variance to detect changes at specific frequency bands
+            \item \textbf{Kolmogorov--Smirnov-type statistics}: Compare spectral distributions across windows
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Application: Regime Detection in Economics}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Detecting the onset and end of the Great Moderation via spectral changes
+            \item Identifying structural breaks in inflation dynamics or financial volatility
+            \item Changes in business cycle frequency or amplitude across policy regimes
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{STFT vs.\ CWT: Bridging Fourier and Wavelets}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Short-Time Fourier Transform (STFT)}
+        {\small Apply the DFT to windowed segments: $\text{STFT}(\tau, \omega) = \sum_{t} x(t)\,w(t - \tau)\,e^{-i\omega t}$, where $w(\cdot)$ is a fixed-width window centered at time $\tau$.}
+    \end{block}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{center}
+    \begin{tabular}{l|c|c}
+        \toprule
+        & \textbf{STFT} & \textbf{CWT} \\
+        \midrule
+        Window & Fixed width for all $\omega$ & Adaptive (narrow at high $\omega$) \\
+        Resolution & Uniform $\Delta t \times \Delta \omega$ & Variable: $\Delta t \propto 1/\omega$ \\
+        Basis & Windowed sinusoids & Scaled/shifted wavelets \\
+        Best for & Signals with stable frequency & Signals with transient features \\
+        Spectrogram & $|\text{STFT}|^2$ = spectrogram & $|W(a,b)|^2$ = scalogram \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Practical Insight}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item The STFT adds time localization to Fourier analysis; the CWT further adapts window width to frequency
+            \item For economic data: CWT preferred because business cycle and high-frequency dynamics require different resolutions
+        \end{itemize}}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Fourier vs.\ Wavelets: When to Use Which}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\small
+    \begin{block}{Decision Guide}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c}
+        \toprule
+        \textbf{Criterion} & \textbf{Fourier / Spectral} & \textbf{Wavelet} \\
+        \midrule
+        Stationarity & Required (or assumed) & Not required \\
+        Time localization & No & Yes \\
+        Frequency resolution & Uniform across all $\omega$ & Varies with scale \\
+        Best for & Stationary series, filter design & Non-stationary, transient events \\
+        Hypothesis testing & Well-developed (F-test, $\chi^2$) & Monte Carlo, AR(1) null \\
+        Computational cost & $O(n \log n)$ & $O(n \log n)$ to $O(n^2)$ \\
+        Common in & Economics, signal processing & Geophysics, finance, climate \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Practical Recommendation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Use \textbf{Fourier/spectral analysis} when you believe the frequency structure is \textit{stable} over time
+            \item Use \textbf{wavelets} when you suspect the frequency structure \textit{changes} over time (regime shifts, evolving cycles)
+            \item Often use \textbf{both}: Fourier for overall spectral shape, wavelets for time-varying behavior
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Case Study: Extracting Business Cycles}
+%=============================================================================
+
+\begin{frame}{Case Study Overview}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Data Description}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data}: US Real GDP, quarterly, 1947Q1--2024Q4 (FRED series GDPC1)
+            \item \textbf{Transformation}: log of real GDP
+            \item \textbf{Task}: Extract the business cycle component using spectral methods
+            \item \textbf{Methods compared}: Periodogram, Multitaper, HP filter, BK filter, CF filter, Wavelet
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Business Cycle Definition}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Burns \& Mitchell (1946) / NBER: recurrent fluctuations with period 6--32 quarters
+            \item Frequency band: $\omega \in [2\pi/32, \; 2\pi/6] \approx [0.196, \; 1.047]$ radians/quarter
+            \item Goal: isolate this band from trend (low $\omega$) and irregular (high $\omega$) components
+        \end{itemize}
+    \end{exampleblock}
+    \quantlet{TSA\_ch12\_business\_cycle}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_business_cycle}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{US GDP Time Series}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_timeseries.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Log US Real GDP (FRED GDPC1), 1947Q1--2024Q4, with quarterly growth rate
+        \item Strong trend dominates time-domain view; spectral methods needed for cycle extraction
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_gdp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_gdp}
+\end{frame}
+
+\begin{frame}[fragile]{Python: Periodogram and Multitaper Estimation}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\tiny
+    \begin{block}{Spectral Analysis with Python}
+    \begin{lstlisting}
+import numpy as np; import pandas as pd
+from scipy import signal; from spectrum import pmtm
+# Load US Real GDP (quarterly, log-transformed)
+gdp = pd.read_csv('GDPC1.csv', parse_dates=['DATE'], index_col='DATE')
+y = np.log(gdp['GDPC1'].values)
+y_dt = y - np.polyval(np.polyfit(np.arange(len(y)), y, 1), np.arange(len(y)))
+# Raw periodogram (fs=4 = quarterly)
+freqs_p, Pxx_p = signal.periodogram(y_dt, fs=4)
+# Multitaper spectral estimate (NW=4, K=7 tapers)
+Pxx_mt, w, ev = pmtm(y_dt, NW=4, NFFT=1024, method='adapt')
+freqs_mt = np.linspace(0, 2, len(Pxx_mt))
+bc_low, bc_high = 1/8, 1/1.5  # business cycle band (cycles/year)
+    \end{lstlisting}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{GDP Periodogram and Multitaper Estimate}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_periodogram.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Raw periodogram (grey) and multitaper estimate (blue) of detrended log GDP
+        \item Shaded band = business cycle range (6--32q); dominant peak at $\approx$16--20 quarters
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_gdp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_gdp}
+\end{frame}
+
+\begin{frame}[fragile]{Python: Band-Pass Filtering}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\tiny
+    \begin{block}{Extracting the Business Cycle Component}
+    \begin{lstlisting}
+import statsmodels.api as sm
+cycle_hp, trend_hp = sm.tsa.filters.hpfilter(y, lamb=1600)   # HP filter
+cycle_bk = sm.tsa.filters.bkfilter(y, low=6, high=32, K=12)  # BK filter
+cycle_cf, trend_cf = sm.tsa.filters.cffilter(y, low=6, high=32) # CF filter
+# Compare extracted cycles
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(12, 5))
+ax.plot(gdp.index, cycle_hp, label='HP filter', alpha=0.8)
+ax.plot(gdp.index[12:-12], cycle_bk, label='BK filter', alpha=0.8)
+ax.plot(gdp.index, cycle_cf, label='CF filter', alpha=0.8)
+ax.axhline(0, color='black', linewidth=0.5)
+ax.legend(); ax.set_title('US Business Cycle Components')
+    \end{lstlisting}
+    \end{block}
+    }
+    \quantlet{TSA\_ch12\_bandpass}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_bandpass}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Band-Pass Filtered Business Cycles}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_bandpass.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item HP ($\lambda\!=\!1600$), BK ($K\!=\!12$), and CF business cycle components with NBER recession shading
+        \item All three filters agree on timing of peaks and troughs; CF preserves endpoints
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_bandpass}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_bandpass}
+\end{frame}
+
+\begin{frame}[fragile]{Python: Wavelet Analysis}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\tiny
+    \begin{block}{Wavelet Power Spectrum and Scalogram}
+    \begin{lstlisting}
+import pywt  # PyWavelets
+scales = np.arange(2, 128)  # scales ~ periods in quarters
+coefficients, frequencies = pywt.cwt(y_dt, scales, 'morl',
+                                      sampling_period=0.25)
+power = np.abs(coefficients) ** 2
+periods = 1 / frequencies  # convert to years
+# Plot scalogram
+fig, ax = plt.subplots(figsize=(12, 6))
+im = ax.contourf(gdp.index, periods, power, levels=20, cmap='jet')
+ax.set_ylim(1, 32); ax.set_yscale('log', base=2)
+ax.set_ylabel('Period (years)')
+ax.axhline(y=1.5, color='white', linestyle='--')
+ax.axhline(y=8, color='white', linestyle='--')
+plt.colorbar(im, label='Power')
+    \end{lstlisting}
+    \end{block}
+    }
+    \quantlet{TSA\_ch12\_wavelet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Wavelet Scalogram: US Real GDP}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_scalogram.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Morlet CWT scalogram of HP-detrended log GDP; white dashed lines = 6--32q BC band
+        \item ``Great Moderation'' (1985--2007) = reduced power; 2008 \& 2020 = intense localised bursts
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_wavelet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet}
+\end{frame}
+
+\begin{frame}{Case Study Results: Spectral Density of US GDP}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Key Findings from Spectral Analysis}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Dominant peak} in the periodogram at period $\approx$ 16--20 quarters (4--5 years)
+            \item Consistent with the average duration of NBER business cycles
+            \item Secondary power concentration at period $\approx$ 32--40 quarters (8--10 years) --- Juglar cycle
+            \item Very high power at lowest frequencies confirms strong trend component
+            \item Multitaper estimate is smoother, confirms the same peak structure
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Filter Comparison}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item HP, BK, and CF filters produce \textbf{similar} business cycle components (correlation $> 0.85$)
+            \item BK loses 12 observations at each end; CF and HP preserve the full sample
+            \item All three correctly identify NBER recessions as troughs in the cycle component
+            \item CF filter slightly better at endpoints due to asymmetric adaptation
+            \item \textbf{Confidence intervals}: $\hat{f}(\omega) \cdot \chi^2_\nu/\nu$ with $\nu$ effective d.o.f.\ provides pointwise CI for each spectral estimate
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Case Study Results: Wavelet Scalogram}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Time-Varying Spectral Structure}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item The wavelet scalogram reveals that business cycle power is \textbf{not constant} over time
+            \item \textbf{1970s--1980s}: Strong power at 4--8 year periods (oil shocks, Volcker disinflation)
+            \item \textbf{1985--2007}: Reduced power at all business cycle frequencies --- the ``Great Moderation''
+            \item \textbf{2008--2009}: Intense power concentration at 4--6 year periods (Great Recession)
+            \item \textbf{2020}: Sharp, localized burst of power at 2--4 year periods (COVID shock)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Insight: Why Wavelets Complement Fourier}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Fourier analysis tells us the \textit{average} cycle is $\approx 5$ years
+            \item Wavelets tell us the cycle duration and intensity \textit{change over time}
+            \item The Great Moderation is visible as a ``quiet zone'' in the scalogram
+            \item This cannot be detected with standard Fourier spectral analysis
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{AI Use Case}
+%=============================================================================
+
+\begin{frame}{AI and Spectral Methods: Modern Intersections}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Neural Spectral Estimation}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Deep learning models can learn spectral representations directly from data
+            \item Autoencoder architectures trained to reconstruct via frequency-domain loss functions
+            \item Neural network--based parametric spectral estimators can adapt to non-standard spectral shapes
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Spectral Regularization in Forecasting}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Modern deep forecasting models (N-BEATS, TimesNet) use spectral decomposition layers
+            \item \textbf{Fourier features} as input: $\sin(2\pi k t/T)$, $\cos(2\pi k t/T)$ capture known periodicities
+            \item \textbf{Spectral loss}: penalize discrepancy between predicted and observed periodograms
+            \item Helps prevent neural networks from ignoring important cyclical structure
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Classical vs.\ Learned: What to Verify}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Does the AI-generated spectrum respect known theoretical properties (non-negativity, symmetry)?
+            \item Are the dominant frequencies consistent with classical periodogram/multitaper estimates?
+            \item Does the model correctly handle the sampling frequency and Nyquist limit?
+        \end{itemize}}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Summary}
+%=============================================================================
+
+\begin{frame}{Key Takeaways}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{block}{What We Learned}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Spectral density} $f(\omega)$ decomposes variance by frequency (Wiener--Khintchine: $\gamma(h) \leftrightarrow f(\omega)$)
+            \item The \textbf{periodogram} is the natural estimator but \textit{inconsistent} --- must be smoothed (multitaper = gold standard)
+            \item \textbf{Cross-spectral} measures (coherence, phase, gain) reveal frequency-specific relationships
+            \item \textbf{Band-pass filters} (BK, CF) extract business cycles; HP is a high-pass filter
+            \item \textbf{Wavelets} provide time-frequency localization for non-stationary signals
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Practical Recommendations}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Always detrend before spectral analysis; use log scale for plotting
+            \item Choose multitaper for final estimates; raw periodogram only for exploration
+            \item For non-stationary data, prefer wavelet analysis over Fourier methods
+        \end{itemize}
+        }
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Quiz}
+%=============================================================================
+
+\begin{frame}{Question 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item What does the spectral density function $f(\omega)$ measure, and what is its relationship to the autocovariance function $\gamma(h)$?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} $f(\omega)$ measures the mean of the process at frequency $\omega$; it is the Laplace transform of $\gamma(h)$\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} $f(\omega)$ measures the contribution of frequency $\omega$ to total variance; it is the Fourier transform of $\gamma(h)$ (Wiener--Khintchine theorem)\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} $f(\omega)$ measures the phase shift at frequency $\omega$; it is the inverse of $\gamma(h)$\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} $f(\omega)$ measures the trend component at frequency $\omega$; it is the derivative of $\gamma(h)$
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 1: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Answer: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item The spectral density function $f(\omega) = \frac{1}{2\pi}\sum_{h} \gamma(h)e^{-i\omega h}$ decomposes the total variance of a stationary process across frequencies. The total variance equals $\gamma(0) = \int_{-\pi}^{\pi} f(\omega)\,d\omega$. This Fourier transform pair between $\gamma(h)$ and $f(\omega)$ is the Wiener--Khintchine theorem --- the fundamental result of spectral analysis.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz1}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz1}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Why is the raw periodogram an \textit{inconsistent} estimator of the spectral density, and how can this be fixed?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} The periodogram is biased; fix it by increasing the sample size\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} The periodogram's variance does not decrease with sample size ($\Var[I(\omega)] \approx f(\omega)^2$ for all $n$); fix it by smoothing (e.g., multitaper, Welch, Daniell kernel)\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} The periodogram only works for white noise; fix it by differencing the data\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} The periodogram is inconsistent because it uses the FFT; fix it by computing the DFT directly
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 2: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Answer: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item The periodogram is approximately unbiased ($\E[I(\omega)] \to f(\omega)$), but its variance $\Var[I(\omega)] \approx f(\omega)^2$ does not decrease as $n \to \infty$. This is because adding more data adds more Fourier frequencies rather than improving estimates at existing frequencies. Smoothing (averaging nearby periodogram values, multitaper, or lag-window methods) trades frequency resolution for reduced variance, yielding a consistent estimator.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz2}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz2}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item You observe a spectral density with a sharp peak near $\omega = 0$ and smaller peaks at $\omega = \pi/6, \pi/3, \pi/2, 2\pi/3, 5\pi/6, \pi$. What type of process likely generated this data?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} White noise --- flat spectrum with random fluctuations\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} AR(1) with $\phi > 0$ --- red spectrum with peak at zero\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Monthly seasonal process with trend --- peak at zero (trend) plus peaks at seasonal harmonics $\omega_k = 2\pi k/12$\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Random walk --- all power at $\omega = 0$ only
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 3: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Answer: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item The peaks at $\omega = \pi/6, \pi/3, \pi/2, 2\pi/3, 5\pi/6, \pi$ correspond exactly to $2\pi k/12$ for $k = 1, 2, \ldots, 6$ --- the seasonal harmonics of monthly data ($s = 12$). The peak at $\omega \approx 0$ indicates a strong trend or long-run component. This is the classic spectral signature of a monthly series with both trend and seasonality, such as airline passengers or retail sales.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz3}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz3}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item What is the main advantage of wavelet analysis over Fourier spectral analysis for economic time series?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Wavelets provide higher frequency resolution than Fourier for stationary series\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Wavelets can localize spectral features in both time and frequency, making them suitable for non-stationary processes where the frequency content changes over time\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Wavelets are computationally faster than the FFT\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Wavelets do not require choosing any parameters, unlike Fourier methods
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 4: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Answer: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Wavelet analysis provides simultaneous time-frequency localization. Unlike Fourier analysis, which produces a single global spectrum, wavelets create a scalogram showing how spectral power evolves over time. This is crucial for economic series subject to structural breaks, regime changes, and evolving business cycle dynamics. The Heisenberg uncertainty principle limits the joint resolution, but wavelets adaptively balance time and frequency resolution across scales.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz4}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz4}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item A researcher applies the Hodrick--Prescott (HP) filter with $\lambda = 1600$ to quarterly GDP data. What is the spectral interpretation of this filter?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Answer Choices}
+
+        \textcolor{MainBlue}{\textbf{(A)}} It is a band-pass filter that extracts cycles with period 6--32 quarters\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} It is a low-pass filter that extracts the trend by keeping only low frequencies\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} The HP cycle component is a high-pass filter: $|A(\omega)|^2 = \frac{4\lambda(1-\cos\omega)^2}{1+4\lambda(1-\cos\omega)^2}$, passing all cycles shorter than $\approx$ 32 quarters including irregular noise\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} It is a notch filter that removes only the seasonal frequency
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 5: Answer}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Answer: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item The HP filter's cycle component is a high-pass filter that passes all frequencies above a cutoff determined by $\lambda$. With $\lambda = 1600$ and quarterly data, it passes cycles shorter than $\approx 32$ quarters. Unlike a band-pass filter (BK, CF), the HP cycle includes both business cycle \textit{and} high-frequency irregular components. This is a well-known limitation: the HP ``cycle'' is contaminated by noise, which is why dedicated band-pass filters are preferred for business cycle extraction.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz5}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz5}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAPHY
+%=============================================================================
+\begin{frame}{Bibliography I}
+    \begin{block}{Foundational References}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Priestley, M.B.\ (1981). \textit{Spectral Analysis and Time Series}. Academic Press.
+            \item Brockwell, P.J.\ \& Davis, R.A.\ (1991). \textit{Time Series: Theory and Methods}, 2nd ed. Springer.
+            \item Hamilton, J.D.\ (1994). \textit{Time Series Analysis}. Princeton University Press, Chapters 6, 10.
+            \item Percival, D.B.\ \& Walden, A.T.\ (1993). \textit{Spectral Analysis for Physical Applications}. Cambridge University Press.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Spectral Estimation}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Thomson, D.J.\ (1982). Spectrum Estimation and Harmonic Analysis, \textit{Proceedings of the IEEE}, 70(9), 1055--1096.
+            \item Welch, P.D.\ (1967). The Use of Fast Fourier Transform for the Estimation of Power Spectra, \textit{IEEE Transactions on Audio and Electroacoustics}, 15(2), 70--73.
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bibliography II}
+    \begin{block}{Band-Pass Filters and Business Cycles}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Baxter, M.\ \& King, R.G.\ (1999). Measuring Business Cycles: Approximate Band-Pass Filters for Economic Time Series, \textit{Review of Economics and Statistics}, 81(4), 575--593.
+            \item Christiano, L.J.\ \& Fitzgerald, T.J.\ (2003). The Band Pass Filter, \textit{International Economic Review}, 44(2), 435--465.
+            \item Hodrick, R.J.\ \& Prescott, E.C.\ (1997). Postwar U.S. Business Cycles: An Empirical Investigation, \textit{Journal of Money, Credit and Banking}, 29(1), 1--16.
+            \item Burns, A.F.\ \& Mitchell, W.C.\ (1946). \textit{Measuring Business Cycles}. NBER.
+        \end{itemize}
+        }
+    \end{block}
+
+    \vspace{-2mm}
+    \begin{alertblock}{Wavelet Analysis}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Torrence \& Compo (1998). A Practical Guide to Wavelet Analysis, \textit{Bull.\ Amer.\ Meteorol.\ Soc.}, 79(1).
+            \item Grinsted, Moore \& Jevrejeva (2004). Cross Wavelet Transform and Wavelet Coherence, \textit{Nonlin.\ Proc.\ Geophys.}, 11.
+            \item Rua \& Nunes (2009). Stock Market Returns: A Wavelet Analysis, \textit{J.\ Empir.\ Finance}, 16(4).
+        \end{itemize}
+        }
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Bibliography III}
+    \begin{block}{Long Memory and Spectral Regression}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Geweke, J.\ \& Porter-Hudak, S.\ (1983). The Estimation and Application of Long Memory Time Series Models, \textit{JTSAM}, 4(4), 221--238.
+            \item Robinson, P.M.\ (1995). Gaussian Semiparametric Estimation of Long Range Dependence, \textit{Annals of Statistics}, 23(5), 1630--1661.
+            \item Shimotsu, K.\ \& Phillips, P.C.B.\ (2005). Exact Local Whittle Estimation of Fractional Integration, \textit{Annals of Statistics}, 33(4), 1890--1933.
+            \item Dahlhaus, R.\ (1997). Fitting Time Series Models to Nonstationary Processes, \textit{Annals of Statistics}, 25(1), 1--37.
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Additional References}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Cooley, J.W.\ \& Tukey, J.W.\ (1965). An Algorithm for the Machine Calculation of Complex Fourier Series, \textit{Mathematics of Computation}, 19(90), 297--301.
+            \item Fisher, R.A.\ (1929). Tests of Significance in Harmonic Analysis, \textit{Proceedings of the Royal Society A}, 125(796), 54--59.
+            \item Granger, C.W.J.\ \& Hatanaka, M.\ (1964). \textit{Spectral Analysis of Economic Time Series}. Princeton University Press.
+            \item Stock, J.H.\ \& Watson, M.W.\ (1999). Business Cycle Fluctuations in U.S.\ Macroeconomic Time Series, \textit{Handbook of Macroeconomics}, Vol.\ 1, 3--64.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \vspace{-1mm}
+    \begin{exampleblock}{Online Resources and Code}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} -- Code platform for quantitative methods
+            \item \textbf{Quantinar}: \url{https://quantinar.com} -- Learning platform for quantitative methods
+            \item \textbf{GitHub TSA}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch12} -- Python code for this chapter
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{}
+    \centering
+    \Huge\textcolor{MainBlue}{Thank You!}
+
+    \vspace{1cm}
+
+    \Large Questions?
+
+    \vspace{0.8cm}
+
+    \normalsize
+
+    Course materials available at: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+\end{frame}
+
+\end{document}

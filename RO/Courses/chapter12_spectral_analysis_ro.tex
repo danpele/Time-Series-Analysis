@@ -1,0 +1,1909 @@
+% Capitolul 12: Analiză Spectrală și Metode în Domeniul Frecvenței
+% Prezentare academică de calitate Harvard
+% Program de master, Academia de Studii Economice din București
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Capitolul 12: Analiză Spectrală și Metode în Domeniul Frecvenței}
+
+\begin{document}
+
+% Pagina de titlu (fără antet/subsol)
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% OBIECTIVE DE ÎNVĂȚARE
+%=============================================================================
+\begin{frame}{Obiective de învățare}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{La finalul acestui capitol, veți fi capabili să:}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Explicați} de ce analiza în domeniul frecvenței completează metodele din domeniul timpului
+            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Derivați} reprezentarea Fourier a unui proces staționar
+            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Calculați} și interpretați periodograma și funcția de densitate spectrală
+            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Aplicați} metode de estimare spectrală neparametrică și parametrică
+            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Interpretați} măsuri cross-spectrale: coerență, fază și câștig
+            \item[\textcolor{MainBlue}{\textbf{6.}}] \textbf{Distingeți} analiza Fourier de analiza wavelet și cazurile lor de utilizare
+            \item[\textcolor{MainBlue}{\textbf{7.}}] \textbf{Utilizați} filtre band-pass pentru extragerea componentelor ciclului de afaceri
+            \item[\textcolor{MainBlue}{\textbf{8.}}] \textbf{Implementați} analiza spectrală în Python pentru date economice și financiare reale
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% CUPRINS
+%=============================================================================
+\begin{frame}{Cuprins}
+    \vspace{-0.3cm}
+    {\small
+    \setbeamertemplate{section in toc}{\color{MainBlue}$\boxdot$~\inserttocsection}
+    \tableofcontents
+    }
+\end{frame}
+
+%=============================================================================
+\section{Motivație}
+%=============================================================================
+
+\begin{frame}{De ce analiză în domeniul frecvenței?}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Domeniul timpului vs.\ domeniul frecvenței}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Domeniul timpului}: descrie cum evoluează seria în timp --- ACF, ARIMA, GARCH
+            \item \textbf{Domeniul frecvenței}: descrie care \textit{componente periodice} determină variația
+            \item Acestea sunt \textbf{reprezentări duale} --- echivalente matematic, dar fiecare dezvăluie structuri diferite
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Când analiza în domeniul frecvenței este esențială}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Detectarea \textbf{periodicitățior ascunse} (cicluri de afaceri, sezonalitate, cicluri astronomice)
+            \item Înțelegerea \textbf{la ce frecvențe} se concentrează cea mai mare energie (varianță)
+            \item Proiectarea \textbf{filtrelor optime} pentru extragerea trendului, ciclului sau sezonalității
+            \item Analiza \textbf{co-mișcării} între serii la frecvențe specifice (coerență)
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Impact istoric}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Fourier (1807): orice funcție periodică poate fi descompusă în unde sinusoidale
+            \item Schuster (1898): a inventat periodograma pentru detectarea periodicitățior ascunse
+            \item Wiener--Khintchine (anii 1930): au legat autocovarianța de densitatea spectrală
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exemplu motivațional: Activitatea petelor solare}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Perspectiva domeniului timpului}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Număr lunar de pete solare (1749--2024)
+                \item Pattern ciclic evident vizibil
+                \item ACF scade lent --- sugerează memorie lungă sau comportament ciclic
+                \item Dar: care este \textit{exact} perioada? Există cicluri multiple?
+            \end{itemize}
+        \end{block}
+
+        \column{0.50\textwidth}
+        \begin{block}{Perspectiva domeniului frecvenței}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Periodograma relevă un \textbf{vârf pronunțat} la frecvența $f \approx 0{,}0076$ cicluri/lună
+                \item Corespunde perioadei $T = 1/f \approx 131$ luni $\approx$ \textbf{11 ani}
+                \item Vârf secundar la $\approx$ 5,5 ani (armonică)
+                \item Răspunde instant: „care cicluri contează?"
+            \end{itemize}
+        \end{block}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Observație cheie}: Domeniul frecvenței \textit{descompune varianța pe frecvențe}, relevând componentele oscilatorii dominante care determină seria.}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_sunspot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_sunspot}
+\end{frame}
+
+\begin{frame}{Seria temporală a petelor solare}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_sunspot_timeseries.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Număr lunar de pete solare (1749--2024) cu ciclul solar de $\approx$11 ani
+        \item Amplitudinea și forma ciclurilor variază --- sunt necesare atât instrumente din domeniul timpului cât și din domeniul frecvenței
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_sunspot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_sunspot}
+\end{frame}
+
+\begin{frame}{Periodograma petelor solare}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_sunspot_periodogram.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Vârf dominant la $f \approx 0{,}0076$ cicluri/lună $\Rightarrow$ ciclul solar de \textbf{11 ani}
+        \item Armonică secundară la $\approx$5,5 ani confirmă forma non-sinusoidală a ciclului
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_sunspot}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_sunspot}
+\end{frame}
+
+\begin{frame}{Reprezentarea spectrală: Imaginea de ansamblu}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Două descrieri echivalente ale unui proces staționar}
+        {\small
+        \begin{center}
+        \begin{tabular}{l|c|c}
+            \toprule
+            & \textbf{Domeniul timpului} & \textbf{Domeniul frecvenței} \\
+            \midrule
+            Statistică rezumativă & Autocovarianța $\gamma(h)$ & Densitatea spectrală $f(\omega)$ \\
+            Varianța totală & $\gamma(0) = \Var(Y_t)$ & $\displaystyle\int_{-\pi}^{\pi} f(\omega)\,d\omega$ \\
+            Relația & \multicolumn{2}{c}{Pereche de transformate Fourier (Wiener--Khintchine)} \\
+            Clasă de modele & ARMA$(p,q)$ & Densitate spectrală rațională \\
+            Estimare & ACF eșantion & Periodogramă / estimatori spectrali \\
+            Analiza filtrelor & Convoluție (dificilă) & Multiplicare (ușoară) \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{De ce să învățăm ambele?}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Filtrarea (extragerea trendului, ajustarea sezonieră) este \textbf{multiplicare} în domeniul frecvenței dar \textbf{convoluție} în domeniul timpului
+            \item Densitatea spectrală oferă un rezumat \textbf{vizual complet} al structurii varianței
+            \item Unele fenomene (cicluri de afaceri, interferențe) sunt \textit{descrise natural} prin frecvență
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+%=============================================================================
+\section{Fundamentele analizei Fourier}
+%=============================================================================
+
+\begin{frame}{Serii Fourier: Descompunerea funcțiilor periodice}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Ideea fundamentală a lui Fourier}
+        {\small Orice funcție periodică $g(t)$ cu perioada $T$ poate fi scrisă ca:
+        \[
+            g(t) = a_0 + \sum_{k=1}^{\infty} \left[ a_k \cos\!\left(\frac{2\pi k t}{T}\right) + b_k \sin\!\left(\frac{2\pi k t}{T}\right) \right]
+        \]
+        unde coeficienții Fourier sunt:
+        \[
+            a_0 = \frac{1}{T}\int_0^T g(t)\,dt, \quad a_k = \frac{2}{T}\int_0^T g(t)\cos\!\left(\frac{2\pi k t}{T}\right)dt, \quad b_k = \frac{2}{T}\int_0^T g(t)\sin\!\left(\frac{2\pi k t}{T}\right)dt
+        \]}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Terminologie cheie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Frecvența}: $f_k = k/T$ cicluri pe unitate de timp; \textbf{Frecvența unghiulară}: $\omega_k = 2\pi f_k$ radiani pe unitate de timp
+            \item \textbf{Frecvența fundamentală}: $f_1 = 1/T$; \textbf{Armonice}: $f_k = k \cdot f_1$ pentru $k = 2, 3, \ldots$
+            \item \textbf{Amplitudinea}: $R_k = \sqrt{a_k^2 + b_k^2}$; \textbf{Faza}: $\phi_k = \arctan(b_k / a_k)$
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ilustrare descompunere Fourier}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_fourier_decomposition.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Semnal periodic complex (sus) descompus în componentele fundamentală + armonice
+        \item Fiecare rând = o componentă de frecvență; suma reconstruiește semnalul original exact
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_fourier}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_fourier}
+\end{frame}
+
+\begin{frame}{Forma exponențială complexă}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Formula lui Euler și seria Fourier complexă}
+        {\small Utilizând formula lui Euler $e^{i\omega t} = \cos(\omega t) + i\sin(\omega t)$, putem scrie:
+        \[
+            g(t) = \sum_{k=-\infty}^{\infty} c_k \, e^{i 2\pi k t / T}, \qquad c_k = \frac{1}{T}\int_0^T g(t)\, e^{-i 2\pi k t / T}\,dt
+        \]
+        unde $c_k = (a_k - ib_k)/2$ pentru $k > 0$ și $c_{-k} = \overline{c_k}$ (conjugatul complex).}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{De ce notația complexă?}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Mai compactă: o singură formulă în locul termenilor separați sinus/cosinus
+            \item Algebric mai simplă: convoluția devine multiplicare
+            \item Standard în procesarea semnalelor, fizică și analiza modernă a seriilor de timp
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Teorema lui Parseval (Conservarea energiei)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Energia totală este conservată între reprezentări}
+        {\small
+        \[
+            \frac{1}{T}\int_0^T |g(t)|^2\,dt = \sum_{k=-\infty}^{\infty} |c_k|^2
+        \]
+        Fiecare $|c_k|^2$ măsoară \textbf{contribuția frecvenței $k/T$ la varianța totală}.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Implicație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Energia din domeniul timpului = energia din domeniul frecvenței
+            \item Aceasta este fundamentul descompunerii spectrale a varianței
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Transformata Fourier Discretă (DFT)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{De la continuu la discret}
+        {\small Date $n$ observații $y_1, y_2, \ldots, y_n$, DFT este:
+        \[
+            J(\omega_j) = \frac{1}{\sqrt{n}} \sum_{t=1}^{n} y_t \, e^{-i\omega_j t}, \qquad \omega_j = \frac{2\pi j}{n}, \quad j = 0, 1, \ldots, n-1
+        \]
+        Frecvențele $\omega_j$ se numesc \textbf{frecvențe Fourier} sau \textbf{frecvențe fundamentale}.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Proprietăți cheie ale DFT}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Ortogonalitate}: $\sum_{t=1}^n e^{i(\omega_j - \omega_k)t} = n \cdot \mathbf{1}_{j=k}$ --- frecvențele sunt ortogonale
+            \item \textbf{Inversabilitate}: $y_t = \frac{1}{\sqrt{n}} \sum_{j=0}^{n-1} J(\omega_j) \, e^{i\omega_j t}$ --- reconstrucție perfectă
+            \item \textbf{Frecvența Nyquist}: $\omega_{n/2} = \pi$ --- cea mai mare frecvență detectabilă ($\geq 2$ obs.\ per ciclu)
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Transformata Fourier Rapidă (FFT)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item DFT naivă: $O(n^2)$ operații. FFT (Cooley--Tukey, 1965): $O(n \log n)$
+            \item Unul dintre cele mai importante algoritme ale secolului XX
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Aliasing și frecvența Nyquist}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Teorema eșantionării (Shannon--Nyquist)}
+        {\small Un semnal continuu cu frecvența maximă $f_{\max}$ poate fi reconstruit perfect din eșantioane discrete dacă rata de eșantionare satisface:
+        \[
+            f_s > 2 f_{\max} \qquad \text{(criteriul Nyquist)}
+        \]
+        \textbf{Frecvența Nyquist} $f_N = f_s / 2$ este cea mai mare frecvență detectabilă.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Aliasing: Ce se întâmplă greșit}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Dacă un semnal conține frecvențe \textit{peste} $f_N$, acestea sunt „repliate" și apar ca frecvențe mai joase
+            \item \textbf{Exemplu}: date zilnice ($f_s = 1$/zi, $f_N = 0{,}5$/zi). Un ciclu intra-zilnic la 0,7 cicluri/zi apare ca 0,3 cicluri/zi
+            \item Aliasing-ul este \textbf{ireversibil} --- odată ce datele sunt eșantionate, frecvențele repliate nu pot fi separate
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Implicații practice}
+        {\small Date lunare: $f_N = 0{,}5$ cicluri/lună $\Rightarrow$ cicluri $\geq 2$ luni. Date trimestriale: cicluri $\geq$ 6 luni.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ilustrare Aliasing}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_aliasing.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Sinusoidă de frecvență înaltă (punctată) eșantionată prea rar $\Rightarrow$ indistinguibilă de alias-ul de frecvență joasă (continuă)
+        \item Filtrele anti-aliasing trebuie aplicate \textit{înainte} de eșantionare pentru a preveni distorsiunea ireversibilă
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_aliasing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_aliasing}
+\end{frame}
+
+%=============================================================================
+\section{Periodograma}
+%=============================================================================
+
+\begin{frame}{Definiție și interpretare}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{defn}[Periodograma]
+        {\small \textbf{Periodograma} seriei $\{y_t\}_{t=1}^n$ la frecvența $\omega_j = 2\pi j / n$ este:
+        \[
+            I(\omega_j) = |J(\omega_j)|^2 = \frac{1}{n}\left|\sum_{t=1}^{n} y_t \, e^{-i\omega_j t}\right|^2
+        \]
+        Echivalent, în formă trigonometrică:
+        \[
+            I(\omega_j) = \frac{n}{2}\left(\hat{a}_j^2 + \hat{b}_j^2\right)
+        \]
+        unde $\hat{a}_j = \frac{2}{n}\sum_t y_t \cos(\omega_j t)$ și $\hat{b}_j = \frac{2}{n}\sum_t y_t \sin(\omega_j t)$.}
+    \end{defn}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $I(\omega_j)$ măsoară \textbf{contribuția frecvenței $\omega_j$ la varianța totală a eșantionului}
+            \item $I(\omega_j)$ mare $\Rightarrow$ oscilație puternică la perioada $T_j = 2\pi/\omega_j = n/j$
+            \item Periodograma descompune varianța: $\frac{1}{n}\sum_{t=1}^n (y_t - \bar{y})^2 = \sum_{j=1}^{\lfloor n/2 \rfloor} I(\omega_j)$ (până la constante)
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+\begin{frame}{Periodograma și autocovarianța eșantionului}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{thm}[Relația periodogramă--autocovarianță]
+        {\small Periodograma este transformata Fourier a funcției de autocovarianță a eșantionului:
+        \[
+            I(\omega) = \sum_{h=-(n-1)}^{n-1} \hat{\gamma}(h) \, e^{-i\omega h}
+        \]
+        unde $\hat{\gamma}(h) = \frac{1}{n}\sum_{t=1}^{n-|h|}(y_t - \bar{y})(y_{t+|h|} - \bar{y})$ este autocovarianța eșantionului la lag-ul $h$.}
+    \end{thm}
+    \vspace{-2mm}
+    \begin{block}{Aceasta este analogul de eșantion al teoremei Wiener--Khintchine}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Populație: $f(\omega) = \frac{1}{2\pi}\sum_{h=-\infty}^{\infty} \gamma(h)\,e^{-i\omega h}$ (densitate spectrală)
+            \item Eșantion: $I(\omega) = \sum_{h} \hat{\gamma}(h)\,e^{-i\omega h}$ (periodogramă)
+            \item Periodograma este un \textbf{estimator natural} al densității spectrale --- dar este unul \textit{bun}?
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Spoiler: Periodograma este inconsistentă!}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\E[I(\omega_j)] \to f(\omega)$ când $n \to \infty$ (asimptotic nediplacată)
+            \item Dar $\Var[I(\omega_j)] \not\to 0$ --- varianța \textit{nu} scade cu mai multe date!
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+\begin{frame}{Citirea periodogramei: Pattern-uri comune}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\small
+    \begin{block}{Semnăturile spectrale ale proceselor comune}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|l|l}
+        \toprule
+        \textbf{Proces} & \textbf{Forma spectrală} & \textbf{Pattern periodogramă} \\
+        \midrule
+        Zgomot alb & Plat: $f(\omega) = \sigma^2/(2\pi)$ & Aproximativ uniform, fără vârfuri \\
+        AR(1), $\phi > 0$ & Vârf la $\omega = 0$, descrescător & Valori mari la frecvențe joase \\
+        AR(1), $\phi < 0$ & Vârf la $\omega = \pi$, descrescător & Valori mari la frecvențe înalte \\
+        AR(2), rădăcini complexe & Vârf la frecvența ciclică & Hump la frecvența ciclică \\
+        Mers aleator & $f(\omega) \propto \omega^{-2}$ & Dominanță puternică la frecvențe joase \\
+        Sezonier ($s = 12$) & Vârfuri la $\omega = 2\pi k/12$ & Spike-uri la armonicele sezoniere \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Regulă practică}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Spectru roșu} (putere concentrată la $\omega$ mic): dominat de trend, autocorelat pozitiv
+            \item \textbf{Spectru albastru} (putere concentrată la $\omega$ mare): dominat de zgomot, autocorelat negativ
+            \item \textbf{Vârfuri ascuțite}: componente periodice deterministe sau cvasi-deterministe
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Galerie densitate spectrală}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_spectral_density_gallery.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Zgomot alb: plat; AR(1) $\phi>0$: spectru roșu; AR(1) $\phi<0$: spectru albastru
+        \item AR(2) cu rădăcini complexe: hump la frecvența ciclică; sezonier: spike-uri la armonice
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+\begin{frame}{Proprietățile statistice ale periodogramei}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Distribuția asimptotică (proces gaussian)}
+        {\small Pentru un proces gaussian staționar cu densitate spectrală $f(\omega)$:
+        \[
+            \frac{2\,I(\omega_j)}{f(\omega_j)} \;\xrightarrow{d}\; \chi^2_2 \qquad \text{pentru } 0 < \omega_j < \pi
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\E[I(\omega_j)] \approx f(\omega_j)$ --- aproximativ nediplacată
+            \item $\Var[I(\omega_j)] \approx f(\omega_j)^2$ --- varianța este egală cu media la pătrat!
+            \item Valorile periodogramei la \textbf{frecvențe Fourier diferite sunt asimptotic independente}
+        \end{itemize}}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Problema inconsistenței}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Coeficientul de variație $\text{CV} = \text{SD}/\text{Media} = 1$ indiferent de dimensiunea eșantionului
+            \item Adăugarea mai multor date adaugă mai multe frecvențe dar \textbf{nu} reduce zgomotul la nicio frecvență
+            \item Periodograma brută \textbf{nu este un estimator consistent} al densității spectrale
+            \item \textbf{Soluție}: netezirea periodogramei (Secțiunea~5)
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ilustrare inconsistență periodogramă}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_periodogram_inconsistency.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Pe măsură ce $n$ crește, periodograma (gri) \textit{nu} converge la densitatea spectrală reală (roșu)
+        \item Fluctuațiile eratice persistă $\Rightarrow$ motivează netezirea kernel și metodele multitaper
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+\begin{frame}{Testul Fisher pentru periodicități ascunse}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Acel vârf este real sau doar zgomot?}
+        {\small Fisher (1929) a propus testarea $H_0$: seria este zgomot alb contra $H_1$: există o periodicitate ascunsă. Statistica de test este:
+        \[
+            g = \frac{\max_j I(\omega_j)}{\sum_{j=1}^{\lfloor n/2 \rfloor} I(\omega_j)}
+        \]
+        Sub $H_0$, distribuția exactă a lui $g$ este cunoscută. Pentru $n$ mare:
+        \[
+            P(g > x) \approx m(1-x)^{m-1} - \binom{m}{2}(1-2x)_+^{m-1} + \cdots
+        \]
+        unde $m = \lfloor n/2 \rfloor$ și $(a)_+ = \max(a, 0)$.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Dacă cea mai mare valoare a periodogramei este semnificativ mai mare decât se așteaptă sub zgomot alb, se respinge $H_0$
+            \item Poate fi aplicat iterativ: se elimină frecvența detectată, se testează din nou
+            \item Alternativă modernă: testarea frecvențelor individuale folosind distribuția $\chi^2_2$
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Funcția de densitate spectrală}
+%=============================================================================
+
+\begin{frame}{Definiția și teorema Wiener--Khintchine}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{thm}[Teorema Wiener--Khintchine]
+        {\small Fie $\{Y_t\}$ un proces slab staționar cu funcția de autocovarianță $\gamma(h)$ satisfăcând $\sum_{h=-\infty}^{\infty} |\gamma(h)| < \infty$. Atunci \textbf{funcția de densitate spectrală} (FDS) există și este dată de:
+        \[
+            f(\omega) = \frac{1}{2\pi} \sum_{h=-\infty}^{\infty} \gamma(h) \, e^{-i\omega h}, \qquad -\pi \leq \omega \leq \pi
+        \]
+        Relația \textbf{inversă} este:
+        \[
+            \gamma(h) = \int_{-\pi}^{\pi} f(\omega) \, e^{i\omega h}\,d\omega
+        \]}
+    \end{thm}
+    \vspace{-2mm}
+    \begin{block}{Proprietățile densității spectrale}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $f(\omega) \geq 0$ pentru orice $\omega$ (non-negativă --- reprezintă contribuția la varianță)
+            \item $f(\omega) = f(-\omega)$ (simetrică pentru procese cu valori reale)
+            \item $\gamma(0) = \Var(Y_t) = \int_{-\pi}^{\pi} f(\omega)\,d\omega$ (varianța totală = aria sub $f$)
+            \item $f$ este \textbf{periodică} cu perioada $2\pi$, deci avem nevoie doar de $\omega \in [-\pi, \pi]$ sau $[0, \pi]$
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+\begin{frame}{Densitatea spectrală a proceselor comune}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\small
+    \begin{block}{Zgomot alb: $Y_t = \varepsilon_t$, $\varepsilon_t \sim \text{WN}(0, \sigma^2)$}
+        \vspace{-2mm}
+        \[
+            \gamma(h) = \sigma^2 \mathbf{1}_{h=0} \qquad\Longrightarrow\qquad f(\omega) = \frac{\sigma^2}{2\pi} \quad \text{(plat --- putere egală la toate frecvențele)}
+        \]
+    \end{block}
+    \vspace{-3mm}
+    \begin{block}{AR(1): $Y_t = \phi Y_{t-1} + \varepsilon_t$}
+        \vspace{-2mm}
+        \[
+            f(\omega) = \frac{\sigma^2}{2\pi} \cdot \frac{1}{|1 - \phi e^{-i\omega}|^2} = \frac{\sigma^2}{2\pi(1 - 2\phi\cos\omega + \phi^2)}
+        \]
+    \end{block}
+    \vspace{-3mm}
+    \begin{block}{MA(1): $Y_t = \varepsilon_t + \theta\varepsilon_{t-1}$}
+        \vspace{-2mm}
+        \[
+            f(\omega) = \frac{\sigma^2}{2\pi} \cdot |1 + \theta e^{-i\omega}|^2 = \frac{\sigma^2}{2\pi}(1 + 2\theta\cos\omega + \theta^2)
+        \]
+    \end{block}
+    \vspace{-3mm}
+    \begin{block}{ARMA$(p,q)$ general: $\phi(B)Y_t = \theta(B)\varepsilon_t$}
+        \vspace{-2mm}
+        \[
+            f(\omega) = \frac{\sigma^2}{2\pi} \cdot \frac{|\theta(e^{-i\omega})|^2}{|\phi(e^{-i\omega})|^2} \qquad \text{(densitate spectrală rațională)}
+        \]
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Galerie densitate spectrală: Comparație vizuală}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_spectral_density_gallery.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Zgomot alb, AR(1) $(\phi=0{,}9)$, AR(1) $(\phi=-0{,}7)$, AR(2) și procese sezoniere
+        \item Structura de autocorelație a fiecărui model se traduce într-o formă spectrală distinctivă
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+\begin{frame}{Teorema reprezentării spectrale}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{thm}[Reprezentarea spectrală / Reprezentarea Cram\'er]
+        {\small Orice proces slab staționar $\{Y_t\}$ cu $\E[Y_t] = 0$ poate fi reprezentat ca:
+        \[
+            Y_t = \int_{-\pi}^{\pi} e^{i\omega t}\,dZ(\omega)
+        \]
+        unde $Z(\omega)$ este un proces cu incrementuri ortogonale satisfăcând:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\E[dZ(\omega)] = 0$
+            \item $\E[|dZ(\omega)|^2] = dF(\omega)$ unde $F(\omega)$ este funcția de distribuție spectrală
+            \item $\E[dZ(\omega_1)\,\overline{dZ(\omega_2)}] = 0$ pentru $\omega_1 \neq \omega_2$
+        \end{itemize}
+        }
+    \end{thm}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Orice proces staționar este o \textbf{superpoziție de oscilații necorelate} la diferite frecvențe
+            \item $dZ(\omega)$ dă amplitudinea și faza (aleatoare) la frecvența $\omega$
+            \item Densitatea spectrală $f(\omega) = dF(\omega)/d\omega$ măsoară \textbf{varianța pe unitate de frecvență}
+            \item Aceasta este \textbf{analogul în domeniul frecvenței al descompunerii Wold}
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Estimarea spectrală}
+%=============================================================================
+
+\begin{frame}{Problema estimării}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Obiectiv: Estimarea lui $f(\omega)$ din date}
+        {\small Avem nevoie de un estimator \textbf{consistent}: atât bias $\to 0$ cât și varianță $\to 0$ când $n \to \infty$. Două abordări principale:}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Metode neparametrice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Netezesc periodograma brută
+                \item Fără ipoteze de model
+                \item \textbf{Fereastră lag} (Blackman--Tukey)
+                \item \textbf{Mediere pe segmente} (Bartlett, Welch)
+                \item \textbf{Multitaper} (Thomson)
+                \item Compromis bias-varianță prin bandwidth
+            \end{itemize}
+        \end{block}
+
+        \column{0.50\textwidth}
+        \begin{alertblock}{Metode parametrice}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Se ajustează un model, se derivă densitatea spectrală
+                \item Presupune o formă specifică de model
+                \item \textbf{Estimare spectrală AR}
+                \item Rezoluție mai mare pentru serii scurte
+                \item Risc de specificare greșită
+                \item AIC/BIC pentru selecția modelului
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Observație cheie}: Estimarea spectrală consistentă necesită sacrificarea rezoluției în frecvență. Acesta este un compromis fundamental bias-varianță --- nu putem avea simultan rezoluție perfectă și varianță mică.}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_estimation}
+\end{frame}
+
+\begin{frame}{Periodograma netezită (Nucleul Daniell)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Ideea: Medierea valorilor periodogramei vecine}
+        {\small \textbf{Periodograma netezită} la frecvența $\omega$ este:
+        \[
+            \hat{f}(\omega) = \sum_{k=-m}^{m} w_k \, I(\omega + \omega_k)
+        \]
+        unde $\{w_k\}$ sunt ponderi non-negative cu sumă 1, iar $m$ este parametrul de \textbf{bandwidth}.
+        Cea mai simplă alegere este nucleul Daniell (uniform): $w_k = 1/(2m+1)$ pentru $|k| \leq m$.
+        Grade de libertate echivalente: $\nu \approx 2(2m+1)$.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Alegerea bandwidth-ului: Compromisul fundamental}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $m$ mic: bias mic, varianță mare (aproape de periodograma brută)
+            \item $m$ mare: varianță mică, bias mare (supra-netezit, vârfurile sunt estompate)
+            \item Aproximativ $\hat{f}(\omega) \sim f(\omega) \cdot \chi^2_\nu / \nu$
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Comparație netezire}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_smoothing_comparison.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Periodograma brută vs.\ estimări netezite Daniell cu bandwidth $m=3,\,8,\,20$
+        \item Bandwidth-ul mai larg reduce varianța dar estompează vârfurile --- compromisul bias-varianță
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_smoothing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_smoothing}
+\end{frame}
+
+\begin{frame}{Estimarea Blackman--Tukey (fereastră lag)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Alternativă: Ponderarea autocovarianțelor}
+        {\small În loc de netezire în domeniul frecvenței, se aplică o fereastră pe autocovarianțele eșantionului:
+        \[
+            \hat{f}(\omega) = \frac{1}{2\pi}\sum_{h=-(M-1)}^{M-1} w(h/M)\,\hat{\gamma}(h)\,e^{-i\omega h}
+        \]
+        unde $w(\cdot)$ este o \textbf{fereastră lag} (nucleu) și $M$ este \textbf{punctul de trunchiere}.}
+    \end{block}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{Ferestre lag comune}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|l|l}
+        \toprule
+        \textbf{Fereastră} & \textbf{Formula $w(x)$, $|x| \leq 1$} & \textbf{Proprietăți} \\
+        \midrule
+        Bartlett (triunghi) & $1 - |x|$ & Simplă, spectru non-negativ \\
+        Parzen & $1 - 6x^2 + 6|x|^3$ pt.\ $|x| \leq 1/2$, altfel $2(1-|x|)^3$ & Netedă, non-negativă \\
+        Tukey--Hanning & $\frac{1}{2}(1 + \cos(\pi x))$ & Rezoluție bună \\
+        Bartlett--Priestley & $\frac{3}{(\pi x)^2}\left(\frac{\sin(\pi x)}{\pi x} - \cos(\pi x)\right)$ & Optimală pt.\ spectre netede \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Alegerea lui $M$}
+        {\small Regulă practică: $M \approx 2\sqrt{n}$. Validare încrucișată sau selectori plug-in pentru alegere automată.}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ilustrare ferestre lag}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_lag_windows.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Ferestrele lag Bartlett, Parzen, Tukey--Hanning și Bartlett--Priestley (stânga) și ferestrele spectrale (dreapta)
+        \item Ferestre lag mai netede $\Rightarrow$ estimări spectrale mai stabile cu valori non-negative
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_lag\_windows}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_lag_windows}
+\end{frame}
+
+\begin{frame}{Metoda Welch (medierea pe segmente)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Ideea: Împărțire și mediere}
+        {\small Welch (1967): împărțirea seriei în $K$ segmente suprapuse de lungime $L$, aplicarea unei ferestre (ex.\ Hanning) pe fiecare, calcularea periodogramei fiecărui segment, apoi medierea:
+        $\hat{f}_{\text{Welch}}(\omega) = \frac{1}{K}\sum_{k=1}^{K} I^{(k)}(\omega)$}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Avantaje}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Varianța redusă cu factorul $\approx 1/K$
+                \item Ferestrele reduc scurgerea spectrală
+                \item Suprapunere de 50\% este standard
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.50\textwidth}
+        \begin{alertblock}{Compromis}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Rezoluție în frecvență $\Delta f = 1/L$
+                \item Segmente mai scurte $\Rightarrow$ rezoluție mai slabă
+                \item Segmente mai lungi $\Rightarrow$ mai puține medieri
+                \item Tipic: $L = n/4$ până la $n/8$ cu suprapunere 50\%
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Estimarea spectrală Multitaper}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Metoda Multitaper a lui Thomson (1982)}
+        {\small În loc de o singură fereastră, se folosesc $K$ \textbf{ferestre ortogonale} $\{h_k(t)\}_{k=0}^{K-1}$:
+        \[
+            \hat{f}_{\text{MT}}(\omega) = \frac{1}{K}\sum_{k=0}^{K-1} \left|\sum_{t=1}^{n} h_k(t)\,y_t\,e^{-i\omega t}\right|^2
+        \]
+        Ferestrele sunt \textbf{secvențe sferoidale prolate discrete} (DPSS / secvențe Slepian), care concentrează optim energia în banda de frecvență $[-W, W]$.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{De ce Multitaper este superioară}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Utilizează \textbf{toate datele} (fără segmentare) --- rezoluție maximă în frecvență
+            \item $K$ ferestre ortogonale furnizează $K$ estimări spectrale aproximativ independente
+            \item Compromis bias-varianță aproape optim controlat de bandwidth $W$; $K = 2nW - 1$
+            \item $NW = 3$--$4$ este standard ($K = 5$--$8$). Python: \texttt{scipy.signal.windows.dpss()}
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_multitaper}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_multitaper}
+\end{frame}
+
+\begin{frame}{Ferestre DPSS Multitaper}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_multitaper_dpss.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Primele ferestre DPSS (Slepian) pentru $NW=4$; fiecare fereastră succesivă are o trecere prin zero suplimentară
+        \item Împreună furnizează estimări spectrale aproape independente concentrate în $[-W,W]$
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_multitaper}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_multitaper}
+\end{frame}
+
+\begin{frame}{Estimarea spectrală parametrică}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Estimarea spectrală bazată pe AR}
+        {\small Dacă ajustăm un model AR($p$): $Y_t = \sum_{k=1}^p \hat{\phi}_k Y_{t-k} + \varepsilon_t$, densitatea spectrală este:
+        \[
+            \hat{f}_{\text{AR}}(\omega) = \frac{\hat{\sigma}^2}{2\pi\,|1 - \hat{\phi}_1 e^{-i\omega} - \cdots - \hat{\phi}_p e^{-ip\omega}|^2}
+        \]
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Avantaje}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Rezoluție înaltă chiar pentru serii scurte
+                \item Estimare netedă (fără fluctuații eratice)
+                \item Poate rezolva vârfuri apropiate
+                \item Algoritm Yule--Walker sau Burg
+            \end{itemize}
+        \end{exampleblock}
+
+        \column{0.50\textwidth}
+        \begin{alertblock}{Dezavantaje}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Presupune că modelul AR este corect
+                \item Poate rata caracteristici necaptate de AR
+                \item Selecția ordinului $p$ este critică (AIC, BIC)
+                \item Nu poate reprezenta zerouri spectrale ascuțite
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Recomandare practică}: Utilizați estimarea spectrală AR pentru serii scurte ($n < 100$) și când procesul subiacent se crede a fi autoregresiv. Folosiți metode neparametrice pentru serii mai lungi sau când forma spectrală este necunoscută.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Comparația metodelor de estimare spectrală}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Rezumatul comparativ al metodelor}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c|c|c}
+        \toprule
+        \textbf{Metoda} & \textbf{Rezoluție} & \textbf{Varianță} & \textbf{Ipoteze} & \textbf{Optim pentru} \\
+        \midrule
+        Periodogramă brută & Cea mai mare & Cea mai mare & Niciuna & Explorare inițială \\
+        Netezire Daniell & Medie & Medie & $f$ local netedă & Estimare rapidă \\
+        Blackman--Tukey & Medie & Mică--medie & $f$ netedă & Analiză clasică \\
+        Metoda Welch & Mică--medie & Mică & Local staționar & Serii lungi, timp real \\
+        Multitaper & Medie--mare & Mică & Niciuna & Standard de aur \\
+        AR parametric & Foarte mare & Foarte mică & Model AR corect & Serii scurte \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Flux de lucru practic}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] Reprezentați periodograma brută (pe scală logaritmică) pentru explorare inițială
+            \item[\textcolor{MainBlue}{\textbf{2.}}] Aplicați estimarea multitaper pentru analiza principală
+            \item[\textcolor{MainBlue}{\textbf{3.}}] Verificați cu estimarea spectrală AR dacă vârfurile necesită rezoluție mai mare
+            \item[\textcolor{MainBlue}{\textbf{4.}}] Folosiți intervale de încredere: $\hat{f}(\omega) \cdot \chi^2_\nu / \nu$ cu $\nu$ grade de libertate efective
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Comparație estimare spectrală}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_estimation_comparison.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Șase metode de estimare aplicate aceleiași serii AR(2) pentru comparație directă
+        \item Multitaper obține cel mai bun echilibru rezoluție-varianță dintre metodele neparametrice
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_estimation}
+\end{frame}
+
+%=============================================================================
+\section{Analiza cross-spectrală}
+%=============================================================================
+
+\begin{frame}{Analiza spectrală bivariată}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{De la univariat la bivariat}
+        {\small Pentru două procese conjunct stațonare $\{X_t\}$ și $\{Y_t\}$, \textbf{densitatea cross-spectrală} este:
+        \[
+            f_{XY}(\omega) = \frac{1}{2\pi}\sum_{h=-\infty}^{\infty} \gamma_{XY}(h)\,e^{-i\omega h}
+        \]
+        unde $\gamma_{XY}(h) = \Cov(X_{t+h}, Y_t)$ este funcția de cross-covarianță.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Diferența cheie față de univariat}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $f_{XY}(\omega)$ este \textbf{cu valori complexe}: $f_{XY}(\omega) = c_{XY}(\omega) - i\,q_{XY}(\omega)$
+            \item $c_{XY}(\omega)$: \textbf{co-spectrul} (co-mișcare în fază la frecvența $\omega$)
+            \item $q_{XY}(\omega)$: \textbf{spectrul de cuadratură} (co-mișcare defazată)
+            \item Acestea sunt mai greu de interpretat direct $\Rightarrow$ se folosesc măsurile derivate
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Coerență, fază și câștig}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Coerența pătratică ($R^2$ în domeniul frecvenței)}
+        {\small $\kappa^2_{XY}(\omega) = \frac{|f_{XY}(\omega)|^2}{f_X(\omega)\,f_Y(\omega)} \in [0, 1]$
+        --- măsoară \textbf{tăria asocierii liniare} între $X$ și $Y$ la frecvența $\omega$. Analog al $R^2$ din regresie, dar \textbf{specific frecvenței}.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Spectrul de fază}
+            {\small
+            $\phi_{XY}(\omega) = \arctan\!\left(\frac{-q_{XY}(\omega)}{c_{XY}(\omega)}\right)$
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Avans/întârziere} între $X$ și $Y$
+                \item $\phi > 0$: $X$ conduce $Y$
+                \item Întârziere: $\tau(\omega) = \phi(\omega)/\omega$
+            \end{itemize}}
+        \end{exampleblock}
+
+        \column{0.50\textwidth}
+        \begin{block}{Câștigul}
+            {\small
+            $G_{XY}(\omega) = |f_{XY}(\omega)|/f_X(\omega)$
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Cât de mult frecvența $\omega$ din $X$ este \textbf{amplificată/atenuată} în $Y$
+                \item Dacă $Y = \beta X + \varepsilon$, câștigul este $|\beta|$
+            \end{itemize}}
+        \end{block}
+    \end{columns}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+\begin{frame}{Exemplu coerență}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_coherence_example.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Coerența pătratică, spectrul de fază și câștigul între două serii economice simulate
+        \item Coerență ridicată la frecvențele ciclului de afaceri (6--32 trimestre) cu fază $\approx 0$ $\Rightarrow$ co-mișcare sincronizată
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+\begin{frame}{Analiza cross-spectrală: Aplicații economice}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Aplicația 1: Sincronizarea ciclurilor de afaceri}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Coerența între PIB-ul a două țări la frecvențele ciclului de afaceri ($\omega$ corespunzând la 6--32 trimestre)
+            \item Coerență ridicată $\Rightarrow$ cicluri de afaceri sincronizate (relevant pentru uniunea monetară)
+            \item Faza $\Rightarrow$ care țară conduce/urmează
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Aplicația 2: Indicatori avansați}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Coerența și faza între un indicator avansat (ex.\ panta curbei randamentelor) și PIB
+            \item Dacă coerența ridicată + fază pozitivă, indicatorul chiar „conduce"
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Aplicația 3: Transmisia politicii monetare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Coerența între rata de politică și inflație: poate fi ridicată la frecvențe joase dar scăzută la frecvențe înalte
+            \item Faza dezvăluie \textbf{întârzierea transmisiei} la fiecare frecvență
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Filtrarea în domeniul frecvenței}
+%=============================================================================
+
+\begin{frame}{Filtre liniare și funcții de transfer I}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Un filtru liniar}
+        {\small Un filtru liniar invariant în timp transformă $\{X_t\}$ în $\{Y_t\}$:
+        \[
+            Y_t = \sum_{j=-\infty}^{\infty} a_j\,X_{t-j} = A(B)\,X_t
+        \]
+        \textbf{Funcția de răspuns în frecvență} (funcția de transfer) este:
+        \[
+            A(\omega) = \sum_{j=-\infty}^{\infty} a_j\,e^{-i\omega j}
+        \]
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Rezultatul fundamental: Filtrarea = Multiplicare}
+        {\small Dacă $X_t$ are densitate spectrală $f_X(\omega)$, atunci $Y_t = A(B)X_t$ are densitate spectrală:
+        \[
+            f_Y(\omega) = |A(\omega)|^2 \cdot f_X(\omega)
+        \]
+        \textbf{Un filtru multiplică spectrul cu câștigul său pătratic} --- de aceea domeniul frecvenței face analiza filtrelor trivială!}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Filtre liniare și funcții de transfer II}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{exampleblock}{Exemple clasice de filtre}
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item \textbf{Prima diferență} $(1-B)$: \quad $|A(\omega)|^2 = 4\sin^2(\omega/2)$\\
+                  $\Rightarrow$ amplifică frecvențele înalte, elimină $\omega = 0$ (elimină trendul)
+            \item \textbf{Media mobilă de ordin $m$}: \quad $|A(\omega)|^2 = \left(\dfrac{\sin(m\omega/2)}{m\sin(\omega/2)}\right)^2$\\
+                  $\Rightarrow$ filtru trece-jos (lasă componentele lente, elimină oscilațiile rapide)
+            \item \textbf{Diferența sezonieră} $(1-B^{12})$: \quad vârfuri ale $|A(\omega)|^2 = 0$ la armonicele sezoniere\\
+                  $\Rightarrow$ elimină pattern-ul sezonier lunar
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{block}{Filtrul band-pass ideal}
+        {\small Lasă să treacă frecvențele din $[\omega_L, \omega_H]$ și blochează restul:
+        \[
+            A(\omega) = \begin{cases} 1 & \text{dacă } \omega_L \leq |\omega| \leq \omega_H \\ 0 & \text{altfel} \end{cases}
+            \qquad a_j = \frac{\sin(\omega_H j) - \sin(\omega_L j)}{\pi j}
+        \]
+        \textbf{Problemă}: necesită infinit de multe avansuri/întârzieri $\Rightarrow$ trebuie trunchiat în practică.}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_filters}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+\begin{frame}{Funcții de transfer ale filtrelor}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_filter_transfer.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Câștigul pătratic $|A(\omega)|^2$ pentru patru filtre: prima diferență, MA pe 12 luni, band-pass ideal, ciclul HP
+        \item Selectivitatea în frecvență a fiecărui filtru este imediat vizibilă în domeniul frecvenței
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_filters}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+\begin{frame}{Filtrele Baxter--King și Christiano--Fitzgerald}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Filtrul Baxter--King (BK) (1999)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Aproximare simetrică, de lungime fixă a filtrului band-pass ideal
+            \item Utilizează $K$ avansuri și întârzieri (de obicei $K = 12$ pentru date trimestriale)
+            \item Coeficienți: filtru ideal trunchiat + constrâns să aibă suma zero (elimină trendul)
+            \item \textbf{Dezavantaj}: pierde $K$ observații la fiecare capăt al seriei
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Filtrul Christiano--Fitzgerald (CF) (2003)}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Filtru asimetric, variabil în timp --- utilizează toate observațiile (fără pierdere de date)
+            \item Aproximare optimală sub ipoteza că $X_t$ este un mers aleator
+            \item Ponderile filtrului se adaptează la capetele seriei
+            \item În general preferat față de BK pentru majoritatea aplicațiilor economice
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \vspace{1mm}
+    {\small \textbf{Filtrul HP} ($\lambda=1600$): filtru trece-sus cu $|A_{\text{HP}}(\omega)|^2 = \frac{4\lambda(1 - \cos\omega)^2}{1 + 4\lambda(1 - \cos\omega)^2}$, lasă să treacă cicluri $< 32$ trimestre.}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Funcții de transfer HP, BK și CF}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_hp_bk_cf_transfer.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Ciclul HP ($\lambda\!=\!1600$), BK band-pass ($K\!=\!12$, 6--32 trim.) și filtrul CF pe date trimestriale
+        \item Ținta ideală band-pass (gri) arată cât de bine aproximează fiecare filtru idealul
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_filters}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+\begin{frame}{Scurgerea spectrală și ponderarea datelor}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Problema scurgerii spectrale}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Calculul DFT presupune implicit că datele sunt periodice (se „înfășoară")
+            \item Dacă seria nu începe și nu se termină la aceeași valoare, aceasta creează \textbf{discontinuități}
+            \item Energia de la vârfurile spectrale puternice „se scurge" în frecvențele vecine
+            \item Rezultat: periodograma arată humps largi în loc de vârfuri ascuțite
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Soluție: Ponderarea datelor (Windowing)}
+        {\small Se aplică o pondere $\{d_t\}$ care aduce neted datele la zero la ambele capete:
+        \[
+            y_t^{\text{ponderat}} = d_t \cdot y_t, \qquad \text{unde } d_1 \approx d_n \approx 0, \quad d_{n/2} \approx 1
+        \]
+        Ferestre comune:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Hanning}: $d_t = 0{,}5(1 - \cos(2\pi t / n))$ --- bun uz general
+            \item \textbf{Hamming}: $d_t = 0{,}54 - 0{,}46\cos(2\pi t / n)$ --- reducere ușor mai mică a scurgerii
+            \item \textbf{Blackman}: $d_t = 0{,}42 - 0{,}5\cos(2\pi t/n) + 0{,}08\cos(4\pi t/n)$ --- excelentă suprimare
+            \item \textbf{DPSS (Slepian)}: concentrare optimală a energiei (folosit în multitaper)
+        \end{itemize}}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Ilustrare scurgere spectrală}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_spectral_leakage.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Fără ponderare (stânga): scurgere severă a energiei spectrale în frecvențele vecine
+        \item Cu fereastră Hanning (dreapta): vârful este bine concentrat, nivelul de scurgere mult redus
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_leakage}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_leakage}
+\end{frame}
+
+%=============================================================================
+\section{Analiza Wavelet}
+%=============================================================================
+
+\begin{frame}{De la Fourier la Wavelets: Motivație}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Limitarea analizei Fourier}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Analiza Fourier descompune un semnal în componente sinus/cosinus \textit{globale}
+            \item Fiecare componentă de frecvență se extinde pe \textbf{întreaga} perioadă de timp
+            \item Problemă: \textbf{semnale nestațonare} --- conținutul de frecvență se schimbă în timp!
+            \item Exemplu: volatilitatea financiară este calmă în unele perioade, turbulentă în altele
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Principiul incertitudinii (Heisenberg--Gabor)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Nu puteți} avea rezoluție perfectă simultan în timp și frecvență
+            \item $\Delta t \cdot \Delta f \geq \frac{1}{4\pi}$ (incertitudine timp-frecvență)
+            \item Fourier: $\Delta f$ este minimă dar $\Delta t = \infty$ (fără localizare în timp)
+            \item Wavelets: adaptivă --- rezoluție bună în timp la $f$ înaltă, rezoluție bună în frecvență la $f$ joasă
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{Wavelets: Localizate atât în timp cât și în frecvență}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Folosesc funcții bază \textbf{scurte, oscilatorii} („wavelets") în loc de sinusoide infinite
+            \item Wavelets se întind pentru frecvențe joase, se comprimă pentru frecvențe înalte
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Transformata Wavelet Continuă (CWT)}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Definiție}
+        {\small CWT a unui semnal $x(t)$ în raport cu un wavelet mamă $\psi(t)$ este:
+        \[
+            W(a, b) = \frac{1}{\sqrt{|a|}}\int_{-\infty}^{\infty} x(t)\,\overline{\psi\!\left(\frac{t-b}{a}\right)}\,dt
+        \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $a$: parametrul de \textbf{scală} (invers proporțional cu frecvența: $a$ mare = frecvență joasă)
+            \item $b$: parametrul de \textbf{translație} (localizare în timp)
+            \item $|W(a,b)|^2$: \textbf{puterea wavelet} la scala $a$ și momentul $b$
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Wavelets mamă comune}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Morlet}: $\psi(t) = \pi^{-1/4}e^{i\omega_0 t}e^{-t^2/2}$ (exponențială complexă modulată gaussian, $\omega_0 = 6$)
+            \item \textbf{Pălăria mexicană}: $\psi(t) = (1-t^2)e^{-t^2/2}$ (derivata a doua a gaussianei)
+            \item \textbf{Haar}: cel mai simplu wavelet --- constant pe porțiuni (bun pentru detectarea salturilor)
+            \item Pentru serii de timp: \textbf{Morlet este standard} --- echilibru bun timp/frecvență
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_morlet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_morlet}
+\end{frame}
+
+\begin{frame}{Ilustrare wavelet Morlet}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_morlet_wavelet.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Wavelet-ul Morlet la patru scale: scalele mai mari captează oscilații de frecvență joasă
+        \item Scalele mai mici captează tranzienții de frecvență înaltă --- rezoluție timp-frecvență adaptivă
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_morlet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_morlet}
+\end{frame}
+
+\begin{frame}{Spectrul de putere wavelet și scalograma}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Spectrul de putere wavelet}
+        {\small
+        \[
+            \text{WPS}(a, b) = |W(a, b)|^2
+        \]
+        Afișat ca o \textbf{scalogramă}: o hartă termică 2D cu timpul pe axa $x$ și scala (perioada) pe axa $y$. Intensitatea culorii = puterea.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{exampleblock}{Spectrul wavelet global}
+            {\small Puterea medie în timp la fiecare scală:
+            \[
+                \overline{W}^2(a) = \frac{1}{n}\sum_{b=1}^{n} |W(a,b)|^2
+            \]
+            Comparabil cu densitatea spectrală Fourier. Util pentru identificarea periodicitățior dominante.}
+        \end{exampleblock}
+
+        \column{0.50\textwidth}
+        \begin{block}{Conul de influență (COI)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Lângă capetele seriei, coeficienții wavelet sunt nesiguri (efecte de margine)
+                \item COI marchează regiunea unde efectele de margine sunt semnificative
+                \item Interpretați puterea doar \textbf{în interiorul} COI
+            \end{itemize}
+        \end{block}
+    \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Semnificație statistică}: Sub $H_0$ de zgomot roșu (AR(1)), puterea wavelet urmează o distribuție $\chi^2_2$ scalată de spectrul de fundal. Contururile la nivelul de semnificație 95\% sunt standard.}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_scalogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_scalogram}
+\end{frame}
+
+\begin{frame}{Scalograma unei serii sintetice}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_scalogram_synthetic.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Semnal sintetic: ciclu de 4 ani (prima jumătate) + ciclu de 10 ani (a doua jumătate)
+        \item Scalograma relevă conținutul de frecvență variabil în timp; COI (punctat) delimitează regiunea fiabilă
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_scalogram}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_scalogram}
+\end{frame}
+
+\begin{frame}{Coerența wavelet}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Transformata cross-wavelet și coerența}
+        {\small Pentru două serii $X_t$ și $Y_t$ cu CWT-urile $W_X(a,b)$ și $W_Y(a,b)$:
+        \[
+            W_{XY}(a,b) = W_X(a,b)\,\overline{W_Y(a,b)} \qquad \text{(spectrul cross-wavelet)}
+        \]
+        \textbf{Coerența wavelet} este:
+        \[
+            R^2_{XY}(a,b) = \frac{|S(W_{XY}(a,b))|^2}{S(|W_X(a,b)|^2) \cdot S(|W_Y(a,b)|^2)}
+        \]
+        unde $S(\cdot)$ este un operator de netezire atât în timp cât și în scală.}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretare și aplicații}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $R^2_{XY}(a,b) \in [0, 1]$: măsură variabilă în timp și scală a co-mișcării
+            \item \textbf{Săgeți de fază} pe graficul de coerență indică relații de avans/întârziere
+            \item Aplicație: prețul petrolului și piețele de acțiuni --- coerența poate fi ridicată la frecvențele ciclului în timpul crizelor dar scăzută în perioade normale
+            \item Aplicație: inflația și masa monetară --- coerența variază între regimuri istorice
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_wavelet\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet_coherence}
+\end{frame}
+
+\begin{frame}{Coerența wavelet: Scalograma}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_scalogram_synthetic.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Coerența wavelet între două serii sintetice cu săgeți de fază
+        \item Dreapta = în fază, stânga = anti-fază, sus = prima serie conduce
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_wavelet\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet_coherence}
+\end{frame}
+
+\begin{frame}{Fourier vs.\ Wavelets: Când se folosește fiecare}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\small
+    \begin{block}{Ghid de decizie}
+    \vspace{-2mm}
+    \begin{center}
+    \begin{tabular}{l|c|c}
+        \toprule
+        \textbf{Criteriu} & \textbf{Fourier / Spectral} & \textbf{Wavelet} \\
+        \midrule
+        Staționaritate & Necesară (sau presupusă) & Nu este necesară \\
+        Localizare în timp & Nu & Da \\
+        Rezoluția în frecvență & Uniformă la toate $\omega$ & Variază cu scala \\
+        Cel mai bun pentru & Serii stațonare, proiectare filtre & Nestațonar, evenimente tranzitorii \\
+        Testarea ipotezelor & Bine dezvoltată (F-test, $\chi^2$) & Monte Carlo, nul AR(1) \\
+        Cost computațional & $O(n \log n)$ & $O(n \log n)$ la $O(n^2)$ \\
+        Comun în & Economie, procesarea semnalelor & Geofizică, finanțe, climă \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{block}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Recomandare practică}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Folosiți \textbf{analiza Fourier/spectrală} când credeți că structura de frecvență este \textit{stabilă} în timp
+            \item Folosiți \textbf{wavelets} când suspectați că structura de frecvență \textit{se schimbă} în timp (schimbări de regim, cicluri în evoluție)
+            \item Adesea folosiți \textbf{ambele}: Fourier pentru forma spectrală generală, wavelets pentru comportamentul variabil în timp
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Studiu de Caz: Extragerea Ciclurilor de Afaceri}
+%=============================================================================
+
+\begin{frame}{Prezentarea studiului de caz}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Descrierea datelor}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Date}: PIB Real SUA, trimestrial, 1947T1--2024T4 (seria FRED GDPC1)
+            \item \textbf{Transformare}: logaritmul PIB-ului real
+            \item \textbf{Obiectiv}: Extragerea componentei ciclului de afaceri folosind metode spectrale
+            \item \textbf{Metode comparate}: Periodogramă, Multitaper, filtru HP, filtru BK, filtru CF, Wavelet
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Definiția ciclului de afaceri}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Burns \& Mitchell (1946) / NBER: fluctuații recurente cu perioada 6--32 trimestre
+            \item Banda de frecvență: $\omega \in [2\pi/32, \; 2\pi/6] \approx [0{,}196, \; 1{,}047]$ radiani/trimestru
+            \item Obiectiv: izolarea acestei benzi de trend (frecvențe joase) și componenta neregulată (frecvențe înalte)
+        \end{itemize}
+    \end{exampleblock}
+    \quantlet{TSA\_ch12\_business\_cycle}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_business_cycle}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Seria temporală PIB SUA}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_timeseries.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Logaritmul PIB-ului Real SUA (FRED GDPC1), 1947T1--2024T4, cu rata de creștere trimestrială
+        \item Trendul puternic domină vizualizarea în domeniul timpului; metodele spectrale sunt necesare pentru extragerea ciclului
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_gdp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_gdp}
+\end{frame}
+
+\begin{frame}[fragile]{Python: Estimarea periodogramei și Multitaper}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\tiny
+    \begin{block}{Analiză spectrală cu Python}
+    \begin{lstlisting}
+import numpy as np; import pandas as pd
+from scipy import signal; from spectrum import pmtm
+# Incarca PIB Real SUA (trimestrial, log-transformat)
+gdp = pd.read_csv('GDPC1.csv', parse_dates=['DATE'], index_col='DATE')
+y = np.log(gdp['GDPC1'].values)
+y_dt = y - np.polyval(np.polyfit(np.arange(len(y)), y, 1), np.arange(len(y)))
+# Periodograma bruta (fs=4 = trimestrial)
+freqs_p, Pxx_p = signal.periodogram(y_dt, fs=4)
+# Estimare spectrala multitaper (NW=4, K=7 ferestre)
+Pxx_mt, w, ev = pmtm(y_dt, NW=4, NFFT=1024, method='adapt')
+freqs_mt = np.linspace(0, 2, len(Pxx_mt))
+bc_low, bc_high = 1/8, 1/1.5  # banda ciclului de afaceri (cicluri/an)
+    \end{lstlisting}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Periodograma și estimarea multitaper a PIB-ului}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_periodogram.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Periodograma brută (gri) și estimarea multitaper (albastru) a log PIB-ului detrendat
+        \item Banda umbrită = intervalul ciclului de afaceri (6--32 trim.); vârf dominant la $\approx$16--20 trimestre
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_gdp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_gdp}
+\end{frame}
+
+\begin{frame}[fragile]{Python: Filtrare Band-Pass}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\tiny
+    \begin{block}{Extragerea componentei ciclului de afaceri}
+    \begin{lstlisting}
+import statsmodels.api as sm
+cycle_hp, trend_hp = sm.tsa.filters.hpfilter(y, lamb=1600)   # HP filter
+cycle_bk = sm.tsa.filters.bkfilter(y, low=6, high=32, K=12)  # BK filter
+cycle_cf, trend_cf = sm.tsa.filters.cffilter(y, low=6, high=32) # CF filter
+# Compara ciclurile extrase
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(12, 5))
+ax.plot(gdp.index, cycle_hp, label='HP filter', alpha=0.8)
+ax.plot(gdp.index[12:-12], cycle_bk, label='BK filter', alpha=0.8)
+ax.plot(gdp.index, cycle_cf, label='CF filter', alpha=0.8)
+ax.axhline(0, color='black', linewidth=0.5)
+ax.legend(); ax.set_title('US Business Cycle Components')
+    \end{lstlisting}
+    \end{block}
+    }
+    \quantlet{TSA\_ch12\_bandpass}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_bandpass}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Cicluri de afaceri filtrate band-pass}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_bandpass.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item HP ($\lambda\!=\!1600$), BK ($K\!=\!12$) și CF --- componentele ciclului de afaceri cu umbrire recesiuni NBER
+        \item Toate trei filtrele sunt de acord asupra sincronizării vârfurilor și minimelor; CF păstrează capetele
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_bandpass}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_bandpass}
+\end{frame}
+
+\begin{frame}[fragile]{Python: Analiza Wavelet}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\tiny
+    \begin{block}{Spectrul de putere wavelet și scalograma}
+    \begin{lstlisting}
+import pywt  # PyWavelets
+scales = np.arange(2, 128)  # scale ~ perioade in trimestre
+coefficients, frequencies = pywt.cwt(y_dt, scales, 'morl',
+                                      sampling_period=0.25)
+power = np.abs(coefficients) ** 2
+periods = 1 / frequencies  # conversie in ani
+# Grafic scalograma
+fig, ax = plt.subplots(figsize=(12, 6))
+im = ax.contourf(gdp.index, periods, power, levels=20, cmap='jet')
+ax.set_ylim(1, 32); ax.set_yscale('log', base=2)
+ax.set_ylabel('Period (years)')
+ax.axhline(y=1.5, color='white', linestyle='--')
+ax.axhline(y=8, color='white', linestyle='--')
+plt.colorbar(im, label='Power')
+    \end{lstlisting}
+    \end{block}
+    }
+    \quantlet{TSA\_ch12\_wavelet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Scalograma wavelet: PIB Real SUA}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{ch12_gdp_scalogram.pdf}
+    \end{center}
+    \vspace{-3mm}
+    {\small
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Scalograma wavelet Morlet a PIB-ului Real SUA detrendat; liniile albe = banda ciclului 6--32 trim.
+        \item „Marea Moderație" (1985--2007) apare ca putere redusă; 2008 și 2020 ca explozii localizate
+    \end{itemize}
+    }
+    \quantlet{TSA\_ch12\_wavelet}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet}
+\end{frame}
+
+\begin{frame}{Rezultate: Densitatea spectrală a PIB-ului SUA}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Constatări cheie din analiza spectrală}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Vârf dominant} în periodogramă la perioada $\approx$ 16--20 trimestre (4--5 ani)
+            \item Consistent cu durata medie a ciclurilor de afaceri NBER
+            \item Concentrare secundară a puterii la perioada $\approx$ 32--40 trimestre (8--10 ani) --- ciclul Juglar
+            \item Putere foarte mare la cele mai joase frecvențe confirmă componenta puternică de trend
+            \item Estimarea multitaper este mai netedă, confirmă aceeași structură de vârfuri
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Comparația filtrelor}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Filtrele HP, BK și CF produc componente ciclice \textbf{similare} (corelație $> 0{,}85$)
+            \item BK pierde 12 observații la fiecare capăt; CF și HP păstrează întregul eșantion
+            \item Toate trei identifică corect recesiunile NBER ca minime ale componentei ciclice
+            \item Filtrul CF este ușor mai bun la capete datorită adaptării asimetrice
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Rezultate: Scalograma Wavelet}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Structura spectrală variabilă în timp}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Scalograma wavelet relevă că puterea ciclului de afaceri \textbf{nu este constantă} în timp
+            \item \textbf{Anii 1970--1980}: Putere puternică la perioade de 4--8 ani (șocuri petroliere, dezinflația Volcker)
+            \item \textbf{1985--2007}: Putere redusă la toate frecvențele ciclice --- „Marea Moderație"
+            \item \textbf{2008--2009}: Concentrare intensă de putere la perioade de 4--6 ani (Marea Recesiune)
+            \item \textbf{2020}: Explozie bruscă, localizată de putere la perioade de 2--4 ani (șocul COVID)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Observație: De ce wavelets completează Fourier}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Analiza Fourier ne spune că ciclul \textit{mediu} este de $\approx 5$ ani
+            \item Wavelets ne spune că durata și intensitatea ciclului \textit{se schimbă în timp}
+            \item Marea Moderație este vizibilă ca o „zonă liniștită" în scalogramă
+            \item Aceasta nu poate fi detectată cu analiza spectrală Fourier standard
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Utilizare IA}
+%=============================================================================
+
+\begin{frame}{Exercițiu IA: Analiză spectrală cu LLM-uri}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Ingineria prompt-urilor pentru analiză spectrală}
+        {\small Utilizați un LLM (Claude, GPT-4) pentru a asista analiza spectrală:}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Exemplu de prompt}
+        {\small \textit{„Am date lunare de producție industrială pentru România (2000--2024). Seria prezintă trend, sezonalitate și posibil cicluri de afaceri. Vă rog:
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item Scrieți cod Python pentru a calcula periodograma și estimarea spectrală multitaper
+            \item Identificați frecvențele dominante și perioadele corespunzătoare
+            \item Aplicați un filtru band-pass pentru a extrage ciclurile cu perioada 2--8 ani
+            \item Creați o scalogramă wavelet pentru a verifica dacă pattern-ul ciclic este stabil
+            \item Interpretați rezultatele în termeni economici"
+        \end{enumerate}
+        }}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Ce trebuie verificat în output-ul IA}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Setează corect \texttt{fs} (frecvența de eșantionare) pentru date lunare?
+            \item Interpretează frecvențele în unitățile corecte (cicluri/lună vs.\ cicluri/an)?
+            \item Aplică detrendare înainte de calculul periodogramei?
+        \end{itemize}}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Rezumat}
+%=============================================================================
+
+\begin{frame}{Concluzii cheie}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    \begin{block}{Ce am învățat}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Densitatea spectrală} $f(\omega)$ descompune varianța pe frecvențe (Wiener--Khintchine: $\gamma(h) \leftrightarrow f(\omega)$)
+            \item \textbf{Periodograma} este estimatorul natural dar \textit{inconsistentă} --- trebuie netezită (multitaper = standard de aur)
+            \item Măsurile \textbf{cross-spectrale} (coerență, fază, câștig) dezvăluie relații specifice frecvenței
+            \item \textbf{Filtrele band-pass} (BK, CF) extrag ciclurile de afaceri; HP este un filtru trece-sus
+            \item \textbf{Wavelets} oferă localizare timp-frecvență pentru semnale nestațonare
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Recomandări practice}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Detrendați întotdeauna înainte de analiza spectrală; folosiți scala logaritmică pentru grafice
+            \item Alegeți multitaper pentru estimări finale; periodograma brută doar pentru explorare
+            \item Pentru date nestațonare, preferați analiza wavelet în locul metodelor Fourier
+        \end{itemize}
+        }
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+\section{Quiz}
+%=============================================================================
+
+\begin{frame}{Întrebarea 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Ce măsoară funcția de densitate spectrală $f(\omega)$ și care este relația sa cu funcția de autocovarianță $\gamma(h)$?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} $f(\omega)$ măsoară media procesului la frecvența $\omega$; este transformata Laplace a lui $\gamma(h)$\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} $f(\omega)$ măsoară contribuția frecvenței $\omega$ la varianța totală; este transformata Fourier a lui $\gamma(h)$ (teorema Wiener--Khintchine)\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} $f(\omega)$ măsoară defazajul la frecvența $\omega$; este inversa lui $\gamma(h)$\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} $f(\omega)$ măsoară componenta de trend la frecvența $\omega$; este derivata lui $\gamma(h)$
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 1: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Răspuns: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Funcția de densitate spectrală $f(\omega) = \frac{1}{2\pi}\sum_{h} \gamma(h)e^{-i\omega h}$ descompune varianța totală a unui proces staționar pe frecvențe. Varianța totală este $\gamma(0) = \int_{-\pi}^{\pi} f(\omega)\,d\omega$. Această pereche de transformate Fourier între $\gamma(h)$ și $f(\omega)$ este teorema Wiener--Khintchine --- rezultatul fundamental al analizei spectrale.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz1}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz1}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item De ce periodograma brută este un estimator \textit{inconsistent} al densității spectrale și cum poate fi remediat acest lucru?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Periodograma este deplasată; se remediază prin creșterea dimensiunii eșantionului\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Varianța periodogramei nu scade cu dimensiunea eșantionului ($\Var[I(\omega)] \approx f(\omega)^2$ pentru orice $n$); se remediază prin netezire (ex.\ multitaper, Welch, nucleu Daniell)\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Periodograma funcționează doar pentru zgomot alb; se remediază prin diferențierea datelor\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Periodograma este inconsistentă deoarece folosește FFT; se remediază prin calculul direct al DFT
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 2: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Răspuns: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Periodograma este aproximativ nediplacată ($\E[I(\omega)] \to f(\omega)$), dar varianța sa $\Var[I(\omega)] \approx f(\omega)^2$ nu scade când $n \to \infty$. Aceasta deoarece adăugarea mai multor date adaugă mai multe frecvențe Fourier în loc să îmbunătățească estimările la frecvențele existente. Netezirea (medierea valorilor vecine ale periodogramei, multitaper sau metode cu fereastră lag) sacrifică rezoluția în frecvență în schimbul varianței reduse, producând un estimator consistent.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz2}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz2}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Observați o densitate spectrală cu un vârf ascuțit lângă $\omega = 0$ și vârfuri mai mici la $\omega = \pi/6, \pi/3, \pi/2, 2\pi/3, 5\pi/6, \pi$. Ce tip de proces a generat probabil aceste date?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Zgomot alb --- spectru plat cu fluctuații aleatorii\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} AR(1) cu $\phi > 0$ --- spectru roșu cu vârf la zero\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Proces sezonier lunar cu trend --- vârf la zero (trend) plus vârfuri la armonicele sezoniere $\omega_k = 2\pi k/12$\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Mers aleator --- toată puterea la $\omega = 0$
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 3: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Răspuns: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Vârfurile la $\omega = \pi/6, \pi/3, \pi/2, 2\pi/3, 5\pi/6, \pi$ corespund exact lui $2\pi k/12$ pentru $k = 1, 2, \ldots, 6$ --- armonicele sezoniere ale datelor lunare ($s = 12$). Vârful la $\omega \approx 0$ indică o componentă puternică de trend sau pe termen lung. Aceasta este semnătura spectrală clasică a unei serii lunare cu atât trend cât și sezonalitate, cum ar fi pasagerii companiilor aeriene sau vânzările cu amănuntul.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz3}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz3}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Care este avantajul principal al analizei wavelet față de analiza spectrală Fourier pentru serii de timp economice?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Wavelets oferă rezoluție mai mare în frecvență decât Fourier pentru serii stațonare\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Wavelets pot localiza caracteristici spectrale atât în timp cât și în frecvență, fiind potrivite pentru procese nestațonare unde conținutul de frecvență se schimbă în timp\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Wavelets sunt computațional mai rapide decât FFT\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Wavelets nu necesită alegerea niciunui parametru, spre deosebire de metodele Fourier
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 4: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Răspuns: (B)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Analiza wavelet oferă localizare simultană în timp și frecvență. Spre deosebire de analiza Fourier, care produce un spectru global unic, wavelets creează o scalogramă care arată cum puterea spectrală evoluează în timp. Aceasta este crucială pentru seriile economice supuse rupturilor structurale, schimbărilor de regim și dinamicii ciclurilor de afaceri în evoluție. Principiul incertitudinii Heisenberg limitează rezoluția comună, dar wavelets echilibrează adaptiv rezoluția în timp și frecvență pe scale diferite.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz4}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz4}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Un cercetător aplică filtrul Hodrick--Prescott (HP) cu $\lambda = 1600$ pe date trimestriale de PIB. Care este interpretarea spectrală a acestui filtru?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+
+        \textcolor{MainBlue}{\textbf{(A)}} Este un filtru band-pass care extrage cicluri cu perioada 6--32 trimestre\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(B)}} Este un filtru trece-jos care extrage trendul păstrând doar frecvențele joase\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(C)}} Componenta ciclică HP este un filtru trece-sus: $|A(\omega)|^2 = \frac{4\lambda(1-\cos\omega)^2}{1+4\lambda(1-\cos\omega)^2}$, lasând să treacă toate ciclurile mai scurte de $\approx$ 32 trimestre inclusiv zgomotul neregulat\\[3pt]
+
+        \textcolor{MainBlue}{\textbf{(D)}} Este un filtru notch care elimină doar frecvența sezonieră
+
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 5: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\small
+    \begin{exampleblock}{Răspuns: (C)}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Componenta ciclică a filtrului HP este un filtru trece-sus care lasă să treacă toate frecvențele peste un prag determinat de $\lambda$. Cu $\lambda = 1600$ și date trimestriale, lasă să treacă cicluri mai scurte de $\approx 32$ trimestre. Spre deosebire de un filtru band-pass (BK, CF), ciclul HP include atât componenta ciclului de afaceri \textit{cât și} componenta neregulată de frecvență înaltă. Aceasta este o limitare bine cunoscută: „ciclul" HP este contaminat cu zgomot, motiv pentru care filtrele band-pass dedicate sunt preferate pentru extragerea ciclului de afaceri.
+    \end{itemize}
+    \end{exampleblock}
+    }
+    \hfill\quantlet{TSA\_ch12\_quiz5}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_quiz5}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\begin{frame}{Bibliografie I}
+    \begin{block}{Referințe fundamentale}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Priestley, M.B.\ (1981). \textit{Spectral Analysis and Time Series}. Academic Press.
+            \item Brockwell, P.J.\ \& Davis, R.A.\ (1991). \textit{Time Series: Theory and Methods}, ed.\ a 2-a. Springer.
+            \item Hamilton, J.D.\ (1994). \textit{Time Series Analysis}. Princeton University Press, Capitolele 6, 10.
+            \item Percival, D.B.\ \& Walden, A.T.\ (1993). \textit{Spectral Analysis for Physical Applications}. Cambridge University Press.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Estimare spectrală}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Thomson, D.J.\ (1982). Spectrum Estimation and Harmonic Analysis, \textit{Proceedings of the IEEE}, 70(9), 1055--1096.
+            \item Welch, P.D.\ (1967). The Use of Fast Fourier Transform for the Estimation of Power Spectra, \textit{IEEE Transactions on Audio and Electroacoustics}, 15(2), 70--73.
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Bibliografie II}
+    \begin{block}{Filtre band-pass și cicluri de afaceri}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Baxter, M.\ \& King, R.G.\ (1999). Measuring Business Cycles: Approximate Band-Pass Filters for Economic Time Series, \textit{Review of Economics and Statistics}, 81(4), 575--593.
+            \item Christiano, L.J.\ \& Fitzgerald, T.J.\ (2003). The Band Pass Filter, \textit{International Economic Review}, 44(2), 435--465.
+            \item Hodrick, R.J.\ \& Prescott, E.C.\ (1997). Postwar U.S. Business Cycles: An Empirical Investigation, \textit{Journal of Money, Credit and Banking}, 29(1), 1--16.
+            \item Burns, A.F.\ \& Mitchell, W.C.\ (1946). \textit{Measuring Business Cycles}. NBER.
+        \end{itemize}
+        }
+    \end{block}
+
+    \vspace{-2mm}
+    \begin{alertblock}{Analiza wavelet}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Torrence \& Compo (1998). A Practical Guide to Wavelet Analysis, \textit{Bull.\ Amer.\ Meteorol.\ Soc.}, 79(1).
+            \item Grinsted, Moore \& Jevrejeva (2004). Cross Wavelet Transform and Wavelet Coherence, \textit{Nonlin.\ Proc.\ Geophys.}, 11.
+            \item Rua \& Nunes (2009). Stock Market Returns: A Wavelet Analysis, \textit{J.\ Empir.\ Finance}, 16(4).
+        \end{itemize}
+        }
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Bibliografie III}
+    \begin{block}{Referințe suplimentare}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Cooley, J.W.\ \& Tukey, J.W.\ (1965). An Algorithm for the Machine Calculation of Complex Fourier Series, \textit{Mathematics of Computation}, 19(90), 297--301.
+            \item Fisher, R.A.\ (1929). Tests of Significance in Harmonic Analysis, \textit{Proceedings of the Royal Society A}, 125(796), 54--59.
+            \item Granger, C.W.J.\ \& Hatanaka, M.\ (1964). \textit{Spectral Analysis of Economic Time Series}. Princeton University Press.
+            \item Stock, J.H.\ \& Watson, M.W.\ (1999). Business Cycle Fluctuations in U.S.\ Macroeconomic Time Series, \textit{Handbook of Macroeconomics}, Vol.\ 1, 3--64.
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-1mm}
+    \begin{exampleblock}{Resurse online și cod}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} -- Platformă de cod pentru metode cantitative
+            \item \textbf{Quantinar}: \url{https://quantinar.com} -- Platformă de învățare pentru metode cantitative
+            \item \textbf{GitHub TSA}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch12} -- Cod Python pentru acest capitol
+        \end{itemize}
+        }
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{}
+    \centering
+    \Huge\textcolor{MainBlue}{Vă Mulțumim!}
+
+    \vspace{1cm}
+
+    \Large Întrebări?
+
+    \vspace{0.8cm}
+
+    \normalsize
+
+    Materialele cursului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+\end{frame}
+
+\end{document}
