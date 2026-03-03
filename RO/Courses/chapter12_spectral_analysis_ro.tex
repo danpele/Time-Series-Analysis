@@ -526,38 +526,55 @@
     \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
 \end{frame}
 
-\begin{frame}{Densitatea spectrală a proceselor comune}
+\begin{frame}{Densitatea spectrală: Zgomot alb și AR(1)}
     \begin{cminipage}{0.95\textwidth}
     \vspace{-2mm}
-    {\small
     \begin{block}{Zgomot alb: $Y_t = \varepsilon_t$, $\varepsilon_t \sim \text{WN}(0, \sigma^2)$}
-        \vspace{-2mm}
+        {\small
         \[
             \gamma(h) = \sigma^2 \mathbf{1}_{h=0} \qquad\Longrightarrow\qquad f(\omega) = \frac{\sigma^2}{2\pi} \quad \text{(plat --- putere egală la toate frecvențele)}
         \]
+        Densitatea spectrală este constantă: zgomotul alb contribuie egal la orice frecvență.}
     \end{block}
-    \vspace{-3mm}
+    \vspace{-2mm}
     \begin{block}{AR(1): $Y_t = \phi Y_{t-1} + \varepsilon_t$}
-        \vspace{-2mm}
+        {\small
         \[
             f(\omega) = \frac{\sigma^2}{2\pi} \cdot \frac{1}{|1 - \phi e^{-i\omega}|^2} = \frac{\sigma^2}{2\pi(1 - 2\phi\cos\omega + \phi^2)}
         \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\phi > 0$: \textbf{spectru roșu} --- vârf la $\omega = 0$, putere concentrată la frecvențe joase (similar tendințelor)
+            \item $\phi < 0$: \textbf{spectru albastru} --- vârf la $\omega = \pi$, putere la frecvențe înalte (oscilatoriu)
+            \item $|\phi| \to 1$: spectrul devine mai concentrat, apropiindu-se de un impuls
+        \end{itemize}}
     \end{block}
-    \vspace{-3mm}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Densitatea spectrală: MA(1) și ARMA general}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
     \begin{block}{MA(1): $Y_t = \varepsilon_t + \theta\varepsilon_{t-1}$}
-        \vspace{-2mm}
+        {\small
         \[
             f(\omega) = \frac{\sigma^2}{2\pi} \cdot |1 + \theta e^{-i\omega}|^2 = \frac{\sigma^2}{2\pi}(1 + 2\theta\cos\omega + \theta^2)
         \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\theta > 0$: mai multă putere la frecvențe joase; $\theta < 0$: mai multă putere la frecvențe înalte
+            \item Forma spectrală este o modulare cosinusoidală simplă a spectrului de zgomot alb
+        \end{itemize}}
     \end{block}
-    \vspace{-3mm}
+    \vspace{-2mm}
     \begin{block}{ARMA$(p,q)$ general: $\phi(B)Y_t = \theta(B)\varepsilon_t$}
-        \vspace{-2mm}
+        {\small
         \[
             f(\omega) = \frac{\sigma^2}{2\pi} \cdot \frac{|\theta(e^{-i\omega})|^2}{|\phi(e^{-i\omega})|^2} \qquad \text{(densitate spectrală rațională)}
         \]
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Polii AR $\Rightarrow$ vârfuri în spectru; zerourile MA $\Rightarrow$ minime (zerouri spectrale)
+            \item Forma rațională face estimarea spectrală parametrică naturală pentru procese ARMA
+        \end{itemize}}
     \end{block}
-    }
     \end{cminipage}
 \end{frame}
 
@@ -885,6 +902,124 @@
 \end{frame}
 
 %=============================================================================
+\section{Memorie lungă și spectrul}
+%=============================================================================
+
+\begin{frame}{Procese cu Memorie Lungă}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{ARFIMA și comportamentul spectral în vecinătatea originii}
+        {\small Un proces ARFIMA$(p,d,q)$ cu parametrul de diferențiere fracționară $d \in (-0{,}5;\; 0{,}5)$:
+        \[
+            \phi(B)(1-B)^d Y_t = \theta(B)\varepsilon_t
+        \]
+        are densitatea spectrală care satisface:
+        \[
+            f(\omega) \sim C_f \, |\omega|^{-2d} \quad \text{când } \omega \to 0
+        \]
+        Pentru $0 < d < 0{,}5$: memorie lungă --- spectrul \textbf{diverge} la origine (putere nelimitată la frecvențe joase).}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Legătura cu exponentul Hurst}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Exponentul Hurst: $H = d + 1/2$, deci $H > 1/2$ indică memorie lungă
+            \item Autocovarianțele descresc hiperbolic: $\gamma(h) \sim C \, |h|^{2d-1}$ (nesumabile pentru $d > 0$)
+            \item Teorema Wiener--Khintchine se aplică în continuare, dar spectrul este nemărginit la $\omega = 0$
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Exemple în economie și finanțe}
+        {\small Volatilitate realizată ($d \approx 0{,}4$), persistența inflației, spread-uri ale ratelor dobânzii, volum tranzacționat.}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Estimatori spectrali de regresie ai lui $d$}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Estimatorul GPH (Geweke \& Porter-Hudak, 1983)}
+        {\small Regresați $\log I(\omega_j)$ față de $\log|2\sin(\omega_j/2)|^2$ la cele mai mici $m$ frecvențe Fourier:
+        \[
+            \log I(\omega_j) = \beta_0 - d \cdot \log\!\big(4\sin^2(\omega_j/2)\big) + \varepsilon_j, \qquad j = 1, \ldots, m
+        \]
+        unde $m = n^\alpha$ cu $\alpha \in (0,1)$, de regulă $\alpha = 0{,}5$--$0{,}8$.
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Regresie simplă pe log-periodogramă; consistent dar ineficient
+            \item $\hat{d}_{\text{GPH}} \xrightarrow{d} N(d,\; \pi^2/(24m))$ în condiții de regularitate
+        \end{itemize}}
+    \end{block}
+    \vspace{-3mm}
+    \begin{exampleblock}{Estimatorul Local Whittle (Robinson, 1995)}
+        {\small Maximizează funcția de verosimilitate locală Whittle la cele $m$ frecvențe inferioare:
+        \[
+            \hat{d}_{\text{LW}} = \arg\min_d \left[\log\!\left(\frac{1}{m}\sum_{j=1}^{m} \frac{I(\omega_j)}{\omega_j^{-2d}}\right) - \frac{2d}{m}\sum_{j=1}^{m}\log\omega_j\right]
+        \]
+        \begin{itemize}\setlength{\itemsep}{-2pt}
+            \item Mai eficient decât GPH; $\sqrt{m}(\hat{d}_{\text{LW}} - d) \xrightarrow{d} N(0,\; 1/4)$
+            \item Versiuni extinse: Local Whittle exact (Shimotsu \& Phillips, 2005) tratează nestationaritatea
+        \end{itemize}}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Estimarea prin funcția de verosimilitate Whittle}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Funcția de verosimilitate Whittle}
+        {\small Pentru un model spectral parametric $f_\theta(\omega)$, aproximarea log-verosimilității Whittle este:
+        \[
+            \ell_W(\theta) = -\sum_{j=1}^{\lfloor n/2 \rfloor} \left[\log f_\theta(\omega_j) + \frac{I(\omega_j)}{f_\theta(\omega_j)}\right], \qquad \hat{\theta}_W = \arg\max_\theta \, \ell_W(\theta)
+        \]}
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Proprietăți asimptotice}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\sqrt{n}(\hat{\theta}_W - \theta_0) \xrightarrow{d} N(0, \Sigma^{-1})$ unde $\Sigma = \frac{1}{4\pi}\int_{-\pi}^{\pi} \bigl(\frac{\partial \log f_\theta}{\partial \theta}\bigr)\bigl(\frac{\partial \log f_\theta}{\partial \theta}\bigr)^{\!\top} d\omega$
+            \item Asimptotic echivalent cu MLE gaussian în domeniul timpului
+        \end{itemize}}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Avantaje față de MLE în domeniul timpului}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Calcul: $O(n \log n)$ față de $O(n^2)$ pentru verosimilitatea exactă în domeniul timpului
+            \item Robustețe: necesită doar specificarea corectă a spectrului, nu ipoteze complete de distribuție
+            \item Modularitate: direct aplicabil pentru ARFIMA sau modele cu structuri spectrale complexe
+        \end{itemize}}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Memorie lungă: Aplicație practică}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Exemplu: Persistența volatilității financiare}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{-1pt}
+            \item Volatilitatea realizată a randamentelor bursiere prezintă memorie lungă cu $d \approx 0{,}35$--$0{,}45$
+            \item Spectrul diverge în vecinătatea $\omega = 0$: revenire la medie extrem de lentă
+            \item Modelele ARMA standard necesită un ordin $p$ foarte ridicat pentru a aproxima acest comportament
+            \item ARFIMA surprinde aceleași dinamici parsimonios cu un singur parametru $d$
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-3mm}
+    \begin{exampleblock}{Flux de lucru practic}
+        \begin{itemize}\setlength{\itemsep}{-1pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] Reprezentați log-periodograma: dacă este aproximativ liniară lângă origine, suspectați memorie lungă
+            \item[\textcolor{MainBlue}{\textbf{2.}}] Estimați $d$ prin GPH și Local Whittle; comparați pentru robustețe
+            \item[\textcolor{MainBlue}{\textbf{3.}}] Ajustați ARFIMA$(p,d,q)$; comparați AIC/BIC cu ARMA standard
+            \item[\textcolor{MainBlue}{\textbf{4.}}] Folosiți verosimilitatea Whittle pentru estimare parametrică eficientă
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    {\small \textbf{Atenție}: Rupturi structurale și tendințe deterministe pot imita memoria lungă în periodogramă --- testați întotdeauna ambele ipoteze (Qu, 2011; Shimotsu, 2006).}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_long\_memory}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_long_memory}
+\end{frame}
+
+%=============================================================================
 \section{Analiza cross-spectrală}
 %=============================================================================
 
@@ -910,36 +1045,69 @@
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Coerență, fază și câștig}
+\begin{frame}{Coerența pătratică}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-2mm}
-    \begin{block}{Coerența pătratică ($R^2$ în domeniul frecvenței)}
-        {\small $\kappa^2_{XY}(\omega) = \frac{|f_{XY}(\omega)|^2}{f_X(\omega)\,f_Y(\omega)} \in [0, 1]$
-        --- măsoară \textbf{tăria asocierii liniare} între $X$ și $Y$ la frecvența $\omega$. Analog al $R^2$ din regresie, dar \textbf{specific frecvenței}.}
+    \vspace{-3mm}
+    \begin{block}{Coerența pătratică: $R^2$ în domeniul frecvenței}
+        {\small
+        \[
+            \kappa^2_{XY}(\omega) = \frac{|f_{XY}(\omega)|^2}{f_X(\omega)\,f_Y(\omega)}, \qquad 0 \leq \kappa^2_{XY}(\omega) \leq 1
+        \]
+        }
     \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Interpretare}
+        \begin{itemize}\setlength{\itemsep}{-2pt}
+            \item Măsoară \textbf{tăria asocierii liniare} între $X$ și $Y$ la frecvența $\omega$
+            \item $\kappa^2 = 1$: relație liniară perfectă la această frecvență; $\kappa^2 = 0$: nicio relație
+            \item Analog al $R^2$ din regresie, dar \textbf{specific frecvenței}
+            \item Spre deosebire de corelația în domeniul timpului, coerența poate arăta că două serii sunt puternic legate la frecvențele ciclului de afaceri dar necorelate la frecvențe mai înalte
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Estimare}
+        \begin{itemize}\setlength{\itemsep}{-2pt}
+            \item Cross-periodograma brută dă $\hat{\kappa}^2 = 1$ peste tot --- trebuie netezită în prealabil
+            \item Se folosesc estimații cross-spectrale cu multitaper sau netezire prin nuclee
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+\begin{frame}{Spectrul de fază și câștigul}
+    \begin{cminipage}{0.95\textwidth}
     \vspace{-2mm}
     \begin{columns}[T]
         \column{0.48\textwidth}
-        \begin{exampleblock}{Spectrul de fază}
+        \begin{block}{Spectrul de fază}
             {\small
-            $\phi_{XY}(\omega) = \arctan\!\left(\frac{-q_{XY}(\omega)}{c_{XY}(\omega)}\right)$
+            \[
+                \phi_{XY}(\omega) = \arctan\!\left(\frac{-q_{XY}(\omega)}{c_{XY}(\omega)}\right)
+            \]
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Avans/întârziere} între $X$ și $Y$
+                \item \textbf{Avans/întârziere} între $X$ și $Y$ la frecvența $\omega$
                 \item $\phi > 0$: $X$ conduce $Y$
-                \item Întârziere: $\tau(\omega) = \phi(\omega)/\omega$
+                \item Decalaj temporal: $\tau(\omega) = \phi(\omega)/\omega$
+                \item Faza are sens doar unde coerența este semnificativă
             \end{itemize}}
-        \end{exampleblock}
+        \end{block}
 
         \column{0.50\textwidth}
-        \begin{block}{Câștigul}
+        \begin{block}{Câștigul (raportul de amplitudine)}
             {\small
-            $G_{XY}(\omega) = |f_{XY}(\omega)|/f_X(\omega)$
+            \[
+                G_{XY}(\omega) = \frac{|f_{XY}(\omega)|}{f_X(\omega)}
+            \]
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Cât de mult frecvența $\omega$ din $X$ este \textbf{amplificată/atenuată} în $Y$
-                \item Dacă $Y = \beta X + \varepsilon$, câștigul este $|\beta|$
+                \item Măsoară cât de mult frecvența $\omega$ din $X$ este \textbf{amplificată sau atenuată} în $Y$
+                \item Dacă $Y = \beta X + \varepsilon$, câștigul este $|\beta|$ la toate frecvențele
+                \item Util pentru evaluarea transmisiei dependente de frecvență
             \end{itemize}}
         \end{block}
     \end{columns}
+    \vspace{2mm}
+    {\small \textbf{Împreună}: Coerența vă spune \textit{cât de puternic} sunt legate două serii la fiecare frecvență, faza vă spune \textit{care conduce}, iar câștigul vă spune \textit{cu cât} sunt amplificate oscilațiile.}
     \end{cminipage}
     \quantlet{TSA\_ch12\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
 \end{frame}
@@ -1306,6 +1474,95 @@
     \end{itemize}
     }
     \quantlet{TSA\_ch12\_wavelet\_coherence}{https://github.com/QuantLet/TSA/tree/main/TSA_ch12/TSA_ch12_wavelet_coherence}
+\end{frame}
+
+\begin{frame}{Procese local staționare}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Dahlhaus (1997): Un cadru pentru spectre nestaționare}
+        {\small Un \textbf{proces local staționar} are reprezentarea:
+        \[
+            X_{t,T} = \int_{-\pi}^{\pi} A\!\left(\frac{t}{T},\,\omega\right) e^{i\omega t}\,dZ(\omega)
+        \]
+        unde $A(u,\omega)$ este \textbf{funcția de transfer variabilă în timp} și $Z(\omega)$ are incrementi ortogonali.
+        \textbf{Densitatea spectrală variabilă în timp} este:
+        \[
+            f(u,\,\omega) = |A(u,\,\omega)|^2, \qquad u \in [0,1],\; \omega \in [-\pi,\pi]
+        \]
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Ideea cheie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item La fiecare punct de timp rescalat $u = t/T$, procesul ``arată'' staționar cu spectrul $f(u,\omega)$
+            \item Generalizează reprezentarea Cramér clasică pentru a permite structuri variabile în timp
+            \item Estimare prin periodograma locală sau metode bazate pe wavelets
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Detecția punctelor de schimbare spectrală}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Testarea staționarității spectrale}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: $f(u, \omega) = f(\omega)$ pentru toți $u$ \quad (spectrul este invariant în timp)
+            \item $H_1$: $f(u, \omega)$ se schimbă la unul sau mai multe puncte de timp (puncte de schimbare spectrală)
+        \end{itemize}
+        }
+    \end{block}
+    \vspace{-2mm}
+    \begin{exampleblock}{Abordări}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{CUSUM pe periodograme locale}: Compararea estimărilor spectrale din sub-segmente
+            \item \textbf{Teste bazate pe wavelets}: Utilizarea varianței la fiecare scală pentru detectarea schimbărilor în benzi de frecvență specifice
+            \item \textbf{Statistici de tip Kolmogorov--Smirnov}: Compararea distribuțiilor spectrale între ferestre
+        \end{itemize}
+    \end{exampleblock}
+    \vspace{-2mm}
+    \begin{alertblock}{Aplicație: Detectarea regimurilor în economie}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Detectarea începutului și sfârșitului Marii Moderații prin schimbări spectrale
+            \item Identificarea rupturilor structurale în dinamica inflației sau volatilitatea financiară
+            \item Schimbări în frecvența sau amplitudinea ciclului de afaceri între regimuri de politică economică
+        \end{itemize}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{STFT vs.\ CWT: Legătura dintre Fourier și Wavelets}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    \begin{block}{Transformata Fourier pe termen scurt (STFT)}
+        {\small Aplicați DFT pe segmente cu fereastră: $\text{STFT}(\tau, \omega) = \sum_{t} x(t)\,w(t - \tau)\,e^{-i\omega t}$, unde $w(\cdot)$ este o fereastră de lățime fixă centrată la momentul $\tau$.}
+    \end{block}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{center}
+    \begin{tabular}{l|c|c}
+        \toprule
+        & \textbf{STFT} & \textbf{CWT} \\
+        \midrule
+        Fereastră & Lățime fixă pentru toți $\omega$ & Adaptivă (îngustă la $\omega$ mare) \\
+        Rezoluție & Uniformă $\Delta t \times \Delta \omega$ & Variabilă: $\Delta t \propto 1/\omega$ \\
+        Bază & Sinusoide cu fereastră & Wavelets scalate/deplasate \\
+        Cel mai bun pentru & Semnale cu frecvență stabilă & Semnale cu elemente tranzitorii \\
+        Spectrogramă & $|\text{STFT}|^2$ = spectrogramă & $|W(a,b)|^2$ = scalogramă \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    }
+    \vspace{-2mm}
+    \begin{exampleblock}{Perspectivă practică}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item STFT adaugă localizare temporală analizei Fourier; CWT adaptează în plus lățimea ferestrei la frecvență
+            \item Pentru date economice: CWT este preferată deoarece dinamicile ciclului de afaceri și cele de înaltă frecvență necesită rezoluții diferite
+        \end{itemize}}
+    \end{exampleblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Fourier vs.\ Wavelets: Când se folosește fiecare}
@@ -1876,10 +2133,12 @@ plt.colorbar(im, label='Power')
         \end{itemize}
         }
     \end{block}
-    \vspace{-1mm}
+\end{frame}
+
+\begin{frame}{Bibliografie IV}
     \begin{exampleblock}{Resurse online și cod}
-        {\scriptsize
-        \begin{itemize}\setlength{\itemsep}{-2pt}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item \textbf{Quantlet}: \url{https://quantlet.com} -- Platformă de cod pentru metode cantitative
             \item \textbf{Quantinar}: \url{https://quantinar.com} -- Platformă de învățare pentru metode cantitative
             \item \textbf{GitHub TSA}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch12} -- Cod Python pentru acest capitol
