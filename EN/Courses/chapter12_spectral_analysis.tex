@@ -351,6 +351,17 @@
     \quantlet{TSA\_ch12\_aliasing}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_aliasing}
 \end{frame}
 
+\begin{frame}{Section Summary: Fourier Analysis}
+\begin{block}{Key Concepts}
+\begin{itemize}\setlength{\itemsep}{3pt}
+    \item \textbf{DFT} decomposes a series into orthogonal sinusoids at frequencies $\omega_j = 2\pi j/n$
+    \item \textbf{Parseval's theorem}: total energy preserved across domains
+    \item \textbf{Aliasing}: frequencies above $\omega_N = \pi$ are aliased --- sample at $\geq 2f_{\max}$
+    \item \textbf{Next}: How to estimate the spectral density from data
+\end{itemize}
+\end{block}
+\end{frame}
+
 %=============================================================================
 \section{The Spectral Density Function}
 %=============================================================================
@@ -598,16 +609,17 @@
 \end{frame}
 
 \begin{frame}{Periodogram Inconsistency Illustrated}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{ch12_periodogram_inconsistency.pdf}
-    \end{center}
-    \vspace{-3mm}
-    {\small
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item As $n$ grows, the periodogram (grey) does \textit{not} converge to the true density (red)
-        \item Erratic fluctuations persist $\Rightarrow$ motivates kernel smoothing and multitaper methods
+    {\small\begin{alertblock}{Key Result: Distribution of the Periodogram}
+    \vspace{-2mm}
+    \begin{itemize}\setlength{\itemsep}{-3pt}
+        \item For large $n$, at non-zero, non-Nyquist frequencies: $I(\omega_j) \stackrel{d}{\approx} f(\omega_j) \cdot \chi^2_2/2$
+        \item $\mathrm{Var}[I(\omega_j)] \approx f(\omega_j)^2$ --- \textbf{does not shrink as $n \to \infty$}: periodogram is \textit{inconsistent}
     \end{itemize}
-    }
+    \vspace{-2mm}
+    \end{alertblock}}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.48\textheight, keepaspectratio]{ch12_periodogram_inconsistency.pdf}
+    \end{center}
     \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
 \end{frame}
 
@@ -976,6 +988,18 @@
     \quantlet{TSA\_ch12\_leakage}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_leakage}
 \end{frame}
 
+\begin{frame}{Section Summary: Spectral Estimation}
+\begin{block}{Estimator Comparison}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \textbf{Periodogram}: unbiased, inconsistent --- high variance
+    \item \textbf{Smoothed (Daniell/BT)}: bias--variance tradeoff via bandwidth $M$
+    \item \textbf{Welch}: reduces variance by segment averaging; lower resolution
+    \item \textbf{Multitaper}: optimal bias--variance via DPSS tapers; preferred in practice
+    \item \textbf{Parametric}: efficient if model correct; sensitive to misspecification
+\end{itemize}
+\end{block}
+\end{frame}
+
 %=============================================================================
 \section{Long Memory and the Spectrum}
 %=============================================================================
@@ -1193,6 +1217,36 @@
     \quantlet{TSA\_ch12\_coherence}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
 \end{frame}
 
+\begin{frame}{Phase: Numeric Example}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{block}{Setup}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item Let $Y_t = X_{t-2} + \varepsilon_t$ (pure lag-2 relationship)
+    \item Cross-spectrum: $S_{XY}(\omega) = e^{-2i\omega} S_{XX}(\omega)$
+    \item Phase: $\phi(\omega) = -2\omega$
+\end{itemize}
+\end{block}
+\begin{exampleblock}{Interpretation}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item At $\omega = \pi/4$ (8-period cycle): $\phi = -\pi/2$ (quarter-cycle lag)
+    \item At $\omega = \pi/8$ (16-period cycle): $\phi = -\pi/4$ (eighth-cycle lag)
+    \item \textbf{Phase slope} $= d\phi/d\omega = -2$ gives the group delay (lag in periods)
+\end{itemize}
+\end{exampleblock}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{alertblock}{Key insight}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Negative phase $\Rightarrow$ $Y$ lags $X$
+    \item Positive phase $\Rightarrow$ $Y$ leads $X$
+    \item Phase $= -\omega k$ means exactly $k$-period lag at all frequencies
+\end{itemize}
+\end{alertblock}
+\end{column}
+\end{columns}
+\end{frame}
+
 \begin{frame}{Coherence Example}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{ch12_coherence_example.pdf}
@@ -1350,6 +1404,26 @@
     \quantlet{TSA\_ch12\_filters}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
 \end{frame}
 
+\begin{frame}{HP Filter: Critical Perspectives}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \textbf{Hamilton (2018) critique}: HP filter introduces spurious cycles not present in the data
+    \begin{itemize}\setlength{\itemsep}{-1pt}
+        \item The filtered series has an ARMA(4,4) structure regardless of the original DGP
+        \item Proposed alternative: regression-based detrending
+    \end{itemize}
+    \item \textbf{Endpoint bias}: estimates near the start/end of sample are unreliable
+    \begin{itemize}\setlength{\itemsep}{-1pt}
+        \item HP filter is a two-sided filter; endpoints use asymmetric weights
+        \item Last 2--3 years of estimates should be interpreted with caution
+    \end{itemize}
+    \item \textbf{$\lambda$ sensitivity}: results depend heavily on the smoothing parameter
+    \begin{itemize}\setlength{\itemsep}{-1pt}
+        \item $\lambda = 1600$ (quarterly) is a convention, not a universal optimum
+        \item BK and CF filters are less sensitive to bandwidth choice
+    \end{itemize}
+    \item \textbf{Practical recommendation}: use HP as one tool among several; always compare with BK/CF
+\end{itemize}
+\end{frame}
 
 %=============================================================================
 \section{Wavelet Analysis}
@@ -1645,9 +1719,33 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Section Summary: Wavelets vs.\ Fourier}
+\begin{block}{When to Use Which}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \textbf{Fourier}: stationary series, global frequency content, sharp frequency resolution
+    \item \textbf{Wavelets}: non-stationary, time-varying frequencies, localization in time AND frequency
+    \item \textbf{STFT}: compromise --- fixed window; uniform time-frequency resolution
+    \item \textbf{Scalogram}: preferred visualization for economic and financial cycles
+\end{itemize}
+\end{block}
+\end{frame}
+
 %=============================================================================
 \section{Case Study: Extracting Business Cycles}
 %=============================================================================
+
+\begin{frame}{Practical Workflow: Spectral Analysis of a Real Series}
+\begin{enumerate}\setlength{\itemsep}{3pt}
+    \item \textbf{Preprocess}: remove trend (HP/first-difference), take logs if needed
+    \item \textbf{Stationarity check}: ADF/KPSS test; difference if needed
+    \item \textbf{Compute periodogram}: identify dominant frequencies visually
+    \item \textbf{Smooth}: apply Welch or multitaper for reliable spectral density estimate
+    \item \textbf{Test}: Fisher's test for significant hidden periodicities
+    \item \textbf{Long memory?}: estimate $d$ via GPH or Local Whittle if $\hat{f}(\omega) \to \infty$ near $\omega=0$
+    \item \textbf{Cross-spectral}: coherence + phase if analyzing two series
+    \item \textbf{Wavelet}: if non-stationarity suspected, use CWT scalogram
+\end{enumerate}
+\end{frame}
 
 \begin{frame}{Case Study Overview}
     \begin{cminipage}{0.95\textwidth}

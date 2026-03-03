@@ -327,6 +327,17 @@
     \quantlet{TSA\_ch12\_aliasing}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_aliasing}
 \end{frame}
 
+\begin{frame}{Rezumat secțiune: Analiza Fourier}
+\begin{block}{Concepte cheie}
+\begin{itemize}\setlength{\itemsep}{3pt}
+    \item \textbf{DFT} descompune o serie în sinusoide ortogonale la frecvențele $\omega_j = 2\pi j/n$
+    \item \textbf{Teorema lui Parseval}: energia totală se conservă între domenii
+    \item \textbf{Aliasing}: frecvențele de deasupra $\omega_N = \pi$ sunt aliate --- eșantionați la $\geq 2f_{\max}$
+    \item \textbf{Urmează}: Cum se estimează densitatea spectrală din date
+\end{itemize}
+\end{block}
+\end{frame}
+
 %=============================================================================
 \section{Periodograma}
 %=============================================================================
@@ -462,16 +473,17 @@
 \end{frame}
 
 \begin{frame}{Ilustrare inconsistență periodogramă}
-    \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.72\textheight, keepaspectratio]{ch12_periodogram_inconsistency.pdf}
-    \end{center}
-    \vspace{-3mm}
-    {\small
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item Pe măsură ce $n$ crește, periodograma (gri) \textit{nu} converge la densitatea spectrală reală (roșu)
-        \item Fluctuațiile eratice persistă $\Rightarrow$ motivează netezirea kernel și metodele multitaper
+    {\small\begin{alertblock}{Rezultat cheie: Distribuția periodogramei}
+    \vspace{-2mm}
+    \begin{itemize}\setlength{\itemsep}{-3pt}
+        \item Pentru $n$ mare, la frecvențe non-zero și non-Nyquist: $I(\omega_j) \stackrel{d}{\approx} f(\omega_j) \cdot \chi^2_2/2$
+        \item $\mathrm{Var}[I(\omega_j)] \approx f(\omega_j)^2$ --- \textbf{nu scade pe măsură ce $n \to \infty$}: periodograma este \textit{inconsistentă}
     \end{itemize}
-    }
+    \vspace{-2mm}
+    \end{alertblock}}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.48\textheight, keepaspectratio]{ch12_periodogram_inconsistency.pdf}
+    \end{center}
     \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
 \end{frame}
 
@@ -913,6 +925,18 @@
     \quantlet{TSA\_ch12\_estimation}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_estimation}
 \end{frame}
 
+\begin{frame}{Rezumat secțiune: Estimarea spectrală}
+\begin{block}{Comparație estimatori}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \textbf{Periodograma}: nedeplasată, inconsistentă --- varianță ridicată
+    \item \textbf{Netezită (Daniell/BT)}: compromis bias--varianță prin lățimea de bandă $M$
+    \item \textbf{Welch}: reduce varianța prin medierea pe segmente; rezoluție mai mică
+    \item \textbf{Multitaper}: optim bias--varianță via tapere DPSS; preferată în practică
+    \item \textbf{Parametrică}: eficientă dacă modelul este corect; sensibilă la specificare greșită
+\end{itemize}
+\end{block}
+\end{frame}
+
 %=============================================================================
 \section{Memorie lungă și spectrul}
 %=============================================================================
@@ -1130,6 +1154,36 @@
     \quantlet{TSA\_ch12\_coherence}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
 \end{frame}
 
+\begin{frame}{Faza: Exemplu numeric}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{block}{Configurație}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Fie $Y_t = X_{t-2} + \varepsilon_t$ (relație de decalaj pur de 2 perioade)
+    \item Cross-spectrul: $S_{XY}(\omega) = e^{-2i\omega} S_{XX}(\omega)$
+    \item Faza: $\phi(\omega) = -2\omega$
+\end{itemize}
+\end{block}
+\begin{exampleblock}{Interpretare}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item La $\omega = \pi/4$ (ciclu de 8 perioade): $\phi = -\pi/2$ (sfert de ciclu)
+    \item La $\omega = \pi/8$ (ciclu de 16 perioade): $\phi = -\pi/4$ (optime de ciclu)
+    \item \textbf{Panta fazei} $= d\phi/d\omega = -2$ dă decalajul de grup (în perioade)
+\end{itemize}
+\end{exampleblock}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{alertblock}{Concluzie cheie}
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item Fază negativă $\Rightarrow$ $Y$ urmează $X$ (întârziere)
+    \item Fază pozitivă $\Rightarrow$ $Y$ precede $X$ (avans)
+    \item Faza $= -\omega k$ înseamnă $k$-perioade decalaj la toate frecvențele
+\end{itemize}
+\end{alertblock}
+\end{column}
+\end{columns}
+\end{frame}
+
 \begin{frame}{Exemplu coerență}
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{ch12_coherence_example.pdf}
@@ -1283,6 +1337,27 @@
     \end{itemize}
     }
     \quantlet{TSA\_ch12\_filters}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+\begin{frame}{Filtrul HP: Perspective critice}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \textbf{Critica Hamilton (2018)}: filtrul HP introduce cicluri false care nu există în date
+    \begin{itemize}\setlength{\itemsep}{-1pt}
+        \item Seria filtrată are o structură ARMA(4,4) indiferent de DGP-ul original
+        \item Alternativă propusă: detrendare bazată pe regresie
+    \end{itemize}
+    \item \textbf{Efectul de capăt}: estimările la marginile eșantionului sunt nesigure
+    \begin{itemize}\setlength{\itemsep}{-1pt}
+        \item Filtrul HP este un filtru bilateral; capetele utilizează ponderi asimetrice
+        \item Ultimii 2--3 ani de estimări trebuie interpretați cu prudență
+    \end{itemize}
+    \item \textbf{Sensibilitate la $\lambda$}: rezultatele depind puternic de parametrul de netezire
+    \begin{itemize}\setlength{\itemsep}{-1pt}
+        \item $\lambda = 1600$ (trimestrial) este o convenție, nu un optim universal
+        \item Filtrele BK și CF sunt mai puțin sensibile la alegerea lățimii de bandă
+    \end{itemize}
+    \item \textbf{Recomandare practică}: utilizați HP ca unul dintre mai multe instrumente; comparați întotdeauna cu BK/CF
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Scurgerea spectrală și ponderarea datelor}
@@ -1623,9 +1698,33 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Rezumat secțiune: Wavelets vs.\ Fourier}
+\begin{block}{Când să folosiți fiecare metodă}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \textbf{Fourier}: serii staționare, conținut global de frecvență, rezoluție ascuțită în frecvență
+    \item \textbf{Wavelets}: nestaționare, frecvențe variabile în timp, localizare în timp ȘI frecvență
+    \item \textbf{STFT}: compromis --- fereastră fixă; rezoluție uniformă timp-frecvență
+    \item \textbf{Scalograma}: vizualizare preferată pentru cicluri economice și financiare
+\end{itemize}
+\end{block}
+\end{frame}
+
 %=============================================================================
 \section{Studiu de Caz: Extragerea Ciclurilor de Afaceri}
 %=============================================================================
+
+\begin{frame}{Flux practic: Analiza spectrală a unei serii reale}
+\begin{enumerate}\setlength{\itemsep}{3pt}
+    \item \textbf{Preprocesare}: eliminați trendul (HP/prima diferență), luați logaritmi dacă este necesar
+    \item \textbf{Verificarea staționarității}: test ADF/KPSS; diferențiați dacă este necesar
+    \item \textbf{Calculați periodograma}: identificați vizual frecvențele dominante
+    \item \textbf{Neteziți}: aplicați Welch sau multitaper pentru o estimare fiabilă a densității spectrale
+    \item \textbf{Testați}: testul Fisher pentru periodicități ascunse semnificative
+    \item \textbf{Memorie lungă?}: estimați $d$ prin GPH sau Local Whittle dacă $\hat{f}(\omega) \to \infty$ aproape de $\omega=0$
+    \item \textbf{Cross-spectral}: coerență + fază dacă analizați două serii
+    \item \textbf{Wavelet}: dacă se suspectează nestacionaritate, folosiți scalograma CWT
+\end{enumerate}
+\end{frame}
 
 \begin{frame}{Prezentarea studiului de caz}
     \begin{cminipage}{0.95\textwidth}
