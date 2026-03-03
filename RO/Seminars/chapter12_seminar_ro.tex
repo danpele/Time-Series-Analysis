@@ -1,0 +1,649 @@
+% Capitolul 12: Seminar - Analiza Spectrală
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 12: Analiza Spectrală și Metode în Domeniul Frecvenței}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% CUPRINS
+%=============================================================================
+\begin{frame}{Cuprins Seminar}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}
+        \item \textbf{Partea I: Nivel Anul 3} -- Fundamente ale analizei spectrale
+        \vspace{0.15cm}
+        \begin{itemize}
+            \item Exercițiul 1: Log-Randamente și Zgomot Alb
+            \item Exercițiul 2: Periodograma Brută
+            \item Exercițiul 3: Inconsistența Periodogramei
+            \item Exercițiul 4: Spectrul Procesului AR(1)
+        \end{itemize}
+        \vspace{0.15cm}
+        \item \textbf{Partea II: Nivel Master} -- Metode avansate de estimare
+        \vspace{0.15cm}
+        \begin{itemize}
+            \item Exercițiul 5: Welch vs.\ Multitaper
+            \item Exercițiul 6: Estimarea Spectrală AR
+            \item Exercițiul 7: Funcția de Transfer a Filtrului HP
+        \end{itemize}
+        \vspace{0.15cm}
+        \item \textbf{Partea III: Extensie Doctorat} -- Memorie lungă și coerență
+        \vspace{0.15cm}
+        \begin{itemize}
+            \item Exercițiul 8: Estimatorul GPH
+            \item Exercițiul 9: Whittle Local
+            \item Exercițiul 10: Analiza Spectrală Încrucișată
+        \end{itemize}
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% PARTEA I: NIVEL ANUL 3
+%=============================================================================
+\section{Partea I: Nivel Anul 3}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 1: Log-Randamente
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 1: Log-Randamente}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Fie o serie de prețuri $P_t$. Definim log-randamentele $r_t = \log(P_t / P_{t-1})$.
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Reprezentați grafic seria $P_t$ și seria de randamente $r_t$. Ce caracteristici vizuale observați?
+            \item[\textbf{(b)}] Calculați ACF-ul eșantion al $r_t$ și al $r_t^2$ pentru decalajele $h = 1, \ldots, 20$.
+            \item[\textbf{(c)}] Ce sugerează un ACF aproape nul al $r_t$ despre predictibilitate? Ce indică valorile semnificative ale ACF al $r_t^2$?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 1: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] $P_t$ prezintă de obicei un trend nestaţionar; $r_t$ oscilează în jurul valorii zero cu perioade de volatilitate ridicată şi scăzută (aglomerarea volatilității).
+            \item[\textbf{(b)}] ACF($r_t$): majoritatea valorilor se încadrează în benzile de confidenţă $\pm 1{,}96/\sqrt{n}$ $\Rightarrow$ randamentele sunt aproximativ necorelate. ACF($r_t^2$): valori pozitive semnificative la multe decalaje $\Rightarrow$ randamentele la pătrat sunt corelate.
+            \item[\textbf{(c)}]
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item ACF($r_t$) $\approx 0$ $\Rightarrow$ randamentele sunt aproape \textbf{zgomot alb}: informaţia din trecut nu ajută la prognoza randamentelor viitoare (ipoteza eficienţei slabe a pieţei).
+                    \item ACF($r_t^2$) semnificativ $\Rightarrow$ \textbf{efecte ARCH/GARCH}: volatilitatea este predictibilă chiar şi atunci când randamentele nu sunt.
+                    \item \textbf{Concluzie cheie}: o densitate spectrală plată a $r_t$ implică putere egală la toate frecvențele --- caracteristica definitorie a zgomotului alb.
+                \end{itemize}
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 2: Periodograma Brută
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 2: Periodograma Brută}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Fie $n = 256$ observaţii. Periodograma la frecvenţa Fourier $\omega_j = 2\pi j/n$ este:
+        \[
+            I(\omega_j) = \frac{1}{2\pi n}\left|d(\omega_j)\right|^2, \qquad
+            d(\omega_j) = \sum_{t=1}^{n} Y_t\, e^{-i\omega_j t}
+        \]
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Reprezentaţi $I(\omega_j)$ în funcţie de $\omega_j \in [0, \pi]$. Cum identificaţi frecvenţa dominantă?
+            \item[\textbf{(b)}] Dacă seria are un \emph{pattern trimestrial} (perioadă $= 4$), la ce frecvenţă unghiulară $\omega^*$ aşteptaţi vârful cel mai mare al periodogramei?
+            \item[\textbf{(c)}] Ce indică o periodogramă complet plată?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 2: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item[\textbf{(a)}] Frecvenţa dominantă este $\omega_j$ la care $I(\omega_j)$ atinge maximul global. Perioada corespunzătoare este $T = 2\pi / \omega_j$ unităţi de timp.
+            \item[\textbf{(b)}] Un pattern trimestrial are perioada $T = 4$, deci:
+                \[
+                    \omega^* = \frac{2\pi}{T} = \frac{2\pi}{4} = \frac{\pi}{2} \approx 1{,}571 \text{ rad}
+                \]
+                Aceasta corespunde celei de-a 64-a frecvenţe Fourier pentru $n = 256$ (întrucât $j^* = n/T = 64$).
+            \item[\textbf{(c)}] O periodogramă plată $I(\omega_j) \approx c$ pentru orice $j$ indică \textbf{zgomot alb}: toate frecvenţele contribuie în mod egal la varianţa seriei ($\int_0^\pi f(\omega)\,d\omega = \gamma(0)$, unde $f(\omega) = \sigma^2/(2\pi) = $ const).
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 3: Inconsistența Periodogramei
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 3: Inconsistența Periodogramei}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Arătaţi că periodograma este un estimator \emph{inconsistent} al densităţii spectrale.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Enunţaţi distribuţia asimptotică a $I(\omega_j)$ când $n \to \infty$.
+            \item[\textbf{(b)}] Derivaţi $\text{Var}[I(\omega_j)]$ în funcţie de $n$. Converge la zero?
+            \item[\textbf{(c)}] Propuneţi o soluţie care produce un estimator consistent şi explicaţi compromisul implicat.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 3: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Pentru $\omega_j \neq 0, \pi$:
+                $\dfrac{2\,I(\omega_j)}{f(\omega_j)} \xrightarrow{d} \chi^2_2 \;\Rightarrow\; I(\omega_j) \stackrel{d}{\approx} f(\omega_j)\cdot\chi^2_2/2$
+            \item[\textbf{(b)}] $\text{Var}[I(\omega_j)] \approx f(\omega_j)^2$. Aceasta \textbf{nu scade} cu $n$ $\Rightarrow$ periodograma este \textbf{inconsistentă}.
+            \item[\textbf{(c)}] \textbf{Netezire} peste $m$ ordonate adiacente:
+                \[
+                    \hat{f}(\omega_j) = \frac{1}{2m+1}\sum_{k=-m}^{m} I(\omega_{j+k})
+                \]
+                \vspace{-4pt}
+                Varianţă $\propto 1/m$, rezoluţie $\propto m/n$. Netezire mai mare $\Rightarrow$ varianţă mai mică, bias mai mare.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 4: Spectrul AR(1)
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 4: Spectrul Procesului AR(1)}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Consideraţi procesul AR(1): $Y_t = 0{,}8\,Y_{t-1} + \varepsilon_t$ cu $\sigma^2_\varepsilon = 1$.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Derivaţi densitatea spectrală $f(\omega)$ pentru $\omega \in [0, \pi]$.
+            \item[\textbf{(b)}] Calculaţi raportul $f(0)/f(\pi)$ şi interpretaţi rezultatul.
+            \item[\textbf{(c)}] Ce este un \emph{spectru roșu}? Daţi un exemplu economic.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 4: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item[\textbf{(a)}] Pentru AR(1) cu coeficient $\phi = 0{,}8$:
+                \[
+                    f(\omega) = \frac{\sigma^2}{2\pi}\cdot\frac{1}{1 - 2\phi\cos\omega + \phi^2}
+                    = \frac{1}{2\pi}\cdot\frac{1}{1{,}64 - 1{,}6\cos\omega}
+                \]
+            \item[\textbf{(b)}] La $\omega = 0$: $f(0) = \frac{1}{2\pi}\cdot\frac{1}{(1-\phi)^2} = \frac{25}{2\pi}$.\\[2pt]
+                La $\omega = \pi$: $f(\pi) = \frac{1}{2\pi}\cdot\frac{1}{(1+\phi)^2} = \frac{1}{2\pi \cdot 3{,}24}$.
+                \[
+                    \frac{f(0)}{f(\pi)} = \left(\frac{1+\phi}{1-\phi}\right)^2 = \left(\frac{1{,}8}{0{,}2}\right)^2 = 81
+                \]
+            \item[\textbf{(c)}] Un \textbf{spectru roșu} este dominat de frecvenţe joase: cea mai mare parte a varianţei provine din oscilaţii lente (cicluri lungi). PIB-ul, consumul şi preţurile acţiunilor prezintă spectre roşii --- evoluează lent şi persistent, cu energie redusă la frecvenţe înalte.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+%=============================================================================
+% PARTEA II: NIVEL MASTER
+%=============================================================================
+\section{Partea II: Nivel Master}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 5: Welch vs Multitaper
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 5: Welch vs.\ Multitaper}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Comparaţi doi estimatori spectrali aplicaţi aceleiaşi serii cu $n = 512$ observaţii:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Welch}: $L = 4$ segmente suprapuse
+            \item \textbf{Multitaper}: $NW = 4$, $K = 7$ tapere DPSS
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Calculaţi rezoluţia în frecvenţă (lăţimea de bandă) pentru fiecare estimator.
+            \item[\textbf{(b)}] Care estimator are varianţă mai mică? De ce?
+            \item[\textbf{(c)}] Descrieţi compromisul bias-varianţă pentru fiecare metodă.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 5: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Welch ($L=4$, $n_{seg}=128$): $\Delta\omega_{\text{Welch}} \approx 2/128 \approx 0{,}0156$ cicluri/obs.\\
+                Multitaper ($NW=4$, $n=512$): $\Delta\omega_{\text{MT}} \approx 2NW/n = 8/512 = 0{,}0156$ cicluri/obs.\\
+                Ambii estimatori au aceeaşi rezoluţie în frecvenţă pentru acești parametri.
+            \item[\textbf{(b)}] Multitaper mediază $K=7$ eigen-spectre independente $\Rightarrow$ varianţă $\propto 1/K$. La lăţime de bandă egală, grade de libertate echivalente: $\approx 2K=14$ faţă de $\approx 2L=8$.
+            \item[\textbf{(c)}] Ambele metode sacrifică rezoluţia pentru varianţă mai mică. Multitaper suprimă optim lobii laterali prin taperele DPSS --- preferat în majoritatea aplicaţiilor.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_estimation}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_estimation}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 6: Estimarea Spectrală AR
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 6: Estimarea Spectrală AR}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Consideraţi procesul AR(2):
+        \[
+            Y_t = 1{,}5\,Y_{t-1} - 0{,}7\,Y_{t-2} + \varepsilon_t, \qquad \sigma^2_\varepsilon = 1
+        \]
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Derivaţi densitatea spectrală parametrică $\hat{f}_{AR}(\omega)$.
+            \item[\textbf{(b)}] Determinaţi frecvenţa de vârf $\omega^*$ a spectrului în mod analitic.
+            \item[\textbf{(c)}] Convertiţi $\omega^*$ în perioadă de ciclu şi interpretaţi economic.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 6: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item[\textbf{(a)}] Cu $\phi_1 = 1{,}5$, $\phi_2 = -0{,}7$ şi funcţia de transfer $A(e^{-i\omega}) = 1 - 1{,}5e^{-i\omega} + 0{,}7e^{-2i\omega}$:
+                \[
+                    f(\omega) = \frac{\sigma^2}{2\pi\,|A(e^{-i\omega})|^2}
+                    = \frac{1}{2\pi\,|1 - 1{,}5e^{-i\omega} + 0{,}7e^{-2i\omega}|^2}
+                \]
+            \item[\textbf{(b)}] Vârful spectral pentru AR(2) cu rădăcini complexe se obţine prin derivare numerică a lui $|A|^2$: $\omega^* \approx 0{,}47$ rad.
+            \item[\textbf{(c)}] Perioada $= 2\pi/\omega^* \approx 2\pi/0{,}47 \approx 13{,}4$ observaţii. Pentru date trimestriale, aceasta corespunde unui \textbf{ciclu de afaceri de 3,3 ani} --- consistent cu ciclurile tipice de inventar şi investiţii.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 7: Funcția de Transfer a Filtrului HP
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 7: Funcția de Transfer a Filtrului HP}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Întrebare}
+        Filtrul HP extrage trendul $\tau_t$ minimizând
+        $\sum(Y_t-\tau_t)^2 + \lambda\sum(\Delta^2\tau_t)^2$.
+        Câştigul la putere al componentei \emph{ciclu} este:
+        \[
+            |A_{HP}(\omega)|^2 = \frac{\lambda\,[2(1-\cos\omega)]^2}{1 + \lambda\,[2(1-\cos\omega)]^2}
+        \]
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Evaluaţi $|A_{HP}(\omega)|^2$ la $\omega = 0$ şi $\omega = \pi$ pentru orice $\lambda$.
+            \item[\textbf{(b)}] Găsiţi frecvenţa de tăiere la jumătate din putere pentru $\lambda = 1600$.
+            \item[\textbf{(c)}] Rezumaţi critica lui Hamilton (2018) la adresa filtrului HP.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.1cm}
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 7: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] La $\omega=0$: $2(1-\cos 0)=0 \Rightarrow |A_{HP}(0)|^2=0$ (trend eliminat).\\
+                La $\omega=\pi$: $2(1+1)=4 \Rightarrow |A_{HP}(\pi)|^2 = 16\lambda/(1+16\lambda)\approx 1$ (frecv.\ înalte trec).
+            \item[\textbf{(b)}] Condiţia $|A_{HP}(\omega)|^2=0{,}5$: $\lambda[2(1-\cos\omega)]^2=1$, deci
+                $2(1-\cos\omega)=1600^{-1/2}=0{,}025$, $\omega^*\approx 0{,}158$ rad $\approx 2\pi/40$ (perioadă $\approx 10$ ani).
+            \item[\textbf{(c)}] \textbf{Hamilton (2018)}: filtrul HP este echivalent cu o regresie pe valori decalate. Ciclul obţinut este corelat spurios la toate decalajele şi impune structură ARMA(4,4) zgomotului alb --- generând \emph{cicluri artificiale}. Hamilton recomandă o regresie simplă în 2 paşi.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_filters}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+%=============================================================================
+% PARTEA III: EXTENSIE DOCTORAT
+%=============================================================================
+\section{Partea III: Extensie Doctorat}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 8: Estimatorul GPH
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 8: Estimatorul GPH}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Întrebare}
+        Pentru ARFIMA(0,$d$,0), estimatorul GPH aplică MCO la:
+        \[
+            \log I(\omega_j) = c - d\log[4\sin^2(\omega_j/2)] + u_j, \quad j=1,\ldots,m
+        \]
+        exploatând aproximaţia $\log f(\omega) \approx c - d\log[4\sin^2(\omega/2)]$ la $\omega\approx 0$.
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Care este estimatorul MCO $\hat{d}$? Cum se calculează?
+            \item[\textbf{(b)}] Ce lăţime de bandă $m$ ar trebui utilizată? Recomandări teoretice?
+            \item[\textbf{(c)}] Care este eroarea standard asimptotică a lui $\hat{d}$?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.1cm}
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 8: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Fie $x_j = -\log[4\sin^2(\omega_j/2)]$ şi $y_j = \log I(\omega_j)$:
+                \[
+                    \hat{d} = \frac{\sum_{j=1}^m (x_j - \bar{x})(y_j - \bar{y})}{\sum_{j=1}^m (x_j - \bar{x})^2}
+                    \quad\text{(panta MCO)}
+                \]
+            \item[\textbf{(b)}] $m = O(n^\alpha)$, $\alpha \in (0,1)$; practică: $m \approx n^{0{,}5}$ până la $n^{0{,}6}$. $m$ mic $\Rightarrow$ varianţă mare; $m$ mare $\Rightarrow$ bias.
+            \item[\textbf{(c)}] $\text{ES}(\hat{d}) = \pi/\sqrt{6m}$. Pentru $n=1000$, $m=32$: ES $\approx 0{,}226$. Hurst: $H = d+0{,}5$; $d>0 \Rightarrow H>0{,}5$ (persistenţă).
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_long\_memory}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_long_memory}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 9: Whittle Local
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 9: Estimatorul Whittle Local}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Comparaţi estimatorii GPH şi Whittle Local pentru o serie cu $n = 1000$ observaţii şi $d = 0{,}3$ adevărat.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Scrieţi funcţia obiectiv a Whittle Local şi precizaţi ce minimizează.
+            \item[\textbf{(b)}] Ce lăţime de bandă $m$ se foloseşte şi care este varianţa asimptotică a $\hat{d}_{WL}$?
+            \item[\textbf{(c)}] De ce este Whittle Local mai eficient decât GPH?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 9: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Whittle Local minimizează log-verosimilitatea restricţionată la $m$ frecvenţe joase:
+                \[
+                    Q(d) = \log G(d) - 2d\,\bar{\lambda}_m, \quad G(d) = \frac{1}{m}\sum_{j=1}^{m}\frac{I(\omega_j)}{\omega_j^{-2d}}, \quad \hat{d}_{WL} = \arg\min_d Q(d)
+                \]
+            \item[\textbf{(b)}] $m=O(n^{0{,}6\text{--}0{,}8})$; pentru $n=1000$ tipic $m\approx 100$--$250$. $\text{Var}(\hat{d}_{WL})=1/(4m)$; pentru $m=100$: ES $=0{,}05$.
+            \item[\textbf{(c)}] GPH foloseşte MCO pe log-periodogramă (erori $\chi^2_2$ cu coadă grea); WL foloseşte o verosimilitate propriu-zisă. WL este asimptotic eficient: $\text{Var}=1/(4m)$ faţă de $\approx 1{,}645/m$ (GPH) pentru acelaşi $m$.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_long\_memory}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_long_memory}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 10: Analiza Spectrală Încrucișată
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 10: Analiza Spectrală Încrucișată}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Presupunem că $Y_t = X_{t-4} + \varepsilon_t$, unde $\varepsilon_t \perp X_s$ pentru orice $s, t$.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Derivaţi spectrul încrucişat $S_{XY}(\omega) = e^{-4i\omega}S_{XX}(\omega)$. Care este funcţia de fază $\phi(\omega)$?
+            \item[\textbf{(b)}] Calculaţi coerenţa la pătrat $C^2_{XY}(\omega)$: (i) fără zgomot, (ii) cu zgomot $\varepsilon_t \sim (0, \sigma^2_\varepsilon)$.
+            \item[\textbf{(c)}] Ce indică panta fazei $-d\phi/d\omega$ şi care este valoarea sa în acest caz?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 10: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Din $Y_t = X_{t-4} + \varepsilon_t$: funcţia de transfer $H(\omega) = e^{-4i\omega}$, deci:
+                \[
+                    S_{XY}(\omega) = e^{-4i\omega}\,S_{XX}(\omega)
+                \]
+                Faza: $\phi(\omega) = -4\omega$ (liniară în $\omega$).
+            \item[\textbf{(b)}] $C^2_{XY}(\omega) = |S_{XY}|^2/(S_{XX} \cdot S_{YY})$:\\
+                (i) Fără zgomot: $C^2_{XY}=1$. \quad (ii) Cu zgomot: $C^2_{XY} = S_{XX}/(S_{XX}+\sigma^2_\varepsilon/(2\pi)) < 1$.
+            \item[\textbf{(c)}] \textbf{Întârzierea de grup} $= -d\phi/d\omega = 4$ perioade la toate frecvenţele --- confirmă o deplasare pură de 4 perioade, fără distorsiune de fază.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+%=============================================================================
+% REZUMAT
+%=============================================================================
+\section{Rezumat}
+
+\begin{frame}{Rezumat: Capitolul 12}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Concepte Cheie pe Nivel}
+        \tiny
+        \begin{center}
+        \begin{tabular}{p{2.2cm}p{2.5cm}p{7.0cm}}
+            \toprule
+            \textbf{Parte} & \textbf{Exerciţii} & \textbf{Concepte Cheie} \\
+            \midrule
+            Anul 3 & Ex.\ 1--4 & Log-randamente; ACF plat $\Rightarrow$ zgomot alb; periodogramă; inconsistenţă; spectrul AR(1); spectru roşu \\[2pt]
+            Master & Ex.\ 5--7 & Bias-varianţă Welch vs.\ multitaper; spectru AR parametric; transfer HP; critica Hamilton \\[2pt]
+            Doctorat & Ex.\ 8--10 & GPH log-periodogramă; eficienţă Whittle Local; spectru încrucişat; coerenţă; întârziere de grup \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{exampleblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Compromisul Fundamental}
+        \begin{center}
+            \textbf{Rezoluţie în frecvenţă} $\;\longleftrightarrow\;$ \textbf{Varianţă statistică}\\[2pt]
+            Netezire mai mare $\Rightarrow$ varianţă mai mică, dar nu se pot distinge vârfuri spectrale apropiate
+        \end{center}
+    \end{block}
+
+    \vspace{0.1cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Întrebări?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\section{Bibliografie}
+
+\begin{frame}{Bibliografie}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{columns}[t]
+    \begin{column}{0.49\textwidth}
+    \begin{block}{Referinţe Principale}
+        {\tiny
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item Shumway \& Stoffer (2017). \textit{Time Series Analysis}, ed. a 4-a, Springer.
+            \item Brockwell \& Davis (2016). \textit{Introduction to Time Series}, ed. a 3-a, Springer.
+            \item Percival \& Walden (1993). \textit{Spectral Analysis for Physical Applications}. Cambridge.
+        \end{itemize}
+        }
+    \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+    \begin{exampleblock}{Memorie Lungă \& Filtre}
+        {\tiny
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item Geweke \& Porter-Hudak (1983). Estimarea modelelor cu memorie lungă. \textit{J.\ Time Ser.\ Anal.}, 4, 221--238.
+            \item Robinson (1995). Estimare semiparametrică gaussiană. \textit{Ann.\ Statist.}, 23, 1630--1661.
+            \item Hamilton (2018). De ce nu trebuie folosit filtrul HP. \textit{Rev.\ Econ.\ Statist.}, 100(5), 831--843.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{column}
+    \end{columns}
+
+    \vspace{0.2cm}
+    {\scriptsize\textbf{Cod}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch12} \hfill
+    \textbf{Quantlet}: \url{https://quantlet.com} \hfill
+    \textbf{Quantinar}: \url{https://quantinar.com}}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Vă mulțumesc!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Întrebări?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Materialele seminarului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}

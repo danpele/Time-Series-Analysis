@@ -1,0 +1,662 @@
+% Seminar 12: Spectral Analysis
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 12: Spectral Analysis and Frequency-Domain Methods}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Seminar Outline}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}
+        \item \textbf{Part I: Year 3 Level} -- Fundamentals of spectral analysis
+        \vspace{0.15cm}
+        \begin{itemize}
+            \item Exercise 1: Log-Returns and White Noise
+            \item Exercise 2: Raw Periodogram
+            \item Exercise 3: Periodogram Inconsistency
+            \item Exercise 4: AR(1) Spectrum
+        \end{itemize}
+        \vspace{0.15cm}
+        \item \textbf{Part II: Master Level} -- Advanced estimation methods
+        \vspace{0.15cm}
+        \begin{itemize}
+            \item Exercise 5: Welch vs Multitaper
+            \item Exercise 6: AR Spectral Estimation
+            \item Exercise 7: HP Filter Transfer Function
+        \end{itemize}
+        \vspace{0.15cm}
+        \item \textbf{Part III: PhD Extension} -- Long memory and coherence
+        \vspace{0.15cm}
+        \begin{itemize}
+            \item Exercise 8: GPH Estimator
+            \item Exercise 9: Local Whittle
+            \item Exercise 10: Cross-Spectral Analysis
+        \end{itemize}
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% PART I: YEAR 3 LEVEL
+%=============================================================================
+\section{Part I: Year 3 Level}
+
+%-----------------------------------------------------------------------------
+% Exercise 1: Log-Returns
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 1: Log-Returns}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Given a price series $P_t$, define log-returns $r_t = \log(P_t / P_{t-1})$.
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Plot the price series $P_t$ and the return series $r_t$. What visual features do you notice?
+            \item[\textbf{(b)}] Compute the sample ACF of $r_t$ and of $r_t^2$ for lags $h = 1, \ldots, 20$.
+            \item[\textbf{(c)}] What does a near-zero ACF of $r_t$ suggest about predictability? What do the significant ACF values of $r_t^2$ indicate?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 1: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] $P_t$ typically shows a non-stationary trending pattern; $r_t$ fluctuates around zero with periods of high and low volatility (volatility clustering).
+            \item[\textbf{(b)}] Sample ACF of $r_t$: most values fall within $\pm 1.96/\sqrt{n}$ confidence bands $\Rightarrow$ returns are approximately uncorrelated. Sample ACF of $r_t^2$: significant positive values at many lags $\Rightarrow$ squared returns are correlated.
+            \item[\textbf{(c)}]
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Near-zero ACF($r_t$) $\Rightarrow$ returns are close to \textbf{white noise}: past returns carry little information to forecast future returns (consistent with weak-form market efficiency).
+                    \item Significant ACF($r_t^2$) $\Rightarrow$ \textbf{ARCH/GARCH effects}: volatility is predictable even when returns are not.
+                    \item \textbf{Key insight}: a flat spectral density of $r_t$ implies equal power at all frequencies --- the hallmark of white noise.
+                \end{itemize}
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 2: Raw Periodogram
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 2: Raw Periodogram}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Given $n = 256$ observations, the periodogram at Fourier frequency $\omega_j = 2\pi j/n$ is:
+        \[
+            I(\omega_j) = \frac{1}{2\pi n}\left|d(\omega_j)\right|^2, \qquad
+            d(\omega_j) = \sum_{t=1}^{n} Y_t\, e^{-i\omega_j t}
+        \]
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Plot $I(\omega_j)$ against $\omega_j \in [0, \pi]$. How do you identify the dominant frequency?
+            \item[\textbf{(b)}] If the series has a \emph{quarterly} pattern (period $= 4$), at which angular frequency $\omega^*$ do you expect the largest periodogram peak?
+            \item[\textbf{(c)}] What does a completely flat periodogram indicate?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 2: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item[\textbf{(a)}] The dominant frequency is the $\omega_j$ at which $I(\omega_j)$ reaches its global maximum. The corresponding period is $T = 2\pi / \omega_j$ time units.
+            \item[\textbf{(b)}] A quarterly pattern has period $T = 4$, so:
+                \[
+                    \omega^* = \frac{2\pi}{T} = \frac{2\pi}{4} = \frac{\pi}{2} \approx 1.571 \text{ rad}
+                \]
+                This is the 64th Fourier frequency for $n = 256$ (since $j^* = n/T = 64$).
+            \item[\textbf{(c)}] A flat periodogram $I(\omega_j) \approx c$ for all $j$ indicates \textbf{white noise}: all frequencies contribute equally to the series variance ($\int_0^\pi f(\omega)\,d\omega = \gamma(0)$, where $f(\omega) = \sigma^2/(2\pi) = $ const).
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 3: Periodogram Inconsistency
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 3: Periodogram Inconsistency}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Show that the periodogram is an \emph{inconsistent} estimator of the spectral density.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] State the asymptotic distribution of $I(\omega_j)$ as $n \to \infty$.
+            \item[\textbf{(b)}] Derive $\text{Var}[I(\omega_j)]$ as a function of $n$. Does it go to zero?
+            \item[\textbf{(c)}] Propose a solution that produces a consistent estimator, and explain the bias-variance tradeoff involved.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 3: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] For $\omega_j \neq 0, \pi$:
+                $\dfrac{2\,I(\omega_j)}{f(\omega_j)} \xrightarrow{d} \chi^2_2 \;\Rightarrow\; I(\omega_j) \stackrel{d}{\approx} f(\omega_j)\cdot\chi^2_2/2$
+            \item[\textbf{(b)}] Since $\chi^2_2$ has variance 4: $\text{Var}[I(\omega_j)] \approx f(\omega_j)^2 \cdot 4/4 = f(\omega_j)^2$. This does \textbf{not} decrease with $n$ $\Rightarrow$ periodogram is \textbf{inconsistent}.
+            \item[\textbf{(c)}] \textbf{Smoothing} over $m$ adjacent ordinates:
+                \[
+                    \hat{f}(\omega_j) = \frac{1}{2m+1}\sum_{k=-m}^{m} I(\omega_{j+k})
+                \]
+                \vspace{-4pt}
+                Variance $\propto 1/m$, bandwidth $\propto m/n$. More smoothing $\Rightarrow$ lower variance but higher bias.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_periodogram}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_periodogram}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 4: AR(1) Spectrum
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 4: AR(1) Spectrum}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Consider the AR(1) process $Y_t = 0.8\,Y_{t-1} + \varepsilon_t$ with $\sigma^2_\varepsilon = 1$.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Derive the spectral density $f(\omega)$ for $\omega \in [0, \pi]$.
+            \item[\textbf{(b)}] Compute the ratio $f(0)/f(\pi)$. Interpret the result.
+            \item[\textbf{(c)}] What is a \emph{red spectrum}? Give an economic example.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 4: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item[\textbf{(a)}] For AR(1) with coefficient $\phi = 0.8$:
+                \[
+                    f(\omega) = \frac{\sigma^2}{2\pi}\cdot\frac{1}{1 - 2\phi\cos\omega + \phi^2}
+                    = \frac{1}{2\pi}\cdot\frac{1}{1.64 - 1.6\cos\omega}
+                \]
+            \item[\textbf{(b)}] At $\omega = 0$: $\cos 0 = 1 \Rightarrow f(0) = \frac{1}{2\pi}\cdot\frac{1}{(1-\phi)^2} = \frac{1}{2\pi}\cdot\frac{1}{0.04} = \frac{25}{2\pi}$.\\[2pt]
+                At $\omega = \pi$: $\cos\pi = -1 \Rightarrow f(\pi) = \frac{1}{2\pi}\cdot\frac{1}{(1+\phi)^2} = \frac{1}{2\pi}\cdot\frac{1}{3.24}$.\\[4pt]
+                \[
+                    \frac{f(0)}{f(\pi)} = \left(\frac{1+\phi}{1-\phi}\right)^2 = \left(\frac{1.8}{0.2}\right)^2 = 81
+                \]
+            \item[\textbf{(c)}] A \textbf{red spectrum} is dominated by low frequencies: most variance is at slow oscillations (long cycles). GDP, consumption, and stock prices all exhibit red spectra --- they move slowly and trend persistently, with little energy at high (business-cycle) frequencies.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+%=============================================================================
+% PART II: MASTER LEVEL
+%=============================================================================
+\section{Part II: Master Level}
+
+%-----------------------------------------------------------------------------
+% Exercise 5: Welch vs Multitaper
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 5: Welch vs.\ Multitaper Estimation}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Compare two spectral estimators on the same series of $n = 512$ observations:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Welch}: $L = 4$ overlapping segments
+            \item \textbf{Multitaper}: $NW = 4$, $K = 7$ DPSS tapers
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Compute the frequency resolution (bandwidth) for each estimator.
+            \item[\textbf{(b)}] Which estimator has lower variance? Why?
+            \item[\textbf{(c)}] Describe the bias-variance tradeoff for each method.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 5: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Welch ($L=4$, $n_{seg}=128$): $\Delta\omega_{\text{Welch}} \approx 2/128 \approx 0.0156$ cyc/obs.\\
+                Multitaper ($NW=4$, $n=512$): $\Delta\omega_{\text{MT}} \approx 2NW/n = 8/512 = 0.0156$ cyc/obs.\\
+                Both have the same frequency resolution for these parameters.
+            \item[\textbf{(b)}] Multitaper averages $K = 7$ independent eigen-spectra $\Rightarrow$ variance $\propto 1/K$. For equal bandwidth, multitaper has lower variance: equivalent degrees of freedom $\approx 2K = 14$ vs $\approx 2L = 8$.
+            \item[\textbf{(c)}] Both methods trade frequency resolution for variance reduction. Multitaper achieves near-optimal sidelobe suppression via DPSS tapers, minimising spectral leakage --- preferred for most applications.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_estimation}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_estimation}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 6: AR Spectral Estimation
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 6: AR Spectral Estimation}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Consider the AR(2) process:
+        \[
+            Y_t = 1.5\,Y_{t-1} - 0.7\,Y_{t-2} + \varepsilon_t, \qquad \sigma^2_\varepsilon = 1
+        \]
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Derive the parametric spectral density $\hat{f}_{AR}(\omega)$.
+            \item[\textbf{(b)}] Find the peak frequency $\omega^*$ of the spectrum analytically.
+            \item[\textbf{(c)}] Convert $\omega^*$ to a cycle period and interpret economically.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 6: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item[\textbf{(a)}] With $\phi_1 = 1.5$, $\phi_2 = -0.7$ and transfer function $A(e^{-i\omega}) = 1 - 1.5e^{-i\omega} + 0.7e^{-2i\omega}$:
+                \[
+                    f(\omega) = \frac{\sigma^2}{2\pi\,|A(e^{-i\omega})|^2}
+                    = \frac{1}{2\pi\,|1 - 1.5e^{-i\omega} + 0.7e^{-2i\omega}|^2}
+                \]
+            \item[\textbf{(b)}] The spectral peak for an AR(2) with complex roots occurs at:
+                \[
+                    \omega^* = \arccos\!\left(\frac{\phi_1}{2|\phi_2|}\cdot\frac{|\phi_2|+1}{1}\right)
+                    = \arccos\!\left(\frac{1.5}{2 \times 0.7}\right) = \arccos(1.071)
+                \]
+                Since $\arccos(1.071)$ has no real solution, we differentiate $|A|^2$ numerically: $\omega^* \approx 0.47$ rad.
+            \item[\textbf{(c)}] Period $= 2\pi/\omega^* \approx 2\pi/0.47 \approx 13.4$ observations. For quarterly data, this corresponds to a \textbf{3.3-year business cycle} --- consistent with typical inventory and investment cycles.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_spectral\_density}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_spectral_density}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 7: HP Filter Transfer Function
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 7: HP Filter Transfer Function}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Question}
+        The HP filter extracts trend $\tau_t$ by minimising
+        $\sum(Y_t-\tau_t)^2 + \lambda\sum(\Delta^2\tau_t)^2$.
+        The squared gain of the \emph{cycle} component is:
+        \[
+            |A_{HP}(\omega)|^2 = \frac{\lambda\,[2(1-\cos\omega)]^2}{1 + \lambda\,[2(1-\cos\omega)]^2}
+        \]
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Evaluate $|A_{HP}(\omega)|^2$ at $\omega = 0$ and $\omega = \pi$ for any $\lambda$.
+            \item[\textbf{(b)}] Find the half-power cutoff frequency for $\lambda = 1600$.
+            \item[\textbf{(c)}] Summarise Hamilton (2018)'s critique of the HP filter.
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 7: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] At $\omega=0$: $2(1-\cos 0)=0 \Rightarrow |A_{HP}(0)|^2=0$ (trend removed).\\
+                At $\omega=\pi$: $2(1+1)=4 \Rightarrow |A_{HP}(\pi)|^2 = 16\lambda/(1+16\lambda)\approx 1$ (high freq.\ passed).
+            \item[\textbf{(b)}] Setting $|A_{HP}(\omega)|^2=0.5$: $\lambda[2(1-\cos\omega)]^2=1$, so
+                $2(1-\cos\omega)=1600^{-1/2}=0.025$, giving $\cos\omega\approx 0.9875$,
+                $\omega^*\approx 0.158$ rad $\approx 2\pi/40$ (period $\approx 40$ quarters $= 10$ years).
+            \item[\textbf{(c)}] \textbf{Hamilton (2018)}: HP filtering is equivalent to a regression on lagged values. The resulting cycle is spuriously correlated at all lags and imposes ARMA(4,4) structure on white noise --- generating \emph{artificial} business cycles. Hamilton recommends a simple 2-step regression alternative.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_filters}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_filters}
+\end{frame}
+
+%=============================================================================
+% PART III: PHD EXTENSION
+%=============================================================================
+\section{Part III: PhD Extension}
+
+%-----------------------------------------------------------------------------
+% Exercise 8: GPH Estimator
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 8: GPH Estimator}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Question}
+        For ARFIMA(0,$d$,0), the GPH estimator fits OLS to:
+        \[
+            \log I(\omega_j) = c - d\log[4\sin^2(\omega_j/2)] + u_j, \quad j=1,\ldots,m
+        \]
+        exploiting the approximation $\log f(\omega) \approx c - d\log[4\sin^2(\omega/2)]$ near $\omega=0$.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] What is the OLS estimator $\hat{d}$? How is it computed?
+            \item[\textbf{(b)}] What bandwidth $m$ should be used? Theoretical recommendations?
+            \item[\textbf{(c)}] What is the asymptotic standard error of $\hat{d}$?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 8: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Let $x_j = -\log[4\sin^2(\omega_j/2)]$ and $y_j = \log I(\omega_j)$:
+                \[
+                    \hat{d} = \frac{\sum_{j=1}^m (x_j - \bar{x})(y_j - \bar{y})}{\sum_{j=1}^m (x_j - \bar{x})^2}
+                    \quad\text{(OLS slope)}
+                \]
+            \item[\textbf{(b)}] Theory: $m = O(n^\alpha)$, $\alpha \in (0,1)$. Common practice: $m \approx n^{0.5}$ to $n^{0.6}$. Too small $m$ $\Rightarrow$ high variance; too large $m$ $\Rightarrow$ bias.
+            \item[\textbf{(c)}] $\text{SE}(\hat{d}) = \pi/\sqrt{6m}$. For $n=1000$, $m=32$: SE $\approx 0.226$. Hurst: $H = d + 0.5$; persistent series have $d>0$ ($H>0.5$).
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_long\_memory}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_long_memory}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 9: Local Whittle
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 9: Local Whittle Estimator}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Compare the GPH and Local Whittle estimators for a series of $n = 1000$ observations with true $d = 0.3$.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Write the Local Whittle objective function and state what it minimises.
+            \item[\textbf{(b)}] What bandwidth $m$ is used, and what is the asymptotic variance of $\hat{d}_{LW}$?
+            \item[\textbf{(c)}] Why is Local Whittle more efficient than GPH?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 9: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item[\textbf{(a)}] Local Whittle minimises the restricted Whittle log-likelihood:
+                \[
+                    Q(d) = \log G(d) - 2d\,\bar{\lambda}_m, \quad G(d) = \frac{1}{m}\sum_{j=1}^{m}\frac{I(\omega_j)}{\omega_j^{-2d}}, \quad \hat{d}_{LW} = \arg\min_d Q(d)
+                \]
+            \item[\textbf{(b)}] Bandwidth $m=O(n^{0.6\text{--}0.8})$; for $n=1000$ typically $m\approx 100$--$250$. Asymptotic variance: $\text{Var}(\hat{d}_{LW})=1/(4m)$. For $m=100$: SD $=0.05$.
+            \item[\textbf{(c)}] GPH uses OLS on log-periodogram (heavy-tailed $\chi^2_2$ errors); LW uses a proper likelihood approximation. LW is asymptotically efficient: $\text{Var}=1/(4m)$ vs GPH's $\approx 1.645/m$ for the same $m$.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_long\_memory}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_long_memory}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 10: Cross-Spectral Analysis
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 10: Cross-Spectral Analysis}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Suppose $Y_t = X_{t-4} + \varepsilon_t$ where $\varepsilon_t \perp X_s$ for all $s, t$.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item[\textbf{(a)}] Derive the cross-spectrum $S_{XY}(\omega) = e^{-4i\omega}S_{XX}(\omega)$. What is the phase function $\phi(\omega)$?
+            \item[\textbf{(b)}] Compute the squared coherence $C^2_{XY}(\omega)$ (i) without noise, (ii) with noise $\varepsilon_t \sim (0, \sigma^2_\varepsilon)$.
+            \item[\textbf{(c)}] What does the phase slope $-d\phi/d\omega$ tell you, and what is its value here?
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 10: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item[\textbf{(a)}] Taking the Fourier transform of $E[Y_t X_{t-h}^*]$: $Y_t = X_{t-4} + \varepsilon_t$ gives the transfer function $H(\omega) = e^{-4i\omega}$, so:
+                \[
+                    S_{XY}(\omega) = H(\omega)\,S_{XX}(\omega) = e^{-4i\omega}\,S_{XX}(\omega)
+                \]
+                The phase is $\phi(\omega) = -4\omega$ (linear in $\omega$).
+            \item[\textbf{(b)}] Squared coherence $C^2_{XY}(\omega) = |S_{XY}|^2/(S_{XX} \cdot S_{YY})$:\\[2pt]
+                (i) No noise: $S_{YY} = S_{XX} \Rightarrow C^2_{XY}(\omega) = 1$ at all frequencies (perfect linear relationship).\\
+                (ii) With noise: $S_{YY} = S_{XX} + \sigma^2_\varepsilon/(2\pi) \Rightarrow C^2_{XY}(\omega) = S_{XX}(\omega)/[S_{XX}(\omega) + \sigma^2_\varepsilon/(2\pi)] < 1$.
+            \item[\textbf{(c)}] The \textbf{group delay} $= -d\phi/d\omega$ measures the frequency-specific time lag:
+                \[
+                    -\frac{d\phi}{d\omega} = -\frac{d(-4\omega)}{d\omega} = 4 \text{ periods at ALL frequencies}
+                \]
+                A constant group delay confirms the system introduces a \textbf{pure shift of 4 periods} with no phase distortion.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch12\_coherence}{https://github.com/danpele/TSA/tree/main/TSA_ch12/TSA_ch12_coherence}
+\end{frame}
+
+%=============================================================================
+% SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Summary: Chapter 12}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Key Concepts by Level}
+        \scriptsize
+        \begin{center}
+        \begin{tabular}{p{2.5cm}p{3cm}p{6.5cm}}
+            \toprule
+            \textbf{Part} & \textbf{Exercises} & \textbf{Key Concepts} \\
+            \midrule
+            Year 3 & Ex.\ 1--4 & Log-returns; flat ACF $\Rightarrow$ white noise; periodogram definition; inconsistency; AR(1) spectrum; red vs blue spectrum \\[4pt]
+            Master & Ex.\ 5--7 & Welch vs multitaper bias-variance tradeoff; AR parametric spectrum; HP filter transfer function; Hamilton critique \\[4pt]
+            PhD & Ex.\ 8--10 & GPH log-periodogram regression; Local Whittle efficiency; cross-spectrum; squared coherence; group delay \\
+            \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{The Fundamental Tradeoff}
+        \begin{center}
+            \textbf{Frequency resolution} $\;\longleftrightarrow\;$ \textbf{Statistical variance}\\[2pt]
+            More smoothing $\Rightarrow$ lower variance but cannot resolve nearby spectral peaks
+        \end{center}
+    \end{block}
+
+    \vspace{0.15cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Questions?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAPHY
+%=============================================================================
+\section{Bibliography}
+
+\begin{frame}{Bibliography}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{columns}[t]
+    \begin{column}{0.49\textwidth}
+    \begin{block}{Core References}
+        {\tiny
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item Shumway \& Stoffer (2017). \textit{Time Series Analysis}, 4th ed., Springer.
+            \item Brockwell \& Davis (2016). \textit{Introduction to Time Series}, 3rd ed., Springer.
+            \item Percival \& Walden (1993). \textit{Spectral Analysis for Physical Applications}. Cambridge.
+        \end{itemize}
+        }
+    \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+    \begin{exampleblock}{Long Memory \& Filters}
+        {\tiny
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item Geweke \& Porter-Hudak (1983). Estimation of long memory models. \textit{J.\ Time Ser.\ Anal.}, 4, 221--238.
+            \item Robinson (1995). Gaussian semiparametric estimation. \textit{Ann.\ Statist.}, 23, 1630--1661.
+            \item Hamilton (2018). Why you should never use the HP filter. \textit{Rev.\ Econ.\ Statist.}, 100(5), 831--843.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{column}
+    \end{columns}
+
+    \vspace{0.2cm}
+    {\scriptsize\textbf{Code}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch12} \hfill
+    \textbf{Quantlet}: \url{https://quantlet.com} \hfill
+    \textbf{Quantinar}: \url{https://quantinar.com}}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Thank You!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Questions?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Seminar materials are available at: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}
