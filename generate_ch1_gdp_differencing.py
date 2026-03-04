@@ -17,7 +17,7 @@ def fetch_wb_gdp():
     vals.sort()
     yrs = np.array([v[0] for v in vals])
     gdp = np.array([v[1] for v in vals])
-    mask = (yrs >= 1992) & (yrs <= 2023)
+    mask = (yrs >= 1992) & (yrs <= 2024)
     return yrs[mask], gdp[mask]
 
 try:

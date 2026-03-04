@@ -21,7 +21,7 @@ def fetch_wb_gdp(country='RO', indicator='NY.GDP.MKTP.KD', per_page=50):
 try:
     years_arr, gdp = fetch_wb_gdp()
     # keep 1992-2023
-    mask = (years_arr >= 1992) & (years_arr <= 2023)
+    mask = (years_arr >= 1992) & (years_arr <= 2024)
     years_arr, gdp = years_arr[mask], gdp[mask]
     source_label = 'Source: World Bank (GDP constant 2015 USD, Romania)'
     print(f"Fetched {len(gdp)} annual obs ({years_arr[0]}-{years_arr[-1]})")
