@@ -43,6 +43,8 @@ print(f"Data: {len(unemp_series)} observations from {unemp_series.index[0]} to {
 print("\nCreating ACF/PACF plots...")
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 plot_acf(unemp_series.values, ax=axes[0], lags=24, alpha=0.05)
 axes[0].set_title('ACF: Unemployment Rate', fontweight='bold', fontsize=12)
@@ -87,6 +89,8 @@ print(f"  ADF (diff) p-value: {adf_diff[1]:.4f}")
 print("\nCreating stationarity comparison chart...")
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Original series
 axes[0, 0].plot(unemp_series.index, unemp_series.values, color=COLORS['blue'], linewidth=1)
@@ -168,6 +172,8 @@ prophet_upper = prophet_pred + 0.8
 
 # Create comparison chart
 fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Left panel: SARIMA
 ax1 = axes[0]

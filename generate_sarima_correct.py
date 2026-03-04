@@ -68,6 +68,8 @@ print(f"{'='*60}")
 print("\n0. Creating train/val/test split chart...")
 
 fig, ax = plt.subplots(figsize=(10, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Plot each segment with different colors
 ax.plot(train_data.index, train_data.values, color=COLORS['blue'], linewidth=2, label=f'Training 70% (n={len(train_data)})')
@@ -101,6 +103,8 @@ print("  - unemployment_train_val_test.pdf")
 print("\n1. Creating ACF/PACF...")
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 plot_acf(train_data.values, ax=axes[0], lags=24, alpha=0.05)
 axes[0].set_title('ACF (Training 70%)', fontweight='bold', fontsize=12)
@@ -130,6 +134,8 @@ print(f"  Original: ADF p = {adf_orig[1]:.4f}")
 print(f"  Differenced: ADF p = {adf_diff[1]:.4f}")
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Top-left: Full series with train/val/test
 axes[0, 0].plot(train_data.index, train_data.values, color=COLORS['blue'], linewidth=1.2, label='Train')
@@ -201,6 +207,8 @@ print(f"\n  >>> Best: {best_model['name']} (Val RMSE = {best_model['val_rmse']:.
 
 # Model selection chart
 fig, ax = plt.subplots(figsize=(9, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 names = [m['name'] for m in results_list]
 val_rmse_values = [m['val_rmse'] for m in results_list]
 x = np.arange(len(names))
@@ -233,6 +241,8 @@ print(f"  Parameters:\n{final_result.summary().tables[1]}")
 
 # Parameter chart
 fig, ax = plt.subplots(figsize=(8, 3))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.axis('off')
 params = final_result.params
 std_errors = final_result.bse
@@ -262,6 +272,8 @@ residuals = final_result.resid.dropna()
 std_resid = (residuals - residuals.mean()) / residuals.std()
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0, 0].plot(std_resid.index, std_resid.values, color=COLORS['blue'], linewidth=0.8)
 axes[0, 0].axhline(y=0, color='black', linewidth=0.5)
@@ -344,6 +356,8 @@ print(f"  Test RMSE = {test_rmse:.2f}, MAE = {test_mae:.2f}")
 
 # Forecast chart
 fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Training
 ax.plot(train_data.index, train_data.values, color=COLORS['blue'], linewidth=1.5, label='Training (70%)')
@@ -397,6 +411,8 @@ prophet_rmse = np.sqrt(np.mean((test_data.values - prophet_pred)**2))
 import matplotlib.dates as mdates
 
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # SARIMA - show train, val, test
 ax1 = axes[0]

@@ -44,6 +44,8 @@ print("\nChapter 1 Motivation Charts:")
 # Chart 1: Time series are everywhere - REAL DATA
 def ch1_motivation_everywhere():
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # 1. S&P 500 Stock Prices (Real data)
     print("  Fetching S&P 500 data...")
@@ -106,6 +108,8 @@ ch1_motivation_everywhere()
 # Chart 2: Why time series analysis matters - REAL DATA
 def ch1_motivation_forecast():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Airline passengers data - classic forecasting example
     passengers = [112, 118, 132, 129, 121, 135, 148, 148, 136, 119, 104, 118,
@@ -180,6 +184,8 @@ ch1_motivation_forecast()
 # Chart 3: Components of time series - REAL DATA (Airline passengers)
 def ch1_motivation_components():
     fig, axes = plt.subplots(4, 1, figsize=(10, 7), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Real airline passengers data
     passengers = [112, 118, 132, 129, 121, 135, 148, 148, 136, 119, 104, 118,
@@ -239,6 +245,8 @@ def ch1_cyclical_component():
     from scipy.signal import butter, filtfilt
 
     fig, axes = plt.subplots(2, 1, figsize=(10, 5), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # US Real GDP (Quarterly, seasonally adjusted) - actual historical data
     # Source: Federal Reserve Economic Data (FRED)
@@ -337,6 +345,8 @@ print("\nChapter 2 Motivation Charts:")
 # Chart 1: Stationary series patterns - REAL RETURNS DATA
 def ch2_motivation_stationary():
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Fetch real stock data
     print("  Fetching stock data for returns...")
@@ -369,6 +379,8 @@ ch2_motivation_stationary()
 # Chart 2: Real-world stationary examples
 def ch2_motivation_realworld():
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     print("  Fetching market data...")
 
@@ -413,6 +425,8 @@ def ch2_motivation_acf():
     from statsmodels.tsa.stattools import acf
 
     fig, axes = plt.subplots(2, 3, figsize=(11, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     print("  Computing ACF for real data...")
 

@@ -11,8 +11,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams['font.size'] = 11
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
@@ -72,6 +74,8 @@ for order, seasonal, name in models_to_try:
 
 # Create comparison chart
 fig, ax = plt.subplots(figsize=(9, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 names = [m['name'] for m in models_results]
 aic_values = [m['aic'] for m in models_results]
@@ -118,6 +122,8 @@ result = best_model['result']
 residuals = result.resid
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Residuals over time
 axes[0, 0].plot(residuals.index, residuals.values, color=COLORS['blue'], linewidth=0.8)
@@ -164,6 +170,8 @@ print("\nCreating in-sample fit chart...")
 fitted_values = result.fittedvalues
 
 fig, ax = plt.subplots(figsize=(10, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(train_data.index, train_data.values, color=COLORS['blue'], linewidth=1.5, label='Actual')
 ax.plot(fitted_values.index, fitted_values.values, color=COLORS['red'], linewidth=1.5,
         linestyle='--', label='SARIMA Fitted', alpha=0.8)
@@ -201,6 +209,8 @@ forecast_mean.index = test_data.index
 forecast_ci.index = test_data.index
 
 fig, ax = plt.subplots(figsize=(10, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Plot training data
 ax.plot(train_data.index, train_data.values, color=COLORS['blue'], linewidth=1.5, label='Training')

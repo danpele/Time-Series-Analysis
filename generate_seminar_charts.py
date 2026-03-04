@@ -37,6 +37,8 @@ PURPLE = '#7b1fa2'
 def ch1_acf_decay():
     """ACF patterns: stationary vs non-stationary"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(0, 21)
 
@@ -78,6 +80,8 @@ def ch1_acf_decay():
 def ch1_forecast_intervals():
     """Forecast intervals widening with horizon"""
     fig, ax = plt.subplots(figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     T = 50
     H = 30
@@ -124,6 +128,8 @@ def ch1_forecast_intervals():
 def ch1_timeseries_cv():
     """Time series cross-validation vs standard k-fold"""
     fig, axes = plt.subplots(2, 1, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n_obs = 20
     n_folds = 5
@@ -196,6 +202,8 @@ def ch1_timeseries_cv():
 def ch3_random_walk_variance():
     """Random walk variance grows linearly with time"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 100
@@ -238,6 +246,8 @@ def ch3_random_walk_variance():
 def ch3_adf_kpss_comparison():
     """ADF vs KPSS test comparison"""
     fig, ax = plt.subplots(figsize=(8, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Create a comparison diagram
     ax.set_xlim(0, 10)
@@ -282,6 +292,8 @@ def ch3_adf_kpss_comparison():
 def ch3_overdifferencing():
     """Overdifferencing creates negative autocorrelation"""
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 200
@@ -347,6 +359,8 @@ def ch3_overdifferencing():
 def ch4_seasonal_acf():
     """Seasonal ACF patterns"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(0, 37)
 
@@ -403,6 +417,8 @@ def ch4_seasonal_acf():
 def ch4_multiplicative_additive():
     """Multiplicative vs Additive seasonality"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     t = np.arange(48)  # 4 years of monthly data
@@ -481,6 +497,8 @@ def ch4_multiplicative_additive():
 def ch5_var_stability():
     """VAR stability - eigenvalues inside unit circle"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Unit circle
     theta = np.linspace(0, 2*np.pi, 100)
@@ -538,6 +556,8 @@ def ch5_var_stability():
 def ch5_irf_example():
     """Example impulse response functions"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     horizons = np.arange(0, 21)
 
@@ -581,6 +601,8 @@ def ch5_irf_example():
 def ch5_granger_diagram():
     """Granger causality concept diagram"""
     fig, ax = plt.subplots(figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 8)
     ax.axis('off')
@@ -629,6 +651,8 @@ def ch5_granger_diagram():
 def ch5_fevd_example():
     """FEVD example"""
     fig, ax = plt.subplots(figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     horizons = [1, 2, 4, 8, 12, 20]
 

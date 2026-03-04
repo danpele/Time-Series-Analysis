@@ -5,8 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 plt.rcParams['font.size'] = 10
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
@@ -23,6 +25,8 @@ OUTPUT_DIR = 'charts/'
 # =============================================================================
 print("Creating compact IRF chart...")
 fig, axes = plt.subplots(2, 2, figsize=(8, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 quarters = np.arange(0, 13)
 

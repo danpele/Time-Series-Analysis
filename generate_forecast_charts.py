@@ -63,6 +63,8 @@ pred_mean = forecast.predicted_mean
 conf_int = forecast.conf_int()
 
 fig, ax = plt.subplots(figsize=(10, 4.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(train.index, train['SUNACTIVITY'], color=COLORS['blue'], linewidth=1.5, label='Train (70%)')
 ax.plot(val.index, val['SUNACTIVITY'], color=COLORS['purple'], linewidth=1.5, label='Val (20%)')
 ax.plot(test.index, test['SUNACTIVITY'], color=COLORS['green'], linewidth=2, label='Test (10%)')
@@ -117,6 +119,8 @@ prophet_upper = prophet_pred + 0.8
 prophet_rmse = np.sqrt(np.mean((test_data.values - prophet_pred)**2))
 
 fig, ax = plt.subplots(figsize=(10, 4.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Plot all three periods with consistent colors
 ax.plot(train_data.index, train_data.values, color=COLORS['blue'], linewidth=1.5, label='Train (70%)')

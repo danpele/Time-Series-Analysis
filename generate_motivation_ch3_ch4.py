@@ -46,6 +46,8 @@ def save_fig(fig, name):
 def create_ch3_motivation_nonstationary():
     """Show examples of non-stationary series"""
     fig, axes = plt.subplots(2, 2, figsize=(11, 7))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 200
@@ -95,6 +97,8 @@ def create_ch3_motivation_nonstationary():
 def create_ch3_motivation_differencing():
     """Show the effect of differencing"""
     fig, axes = plt.subplots(2, 2, figsize=(11, 7))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(123)
     T = 150
@@ -161,6 +165,8 @@ def create_ch3_motivation_differencing():
 def create_ch3_motivation_realworld():
     """Show real-world applications"""
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(456)
     T = 120
@@ -212,6 +218,8 @@ def create_ch3_motivation_realworld():
 def create_ch4_motivation_seasonal():
     """Show clear seasonal patterns"""
     fig, axes = plt.subplots(2, 2, figsize=(11, 7))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 72  # 6 years of monthly data
@@ -284,6 +292,8 @@ def create_ch4_motivation_seasonal():
 def create_ch4_motivation_decomposition():
     """Show seasonal decomposition"""
     fig, axes = plt.subplots(4, 1, figsize=(10, 8), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(123)
     T = 72
@@ -325,6 +335,8 @@ def create_ch4_motivation_decomposition():
 def create_ch4_motivation_monthly_pattern():
     """Show monthly seasonal pattern"""
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(456)
 
@@ -372,6 +384,8 @@ def create_ch4_motivation_monthly_pattern():
 def create_ch4_motivation_why_sarima():
     """Show why we need SARIMA"""
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(789)
     T = 60

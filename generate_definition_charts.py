@@ -969,6 +969,8 @@ ch4_def_seasonality()
 def ch4_def_seasonal_diff():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Monthly data with seasonality
     n = 48
@@ -1003,6 +1005,8 @@ ch4_def_seasonal_diff()
 def ch4_def_sarima():
     np.random.seed(42)
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 96
     t = np.arange(n)
@@ -1055,6 +1059,8 @@ print("\nChapter 5 Definition Charts:")
 def ch5_def_ccf():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
 

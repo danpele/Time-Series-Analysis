@@ -43,6 +43,8 @@ def ch2_ar_stationarity():
     eps = np.random.normal(0, 1, n)
 
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Stationary: phi = -0.8
     y_stat = np.zeros(n)
@@ -85,6 +87,8 @@ ch2_ar_stationarity()
 # Quiz: ACF/PACF Pattern Recognition
 def ch2_acf_pacf_patterns():
     fig, axes = plt.subplots(2, 3, figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     lags = np.arange(0, 11)
 
     # AR(1) with phi=0.7
@@ -156,6 +160,8 @@ ch2_acf_pacf_patterns()
 # Quiz: Information Criteria
 def ch2_information_criteria():
     fig, ax = plt.subplots(figsize=(8, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     orders = np.arange(0, 8)
     n = 200
@@ -195,6 +201,8 @@ ch2_information_criteria()
 def ch2_ljung_box():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(1, 21)
 
@@ -233,6 +241,8 @@ ch2_ljung_box()
 def ch2_forecast_properties():
     np.random.seed(42)
     fig, ax = plt.subplots(figsize=(9, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Simulated AR(1) series
     n = 100
@@ -293,6 +303,8 @@ print("\nChapter 3: ARIMA Quiz Charts")
 def ch3_quiz1_rw_variance():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 100
     n_paths = 50
@@ -327,6 +339,8 @@ ch3_quiz1_rw_variance()
 def ch3_quiz2_differencing():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n)
@@ -364,6 +378,8 @@ ch3_quiz2_differencing()
 # Quiz 3: ADF test interpretation
 def ch3_quiz3_adf_test():
     fig, ax = plt.subplots(figsize=(8, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Critical values
     cv_1 = -3.43
@@ -410,6 +426,8 @@ ch3_quiz3_adf_test()
 # Quiz 4: ACF of AR(1) decays exponentially
 def ch3_quiz4_acf_decay():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     phi = 0.7
     lags = np.arange(0, 16)
@@ -438,6 +456,8 @@ ch3_quiz4_acf_decay()
 def ch3_quiz5_forecast_ci():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 80
     h_max = 40
@@ -495,6 +515,8 @@ print("\nChapter 4: SARIMA Quiz Charts")
 # Quiz 1: Seasonal periods
 def ch4_quiz1_seasonal_periods():
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     np.random.seed(42)
 
     # Quarterly data (s=4)
@@ -538,6 +560,8 @@ ch4_quiz1_seasonal_periods()
 def ch4_quiz2_seasonal_diff():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 72  # 6 years of monthly data
     t = np.arange(n)
@@ -578,6 +602,8 @@ ch4_quiz2_seasonal_diff()
 # Quiz 5: ACF with seasonal spikes
 def ch4_quiz5_seasonal_acf():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(0, 49)
 
@@ -626,6 +652,8 @@ print("\nChapter 5: VAR Quiz Charts")
 # Quiz 1: VAR stability - eigenvalues in unit circle
 def ch5_quiz1_var_stability():
     fig, ax = plt.subplots(figsize=(6, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Unit circle
     theta = np.linspace(0, 2*np.pi, 100)
@@ -663,6 +691,8 @@ ch5_quiz1_var_stability()
 # Quiz 2: Granger causality concept
 def ch5_quiz2_granger_causality():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     np.random.seed(42)
 
     n = 100
@@ -711,6 +741,8 @@ ch5_quiz2_granger_causality()
 # Quiz 3: Cholesky ordering
 def ch5_quiz3_cholesky_ordering():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Ordering 1: GDP first, then Interest Rate
     axes[0].axis('off')
@@ -764,6 +796,8 @@ ch5_quiz3_cholesky_ordering()
 # Quiz 5: FEVD interpretation
 def ch5_quiz5_fevd():
     fig, ax = plt.subplots(figsize=(8, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     horizons = [1, 4, 8, 12, 20]
 

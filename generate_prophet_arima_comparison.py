@@ -8,8 +8,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams['font.size'] = 11
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
+plt.rcParams['savefig.transparent'] = True
 plt.rcParams['axes.grid'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.right'] = False
@@ -96,6 +98,8 @@ except ImportError:
 print("Creating comparison chart...")
 
 fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Left panel: ARIMA
 ax1 = axes[0]

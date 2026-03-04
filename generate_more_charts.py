@@ -30,6 +30,8 @@ OUTPUT_DIR = 'charts/'
 # =============================================================================
 print("Creating train/val/test split diagram...")
 fig, ax = plt.subplots(figsize=(10, 2.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Draw bars - 70% / 15% / 15%
 ax.barh(0, 70, left=0, height=0.6, color=COLORS['blue'], alpha=0.7, label='Training (70%)')
@@ -66,6 +68,8 @@ btc = yf.download('BTC-USD', start='2019-01-01', end='2025-01-15', progress=Fals
 btc_returns = btc['Close'].pct_change() * 100
 
 fig, ax = plt.subplots(figsize=(10, 3))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 squared_returns = (btc_returns ** 2).dropna()
 ax.fill_between(squared_returns.index, 0, squared_returns.values.flatten(),
                 color=COLORS['orange'], alpha=0.6)
@@ -84,6 +88,8 @@ print("  - btc_squared_returns.pdf")
 # =============================================================================
 print("Creating ACF of squared returns...")
 fig, ax = plt.subplots(figsize=(8, 3))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 plot_acf(squared_returns.dropna().values.flatten()[:2000], ax=ax, lags=30, alpha=0.05)
 ax.set_title('ACF of Squared Returns (Evidence for GARCH)', fontweight='bold', fontsize=14)
 ax.set_xlabel('Lag')
@@ -103,6 +109,8 @@ sunspots = sm.datasets.sunspots.load_pandas().data
 sunspots = sunspots[sunspots['YEAR'] >= 1900].copy()
 
 fig, ax = plt.subplots(figsize=(8, 3))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 plot_acf(sunspots['SUNACTIVITY'].values, ax=ax, lags=40, alpha=0.05)
 ax.axvline(x=11, color=COLORS['red'], linestyle='--', alpha=0.7, linewidth=2, label='11-year lag')
 ax.axvline(x=22, color=COLORS['red'], linestyle='--', alpha=0.7, linewidth=2)
@@ -121,6 +129,8 @@ print("  - sunspots_acf.pdf")
 # =============================================================================
 print("Creating Fourier terms illustration...")
 fig, axes = plt.subplots(1, 3, figsize=(10, 3))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 t = np.linspace(0, 4*np.pi, 200)
 period = 2*np.pi
@@ -161,6 +171,8 @@ print("Creating Granger causality heatmap...")
 import matplotlib.patches as mpatches
 
 fig, ax = plt.subplots(figsize=(6, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Sample p-values (from the notebook results)
 variables = ['GDP', 'Unemp', 'Infl', 'Fed']
@@ -209,6 +221,8 @@ print("  - granger_heatmap.pdf")
 # =============================================================================
 print("Creating metrics comparison chart...")
 fig, ax = plt.subplots(figsize=(9, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 models = ['GARCH\n(Bitcoin)', 'Fourier\n(Sunspots)', 'Prophet\n(Unemp)', 'VAR\n(Economic)']
 rmse_values = [2.21, 48.51, 0.42, 1.32]
@@ -236,6 +250,8 @@ print("  - model_comparison.pdf")
 # =============================================================================
 print("Creating impulse response illustration...")
 fig, axes = plt.subplots(2, 2, figsize=(9, 6))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 quarters = np.arange(0, 13)
 
@@ -283,6 +299,8 @@ print("  - irf_gdp_shock.pdf")
 # =============================================================================
 print("Creating GARCH convergence illustration...")
 fig, ax = plt.subplots(figsize=(8, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 h = np.arange(1, 51)
 sigma_bar = 3.0  # Unconditional variance
@@ -370,6 +388,8 @@ for i in range(n_test_var):
         var_forecast_unemp[i] = 0.9 * test_data_var['Unemployment'].iloc[i-1] - 0.1 * test_data_var['GDP_Growth'].iloc[i-1] + np.random.randn() * 0.3
 
 fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # GDP Growth forecast
 ax1 = axes[0]
@@ -414,6 +434,8 @@ print("  - var_forecast.pdf")
 # =============================================================================
 print("Creating IRF for Unemployment shock...")
 fig, axes = plt.subplots(2, 2, figsize=(9, 6))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 quarters = np.arange(0, 13)
 
@@ -461,6 +483,8 @@ print("  - irf_unemp_shock.pdf")
 # =============================================================================
 print("Creating IRF for Fed Rate shock...")
 fig, axes = plt.subplots(2, 2, figsize=(9, 6))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Fed shock -> Fed Rate (own effect)
 irf_fed_fed = 1 * np.exp(-quarters/6)

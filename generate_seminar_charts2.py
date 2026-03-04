@@ -40,6 +40,8 @@ CYAN = '#0097a7'
 def ch1_white_noise():
     """White noise properties visualization"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 200
@@ -110,6 +112,8 @@ def ch1_white_noise():
 def ch1_holt_method():
     """Holt's exponential smoothing visualization"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 40
@@ -172,6 +176,8 @@ def ch1_holt_method():
 def ch1_decomposition():
     """Additive vs Multiplicative decomposition"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     t = np.arange(48)  # 4 years monthly
@@ -262,6 +268,8 @@ def ch1_decomposition():
 def ch2_acf_pacf_patterns():
     """ACF/PACF patterns for AR, MA, ARMA identification"""
     fig, axes = plt.subplots(3, 2, figsize=(10, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(0, 16)
 
@@ -346,6 +354,8 @@ def ch2_acf_pacf_patterns():
 def ch2_stationarity_region():
     """AR(2) stationarity region (triangle)"""
     fig, ax = plt.subplots(figsize=(8, 7))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Stationarity triangle vertices
     vertices = np.array([[-2, 1], [2, 1], [0, -1], [-2, 1]])
@@ -398,6 +408,8 @@ def ch2_stationarity_region():
 def ch2_invertibility():
     """MA invertibility visualization"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Unit circle
     theta = np.linspace(0, 2*np.pi, 100)
@@ -458,6 +470,8 @@ def ch2_invertibility():
 def ch2_information_criteria():
     """AIC vs BIC comparison"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Model comparison
     p_values = np.arange(1, 8)
@@ -523,6 +537,8 @@ def ch2_information_criteria():
 def ch3_trend_vs_difference():
     """Trend stationary vs difference stationary"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 100
@@ -582,6 +598,8 @@ def ch3_trend_vs_difference():
 def ch3_arima_flowchart():
     """ARIMA model selection flowchart"""
     fig, ax = plt.subplots(figsize=(12, 8))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 12)
     ax.set_ylim(0, 10)
     ax.axis('off')
@@ -667,6 +685,8 @@ def ch3_arima_flowchart():
 def ch4_sarima_notation():
     """SARIMA notation breakdown"""
     fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 12)
     ax.set_ylim(0, 8)
     ax.axis('off')
@@ -726,6 +746,8 @@ def ch4_sarima_notation():
 def ch4_airline_model():
     """Famous Airline Model visualization"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 144  # 12 years of monthly data
@@ -792,6 +814,8 @@ def ch4_airline_model():
 def ch5_cholesky_ordering():
     """Cholesky ordering impact visualization"""
     fig, ax = plt.subplots(figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 8)
     ax.axis('off')
@@ -854,6 +878,8 @@ def ch5_cholesky_ordering():
 def ch5_var_diagnostics():
     """VAR residual diagnostics"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     T = 200
@@ -921,6 +947,8 @@ def ch5_var_diagnostics():
 def ch5_var_parameters():
     """VAR parameter counting diagram"""
     fig, ax = plt.subplots(figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 8)
     ax.axis('off')

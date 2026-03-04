@@ -111,6 +111,8 @@ def plot_timeseries_definition(data):
     sp500 = data['sp500']['Close'].iloc[-252:]
 
     fig, ax = plt.subplots(figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.plot(sp500.index, sp500.values, color=COLORS['main_blue'], linewidth=0.8, alpha=0.7)
     ax.scatter(sp500.index[::5], sp500.values[::5], color=COLORS['ida_red'], s=12, zorder=5)
     ax.set_xlabel('Time ($t$)')
@@ -126,6 +128,8 @@ def plot_timeseries_definition(data):
 def plot_multiple_assets(data):
     """Plot multiple financial time series"""
     fig, axes = plt.subplots(2, 3, figsize=(11, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     assets = [
         ('sp500', 'S&P 500', COLORS['main_blue']),
@@ -157,6 +161,8 @@ def plot_multiple_assets(data):
 def plot_data_types_comparison():
     """Visual comparison of data types"""
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.2))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     np.random.seed(42)
 
     # Cross-sectional
@@ -211,6 +217,8 @@ def plot_ts_components_synthetic():
     observed = trend + seasonal + residual
 
     fig, axes = plt.subplots(4, 1, figsize=(10, 6), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     components = [
         (observed, '$X_t$', COLORS['main_blue']),
@@ -238,6 +246,8 @@ def plot_airline_decomposition(data):
     decomp = seasonal_decompose(airline['Passengers'], model='multiplicative', period=12)
 
     fig, axes = plt.subplots(4, 1, figsize=(10, 6), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     components = [
         (airline['Passengers'], '$X_t$', COLORS['main_blue']),
@@ -266,6 +276,8 @@ def plot_additive_vs_multiplicative(data):
     mult_decomp = seasonal_decompose(airline['Passengers'], model='multiplicative', period=12)
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Seasonal components
     axes[0, 0].plot(add_decomp.seasonal.index, add_decomp.seasonal.values, color=COLORS['main_blue'], linewidth=0.7)
@@ -309,6 +321,8 @@ def plot_moving_average_trend():
     ma_12 = pd.Series(observed).rolling(window=12, center=True).mean()
 
     fig, ax = plt.subplots(figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.plot(t, observed, color=COLORS['light_gray'], linewidth=0.6, label='Observed', alpha=0.8)
     ax.plot(t, ma_5, color=COLORS['forest'], linewidth=1, label='MA(5)')
     ax.plot(t, ma_12, color=COLORS['ida_red'], linewidth=1.2, label='MA(12)')
@@ -331,6 +345,8 @@ def plot_stl_decomposition(data):
     result = stl.fit()
 
     fig, axes = plt.subplots(4, 1, figsize=(10, 6), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     components = [
         (airline['Passengers'], '$X_t$', COLORS['main_blue']),
@@ -361,6 +377,8 @@ def plot_seasonal_pattern(data):
     months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
 
     fig, ax = plt.subplots(figsize=(8, 3.5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     colors = [COLORS['forest'] if v > 1 else COLORS['ida_red'] for v in seasonal_pattern.values]
     bars = ax.bar(months, seasonal_pattern.values, color=colors, alpha=0.8, width=0.7)
     ax.axhline(y=1, color=COLORS['dark_gray'], linestyle='--', linewidth=0.8)
@@ -382,6 +400,8 @@ def plot_simple_exp_smoothing(data):
     airline = data['airline']['Passengers']
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Different alpha values
     ax1 = axes[0]
@@ -426,6 +446,8 @@ def plot_holt_method(data):
     forecast = model.forecast(24)
 
     fig, ax = plt.subplots(figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     ax.plot(airline.index, airline.values, color=COLORS['main_blue'], linewidth=0.8, label='Observed')
     ax.plot(airline.index, model.fittedvalues, color=COLORS['ida_red'], linewidth=1, label='Fitted')
@@ -460,6 +482,8 @@ def plot_holt_winters(data):
     forecast_idx = pd.date_range(airline.index[-1], periods=25, freq='M')[1:]
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Additive
     ax1 = axes[0]
@@ -496,6 +520,8 @@ def plot_ets_components(data):
                                   initialization_method='estimated').fit()
 
     fig, axes = plt.subplots(3, 1, figsize=(10, 5.5), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Level
     axes[0].plot(airline.index, model.level, color=COLORS['main_blue'], linewidth=0.8)
@@ -544,6 +570,8 @@ def plot_forecast_accuracy_metrics(data):
     fc_hw = hw.forecast(24)
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Forecast comparison
     ax1 = axes[0]
@@ -597,11 +625,14 @@ def plot_residual_diagnostics(data):
     """Residual diagnostics for forecast evaluation"""
     airline = data['airline']['Passengers']
 
+
     model = ExponentialSmoothing(airline, seasonal_periods=12, trend='add', seasonal='mul',
                                   initialization_method='estimated').fit()
     residuals = model.resid
 
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Residuals over time
     axes[0, 0].plot(residuals.index, residuals.values, color=COLORS['main_blue'], linewidth=0.5)
@@ -656,6 +687,8 @@ def plot_cross_validation_forecast(data):
     T = 100
 
     fig, ax = plt.subplots(figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Create sample data
     t = np.arange(T)
@@ -708,6 +741,8 @@ def plot_train_test_validation():
     val_end = 125
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Left: The split
     ax1 = axes[0]
@@ -754,6 +789,8 @@ def plot_seasonality_fourier_dummies(data):
     t = np.arange(T)
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Top left: Dummy variables visualization
     ax1 = axes[0, 0]
@@ -862,6 +899,8 @@ def plot_real_data_forecast_comparison(data):
     fc_hw_mul = hw_mul.forecast(h)
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Left: Forecasts
     ax1 = axes[0]
@@ -927,6 +966,8 @@ def plot_multiple_series_comparison(data):
     }
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     for idx, (name, series) in enumerate(datasets.items()):
         row = idx
@@ -997,6 +1038,8 @@ def plot_detrending_methods():
     y = trend + seasonal + noise
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Original
     axes[0, 0].plot(t, y, color=COLORS['main_blue'], linewidth=0.7)
@@ -1060,6 +1103,8 @@ def plot_seasonal_adjustment(data):
     seasonal_diff = airline.diff(12).dropna()
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Original
     axes[0, 0].plot(airline.index, airline.values, color=COLORS['main_blue'], linewidth=0.7)
@@ -1115,6 +1160,8 @@ def plot_trend_estimation_comparison(data):
     result = stl.fit()
 
     fig, ax = plt.subplots(figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     ax.plot(airline.index, airline.values, color='#AAAAAA', linewidth=1.0, label='Observed', alpha=0.7)
     ax.plot(airline.index, ma12.values, color='#1A3A6E', linewidth=2.5, label='MA(12)')
@@ -1144,6 +1191,8 @@ def plot_deterministic_trend_example():
     y = trend + noise
 
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Plot 1: The series with trend line
     ax1 = axes[0]
@@ -1193,6 +1242,8 @@ def plot_stochastic_trend_example():
     y = np.cumsum(shocks) + 50  # Random walk starting at 50
 
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Plot 1: The random walk
     ax1 = axes[0]
@@ -1244,6 +1295,8 @@ def plot_trend_comparison_sidebyside():
     stoch_series = np.cumsum(np.random.randn(T) * 2) + 50
 
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Top left: Deterministic trend
     ax1 = axes[0, 0]
@@ -1301,6 +1354,8 @@ def plot_realizations_ensemble():
     n_paths = 6
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     ax1 = axes[0]
     colors = plt.cm.Blues(np.linspace(0.4, 0.9, n_paths))
@@ -1345,6 +1400,8 @@ def plot_white_noise():
     wn = np.random.randn(T)
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     ax1 = axes[0]
     ax1.plot(wn, color=COLORS['main_blue'], linewidth=0.5)
@@ -1377,6 +1434,8 @@ def plot_random_walk():
     n_paths = 4
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     ax1 = axes[0]
     colors = [COLORS['main_blue'], COLORS['ida_red'], COLORS['forest'], COLORS['amber']]
@@ -1420,6 +1479,8 @@ def plot_random_walk_vs_stationary():
         ar1[t] = phi * ar1[t-1] + np.random.randn()
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 5.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     axes[0, 0].plot(rw, color=COLORS['ida_red'], linewidth=0.7)
     axes[0, 0].set_title('Random Walk', fontweight='bold', fontsize=9, color=COLORS['dark_gray'])
@@ -1476,6 +1537,8 @@ def plot_acf_pacf_examples():
         ma1[t] = eps[t] + 0.7 * eps[t-1]
 
     fig, axes = plt.subplots(3, 3, figsize=(11, 7))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     processes = [
         (wn, 'White Noise', COLORS['main_blue']),
@@ -1527,6 +1590,8 @@ def plot_acf_theoretical():
     lags = np.arange(0, 16)
 
     fig, axes = plt.subplots(2, 2, figsize=(10, 5.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     axes = axes.flatten()
     colors = [COLORS['main_blue'], COLORS['ida_red'], COLORS['forest'], COLORS['amber']]
 
@@ -1556,6 +1621,8 @@ def plot_differencing_effect(data):
     log_returns = (np.log(sp500) - np.log(sp500.shift(1))).dropna() * 100
 
     fig, axes = plt.subplots(3, 2, figsize=(11, 7))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Original
     axes[0, 0].plot(sp500.index, sp500.values, color=COLORS['main_blue'], linewidth=0.5)
@@ -1619,6 +1686,8 @@ def plot_adf_test_visualization(data):
     adf_returns = adfuller(returns, maxlag=20, autolag='AIC')
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Price
     axes[0, 0].plot(sp500.index, sp500.values, color=COLORS['ida_red'], linewidth=0.5)
@@ -1664,6 +1733,8 @@ def plot_sp500_analysis(data):
     returns = (np.log(sp500) - np.log(sp500.shift(1))).dropna() * 100
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     axes[0, 0].plot(sp500.index, sp500.values, color=COLORS['main_blue'], linewidth=0.5)
     axes[0, 0].set_title('S&P 500 Price', fontweight='bold', fontsize=9, color=COLORS['dark_gray'])
@@ -1710,6 +1781,8 @@ def plot_returns_distribution(data):
     returns = (np.log(sp500) - np.log(sp500.shift(1))).dropna() * 100
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     ax1 = axes[0]
     ax1.hist(returns, bins=80, color=COLORS['main_blue'], alpha=0.7, edgecolor='white', density=True)
@@ -1761,6 +1834,8 @@ def plot_volatility_clustering(data):
     returns = (np.log(sp500) - np.log(sp500.shift(1))).dropna() * 100
 
     fig, ax = plt.subplots(figsize=(11, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     ax.plot(returns.index, returns.values, color=COLORS['main_blue'], linewidth=0.3, alpha=0.8)
     ax.axhline(y=0, color=COLORS['medium_gray'], linestyle='--', linewidth=0.4)

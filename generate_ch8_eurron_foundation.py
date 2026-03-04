@@ -133,6 +133,8 @@ print(f"   Test:  {len(price_test)} obs ({price_test.index[0].strftime('%Y-%m-%d
 print("\n   Generating ch8_eurron_series.pdf …")
 
 fig, axes = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].plot(eurron.index, eurron.values, color=MAIN_BLUE, linewidth=0.8)
 axes[0].set_ylabel('EUR/RON Rate')
@@ -162,6 +164,8 @@ save_fig('ch8_eurron_series')
 print("   Generating ch8_case_raw_data.pdf …")
 
 fig, axes = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].plot(price_train.index, price_train.values, color=MAIN_BLUE, linewidth=0.8, label='Train')
 axes[0].plot(price_val.index, price_val.values, color=AMBER, linewidth=0.8, label='Validation')
@@ -196,6 +200,8 @@ acf_ret = acf(returns.values, nlags=40)
 acf_sq  = acf((returns ** 2).values, nlags=40)
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 ci = 1.96 / np.sqrt(len(returns))
 
@@ -437,6 +443,8 @@ print(f"   Top features: {', '.join(importances.head(3)['feature'].values)}")
 print("   Generating ch8_case_feature_importance.pdf …")
 sorted_idx = np.argsort(rf.feature_importances_)
 fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 bars = ax.barh([feature_cols[i] for i in sorted_idx],
                rf.feature_importances_[sorted_idx], color=MAIN_BLUE)
 ax.set_xlabel('Feature Importance')
@@ -486,6 +494,8 @@ print(f"   Time: {mlp_time:.2f}s")
 print("   Generating ch8_case_lstm_training.pdf …")
 epochs_arr = np.arange(1, len(train_losses) + 1)
 fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(epochs_arr, train_losses, color=MAIN_BLUE, linewidth=2, label='Training Loss')
 ax.plot(epochs_arr, val_losses, color=IDA_RED, linewidth=2, label='Validation Loss')
 ax.set_xlabel('Epoch')
@@ -613,6 +623,8 @@ print("-" * 40)
 
 print("   Generating ch8_case_predictions.pdf …")
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 test_idx = price_test.index
 ax.plot(test_idx, price_test.values, color='#333333', linewidth=1.5,
@@ -648,6 +660,8 @@ time_vals   = [arima_time, arfima_time, rf_time, mlp_time]
 colors_bar  = [MAIN_BLUE, IDA_RED, FOREST, AMBER]
 
 fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 x = np.arange(len(model_names))
 
 # RMSE
@@ -708,6 +722,8 @@ if HAS_CHRONOS or HAS_TIMESFM:
         fm_colors.append(TEAL)
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     x2 = np.arange(len(fm_names))
     w = 0.35
 
@@ -752,6 +768,8 @@ else:
     fm_colors = colors_bar
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     x2 = np.arange(len(fm_names))
     w = 0.35
 
@@ -792,6 +810,8 @@ if HAS_CHRONOS or HAS_TIMESFM:
     print("   Generating ch8_foundation_predictions.pdf …")
 
     fig, ax = plt.subplots(figsize=(12, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.plot(test_idx, price_test.values, color='#333333', linewidth=1.5,
             label='Actual EUR/RON', zorder=5)
     ax.plot(test_idx, arima_preds, color=MAIN_BLUE, linewidth=0.8,
@@ -823,6 +843,8 @@ else:
 
     # Show classical predictions only — clean chart, no ugly placeholders
     fig, ax = plt.subplots(figsize=(12, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.plot(test_idx, price_test.values, color='#333333', linewidth=1.5,
             label='Actual EUR/RON', zorder=5)
     ax.plot(test_idx, arima_preds, color=MAIN_BLUE, linewidth=0.8,
