@@ -56,6 +56,8 @@ for t in range(1, n):
     Y[t] = c + A @ Y[t-1] + eps
 
 fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].plot(Y[:, 0], color=COLORS['blue'], linewidth=1.5, label='Y₁')
 axes[0].set_title('Simulated VAR(1): Variable Y₁', fontweight='bold', fontsize=12)
@@ -69,8 +71,8 @@ axes[1].set_ylabel('Value')
 axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_var_simulation.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_var_simulation.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_var_simulation.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_var_simulation.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_var_simulation.pdf")
 
@@ -93,6 +95,8 @@ for lag in lags:
     ccf.append(corr)
 
 fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.bar(lags, ccf, color=COLORS['blue'], alpha=0.7, width=0.8)
 ax.axhline(y=0, color='black', linewidth=0.5)
 ax.axhline(y=1.96/np.sqrt(n), color=COLORS['red'], linestyle='--', alpha=0.7, label='95% CI')
@@ -103,8 +107,8 @@ ax.set_title('Cross-correlation: Y₁ and Y₂', fontweight='bold', fontsize=12)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_cross_correlation.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_cross_correlation.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_cross_correlation.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_cross_correlation.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_cross_correlation.pdf")
 
@@ -122,6 +126,8 @@ results = model.fit(maxlags=4, ic='aic')
 irf = results.irf(periods=20)
 
 fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Response of Y1 to shock in Y1
 axes[0, 0].plot(irf.irfs[:, 0, 0], color=COLORS['blue'], linewidth=2, marker='o', markersize=4)
@@ -161,8 +167,8 @@ axes[1, 1].set_xlabel('Horizon')
 
 plt.suptitle('Impulse Response Functions', fontsize=14, fontweight='bold', y=1.02)
 plt.tight_layout()
-plt.savefig('charts/ch5_irf.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_irf.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_irf.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_irf.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_irf.pdf")
 
@@ -174,6 +180,8 @@ print("Generating Chart 4: FEVD...")
 fevd = results.fevd(periods=20)
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Extract FEVD data - shape is (n_periods, n_vars, n_vars)
 # fevd.decomp[h, i, j] = contribution of shock j to variance of variable i at horizon h
@@ -205,8 +213,8 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=
 
 plt.suptitle('Forecast Error Variance Decomposition', fontsize=14, fontweight='bold', y=1.02)
 plt.tight_layout()
-plt.savefig('charts/ch5_fevd.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_fevd.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_fevd.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_fevd.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_fevd.pdf")
 
@@ -247,6 +255,8 @@ except Exception as e:
     data_source = "Simulated"
 
 fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].plot(combined.index, combined['GDP_Growth'], color=COLORS['blue'], linewidth=1.5)
 axes[0].axhline(y=0, color='black', linestyle='--', alpha=0.3)
@@ -261,8 +271,8 @@ axes[1].set_xlabel('Date')
 axes[1].set_ylabel('Rate (%)')
 
 plt.tight_layout()
-plt.savefig('charts/ch5_gdp_unemployment.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_gdp_unemployment.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_gdp_unemployment.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_gdp_unemployment.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_gdp_unemployment.pdf")
 
@@ -283,6 +293,8 @@ unemployment = 5.5 - 0.4 * gdp_growth + np.random.randn(n) * 0.3
 unemployment = np.clip(unemployment, 3, 10)
 
 fig, axes = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].plot(dates, gdp_growth, color=COLORS['blue'], linewidth=1.5, label='GDP Growth')
 axes[0].axhline(y=0, color='black', linestyle='--', alpha=0.3)
@@ -300,8 +312,8 @@ axes[2].set_xlabel('Date')
 axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_motivation_econ.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_motivation_econ.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_motivation_econ.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_motivation_econ.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_motivation_econ.pdf")
 
@@ -311,6 +323,8 @@ print("Created: ch5_motivation_econ.pdf")
 print("Generating Chart 7: Motivation Scatter...")
 
 fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # GDP vs Unemployment (Okun's Law)
 axes[0].scatter(gdp_growth, unemployment, alpha=0.6, color=COLORS['blue'], s=30)
@@ -345,8 +359,8 @@ axes[2].set_title('Phillips Curve', fontweight='bold')
 axes[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_motivation_scatter.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_motivation_scatter.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_motivation_scatter.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_motivation_scatter.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_motivation_scatter.pdf")
 
@@ -363,6 +377,8 @@ for t in range(4, n):
     unemployment_change[t] = -0.3 * stock_returns[t-4] + np.random.randn() * 0.5
 
 fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Time series
 ax1 = axes[0]
@@ -403,8 +419,8 @@ axes[1].set_title('Cross-correlation Function', fontweight='bold')
 axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_motivation_leadlag.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_motivation_leadlag.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_motivation_leadlag.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_motivation_leadlag.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_motivation_leadlag.pdf")
 
@@ -414,6 +430,8 @@ print("Created: ch5_motivation_leadlag.pdf")
 print("Generating Chart 9: Univariate limitation...")
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Left: Univariate approach
 axes[0].plot(dates[:60], gdp_growth[:60], color=COLORS['blue'], linewidth=1.5, label='GDP Growth')
@@ -438,8 +456,8 @@ ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center',
            bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_motivation_univariate.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_motivation_univariate.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_motivation_univariate.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_motivation_univariate.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_motivation_univariate.pdf")
 
@@ -456,6 +474,8 @@ bic_vals = 5.6 - 0.25 * lags_test + 0.06 * lags_test**2 + np.random.randn(8) * 0
 hq_vals = 5.55 - 0.27 * lags_test + 0.055 * lags_test**2 + np.random.randn(8) * 0.05
 
 fig, ax = plt.subplots(figsize=(10, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(lags_test, aic_vals, 'o-', color=COLORS['blue'], linewidth=2, markersize=8, label='AIC')
 ax.plot(lags_test, bic_vals, 's-', color=COLORS['red'], linewidth=2, markersize=8, label='BIC')
 ax.plot(lags_test, hq_vals, '^-', color=COLORS['green'], linewidth=2, markersize=8, label='HQ')
@@ -473,8 +493,8 @@ ax.set_xticks(lags_test)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_lag_selection.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_lag_selection.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_lag_selection.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_lag_selection.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_lag_selection.pdf")
 
@@ -484,6 +504,8 @@ print("Created: ch5_lag_selection.pdf")
 print("Generating Chart 11: Stability Roots...")
 
 fig, ax = plt.subplots(figsize=(8, 8))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Draw unit circle
 theta = np.linspace(0, 2*np.pi, 100)
@@ -507,8 +529,8 @@ ax.set_aspect('equal')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_stability_roots.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_stability_roots.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_stability_roots.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_stability_roots.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_stability_roots.pdf")
 
@@ -525,6 +547,8 @@ irf_21 = -np.exp(-horizons * 0.1) * 0.3 * (1 - np.exp(-horizons * 0.2))
 irf_22 = np.exp(-horizons * 0.18) * 0.8
 
 fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0, 0].plot(horizons, irf_11, color=COLORS['blue'], linewidth=2, marker='o', markersize=4)
 axes[0, 0].fill_between(horizons, irf_11 - 0.15, irf_11 + 0.15, color=COLORS['blue'], alpha=0.2)
@@ -552,8 +576,8 @@ axes[1, 1].set_xlabel('Horizon')
 
 plt.suptitle('Structural Impulse Response Functions (Cholesky)', fontsize=14, fontweight='bold', y=1.02)
 plt.tight_layout()
-plt.savefig('charts/ch5_structural_irf.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_structural_irf.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_structural_irf.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_structural_irf.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_structural_irf.pdf")
 
@@ -583,6 +607,8 @@ for t in range(1, n_fcst):
 ci_width = np.sqrt(np.arange(1, n_fcst + 1)) * 0.4
 
 fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Y1
 time_hist = np.arange(n_obs)
@@ -610,8 +636,8 @@ axes[1].set_title('VAR Forecast: Variable Y₂', fontweight='bold')
 axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_var_forecast.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_var_forecast.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_var_forecast.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_var_forecast.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_var_forecast.pdf")
 
@@ -621,6 +647,8 @@ print("Created: ch5_var_forecast.pdf")
 print("Generating Chart 14: VAR Results...")
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Coefficient matrix visualization
 coef_matrix = np.array([[0.7, 0.2], [-0.1, 0.6]])
@@ -646,8 +674,8 @@ axes[1].set_title('Model Fit Statistics', fontweight='bold')
 axes[1].axhline(y=0, color='black', linewidth=0.5)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_var_results.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_var_results.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_var_results.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_var_results.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_var_results.pdf")
 
@@ -660,6 +688,8 @@ np.random.seed(42)
 residuals = np.random.randn(100)
 
 fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # ACF of residuals
 from statsmodels.graphics.tsaplots import plot_acf
@@ -694,8 +724,8 @@ axes[1, 1].set_ylabel('Residual')
 
 plt.suptitle('VAR Diagnostic Plots', fontsize=14, fontweight='bold', y=1.02)
 plt.tight_layout()
-plt.savefig('charts/ch5_diagnostics.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_diagnostics.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_diagnostics.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_diagnostics.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_diagnostics.pdf")
 
@@ -714,6 +744,8 @@ shock2_contrib = np.cumsum(np.random.randn(n) * 0.2)
 actual = shock1_contrib + shock2_contrib
 
 fig, ax = plt.subplots(figsize=(12, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 ax.fill_between(time, 0, shock1_contrib, alpha=0.6, color=COLORS['blue'], label='Shock 1 Contribution')
 ax.fill_between(time, shock1_contrib, shock1_contrib + shock2_contrib, alpha=0.6,
@@ -726,8 +758,8 @@ ax.set_title('Historical Decomposition of Y₁', fontweight='bold', fontsize=12)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch5_historical_decomp.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_historical_decomp.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_historical_decomp.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_historical_decomp.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_historical_decomp.pdf")
 
@@ -745,6 +777,8 @@ output_response = -0.5 * (1 - np.exp(-horizons * 0.2)) * np.exp(-horizons * 0.08
 inflation_response = -0.3 * (1 - np.exp(-horizons * 0.15)) * np.exp(-horizons * 0.05)
 
 fig, axes = plt.subplots(1, 3, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Interest rate shock
 axes[0].plot(horizons, ir_shock, color=COLORS['blue'], linewidth=2, marker='o', markersize=4)
@@ -773,8 +807,8 @@ axes[2].set_ylabel('Percentage Points')
 plt.suptitle('Monetary Policy Transmission: Response to 1pp Interest Rate Shock',
              fontsize=14, fontweight='bold', y=1.02)
 plt.tight_layout()
-plt.savefig('charts/ch5_monetary_irf.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch5_monetary_irf.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch5_monetary_irf.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch5_monetary_irf.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch5_monetary_irf.pdf")
 

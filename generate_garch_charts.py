@@ -96,6 +96,8 @@ results = model.fit(disp='off')
 conditional_vol = results.conditional_volatility
 
 fig, axes = plt.subplots(2, 1, figsize=(14, 8), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Returns
 axes[0].plot(sp500_returns.index, sp500_returns.values, color=COLORS['blue'], linewidth=0.5, alpha=0.8)
@@ -132,6 +134,8 @@ print("Created: garch_volatility_clustering.pdf")
 print("Generating Chart 2: Stylized Facts (S&P 500)...")
 
 fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # ACF of returns
 plot_acf(sp500_returns.values, lags=30, ax=axes[0, 0], color=COLORS['blue'],
@@ -200,6 +204,8 @@ res_egarch = model_egarch.fit(disp='off')
 models_results['EGARCH'] = res_egarch
 
 fig, ax = plt.subplots(figsize=(14, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 colors = [COLORS['blue'], COLORS['red'], COLORS['green']]
 for i, (name, res) in enumerate(models_results.items()):
@@ -238,6 +244,8 @@ df_lev = pd.DataFrame({
 }).dropna()
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Scatter plot
 colors = [COLORS['red'] if r < 0 else COLORS['blue'] for r in df_lev['lagged_returns']]
@@ -304,6 +312,8 @@ indicator = (epsilon_range < 0).astype(float)
 sigma2_gjr = omega_gjr + alpha_gjr * epsilon_range**2 + gamma_gjr * epsilon_range**2 * indicator + beta_gjr * sigma2_prev_gjr
 
 fig, ax = plt.subplots(figsize=(12, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 ax.plot(epsilon_range, np.sqrt(sigma2_garch), color=COLORS['blue'], linewidth=2.5,
         label=f'GARCH(1,1): α={alpha_g:.3f}, β={beta_g:.3f}')
@@ -335,6 +345,8 @@ print("Generating Chart 6: Model Diagnostics...")
 std_resid = res_garch.std_resid
 
 fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Time series of standardized residuals
 axes[0, 0].plot(sp500_returns.index, std_resid, color=COLORS['blue'], linewidth=0.5, alpha=0.8)
@@ -399,6 +411,8 @@ last_date = sp500_returns.index[-1]
 forecast_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=forecast_horizon, freq='B')
 
 fig, ax = plt.subplots(figsize=(14, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Historical
 ax.plot(hist_dates, hist_vol, color=COLORS['blue'], linewidth=1.2, label='Historical Volatility')
@@ -437,6 +451,8 @@ print("Created: garch_forecast.pdf")
 print("Generating Chart 8: S&P 500 Full History...")
 
 fig, axes = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Returns
 axes[0].plot(sp500_returns.index, sp500_returns.values, color=COLORS['blue'],
@@ -499,6 +515,8 @@ sp500_common = conditional_vol[(sp500_returns.index >= common_start) & (sp500_re
 btc_common = btc_vol[(btc_returns.index >= common_start) & (btc_returns.index <= common_end)]
 
 fig, ax = plt.subplots(figsize=(14, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 ax.plot(sp500_common.index, sp500_common.values, color=COLORS['blue'],
         linewidth=1, label='S&P 500', alpha=0.8)
@@ -552,6 +570,8 @@ res_e_t = model_e_t.fit(disp='off')
 models_compare['EGARCH-t'] = {'AIC': res_e_t.aic, 'BIC': res_e_t.bic, 'LL': res_e_t.loglikelihood}
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # AIC/BIC comparison
 models_names = list(models_compare.keys())

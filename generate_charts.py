@@ -35,6 +35,8 @@ btc_returns = btc['Close'].pct_change() * 100
 
 # Chart 1: Bitcoin returns showing volatility clustering
 fig, ax = plt.subplots(figsize=(10, 3.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(btc_returns.index, btc_returns.values, color=COLORS['blue'], linewidth=0.5)
 ax.axhline(y=0, color='black', linewidth=0.5, alpha=0.3)
 ax.set_title('Bitcoin Daily Returns: Volatility Clustering', fontweight='bold', fontsize=14)
@@ -72,6 +74,8 @@ for i in range(len(test_returns)):
 realized_vol = np.abs(test_returns).flatten()
 
 fig, ax = plt.subplots(figsize=(10, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.fill_between(test_dates, 0, realized_vol, color=COLORS['blue'], alpha=0.4, label='Realized |Returns|')
 ax.plot(test_dates, test_vol_forecast, color=COLORS['red'], linewidth=2, label='GARCH Rolling Forecast')
 ax.set_title('GARCH(1,1): Rolling One-Step-Ahead Volatility Forecast', fontweight='bold', fontsize=14)
@@ -94,6 +98,8 @@ sunspots = sm.datasets.sunspots.load_pandas().data
 sunspots = sunspots[sunspots['YEAR'] >= 1900].copy()
 
 fig, ax = plt.subplots(figsize=(10, 3.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(sunspots['YEAR'], sunspots['SUNACTIVITY'], color=COLORS['blue'], linewidth=1.2)
 ax.set_title('Yearly Sunspot Numbers: 11-Year Schwabe Cycle', fontweight='bold', fontsize=14)
 ax.set_xlabel('Year')
@@ -115,6 +121,8 @@ import pandas_datareader as pdr
 unemp = pdr.get_data_fred('UNRATE', start='2010-01-01', end='2025-01-15')
 
 fig, ax = plt.subplots(figsize=(10, 3.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(unemp.index, unemp['UNRATE'], color=COLORS['blue'], linewidth=1.5)
 ax.axvspan(pd.Timestamp('2020-03-01'), pd.Timestamp('2020-05-01'),
            alpha=0.3, color=COLORS['red'], label='COVID-19 Shock')
@@ -142,6 +150,8 @@ gdp['gdp_growth'] = gdp['GDPC1'].pct_change(4) * 100
 inflation['inflation'] = inflation['CPIAUCSL'].pct_change(12) * 100
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0, 0].plot(gdp.index, gdp['gdp_growth'], color=COLORS['blue'], linewidth=1)
 axes[0, 0].axhline(y=0, color='black', linewidth=0.5, alpha=0.3)
@@ -186,6 +196,8 @@ val_mae = [2.63, 2.63, 2.66]
 colors_bar = [COLORS['green'], COLORS['blue'], COLORS['blue']]
 
 fig, ax = plt.subplots(figsize=(8, 3.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 bars = ax.barh(models, val_mae, color=colors_bar, height=0.5)
 ax.set_xlabel('Validation MAE')
 ax.set_title('GARCH Model Comparison (Validation Set)', fontweight='bold', fontsize=14)
@@ -205,6 +217,8 @@ print("  - garch_comparison.pdf")
 print("Creating rolling vs multi-step illustration...")
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Multi-step (converges to flat line)
 t = np.arange(100)

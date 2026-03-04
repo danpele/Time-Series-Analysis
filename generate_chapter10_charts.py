@@ -174,6 +174,8 @@ def generate_bitcoin_overview():
     df = get_bitcoin_data()
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Prices (log scale)
     axes[0].plot(df['ds'], df['price'], color=BITCOIN_ORANGE, linewidth=1)
@@ -184,7 +186,7 @@ def generate_bitcoin_overview():
                     alpha=0.2, color=MAIN_BLUE, label='Crypto Winter')
     axes[0].set_title('Bitcoin Daily Prices (2019-2024) - Log Scale', fontweight='bold', fontsize=12)
     axes[0].set_ylabel('Price (USD)')
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False)
 
     # Returns
     axes[1].plot(df['ds'], df['returns'], color=MAIN_BLUE, linewidth=0.5, alpha=0.8)
@@ -223,6 +225,8 @@ def generate_bitcoin_acf_pacf():
     acf_squared = calc_acf(returns**2, 20)
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     lags = np.arange(21)
     conf_int = 1.96 / np.sqrt(len(returns))
 
@@ -289,6 +293,8 @@ def generate_bitcoin_garch():
     sigma = np.sqrt(sigma2)
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Returns with volatility bands
     axes[0].plot(df['ds'][1:], returns.values, color=MAIN_BLUE, linewidth=0.5, alpha=0.7, label='Returns')
@@ -297,7 +303,7 @@ def generate_bitcoin_garch():
     axes[0].axhline(y=0, color='black', linewidth=0.5, alpha=0.3)
     axes[0].set_title('Bitcoin Returns with GARCH(1,1) Volatility Bands', fontweight='bold', fontsize=12)
     axes[0].set_ylabel('Return (%)')
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3, frameon=False)
 
     # Conditional volatility
     axes[1].fill_between(df['ds'][1:], 0, sigma, color=BITCOIN_ORANGE, alpha=0.7)
@@ -324,6 +330,8 @@ def generate_sunspot_overview():
     df = get_sunspot_data()
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Full series
     axes[0].plot(df['ds'], df['y'], color=ORANGE, linewidth=1)
@@ -363,7 +371,7 @@ def generate_sunspot_overview():
     axes[1].set_title('ACF Shows ~11 Year Solar Cycle', fontweight='bold', fontsize=12)
     axes[1].set_xlabel('Lag (months)')
     axes[1].set_ylabel('ACF')
-    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=1)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=1, frameon=False)
 
     plt.tight_layout()
     save_chart(fig, 'ch10_sunspot_overview')
@@ -395,6 +403,8 @@ def generate_sunspot_decomposition():
     residual = y - trend - seasonal
 
     fig, axes = plt.subplots(4, 1, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     axes[0].plot(df['ds'], y, color=ORANGE, linewidth=1)
     axes[0].set_title('Original Series: Monthly Sunspot Numbers', fontweight='bold')
@@ -450,6 +460,8 @@ def generate_sunspot_sarima():
     forecast = np.maximum(forecast, 0)
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Forecast plot
     axes[0].plot(train_dates, train, color=MAIN_BLUE, linewidth=1, label='Training')
@@ -459,7 +471,7 @@ def generate_sunspot_sarima():
     axes[0].axvline(x=df['ds'].iloc[train_size], color='black', linestyle=':', alpha=0.5)
     axes[0].set_title('SARIMA Forecast for Sunspot Numbers', fontweight='bold', fontsize=12)
     axes[0].set_ylabel('Sunspot Number')
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=3, frameon=False)
 
     # Residual diagnostics
     residuals = test - forecast
@@ -491,6 +503,8 @@ def generate_unemployment_overview():
     df = get_unemployment_data()
 
     fig, ax = plt.subplots(figsize=(14, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     ax.plot(df['ds'], df['y'], color=MAIN_BLUE, linewidth=2)
     ax.fill_between(df['ds'], 0, df['y'], color=MAIN_BLUE, alpha=0.3)
@@ -524,7 +538,7 @@ def generate_unemployment_overview():
     ax.set_title('US Unemployment Rate (2015-2023): COVID-19 Structural Break', fontweight='bold', fontsize=12)
     ax.set_xlabel('Date')
     ax.set_ylabel('Unemployment Rate (%)')
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False)
     ax.set_ylim(0, 16)
 
     plt.tight_layout()
@@ -553,6 +567,8 @@ def generate_unemployment_prophet():
     fitted = trend + seasonal
 
     fig, axes = plt.subplots(3, 1, figsize=(14, 9))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Model fit
     axes[0].plot(df['ds'], y, color=MAIN_BLUE, linewidth=1.5, label='Actual')
@@ -561,7 +577,7 @@ def generate_unemployment_prophet():
     axes[0].axvline(x=pd.Timestamp('2020-04-01'), color=FOREST, linestyle=':', alpha=0.7)
     axes[0].set_title('Prophet Model with Changepoint Detection', fontweight='bold', fontsize=12)
     axes[0].set_ylabel('Unemployment Rate (%)')
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=False)
 
     # Trend with changepoint
     axes[1].plot(df['ds'], trend, color=FOREST, linewidth=2)
@@ -569,7 +585,7 @@ def generate_unemployment_prophet():
                     alpha=0.7, linewidth=2, label='Changepoint (COVID)')
     axes[1].set_title('Trend Component with Structural Break', fontweight='bold')
     axes[1].set_ylabel('Trend (%)')
-    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=1)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=1, frameon=False)
 
     # Seasonality (small effect)
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -604,6 +620,8 @@ def generate_unemployment_comparison():
     naive_forecast = np.full(len(test), y[train_size-1])  # Last value
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Forecasts
     axes[0].plot(df['ds'][:train_size], y[:train_size], color=GRAY, linewidth=1, alpha=0.5, label='Training')
@@ -614,7 +632,7 @@ def generate_unemployment_comparison():
     axes[0].axvline(x=df['ds'].iloc[train_size], color='black', linestyle=':', alpha=0.5)
     axes[0].set_title('Model Comparison: Unemployment Rate Forecast (2022-2023)', fontweight='bold', fontsize=12)
     axes[0].set_ylabel('Unemployment Rate (%)')
-    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=4)
+    axes[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=4, frameon=False)
 
     # Metrics comparison
     models = ['ARIMA', 'Prophet', 'Naive']
@@ -639,7 +657,7 @@ def generate_unemployment_comparison():
     axes[1].set_ylabel('Error')
     axes[1].set_xticks(x)
     axes[1].set_xticklabels(models)
-    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
+    axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False)
 
     # Add value labels
     for bar in bars1:
@@ -660,6 +678,8 @@ def generate_unemployment_comparison():
 def generate_model_selection_flowchart():
     """Model selection decision flowchart"""
     fig, ax = plt.subplots(figsize=(14, 9))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 14)
     ax.set_ylim(0, 9)
     ax.axis('off')

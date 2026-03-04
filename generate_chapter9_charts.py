@@ -138,6 +138,8 @@ def generate_multiple_seasonality_example():
     df = get_air_passengers()
 
     fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Full series
     axes[0].plot(df['ds'], df['y'], color=MAIN_BLUE, linewidth=1.5)
@@ -183,6 +185,8 @@ def generate_fourier_terms_visualization():
     true_pattern = monthly_pattern.values
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
     # K=1 (one harmonic)
@@ -259,6 +263,8 @@ def generate_tbats_decomposition():
     remainder = y - trend - seasonal
 
     fig, axes = plt.subplots(4, 1, figsize=(14, 10), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     axes[0].plot(dates, y, color=MAIN_BLUE, linewidth=1)
     axes[0].set_title('Air Passengers: Classical Decomposition (Additive)', fontweight='bold')
@@ -307,6 +313,8 @@ def generate_prophet_components():
     remainder = y - trend
 
     fig, axes = plt.subplots(4, 1, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Observed + Trend
     axes[0].plot(dates, y, color='gray', linewidth=0.5, alpha=0.7, label='Observed')
@@ -391,6 +399,8 @@ def generate_prophet_vs_tbats_comparison():
     tbats_forecast = tbats_trend + tbats_seasonal + np.random.normal(0, 10, n_test)
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Show last 2 years of training + forecast
     train_plot = train.tail(24)
@@ -444,6 +454,8 @@ def generate_electricity_demand_example():
     day_of_week = dates.dt.dayofweek
 
     fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Full series (2 weeks)
     axes[0].plot(dates[:24*14], demand[:24*14], color=MAIN_BLUE, linewidth=0.8)
@@ -503,6 +515,8 @@ def generate_retail_sales_example():
     sales = df['y'].values
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Full series
     axes[0, 0].plot(dates, sales, color=MAIN_BLUE, linewidth=1.5)
@@ -563,6 +577,8 @@ def generate_additive_vs_multiplicative():
 
     # Air passengers is clearly multiplicative
     fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Additive: Seasonal amplitude constant (simulated)
     np.random.seed(42)
@@ -635,6 +651,8 @@ def generate_changepoint_detection():
     changepoint_idx = np.argsort(z_scores)[-5:] + window
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Observed data with trend
     axes[0].plot(dates, y, color=MAIN_BLUE, linewidth=0.5, alpha=0.7, label='Observed')
@@ -674,6 +692,8 @@ def generate_changepoint_detection():
 def generate_model_selection_flowchart():
     """Create a decision flowchart for model selection"""
     fig, ax = plt.subplots(1, 1, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 14)
     ax.set_ylim(0, 10)
     ax.axis('off')

@@ -46,6 +46,8 @@ def plot_spurious_regression():
     y2 = np.cumsum(e2)
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Time series plot
     ax1 = axes[0]
@@ -100,6 +102,8 @@ def plot_cointegrated_series():
     spread = y1 - 1.25 * y2 + 6.25
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Time series
     ax1 = axes[0]
@@ -158,6 +162,8 @@ def plot_error_correction():
     spread = y1 - beta * y2
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Series
     ax1 = axes[0]
@@ -212,6 +218,8 @@ def plot_interest_rates():
     spread = long_rate - short_rate
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Interest rates
     ax1 = axes[0]
@@ -256,6 +264,8 @@ def plot_pairs_trading():
     spread = spread - spread.mean()
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Stock prices
     ax1 = axes[0]
@@ -306,6 +316,8 @@ def plot_ppp_example():
     real_rate = exchange_rate - price_diff
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Nominal series
     ax1 = axes[0]
@@ -351,6 +363,8 @@ def plot_vecm_irf():
         y2_resp[t] = y2_resp[t-1] + alpha2 * error
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # IRF
     ax1 = axes[0]
@@ -387,6 +401,8 @@ def plot_eigenvalues():
     eigenvalues = [0.35, 0.12, 0.03]
 
     fig, ax = plt.subplots(figsize=(8, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     x = range(1, 4)
     bars = ax.bar(x, eigenvalues, color=[IDA_RED, AMBER, MAIN_BLUE], width=0.6)

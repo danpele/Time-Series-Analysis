@@ -60,6 +60,8 @@ def plot_ar1_comparison():
     colors = [BLUE, GREEN, ORANGE, RED]
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     axes = axes.flatten()
 
     for idx, (phi, color) in enumerate(zip(phi_values, colors)):
@@ -95,6 +97,8 @@ def plot_ma1_comparison():
     colors = [BLUE, GREEN, ORANGE, RED]
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     axes = axes.flatten()
 
     for idx, (theta, color) in enumerate(zip(theta_values, colors)):
@@ -120,6 +124,8 @@ def plot_arma11():
     n = 300
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # ARMA(1,1) with phi=0.7, theta=0.4
     ar = np.array([1, -0.7])
@@ -173,6 +179,8 @@ def plot_acf_pacf_patterns():
     arma_data = ArmaProcess(ar_arma, ma_arma).generate_sample(nsample=n)
 
     fig, axes = plt.subplots(3, 2, figsize=(14, 12))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     datasets = [
         ('AR(2)', ar2_data, BLUE),
@@ -228,6 +236,8 @@ def plot_acf_pacf_patterns():
 def plot_unit_circle():
     """Visualize stationarity conditions with unit circle"""
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Stationary AR(2)
     phi1, phi2 = 0.5, 0.3
@@ -292,6 +302,8 @@ def plot_impulse_response():
     n_lags = 20
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # AR(1) with phi=0.8
     phi = 0.8
@@ -341,6 +353,8 @@ def plot_ar1_theoretical_acf():
     colors = [BLUE, GREEN, ORANGE, RED]
 
     fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     for phi, color in zip(phi_values, colors):
         acf_theoretical = phi ** lags
@@ -386,6 +400,8 @@ def plot_aic_bic_comparison():
     results_df = pd.DataFrame(results)
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # AIC heatmap
     aic_pivot = results_df.pivot(index='p', columns='q', values='AIC')
@@ -449,6 +465,8 @@ def plot_arma_forecast():
     conf_int = forecast.conf_int()
 
     fig, ax = plt.subplots(figsize=(14, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Historical data
     ax.plot(range(n), data, color=BLUE, linewidth=1, label='Observed')
@@ -500,6 +518,8 @@ def plot_residual_diagnostics_arma():
     resid = fitted.resid
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Residuals over time
     axes[0, 0].plot(resid, color=BLUE, linewidth=0.8)
@@ -554,6 +574,8 @@ def plot_lag_operator():
     x = np.sin(t * 0.3) + 0.5 * np.random.randn(n)
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Original series
     axes[0].plot(t, x, 'o-', color=BLUE, linewidth=1.5, markersize=5)
@@ -595,6 +617,8 @@ def plot_yule_walker():
         rho[k] = phi1 * rho[k-1] + phi2 * rho[k-2]
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # ACF plot
     axes[0].bar(range(len(rho)), rho, color=BLUE, width=0.5)
@@ -639,6 +663,8 @@ def plot_ar1_variance():
     variance = sigma_sq / (1 - phi_values**2)
 
     fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     ax.plot(phi_values, variance, color=BLUE, linewidth=2.5)
     ax.axvline(x=0, color='gray', linestyle='--', alpha=0.5)
@@ -672,6 +698,8 @@ def plot_ar1_variance():
 def plot_model_identification_table():
     """Create visual summary of model identification"""
     fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.axis('off')
 
     # Table data
@@ -719,6 +747,8 @@ def plot_box_jenkins_flowchart():
     from matplotlib.patches import FancyBboxPatch, Polygon
 
     fig, ax = plt.subplots(figsize=(11, 8))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 11)
     ax.set_ylim(0, 9)
     ax.axis('off')
@@ -818,6 +848,8 @@ def plot_ljung_box():
     resid_bad = fit_bad.resid
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Good model ACF
     acf_good = acf(resid_good, nlags=20)
@@ -872,6 +904,8 @@ def plot_ar2_stationarity_triangle():
     from matplotlib.patches import Polygon
 
     fig, ax = plt.subplots(figsize=(10, 10))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Stationarity triangle vertices
     # phi1 + phi2 < 1, phi2 - phi1 < 1, |phi2| < 1
@@ -921,6 +955,8 @@ def plot_arma_structure():
     from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle
 
     fig, ax = plt.subplots(figsize=(16, 8))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 16)
     ax.set_ylim(0, 8)
     ax.axis('off')
@@ -1003,6 +1039,8 @@ def plot_wold_representation():
     psi = [phi**k for k in range(n_psi)]
 
     fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Original AR(1) series
     axes[0].plot(data, color=BLUE, linewidth=1)
@@ -1044,6 +1082,8 @@ def plot_wold_representation():
 def plot_characteristic_roots():
     """Visualize characteristic polynomial roots"""
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     cases = [
         ('AR(1): $\\phi=0.8$', [1, -0.8], GREEN),
@@ -1095,6 +1135,8 @@ def plot_estimation_comparison():
     from matplotlib.patches import FancyBboxPatch
 
     fig, ax = plt.subplots(figsize=(14, 8))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.set_xlim(0, 14)
     ax.set_ylim(0, 10)
     ax.axis('off')
@@ -1165,6 +1207,8 @@ def plot_invertibility():
     n = 100
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Invertible MA(1)
     theta_inv = 0.6
@@ -1247,6 +1291,8 @@ def plot_arma_simulation_steps():
         x[t] = phi * x[t-1] + eps[t] + theta * eps[t-1]
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # White noise
     markerline, stemlines, baseline = axes[0, 0].stem(range(n), eps, basefmt='gray')
@@ -1296,6 +1342,8 @@ def plot_arma_simulation_steps():
 def plot_parsimony():
     """Illustrate parsimony principle in model selection"""
     fig, ax = plt.subplots(figsize=(12, 7))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Number of parameters
     n_params = np.arange(1, 11)
@@ -1423,6 +1471,8 @@ def plot_forecast_use_case():
     test_ci = test_forecast.conf_int()
 
     fig, ax = plt.subplots(figsize=(14, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Plot training data
     ax.plot(range(n_train), train, color=BLUE, linewidth=1.5, label='Training Data')
@@ -1486,6 +1536,8 @@ def plot_arma_rolling_forecast():
         data[t] = phi * data[t-1] + np.random.randn()
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Left panel: Fixed window rolling
     ax = axes[0]
@@ -1552,6 +1604,8 @@ def plot_arma_rolling_vs_multistep():
     test_len = 40
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Left: Rolling 1-step ahead
     ax = axes[0]
@@ -1630,6 +1684,8 @@ def plot_real_data_arma_forecast():
     train_end = 80
 
     fig, ax = plt.subplots(figsize=(12, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Training data
     ax.plot(range(train_end), data[:train_end], color=BLUE, linewidth=1.5, label='Training data')

@@ -73,6 +73,8 @@ hyp_decay = (lags + 1).astype(float) ** (2*d - 1)  # Hyperbolic decay
 hyp_decay = hyp_decay / hyp_decay[0]
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Short memory ACF
 axes[0].bar(lags, acf_short, color=COLORS['blue'], alpha=0.7, width=0.8, label='Empirical ACF')
@@ -99,8 +101,8 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), frameon=False)
 axes[1].set_xlim(-1, max_lag)
 
 plt.tight_layout()
-plt.savefig('charts/ch8_acf_comparison.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_acf_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_acf_comparison.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_acf_comparison.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_acf_comparison.pdf")
 
@@ -131,6 +133,8 @@ for i in range(n):
 persistent = np.cumsum(persistent) * 0.5
 
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].plot(mean_rev, color=COLORS['green'], linewidth=1.2)
 axes[0].axhline(y=0, color='red', linestyle='--', alpha=0.5)
@@ -147,8 +151,8 @@ axes[2].set_title('Persistent (H > 0.5)\nTrending', fontweight='bold', fontsize=
 axes[2].set_xlabel('Time')
 
 plt.tight_layout()
-plt.savefig('charts/ch8_hurst_interpretation.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_hurst_interpretation.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_hurst_interpretation.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_hurst_interpretation.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_hurst_interpretation.pdf")
 
@@ -176,6 +180,8 @@ acf_ret = acf(returns, nlags=max_lag, fft=True)
 acf_abs = acf(abs_returns, nlags=max_lag, fft=True)
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 8))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Returns series
 axes[0, 0].plot(returns, color=COLORS['blue'], linewidth=0.5, alpha=0.8)
@@ -209,8 +215,8 @@ axes[1, 1].set_ylabel('ACF')
 axes[1, 1].set_xlim(-1, max_lag)
 
 plt.tight_layout()
-plt.savefig('charts/ch8_volatility_long_memory.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_volatility_long_memory.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_volatility_long_memory.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_volatility_long_memory.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_volatility_long_memory.pdf")
 
@@ -235,6 +241,8 @@ lag2[:2] = np.nan
 rolling_mean = pd.Series(y).rolling(7).mean().values
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 8))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Original series
 axes[0, 0].plot(y, color=COLORS['blue'], linewidth=1.5, label='y_t')
@@ -273,8 +281,8 @@ for bar, val in zip(bars, feature_importance):
                     va='center', fontsize=10)
 
 plt.tight_layout()
-plt.savefig('charts/ch8_feature_engineering.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_feature_engineering.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_feature_engineering.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_feature_engineering.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_feature_engineering.pdf")
 
@@ -302,6 +310,8 @@ y_test = y[train_size:]
 y_pred = y_test + np.random.randn(len(y_test)) * 1.5  # Add some prediction error
 
 fig, ax = plt.subplots(figsize=(14, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Training data
 ax.plot(range(train_size), y_train, color=COLORS['blue'], linewidth=1.2, label='Training Data')
@@ -323,8 +333,8 @@ ax.set_ylabel('Value')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch8_rf_prediction.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_rf_prediction.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_rf_prediction.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_rf_prediction.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_rf_prediction.pdf")
 
@@ -334,6 +344,8 @@ print("Created: ch8_rf_prediction.pdf")
 print("Generating Chart 6: Time Series CV...")
 
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 folds = 5
 total_len = 10
@@ -367,8 +379,8 @@ ax.set_yticks([])
 ax.spines['left'].set_visible(False)
 
 plt.tight_layout()
-plt.savefig('charts/ch8_timeseries_cv.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_timeseries_cv.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_timeseries_cv.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_timeseries_cv.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_timeseries_cv.pdf")
 
@@ -378,6 +390,8 @@ print("Created: ch8_timeseries_cv.pdf")
 print("Generating Chart 7: LSTM Architecture...")
 
 fig, ax = plt.subplots(figsize=(14, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.set_xlim(0, 14)
 ax.set_ylim(0, 8)
 ax.axis('off')
@@ -435,8 +449,8 @@ ax.add_patch(FancyBboxPatch((3, 0.3), 8, 0.8, boxstyle="round,pad=0.05",
 ax.text(7, 0.7, 'Key: Gates control information flow → Solves vanishing gradient',
         ha='center', fontsize=10, style='italic')
 
-plt.savefig('charts/ch8_lstm_architecture.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_lstm_architecture.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_lstm_architecture.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_lstm_architecture.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_lstm_architecture.pdf")
 
@@ -450,6 +464,8 @@ rmse = [2.45, 2.32, 2.18, 2.25]
 training_time = [1, 2, 15, 120]  # relative units
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # RMSE comparison
 colors_bar = [COLORS['blue'], COLORS['green'], COLORS['orange'], COLORS['red']]
@@ -474,8 +490,8 @@ for bar, val in zip(bars2, training_time):
                  ha='center', fontsize=11, fontweight='bold')
 
 plt.tight_layout()
-plt.savefig('charts/ch8_model_comparison.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_model_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_model_comparison.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_model_comparison.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_model_comparison.pdf")
 
@@ -485,6 +501,8 @@ print("Created: ch8_model_comparison.pdf")
 print("Generating Chart 9: ARFIMA d Parameter...")
 
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 d_values = [0, 0.2, 0.4, 0.49]
 colors_d = [COLORS['blue'], COLORS['green'], COLORS['orange'], COLORS['red']]
@@ -520,8 +538,8 @@ ax.annotate('Slow decay\n(Long memory)', xy=(20, 0.15), xytext=(22, 0.35),
             fontsize=9, color=COLORS['red'])
 
 plt.tight_layout()
-plt.savefig('charts/ch8_arfima_d_effect.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('charts/ch8_arfima_d_effect.png', dpi=150, bbox_inches='tight')
+plt.savefig('charts/ch8_arfima_d_effect.pdf', dpi=150, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch8_arfima_d_effect.png', dpi=150, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch8_arfima_d_effect.pdf")
 

@@ -41,6 +41,8 @@ print("Chapter 9: Prophet & TBATS Quiz Charts")
 def ch9_quiz1_multiple_seasonality():
     """Illustrate why SARIMA cannot handle multiple seasonalities"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     n = 168 * 2  # Two weeks of hourly data
@@ -103,6 +105,8 @@ ch9_quiz1_multiple_seasonality()
 def ch9_quiz2_tbats_components():
     """Visualize TBATS components"""
     fig, ax = plt.subplots(figsize=(9, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.axis('off')
 
     # TBATS acronym explanation
@@ -144,6 +148,8 @@ ch9_quiz2_tbats_components()
 def ch9_quiz3_fourier_harmonics():
     """Show effect of number of harmonics on seasonal pattern"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     t = np.linspace(0, 2, 200)  # Two periods
 
@@ -181,6 +187,8 @@ ch9_quiz3_fourier_harmonics()
 def ch9_quiz4_prophet_decomposition():
     """Illustrate Prophet's additive decomposition"""
     fig, axes = plt.subplots(4, 1, figsize=(10, 8))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     n = 365 * 2  # 2 years of daily data
@@ -232,6 +240,8 @@ ch9_quiz4_prophet_decomposition()
 def ch9_quiz5_prophet_vs_tbats():
     """Comparison table visualization"""
     fig, ax = plt.subplots(figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.axis('off')
 
     # Comparison data
@@ -279,6 +289,8 @@ ch9_quiz5_prophet_vs_tbats()
 def ch9_quiz6_seasonality_mode():
     """Show difference between additive and multiplicative seasonality"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     t = np.arange(120)
@@ -319,6 +331,8 @@ ch9_quiz6_seasonality_mode()
 def ch9_quiz7_changepoints():
     """Illustrate Prophet's automatic changepoint detection"""
     fig, ax = plt.subplots(figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     np.random.seed(42)
     n = 200
@@ -375,6 +389,8 @@ ch9_quiz7_changepoints()
 def ch9_quiz8_model_decision():
     """Decision flowchart for model selection"""
     fig, ax = plt.subplots(figsize=(12, 8))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
     ax.axis('off')
     ax.set_xlim(0, 12)
     ax.set_ylim(0, 10)
@@ -458,6 +474,8 @@ ch9_quiz8_model_decision()
 def ch9_quiz9_prophet_uncertainty():
     """Show Prophet's uncertainty intervals"""
     fig, ax = plt.subplots(figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     np.random.seed(42)
 
@@ -508,6 +526,8 @@ ch9_quiz9_prophet_uncertainty()
 def ch9_quiz10_energy_example():
     """Example: Energy demand with multiple seasonalities"""
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
 

@@ -36,6 +36,8 @@ print("Chapter 1: Introduction Quiz Charts")
 def ch1_quiz1_components():
     np.random.seed(42)
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     t = np.arange(120)
 
@@ -73,6 +75,8 @@ ch1_quiz1_components()
 def ch1_quiz2_stationarity():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
 
@@ -107,6 +111,8 @@ ch1_quiz2_stationarity()
 # Quiz 3: ACF Patterns
 def ch1_quiz3_acf():
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(0, 16)
     ci = 1.96 / np.sqrt(100)
@@ -169,6 +175,8 @@ ch1_quiz3_acf()
 def ch1_quiz4_wn_rw():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 100
 
@@ -200,6 +208,8 @@ ch1_quiz4_wn_rw()
 def ch1_quiz5_forecast_errors():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 20
     t = np.arange(n)
@@ -243,6 +253,8 @@ ch1_quiz5_forecast_errors()
 def ch1_quiz6_decomposition():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     t = np.arange(48)
     trend = 10 + 0.2 * t

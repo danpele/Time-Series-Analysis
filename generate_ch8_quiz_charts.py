@@ -40,6 +40,8 @@ print("Chapter 8: Modern Extensions Quiz Charts")
 def ch8_quiz1_long_memory():
     """Compare ACF decay: short memory vs long memory"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(0, 31)
 
@@ -82,6 +84,8 @@ ch8_quiz1_long_memory()
 def ch8_quiz2_arfima_d():
     """Show effect of different d values on ACF"""
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     lags = np.arange(0, 26)
 
@@ -120,6 +124,8 @@ def ch8_quiz3_hurst():
     """Visualize Hurst exponent and its interpretation"""
     np.random.seed(42)
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 200
 
@@ -173,6 +179,8 @@ ch8_quiz3_hurst()
 def ch8_quiz4_rf_features():
     """Visualize typical feature importance for time series RF"""
     fig, ax = plt.subplots(figsize=(8, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     features = ['lag_1', 'lag_2', 'rolling_std_5', 'rolling_mean_5',
                 'lag_3', 'lag_5', 'dayofweek', 'month', 'lag_10', 'rolling_mean_20']
@@ -215,6 +223,8 @@ ch8_quiz4_rf_features()
 def ch8_quiz5_cv_comparison():
     """Illustrate why standard k-fold is wrong for time series"""
     fig, axes = plt.subplots(2, 1, figsize=(10, 5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n_samples = 20
     n_folds = 5
@@ -291,6 +301,8 @@ ch8_quiz5_cv_comparison()
 def ch8_quiz6_lstm_advantage():
     """Illustrate LSTM's advantage over standard RNN"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # RNN gradient flow
     ax = axes[0]
@@ -335,6 +347,8 @@ ch8_quiz6_lstm_advantage()
 def ch8_quiz7_model_selection():
     """Visualization of model selection criteria"""
     fig, ax = plt.subplots(figsize=(9, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     models = ['ARIMA', 'ARFIMA', 'Random\nForest', 'LSTM']
 
@@ -375,6 +389,8 @@ ch8_quiz7_model_selection()
 def ch8_quiz8_data_leakage():
     """Illustrate data leakage in time series feature engineering"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
     n = 15
@@ -437,6 +453,8 @@ ch8_quiz8_data_leakage()
 def ch8_quiz9_complexity_data():
     """Show relationship between model complexity and required data"""
     fig, ax = plt.subplots(figsize=(8, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     models = ['ARIMA\n(~5 params)', 'ARFIMA\n(~6 params)', 'Random Forest\n(~1000 params)',
               'LSTM\n(~10,000+ params)']
@@ -474,6 +492,8 @@ ch8_quiz9_complexity_data()
 def ch8_quiz10_metrics():
     """Compare RMSE, MAE, and MAPE sensitivity"""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     np.random.seed(42)
 

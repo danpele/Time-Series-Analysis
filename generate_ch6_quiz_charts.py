@@ -40,6 +40,8 @@ print("Chapter 6: Cointegration & VECM Quiz Charts")
 def ch6_quiz1_cointegration():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     # Common stochastic trend
@@ -84,6 +86,8 @@ ch6_quiz1_cointegration()
 def ch6_quiz2_spurious():
     np.random.seed(123)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 100
     # Two INDEPENDENT random walks
@@ -121,6 +125,8 @@ ch6_quiz2_spurious()
 # Quiz 4: Johansen test - multiple cointegrating vectors
 def ch6_quiz4_johansen():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Eigenvalues visualization
     eigenvalues = [0.45, 0.18, 0.05]
@@ -172,6 +178,8 @@ ch6_quiz4_johansen()
 # Quiz 6: Adjustment coefficients
 def ch6_quiz6_adjustment():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     np.random.seed(42)
 
     n = 100
@@ -227,6 +235,8 @@ ch6_quiz6_adjustment()
 # Engle-Granger critical values visualization
 def ch6_quiz3_eg_critical():
     fig, ax = plt.subplots(figsize=(8, 4))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Critical values
     cv_1 = -3.90
@@ -270,6 +280,8 @@ ch6_quiz3_eg_critical()
 # VECM impulse response
 def ch6_quiz_vecm_irf():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Simulate VECM IRF
     h = 20
@@ -312,6 +324,8 @@ ch6_quiz_vecm_irf()
 # Weak exogeneity visualization
 def ch6_quiz_weak_exog():
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
     np.random.seed(42)
 
     n = 100
@@ -362,6 +376,8 @@ ch6_quiz_weak_exog()
 # Trace test sequential procedure
 def ch6_quiz_trace_test():
     fig, ax = plt.subplots(figsize=(9, 5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     # Test statistics and critical values for k=3 variables
     r_values = [0, 1, 2]

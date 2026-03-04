@@ -48,6 +48,8 @@ print(f"Using: {data_source}")
 
 # Chart 1: Non-stationary time series (GDP in levels)
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(gdp_data.index, gdp_data.values, color=BLUE, linewidth=1.5)
 ax.set_title('US Real GDP (Quarterly, 1990-2024): A Non-Stationary Time Series', fontweight='bold', fontsize=14)
 ax.set_xlabel('Date')
@@ -55,8 +57,8 @@ ax.set_ylabel('Billions of 2017 Dollars')
 ax.text(0.02, 0.98, 'Source: FRED (GDPC1)', transform=ax.transAxes, fontsize=9,
         verticalalignment='top', style='italic', color='gray')
 plt.tight_layout()
-plt.savefig('charts/ch3_gdp_levels.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_gdp_levels.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_gdp_levels.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_gdp_levels.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_gdp_levels.pdf")
 
@@ -64,6 +66,8 @@ print("Created: ch3_gdp_levels.pdf")
 gdp_growth = np.log(gdp_data).diff().dropna() * 100  # Percentage growth
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Levels
 axes[0].plot(gdp_data.index, gdp_data.values, color=BLUE, linewidth=1.5)
@@ -82,13 +86,15 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
-plt.savefig('charts/ch3_differencing.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_differencing.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_differencing.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_differencing.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_differencing.pdf")
 
 # Chart 3: ACF/PACF comparison (levels vs differenced)
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # ACF of levels
 acf_levels = acf(gdp_data.dropna(), nlags=20)
@@ -131,8 +137,8 @@ axes[1, 1].set_xlabel('Lag')
 axes[1, 1].set_ylabel('PACF')
 
 plt.tight_layout()
-plt.savefig('charts/ch3_acf_pacf.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_acf_pacf.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_acf_pacf.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_acf_pacf.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_acf_pacf.pdf")
 
@@ -153,6 +159,8 @@ forecast_mean = np.exp(forecast.predicted_mean)
 conf_int = np.exp(forecast.conf_int())
 
 fig, ax = plt.subplots(figsize=(14, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Training data (last 40 obs)
 ax.plot(train.index[-40:], train.values[-40:], color=BLUE, linewidth=1.5, label='Training Data')
@@ -175,8 +183,8 @@ ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.14), ncol=4, frameon=False
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.16)
-plt.savefig('charts/ch3_arima_forecast.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_arima_forecast.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_arima_forecast.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_arima_forecast.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_arima_forecast.pdf")
 
@@ -185,6 +193,8 @@ adf_levels = adfuller(gdp_data.dropna(), autolag='AIC')
 adf_diff = adfuller(gdp_growth.dropna(), autolag='AIC')
 
 fig, ax = plt.subplots(figsize=(10, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Create bar chart for ADF statistics vs critical values
 categories = ['GDP Levels', 'GDP Growth\n(Differenced)', '1% Critical', '5% Critical', '10% Critical']
@@ -212,8 +222,8 @@ ax.text(0.02, 0.92, f'GDP Growth: p-value = {adf_diff[1]:.4f} (Stationary)',
         transform=ax.transAxes, fontsize=10, verticalalignment='top', color=GREEN)
 
 plt.tight_layout()
-plt.savefig('charts/ch3_adf_test.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_adf_test.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_adf_test.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_adf_test.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_adf_test.pdf")
 
@@ -221,6 +231,8 @@ print("Created: ch3_adf_test.pdf")
 resid = fitted.resid
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Residuals over time
 axes[0, 0].plot(resid.index, resid.values, color=BLUE, linewidth=0.8)
@@ -262,8 +274,8 @@ axes[1, 1].set_xlabel('Theoretical Quantiles')
 axes[1, 1].set_ylabel('Sample Quantiles')
 
 plt.tight_layout()
-plt.savefig('charts/ch3_diagnostics.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_diagnostics.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_diagnostics.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_diagnostics.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_diagnostics.pdf")
 
@@ -271,6 +283,8 @@ print("Created: ch3_diagnostics.pdf")
 np.random.seed(123)
 n_sim = 200
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Simulate multiple random walks
 for i in range(5):
@@ -290,8 +304,8 @@ axes[1].set_xlabel('Time')
 axes[1].set_ylabel('$Y_t$')
 
 plt.tight_layout()
-plt.savefig('charts/ch3_random_walk.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_random_walk.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_random_walk.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_random_walk.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_random_walk.pdf")
 
@@ -301,6 +315,8 @@ n_sim = 150
 t = np.arange(n_sim)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Deterministic trend
 det_trend = 2 + 0.1 * t + np.random.normal(0, 2, n_sim)
@@ -321,8 +337,8 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), frameon=False)
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.20)
-plt.savefig('charts/ch3_trend_comparison.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_trend_comparison.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_trend_comparison.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_trend_comparison.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_trend_comparison.pdf")
 
@@ -339,6 +355,8 @@ variances = np.var(all_paths, axis=0)
 theoretical_var = np.arange(1, n_time + 1)  # Var(Y_t) = t * sigma^2
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Show fan chart of paths
 percentiles = [5, 25, 50, 75, 95]
@@ -363,8 +381,8 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2, frameon=
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.20)
-plt.savefig('charts/ch3_variance_growth.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_variance_growth.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_variance_growth.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_variance_growth.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_variance_growth.pdf")
 
@@ -378,6 +396,8 @@ rw = np.cumsum(np.random.normal(0, 1, n_sim))
 wn = np.random.normal(0, 1, n_sim)
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Random walk series
 axes[0, 0].plot(rw, color=BLUE, linewidth=1)
@@ -413,8 +433,8 @@ axes[1, 1].set_xlabel('Lag')
 axes[1, 1].set_ylabel('ACF')
 
 plt.tight_layout()
-plt.savefig('charts/ch3_acf_nonstationary.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_acf_nonstationary.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_acf_nonstationary.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_acf_nonstationary.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_acf_nonstationary.pdf")
 
@@ -447,6 +467,8 @@ for t in range(window_size, n_total - 1):
     actuals.append(y[t])
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Left: Show rolling window concept
 t_show = list(range(n_total))
@@ -482,8 +504,8 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.18)
-plt.savefig('charts/ch3_rolling_forecast.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch3_rolling_forecast.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch3_rolling_forecast.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch3_rolling_forecast.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch3_rolling_forecast.pdf")
 

@@ -49,13 +49,15 @@ print(f"Airline passengers data: {len(passengers)} observations")
 
 # Chart 1: Original time series
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(passengers.index, passengers.values, color=BLUE, linewidth=1.5)
 ax.set_title('International Airline Passengers (1949-1960)', fontweight='bold', fontsize=14)
 ax.set_xlabel('Date')
 ax.set_ylabel('Passengers (thousands)')
 plt.tight_layout()
-plt.savefig('charts/ch4_airline_data.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_airline_data.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_airline_data.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_airline_data.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_airline_data.pdf")
 
@@ -63,6 +65,8 @@ print("Created: ch4_airline_data.pdf")
 decomposition = seasonal_decompose(passengers, model='multiplicative', period=12)
 
 fig, axes = plt.subplots(4, 1, figsize=(12, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].plot(passengers.index, passengers.values, color=BLUE, linewidth=1)
 axes[0].set_title('Original Series', fontweight='bold')
@@ -82,8 +86,8 @@ axes[3].set_ylabel('Residual')
 axes[3].set_xlabel('Date')
 
 plt.tight_layout()
-plt.savefig('charts/ch4_decomposition.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_decomposition.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_decomposition.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_decomposition.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_decomposition.pdf")
 
@@ -93,6 +97,8 @@ log_passengers = np.log(passengers)
 diff_data = log_passengers.diff().diff(12).dropna()
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # ACF
 acf_vals = acf(diff_data, nlags=36)
@@ -122,8 +128,8 @@ axes[1].set_xlabel('Lag')
 axes[1].set_ylabel('PACF')
 
 plt.tight_layout()
-plt.savefig('charts/ch4_acf_pacf.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_acf_pacf.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_acf_pacf.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_acf_pacf.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_acf_pacf.pdf")
 
@@ -141,6 +147,8 @@ forecast_mean = forecast.predicted_mean
 conf_int = forecast.conf_int()
 
 fig, ax = plt.subplots(figsize=(14, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Training data (last 48 obs)
 ax.plot(train.index[-48:], np.exp(train.values[-48:]), color=BLUE, linewidth=1.5, label='Training Data')
@@ -162,8 +170,8 @@ ax.set_ylabel('Passengers (thousands)')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=4, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch4_sarima_forecast.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_sarima_forecast.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_sarima_forecast.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_sarima_forecast.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_sarima_forecast.pdf")
 
@@ -172,6 +180,8 @@ print("Created: ch4_sarima_forecast.pdf")
 resid = fitted.resid[13:]
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Residuals over time
 axes[0, 0].plot(resid.index, resid.values, color=BLUE, linewidth=0.8)
@@ -216,13 +226,15 @@ axes[1, 1].set_xlabel('Theoretical Quantiles')
 axes[1, 1].set_ylabel('Sample Quantiles')
 
 plt.tight_layout()
-plt.savefig('charts/ch4_diagnostics.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_diagnostics.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_diagnostics.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_diagnostics.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_diagnostics.pdf")
 
 # Chart 6: ACF of original data (showing seasonal patterns)
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 acf_orig = acf(passengers, nlags=48)
 axes[0].bar(range(len(acf_orig)), acf_orig, color=BLUE, width=0.4)
@@ -255,13 +267,15 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=
 axes[1].set_xticks(seasonal_lags[:len([x for x in seasonal_lags if x < len(acf_seasonal)])])
 
 plt.tight_layout()
-plt.savefig('charts/ch4_acf_seasonality.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_acf_seasonality.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_acf_seasonality.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_acf_seasonality.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_acf_seasonality.pdf")
 
 # Chart 7: Seasonal subseries plot
 fig, ax = plt.subplots(figsize=(14, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 colors_months = plt.cm.tab10(np.linspace(0, 1, 12))
@@ -282,13 +296,15 @@ ax.set_ylabel('Passengers (thousands)')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=6, fontsize=8, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch4_seasonal_subseries.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_seasonal_subseries.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_seasonal_subseries.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_seasonal_subseries.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_seasonal_subseries.pdf")
 
 # Chart 8: Seasonal box plot
 fig, ax = plt.subplots(figsize=(12, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 month_data = [passengers[passengers.index.month == m].values for m in range(1, 13)]
 bp = ax.boxplot(month_data, labels=months, patch_artist=True)
@@ -309,13 +325,15 @@ ax.plot(range(1, 13), means, 'o--', color=RED, linewidth=2, markersize=8, label=
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch4_seasonal_boxplot.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_seasonal_boxplot.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_seasonal_boxplot.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_seasonal_boxplot.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_seasonal_boxplot.pdf")
 
 # Chart 9: Effect of seasonal differencing
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Original series
 axes[0, 0].plot(passengers.index, passengers.values, color=BLUE, linewidth=1)
@@ -345,13 +363,15 @@ axes[1, 1].set_xlabel('Date')
 axes[1, 1].axhline(y=0, color='gray', linestyle='--', alpha=0.5)
 
 plt.tight_layout()
-plt.savefig('charts/ch4_differencing_effect.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_differencing_effect.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_differencing_effect.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_differencing_effect.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_differencing_effect.pdf")
 
 # Chart 10: ACF comparison before and after differencing
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # ACF of original
 acf_orig = acf(passengers, nlags=36)
@@ -399,8 +419,8 @@ axes[1, 1].set_ylabel('ACF')
 axes[1, 1].set_ylim(-0.4, 0.6)
 
 plt.tight_layout()
-plt.savefig('charts/ch4_acf_differencing.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch4_acf_differencing.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch4_acf_differencing.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch4_acf_differencing.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch4_acf_differencing.pdf")
 

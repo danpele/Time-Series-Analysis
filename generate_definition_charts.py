@@ -41,6 +41,8 @@ print("\nChapter 1 Definition Charts:")
 def ch1_def_timeseries():
     np.random.seed(42)
     fig, ax = plt.subplots(figsize=(8, 3))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     n = 50
     t = np.arange(n)
@@ -65,6 +67,8 @@ ch1_def_timeseries()
 def ch1_def_stochastic():
     np.random.seed(42)
     fig, ax = plt.subplots(figsize=(8, 3.5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     n = 100
     t = np.arange(n)
@@ -91,6 +95,8 @@ ch1_def_stochastic()
 def ch1_def_strict_stationarity():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
 
@@ -130,6 +136,8 @@ ch1_def_strict_stationarity()
 def ch1_def_weak_stationarity():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
 
@@ -166,6 +174,8 @@ ch1_def_weak_stationarity()
 def ch1_def_white_noise():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 100
     wn = np.random.normal(0, 1, n)
@@ -203,6 +213,8 @@ ch1_def_white_noise()
 def ch1_def_lag_operator():
     np.random.seed(42)
     fig, ax = plt.subplots(figsize=(9, 3.5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     n = 20
     t = np.arange(n)
@@ -230,6 +242,8 @@ ch1_def_lag_operator()
 def ch1_def_moving_average():
     np.random.seed(42)
     fig, ax = plt.subplots(figsize=(9, 3.5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     n = 60
     t = np.arange(n)
@@ -257,6 +271,8 @@ ch1_def_moving_average()
 def ch1_def_stl():
     np.random.seed(42)
     fig, axes = plt.subplots(4, 1, figsize=(9, 6), sharex=True)
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 96
     t = np.arange(n)
@@ -291,6 +307,8 @@ ch1_def_stl()
 def ch1_def_ets():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 50
     t = np.arange(n)
@@ -338,6 +356,8 @@ print("\nChapter 2 Definition Charts:")
 def ch2_def_ar1():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
 
@@ -378,6 +398,8 @@ ch2_def_ar1()
 def ch2_def_arp():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n)
@@ -418,6 +440,8 @@ ch2_def_arp()
 def ch2_def_ma1():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n)
@@ -457,6 +481,8 @@ ch2_def_ma1()
 def ch2_def_maq():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n + 3)
@@ -500,6 +526,8 @@ ch2_def_maq()
 # 5. Invertibility
 def ch2_def_invertibility():
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     theta_values = np.linspace(-1.5, 1.5, 100)
 
@@ -545,6 +573,8 @@ ch2_def_invertibility()
 def ch2_def_arma():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n)
@@ -588,6 +618,8 @@ ch2_def_arma()
 def ch2_def_ljungbox():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 100
     lags = np.arange(1, 21)
@@ -641,6 +673,8 @@ print("\nChapter 3 Definition Charts:")
 def ch3_def_random_walk():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
 
@@ -683,6 +717,8 @@ ch3_def_random_walk()
 def ch3_def_random_walk_drift():
     np.random.seed(42)
     fig, ax = plt.subplots(figsize=(9, 3.5))
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n)
@@ -714,6 +750,8 @@ ch3_def_random_walk_drift()
 def ch3_def_integrated():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n)
@@ -753,6 +791,8 @@ ch3_def_integrated()
 def ch3_def_difference():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 100
 
@@ -783,6 +823,8 @@ ch3_def_difference()
 def ch3_def_arima():
     np.random.seed(42)
     fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 150
     eps = np.random.normal(0, 1, n)
@@ -844,6 +886,8 @@ ch3_def_arima()
 def ch3_def_adf():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     n = 100
 
@@ -885,6 +929,8 @@ print("\nChapter 4 Definition Charts:")
 def ch4_def_seasonality():
     np.random.seed(42)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
+    fig.patch.set_alpha(0)
+    for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
     # Monthly seasonality (s=12)
     t = np.arange(48)

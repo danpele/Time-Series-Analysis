@@ -10,9 +10,9 @@ warnings.filterwarnings('ignore')
 
 # Set Harvard-style professional settings
 plt.rcParams['figure.figsize'] = (12, 5)
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['savefig.facecolor'] = 'white'
+plt.rcParams['axes.facecolor'] = 'none'
+plt.rcParams['figure.facecolor'] = 'none'
+plt.rcParams['savefig.facecolor'] = 'none'
 plt.rcParams['savefig.dpi'] = 150
 plt.rcParams['savefig.bbox'] = 'tight'
 plt.rcParams['axes.grid'] = False
@@ -42,6 +42,8 @@ n = 120
 dates = pd.date_range(start='2015-01-01', periods=n, freq='M')
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Trend
 trend_data = 100 + 0.5 * np.arange(n) + np.random.normal(0, 5, n)
@@ -70,8 +72,8 @@ axes[1, 1].set_xlabel('Date')
 axes[1, 1].set_ylabel('Value')
 
 plt.tight_layout()
-plt.savefig('charts/ch1_ts_patterns.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_ts_patterns.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_ts_patterns.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_ts_patterns.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_ts_patterns.pdf")
 
@@ -84,6 +86,8 @@ noise = np.random.normal(0, 5, n)
 y = trend + seasonal + noise
 
 fig, axes = plt.subplots(4, 1, figsize=(12, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 dates = pd.date_range(start='2012-01-01', periods=n, freq='M')
 
 axes[0].plot(dates, y, color=BLUE, linewidth=1)
@@ -105,8 +109,8 @@ axes[3].set_xlabel('Date')
 axes[3].set_ylabel('$\\varepsilon_t$')
 
 plt.tight_layout()
-plt.savefig('charts/ch1_decomposition.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_decomposition.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_decomposition.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_decomposition.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_decomposition.pdf")
 
@@ -119,6 +123,8 @@ def moving_average(data, window):
     return pd.Series(data).rolling(window=window, center=True).mean()
 
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(t, y, color=BLUE, linewidth=1, alpha=0.5, label='Original')
 ax.plot(t, moving_average(y, 3), color=GREEN, linewidth=2, label='MA(3)')
 ax.plot(t, moving_average(y, 12), color=RED, linewidth=2, label='MA(12)')
@@ -128,8 +134,8 @@ ax.set_ylabel('Value')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch1_moving_average.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_moving_average.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_moving_average.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_moving_average.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_moving_average.pdf")
 
@@ -144,6 +150,8 @@ def exponential_smoothing(data, alpha):
     return np.array(result)
 
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(range(n), y, 'o-', color=BLUE, linewidth=1, markersize=4, alpha=0.6, label='Original')
 ax.plot(range(n), exponential_smoothing(y, 0.1), color=GREEN, linewidth=2, label='$\\alpha = 0.1$ (smooth)')
 ax.plot(range(n), exponential_smoothing(y, 0.5), color=ORANGE, linewidth=2, label='$\\alpha = 0.5$')
@@ -154,8 +162,8 @@ ax.set_ylabel('Value')
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=4, frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch1_exponential_smoothing.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_exponential_smoothing.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_exponential_smoothing.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_exponential_smoothing.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_exponential_smoothing.pdf")
 
@@ -163,6 +171,8 @@ print("Created: ch1_exponential_smoothing.pdf")
 n = 200
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # White noise
 wn = np.random.normal(0, 1, n)
@@ -214,14 +224,16 @@ axes[1, 1].set_xlabel('Lag')
 axes[1, 1].set_ylabel('ACF')
 
 plt.tight_layout()
-plt.savefig('charts/ch1_acf_examples.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_acf_examples.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_acf_examples.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_acf_examples.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_acf_examples.pdf")
 
 # Chart 6: Stationarity vs Non-Stationarity
 n = 150
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Stationary (constant mean and variance)
 stationary = np.random.normal(50, 5, n)
@@ -259,8 +271,8 @@ axes[1, 1].set_xlabel('Time')
 axes[1, 1].set_ylabel('$Y_t$')
 
 plt.tight_layout()
-plt.savefig('charts/ch1_stationarity.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_stationarity.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_stationarity.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_stationarity.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_stationarity.pdf")
 
@@ -271,6 +283,8 @@ actual = 50 + 0.2 * np.arange(n) + np.random.normal(0, 5, n)
 forecast = 50 + 0.2 * np.arange(n) + np.random.normal(0, 2, n)  # Slightly biased
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Time series plot
 axes[0].plot(actual, color=BLUE, linewidth=1.5, label='Actual')
@@ -292,8 +306,8 @@ axes[1].set_ylabel('Error')
 axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), frameon=False)
 
 plt.tight_layout()
-plt.savefig('charts/ch1_forecast_eval.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_forecast_eval.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_forecast_eval.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_forecast_eval.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_forecast_eval.pdf")
 
@@ -304,6 +318,8 @@ wn = np.random.normal(0, 1, n)
 rw = np.cumsum(wn)
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # White noise series
 axes[0, 0].plot(wn, color=BLUE, linewidth=0.8)
@@ -337,8 +353,8 @@ axes[1, 1].set_xlabel('Time')
 axes[1, 1].set_ylabel('$Y_t$')
 
 plt.tight_layout()
-plt.savefig('charts/ch1_wn_rw.pdf', dpi=300, bbox_inches='tight')
-plt.savefig('charts/ch1_wn_rw.png', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_wn_rw.pdf', dpi=300, bbox_inches='tight', transparent=True)
+plt.savefig('charts/ch1_wn_rw.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_wn_rw.pdf")
 
@@ -365,6 +381,8 @@ noise = np.random.normal(0, 2, T)
 y = trend_true + cycle + noise
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Effect of different lambdas
 lambdas = [10, 100, 1600, 50000]
@@ -394,7 +412,7 @@ axes[1].set_ylabel('Cycle Component')
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.2)
-plt.savefig('charts/ch1_hp_filter_lambda.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_hp_filter_lambda.pdf', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_hp_filter_lambda.pdf")
 
@@ -420,6 +438,8 @@ trend_hp = hp_filter(gdp, 1600)
 cycle_hp = (gdp - trend_hp) / trend_hp * 100  # Percentage deviation
 
 fig, axes = plt.subplots(2, 1, figsize=(12, 7), sharex=True)
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 dates = pd.date_range('1990-01-01', periods=T, freq='QS')
 
 # GDP and trend
@@ -448,7 +468,7 @@ axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, frameon=
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.12)
-plt.savefig('charts/ch1_hp_filter_cycle.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('charts/ch1_hp_filter_cycle.pdf', dpi=300, bbox_inches='tight', transparent=True)
 plt.close()
 print("Created: ch1_hp_filter_cycle.pdf")
 

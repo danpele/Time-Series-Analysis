@@ -182,6 +182,8 @@ print("=" * 70)
 print("\n[1/28] ch11_pretraining_scale")
 
 fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 models = ['Lag-Llama', 'Moirai', 'Chronos', 'TimesFM', 'TimeGPT']
 data_sizes = [0.352, 27, 84, 100, 100]  # billions of time points
 bar_colors = [IDA_RED, TEAL, PURPLE, AMBER, MAIN_BLUE]
@@ -224,6 +226,8 @@ attention = attention / attention.sum(axis=1, keepdims=True)
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5),
                          gridspec_kw={'width_ratios': [1, 1.2]})
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Left: the time series
 axes[0].plot(t, series, color=MAIN_BLUE, linewidth=1.2, marker='o', markersize=3)
@@ -263,6 +267,8 @@ pe[:, 0::2] = np.sin(position * div_term)
 pe[:, 1::2] = np.cos(position * div_term)
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Left: individual sine/cosine waves for selected dimensions
 dims_to_show = [0, 1, 4, 5, 16, 17, 32, 33]
@@ -295,6 +301,8 @@ save_fig('ch11_positional_encoding')
 print("[4/28] ch11_transformer_block")
 
 fig, ax = plt.subplots(figsize=(6, 10))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.set_xlim(0, 10)
 ax.set_ylim(0, 16)
 ax.axis('off')
@@ -352,6 +360,8 @@ save_fig('ch11_transformer_block')
 print("[5/28] ch11_foundation_paradigm")
 
 fig, ax = plt.subplots(figsize=(14, 4.5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.set_xlim(0, 15)
 ax.set_ylim(0, 5)
 ax.axis('off')
@@ -402,6 +412,8 @@ t = np.arange(T)
 series = 2.0 * np.sin(2 * np.pi * t / 12) + 0.5 * np.random.randn(T) + 5.0
 
 fig, axes = plt.subplots(2, 2, figsize=(13, 8))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # (a) Raw values
 axes[0, 0].plot(t, series, color=MAIN_BLUE, linewidth=1.0, marker='o', markersize=2)
@@ -482,6 +494,8 @@ t2 = np.arange(T2)
 series_patch = 3 * np.sin(2 * np.pi * t2 / 24) + np.random.randn(T2) * 0.5 + 10
 
 fig, axes = plt.subplots(2, 1, figsize=(13, 6), gridspec_kw={'height_ratios': [2, 1]})
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Top: original series with patch boundaries
 P = 16
@@ -534,6 +548,8 @@ np.random.seed(22)
 raw = np.array([10.5, 12.3, 8.7, 15.1, 11.8, 9.2, 14.6, 13.0])
 
 fig, ax = plt.subplots(figsize=(14, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.set_xlim(0, 16)
 ax.set_ylim(0, 6)
 ax.axis('off')
@@ -584,6 +600,8 @@ save_fig('ch11_chronos_tokenization')
 print("[9/28] ch11_pretraining_objectives")
 
 fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 np.random.seed(33)
 seq = np.sin(np.linspace(0, 4 * np.pi, 20)) + 0.2 * np.random.randn(20)
@@ -643,6 +661,8 @@ save_fig('ch11_pretraining_objectives')
 print("[10/28] ch11_chronos_pipeline")
 
 fig, ax = plt.subplots(figsize=(15, 4))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.set_xlim(0, 18)
 ax.set_ylim(0, 5)
 ax.axis('off')
@@ -684,6 +704,8 @@ deepar_wql = [0.052, 0.078, 0.063, 0.069, 0.085, 0.055, 0.067]
 patchtst_wql = [0.048, 0.075, 0.058, 0.065, 0.080, 0.052, 0.063]
 
 fig, ax = plt.subplots(figsize=(12, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 x = np.arange(len(categories))
 w = 0.18
 
@@ -721,6 +743,8 @@ mase_monash = [1.00, 0.91, 0.85, 0.82, 0.79, 0.74]
 mase_darts = [1.00, 0.93, 0.88, 0.84, 0.81, 0.76]
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 x = np.arange(len(baselines))
 bar_colors_tfm = ['#AAAAAA', '#888888', AMBER, TEAL, ACCENT_BLUE, MAIN_BLUE]
 
@@ -827,6 +851,8 @@ loss_tokens = 2.0 * (tokens / 1e8) ** (-0.06) + baseline + 0.02 * np.random.rand
 loss_tokens = np.maximum(loss_tokens, baseline)
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 axes[0].scatter(params, loss, color=MAIN_BLUE, s=20, alpha=0.7, zorder=3)
 # Fit line
@@ -965,6 +991,8 @@ finetuned_mase = [0.71, 0.62, 0.75]
 trained_mase = [0.68, 0.58, 0.72]
 
 fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 x = np.arange(len(datasets))
 w = 0.22
 
@@ -1001,6 +1029,8 @@ timesfm_acc = [0.95, 0.88, 0.81, 0.76, 0.74]
 moirai_acc = [0.90, 0.84, 0.77, 0.74, 0.72]
 
 fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 ax.plot(context_lengths, chronos_acc, color=PURPLE, linewidth=1.5, marker='o',
         markersize=5, label='Chronos')
@@ -1031,6 +1061,8 @@ save_fig('ch11_context_length_effect')
 print("[17/28] ch11_decision_flowchart")
 
 fig, ax = plt.subplots(figsize=(14, 8))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.set_xlim(0, 14)
 ax.set_ylim(0, 10)
 ax.axis('off')
@@ -1118,6 +1150,8 @@ bar_colors_all = ['#AAAAAA', '#888888', FOREST, AMBER,
                   PURPLE, TEAL, IDA_RED, ACCENT_BLUE, MAIN_BLUE]
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 x = np.arange(len(model_names_all))
 w = 0.55
 
@@ -1152,6 +1186,8 @@ save_fig('ch11_eurron_all_models')
 print("[19/28] ch11_eurron_predictions_detail")
 
 fig, ax = plt.subplots(figsize=(13, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 ax.plot(test_idx, test_vals, color='#333333', linewidth=1.5,
         label='Actual EUR/RON', zorder=5)
@@ -1195,6 +1231,8 @@ arima_energy = energy_test * 0.95 + np.random.normal(0, 2.0, len(energy_test))
 arima_energy = np.convolve(arima_energy, np.ones(4) / 4, mode='same')
 
 fig, ax = plt.subplots(figsize=(13, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 hours = np.arange(len(energy_test))
 
 ax.plot(hours, energy_test, color='#333333', linewidth=1.5, label='Actual Load',
@@ -1248,6 +1286,8 @@ timesfm_vol = np.convolve(timesfm_vol, np.ones(3) / 3, mode='same')
 timesfm_vol = np.maximum(timesfm_vol, 3)
 
 fig, ax = plt.subplots(figsize=(13, 5))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 ax.plot(vol_idx, vol_vals, color='#333333', linewidth=1.2, label='Realized Volatility',
         zorder=5)
@@ -1290,6 +1330,8 @@ bench_data = np.array([
 ])
 
 fig, ax = plt.subplots(figsize=(12, 7))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 im = ax.imshow(bench_data, cmap='RdYlGn_r', aspect='auto', vmin=0.60, vmax=1.05)
 
 ax.set_xticks(np.arange(len(datasets_bench)))
@@ -1337,6 +1379,8 @@ bubble_colors = ['#AAAAAA', '#888888', '#666666', AMBER, TEAL,
                  ACCENT_BLUE, PURPLE, PURPLE, AMBER, TEAL, MAIN_BLUE]
 
 fig, ax = plt.subplots(figsize=(12, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
 # Scale bubble sizes
 sizes = np.array(params_millions)
@@ -1387,6 +1431,8 @@ save_fig('ch11_accuracy_vs_cost')
 print("\n[24/28] ch11_quiz1_attention_vs_rnn")
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Left: RNN sequential processing
 axes[0].set_xlim(0, 12)
@@ -1476,6 +1522,8 @@ t_q = np.arange(T_q)
 series_q = 3 * np.sin(2 * np.pi * t_q / 8) + np.random.randn(T_q) * 0.3 + 10
 
 fig, ax = plt.subplots(figsize=(13, 6))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.plot(t_q, series_q, color=MAIN_BLUE, linewidth=1.2, marker='o', markersize=3,
         zorder=5)
 ax.set_xlabel('Time Step')
@@ -1516,6 +1564,8 @@ save_fig('ch11_quiz2_tokenization')
 print("[26/28] ch11_quiz3_zeroshot_decision")
 
 fig, ax = plt.subplots(figsize=(10, 7))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.set_xlim(0, 10)
 ax.set_ylim(0, 10)
 ax.axis('off')
@@ -1568,6 +1618,8 @@ t3 = np.arange(T3)
 series_p = 2 * np.sin(2 * np.pi * t3 / 16) + np.random.randn(T3) * 0.3 + 5
 
 fig, axes = plt.subplots(2, 1, figsize=(13, 7))
+fig.patch.set_alpha(0)
+for _a in np.array(axes).flatten(): _a.patch.set_alpha(0)
 
 # Top: Correct patching (non-overlapping, P=16)
 P = 16
@@ -1622,6 +1674,8 @@ save_fig('ch11_quiz4_patching')
 print("[28/28] ch11_quiz5_model_selection")
 
 fig, ax = plt.subplots(figsize=(14, 7))
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 ax.axis('off')
 
 # Table data
