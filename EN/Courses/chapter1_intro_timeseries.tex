@@ -798,29 +798,33 @@
 \end{frame}
 
 \begin{frame}{White noise vs random walk: comparison}
-    \vspace{-0.2cm}
-    \begin{center}
-        \includegraphics[width=0.75\textwidth, height=0.26\textheight, keepaspectratio]{ch1_wn_rw.pdf}
-    \end{center}
-    \vspace{-0.2cm}
-    \hfill\quantlet{TSA\_ch1\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch1/TSA_ch1_random_walk}
-    {\footnotesize
-    \begin{block}{White Noise}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Stationary; $\Var = \sigma^2$ (const.); ACF $= 0$, $h \neq 0$; no memory
-        \end{itemize}
-    \end{block}
-    \begin{alertblock}{Random Walk}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Non-stationary; $\Var = t\sigma^2$ (grows); ACF $\approx 1$ (slow); permanent shocks
-        \end{itemize}
-    \end{alertblock}
-    \begin{block}{Link}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item $\Delta X_t = \varepsilon_t$
-    \end{itemize}
-    \end{block}
-    }
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{center}
+        \renewcommand{\arraystretch}{1.25}
+        \begin{tabular}{l c c}
+            \hline
+            \textbf{Property} & \textbf{White Noise (WN)} & \textbf{Random Walk (RW)} \\
+            \hline
+            Model & $X_t = \varepsilon_t$ & $X_t = X_{t-1} + \varepsilon_t$ \\
+            Stationary? & \textcolor{Forest}{Yes} & \textcolor{Crimson}{No} \\
+            $\Var(X_t)$ & $\sigma^2$ (constant) & $t\sigma^2$ (grows linearly) \\
+            $\mathrm{ACF}(h),\; h \neq 0$ & $0$ & $\approx 1$ (slow decay) \\
+            Memory & None & Permanent (shocks persist) \\
+            Differencing & --- & $\Delta X_t = \varepsilon_t$ (yields WN) \\
+            \hline
+        \end{tabular}
+        \end{center}
+        \vspace{0.1cm}
+        \begin{block}{Link}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\Delta X_t = \varepsilon_t$ --- differencing a random walk produces white noise
+            \end{itemize}
+        \end{block}
+        }
+        \hfill\quantlet{TSA\_ch1\_random\_walk}{https://github.com/QuantLet/TSA/tree/main/TSA_ch1/TSA_ch1_random_walk}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Trend-stationary vs.\ difference-stationary}
@@ -1133,6 +1137,34 @@
         \end{exampleblock}
 \end{frame}
 
+\begin{frame}{Complete stationarity analysis protocol}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{block}{Step-by-step protocol}
+            \begin{enumerate}\setlength{\itemsep}{2pt}
+                \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Visualize}: plot series $+$ ACF/PACF $\Rightarrow$ first intuition (trend? seasonality?)
+                \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{ADF test}: $H_0$: unit root. Specify: constant only \textit{or} constant $+$ trend
+                \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{KPSS test}: $H_0$: stationary. Same specification as ADF
+                \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Decision}:
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item \textcolor{Forest}{Concordant}: ADF rejects $+$ KPSS fails to reject $\Rightarrow$ \textbf{stationary}
+                        \item \textcolor{Forest}{Concordant}: ADF fails to reject $+$ KPSS rejects $\Rightarrow$ \textbf{non-stationary}
+                        \item \textcolor{Crimson}{Divergent}: additional tests (PP, DF-GLS) or transformation
+                    \end{itemize}
+                \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Transform} (if non-stationary): differencing ($\Delta y_t$), log $+$ differencing, or detrending
+            \end{enumerate}
+        \end{block}
+        \vspace{0.1cm}
+        \begin{alertblock}{Rule of thumb}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Always} apply at least two tests with opposite $H_0$ to avoid false conclusions
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{The Phillips-Perron (PP) Test}
     \begin{cminipage}{0.95\textwidth}
         \small
@@ -1172,6 +1204,35 @@
                 }
             \end{column}
         \end{columns}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{The DF-GLS Test (Elliott, Rothenberg, Stock 1996)}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.3cm}
+        {\footnotesize
+        \begin{defn}[DF-GLS --- Dickey-Fuller with GLS detrending]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Principle}: removes deterministic component via \textbf{GLS} \textit{before} applying ADF
+                \item \textbf{Step 1}: GLS-detrended series: $\tilde{y}_t = y_t - \hat{\beta}_0 - \hat{\beta}_1 t$, with $\hat{\beta}$ estimated via quasi-differencing ($\bar{\alpha} = 1 - c/T$)
+                \item \textbf{Step 2}: ADF on $\tilde{y}_t$: \ $\Delta \tilde{y}_t = \gamma\, \tilde{y}_{t-1} + \sum_{j=1}^{p} \phi_j \Delta \tilde{y}_{t-j} + e_t$
+                \item $H_0$: unit root ($\gamma = 0$) \ vs.\ $H_1$: stationary
+            \end{itemize}
+        \end{defn}
+        \vspace{-1mm}
+        \begin{block}{Advantages over ADF}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Higher power}: asymptotically most powerful unit root test in its class
+                \item \textbf{Reduced size distortion}: less sensitive to lag misspecification
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Python}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \texttt{from arch.unitroot import DFGLS} \quad $\rightarrow$ \quad \texttt{DFGLS(y, trend='ct').summary()}
+            \end{itemize}
+        \end{exampleblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -1305,6 +1366,33 @@
             \item The GDP series is \textbf{non-stationary} $\Rightarrow$ requires differencing
         \end{itemize}
     \end{alertblock}
+\end{frame}
+
+\begin{frame}{The Zivot-Andrews Test (1992): unit root with breakpoint}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{block}{Model C (shift in mean and trend)}
+            \[
+                y_t = \mu + \beta\, t + \gamma\, y_{t-1} + \theta\, DU_t(\tau) + \delta\, DT_t(\tau) + \sum_{j=1}^{k} \phi_j \Delta y_{t-j} + e_t
+            \]
+            \vspace{-3mm}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $DU_t(\tau) = \mathbf{1}(t > T_B)$, \quad $DT_t(\tau) = \mathbf{1}(t > T_B)\cdot(t - T_B)$
+                \item $H_0$: $\gamma = 1$ (unit root) \quad vs.\ \quad $H_1$: $|\gamma| < 1$ with breakpoint at $T_B$
+            \end{itemize}
+        \end{block}
+        }
+        \vspace{-2mm}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.35\textheight, keepaspectratio]{ch1_zivot_andrews.pdf}
+        \end{center}
+        \vspace{-2mm}
+        {\scriptsize
+        \texttt{from arch.unitroot import ZivotAndrews; ZivotAndrews(y, method='c').summary()}
+        }
+        \hfill\quantlet{TSA\_ch1\_case\_gdp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch1/TSA_ch1_case_gdp}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{Differencing: transformation to stationarity}
@@ -1716,6 +1804,43 @@
     \end{exampleblock}
     }
     \hfill\quantlet{TSA\_ch1\_operators}{https://github.com/QuantLet/TSA/tree/main/TSA_ch1/TSA_ch1_operators}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 7: PACF and model identification}
+    \begin{cminipage}{0.95\textwidth}
+        {\small
+        \begin{block}{Question}
+            What does a PACF that cuts off sharply after lag 2, while the ACF decays exponentially, indicate?
+        \end{block}
+        \vspace{0.3cm}
+        \begin{enumerate}
+            \item[\textcolor{MainBlue}{\textbf{(A)}}] An MA(2) process
+            \item[\textcolor{MainBlue}{\textbf{(B)}}] An AR(2) process
+            \item[\textcolor{MainBlue}{\textbf{(C)}}] An ARMA(2,2) process
+            \item[\textcolor{MainBlue}{\textbf{(D)}}] A random walk
+        \end{enumerate}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Question 7: Answer}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.98\textwidth, height=0.42\textheight, keepaspectratio]{ch1_acf_examples.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\small
+        \begin{exampleblock}{Answer: (B) --- AR(2) process}
+            \begin{itemize}\setlength{\itemsep}{2pt}
+                \item \textbf{Identification rule}: PACF with sharp cutoff at lag $p$ $+$ ACF with exponential decay $\Rightarrow$ AR($p$)
+                \item PACF $\neq 0$ at lags 1 and 2, then $\approx 0$ for $h > 2$ $\Rightarrow$ \textbf{AR(2)}
+                \item Comparison: MA($q$) has ACF cutoff at lag $q$ and PACF with exponential decay (reverse pattern)
+            \end{itemize}
+        \end{exampleblock}
+        }
+        \hfill\quantlet{TSA\_ch1\_acf\_patterns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch1/TSA_ch1_acf_patterns}
     \end{cminipage}
 \end{frame}
 
