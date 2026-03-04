@@ -21,7 +21,7 @@ def fetch_wb_gdp(country='RO', indicator='NY.GDP.MKTP.KD', per_page=50):
 try:
     years_arr, gdp = fetch_wb_gdp()
     # keep 1992-2023
-    mask = (years_arr >= 2010) & (years_arr <= 2023)
+    mask = (years_arr >= 1990) & (years_arr <= 2023)
     years_arr, gdp = years_arr[mask], gdp[mask]
     source_label = 'Source: World Bank (GDP constant 2015 USD, Romania)'
     print(f"Fetched {len(gdp)} annual obs ({years_arr[0]}-{years_arr[-1]})")
@@ -57,8 +57,8 @@ ax1.set_ylabel('Mld. USD (prețuri constante 2015)', fontsize=8)
 ax1.tick_params(labelsize=8)
 ax1.set_xlim(years_arr[0] - 1, years_arr[-1] + 1)
 ax1.annotate('Growing variance\n$\\Rightarrow I(1)$, non-stationary',
-             xy=(2016, gdp[list(years_arr).index(2016)]),
-             xytext=(2011, gdp[-1] * 0.85),
+             xy=(2010, gdp[list(years_arr).index(2010)]),
+             xytext=(1994, gdp[-1] * 0.85),
              fontsize=7.5, color=red, ha='center',
              arrowprops=dict(arrowstyle='->', color=red, lw=1.2),
              bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
@@ -79,8 +79,8 @@ ax2.set_ylabel('log PIB', fontsize=9)
 ax2.tick_params(labelsize=8)
 ax2.set_xlim(years_arr[0] - 1, years_arr[-1] + 1)
 ax2.annotate('Stabilized variance\n(linear trend remains)',
-             xy=(2016, log_gdp[list(years_arr).index(2016)]),
-             xytext=(2011, log_gdp[-1] * 0.985),
+             xy=(2010, log_gdp[list(years_arr).index(2010)]),
+             xytext=(1994, log_gdp[-1] * 0.985),
              fontsize=7.5, color=blue, ha='center',
              arrowprops=dict(arrowstyle='->', color=blue, lw=1.2),
              bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
