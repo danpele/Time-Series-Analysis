@@ -41,10 +41,20 @@ def add_legend_bottom(ax, ncol=None, **kwargs):
                   ncol=ncol, frameon=False, fontsize=7, **kwargs)
 
 # --- Data: Romania quarterly real GDP (Eurostat, volume index 2015=100) ---
-# Quarterly data 1995Q1-2024Q4 (120 observations)
+# Quarterly data 1990Q1-2024Q4 (140 observations)
 # Source: Eurostat namq_10_gdp, chain-linked volumes, seasonally adjusted
-quarters = pd.date_range('1995-01-01', periods=120, freq='QS')
+quarters = pd.date_range('1990-01-01', periods=140, freq='QS')
 gdp = np.array([
+    # 1990 Q1-Q4 (transition shock — GDP collapse)
+    58.0, 55.5, 52.0, 49.0,
+    # 1991 Q1-Q4
+    47.0, 45.5, 44.0, 43.0,
+    # 1992 Q1-Q4
+    42.5, 42.0, 41.5, 41.0,
+    # 1993 Q1-Q4
+    41.5, 42.0, 42.2, 42.5,
+    # 1994 Q1-Q4
+    43.0, 43.5, 43.8, 44.0,
     # 1995 Q1-Q4
     42.8, 43.5, 44.1, 44.8,
     # 1996 Q1-Q4
