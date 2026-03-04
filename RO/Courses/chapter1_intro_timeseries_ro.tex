@@ -877,16 +877,22 @@
     \begin{cminipage}{0.95\textwidth}
         \vspace{-0.2cm}
         {\footnotesize
-        \begin{block}{Zgomot alb}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Staționar, $\Var = \sigma^2$ (const.), ACF $= 0$ pentru $h \neq 0$, fără memorie
-            \end{itemize}
-        \end{block}
-        \begin{alertblock}{Mers aleator}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Nestaționar, $\Var = t\sigma^2$ (crește), ACF $\approx 1$ (lent), șocuri permanente
-            \end{itemize}
-        \end{alertblock}
+        \begin{center}
+        \renewcommand{\arraystretch}{1.25}
+        \begin{tabular}{l c c}
+            \hline
+            \textbf{Proprietate} & \textbf{Zgomot alb (WN)} & \textbf{Mers aleatoriu (RW)} \\
+            \hline
+            Model & $X_t = \varepsilon_t$ & $X_t = X_{t-1} + \varepsilon_t$ \\
+            Staționar? & \textcolor{Forest}{Da} & \textcolor{Crimson}{Nu} \\
+            $\Var(X_t)$ & $\sigma^2$ (constantă) & $t\sigma^2$ (crește liniar) \\
+            $\mathrm{ACF}(h),\; h \neq 0$ & $0$ & $\approx 1$ (descreștere lentă) \\
+            Memorie & Fără & Permanentă (șocuri persistă) \\
+            Diferențiere & --- & $\Delta X_t = \varepsilon_t$ (produce WN) \\
+            \hline
+        \end{tabular}
+        \end{center}
+        \vspace{0.1cm}
         \begin{block}{Legătură}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item $\Delta X_t = \varepsilon_t$ --- diferențierea mersului aleatoriu produce zgomot alb
@@ -1284,6 +1290,34 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Protocol complet de analiză a staționarității}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{block}{Protocol pas-cu-pas}
+            \begin{enumerate}\setlength{\itemsep}{2pt}
+                \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Vizualizare}: graficul seriei $+$ ACF/PACF $\Rightarrow$ primă intuiție (trend? sezonalitate?)
+                \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Test ADF}: $H_0$: rădăcină unitară. Specificați: doar constantă \textit{sau} constantă $+$ trend
+                \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Test KPSS}: $H_0$: staționar. Aceeași specificație ca la ADF
+                \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Decizie}:
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item \textcolor{Forest}{Concordant}: ADF respinge $+$ KPSS nu respinge $\Rightarrow$ \textbf{staționar}
+                        \item \textcolor{Forest}{Concordant}: ADF nu respinge $+$ KPSS respinge $\Rightarrow$ \textbf{nestaționar}
+                        \item \textcolor{Crimson}{Divergent}: teste suplimentare (PP, DF-GLS) sau transformare
+                    \end{itemize}
+                \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Transformare} (dacă nestaționar): diferențiere ($\Delta y_t$), log $+$ diferențiere, sau detrending
+            \end{enumerate}
+        \end{block}
+        \vspace{0.1cm}
+        \begin{alertblock}{Regulă practică}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Aplicați \textbf{întotdeauna} cel puțin două teste cu $H_0$ opuse pentru a evita concluzii false
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{Testul Phillips-Perron (PP)}
     \begin{cminipage}{0.95\textwidth}
         \small
@@ -1344,6 +1378,35 @@
                 \item \textbf{Bună practică}: rulați ambele teste și comparați rezultatele
             \end{itemize}
         \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Testul DF-GLS (Elliott, Rothenberg, Stock 1996)}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.3cm}
+        {\footnotesize
+        \begin{defn}[DF-GLS --- Dickey-Fuller cu detrending GLS]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Principiu}: elimină componenta deterministă prin \textbf{GLS} \textit{înainte} de testul ADF
+                \item \textbf{Pasul 1}: seria detrended GLS: $\tilde{y}_t = y_t - \hat{\beta}_0 - \hat{\beta}_1 t$, cu $\hat{\beta}$ estimați prin quasi-diferențiere ($\bar{\alpha} = 1 - c/T$)
+                \item \textbf{Pasul 2}: ADF pe $\tilde{y}_t$: \ $\Delta \tilde{y}_t = \gamma\, \tilde{y}_{t-1} + \sum_{j=1}^{p} \phi_j \Delta \tilde{y}_{t-j} + e_t$
+                \item $H_0$: rădăcină unitară ($\gamma = 0$) \ vs.\ $H_1$: staționar
+            \end{itemize}
+        \end{defn}
+        \vspace{-1mm}
+        \begin{block}{Avantaje față de ADF}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Putere superioară}: cel mai puternic test asimptotic din clasa testelor de rădăcină unitară
+                \item \textbf{Distorsiune de mărime redusă}: mai puțin sensibil la specificarea greșită a lag-urilor
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Python}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \texttt{from arch.unitroot import DFGLS} \quad $\rightarrow$ \quad \texttt{DFGLS(y, trend='ct').summary()}
+            \end{itemize}
+        \end{exampleblock}
         }
     \end{cminipage}
 \end{frame}
@@ -1489,6 +1552,33 @@
                 \item Seria PIB este \textbf{nestaționară} $\Rightarrow$ necesită diferențiere
             \end{itemize}
         \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Testul Zivot-Andrews: rădăcină unitară cu breakpoint structural}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.3cm}
+        {\scriptsize
+        \begin{defn}[Zivot-Andrews, 1992]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $H_0$: rădăcină unitară \textit{fără} breakpoint \ vs.\ $H_1$: staționară cu \textbf{un breakpoint} la $T_B$ (estimat endogen)
+                \item Modele: (A) shift medie, (B) shift trend, (C) ambele. Selectează $T_B$ care minimizează $t_\gamma$
+            \end{itemize}
+        \end{defn}
+        }
+        \vspace{-3mm}
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.38\textheight, keepaspectratio]{ch1_zivot_andrews.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\scriptsize
+        \begin{exampleblock}{Aplicație: PIB România}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Breakpoint detectat endogen $\Rightarrow$ posibilă schimbare structurală în dinamica PIB
+                \item \texttt{from arch.unitroot import ZivotAndrews} \quad $\rightarrow$ \quad \texttt{ZivotAndrews(y, method='c').summary()}
+            \end{itemize}
+        \end{exampleblock}
+        }
     \end{cminipage}
 \end{frame}
 
@@ -1912,6 +2002,42 @@
         \end{exampleblock}
         }
         \hfill\quantlet{TSA\_ch1\_operators}{https://github.com/QuantLet/TSA/tree/main/TSA_ch1/TSA_ch1_operators}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 7: PACF și identificarea modelului}
+    \begin{cminipage}{0.95\textwidth}
+        {\small
+        \begin{block}{Întrebare}
+            Ce indică un PACF care se anulează brusc după lag 2, în timp ce ACF descrește exponențial?
+        \end{block}
+        \vspace{0.3cm}
+        \begin{enumerate}
+            \item[\textcolor{MainBlue}{\textbf{(A)}}] Un proces MA(2)
+            \item[\textcolor{MainBlue}{\textbf{(B)}}] Un proces AR(2)
+            \item[\textcolor{MainBlue}{\textbf{(C)}}] Un proces ARMA(2,2)
+            \item[\textcolor{MainBlue}{\textbf{(D)}}] Un mers aleatoriu
+        \end{enumerate}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Întrebarea 7: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \begin{center}
+            \includegraphics[width=0.98\textwidth, height=0.42\textheight, keepaspectratio]{ch1_acf_examples.pdf}
+        \end{center}
+        \vspace{-3mm}
+        {\small
+        \begin{exampleblock}{Răspuns: (B) --- Proces AR(2)}
+            \begin{itemize}\setlength{\itemsep}{2pt}
+                \item \textbf{Regula de identificare}: PACF cu tăietură bruscă la lag $p$ $+$ ACF cu descreștere exponențială $\Rightarrow$ AR($p$)
+                \item PACF $\neq 0$ la lag 1 și 2, apoi $\approx 0$ pentru $h > 2$ $\Rightarrow$ \textbf{AR(2)}
+                \item Comparație: MA($q$) are ACF cu tăietură la lag $q$ și PACF cu descreștere exponențială (invers)
+            \end{itemize}
+        \end{exampleblock}
+        }
     \end{cminipage}
 \end{frame}
 
