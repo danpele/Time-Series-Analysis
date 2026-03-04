@@ -55,8 +55,8 @@ ax1.tick_params(labelsize=8)
 ax1.set_xlim(years[0]-0.5, years[-1]+0.5)
 # ADF/KPSS OUTSIDE — below x-axis via xlabel
 ax1.set_xlabel(
-    'ADF = $-1.82$  ($p = 0.36$)  — fail to reject $H_0$ (unit root)   |   '
-    'KPSS = $0.74^{**}$  ($p < 0.05$)  — reject $H_0$ (non-stationary)',
+    'ADF = $-2.42$  ($p = 0.37$)  — fail to reject $H_0$ (unit root)   |   '
+    'KPSS = $0.77^{**}$  ($p = 0.01$)  — reject $H_0$ (non-stationary)',
     fontsize=8, color=red, labelpad=6)
 
 # ── Panel 2: Δlog(PIB) = creștere economică ────────────────────────────────────
@@ -86,8 +86,8 @@ ax2.legend(loc='upper left', frameon=False, fontsize=8)
 
 # ADF/KPSS OUTSIDE — below x-axis
 ax2.set_xlabel(
-    'ADF = $-4.56^{***}$  ($p < 0.01$)  — reject $H_0$ (stationary)   |   '
-    'KPSS = $0.21$  ($p > 0.10$)  — fail to reject $H_0$ (stationary)',
+    'ADF = $-4.69^{***}$  ($p < 0.001$)  — reject $H_0$ (stationary)   |   '
+    'KPSS = $0.29$  ($p > 0.10$)  — fail to reject $H_0$ (stationary)',
     fontsize=8, color=green, labelpad=6)
 
 fig.text(0.5, -0.02, source, ha='center', fontsize=7,
