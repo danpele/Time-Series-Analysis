@@ -17,7 +17,7 @@ def fetch_wb_gdp():
     vals.sort()
     yrs = np.array([v[0] for v in vals])
     gdp = np.array([v[1] for v in vals])
-    mask = (yrs >= 1992) & (yrs <= 2024)
+    mask = (yrs >= 2010) & (yrs <= 2023)
     return yrs[mask], gdp[mask]
 
 try:
@@ -26,11 +26,9 @@ try:
     print(f"Fetched {len(gdp)} obs ({years[0]}-{years[-1]})")
 except Exception as e:
     print(f"Download failed: {e}")
-    years = np.arange(1992, 2024)
-    gdp   = np.array([88.5,82.1,79.4,80.2,82.7,87.3,85.6,80.1,78.4,84.2,
-                      93.5,103.1,113.7,122.4,132.8,143.0,135.2,141.8,149.3,
-                      157.1,162.8,168.5,175.3,186.4,195.1,200.7,209.1,220.8,
-                      230.0,235.2,237.4])
+    years = np.arange(2010, 2024)
+    gdp   = np.array([143.0,135.2,141.8,149.3,157.1,162.8,168.5,175.3,
+                      186.4,195.1,200.7,209.1,220.8,230.0])
     source = 'Source: World Bank approx. (constant 2015 USD)'
 
 log_gdp   = np.log(gdp)

@@ -21,18 +21,16 @@ def fetch_wb_gdp(country='RO', indicator='NY.GDP.MKTP.KD', per_page=50):
 try:
     years_arr, gdp = fetch_wb_gdp()
     # keep 1992-2023
-    mask = (years_arr >= 1992) & (years_arr <= 2024)
+    mask = (years_arr >= 2010) & (years_arr <= 2023)
     years_arr, gdp = years_arr[mask], gdp[mask]
     source_label = 'Source: World Bank (GDP constant 2015 USD, Romania)'
     print(f"Fetched {len(gdp)} annual obs ({years_arr[0]}-{years_arr[-1]})")
 except Exception as e:
     print(f"Download failed ({e}), using hardcoded data")
-    years_arr = np.arange(1992, 2024)
+    years_arr = np.arange(2010, 2024)
     gdp = np.array([
-        88.5, 82.1, 79.4, 80.2, 82.7, 87.3, 85.6, 80.1, 78.4, 84.2,
-        93.5, 103.1, 113.7, 122.4, 132.8, 143.0, 135.2, 141.8, 149.3,
-        157.1, 162.8, 168.5, 175.3, 186.4, 195.1, 200.7, 209.1, 220.8,
-        230.0, 235.2, 237.4
+        143.0, 135.2, 141.8, 149.3, 157.1, 162.8, 168.5, 175.3,
+        186.4, 195.1, 200.7, 209.1, 220.8, 230.0
     ])
     source_label = 'Source: World Bank (approx., constant 2015 USD)'
 
@@ -58,9 +56,9 @@ ax1.set_xlabel('Year', fontsize=9)
 ax1.set_ylabel('Mld. USD (prețuri constante 2015)', fontsize=8)
 ax1.tick_params(labelsize=8)
 ax1.set_xlim(years_arr[0] - 1, years_arr[-1] + 1)
-ax1.annotate('Varianță\ncrescătoare\n$\\Rightarrow I(1)$, nestaționar',
-             xy=(2005, gdp[list(years_arr).index(2005)]),
-             xytext=(1993, gdp[-5]),
+ax1.annotate('Growing variance\n$\\Rightarrow I(1)$, non-stationary',
+             xy=(2016, gdp[list(years_arr).index(2016)]),
+             xytext=(2011, gdp[-1] * 0.85),
              fontsize=7.5, color=red, ha='center',
              arrowprops=dict(arrowstyle='->', color=red, lw=1.2),
              bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
@@ -80,9 +78,9 @@ ax2.set_xlabel('Year', fontsize=9)
 ax2.set_ylabel('log PIB', fontsize=9)
 ax2.tick_params(labelsize=8)
 ax2.set_xlim(years_arr[0] - 1, years_arr[-1] + 1)
-ax2.annotate('Varianță stabilizată\n(dar trend liniar!)',
-             xy=(2008, log_gdp[list(years_arr).index(2008)]),
-             xytext=(1993, log_gdp[-5]),
+ax2.annotate('Stabilized variance\n(linear trend remains)',
+             xy=(2016, log_gdp[list(years_arr).index(2016)]),
+             xytext=(2011, log_gdp[-1] * 0.985),
              fontsize=7.5, color=blue, ha='center',
              arrowprops=dict(arrowstyle='->', color=blue, lw=1.2),
              bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
@@ -118,7 +116,7 @@ for yr, label, offset in [(2009, 'Criză\n2009', -3.5), (2020, 'COVID\n2020', -3
                      fontsize=7, color=red, ha='center',
                      arrowprops=dict(arrowstyle='->', color=red, lw=1.0))
 
-fig.suptitle('PIB România: logaritm → diferențiere = creștere economică',
+fig.suptitle('Romania GDP: log transform + differencing = economic growth',
              fontsize=11, fontweight='bold', y=1.01)
 fig.text(0.5, -0.04, source_label, ha='center', fontsize=7,
          color='gray', style='italic')
