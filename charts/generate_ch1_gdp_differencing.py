@@ -82,10 +82,10 @@ fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6.5), height_ratios=[1, 1])
 # Panel 1: log(GDP)
 ax1.plot(quarters, log_gdp, color=BLUE, linewidth=1.2, marker='o', markersize=2)
 ax1.fill_between(quarters, log_gdp, alpha=0.08, color=BLUE)
-ax1.set_title(r'log(PIB) România — trend liniar, nestaționar $I(1)$',
+ax1.set_title(r'log(GDP) Romania — linear trend, non-stationary $I(1)$',
               fontsize=11, fontweight='bold', color=RED)
-ax1.set_ylabel('log PIB')
-ax1.set_xlabel('An')
+ax1.set_ylabel('log GDP')
+ax1.set_xlabel('Year')
 ax1.set_ylim(log_gdp.min() - 0.05, log_gdp.max() + 0.1)
 ax1.xaxis.set_major_locator(mdates.YearLocator(5))
 ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
@@ -99,11 +99,11 @@ ax1.text(0.5, -0.18, f'{adf_s1}  |  {kpss_s1}',
 colors = [GREEN if v >= 0 else RED for v in dlog_gdp]
 ax2.bar(dlog_quarters, dlog_gdp, width=70, color=colors, alpha=0.75)
 ax2.axhline(y=mean_growth, color=GREEN, linewidth=1.2, linestyle='--',
-            label=f'Mean = {mean_growth:.1f}%/trim.')
-ax2.set_title(r'$\Delta\log$(PIB) — creștere economică trimestrială, staționar $I(0)$',
+            label=f'Mean = {mean_growth:.1f}%/qtr')
+ax2.set_title(r'$\Delta\log$(GDP) — quarterly economic growth, stationary $I(0)$',
               fontsize=11, fontweight='bold', color=GREEN)
-ax2.set_ylabel('Rată de creștere (%)')
-ax2.set_xlabel('An')
+ax2.set_ylabel('Growth rate (%)')
+ax2.set_xlabel('Year')
 ax2.xaxis.set_major_locator(mdates.YearLocator(5))
 ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 ax2.legend(loc='upper left', frameon=False, fontsize=8)

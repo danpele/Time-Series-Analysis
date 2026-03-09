@@ -57,17 +57,17 @@ print(f"Breakpoint: {bp_label}")
 fig, ax = plt.subplots(1, 1, figsize=(8, 2.8))
 
 ax.plot(quarters, values, color=BLUE, linewidth=1.0,
-        label='PIB România (indice volum, 2015=100)')
+        label='Romania GDP (volume index, 2015=100)')
 ax.axvline(x=bp_date, color=RED, linewidth=1.8, linestyle='--',
-           label=f'Breakpoint detectat: {bp_label}')
+           label=f'Detected breakpoint: {bp_label}')
 
 ax.axvspan(quarters[0], bp_date, alpha=0.06, color=BLUE)
 ax.axvspan(bp_date, quarters[-1], alpha=0.06, color=GREEN)
 
-ax.set_title('Testul Zivot-Andrews: PIB România trimestrial cu breakpoint structural',
+ax.set_title('Zivot-Andrews Test: Romania Quarterly GDP with Structural Breakpoint',
              fontsize=9, fontweight='bold')
-ax.set_xlabel('An')
-ax.set_ylabel('PIB (2015=100)')
+ax.set_xlabel('Year')
+ax.set_ylabel('GDP (2015=100)')
 ax.xaxis.set_major_locator(mdates.YearLocator(5))
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 

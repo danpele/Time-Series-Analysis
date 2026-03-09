@@ -58,8 +58,8 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 2.8))
 ax1.plot(t, Y, color=BLUE, linewidth=0.6, alpha=0.85, label=r'$Y_t = \alpha + \beta\,t + \varepsilon_t$')
 ax1.plot(t, trend_hat, color=RED, linewidth=1.4, linestyle='--',
          label=rf'$\hat{{Y}}_t = {intercept:.1f} + {slope:.3f}\,t$')
-ax1.set_title('Serie cu trend determinist', fontsize=9, fontweight='bold')
-ax1.set_xlabel('Timp')
+ax1.set_title('Series with deterministic trend', fontsize=9, fontweight='bold')
+ax1.set_xlabel('Time')
 ax1.set_ylabel(r'$Y_t$')
 add_legend_bottom(ax1)
 
@@ -67,8 +67,8 @@ add_legend_bottom(ax1)
 ax2.plot(t, residuals, color=GREEN, linewidth=0.6, alpha=0.85,
          label=r'$\hat{\varepsilon}_t = Y_t - \hat{\alpha} - \hat{\beta}\,t$')
 ax2.axhline(0, color=GRAY, linewidth=0.5, linestyle=':')
-ax2.set_title('Serie staționarizată (reziduuri)', fontsize=9, fontweight='bold')
-ax2.set_xlabel('Timp')
+ax2.set_title('Stationarized series (residuals)', fontsize=9, fontweight='bold')
+ax2.set_xlabel('Time')
 ax2.set_ylabel(r'$\hat{\varepsilon}_t$')
 add_legend_bottom(ax2)
 

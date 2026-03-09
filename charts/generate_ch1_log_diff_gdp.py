@@ -50,9 +50,9 @@ fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(11, 3.2))
 # Panel 1: GDP level
 ax1.plot(quarters, values, color=BLUE, linewidth=1.0, marker='o', markersize=1)
 ax1.fill_between(quarters, values, alpha=0.08, color=BLUE)
-ax1.set_title('PIB nivel', fontsize=10, fontweight='bold', color=BLUE)
-ax1.set_ylabel('Indice volum (2015=100)')
-ax1.set_xlabel('An')
+ax1.set_title('GDP level', fontsize=10, fontweight='bold', color=BLUE)
+ax1.set_ylabel('Volume index (2015=100)')
+ax1.set_xlabel('Year')
 ax1.annotate('Growing variance\n$\\Rightarrow$ I(1), non-stationary',
              xy=(quarters[10], values[10]), fontsize=6.5, color=RED,
              bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor=RED, alpha=0.9))
@@ -62,9 +62,9 @@ ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 # Panel 2: log(GDP)
 ax2.plot(quarters, log_gdp, color=GREEN, linewidth=1.0, marker='o', markersize=1)
 ax2.fill_between(quarters, log_gdp, alpha=0.08, color=GREEN)
-ax2.set_title('log(PIB)', fontsize=10, fontweight='bold', color=GREEN)
-ax2.set_ylabel('log PIB')
-ax2.set_xlabel('An')
+ax2.set_title('log(GDP)', fontsize=10, fontweight='bold', color=GREEN)
+ax2.set_ylabel('log GDP')
+ax2.set_xlabel('Year')
 ax2.set_ylim(log_gdp.min() - 0.05, log_gdp.max() + 0.15)
 ax2.annotate('Stabilized variance\n(linear trend remains)',
              xy=(quarters[5], log_gdp.max() + 0.05), fontsize=6.5, color=BLUE,
@@ -76,15 +76,15 @@ ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 colors = [GREEN if v >= 0 else RED for v in dlog_gdp]
 ax3.bar(dlog_quarters, dlog_gdp, width=70, color=colors, alpha=0.75)
 ax3.axhline(y=mean_growth, color=GREEN, linewidth=1.2, linestyle='--',
-            label=f'Mean = {mean_growth:.1f}%/trim.')
-ax3.set_title(r'$\Delta\log$(PIB) = Creștere economică', fontsize=10, fontweight='bold', color=RED)
-ax3.set_ylabel('Rată de creștere trimestrială (%)')
-ax3.set_xlabel('An')
+            label=f'Mean = {mean_growth:.1f}%/qtr')
+ax3.set_title(r'$\Delta\log$(GDP) = Economic growth', fontsize=10, fontweight='bold', color=RED)
+ax3.set_ylabel('Quarterly growth rate (%)')
+ax3.set_xlabel('Year')
 ax3.xaxis.set_major_locator(mdates.YearLocator(5))
 ax3.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
 # Annotate crises
-ax3.annotate('Criză\n2009', xy=(pd.Timestamp('2009-01-01'), -3),
+ax3.annotate('Crisis\n2009', xy=(pd.Timestamp('2009-01-01'), -3),
              xytext=(pd.Timestamp('2011-06-01'), -6),
              fontsize=6, color=RED, ha='center',
              arrowprops=dict(arrowstyle='->', color=RED, lw=0.8))
