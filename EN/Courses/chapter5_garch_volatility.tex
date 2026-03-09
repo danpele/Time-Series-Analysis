@@ -883,6 +883,71 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Nelson's Theorem (1990): Strict Stationarity of IGARCH}
+    \quantlet{TSA\_ch5\_nelson\_theorem}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_nelson_theorem}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-2mm}
+        {\scriptsize
+        \begin{thm}[Nelson, 1990]
+            Let the IGARCH(1,1) process:
+            $\varepsilon_t = \sigma_t z_t$, \; $\sigma_t^2 = \omega + \alpha\,\varepsilon_{t-1}^2 + (1 - \alpha)\,\sigma_{t-1}^2$, \; $z_t$ i.i.d., $\E[z_t^2] = 1$.
+            If $\omega > 0$ and $\E\bigl[\ln\!\bigl(\alpha z_t^2 + (1 - \alpha)\bigr)\bigr] < 0$, then the process $\{\varepsilon_t\}$ is \textbf{strictly stationary} and \textbf{ergodic}, even though the unconditional variance is infinite.
+        \end{thm}
+        \vspace{-1mm}
+        \begin{block}{Lyapunov Condition}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The condition $\E[\ln(\alpha z_t^2 + (1-\alpha))] < 0$ is equivalent to a \textbf{negative top Lyapunov exponent}
+                \item Verified for standard distributions ($z_t \sim \mathcal{N}(0,1)$, Student-$t$) when $\alpha \in (0,1)$
+                \item Interpretation: log-volatility $\ln \sigma_t^2$ has a mean-contracting tendency
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{block}{Proof Sketch}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Rewrite $\sigma_t^2$ as a stochastic recurrence: $Y_t = A_t Y_{t-1} + B_t$, where $A_t = \alpha z_{t-1}^2 + (1-\alpha)$, $B_t = \omega$
+                \item Apply Bougerol \& Picard (1992) theorem: if $\E[\ln A_t] < 0$ and $\E[\ln^+ B_t] < \infty$, the series $Y_t$ converges in distribution
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{IGARCH: Strict Stationarity vs.\ Covariance Stationarity}
+    \quantlet{TSA\_ch5\_igarch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_igarch}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-2mm}
+        {\scriptsize
+        \begin{block}{Fundamental Contrast}
+            \renewcommand{\arraystretch}{1.2}
+            \begin{center}
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Property} & \textbf{GARCH} ($\alpha + \beta < 1$) & \textbf{IGARCH} ($\alpha + \beta = 1$) \\
+                \midrule
+                Strictly stationary & Yes & \textbf{Yes} (Nelson, 1990) \\
+                Covariance stationary & Yes & \textbf{No} ($\Var[\varepsilon_t] = \infty$) \\
+                Unconditional variance & $\bar{\sigma}^2 = \frac{\omega}{1 - \alpha - \beta}$ & Does not exist (infinite) \\
+                Shock persistence & Geometric (decays) & Permanent \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+        \vspace{-1mm}
+        \begin{alertblock}{Practical Implication}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item IGARCH is a \textbf{valid model}, despite the unit root in variance
+                \item Conditional variance forecast: $\E_t[\sigma_{t+h}^2] = \sigma_t^2 + h\omega$ (linear growth)
+                \item Does not imply process explosion: $\varepsilon_t$ remains well-defined
+            \end{itemize}
+        \end{alertblock}
+        \vspace{-1mm}
+        \begin{rmk}
+            The distinction between strict stationarity and covariance stationarity is analogous to heavy-tailed processes: a process can have a well-defined marginal distribution without having finite higher-order moments.
+        \end{rmk}
+        }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{Volatility Regime Changes}
     \begin{cminipage}{0.95\textwidth}
     \scriptsize
@@ -2001,12 +2066,9 @@
     \end{block}
     \vspace{-0.15cm}
     \begin{defn}[Acerbi-Sz\'ekely Z-test (2014)]
-        \[
-            Z_{\text{ES}} = \frac{1}{n_\alpha} \sum_{t: r_t < -\text{VaR}_t} \frac{r_t}{\text{ES}_t} + 1
-        \]
-        Under $H_0$ (correct ES model): $\E[Z_{\text{ES}}] = 0$. Reject if $Z_{\text{ES}} < z_{\alpha/2}$.
+        $Z_{\text{ES}} = \frac{1}{n_\alpha} \sum_{t: r_t < -\text{VaR}_t} \frac{r_t}{\text{ES}_t} + 1$.\quad Under $H_0$ (correct ES model): $\E[Z_{\text{ES}}] = 0$. Reject if $Z_{\text{ES}} < z_{\alpha/2}$.
     \end{defn}
-    \vspace{-0.15cm}
+    \vspace{-1.5mm}
     \begin{alertblock}{Key Insight}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Unlike VaR backtesting (binary hit/miss), ES backtesting uses the \textit{magnitude} of losses
@@ -2551,36 +2613,152 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{The DCC-GARCH Multivariate Model}
+    \quantlet{TSA\_ch5\_dcc\_garch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_garch}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-3mm}
+        {\scriptsize
+        \setlength{\abovedisplayskip}{2pt}\setlength{\belowdisplayskip}{2pt}
+        \begin{block}{Motivation: From Univariate Volatility to Dynamic Correlations}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Univariate GARCH models the volatility of a \textbf{single} series
+                \item In practice, portfolios contain \textbf{multiple assets} with time-varying correlations
+                \item DCC-GARCH (Engle, 2002) jointly models volatilities \emph{and} correlations
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{block}{Two-Step DCC Structure}
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item \textbf{Step 1}: Estimate univariate GARCH for each series $\Rightarrow$ $\mathbf{D}_t = \text{diag}(\sigma_{1,t}, \ldots, \sigma_{K,t})$
+                \item \textbf{Step 2}: Model conditional correlations:
+                $\mathbf{Q}_t = (1 - a - b)\bar{\mathbf{Q}} + a\,\mathbf{u}_{t-1}\mathbf{u}_{t-1}' + b\,\mathbf{Q}_{t-1}$,
+                where $\mathbf{u}_t = \mathbf{D}_t^{-1}\boldsymbol{\varepsilon}_t$ are standardized residuals
+            \end{enumerate}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{block}{Conditional Correlation and Covariance Matrices}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Correlation: $\mathbf{R}_t = \mathbf{Q}_t^{*-1}\,\mathbf{Q}_t\,\mathbf{Q}_t^{*-1}$, with $\mathbf{Q}_t^{*} = \text{diag}\!\bigl(\sqrt{q_{11,t}},\, \ldots,\, \sqrt{q_{KK,t}}\bigr)$
+                \item Covariance: $\mathbf{H}_t = \mathbf{D}_t\,\mathbf{R}_t\,\mathbf{D}_t$
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{DCC-GARCH Estimation}
+    \quantlet{TSA\_ch5\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_estimation}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-3mm}
+        {\scriptsize
+        \setlength{\abovedisplayskip}{2pt}\setlength{\belowdisplayskip}{2pt}
+        \begin{block}{Two-Step QML Estimation (Engle, 2002; Engle \& Sheppard, 2001)}
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item \textbf{Step 1} --- Estimate univariate GARCH parameters:
+                \vspace{-1mm}
+                \[
+                    \mathcal{L}_1(\boldsymbol{\theta}) = -\frac{1}{2}\sum_{t=1}^{T}\sum_{k=1}^{K}\bigl(\ln \sigma_{k,t}^2 + \varepsilon_{k,t}^2 / \sigma_{k,t}^2\bigr) \;\longrightarrow\; \hat{\mathbf{D}}_t
+                \]
+                \vspace{-3mm}
+                \item \textbf{Step 2} --- Estimate correlation parameters $(a, b)$:
+                \vspace{-1mm}
+                \[
+                    \mathcal{L}_2(a, b) = -\frac{1}{2}\sum_{t=1}^{T}\bigl(\ln|\mathbf{R}_t| + \mathbf{u}_t'\,\mathbf{R}_t^{-1}\,\mathbf{u}_t - \mathbf{u}_t'\mathbf{u}_t\bigr)
+                \]
+                \vspace{-3mm}
+            \end{enumerate}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{block}{Estimator Properties}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The QML estimator is \textbf{consistent} even under misspecification of the conditional distribution
+                \item Robust standard errors via \textbf{sandwich estimator} (Bollerslev \& Wooldridge, 1992)
+                \item Computational advantage: reduces problem dimension from $O(K^2)$ to $O(K) + O(2)$
+            \end{itemize}
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{DCC Properties and Extensions}
+    \quantlet{TSA\_ch5\_dcc\_extensions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_extensions}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        {\scriptsize
+        \begin{block}{Positive Definiteness}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\mathbf{H}_t$ is \textbf{positive definite} if $\bar{\mathbf{Q}}$ is positive definite and $a + b < 1$, $a \geq 0$, $b \geq 0$
+                \item Normalization through $\mathbf{Q}_t^{*}$ guarantees $\rho_{ij,t} \in [-1, 1]$
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{block}{Asymmetric DCC (Cappiello, Engle \& Sheppard, 2006)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Extension with \textbf{leverage term} to capture increased correlations during crises:
+            \end{itemize}
+            \vspace{-2mm}
+            \[
+                \mathbf{Q}_t = (1\!-\!a\!-\!b)\bar{\mathbf{Q}} - g\bar{\mathbf{N}} + a\,\mathbf{u}_{t-1}\mathbf{u}_{t-1}' + b\,\mathbf{Q}_{t-1} + g\,\mathbf{n}_{t-1}\mathbf{n}_{t-1}'
+            \]
+            \vspace{-4mm}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\mathbf{n}_t = \mathbb{I}(\mathbf{u}_t < 0) \odot \mathbf{u}_t$ (negative component), $\bar{\mathbf{N}} = \E[\mathbf{n}_t \mathbf{n}_t']$
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{exampleblock}{Applications}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Portfolio optimization}: Markowitz weights with time-varying $\mathbf{H}_t$
+                \item \textbf{Systemic risk}: conditional correlations as a measure of financial contagion
+                \item \textbf{Dynamic hedging}: optimal hedge ratios $h_t^{*} = \sigma_{12,t} / \sigma_{22,t}$
+            \end{itemize}
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
+
 %=============================================================================
 \section{AI Use Case}
 %=============================================================================
 
 \begin{frame}{AI Exercise: Critical Thinking}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-3mm}
-    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        \vspace{-3mm}
+        \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+            {\footnotesize
+            ``Using yfinance, download daily closing prices for S\&P 500 (\^{}GSPC) from 2018-01-01 to 2024-12-31 (approx.\ 1{,}750 observations). Compute daily log returns. Test for ARCH effects, fit a GARCH(1,1) model, and forecast volatility for the next 20 trading days. Give me complete Python code.''
+            }
+        \end{block}
+        \vspace{-2mm}
         {\footnotesize
-        ``Using yfinance, download daily closing prices for S\&P 500 (\^{}GSPC) from 2018-01-01 to 2024-12-31 (approx.\ 1{,}750 observations). Compute daily log returns. Test for ARCH effects, fit a GARCH(1,1) model, and forecast volatility for the next 20 trading days. Give me complete Python code.''
+        \textbf{Exercise}:
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \item Run the prompt in an LLM of your choice and critically analyze the response
+            \item Does it compute log returns correctly? Does it remove the mean before fitting GARCH?
+            \item How does it test for ARCH effects? Does it use Engle's LM test?
+            \item Does it separate the mean equation from the variance equation?
+            \item Does it discuss asymmetric effects (GJR-GARCH, EGARCH)?
+        \end{enumerate}
         }
-    \end{block}
-    \vspace{-2mm}
-    {\footnotesize
-    \textbf{Exercise}:
-    \begin{enumerate}\setlength{\itemsep}{0pt}
-        \item Run the prompt in an LLM of your choice and critically analyze the response.
-        \item Does it compute log returns correctly? Does it remove the mean before fitting GARCH?
-        \item How does it test for ARCH effects? Does it use Engle's LM test?
-        \item Does it separate the mean equation from the variance equation?
-        \item Does it discuss asymmetric effects (GJR-GARCH, EGARCH)? Are VaR estimates computed from the conditional distribution?
-        \item Identify at least \textbf{two factual errors} or questionable assumptions in the LLM output.
-        \item Does the code verify the stationarity constraint $\alpha + \beta < 1$? If not, add it.
-        \item Compare the LLM's VaR estimate with the results from this chapter. Are they consistent?
-    \end{enumerate}
-    }
-    \vspace{-2mm}
-    \begin{alertblock}{}
-        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
-    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{AI Exercise: Critical Thinking (cont.)}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \textbf{Exercise (continued)}:
+        \begin{enumerate}\setlength{\itemsep}{0pt}
+            \setcounter{enumi}{5}
+            \item Are VaR estimates computed from the conditional distribution?
+            \item Identify at least \textbf{two factual errors} or questionable assumptions in the LLM output
+            \item Does the code verify the stationarity constraint $\alpha + \beta < 1$? If not, add it
+            \item Compare the LLM's VaR estimate with the results from this chapter. Are they consistent?
+        \end{enumerate}
+        }
+        \vspace{-2mm}
+        \begin{alertblock}{}
+            {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 
