@@ -88,7 +88,7 @@
     {\scriptsize
     \begin{itemize}\setlength{\itemsep}{0pt}
         \item Perioadele de volatilitate mare sunt urmate de perioade de volatilitate mare, iar perioadele de volatilitate redusă sunt urmate de perioade de volatilitate redusă
-        \item Acest lucru sugerează că \textbf{varianța condiționată} este predictibilă
+        \item \textbf{Takeaway:} Volatility clustering este vizibil \textbf{chiar înainte de modelare} --- este primul semn că varianța nu este constantă
     \end{itemize}
     }
     \begin{center}
@@ -108,13 +108,33 @@
                 \item Volatilitatea răspunde \textbf{asimetric} la șocuri (leverage effect)
             \end{itemize}
         \end{block}
-
-        \vspace{0.3cm}
-
-        \begin{alertblock}{Limitarea modelelor ARIMA (Autoregressive Integrated Moving Average)}
+        \vspace{0.2cm}
+        \begin{alertblock}{Ideea centrală a capitolului}
             \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Modelele ARIMA presupun \textbf{varianță constantă} (homoscedasticitate)
-                \item Această ipoteză nu este realistă pentru seriile financiare.
+                \item \textbf{Chiar dacă randamentele sunt greu de prognozat, volatilitatea lor este adesea prognozabilă.}
+                \item Modelele ARIMA presupun \textbf{varianță constantă} (homoscedasticitate) --- ipoteză nerealistă pentru seriile financiare
+            \end{itemize}
+        \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%% Rec. 7: De ce ne pasă de volatilitate condiționată?
+\begin{frame}{De ce ne pasă de volatilitate condiționată?}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Aplicații directe în finanțe}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Value at Risk (VaR) și Expected Shortfall (ES)}: cerințe de capital Basel III/IV
+                \item \textbf{Prețul opțiunilor}: volatilitatea implicită vs realizată
+                \item \textbf{Hedging dinamic}: rapoarte de acoperire optime $h_t^{*} = \sigma_{12,t}/\sigma_{22,t}$
+                \item \textbf{Margining}: casele de compensare recalculează zilnic marjele
+                \item \textbf{Capital economic / reglementar}: FRTB, stress testing
+                \item \textbf{Alocarea portofoliului}: ponderi Markowitz cu $\mathbf{H}_t$ variabilă în timp
+            \end{itemize}
+        \end{block}
+        \vspace{0.2cm}
+        \begin{alertblock}{Concluzie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Volatilitatea condiționată nu este un exercițiu academic --- este \textbf{ingredientul central} al managementului cantitativ al riscului
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -140,8 +160,14 @@
 \end{frame}
 
 \begin{frame}{Exemplu: Bitcoin -- volatility clustering}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item \textbf{Takeaway:} Bitcoin cere modele mai flexibile decât un benchmark liniar cu varianță constantă
+    \end{itemize}
+    }
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{btc_returns.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{btc_returns.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_btc\_returns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_btc_returns}
 \end{frame}
@@ -186,12 +212,10 @@
 \begin{frame}{Exemplu: Bitcoin -- evidență pentru efecte ARCH}
     \vspace{-0.2cm}
     {\scriptsize
-    \begin{block}{Interpretare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item ACF($r_t^2$) este semnificativ la multe lag-uri $\Rightarrow$ \textbf{efecte ARCH prezente}
-            \item Varianța condiționată este predictibilă $\Rightarrow$ modelele GARCH sunt justificate
-        \end{itemize}
-    \end{block}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item ACF($r_t^2$) semnificativ la multe lag-uri $\Rightarrow$ \textbf{efecte ARCH prezente}
+        \item \textbf{Takeaway:} ACF pe pătrate sugerează dependență în momentul al doilea --- chiar dacă ACF pe randamente $\approx 0$
+    \end{itemize}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{btc_acf_squared.pdf}
@@ -266,6 +290,10 @@
             \end{exampleblock}
         \end{column}
     \end{columns}
+    \vspace{-0.1cm}
+    \begin{center}
+        {\scriptsize\textcolor{MainBlue}{\textbf{Aceasta este baza econometriei moderne a volatilității și a managementului cantitativ al riscului.}}}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Simulare ARCH(1): Efectul parametrului $\alpha$}
@@ -533,6 +561,36 @@
     \end{cminipage}
 \end{frame}
 
+%% Rec. 1 + 5: Cum citesc un model GARCH în 30 de secunde
+\begin{frame}{Cum citesc un model GARCH în 30 de secunde}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \footnotesize
+        \begin{block}{Structura unui model GARCH(1,1)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Ecuația mediei}: $r_t = \mu + \varepsilon_t$, \quad $\varepsilon_t = \sigma_t z_t$, \quad $z_t \sim D(0,1)$
+                \item \textbf{Ecuația varianței}: $\sigma_t^2 = \underbrace{\omega}_{\text{bază}} + \underbrace{\alpha \varepsilon_{t-1}^2}_{\text{reacție la șoc}} + \underbrace{\beta \sigma_{t-1}^2}_{\text{persistență}}$
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{exampleblock}{Interpretare economică a parametrilor}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\alpha$ \textbf{mare} $\Rightarrow$ piață \textbf{foarte sensibilă} la informație nouă (șocuri bruște)
+                \item $\beta$ \textbf{mare} $\Rightarrow$ șocurile de volatilitate se \textbf{sting lent} (inerție)
+                \item $\alpha + \beta$ aproape de 1 $\Rightarrow$ volatilitate \textbf{foarte persistentă} (aproape de IGARCH)
+                \item $\omega / (1 - \alpha - \beta)$ = varianța necondiționată (nivelul de echilibru pe termen lung)
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-1.5mm}
+        \begin{alertblock}{Alegerea distribuției $z_t$}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Normal}: simplu, dar subestimează riscul de coadă
+                \item \textbf{Student-t}: cozi mai groase $\Rightarrow$ VaR mai realist; \textbf{alegerea standard} în practică
+            \end{itemize}
+        \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{Simulare GARCH(1,1): efectul persistenței}
     \vspace{-0.2cm}
     {\footnotesize
@@ -669,6 +727,51 @@
         \begin{alertblock}{Notă practică}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Distribuția Student-t oferă de regulă o potrivire mai bună pentru randamentele financiare datorită cozilor groase (kurtosis $> 3$)
+            \end{itemize}
+        \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%% Rec. 6: Alegerea distribuției inovațiilor
+\begin{frame}{Alegerea distribuției inovațiilor}
+    \begin{cminipage}{0.95\textwidth}
+        \small
+        \begin{columns}[T]
+            \begin{column}{0.32\textwidth}
+                \begin{block}{\centering Normal}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Simplu, rapid
+                        \item Kurtosis = 3 (fixă)
+                        \item \textcolor{Crimson}{Subestimează extremele}
+                        \item VaR 1\%: $2.326\sigma$
+                    \end{itemize}
+                \end{block}
+            \end{column}
+            \begin{column}{0.32\textwidth}
+                \begin{block}{\centering Student-$t$}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Un parametru extra ($\nu$)
+                        \item Kurtosis ajustabilă
+                        \item \textcolor{Forest}{Cozi groase realiste}
+                        \item VaR 1\%: $> 2.326\sigma$
+                    \end{itemize}
+                \end{block}
+            \end{column}
+            \begin{column}{0.32\textwidth}
+                \begin{block}{\centering GED}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Parametru formă ($\nu$)
+                        \item Include Normal ($\nu=2$)
+                        \item Flexibil, dar mai puțin intuitiv
+                        \item Folosit rar în practică
+                    \end{itemize}
+                \end{block}
+            \end{column}
+        \end{columns}
+        \vspace{0.2cm}
+        \begin{alertblock}{Concluzie}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{În risk management, alegerea distribuției este aproape la fel de importantă ca alegerea dinamicii varianței.} Student-t este alegerea standard.
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -1119,6 +1222,35 @@
     \quantlet{TSA\_ch5\_nic\_comp}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_nic_comp}
 \end{frame}
 
+%% Rec. 4: Când aleg ARCH, GARCH, EGARCH sau GJR-GARCH?
+\begin{frame}{Când aleg ARCH, GARCH, EGARCH sau GJR-GARCH?}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \scriptsize
+        \begin{block}{Ghid de alegere}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{ARCH(q)}: simplu conceptual, dar necesită multe lag-uri $\Rightarrow$ \textcolor{Crimson}{rar folosit în practică}
+                \item \textbf{GARCH(1,1)}: \textcolor{Forest}{\textbf{benchmark-ul standard}} --- captează persistența cu doar 3 parametri; suficient în $\sim$90\% din cazuri
+                \item \textbf{EGARCH}: modelează $\ln(\sigma_t^2)$ $\Rightarrow$ \textbf{nu necesită restricții de pozitivitate}; captează leverage prin $\gamma$; \textcolor{Forest}{preferat pentru acțiuni}
+                \item \textbf{GJR-GARCH}: variabilă indicatoare $I(\varepsilon_{t-1}<0)$ $\Rightarrow$ \textbf{interpretare directă a impactului asimetric}; echivalent cu EGARCH
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{alertblock}{Reguli practice de selecție}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Pasul 1}: Începe cu GARCH(1,1) --- suficient pentru majoritatea seriilor
+                \item \textbf{Pasul 2}: Verifică leverage effect (sign bias test, news impact curve)
+                \item \textbf{Pasul 3}: Dacă leverage semnificativ $\Rightarrow$ EGARCH sau GJR-GARCH
+                \item \textbf{Pasul 4}: Compară cu AIC/BIC; alege distribuția Student-t
+            \end{itemize}
+        \end{alertblock}
+        \vspace{-1mm}
+        \begin{center}
+            {\footnotesize\textcolor{MainBlue}{\textbf{Modelele nu sunt o listă --- sunt un set de alegeri motivate de date.}}}
+        \end{center}
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{Comparație familie GARCH}
     \vspace{-0.2cm}
     {\scriptsize
@@ -1203,6 +1335,33 @@
 % SECȚIUNEA 5: SELECTAREA ȘI DIAGNOSTICAREA MODELELOR
 %=============================================================================
 \section{Selectarea și Diagnosticarea modelelor}
+
+%% Rec. 2: Workflow complet de selecție și diagnostic
+\begin{frame}{Workflow complet: de la date la VaR validat}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \scriptsize
+        \begin{block}{Algoritmul practic în 8 pași}
+            \begin{enumerate}\setlength{\itemsep}{1pt}
+                \item \textbf{Estimează ecuația mediei}: ARMA sau $r_t = \mu + \varepsilon_t$ (verifică ACF randamente)
+                \item \textbf{Testează efecte ARCH}: ARCH-LM test + Ljung-Box pe $\hat{\varepsilon}_t^2$
+                \item \textbf{Estimează familia GARCH}: GARCH(1,1), EGARCH(1,1), GJR-GARCH(1,1)
+                \item \textbf{Compară distribuții ale inovațiilor}: Normal vs Student-t vs GED
+                \item \textbf{Verifică reziduurile standardizate}: $\hat{z}_t = \hat{\varepsilon}_t / \hat{\sigma}_t$ i.i.d. (Ljung-Box, ARCH-LM rezidual, Q-Q plot)
+                \item \textbf{Compară modele cu AIC/BIC}: cel mai mic AIC/BIC = cel mai bun compromis
+                \item \textbf{Prognozează volatilitatea}: $\hat{\sigma}_{T+h}^2$ cu rolling window sau recursive
+                \item \textbf{Validează VaR}: backtesting cu Kupiec (acoperire) și Christoffersen (independență)
+            \end{enumerate}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{alertblock}{De reținut}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Acesta este \textbf{exact} fluxul de lucru pe care îl veți urma în studiile de caz S\&P 500 și Bitcoin
+                \item \textbf{Chiar dacă randamentele sunt greu de prognozat, volatilitatea lor este adesea prognozabilă}
+            \end{itemize}
+        \end{alertblock}
+    \end{cminipage}
+\end{frame}
 
 \begin{frame}{Selectarea ordinului}
     \begin{cminipage}{0.95\textwidth}
@@ -2306,6 +2465,7 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
                 \item Distribuția Student-t este \textbf{esențială} pentru date financiare
                 \item Leverage effect: modelele asimetrice \textbf{obligatorii} pentru acțiuni
                 \item Backtesting sistematic: nu doar „arată bine'', ci \textbf{testat statistic}
+                \item \textbf{Chiar dacă randamentele sunt greu de prognozat, volatilitatea lor este prognozabilă}
             \end{itemize}
         \end{alertblock}
     \end{cminipage}
@@ -3049,6 +3209,29 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
             \end{itemize}
             }
         \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%% Rec. 10: Recapitulare competențe
+\begin{frame}{Competențe dobândite}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{La finalul capitolului, studentul trebuie să poată:}
+            \begin{enumerate}\setlength{\itemsep}{2pt}
+                \item \textbf{Recunoaște} efecte ARCH în date (ARCH-LM, Ljung-Box pe $r_t^2$, Q-Q plot)
+                \item \textbf{Estima și interpreta} un GARCH(1,1) --- rolul lui $\alpha$, $\beta$, varianța necondiționată, half-life
+                \item \textbf{Decide} dacă este nevoie de asimetrie (leverage effect $\Rightarrow$ EGARCH / GJR-GARCH)
+                \item \textbf{Alege} o distribuție a inovațiilor (Normal vs Student-t vs GED)
+                \item \textbf{Produce} un forecast de volatilitate (rolling window, convergența la $\bar{\sigma}^2$)
+                \item \textbf{Calcula și valida} un VaR (backtesting Kupiec + Christoffersen)
+            \end{enumerate}
+        \end{block}
+        \vspace{0.2cm}
+        \begin{alertblock}{Mesajul central al capitolului}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Chiar dacă randamentele sunt greu de prognozat, volatilitatea lor este adesea prognozabilă.}
+                \item Aceasta este ideea fundamentală care justifică întreaga econometrie a volatilității.
+            \end{itemize}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 

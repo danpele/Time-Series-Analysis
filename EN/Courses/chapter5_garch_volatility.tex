@@ -94,7 +94,7 @@
     {\scriptsize
     \begin{itemize}\setlength{\itemsep}{0pt}
         \item High volatility periods are followed by high volatility; calm periods by calm periods
-        \item This suggests that \textbf{conditional variance} is predictable
+        \item \textbf{Takeaway:} Volatility clustering is visible \textbf{even before modeling} --- it is the first sign that variance is not constant
     \end{itemize}
     }
     \begin{center}
@@ -114,12 +114,35 @@
             \item Volatility responds \textbf{asymmetrically} to shocks (leverage effect)
         \end{itemize}
     \end{block}
-
-    \vspace{0.3cm}
-
-    \begin{alertblock}{Limitation of ARIMA Models}
-        ARIMA models assume \textbf{constant variance} (homoskedasticity), which is not realistic for financial series!
+    \vspace{0.2cm}
+    \begin{alertblock}{Central Idea of this Chapter}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Even though returns are hard to predict, their volatility is often predictable.}
+            \item ARIMA models assume \textbf{constant variance} (homoskedasticity) --- an unrealistic assumption for financial series
+        \end{itemize}
     \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%% Rec. 7: Why do we care about conditional volatility?
+\begin{frame}{Why Do We Care About Conditional Volatility?}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Direct Applications in Finance}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Value at Risk (VaR) and Expected Shortfall (ES)}: Basel III/IV capital requirements
+                \item \textbf{Option pricing}: implied vs realized volatility
+                \item \textbf{Dynamic hedging}: optimal hedge ratios $h_t^{*} = \sigma_{12,t}/\sigma_{22,t}$
+                \item \textbf{Margining}: clearing houses recalculate margins daily
+                \item \textbf{Economic/regulatory capital}: FRTB, stress testing
+                \item \textbf{Portfolio allocation}: Markowitz weights with time-varying $\mathbf{H}_t$
+            \end{itemize}
+        \end{block}
+        \vspace{0.2cm}
+        \begin{alertblock}{Conclusion}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Conditional volatility is not an academic exercise --- it is the \textbf{central ingredient} of quantitative risk management
+            \end{itemize}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 
@@ -143,8 +166,14 @@
 \end{frame}
 
 \begin{frame}{Example: Bitcoin -- Volatility Clustering}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item \textbf{Takeaway:} Bitcoin requires more flexible models than a linear benchmark with constant variance
+    \end{itemize}
+    }
     \begin{center}
-        \includegraphics[width=0.95\textwidth, height=0.78\textheight, keepaspectratio]{btc_returns.pdf}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{btc_returns.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_btc\_returns}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_btc_returns}
 \end{frame}
@@ -189,12 +218,10 @@
 \begin{frame}{Example: Bitcoin -- Evidence for ARCH Effects}
     \vspace{-0.2cm}
     {\scriptsize
-    \begin{block}{Interpretation}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item ACF($r_t^2$) is significant at many lags $\Rightarrow$ \textbf{ARCH effects present}
-            \item Conditional variance is predictable $\Rightarrow$ GARCH models are justified
-        \end{itemize}
-    \end{block}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item ACF($r_t^2$) significant at many lags $\Rightarrow$ \textbf{ARCH effects present}
+        \item \textbf{Takeaway:} ACF on squares suggests dependence in the second moment --- even when ACF on returns $\approx 0$
+    \end{itemize}
     }
     \begin{center}
         \includegraphics[width=0.95\textwidth, height=0.55\textheight, keepaspectratio]{btc_acf_squared.pdf}
@@ -269,6 +296,10 @@
             \end{exampleblock}
         \end{column}
     \end{columns}
+    \vspace{-0.1cm}
+    \begin{center}
+        {\scriptsize\textcolor{MainBlue}{\textbf{This is the foundation of modern volatility econometrics and quantitative risk management.}}}
+    \end{center}
 \end{frame}
 
 \begin{frame}{ARCH(1) Simulation: Effect of $\alpha$ Parameter}
@@ -517,6 +548,36 @@
     \end{cminipage}
 \end{frame}
 
+%% Rec. 1 + 5: How to read a GARCH model in 30 seconds
+\begin{frame}{How to Read a GARCH Model in 30 Seconds}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \footnotesize
+        \begin{block}{Structure of a GARCH(1,1) Model}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Mean equation}: $r_t = \mu + \varepsilon_t$, \quad $\varepsilon_t = \sigma_t z_t$, \quad $z_t \sim D(0,1)$
+                \item \textbf{Variance equation}: $\sigma_t^2 = \underbrace{\omega}_{\text{base}} + \underbrace{\alpha \varepsilon_{t-1}^2}_{\text{shock reaction}} + \underbrace{\beta \sigma_{t-1}^2}_{\text{persistence}}$
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{exampleblock}{Economic Interpretation of Parameters}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Large $\alpha$ $\Rightarrow$ market \textbf{very sensitive} to new information (sudden shocks)
+                \item Large $\beta$ $\Rightarrow$ volatility shocks \textbf{dissipate slowly} (inertia)
+                \item $\alpha + \beta$ close to 1 $\Rightarrow$ \textbf{very persistent} volatility (near-IGARCH)
+                \item $\omega / (1 - \alpha - \beta)$ = unconditional variance (long-run equilibrium level)
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-1.5mm}
+        \begin{alertblock}{Choosing the Innovation Distribution $z_t$}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Normal}: simple, but underestimates tail risk
+                \item \textbf{Student-t}: fatter tails $\Rightarrow$ more realistic VaR; \textbf{standard choice} in practice
+            \end{itemize}
+        \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{GARCH(1,1) Simulation: Persistence Effect}
     \vspace{-0.2cm}
     {\footnotesize
@@ -648,6 +709,51 @@
     \begin{alertblock}{Practical Note}
         Student-t distribution typically provides better fit for financial returns due to fat tails (kurtosis $> 3$).
     \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%% Rec. 6: Choosing the innovation distribution
+\begin{frame}{Choosing the Innovation Distribution}
+    \begin{cminipage}{0.95\textwidth}
+        \small
+        \begin{columns}[T]
+            \begin{column}{0.32\textwidth}
+                \begin{block}{\centering Normal}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Simple, fast
+                        \item Kurtosis = 3 (fixed)
+                        \item \textcolor{Crimson}{Underestimates extremes}
+                        \item VaR 1\%: $2.326\sigma$
+                    \end{itemize}
+                \end{block}
+            \end{column}
+            \begin{column}{0.32\textwidth}
+                \begin{block}{\centering Student-$t$}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item One extra parameter ($\nu$)
+                        \item Adjustable kurtosis
+                        \item \textcolor{Forest}{Realistic fat tails}
+                        \item VaR 1\%: $> 2.326\sigma$
+                    \end{itemize}
+                \end{block}
+            \end{column}
+            \begin{column}{0.32\textwidth}
+                \begin{block}{\centering GED}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Shape parameter ($\nu$)
+                        \item Includes Normal ($\nu=2$)
+                        \item Flexible, but less intuitive
+                        \item Rarely used in practice
+                    \end{itemize}
+                \end{block}
+            \end{column}
+        \end{columns}
+        \vspace{0.2cm}
+        \begin{alertblock}{Conclusion}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{In risk management, the choice of distribution is almost as important as the choice of variance dynamics.} Student-t is the standard choice.
+            \end{itemize}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 
@@ -1043,6 +1149,35 @@
     \quantlet{TSA\_ch5\_family}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_family}
 \end{frame}
 
+%% Rec. 4: When to choose ARCH, GARCH, EGARCH or GJR-GARCH?
+\begin{frame}{When to Choose ARCH, GARCH, EGARCH or GJR-GARCH?}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \scriptsize
+        \begin{block}{Selection Guide}
+            \begin{itemize}\setlength{\itemsep}{1pt}
+                \item \textbf{ARCH(q)}: conceptually simple, but requires many lags $\Rightarrow$ \textcolor{Crimson}{rarely used in practice}
+                \item \textbf{GARCH(1,1)}: \textcolor{Forest}{\textbf{the standard benchmark}} --- captures persistence with only 3 parameters; sufficient in $\sim$90\% of cases
+                \item \textbf{EGARCH}: models $\ln(\sigma_t^2)$ $\Rightarrow$ \textbf{no positivity constraints}; captures leverage through $\gamma$; \textcolor{Forest}{preferred for equities}
+                \item \textbf{GJR-GARCH}: indicator variable $I(\varepsilon_{t-1}<0)$ $\Rightarrow$ \textbf{direct interpretation of asymmetric impact}; equivalent to EGARCH
+            \end{itemize}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{alertblock}{Practical Selection Rules}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Step 1}: Start with GARCH(1,1) --- sufficient for most series
+                \item \textbf{Step 2}: Check for leverage effect (sign bias test, news impact curve)
+                \item \textbf{Step 3}: If leverage significant $\Rightarrow$ EGARCH or GJR-GARCH
+                \item \textbf{Step 4}: Compare with AIC/BIC; choose Student-t distribution
+            \end{itemize}
+        \end{alertblock}
+        \vspace{-1mm}
+        \begin{center}
+            {\footnotesize\textcolor{MainBlue}{\textbf{Models are not a checklist --- they are a set of data-driven choices.}}}
+        \end{center}
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{GARCH-in-Mean (GARCH-M) --- Engle, Lilien \& Robins (1987)}
     \vspace{-0.2cm}
 \small
@@ -1098,6 +1233,33 @@
 % SECTION 5: MODEL SELECTION AND DIAGNOSTICS
 %=============================================================================
 \section{Model Selection and Diagnostics}
+
+%% Rec. 2: Complete workflow from data to validated VaR
+\begin{frame}{Complete Workflow: From Data to Validated VaR}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \scriptsize
+        \begin{block}{Practical 8-Step Algorithm}
+            \begin{enumerate}\setlength{\itemsep}{1pt}
+                \item \textbf{Estimate the mean equation}: ARMA or $r_t = \mu + \varepsilon_t$ (check ACF of returns)
+                \item \textbf{Test for ARCH effects}: ARCH-LM test + Ljung-Box on $\hat{\varepsilon}_t^2$
+                \item \textbf{Estimate the GARCH family}: GARCH(1,1), EGARCH(1,1), GJR-GARCH(1,1)
+                \item \textbf{Compare innovation distributions}: Normal vs Student-t vs GED
+                \item \textbf{Check standardized residuals}: $\hat{z}_t = \hat{\varepsilon}_t / \hat{\sigma}_t$ i.i.d. (Ljung-Box, ARCH-LM residual, Q-Q plot)
+                \item \textbf{Compare models with AIC/BIC}: lowest AIC/BIC = best trade-off
+                \item \textbf{Forecast volatility}: $\hat{\sigma}_{T+h}^2$ with rolling window or recursive
+                \item \textbf{Validate VaR}: backtesting with Kupiec (coverage) and Christoffersen (independence)
+            \end{enumerate}
+        \end{block}
+        \vspace{-1.5mm}
+        \begin{alertblock}{Remember}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item This is \textbf{exactly} the workflow you will follow in the S\&P 500 and Bitcoin case studies
+                \item \textbf{Even though returns are hard to predict, their volatility is often predictable}
+            \end{itemize}
+        \end{alertblock}
+    \end{cminipage}
+\end{frame}
 
 \begin{frame}{Order Selection}
     \begin{cminipage}{0.95\textwidth}
@@ -2167,6 +2329,7 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
             \item Student-t distribution is \textbf{essential} for financial data
             \item Leverage effect: asymmetric models \textbf{mandatory} for equities
             \item Systematic backtesting: not just ``looks good'', but \textbf{statistically tested}
+            \item \textbf{Even though returns are hard to predict, their volatility is often predictable}
         \end{itemize}
     \end{alertblock}
     \end{cminipage}
@@ -2783,6 +2946,29 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
         \end{itemize}
         }
     \end{exampleblock}
+\end{frame}
+
+%% Rec. 10: Competencies acquired
+\begin{frame}{Competencies Acquired}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{By the end of the chapter, the student should be able to:}
+            \begin{enumerate}\setlength{\itemsep}{2pt}
+                \item \textbf{Recognize} ARCH effects in data (ARCH-LM, Ljung-Box on $r_t^2$, Q-Q plot)
+                \item \textbf{Estimate and interpret} a GARCH(1,1) --- the role of $\alpha$, $\beta$, unconditional variance, half-life
+                \item \textbf{Decide} whether asymmetry is needed (leverage effect $\Rightarrow$ EGARCH / GJR-GARCH)
+                \item \textbf{Choose} an innovation distribution (Normal vs Student-t vs GED)
+                \item \textbf{Produce} a volatility forecast (rolling window, convergence to $\bar{\sigma}^2$)
+                \item \textbf{Calculate and validate} a VaR (Kupiec + Christoffersen backtesting)
+            \end{enumerate}
+        \end{block}
+        \vspace{0.2cm}
+        \begin{alertblock}{Central Message of the Chapter}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Even though returns are hard to predict, their volatility is often predictable.}
+                \item This is the fundamental idea that justifies the entire econometrics of volatility.
+            \end{itemize}
+        \end{alertblock}
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{}
