@@ -61,9 +61,9 @@ try:
 except Exception as e:
     print(f"arch error ({e}), using fallback values")
     adf_log_stat, adf_log_p = -0.14, 0.945
-    kpss_log_stat, kpss_log_p = 0.953, 0.003
+    kpss_log_stat, kpss_log_p = 0.95, 0.003
     adf_diff_stat, adf_diff_p = -4.95, 0.0001
-    kpss_diff_stat, kpss_diff_p = 0.101, 0.58
+    kpss_diff_stat, kpss_diff_p = 0.10, 0.58
 
 def fmt_p(p):
     if p < 0.001: return 'p < 0.001'

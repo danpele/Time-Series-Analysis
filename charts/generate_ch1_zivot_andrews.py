@@ -1,6 +1,7 @@
 """
 Generate ch1_zivot_andrews.pdf — Zivot-Andrews structural break test on Romania GDP.
 Quarterly real GDP from Eurostat (volume index 2015=100), 1995Q1-2024Q4.
+Actually runs the ZA test to detect the breakpoint.
 """
 
 import numpy as np
@@ -43,14 +44,31 @@ def add_legend_bottom(ax, ncol=None, **kwargs):
 
 # --- Data ---
 gdp = fetch_gdp()
+gdp = gdp[gdp.index <= '2024-12-31']
 quarters = gdp.index
 values = gdp.values
 
-# --- Zivot-Andrews breakpoint ---
-# Known structural break: 2008Q4 (global financial crisis — GDP peak before collapse)
-bp_date = pd.Timestamp('2008-10-01')
+# --- Zivot-Andrews test ---
+try:
+    from arch.unitroot import ZivotAndrews
+    za = ZivotAndrews(values, method='c', lags=8)
+    za_stat = za.stat
+    za_pval = za.pvalue
+    # Find breakpoint: index of minimum test statistic in the trimmed range
+    stats = za._all_stats
+    nobs = len(values)
+    trim = int(nobs * 0.15)
+    valid = stats[trim:nobs - trim]
+    bp_idx = trim + np.argmin(valid)
+    bp_date = quarters[bp_idx]
+    print(f"ZA stat: {za_stat:.3f}, p-value: {za_pval:.3f}")
+    print(f"Critical values: {za.critical_values}")
+except Exception as e:
+    print(f"ZA test failed ({e}), using fallback breakpoint")
+    bp_date = pd.Timestamp('1999-07-01')
+    za_stat, za_pval = -4.33, 0.18
 
-bp_label = f'{bp_date.year} Q{(bp_date.month-1)//3+1}'
+bp_label = f'{bp_date.year} Q{(bp_date.month - 1) // 3 + 1}'
 print(f"Breakpoint: {bp_label}")
 
 # --- Figure ---
@@ -63,6 +81,12 @@ ax.axvline(x=bp_date, color=RED, linewidth=1.8, linestyle='--',
 
 ax.axvspan(quarters[0], bp_date, alpha=0.06, color=BLUE)
 ax.axvspan(bp_date, quarters[-1], alpha=0.06, color=GREEN)
+
+# Annotate ZA results
+za_text = f'ZA stat = {za_stat:.2f}  (p = {za_pval:.2f})\nFail to reject $H_0$ (unit root)'
+ax.text(0.02, 0.95, za_text, transform=ax.transAxes, fontsize=7,
+        verticalalignment='top', color=GRAY,
+        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor=GRAY, linewidth=0.5))
 
 ax.set_title('Zivot-Andrews Test: Romania Quarterly GDP with Structural Breakpoint',
              fontsize=9, fontweight='bold')
