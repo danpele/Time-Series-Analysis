@@ -703,6 +703,46 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{De ce funcționează GARCH: intuiția centrală}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.2cm}
+        \begin{block}{Ideea fundamentală}
+            {\footnotesize
+            Randamentele financiare sunt greu de prognozat, dar \textbf{volatilitatea lor este prognozabilă}:
+            \[
+                r_t = \sigma_t \cdot z_t, \qquad z_t \sim \text{i.i.d.}(0,1)
+            \]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $r_t$ este impredictibil (piața eficientă), dar $\sigma_t^2$ \textbf{evoluează lent}
+                \item GARCH capturează acest lucru: \textbf{șocurile afectează volatilitatea pentru multe perioade}
+            \end{itemize}
+            }
+        \end{block}
+        \vspace{-0.15cm}
+        \begin{exampleblock}{Mecanismul GARCH(1,1)}
+            {\footnotesize
+            \[
+                \sigma_t^2 = \underbrace{\omega}_{\substack{\text{nivel de}\\\text{echilibru}}} + \underbrace{\alpha\, r_{t-1}^2}_{\substack{\text{informație}\\\text{nouă (șoc)}}} + \underbrace{\beta\, \sigma_{t-1}^2}_{\substack{\text{memoria}\\\text{volatilității}}}
+            \]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Ieri a fost o zi turbulentă?} ($r_{t-1}^2$ mare) $\Rightarrow$ volatilitatea de azi crește
+                \item \textbf{Ieri volatilitatea era deja ridicată?} ($\sigma_{t-1}^2$ mare) $\Rightarrow$ persistă și azi
+                \item Pe termen lung: volatilitatea revine la echilibru $\bar{\sigma}^2 = \omega / (1 - \alpha - \beta)$
+            \end{itemize}
+            }
+        \end{exampleblock}
+        \vspace{-0.15cm}
+        {\scriptsize
+        \begin{alertblock}{De ce este important}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Fără GARCH: VaR constant $\Rightarrow$ \textbf{subestimează} riscul în crize, \textbf{supraestimează} în perioade calme
+                \item Cu GARCH: VaR dinamic $\Rightarrow$ \textbf{se adaptează} la condițiile pieței $\Rightarrow$ management de risc realist
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{Estimarea modelelor GARCH}
     \begin{cminipage}{0.95\textwidth}
         \small
@@ -967,6 +1007,43 @@
             Distincția strict staționar / staționar în covarianță este analogă cu procesele cu cozi grele: un proces poate avea distribuția marginală bine definită fără a avea momente finite de ordin superior.
         \end{rmk}
         }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{EWMA: GARCH restricționat pentru RiskMetrics}
+    \begin{cminipage}{0.95\textwidth}
+        \footnotesize
+        \begin{defn}[Exponentially Weighted Moving Average]
+            Modelul \textbf{EWMA} (J.P.\ Morgan RiskMetrics, 1996):
+            \[
+                \sigma_t^2 = \lambda\, \sigma_{t-1}^2 + (1 - \lambda)\, r_{t-1}^2, \qquad \lambda \in (0,1)
+            \]
+        \end{defn}
+        \vspace{-0.15cm}
+        \begin{block}{Relația cu GARCH}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item EWMA = \textbf{IGARCH(1,1) cu $\omega = 0$}: \quad $\alpha = 1 - \lambda$, \; $\beta = \lambda$, \; $\alpha + \beta = 1$
+                \item Standard industrial: $\lambda = 0.94$ (date zilnice), $\lambda = 0.97$ (date lunare)
+                \item \textbf{Nicio estimare necesară} --- parametru fix $\Rightarrow$ simplu, dar rigid
+            \end{itemize}
+        \end{block}
+        \vspace{-0.15cm}
+        \begin{alertblock}{EWMA vs GARCH(1,1)}
+            \begin{center}
+            {\footnotesize
+            \begin{tabular}{lcc}
+                \toprule
+                & \textbf{EWMA} & \textbf{GARCH(1,1)} \\
+                \midrule
+                Parametri estimați & 0 ($\lambda$ fix) & 3 ($\omega, \alpha, \beta$) \\
+                Mean-reversion & \textcolor{Crimson}{Nu} (persistență infinită) & \textcolor{Forest}{Da} (dacă $\alpha + \beta < 1$) \\
+                Varianță pe termen lung & \textcolor{Crimson}{Nedefinită} & \textcolor{Forest}{$\omega / (1 - \alpha - \beta)$} \\
+                Utilizare & Basel II, screening rapid & Estimare precisă, VaR \\
+                \bottomrule
+            \end{tabular}
+            }
+            \end{center}
+        \end{alertblock}
     \end{cminipage}
 \end{frame}
 
