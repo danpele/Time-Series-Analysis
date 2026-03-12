@@ -317,6 +317,30 @@
     \quantlet{TSA\_ch5\_arch\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_arch_sim}
 \end{frame}
 
+\begin{frame}{ARCH(1) Simulation: What Do We Observe?}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Reading the Simulation Plot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Small $\alpha$} (e.g., 0.1): series looks almost like white noise --- mild clustering, rare spikes
+                \item \textbf{Moderate $\alpha$} (e.g., 0.5): visible spikes, but they die out quickly (1--2 periods) --- ``short memory''
+                \item \textbf{Large $\alpha$} (e.g., 0.9): explosive volatility --- very large spikes, but still no real persistence
+            \end{itemize}
+        \end{block}
+        \begin{alertblock}{Key Difference: ARCH vs GARCH}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item ARCH reacts only to the \textbf{last shock} ($\varepsilon_{t-1}^2$) --- volatility rises sharply but falls just as sharply. It cannot capture the long high-volatility episodes observed in markets. GARCH adds $\beta\sigma_{t-1}^2$ = ``memory''.
+            \end{itemize}
+        \end{alertblock}
+        \begin{exampleblock}{Visual Example}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Compare: in the ARCH(1) simulation, the $\pm 2\sigma$ bands have narrow spikes (1 day). On real S\&P 500, volatility episodes last weeks $\Rightarrow$ ARCH is insufficient.
+            \end{itemize}
+        \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{The ARCH(q) Model --- Engle (1982)}
     \begin{cminipage}{0.95\textwidth}
     \small
@@ -416,6 +440,44 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Derivation: Kurtosis of GARCH(1,1)}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    For $\varepsilon_t = \sigma_t z_t$ with $z_t \sim N(0,1)$ and $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$:
+
+    \textbf{Step 1}: $\E[\varepsilon_t^4] = \E[\sigma_t^4 z_t^4] = 3\E[\sigma_t^4]$ (since $\E[z^4] = 3$)
+
+    \textbf{Step 2}: Using $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$, square both sides:
+    \vspace{-2mm}
+    \[
+        \E[\sigma_t^4] = \E[(\omega + \alpha\varepsilon_{t-1}^2 + \beta\sigma_{t-1}^2)^2]
+    \]
+    \vspace{-2mm}
+
+    Expand and use stationarity ($\E[\sigma_t^4] = \E[\sigma_{t-1}^4]$, $\E[\varepsilon_t^4] = 3\E[\sigma_t^4]$):
+    \vspace{-2mm}
+    \[
+        \E[\sigma_t^4] = \omega^2 + 2\omega(\alpha+\beta)\bar{\sigma}^2 + (3\alpha^2 + 2\alpha\beta + \beta^2)\E[\sigma_{t-1}^4]
+    \]
+    \vspace{-2mm}
+
+    \textbf{Step 3}: Solving the recursion:
+    \vspace{-2mm}
+    \[
+        \boxed{\kappa_{\varepsilon} = \frac{\E[\varepsilon_t^4]}{(\E[\varepsilon_t^2])^2} = 3 \cdot \frac{1 - (\alpha+\beta)^2}{1 - (\alpha+\beta)^2 - 2\alpha^2}}
+    \]
+    }
+    \vspace{-2mm}
+    \begin{block}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Requires $1 - (\alpha+\beta)^2 - 2\alpha^2 > 0$ for finite fourth moment
+            \item GARCH generates \textbf{more kurtosis} than ARCH because $\beta > 0$ amplifies persistence
+            \item With $\alpha = 0.088$, $\beta = 0.900$: $\kappa \approx 5.6$ (vs.\ ARCH(1): $\kappa \approx 3.05$)
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{Theory vs Empirics: The Kurtosis Gap}
     \begin{cminipage}{0.95\textwidth}
     \small
@@ -443,6 +505,79 @@
             \item Both combined: Student-$t$ GARCH captures $\kappa \gg 3$ observed in practice
         \end{itemize}
     \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%% --- Innovation distributions ---
+
+\begin{frame}{The Normal (Gaussian) Distribution}
+    \vspace{-0.2cm}
+    {\small
+        \begin{block}{Probability Density Function (PDF)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $f(x \mid \mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} \exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$
+                \item Parameters: $\mu$ (mean), $\sigma > 0$ (standard deviation)
+                \item Kurtosis: $\kappa = 3$ (reference --- the mesokurtic distribution)
+                \item Limitation: \textbf{underestimates} the frequency of extreme values in financial series
+            \end{itemize}
+        \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.42\textheight, keepaspectratio]{garch_dist_normal.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_distributions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_distributions}
+\end{frame}
+
+\begin{frame}{The Student-$t$ Distribution}
+    \vspace{-0.2cm}
+    {\small
+        \begin{block}{Probability Density Function (PDF)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $f(x \mid \nu) = \frac{\Gamma\!\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\;\Gamma\!\left(\frac{\nu}{2}\right)} \left(1 + \frac{x^2}{\nu}\right)^{-\frac{\nu+1}{2}}$
+                \item Parameter: $\nu > 2$ (degrees of freedom); finite variance only if $\nu > 2$
+                \item Kurtosis: $\kappa = 3 + \frac{6}{\nu - 4}$ (for $\nu > 4$); \quad $\nu \to \infty \Rightarrow N(0,1)$
+                \item \textbf{Advantage}: fat tails controlled by $\nu$ --- captures extreme values in financial series
+            \end{itemize}
+        \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.42\textheight, keepaspectratio]{garch_dist_student.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_distributions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_distributions}
+\end{frame}
+
+\begin{frame}{The GED (Generalized Error Distribution)}
+    \vspace{-0.2cm}
+    {\small
+        \begin{block}{Probability Density Function (PDF)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $f(x \mid \nu) = \frac{\nu \exp\!\left(-\frac{1}{2}\left|\frac{x}{\lambda}\right|^\nu\right)}{\lambda \cdot 2^{1+1/\nu} \cdot \Gamma(1/\nu)}$, \quad $\lambda = \sqrt{2^{-2/\nu} \cdot \Gamma(1/\nu) / \Gamma(3/\nu)}$
+                \item Parameter: $\nu > 0$ (shape); \quad $\nu = 2$: Normal; \quad $\nu = 1$: Laplace; \quad $\nu \to \infty$: Uniform
+                \item Kurtosis: $\kappa = \frac{\Gamma(1/\nu)\,\Gamma(5/\nu)}{\Gamma(3/\nu)^2}$; \quad $\nu < 2$: fat tails; \quad $\nu > 2$: thin tails
+                \item \textbf{Advantage}: maximum flexibility --- a single parameter controls the entire distribution shape
+            \end{itemize}
+        \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.42\textheight, keepaspectratio]{garch_dist_ged.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_distributions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_distributions}
+\end{frame}
+
+\begin{frame}{Correlogram of Squared Residuals}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{block}{Visual Diagnostic for ARCH Effects}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item If $\hat{\varepsilon}_t$ are i.i.d., then $\hat{\varepsilon}_t^2$ should show no autocorrelation
+            \item Significant ACF of $\hat{\varepsilon}_t^2$ at multiple lags $\Rightarrow$ \textbf{conditional heteroskedasticity}
+            \item Complements the Engle LM test with an intuitive visualization
+        \end{itemize}
+    \end{block}
+    }
+    \begin{center}
+        \includegraphics[width=0.85\textwidth, height=0.45\textheight, keepaspectratio]{ch5_garch_acf_squared.pdf}
+    \end{center}
     \end{cminipage}
 \end{frame}
 
@@ -595,6 +730,32 @@
     \quantlet{TSA\_ch5\_garch\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_garch_sim}
 \end{frame}
 
+\begin{frame}{GARCH(1,1) Simulation: What Do We Observe?}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Reading the Simulation Plot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Small $\alpha + \beta$} (e.g., 0.7): volatility reverts quickly to the mean --- the series looks almost like white noise with slight amplitude variations
+                \item \textbf{Moderate $\alpha + \beta$} (e.g., 0.95): high-volatility episodes last weeks --- similar to real financial series
+                \item \textbf{$\alpha + \beta$ close to 1} (e.g., 0.99): volatility persists for months --- half-life $\approx 69$ days
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{Visual Identification: Half-Life}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Half-life: $HL = \ln(0.5) / \ln(\alpha + \beta)$
+                \item With $\alpha + \beta = 0.95$: $HL \approx 14$ days (2 weeks)
+                \item With $\alpha + \beta = 0.988$: $HL \approx 58$ days (3 months) --- typical for S\&P 500
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{Practical Rule}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item If the $\pm 2\sigma_t$ bands do not revert to normal within 1--2 months, the market has high persistence ($\alpha + \beta > 0.97$)
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{Derivation: Unconditional Variance of GARCH(1,1)}
 \small
     \begin{proof}[Derivation]
@@ -689,34 +850,34 @@
 
 \begin{frame}{Why GARCH works: the core intuition}
     \begin{cminipage}{0.95\textwidth}
-        \vspace{-0.2cm}
+        \vspace{-0.3cm}
+        {\scriptsize
         \begin{block}{The fundamental idea}
-            {\footnotesize
             Financial returns are hard to predict, but \textbf{their volatility is predictable}:
+            \vspace{-3mm}
             \[
                 r_t = \sigma_t \cdot z_t, \qquad z_t \sim \text{i.i.d.}(0,1)
             \]
+            \vspace{-5mm}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item $r_t$ is unpredictable (efficient market), but $\sigma_t^2$ \textbf{evolves slowly}
                 \item GARCH captures this: \textbf{shocks affect volatility for many periods}
             \end{itemize}
-            }
         \end{block}
-        \vspace{-0.15cm}
+        \vspace{-2mm}
         \begin{exampleblock}{The GARCH(1,1) mechanism}
-            {\footnotesize
+            \vspace{-3mm}
             \[
                 \sigma_t^2 = \underbrace{\omega}_{\substack{\text{equilibrium}\\\text{level}}} + \underbrace{\alpha\, r_{t-1}^2}_{\substack{\text{new}\\\text{information (shock)}}} + \underbrace{\beta\, \sigma_{t-1}^2}_{\substack{\text{volatility}\\\text{memory}}}
             \]
+            \vspace{-4mm}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{Was yesterday turbulent?} ($r_{t-1}^2$ large) $\Rightarrow$ today's volatility rises
                 \item \textbf{Was volatility already high?} ($\sigma_{t-1}^2$ large) $\Rightarrow$ it persists today
                 \item Long-run: volatility reverts to equilibrium $\bar{\sigma}^2 = \omega / (1 - \alpha - \beta)$
             \end{itemize}
-            }
         \end{exampleblock}
-        \vspace{-0.15cm}
-        {\scriptsize
+        \vspace{-2mm}
         \begin{alertblock}{Why it matters}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item Without GARCH: constant VaR $\Rightarrow$ \textbf{underestimates} risk in crises, \textbf{overestimates} in calm periods
@@ -749,6 +910,37 @@
     \begin{alertblock}{Practical Note}
         Student-t distribution typically provides better fit for financial returns due to fat tails (kurtosis $> 3$).
     \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Student-$t$ Log-Likelihood}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Why Student-$t$?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Gaussian innovations underestimate fat tails: kurtosis fixed at 3
+                \item Student-$t$ adds a parameter $\nu > 2$ (degrees of freedom) that controls tail thickness
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{defn}[Standardized Student-$t$ Log-Likelihood]
+            \vspace{-2mm}
+            \[
+                \ell_t(\theta, \nu) = \ln\Gamma\!\left(\frac{\nu+1}{2}\right) - \ln\Gamma\!\left(\frac{\nu}{2}\right) - \frac{1}{2}\ln\bigl[(\nu-2)\pi\sigma_t^2\bigr] - \frac{\nu+1}{2}\ln\!\left(1 + \frac{\varepsilon_t^2}{(\nu-2)\sigma_t^2}\right)
+            \]
+            \vspace{-2mm}
+
+            where $\Gamma(\cdot)$ is the Gamma function, $\nu > 2$, and $\sigma_t^2$ is from the GARCH equation.
+        \end{defn}
+        \vspace{-1mm}
+        \begin{alertblock}{Properties}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item When $\nu \to \infty$: converges to the Normal log-likelihood
+                \item Student-$t$ kurtosis: $3(\nu-2)/(\nu-4)$ for $\nu > 4$ (e.g., $\nu = 6 \Rightarrow \kappa = 6$)
+                \item $\nu$ is estimated jointly with $(\omega, \alpha, \beta)$ via MLE
+            \end{itemize}
+        \end{alertblock}
+    }
     \end{cminipage}
 \end{frame}
 
@@ -898,6 +1090,32 @@
     \quantlet{TSA\_ch5\_igarch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_igarch}
 \end{frame}
 
+\begin{frame}{IGARCH: What Do We Observe in the Simulated Series?}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Reading the Comparison Plot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Standard GARCH} ($\alpha + \beta < 1$): volatility rises after shocks but \textbf{reverts to the equilibrium level} $\bar{\sigma}^2$ --- we observe ``waves'' with decreasing amplitude
+                \item \textbf{IGARCH} ($\alpha + \beta = 1$): volatility has \textbf{no anchor} --- after a large shock, the elevated level persists indefinitely, with no tendency to revert
+                \item Visually: the IGARCH series ``wanders'' (random walk in variance), while GARCH oscillates around the mean
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{How to Detect IGARCH in Practice?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Estimate GARCH(1,1) and check: if $\hat{\alpha} + \hat{\beta} > 0.99$, consider IGARCH
+                \item ACF of $\varepsilon_t^2$ decays very slowly (like a long-memory process)
+                \item Frequently encountered in currency markets (FX) and some commodities
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{Caution}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item IGARCH may be an artifact of regime changes --- verify with Markov-switching models!
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{IGARCH --- Integrated GARCH}
     \quantlet{TSA\_ch5\_igarch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_igarch}
     \begin{cminipage}{0.95\textwidth}
@@ -990,9 +1208,11 @@
 
 \begin{frame}{EWMA: Restricted GARCH for RiskMetrics}
     \begin{cminipage}{0.95\textwidth}
-        \footnotesize
+        \vspace{-0.2cm}
+        {\scriptsize
         \begin{defn}[Exponentially Weighted Moving Average]
             The \textbf{EWMA} model (J.P.\ Morgan RiskMetrics, 1996):
+            \vspace{-2mm}
             \[
                 \sigma_t^2 = \lambda\, \sigma_{t-1}^2 + (1 - \lambda)\, r_{t-1}^2, \qquad \lambda \in (0,1)
             \]
@@ -1007,8 +1227,8 @@
         \end{block}
         \vspace{-0.15cm}
         \begin{alertblock}{EWMA vs GARCH(1,1)}
+            \vspace{-1mm}
             \begin{center}
-            {\footnotesize
             \begin{tabular}{lcc}
                 \toprule
                 & \textbf{EWMA} & \textbf{GARCH(1,1)} \\
@@ -1019,9 +1239,192 @@
                 Use case & Basel II, quick screening & Precise estimation, VaR \\
                 \bottomrule
             \end{tabular}
-            }
             \end{center}
         \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{EWMA vs GARCH: Visual Comparison}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item EWMA (blue) reacts similarly to GARCH (red), but does not revert to the unconditional level
+    \end{itemize}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{garch_ewma_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_ewma}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_ewma}
+\end{frame}
+
+\begin{frame}{EWMA: Interpretation and What We Observe}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Reading the EWMA Series}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The EWMA volatility series closely tracks squared returns --- fast reaction, no filtering
+                \item With $\lambda = 0.94$: yesterday's weight is $6\%$, the rest comes from exponentially decaying history
+                \item Visually: EWMA volatility ``sticks'' to spikes --- rises quickly but does not revert to a fixed level
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{When Is EWMA Sufficient?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Quick screening}: no estimation required --- computable immediately on any series
+                \item \textbf{Basel II/III}: RiskMetrics EWMA remains accepted for internal VaR
+                \item \textbf{Real-time monitoring}: simple to implement in trading systems
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{Limitations Visible in the Plot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item EWMA does not revert to an equilibrium level $\bar{\sigma}^2$ (has no $\omega > 0$). After crises, EWMA volatility remains elevated longer than GARCH --- \textbf{overreacts on the medium term}.
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{CGARCH --- Component GARCH (Engle \& Lee, 1999)}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Motivation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GARCH(1,1) has a \textbf{single persistence component}: it cannot distinguish between short- and long-duration shocks
+                \item CGARCH decomposes variance into a \textbf{permanent} (trend) + \textbf{transitory} component
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{defn}[CGARCH(1,1)]
+            \vspace{-2mm}
+            \begin{align*}
+                \sigma_t^2 &= q_t + \alpha(\varepsilon_{t-1}^2 - q_{t-1}) + \beta(\sigma_{t-1}^2 - q_{t-1}) & \text{(transitory component)}\\
+                q_t &= \bar{\omega} + \rho\,(q_{t-1} - \bar{\omega}) + \phi\,(\varepsilon_{t-1}^2 - \sigma_{t-1}^2) & \text{(permanent component)}
+            \end{align*}
+            \vspace{-2mm}
+
+            where $q_t$ is the long-run trend, $\rho$ controls permanent persistence ($\rho > \alpha+\beta$).
+        \end{defn}
+        \vspace{-1mm}
+        \begin{alertblock}{Interpretation}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $q_t$ varies slowly (macroeconomic factors); $\sigma_t^2 - q_t$ reacts quickly to shocks
+                \item Allows different half-lives: permanent $\sim$years, transitory $\sim$weeks
+                \item Available in Python: \texttt{arch} with manual specification
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{CGARCH Simulation: Permanent vs Transitory Component}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item $q_t$ (blue, thick) = long-run trend; $\sigma_t^2$ (red, thin) = total volatility
+    \end{itemize}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{garch_cgarch_simulation.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_cgarch\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_cgarch_sim}
+\end{frame}
+
+\begin{frame}{CGARCH: What Do We Observe in Practice?}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \vspace{-0.2cm}
+        \begin{block}{Interpreting the Two Components}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Permanent component} $q_t$: moves slowly --- macroeconomic factors (inflation, business cycle)
+                \item \textbf{Transitory component} $\sigma_t^2 - q_t$: reacts quickly to news (earnings, Fed, geopolitics)
+                \item Visually: $q_t$ = smooth moving average; $\sigma_t^2$ oscillates around it
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Example: S\&P 500}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Permanent component rises 2005--2008, explodes 2008--2009, declines slowly afterward
+                \item Transitory component: spikes at Flash Crash (2010), Brexit (2016), COVID (2020)
+                \item Half-life: permanent $\approx 2$--$3$ years; transitory $\approx 2$--$4$ weeks
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-1mm}
+        \begin{alertblock}{When to Use CGARCH?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Long-horizon VaR (1 year+) --- the permanent component matters for Solvency II, stress testing
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{FIGARCH --- Fractionally Integrated GARCH}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Motivation: Long Memory in Volatility}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item ACF of $r_t^2$ decays \textbf{hyperbolically} (not exponentially) $\Rightarrow$ long memory
+                \item GARCH: exponential decay; IGARCH: infinite persistence --- neither captures long memory
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{defn}[FIGARCH(1,$d$,1) --- Baillie, Bollerslev \& Mikkelsen (1996)]
+            \vspace{-2mm}
+            \[
+                \bigl[1 - \beta L\bigr]\sigma_t^2 = \omega + \bigl[1 - \beta L - (1-\phi L)(1-L)^d\bigr]\varepsilon_t^2
+            \]
+            \vspace{-2mm}
+
+            where $d \in [0,1]$ is the fractional integration parameter: $d=0$ $\Rightarrow$ GARCH, $d=1$ $\Rightarrow$ IGARCH.
+        \end{defn}
+        \vspace{-1mm}
+        \begin{alertblock}{Key Properties}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Impulse weights $\lambda_k \sim k^{d-1}$ decay hyperbolically: old shocks matter, but less and less
+                \item Unconditional variance: finite only if $d < 1$ (unlike IGARCH)
+                \item Typical empirical values: $\hat{d} \approx 0.3$--$0.5$ for stocks (Baillie et al., 1996)
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{FIGARCH Simulation: GARCH vs FIGARCH vs IGARCH}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item GARCH: exponential reversion; FIGARCH: hyperbolic (slow) reversion; IGARCH: infinite persistence
+    \end{itemize}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{garch_figarch_simulation.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_figarch\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_figarch_sim}
+\end{frame}
+
+\begin{frame}{FIGARCH: Interpretation and Practical Applications}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{What Does $d$ Mean in Practice?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{$d = 0$} (GARCH): ACF of $r_t^2$ decays exponentially --- shocks die out quickly
+                \item \textbf{$d = 1$} (IGARCH): ACF does not decay --- shocks persist infinitely
+                \item \textbf{$0 < d < 1$} (FIGARCH): ACF decays \textbf{hyperbolically} ($\sim k^{2d-1}$) --- old shocks matter, but less and less
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{Empirical Results}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Equities} (S\&P 500, DAX): $\hat{d} \approx 0.35$--$0.50$ --- moderate long memory
+                \item \textbf{Forex} (EUR/USD): $\hat{d} \approx 0.40$--$0.60$ --- higher persistence
+                \item \textbf{Crypto} (Bitcoin): $\hat{d} \approx 0.25$--$0.45$ --- variable over time
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{FIGARCH vs IGARCH: How to Choose?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item If $\hat{\alpha} + \hat{\beta} \approx 1$ in GARCH, test FIGARCH: if $\hat{d} < 1$, persistence is not infinite --- just long. FIGARCH provides a more realistic picture than spurious IGARCH.
+            \end{itemize}
+        \end{alertblock}
+    }
     \end{cminipage}
 \end{frame}
 
@@ -1059,10 +1462,74 @@
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{Markov-Switching GARCH Simulation: Volatility Regimes}
+    \vspace{-0.2cm}
+    {\scriptsize
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item Calm regime (blue) vs turbulent regime (red) --- volatility jumps between discrete levels
+    \end{itemize}
+    }
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{garch_markov_switching.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_markov\_garch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_markov_garch}
+\end{frame}
+
+\begin{frame}{Regime Changes: Interpretation and Applications}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{What Do We See in Practice?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Markov-switching GARCH identifies 2--3 regimes:
+                    \textbf{calm} ($\sigma \approx 0.5$--$1\%$) vs \textbf{turbulent} ($\sigma \approx 2$--$4\%$)
+                \item The probability of the turbulent regime spikes sharply during crises (2008, 2020)
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{Structural Breaks Detected with ICSS on S\&P 500}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{2001}: dot-com crash + 9/11; \; \textbf{2008}: global financial crisis; \; \textbf{2020}: COVID-19
+                \item Between breaks: GARCH with different parameters is more accurate than GARCH over the entire period
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{Practical Implication}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item If GARCH gives $\hat{\alpha} + \hat{\beta} \approx 1$, check whether it is real IGARCH or an artifact of regime changes. The ICSS test helps decide.
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
 %=============================================================================
 % SECTION 4: ASYMMETRIC GARCH MODELS
 %=============================================================================
 \section{Asymmetric GARCH Models}
+
+\begin{frame}{From Symmetric GARCH to Asymmetric Models}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{What We Have Learned So Far}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GARCH(1,1) captures volatility clustering and fat tails
+                \item IGARCH, CGARCH, FIGARCH --- different types of persistence
+            \end{itemize}
+        \end{block}
+        \vspace{-0.15cm}
+        \begin{rmk}[The Symmetry Limitation of Standard GARCH]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GARCH treats shocks \textbf{symmetrically}: $\varepsilon_{t-1}^2$ does not distinguish the sign of $\varepsilon_{t-1}$
+                \item Empirically: a $-5\%$ shock increases volatility more than $+5\%$ --- \textbf{leverage effect} (Black, 1976)
+            \end{itemize}
+        \end{rmk}
+        \vspace{-0.15cm}
+        \begin{exampleblock}{Asymmetric Models Presented}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item EGARCH $\cdot$ GJR-GARCH $\cdot$ TGARCH $\cdot$ APARCH --- all distinguish the sign of the shock
+            \end{itemize}
+        \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
 
 \begin{frame}{Leverage Effect}
     \begin{cminipage}{0.95\textwidth}
@@ -1106,6 +1573,33 @@
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{garch_egarch_simulation.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_egarch\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_egarch_sim}
+\end{frame}
+
+\begin{frame}{EGARCH Simulation: What Do We Observe?}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\scriptsize
+        \begin{block}{Reading the Simulation Plot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Left panel} ($\gamma = 0$, symmetric): volatility reacts equally to positive and negative shocks --- similar to standard GARCH
+                \item \textbf{Right panel} ($\gamma < 0$, asymmetric): after \textbf{negative} shocks, volatility rises sharply and persistently; after positive shocks, the reaction is muted
+                \item Visually: volatility spikes are \textbf{taller} and \textbf{wider} after market declines
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{exampleblock}{Numerical Example: Interpreting $\gamma$}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item With $\gamma = -0.15$: a negative standardized shock $z_{t-1} = -2$ contributes $\alpha |{-2}| + \gamma({-2}) = 0.10 \times 2 + (-0.15)({-2}) = 0.50$ to $\ln(\sigma_t^2)$. A positive shock $z_{t-1} = +2$ contributes $0.10 \times 2 + (-0.15)(+2) = -0.10$. Difference: \textbf{0.60} units on the log scale!
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-1mm}
+        \begin{alertblock}{Implication for Risk Management}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item EGARCH captures the fact that markets ``take the elevator down and the stairs up'' --- volatility rises fast but falls slowly.
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{The EGARCH Model --- Nelson (1991)}
@@ -1164,10 +1658,49 @@
     \quantlet{TSA\_ch5\_nic}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_nic}
 \end{frame}
 
+\begin{frame}{EGARCH: Practical Applications}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{When to Use EGARCH?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Equity markets and indices} --- pronounced leverage effect (Black, 1976)
+                \item \textbf{Unique advantage}: no positivity constraints ($\ln\sigma_t^2$ can take any real value)
+                \item Useful when symmetric GARCH gives $\hat{\alpha} + \hat{\beta} > 1$ (artifact of ignoring asymmetry)
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{Example: S\&P 500 --- GARCH vs EGARCH}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GARCH(1,1): underestimates volatility after crashes (treats shocks symmetrically)
+                \item EGARCH: volatility rises faster after drops, declines more slowly
+                \item During COVID crisis (March 2020), EGARCH forecasts VaR 15--20\% higher
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{Practical Rule}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Test EGARCH vs GARCH on real data: if AIC/BIC favors EGARCH, the market exhibits significant leverage.
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{EGARCH: S\&P 500 --- Model Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.75\textheight, keepaspectratio]{garch_sp500_comparison.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_sp500}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_sp500}
+\end{frame}
+
 \begin{frame}{The GJR-GARCH Model}
     \begin{cminipage}{0.95\textwidth}
     \vspace{-0.3cm}
     {\footnotesize
+    \begin{alertblock}{Why GJR? An Alternative to EGARCH}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item EGARCH models $\ln(\sigma_t^2)$ $\Rightarrow$ hard to interpret economically. GJR-GARCH stays on the $\sigma_t^2$ scale but adds an indicator $I_{t-1}$ that activates an extra term for negative shocks.
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-0.15cm}
     \begin{defn}[GJR-GARCH(1,1)]
         Glosten, Jagannathan \& Runkle (1993):
         $\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \gamma \varepsilon_{t-1}^2 \cdot I_{t-1} + \beta \sigma_{t-1}^2$
@@ -1207,7 +1740,151 @@
     \quantlet{TSA\_ch5\_gjr\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_gjr_sim}
 \end{frame}
 
+\begin{frame}{GJR-GARCH: What Do We Observe in the Simulated Series?}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    {\scriptsize
+        \begin{block}{Reading the Simulation Plot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item The indicator $I_{t-1} = \mathbb{1}(\varepsilon_{t-1} < 0)$ ``activates'' only for negative shocks
+                \item Asymmetric impact: $\varepsilon_{t-1} = -3\%$ $\Rightarrow$ contribution $= (\alpha + \gamma) \times 0.09 = 0.15 \times 0.09$
+                \item Symmetric impact: $\varepsilon_{t-1} = +3\%$ $\Rightarrow$ contribution $= \alpha \times 0.09 = 0.05 \times 0.09$
+                \item Visually: after down days, volatility bands widen by \textbf{3$\times$ as much}
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{Numerical Example: S\&P 500}
+            With $\alpha = 0.05$, $\gamma = 0.10$, $\beta = 0.88$, $\omega = 0.00001$:
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Good day ($+2\%$): $\Delta\sigma_t^2 \approx 0.05 \times 0.04\% = 0.002\%$
+                \item Bad day ($-2\%$): $\Delta\sigma_t^2 \approx (0.05 + 0.10) \times 0.04\% = 0.006\%$ --- \textbf{triple!}
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{GJR vs EGARCH: When to Choose GJR?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item GJR operates on the $\sigma_t^2$ scale $\Rightarrow$ coefficients are directly interpretable as marginal impacts. EGARCH operates on $\ln(\sigma_t^2)$ $\Rightarrow$ harder to read economically, but no positivity constraints.
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{The APARCH Model --- Ding, Granger \& Engle (1993)}
+    \begin{cminipage}{0.95\textwidth}
+        \vspace{-0.3cm}
+    {\footnotesize
+        \begin{defn}[APARCH(1,1)]
+            \textbf{Asymmetric Power ARCH} --- the unifying model of the GARCH family:
+            \vspace{-2mm}
+            \[
+                \sigma_t^\delta = \omega + \alpha_1 (|\varepsilon_{t-1}| - \gamma_1 \varepsilon_{t-1})^\delta + \beta_1 \sigma_{t-1}^\delta
+            \]
+            \vspace{-2mm}
+
+            where $\delta > 0$ is the power parameter and $|\gamma_1| < 1$ captures asymmetry.
+        \end{defn}
+        \vspace{-1mm}
+        \begin{block}{Special Cases}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\delta = 2$, $\gamma_1 = 0$: \textbf{GARCH(1,1)} standard
+                \item $\delta = 2$, $\gamma_1 \neq 0$: \textbf{GJR-GARCH}
+                \item $\delta = 1$, $\gamma_1 \neq 0$: \textbf{TGARCH} (Zakoian, 1994)
+                \item $\delta = 1$, $\gamma_1 = 0$: \textbf{AVGARCH} (Taylor, 1986)
+            \end{itemize}
+        \end{block}
+        \vspace{-1mm}
+        \begin{alertblock}{Why APARCH Matters}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Estimating $\delta$ from data (not fixed at 1 or 2) can \textbf{improve forecasts}
+                \item Empirical studies: $\hat{\delta} \approx 1.0$--$1.5$ for equities (Ding et al., 1993)
+                \item Provides a \textbf{unifying framework} for comparing asymmetric models
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{APARCH Simulation: Special Cases}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    {\footnotesize
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item APARCH unifies the entire GARCH family: $\delta$ and $\gamma$ control power and asymmetry
+    \end{itemize}
+    }
+    \end{cminipage}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{garch_aparch_simulation.pdf}
+    \end{center}
+    \quantlet{TSA\_ch5\_aparch\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_aparch_sim}
+\end{frame}
+
+\begin{frame}{APARCH: Interpretation and Practical Applications}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.2cm}
+    {\scriptsize
+        \begin{block}{What Does the Estimate of $\delta$ Tell Us?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item $\hat{\delta} \approx 2$: the market behaves like standard GARCH (variance is the natural measure)
+                \item $\hat{\delta} \approx 1$: modeling standard deviation ($\sigma_t$) is more appropriate --- like TGARCH
+                \item $\hat{\delta} < 1$: absolute returns have stronger structure than squares
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{Typical Empirical Results}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item \textbf{Equities}: $\hat{\delta} \approx 1.0$--$1.5$, $\hat{\gamma} \approx 0.3$--$0.8$ (strong leverage)
+                \item \textbf{Forex}: $\hat{\delta} \approx 1.5$--$2.0$, $\hat{\gamma} \approx 0$ (symmetric, no leverage)
+                \item \textbf{Crypto}: $\hat{\delta} \approx 1.0$--$1.3$, $\hat{\gamma}$ variable (depends on the period)
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{When to Use APARCH?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item When we do not know a priori what power ($\delta$) or what level of asymmetry ($\gamma$) is optimal --- APARCH lets the data decide. Useful as a reference model for testing restrictions (LR test vs GARCH, GJR, etc.).
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Stationarity of Asymmetric Models}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Stationarity Conditions --- Asymmetric Models}
+            \begin{center}
+            \begin{tabular}{lll}
+                \toprule
+                \textbf{Model} & \textbf{Condition} & \textbf{Notes} \\
+                \midrule
+                GARCH(1,1) & $\alpha + \beta < 1$ & Covariance-stationarity \\
+                GJR-GARCH & $\alpha + \gamma/2 + \beta < 1$ & $\gamma/2$ because $P(\varepsilon<0) = 1/2$ \\
+                EGARCH(1,1) & $|\beta| < 1$ & $\ln \sigma_t^2$ is AR(1)-like \\
+                TGARCH(1,1) & $(\alpha^+ + \alpha^-)/2 + \beta < 1$ & Mean of positive/negative impact \\
+                APARCH(1,1) & $\alpha_1 \E[(|z|-\gamma z)^\delta] + \beta_1 < 1$ & Depends on distribution of $z_t$ \\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+        \end{block}
+        \vspace{-1mm}
+                \begin{prop}[EGARCH Stationarity (Nelson, 1991)]
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item EGARCH models $\ln \sigma_t^2$ as an AR(1) process with innovations $g(z_{t-1})$
+                \item $|\beta| < 1$: \textbf{necessary and sufficient} for strict stationarity
+                \item \textbf{Note}: do not confuse with $\alpha + \beta < 1$ from GARCH --- $\alpha$ in EGARCH has a different role
+            \end{itemize}
+        \end{prop}
+    }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{TGARCH --- Threshold GARCH}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \vspace{-0.2cm}
+    \begin{alertblock}{Why TGARCH? Direct Modeling of Standard Deviation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item GARCH/EGARCH/GJR model $\sigma_t^2$. TGARCH models $\sigma_t$ directly, allowing separate coefficients $\alpha^+$, $\alpha^-$ for positive and negative shocks --- more intuitive interpretation.
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-0.15cm}
     \begin{defn}[TGARCH(1,1)]
         Zakoian (1994) models standard deviation:
         $\sigma_t = \omega + \alpha^+ \varepsilon_{t-1}^+ + \alpha^- \varepsilon_{t-1}^- + \beta \sigma_{t-1}$
@@ -1217,7 +1894,6 @@
 
     \begin{block}{Comparison of Asymmetric Models}
         \begin{center}
-            \small
             \begin{tabular}{lcc}
                 \toprule
                 \textbf{Model} & \textbf{Specification} & \textbf{Leverage} \\
@@ -1226,10 +1902,13 @@
                 EGARCH & $\ln(\sigma_t^2)$ & Yes ($\gamma < 0$) \\
                 GJR-GARCH & $\sigma_t^2$ with indicator & Yes ($\gamma > 0$) \\
                 TGARCH & $\sigma_t$ & Yes ($\alpha^- > \alpha^+$) \\
+                APARCH & $\sigma_t^\delta$ & Yes ($\gamma_i \neq 0$) \\
                 \bottomrule
             \end{tabular}
         \end{center}
     \end{block}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{TGARCH Simulation: Asymmetric Volatility Response}
@@ -1246,6 +1925,32 @@
         \includegraphics[width=0.95\textwidth, height=0.50\textheight, keepaspectratio]{garch_tgarch_simulation.pdf}
     \end{center}
     \quantlet{TSA\_ch5\_tgarch\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_tgarch_sim}
+\end{frame}
+
+\begin{frame}{TGARCH: What Do We Observe in the Simulated Series?}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Reading the Simulation Plot}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item With $\alpha^- = 0.15$ and $\alpha^+ = 0.03$, a negative shock of $-3\%$ increases $\sigma_t$ by $0.15 \times 3 = 0.45$
+                \item The same positive shock of $+3\%$ increases $\sigma_t$ by only $0.03 \times 3 = 0.09$ --- \textbf{5$\times$ less}
+                \item Visually: the $\pm 2\sigma$ bands widen abruptly and \textbf{asymmetrically} after market drops
+            \end{itemize}
+        \end{block}
+        \begin{exampleblock}{When to Use TGARCH?}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item When we want to model $\sigma_t$ directly (not $\sigma_t^2$ like GJR, nor $\ln\sigma_t^2$ like EGARCH)
+                \item Markets with strong leverage: individual stocks, equity indices
+                \item \textbf{Advantage}: natural interpretation --- coefficients act on the standard deviation scale
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{TGARCH vs GJR-GARCH}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Both capture asymmetry, but on different scales ($\sigma_t$ vs $\sigma_t^2$). Empirically, differences are small; TGARCH is preferred in risk management (VaR uses $\sigma_t$ directly).
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
 \end{frame}
 
 \begin{frame}{News Impact Curves Comparison}
@@ -2255,34 +2960,48 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Practical checklist: step-by-step GARCH modeling}
+\begin{frame}{Practical Checklist: GARCH Modeling (I)}
     \begin{cminipage}{0.95\textwidth}
-        \vspace{-0.2cm}
-        {\footnotesize
-        \begin{block}{Recommended workflow}
+    {\footnotesize
+        \begin{block}{Recommended Workflow --- Steps 1--5}
             \begin{enumerate}\setlength{\itemsep}{1pt}
                 \item \textbf{Data}: Compute log-returns: $r_t = \ln(P_t / P_{t-1}) \times 100$
                 \item \textbf{Explore}: Check stylized facts --- kurtosis $\gg 3$, significant ACF($r_t^2$), QQ-plot
                 \item \textbf{ARCH test}: Engle LM test on AR(p) residuals --- $H_0$: no ARCH effects
                 \item \textbf{Estimate}: Start with GARCH(1,1)-t; compare with EGARCH, GJR-GARCH
                 \item \textbf{Distribution}: \textcolor{Crimson}{\textbf{Not}} Normal --- use \textbf{Student-$t$} (fat tails) or Skewed-$t$
+            \end{enumerate}
+        \end{block}
+        \vspace{0.1cm}
+        \begin{alertblock}{Note}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Steps 1--3 are \textbf{mandatory} before any GARCH estimation
+                \item Step 4: GARCH(1,1) is sufficient in 90\% of cases --- higher orders rarely improve forecasts
+            \end{itemize}
+        \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Practical Checklist: GARCH Modeling (II)}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+        \begin{block}{Recommended Workflow --- Steps 6--9}
+            \begin{enumerate}\setcounter{enumi}{5}\setlength{\itemsep}{1pt}
                 \item \textbf{Persistence}: Check $\alpha + \beta$ --- if $\approx 1$, consider IGARCH
                 \item \textbf{Diagnostics}: Standardized residuals $\hat{z}_t = r_t / \hat{\sigma}_t$ must be i.i.d.
                 \item \textbf{Selection}: AIC/BIC + Diebold-Mariano on out-of-sample forecasting
                 \item \textbf{Apply}: VaR/ES with rolling window (250--500 days) + Kupiec/Christoffersen backtesting
             \end{enumerate}
         \end{block}
-        }
-        \vspace{-0.15cm}
-        {\scriptsize
-        \begin{alertblock}{Common pitfalls}
+        \vspace{0.1cm}
+        \begin{alertblock}{Common Pitfalls}
             \begin{itemize}\setlength{\itemsep}{0pt}
                 \item \textbf{Convergence}: If optimizer fails, switch algorithm (\texttt{method='Nelder-Mead'}) or starting values
                 \item \textbf{Structural breaks}: On long series (2000--2024), GARCH parameters are \textbf{not constant} --- rolling windows are essential
-                \item \textbf{Overfitting}: GARCH(1,1) is sufficient in 90\% of cases --- higher orders rarely improve forecasts
             \end{itemize}
         \end{alertblock}
-        }
+    }
     \end{cminipage}
 \end{frame}
 
@@ -2721,40 +3440,252 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{The DCC-GARCH Multivariate Model}
-    \quantlet{TSA\_ch5\_dcc\_garch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_garch}
+%=============================================================================
+% MULTIVARIATE GARCH MODELS (Expanded Section)
+%=============================================================================
+\section{Multivariate GARCH Models}
+
+\begin{frame}{Why Multivariate GARCH?}
     \begin{cminipage}{0.95\textwidth}
-        \vspace{-3mm}
-        {\scriptsize
-        \setlength{\abovedisplayskip}{2pt}\setlength{\belowdisplayskip}{2pt}
-        \begin{block}{Motivation: From Univariate Volatility to Dynamic Correlations}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Univariate GARCH models the volatility of a \textbf{single} series
-                \item In practice, portfolios contain \textbf{multiple assets} with time-varying correlations
-                \item DCC-GARCH (Engle, 2002) jointly models volatilities \emph{and} correlations
-            \end{itemize}
-        \end{block}
-        \vspace{-1.5mm}
-        \begin{block}{Two-Step DCC Structure}
-            \begin{enumerate}\setlength{\itemsep}{0pt}
-                \item \textbf{Step 1}: Estimate univariate GARCH for each series $\Rightarrow$ $\mathbf{D}_t = \text{diag}(\sigma_{1,t}, \ldots, \sigma_{K,t})$
-                \item \textbf{Step 2}: Model conditional correlations:
-                $\mathbf{Q}_t = (1 - a - b)\bar{\mathbf{Q}} + a\,\mathbf{u}_{t-1}\mathbf{u}_{t-1}' + b\,\mathbf{Q}_{t-1}$,
-                where $\mathbf{u}_t = \mathbf{D}_t^{-1}\boldsymbol{\varepsilon}_t$ are standardized residuals
-            \end{enumerate}
-        \end{block}
-        \vspace{-1.5mm}
-        \begin{block}{Conditional Correlation and Covariance Matrices}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Correlation: $\mathbf{R}_t = \mathbf{Q}_t^{*-1}\,\mathbf{Q}_t\,\mathbf{Q}_t^{*-1}$, with $\mathbf{Q}_t^{*} = \text{diag}\!\bigl(\sqrt{q_{11,t}},\, \ldots,\, \sqrt{q_{KK,t}}\bigr)$
-                \item Covariance: $\mathbf{H}_t = \mathbf{D}_t\,\mathbf{R}_t\,\mathbf{D}_t$
-            \end{itemize}
-        \end{block}
+        {\footnotesize
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{block}{The Need for Joint Modeling}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Assets don't move in isolation
+                        \item Correlations change over time
+                        \item Diversification benefits vary
+                        \item Contagion during crises
+                    \end{itemize}
+                \end{block}
+                \begin{alertblock}{Key Observation}
+                    During the 2008 crisis, correlations spiked to 0.8+ across asset classes --- diversification failed precisely when needed most!
+                \end{alertblock}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{block}{Financial Applications}
+                    \begin{enumerate}\setlength{\itemsep}{0pt}
+                        \item \textbf{Portfolio optimization} --- Markowitz with dynamic $\mathbf{H}_t$
+                        \item \textbf{Risk management} --- Portfolio VaR requires covariances
+                        \item \textbf{Hedging} --- Optimal hedge ratios: $\beta_t = \sigma_{12,t}/\sigma_{2,t}^2$
+                        \item \textbf{Asset pricing} --- Time-varying betas: $\beta_{i,t} = \text{Cov}_t(r_i, r_m)/\text{Var}_t(r_m)$
+                        \item \textbf{Contagion analysis} --- Spillover effects across markets
+                    \end{enumerate}
+                \end{block}
+            \end{column}
+        \end{columns}
         }
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{DCC-GARCH Estimation}
+\begin{frame}{The Curse of Dimensionality}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Problem Statement}
+            For $n$ assets, the covariance matrix $\mathbf{H}_t$ has $n(n+1)/2$ unique elements.
+            A ``naive'' multivariate GARCH would need to model how \textit{each} element depends on \textit{all} past shocks and variances.
+        \end{block}
+        \vspace{-2mm}
+        \begin{center}
+        {\scriptsize
+        \begin{tabular}{ccccc}
+            \toprule
+            \textbf{Assets ($n$)} & \textbf{Covariances} & \textbf{VEC params} & \textbf{BEKK params} & \textbf{DCC params}\\
+            \midrule
+            2 & 3 & 21 & 11 & 9\\
+            5 & 15 & 465 & 56 & 17\\
+            10 & 55 & 6{,}105 & 221 & 32\\
+            50 & 1{,}275 & 3.2M & 5{,}356 & 152\\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+        \vspace{-2mm}
+        \begin{alertblock}{Solution Strategy}
+            Impose \textbf{structure} to reduce parameters while maintaining flexibility:
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Separate volatility and correlation dynamics (CCC, DCC)
+                \item Restrict parameter matrices (Diagonal BEKK, Scalar BEKK)
+                \item Factor structures (O-GARCH, GO-GARCH)
+            \end{itemize}
+        \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Multivariate GARCH: General Framework}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{The Model in Matrix Notation}
+            \vspace{-2mm}
+            \begin{align*}
+                \mathbf{r}_t &= \boldsymbol{\mu}_t + \boldsymbol{\varepsilon}_t && \text{(Mean equation)}\\
+                \boldsymbol{\varepsilon}_t &= \mathbf{H}_t^{1/2} \mathbf{z}_t && \text{(Error decomposition)}\\
+                \mathbf{z}_t &\sim (0, \mathbf{I}_n) && \text{(Standardized innovations)}
+            \end{align*}
+        \end{block}
+        \vspace{-2mm}
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{exampleblock}{Notation}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item $\mathbf{r}_t$: $n \times 1$ vector of returns
+                        \item $\mathbf{H}_t$: $n \times n$ conditional covariance matrix
+                        \item $\mathbf{H}_t^{1/2}$: Cholesky factor of $\mathbf{H}_t$
+                        \item $\mathbf{z}_t$: i.i.d.\ innovations
+                    \end{itemize}
+                \end{exampleblock}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{alertblock}{Key Requirements}
+                    \begin{enumerate}\setlength{\itemsep}{0pt}
+                        \item $\mathbf{H}_t$ must be \textbf{positive definite} $\forall t$
+                        \item Model must be \textbf{stationary}
+                        \item Estimation must be \textbf{feasible}
+                        \item Parameters should be \textbf{interpretable}
+                    \end{enumerate}
+                \end{alertblock}
+            \end{column}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Decomposition: Volatility and Correlation}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Key Insight}
+            Any covariance matrix can be decomposed as:
+            $\boxed{\mathbf{H}_t = \mathbf{D}_t \mathbf{R}_t \mathbf{D}_t}$
+        \end{block}
+        \vspace{-2mm}
+        {\scriptsize
+        where:
+        $\mathbf{D}_t = \text{diag}(\sigma_{1,t}, \ldots, \sigma_{n,t})$, \quad
+        $\mathbf{R}_t = \begin{pmatrix} 1 & \rho_{12,t} & \cdots & \rho_{1n,t}\\ \rho_{12,t} & 1 & \cdots & \rho_{2n,t}\\ \vdots & \vdots & \ddots & \vdots\\ \rho_{1n,t} & \rho_{2n,t} & \cdots & 1 \end{pmatrix}$
+        }
+        \vspace{1mm}
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{exampleblock}{Element-wise}
+                    $h_{ij,t} = \sigma_{i,t} \cdot \rho_{ij,t} \cdot \sigma_{j,t}$
+
+                    For $i = j$: $h_{ii,t} = \sigma_{i,t}^2$
+                \end{exampleblock}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{block}{Advantages}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Each $\sigma_{i,t}^2$ follows univariate GARCH
+                        \item Correlations modeled separately
+                        \item Reduces dimensionality dramatically
+                    \end{itemize}
+                \end{block}
+            \end{column}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{BEKK Model (Engle \& Kroner, 1995)}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{BEKK --- Matrix Form}
+            $\boxed{\mathbf{H}_t = \mathbf{C}'\mathbf{C} + \mathbf{A}'\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}'\mathbf{A} + \mathbf{B}'\mathbf{H}_{t-1}\mathbf{B}}$
+        \end{block}
+        \vspace{-2mm}
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{exampleblock}{Key Properties}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item $\mathbf{C}$: lower triangular ($n(n+1)/2$ params)
+                        \item $\mathbf{A}$, $\mathbf{B}$: $n \times n$ matrices ($2n^2$ params)
+                        \item \textbf{Automatic positive definiteness!}
+                        \item For $n = 2$: $3 + 8 = 11$ parameters
+                    \end{itemize}
+                \end{exampleblock}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{alertblock}{Diagonal BEKK (simplified)}
+                    $\mathbf{A}, \mathbf{B}$ diagonal $\Rightarrow$ $n(n+1)/2 + 2n$ params
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item Variances follow univariate GARCH (no spillovers)
+                        \item Covariance: $h_{12,t} = c + a_1 a_2 \varepsilon_{1,t-1}\varepsilon_{2,t-1} + b_1 b_2 h_{12,t-1}$
+                        \item Only 7 params for bivariate case!
+                    \end{itemize}
+                \end{alertblock}
+            \end{column}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{CCC-GARCH (Bollerslev, 1990)}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Constant Conditional Correlation}
+            $\boxed{\mathbf{H}_t = \mathbf{D}_t \mathbf{R} \mathbf{D}_t}$
+            where $\mathbf{R}$ is a \textbf{constant} correlation matrix
+        \end{block}
+        \vspace{-2mm}
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{exampleblock}{Structure}
+                    \begin{enumerate}\setlength{\itemsep}{0pt}
+                        \item Each $\sigma_{i,t}^2$ follows univariate GARCH
+                        \item Correlations are constant: $\rho_{ij} = \text{const}$
+                        \item Covariances: $h_{ij,t} = \rho_{ij} \cdot \sigma_{i,t} \cdot \sigma_{j,t}$
+                    \end{enumerate}
+                \end{exampleblock}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{block}{Two-Step Estimation}
+                    \begin{enumerate}\setlength{\itemsep}{0pt}
+                        \item Fit $n$ univariate GARCH models
+                        \item Estimate $\mathbf{R}$ from standardized residuals: $\hat{z}_{i,t} = \varepsilon_{i,t}/\hat{\sigma}_{i,t}$
+                    \end{enumerate}
+                    Parameters: $3n + n(n-1)/2$
+                \end{block}
+            \end{column}
+        \end{columns}
+        \vspace{-1mm}
+        \begin{alertblock}{Limitation: Constant Correlation is Unrealistic}
+            Correlations spike during crises (``flight to quality'') --- CCC underestimates portfolio risk in turbulent times. \textbf{Solution}: $\mathbf{R}_t$ time-varying $\Rightarrow$ DCC-GARCH
+        \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{DCC-GARCH (Engle, 2002)}
+    \quantlet{TSA\_ch5\_dcc\_garch}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_garch}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Dynamic Conditional Correlation}
+            $\boxed{\mathbf{H}_t = \mathbf{D}_t \mathbf{R}_t \mathbf{D}_t}$
+            where $\mathbf{R}_t$ is now \textbf{time-varying}
+        \end{block}
+        \vspace{-2mm}
+        \begin{block}{Correlation Dynamics}
+            $\mathbf{Q}_t = (1 - a - b)\bar{\mathbf{Q}} + a \mathbf{z}_{t-1}\mathbf{z}_{t-1}' + b \mathbf{Q}_{t-1}$
+
+            $\mathbf{R}_t = \text{diag}(\mathbf{Q}_t)^{-1/2} \mathbf{Q}_t \text{diag}(\mathbf{Q}_t)^{-1/2}$
+        \end{block}
+        \vspace{-2mm}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\mathbf{z}_t = \mathbf{D}_t^{-1} \boldsymbol{\varepsilon}_t$ = standardized residuals, \quad $\bar{\mathbf{Q}} = \E[\mathbf{z}_t \mathbf{z}_t']$ = unconditional covariance
+            \item $a \geq 0$: news impact (like $\alpha$ in GARCH), \quad $b \geq 0$: persistence (like $\beta$), \quad $a + b < 1$
+        \end{itemize}
+        }
+        \vspace{-1mm}
+        \begin{exampleblock}{Bivariate scalar form}
+            $q_{12,t} = (1-a-b)\bar{q}_{12} + a \cdot z_{1,t-1} z_{2,t-1} + b \cdot q_{12,t-1}$, \quad $\rho_t = q_{12,t}/\sqrt{q_{11,t} \cdot q_{22,t}}$
+        \end{exampleblock}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{DCC-GARCH: Two-Step Estimation}
     \quantlet{TSA\_ch5\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_estimation}
     \begin{cminipage}{0.95\textwidth}
         \vspace{-3mm}
@@ -2788,39 +3719,169 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
     \end{cminipage}
 \end{frame}
 
+\begin{frame}{DCC: Intuition and Crisis Behavior}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Why does $\rho_t$ increase during crises?}
+            Consider $q_{12,t} = (1 - a - b)\bar{q}_{12} + a \cdot z_{1,t-1} z_{2,t-1} + b \cdot q_{12,t-1}$
+        \end{block}
+        \vspace{-2mm}
+        \begin{exampleblock}{Scenario: Joint Negative Shock (Crisis)}
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Both assets crash: $\varepsilon_{1,t-1} < 0$ and $\varepsilon_{2,t-1} < 0$
+                \item Standardized: $z_{1,t-1} < 0$, $z_{2,t-1} < 0$
+                \item Product: $z_{1,t-1} \cdot z_{2,t-1} > 0$ (positive!) $\Rightarrow$ $q_{12,t}$ increases $\Rightarrow$ $\rho_t$ increases!
+            \end{itemize}
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{alertblock}{DCC vs CCC: Numerical Example}
+            Equal-weight portfolio, $\sigma_1 = \sigma_2 = 3\%$ (crisis). \textbf{CCC}: $\rho = 0.5$ (unchanged) $\Rightarrow$ VaR$_{99\%}$ = 5.64\%.
+            \textbf{DCC}: $\rho_t = 0.7$ (increases) $\Rightarrow$ VaR$_{99\%}$ = 6.44\%.
+            DCC VaR is \textbf{14\% higher} --- CCC \textbf{underestimates} crisis risk!
+        \end{alertblock}
+        }
+    \end{cminipage}
+\end{frame}
+
 \begin{frame}{DCC Properties and Extensions}
     \quantlet{TSA\_ch5\_dcc\_extensions}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5/TSA_ch5_dcc_extensions}
     \begin{cminipage}{0.95\textwidth}
-        \vspace{-0.2cm}
+        {\footnotesize
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{block}{Typical DCC Parameters}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item News impact $a$: typically $[0.01, 0.05]$
+                        \item Persistence $b$: typically $[0.90, 0.99]$
+                        \item Total $a + b$: 0.95--0.99
+                        \item Half-life: $HL = \ln(0.5)/\ln(a+b)$
+                    \end{itemize}
+                \end{block}
+                \begin{exampleblock}{Positive Definiteness}
+                    $\mathbf{H}_t > 0$ guaranteed if $\bar{\mathbf{Q}} > 0$, $a \geq 0$, $b \geq 0$, $a + b < 1$
+                \end{exampleblock}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{alertblock}{Asymmetric DCC (aDCC)}
+                    Cappiello, Engle \& Sheppard (2006):
+                    {\scriptsize
+                    \[
+                        \mathbf{Q}_t = \bar{\mathbf{Q}} + a(\mathbf{z}_{t-1}\mathbf{z}_{t-1}' - \bar{\mathbf{Q}}) + g(\mathbf{n}_{t-1}\mathbf{n}_{t-1}' - \bar{\mathbf{N}}) + b(\mathbf{Q}_{t-1} - \bar{\mathbf{Q}})
+                    \]
+                    }
+                    $\mathbf{n}_t = \mathbb{I}(\mathbf{z}_t < 0) \odot \mathbf{z}_t$ (negative component)
+                \end{alertblock}
+                \begin{block}{Other Extensions}
+                    \begin{itemize}\setlength{\itemsep}{0pt}
+                        \item \textbf{DECO} (Engle \& Kelly, 2012): equicorrelation
+                        \item \textbf{GO-GARCH}: factor-based, scalable to large $n$
+                    \end{itemize}
+                \end{block}
+            \end{column}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Multivariate GARCH: Model Comparison}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{center}
         {\scriptsize
-        \begin{block}{Positive Definiteness}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item $\mathbf{H}_t$ is \textbf{positive definite} if $\bar{\mathbf{Q}}$ is positive definite and $a + b < 1$, $a \geq 0$, $b \geq 0$
-                \item Normalization through $\mathbf{Q}_t^{*}$ guarantees $\rho_{ij,t} \in [-1, 1]$
-            \end{itemize}
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Feature} & \textbf{VEC} & \textbf{BEKK} & \textbf{CCC} & \textbf{DCC}\\
+            \midrule
+            Year introduced & 1988 & 1995 & 1990 & 2002\\
+            Parameters ($n=2$) & 21 & 11 & 9 & 11\\
+            Parameters ($n=5$) & 465 & 56 & 25 & 27\\
+            Positive definite & Hard & \textcolor{Forest}{Auto} & \textcolor{Forest}{Auto} & \textcolor{Forest}{Auto}\\
+            Time-varying $\rho$ & \textcolor{Forest}{Yes} & \textcolor{Forest}{Yes} & \textcolor{Crimson}{No} & \textcolor{Forest}{Yes}\\
+            Spillovers & \textcolor{Forest}{Yes} & \textcolor{Forest}{Yes} & \textcolor{Crimson}{No} & \textcolor{Crimson}{Limited}\\
+            Estimation & Hard & Moderate & \textcolor{Forest}{Easy} & \textcolor{Forest}{Easy}\\
+            Scalable to large $n$ & \textcolor{Crimson}{No} & \textcolor{Crimson}{No} & \textcolor{Forest}{Yes} & \textcolor{Forest}{Yes}\\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+        \vspace{-2mm}
+        \begin{columns}[T]
+            \begin{column}{0.48\textwidth}
+                \begin{alertblock}{When to use BEKK}
+                    Small $n$ ($\leq 5$), need spillovers, research applications
+                \end{alertblock}
+            \end{column}
+            \begin{column}{0.48\textwidth}
+                \begin{exampleblock}{When to use DCC}
+                    Moderate to large $n$, portfolios, industry practice
+                \end{exampleblock}
+            \end{column}
+        \end{columns}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Application: Portfolio VaR with DCC}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Portfolio Variance}
+            $\sigma_{p,t}^2 = \mathbf{w}' \mathbf{H}_t \mathbf{w}$, \quad for $n = 2$: $\sigma_{p,t}^2 = w_1^2 \sigma_{1,t}^2 + w_2^2 \sigma_{2,t}^2 + 2 w_1 w_2 \rho_t \sigma_{1,t} \sigma_{2,t}$
         \end{block}
-        \vspace{-1.5mm}
-        \begin{block}{Asymmetric DCC (Cappiello, Engle \& Sheppard, 2006)}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Extension with \textbf{leverage term} to capture increased correlations during crises:
-            \end{itemize}
-            \vspace{-2mm}
-            \[
-                \mathbf{Q}_t = (1\!-\!a\!-\!b)\bar{\mathbf{Q}} - g\bar{\mathbf{N}} + a\,\mathbf{u}_{t-1}\mathbf{u}_{t-1}' + b\,\mathbf{Q}_{t-1} + g\,\mathbf{n}_{t-1}\mathbf{n}_{t-1}'
-            \]
-            \vspace{-4mm}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item $\mathbf{n}_t = \mathbb{I}(\mathbf{u}_t < 0) \odot \mathbf{u}_t$ (negative component), $\bar{\mathbf{N}} = \E[\mathbf{n}_t \mathbf{n}_t']$
-            \end{itemize}
-        \end{block}
-        \vspace{-1.5mm}
-        \begin{exampleblock}{Applications}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item \textbf{Portfolio optimization}: Markowitz weights with time-varying $\mathbf{H}_t$
-                \item \textbf{Systemic risk}: conditional correlations as a measure of financial contagion
-                \item \textbf{Dynamic hedging}: optimal hedge ratios $h_t^{*} = \sigma_{12,t} / \sigma_{22,t}$
-            \end{itemize}
+        \vspace{-2mm}
+        \begin{exampleblock}{Numerical Example: Equal-weight portfolio ($w_1 = w_2 = 0.5$)}
+            {\scriptsize
+            \begin{center}
+            \begin{tabular}{lccc}
+                \toprule
+                & \textbf{Normal times} & \textbf{Crisis (CCC)} & \textbf{Crisis (DCC)}\\
+                \midrule
+                $\sigma_1 = \sigma_2$ & 1\% & 3\% & 3\%\\
+                $\rho$ & 0.3 & 0.3 (unchanged) & 0.7 (increases)\\
+                $\sigma_p$ & 0.81\% & 2.42\% & 2.77\%\\
+                VaR$_{99\%}$ & 1.88\% & 5.64\% & \textcolor{Crimson}{\textbf{6.44\%}}\\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+            }
         \end{exampleblock}
+        \vspace{-2mm}
+        \begin{block}{Minimum Variance Portfolio}
+            $w_{1,t}^* = \frac{\sigma_{2,t}^2 - \rho_t \sigma_{1,t}\sigma_{2,t}}{\sigma_{1,t}^2 + \sigma_{2,t}^2 - 2\rho_t \sigma_{1,t}\sigma_{2,t}}$
+            \quad When $\rho_t$ increases, weights shift toward the less volatile asset!
+        \end{block}
+        }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Time-Varying Hedge Ratios}
+    \begin{cminipage}{0.95\textwidth}
+        {\footnotesize
+        \begin{block}{Minimum Variance Hedge Ratio}
+            To hedge asset 1 with asset 2:
+            $\beta_t^* = \frac{h_{12,t}}{h_{22,t}} = \frac{\rho_t \sigma_{1,t} \sigma_{2,t}}{\sigma_{2,t}^2} = \rho_t \cdot \frac{\sigma_{1,t}}{\sigma_{2,t}}$
+        \end{block}
+        \vspace{-2mm}
+        \begin{exampleblock}{Example: Hedging stock portfolio with index futures}
+            {\scriptsize
+            \begin{center}
+            \begin{tabular}{lccc}
+                \toprule
+                & \textbf{Normal} & \textbf{Crisis (CCC)} & \textbf{Crisis (DCC)}\\
+                \midrule
+                $\sigma_{\text{portfolio}}$ & 1.2\% & 3.0\% & 3.0\%\\
+                $\sigma_{\text{futures}}$ & 1.0\% & 2.8\% & 2.8\%\\
+                $\rho$ & 0.85 & 0.85 & 0.95\\
+                \midrule
+                $\beta^*$ & 1.02 & 0.91 & \textcolor{Crimson}{\textbf{1.02}}\\
+                \bottomrule
+            \end{tabular}
+            \end{center}
+            }
+        \end{exampleblock}
+        \vspace{-2mm}
+        \begin{alertblock}{Implication}
+            CCC under-hedges during crisis (misses correlation increase)!
+        \end{alertblock}
         }
     \end{cminipage}
 \end{frame}
@@ -3168,48 +4229,6 @@ VaR_1pct = norm.ppf(0.01) * sigma_1  # Normal approx
         \end{itemize}
         }
     \end{exampleblock}
-\end{frame}
-
-\begin{frame}{Multivariate GARCH: Extensions for Portfolios}
-    \begin{cminipage}{0.95\textwidth}
-        \small
-        \begin{block}{Why Multivariate GARCH?}
-            \begin{itemize}\setlength{\itemsep}{0pt}
-                \item Portfolios require the conditional covariance matrix $\mathbf{H}_t = \mathrm{Cov}(\mathbf{r}_t \mid \mathcal{F}_{t-1})$
-                \item $K$ assets $\Rightarrow$ $K(K+1)/2$ unique elements in $\mathbf{H}_t$ $\Rightarrow$ dimensionality explosion
-            \end{itemize}
-        \end{block}
-        \vspace{-0.2cm}
-        \begin{columns}[T]
-            \begin{column}{0.48\textwidth}
-                \begin{exampleblock}{DCC (Engle, 2002)}
-                    \begin{itemize}\setlength{\itemsep}{0pt}
-                        \item $\mathbf{H}_t = \mathbf{D}_t \mathbf{R}_t \mathbf{D}_t$
-                        \item $\mathbf{D}_t = \mathrm{diag}(\sigma_{1,t}, \ldots, \sigma_{K,t})$ --- univariate GARCH
-                        \item $\mathbf{R}_t$ --- dynamic correlations (2 parameters)
-                        \item \textbf{Advantage}: 2-stage estimation, scalable
-                        \item \textbf{Limitation}: symmetric correlations
-                    \end{itemize}
-                \end{exampleblock}
-            \end{column}
-            \begin{column}{0.48\textwidth}
-                \begin{alertblock}{BEKK (Engle-Kroner, 1995)}
-                    \begin{itemize}\setlength{\itemsep}{0pt}
-                        \item $\mathbf{H}_t = \mathbf{C}'\mathbf{C} + \mathbf{A}'\boldsymbol{\epsilon}_{t-1}\boldsymbol{\epsilon}_{t-1}'\mathbf{A} + \mathbf{B}'\mathbf{H}_{t-1}\mathbf{B}$
-                        \item Guarantees $\mathbf{H}_t \succ 0$ (positive-definite)
-                        \item \textbf{Advantage}: fully flexible model
-                        \item \textbf{Limitation}: $K^2$ parameters per matrix $\Rightarrow$ practical only for $K \leq 3$
-                    \end{itemize}
-                \end{alertblock}
-            \end{column}
-        \end{columns}
-        \vspace{0.1cm}
-        {\scriptsize
-        \begin{block}{Python Implementation}
-            \texttt{from arch.univariate import ARCHModel} --- DCC via \texttt{rmgarch} (R) or \texttt{mgarch} (Python/Stata)
-        \end{block}
-        }
-    \end{cminipage}
 \end{frame}
 
 \begin{frame}{References III}
