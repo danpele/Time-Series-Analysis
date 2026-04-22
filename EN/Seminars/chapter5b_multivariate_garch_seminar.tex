@@ -1,0 +1,914 @@
+% Seminar: Multivariate GARCH Models - Multiple Choice Quiz and Practice Exercises
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 5b: Multivariate GARCH Models}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% SEMINAR OUTLINE
+%=============================================================================
+\begin{frame}{Seminar Outline}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item \textbf{Multiple Choice Quiz} -- Knowledge check (10 questions)
+        \vspace{0.15cm}
+        \item \textbf{True/False Questions} -- Conceptual checks
+        \vspace{0.15cm}
+        \item \textbf{Practice Problems} -- Calculations and interpretations
+        \vspace{0.15cm}
+        \item \textbf{Python Workflow} -- DCC estimation on real data
+        \vspace{0.15cm}
+        \item \textbf{AI-Assisted Exercise} -- Critical thinking
+        \vspace{0.15cm}
+        \item \textbf{Summary} -- Key takeaways
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SECTION 1: QUIZ
+%=============================================================================
+\section{Multiple Choice Quiz}
+
+%-----------------------------------------------------------------------------
+% Question 1
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Why are univariate GARCH models insufficient for portfolio risk management?}
+        \textcolor{MainBlue}{\textbf{(A)}} They cannot model volatility clustering\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} They do not capture time-varying covariances between assets\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} They do not allow maximum likelihood estimation\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} They cannot use the Student-t distribution
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Think about what information is needed to compute portfolio VaR...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{They do not capture time-varying covariances between assets}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explanation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Portfolio VaR: $\sigma_{p,t}^2 = \mathbf{w}'\mathbf{H}_t\mathbf{w}$ requires the \textbf{full matrix} $\mathbf{H}_t$
+            \item Univariate GARCH gives only individual variances $h_{ii,t}$, not covariances $h_{ij,t}$
+            \item Correlations increase during crises --- ignoring them \textbf{underestimates risk}
+            \item Optimal hedging requires $h_{12,t}/h_{22,t}$ --- impossible without a multivariate model
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_motivation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_motivation}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 2
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{How many unique elements does the covariance matrix $\mathbf{H}_t$ have for $N = 10$ assets?}
+        \textcolor{MainBlue}{\textbf{(A)}} 10\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} 45\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} 55\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} 100
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{55}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Calculation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\mathbf{H}_t$ is symmetric: $h_{ij,t} = h_{ji,t}$
+            \item Unique elements: $N(N+1)/2 = 10 \times 11/2 = 55$
+            \item Of which: 10 variances ($h_{ii,t}$) and 45 covariances ($h_{ij,t}$, $i \neq j$)
+            \item This is the \textbf{curse of dimensionality} --- motivation for structured models
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_curse\_dim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_curse_dim}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 3
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{What property does the BEKK model guarantee by construction?}
+        \textcolor{MainBlue}{\textbf{(A)}} Stationarity\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Positive definiteness of the matrix $\mathbf{H}_t$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Constant correlations\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Absence of volatility spillovers
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Positive definiteness of the matrix $\mathbf{H}_t$}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explanation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item BEKK: $\mathbf{H}_t = \mathbf{C}\mathbf{C}' + \mathbf{A}'\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}'\mathbf{A} + \mathbf{B}'\mathbf{H}_{t-1}\mathbf{B}$
+            \item $\mathbf{C}\mathbf{C}'$ is p.d.\ (if $\mathbf{C}$ has full rank)
+            \item $\mathbf{A}'\mathbf{M}\mathbf{A}$ is p.s.d.\ for any p.s.d.\ $\mathbf{M}$
+            \item Sum of p.d.\ and p.s.d.\ matrices is p.d. $\Rightarrow$ $\mathbf{H}_t$ is p.d.\ automatically!
+            \item \textbf{Note}: stationarity requires a separate condition on the spectral radius
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_bekk\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_bekk_sim}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 4
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{In the CCC model, the covariance $h_{ij,t}$ is given by:}
+        \textcolor{MainBlue}{\textbf{(A)}} $h_{ij,t} = \rho_{ij,t} \cdot \sigma_{i,t} \cdot \sigma_{j,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $h_{ij,t} = \rho_{ij} \cdot \sigma_{i,t} \cdot \sigma_{j,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} $h_{ij,t} = \alpha_{ij} \cdot \varepsilon_{i,t-1} \varepsilon_{j,t-1}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $h_{ij,t} = \rho_{ij} \cdot \bar{\sigma}_i \cdot \bar{\sigma}_j$
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $h_{ij,t} = \rho_{ij} \cdot \sigma_{i,t} \cdot \sigma_{j,t}$
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explanation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item CCC: $\mathbf{H}_t = \mathbf{D}_t \mathbf{R} \mathbf{D}_t$ with $\mathbf{R}$ \textbf{constant}
+            \item The correlation $\rho_{ij}$ does not change over time (hence the name ``constant'')
+            \item Covariance varies only through $\sigma_{i,t}$ and $\sigma_{j,t}$ (modeled with univariate GARCH)
+            \item (A) would be DCC (with time-varying $\rho_{ij,t}$), (D) would be the unconditional covariance
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_ccc\_dcc}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_ccc_dcc}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 5
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{How many correlation parameters does DCC(1,1) require regardless of $N$?}
+        \textcolor{MainBlue}{\textbf{(A)}} $N(N-1)/2$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $N^2$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} 2\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $3N$
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{2} parameters ($a$ and $b$)
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explanation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item DCC: $\mathbf{Q}_t = (1-a-b)\bar{\mathbf{Q}} + a\mathbf{z}_{t-1}\mathbf{z}_{t-1}' + b\mathbf{Q}_{t-1}$
+            \item $a$ = reaction to shocks, $b$ = persistence --- \textbf{scalars}, not matrices!
+            \item This is the key to DCC scalability: $N = 2$ or $N = 500$, still 2 parameters
+            \item Plus $3N$ univariate GARCH parameters (estimated separately in Stage 1)
+            \item Total: $3N + N(N-1)/2 + 2$ (including the unconditional correlation $\bar{\mathbf{Q}}$)
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_estimation}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 6
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 6}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{What happens to DCC correlations during crisis periods?}
+        \textcolor{MainBlue}{\textbf{(A)}} They decrease, because assets move independently\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} They remain constant, because DCC has mean reversion\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} They increase, because common negative shocks raise $q_{12,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} They become negative, because investors flee to safe assets
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 6}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{They increase, because common negative shocks raise $q_{12,t}$}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{The mechanism}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Crisis: $\varepsilon_{1,t-1} < 0$, $\varepsilon_{2,t-1} < 0$ $\Rightarrow$ $z_{1,t-1} < 0$, $z_{2,t-1} < 0$
+            \item Product: $z_{1,t-1} \cdot z_{2,t-1} > 0$ (positive and large!)
+            \item $q_{12,t}$ increases $\Rightarrow$ $\rho_{12,t}$ increases
+            \item \textbf{Diversification fails exactly when it is most needed}
+            \item The aDCC model captures this effect even more strongly through the asymmetric term $g$
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_crisis\_corr}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_crisis_corr}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 7
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 7}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Which multivariate GARCH model captures volatility spillovers?}
+        \textcolor{MainBlue}{\textbf{(A)}} CCC --- through constant correlations\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} DCC --- through dynamic correlations\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Full BEKK --- through the off-diagonal elements of $\mathbf{A}$ and $\mathbf{B}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Diagonal BEKK --- through the diagonal elements of $\mathbf{A}$
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 7}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Full BEKK --- through the off-diagonal elements of $\mathbf{A}$ and $\mathbf{B}$}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explanation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $a_{21} \neq 0$: shock from asset 1 affects the variance of asset 2 (shock spillover)
+            \item $b_{21} \neq 0$: past volatility of asset 1 affects current volatility of asset 2
+            \item CCC/DCC: each variance follows univariate GARCH --- \textbf{no spillovers}
+            \item Diagonal BEKK: $\mathbf{A}$, $\mathbf{B}$ diagonal $\Rightarrow$ spillovers eliminated
+            \item \textbf{Cost}: full BEKK is feasible only for $N \leq 5$
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_bekk\_spillover}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_bekk_spillover}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 8
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 8}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{The optimal minimum-variance hedge ratio is:}
+        \textcolor{MainBlue}{\textbf{(A)}} $h_t^* = h_{11,t} / h_{22,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $h_t^* = h_{12,t} / h_{22,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} $h_t^* = h_{12,t} / h_{11,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $h_t^* = \rho_t \cdot \sigma_{1,t} / \sigma_{2,t}$ only if correlation is constant
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 8}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $h_t^* = h_{12,t} / h_{22,t}$
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Proof}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Hedged portfolio: $r_{\text{hedged}} = r_{\text{spot}} - h \cdot r_{\text{futures}}$
+            \item Variance: $\text{Var}(r_{\text{hedged}}) = h_{11,t} - 2h \cdot h_{12,t} + h^2 \cdot h_{22,t}$
+            \item Minimize: $\frac{\partial}{\partial h} = -2h_{12,t} + 2h \cdot h_{22,t} = 0$
+            \item $h_t^* = h_{12,t} / h_{22,t} = \rho_t \cdot \sigma_{1,t}/\sigma_{2,t}$
+            \item With DCC: $\rho_t$ time-varying $\Rightarrow$ more precise hedging during crises!
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_hedge\_ratio}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_hedge_ratio}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 9
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 9}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Which test checks whether correlations are constant (CCC vs DCC)?}
+        \textcolor{MainBlue}{\textbf{(A)}} ARCH-LM test\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Augmented Dickey-Fuller test\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Engle--Sheppard test for constant correlation\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Ljung-Box test on returns
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 9}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Engle--Sheppard (2001) test for constant correlation}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Procedure}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: correlations are constant (CCC adequate)
+            \item $H_1$: correlations vary over time (DCC needed)
+            \item Regress $\text{vech}(\mathbf{z}_t\mathbf{z}_t' - \hat{\mathbf{R}})$ on lagged values
+            \item Test statistic: $T \cdot R^2 \sim \chi^2$ under $H_0$
+            \item \textbf{Empirically}: CCC is almost always rejected in financial data
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_ccc\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_ccc_test}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Question 10
+%-----------------------------------------------------------------------------
+\begin{frame}{Question 10}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Which model is suitable for a portfolio of 100 stocks?}
+        \textcolor{MainBlue}{\textbf{(A)}} VEC(1,1)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Full BEKK\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} DCC or Factor GARCH\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Diagonal BEKK
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Answer Question 10}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Correct Answer: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{DCC or Factor GARCH}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Justification}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VEC: $\sim$25,500 parameters --- completely infeasible
+            \item Full BEKK: $\sim$20,000 parameters --- infeasible
+            \item Diagonal BEKK: $\sim$5,250 parameters --- difficult
+            \item DCC: $302 + 2 = 304$ parameters (estimated in two stages) --- \textbf{feasible}
+            \item Factor GARCH: $K$ factors ($K \ll N$) --- even more efficient
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_model\_choice}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_model_choice}
+\end{frame}
+
+%=============================================================================
+% SECTION 2: TRUE/FALSE
+%=============================================================================
+\section{True/False Questions}
+
+\begin{frame}{True or False?}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item The CCC model assumes that correlations between assets change over time.
+
+        \vspace{0.3cm}
+
+        \item Two-stage DCC estimation is consistent but not fully efficient.
+
+        \vspace{0.3cm}
+
+        \item Multivariate EWMA is equivalent to Scalar BEKK with $\omega = 0$ and $\alpha + \beta = 1$.
+
+        \vspace{0.3cm}
+
+        \item The diagonal BEKK model captures volatility spillovers between assets.
+
+        \vspace{0.3cm}
+
+        \item aDCC adds only one additional parameter compared to DCC.
+
+        \vspace{0.3cm}
+
+        \item DCC-based portfolio VaR is always larger than CCC-based VaR.
+
+        \vspace{0.3cm}
+
+        \item GO-GARCH works by decomposing returns into uncorrelated factors.
+
+        \vspace{0.3cm}
+
+        \item Correlations between stocks typically decrease during financial crises.
+    \end{enumerate}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{True/False Answers}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item \textbf{FALSE} --- CCC = Constant Conditional Correlation. $\mathbf{R}$ is fixed.
+
+        \vspace{0.2cm}
+
+        \item \textbf{TRUE} --- Consistent via QML. Standard errors via sandwich estimator.
+
+        \vspace{0.2cm}
+
+        \item \textbf{TRUE} --- $\mathbf{H}_t = (1-\lambda)\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}' + \lambda\mathbf{H}_{t-1}$ with $\lambda = 0.94$.
+
+        \vspace{0.2cm}
+
+        \item \textbf{FALSE} --- Diagonal BEKK: $\mathbf{A}$, $\mathbf{B}$ diagonal, hence \textbf{no spillovers}. Only full BEKK captures spillovers.
+
+        \vspace{0.2cm}
+
+        \item \textbf{TRUE} --- The parameter $g$ for negative asymmetry. Includes DCC ($g=0$) as a special case.
+
+        \vspace{0.2cm}
+
+        \item \textbf{FALSE} --- DCC VaR is larger \textbf{during crises} (increased correlations), but can be smaller in calm periods (lower correlations). It depends on the regime.
+
+        \vspace{0.2cm}
+
+        \item \textbf{TRUE} --- Uses a mixing matrix $\mathbf{Z}$ and factors with individual GARCH.
+
+        \vspace{0.2cm}
+
+        \item \textbf{FALSE} --- Correlations \textbf{increase} during crises (contagion). Diversification fails.
+    \end{enumerate}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SECTION 3: PRACTICE PROBLEMS
+%=============================================================================
+\section{Practice Problems}
+
+\begin{frame}{Problem 1: Portfolio VaR --- CCC vs DCC}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Problem statement}
+        An equally weighted portfolio ($w_1 = w_2 = 0.5$) contains two assets with:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Daily volatilities: $\sigma_{1,t} = 2\%$, $\sigma_{2,t} = 3\%$
+            \item CCC correlation: $\rho = 0.4$
+            \item DCC correlation (in crisis): $\rho_t = 0.8$
+        \end{itemize}
+
+        \vspace{0.3cm}
+        Calculate:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} Portfolio volatility with CCC
+            \item \textbf{(b)} Portfolio volatility with DCC (in crisis)
+            \item \textbf{(c)} 99\% VaR (1 day) for EUR 1,000,000, both models
+            \item \textbf{(d)} How much does CCC underestimate risk during a crisis?
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Solution Problem 1}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{exampleblock}{Answers}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} $\sigma_p^2 = 0.25 \times 0.04 + 0.25 \times 0.09 + 2 \times 0.25 \times 0.4 \times 0.02 \times 0.03 = 0.0445\%$
+
+            $\sigma_p = \sqrt{0.000445} = 2.11\%$
+
+            \vspace{0.15cm}
+
+            \item \textbf{(b)} With $\rho_t = 0.8$: $\sigma_p^2 = 0.0325 + 0.012 = 0.000565$
+
+            $\sigma_p = \sqrt{0.000565} = 2.38\%$
+
+            \vspace{0.15cm}
+
+            \item \textbf{(c)} VaR 99\% ($z_{0.01} = 2.326$):
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item CCC: $2.326 \times 0.0211 \times 1{,}000{,}000 = \textbf{49{,}069}$ EUR
+                \item DCC: $2.326 \times 0.0238 \times 1{,}000{,}000 = \textbf{55{,}359}$ EUR
+            \end{itemize}
+
+            \vspace{0.15cm}
+
+            \item \textbf{(d)} CCC underestimates VaR by $(55{,}359 - 49{,}069)/49{,}069 = \textbf{12.8\%}$ in crisis!
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_var\_ccc\_dcc}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_var_ccc_dcc}
+\end{frame}
+
+\begin{frame}{Problem 2: Dynamic hedging with DCC}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Problem statement}
+        A fund holds stocks and hedges them with index futures. At time $t$:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\sigma_{\text{spot},t} = 1.5\%$, $\sigma_{\text{futures},t} = 1.2\%$
+            \item CCC: $\rho = 0.90$
+            \item DCC (crisis): $\rho_t = 0.97$
+        \end{itemize}
+
+        \vspace{0.3cm}
+        Calculate:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} CCC hedge ratio: $h^* = \rho \cdot \sigma_{\text{spot}} / \sigma_{\text{futures}}$
+            \item \textbf{(b)} DCC hedge ratio (crisis)
+            \item \textbf{(c)} Hedging effectiveness ($HE$) for each model
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Solution Problem 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Answers}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} CCC: $h^* = 0.90 \times 1.5/1.2 = \textbf{1.125}$
+
+            \vspace{0.2cm}
+
+            \item \textbf{(b)} DCC: $h_t^* = 0.97 \times 1.5/1.2 = \textbf{1.213}$
+
+            \vspace{0.2cm}
+
+            \item \textbf{(c)} Effectiveness: $HE = \rho^2$
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item CCC: $HE = 0.90^2 = 81.0\%$ of variance eliminated
+                \item DCC: $HE = 0.97^2 = 94.1\%$ of variance eliminated
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            CCC under-hedges by $1.213 - 1.125 = 0.088$ futures units. The residual exposure is significant!
+        \end{itemize}
+    \end{exampleblock}
+
+    \begin{alertblock}{Conclusion}
+        DCC automatically adjusts the hedge ratio to market conditions. CCC misses the increase in correlation during crises.
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_hedge\_ratio}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_hedge_ratio}
+\end{frame}
+
+\begin{frame}{Problem 3: Model selection}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Problem statement}
+        A researcher estimates models for a 3-asset portfolio:
+
+        \vspace{0.3cm}
+        \begin{center}
+        {\footnotesize
+            \begin{tabular}{lcccc}
+                \toprule
+                \textbf{Model} & \textbf{Params} & \textbf{Log-Lik} & \textbf{AIC} & \textbf{Dynamic $\rho$?} \\
+                \midrule
+                CCC & 12 & $-3{,}210$ & $6{,}444$ & No \\
+                DCC & 14 & $-3{,}185$ & $6{,}398$ & Yes \\
+                aDCC & 15 & $-3{,}180$ & $6{,}390$ & Yes \\
+                Diagonal BEKK & 12 & $-3{,}200$ & $6{,}424$ & Yes \\
+                Full BEKK & 24 & $-3{,}170$ & $6{,}388$ & Yes \\
+                \bottomrule
+            \end{tabular}
+        }
+        \end{center}
+
+        \vspace{0.3cm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} Which model has the best AIC?
+            \item \textbf{(b)} Can you test CCC vs DCC with an LR test? Compute the statistic.
+            \item \textbf{(c)} Which model do you recommend and why?
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Solution Problem 3}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{exampleblock}{Answers}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} Full BEKK has the lowest AIC ($6{,}388$), followed by aDCC ($6{,}390$).
+
+            \vspace{0.15cm}
+
+            \item \textbf{(b)} Yes, CCC is nested in DCC ($a = b = 0$):
+
+            $LR = 2 \times (-3{,}185 - (-3{,}210)) = 2 \times 25 = 50$
+
+            Under $H_0$: $LR \sim \chi^2(2)$. Critical value at 1\%: 9.21.
+
+            $50 \gg 9.21$ $\Rightarrow$ \textbf{CCC strongly rejected}!
+
+            \vspace{0.15cm}
+
+            \item \textbf{(c)} \textbf{aDCC}: AIC close to full BEKK but with 9 fewer parameters. For $N = 3$, full BEKK is feasible, but aDCC offers a better trade-off between flexibility and parsimony. If spillovers are important $\Rightarrow$ full BEKK.
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_model\_select}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_model_select}
+\end{frame}
+
+%=============================================================================
+% SECTION 4: PYTHON WORKFLOW
+%=============================================================================
+\section{Python Workflow}
+
+\begin{frame}[fragile]{Step 1: Download data and compute returns}
+    \begin{cminipage}{0.95\textwidth}
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+import yfinance as yf
+from arch import arch_model
+
+# Download S&P 500 and DAX
+sp500 = yf.download('^GSPC', start='2010-01-01', end='2024-12-31')
+dax = yf.download('^GDAXI', start='2010-01-01', end='2024-12-31')
+
+# Percentage returns
+r_sp = (sp500['Close'].pct_change() * 100).dropna()
+r_dax = (dax['Close'].pct_change() * 100).dropna()
+
+# Align data on common trading days
+returns = pd.concat([r_sp, r_dax], axis=1, join='inner')
+returns.columns = ['SP500', 'DAX']
+print(f'Observations: {len(returns)}')
+\end{lstlisting}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_python}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_python}
+\end{frame}
+
+\begin{frame}[fragile]{Step 2: Rolling correlations and DCC estimation}
+    \begin{cminipage}{0.95\textwidth}
+\begin{lstlisting}
+# Rolling correlations with a 60-day window
+rolling_corr = returns['SP500'].rolling(60).corr(returns['DAX'])
+
+# Stage 1: Univariate GARCH for each series
+res_sp = arch_model(returns['SP500'], vol='Garch', p=1, q=1,
+                    dist='t').fit(disp='off')
+res_dax = arch_model(returns['DAX'], vol='Garch', p=1, q=1,
+                     dist='t').fit(disp='off')
+
+# Standardized residuals
+z_sp = res_sp.std_resid
+z_dax = res_dax.std_resid
+
+# Stage 2: Manual DCC (scalar form)
+z = np.column_stack([z_sp, z_dax])
+Qbar = np.corrcoef(z_sp, z_dax)  # Unconditional Q
+\end{lstlisting}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_estimation}
+\end{frame}
+
+\begin{frame}[fragile]{Step 3: DCC dynamic correlations}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+\begin{lstlisting}
+from scipy.optimize import minimize
+def dcc_loglik(params, z, Qbar):
+    a, b = params
+    T, N = z.shape
+    Qt, ll, rho_t = Qbar.copy(), 0, np.zeros(T)
+    for t in range(1, T):
+        Qt = (1-a-b)*Qbar + a*np.outer(z[t-1], z[t-1]) + b*Qt
+        Rt = Qt / np.sqrt(np.outer(np.diag(Qt), np.diag(Qt)))
+        rho_t[t] = Rt[0, 1]
+        ll += np.log(np.linalg.det(Rt)) + z[t]@np.linalg.inv(Rt)@z[t] - z[t]@z[t]
+    return 0.5 * ll, rho_t
+res = minimize(lambda p: dcc_loglik(p, z, Qbar)[0],
+    x0=[0.02, 0.95], bounds=[(0,0.3),(0,0.999)],
+    constraints={'type':'ineq','fun': lambda p: 0.999-p[0]-p[1]})
+a_hat, b_hat = res.x
+_, rho_dcc = dcc_loglik([a_hat, b_hat], z, Qbar)
+\end{lstlisting}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_estimation}
+\end{frame}
+
+\begin{frame}[fragile]{Step 4: Portfolio VaR and visualization}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+COLORS = {'blue':'#1A3A6E', 'red':'#DC3545', 'green':'#2E7D32'}
+# Portfolio VaR with DCC
+w = np.array([0.5, 0.5])
+sigma_sp = res_sp.conditional_volatility / 100
+sigma_dax = res_dax.conditional_volatility / 100
+port_vol = np.sqrt(w[0]**2*sigma_sp**2 + w[1]**2*sigma_dax**2
+                   + 2*w[0]*w[1]*rho_dcc*sigma_sp*sigma_dax)
+VaR_99 = 2.326 * port_vol * 1_000_000
+# Plot
+fig, ax = plt.subplots(figsize=(14, 5))
+ax.plot(returns.index, rho_dcc, color=COLORS['blue'], lw=0.8)
+ax.plot(returns.index, rolling_corr, color=COLORS['red'], lw=0.8, alpha=0.5)
+ax.set_title('DCC vs Rolling Correlations: S&P 500 - DAX')
+ax.legend(['DCC', 'Rolling 60 days'],
+          loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
+plt.tight_layout(); plt.show()
+\end{lstlisting}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_var\_portfolio}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_var_portfolio}
+\end{frame}
+
+%=============================================================================
+% AI-ASSISTED EXERCISE
+%=============================================================================
+\section{AI-Assisted Exercise}
+
+\begin{frame}{AI Exercise: critical thinking}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Using yfinance, download the daily closing prices of S\&P 500 (\^{}GSPC) and FTSE 100 (\^{}FTSE) from 2015-01-01 to 2024-12-31. Compute log returns. Estimate a DCC-GARCH(1,1) model in two stages: (1) GARCH(1,1) with Student-t for each series, (2) DCC parameters $(a, b)$ on standardized residuals. Visualize the dynamic correlations over time. Compute equally weighted portfolio VaR at 99\%. Compare with CCC VaR. I want complete Python code with plots.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Critical evaluation exercise}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Run the prompt and critically analyze the generated code.
+        \item Does it estimate DCC correctly in \textbf{two stages} or does it use simultaneous MLE?
+        \item Does it rescale $\mathbf{Q}_t$ correctly to $\mathbf{R}_t$? (diagonal $\neq 1$ before rescaling)
+        \item Does it check the constraint $a + b < 1$? Does it report standard errors?
+        \item Does VaR use portfolio volatility $\sigma_{p,t} = \sqrt{\mathbf{w}'\mathbf{H}_t\mathbf{w}}$, not the sum of volatilities?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Warning}: AI-generated code may produce beautiful plots but \textit{incorrect} $\mathbf{R}_t$ (e.g., without rescaling).}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SECTION 5: SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Seminar Summary}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \vspace{-2mm}
+    \begin{block}{Key concepts}
+        \begin{itemize}\setlength{\itemsep}{-1pt}
+            \item \textbf{BEKK}: automatic positive definiteness, spillovers, but max $N \leq 5$
+            \item \textbf{CCC}: $\mathbf{H}_t = \mathbf{D}_t\mathbf{R}\mathbf{D}_t$, constant $\rho$ --- benchmark
+            \item \textbf{DCC}: dynamic $\rho_t$, only 2 additional parameters --- industry standard
+            \item \textbf{aDCC}: adds correlation asymmetry (leverage)
+        \end{itemize}
+    \end{block}
+    \vspace{-1mm}
+    \begin{block}{Key formulas}
+        \begin{itemize}\setlength{\itemsep}{-1pt}
+            \item $\sigma_{p,t}^2 = \mathbf{w}'\mathbf{H}_t\mathbf{w}$;\quad $h_t^* = h_{12,t}/h_{22,t}$;\quad $\text{VaR}_\alpha = z_\alpha \cdot \sigma_{p,t} \cdot V$
+        \end{itemize}
+    \end{block}
+    \vspace{-1mm}
+    \begin{alertblock}{Tip: Start with DCC-GARCH(1,1), test CCC vs DCC with Engle--Sheppard!}
+    \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Homework exercises}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \vspace{-2mm}
+    \begin{block}{Exercises}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item Download BET and DAX returns. Estimate DCC-GARCH(1,1). Visualize $\rho_t$. When is correlation at its maximum?
+            \item Compute daily portfolio VaR (50/50) with DCC and CCC. Compare backtesting results.
+            \item For Bitcoin and Ethereum, estimate DCC. Is the correlation more volatile than between stock indices?
+            \item Compute the dynamic hedge ratio for BET stocks hedged with index futures. Compare CCC vs DCC.
+            \item Estimate a bivariate diagonal BEKK for S\&P 500 and EUR/USD. Are there significant spillovers?
+        \end{enumerate}
+    \end{block}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_homework}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_homework}
+\end{frame}
+
+%=============================================================================
+% REPLICATION EXERCISE
+%=============================================================================
+\begin{frame}{Replication exercise: Engle (2002)}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Objective}
+            Replicate Table 1 from Engle (2002) --- DCC estimation on stock indices.
+        \end{block}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            {\small
+            \item Download daily returns of S\&P 500 and DJIA (2000--2024)
+            \item Estimate univariate GARCH(1,1) for each series (Student-t)
+            \item Compute standardized residuals $\hat{z}_t$
+            \item Estimate DCC parameters $(a, b)$ by maximizing $\mathcal{L}_2$
+            \item Visualize the dynamic correlation $\rho_t$ and mark crisis periods
+            \item \textbf{Question}: is the S\&P 500--DJIA correlation more stable than S\&P 500--DAX? Why?
+            }
+        \end{enumerate}
+        {\tiny Ref: Engle, R.F.\ (2002). Dynamic Conditional Correlation: A Simple Class of Multivariate GARCH Models, \textit{JBES}, 20(3), 339--350.}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_engle2002}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_engle2002}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAPHY
+%=============================================================================
+\section{Bibliography}
+
+\begin{frame}{Bibliography I}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Multivariate GARCH models}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Engle, R.F. (2002). Dynamic Conditional Correlation. \textit{JBES}, 20(3), 339--350.
+            \item Bollerslev, T. (1990). Modelling the Coherence in Short-Run Nominal Exchange Rates. \textit{REStat}, 72(3), 498--505.
+            \item Engle, R.F. \& Kroner, K.F. (1995). Multivariate Simultaneous Generalized ARCH. \textit{Econometric Theory}, 11(1), 122--150.
+            \item Cappiello, L., Engle, R.F. \& Sheppard, K. (2006). Asymmetric Dynamics in Correlations. \textit{JFE}, 4(4), 537--572.
+        \end{itemize}
+        }
+    \end{block}
+    \begin{exampleblock}{Financial time series}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Bauwens, L., Laurent, S. \& Rombouts, J.V.K. (2006). Multivariate GARCH Models: A Survey. \textit{JAE}, 21(1), 79--109.
+            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
+            \item Franke, J., H\"ardle, W.K. \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Thank you!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Questions?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Seminar materials are available at: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}

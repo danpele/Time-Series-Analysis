@@ -1,0 +1,914 @@
+% Seminar: Modele GARCH Multivariate - Test de Recapitulare și Exerciții Practice
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 5b: Modele GARCH Multivariate}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% CUPRINS SEMINAR
+%=============================================================================
+\begin{frame}{Cuprins Seminar}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item \textbf{Test de Recapitulare} -- Verificare cunoștințe (10 întrebări)
+        \vspace{0.15cm}
+        \item \textbf{Întrebări Adevărat/Fals} -- Verificări conceptuale
+        \vspace{0.15cm}
+        \item \textbf{Probleme Practice} -- Calcule și interpretări
+        \vspace{0.15cm}
+        \item \textbf{Flux de Lucru Python} -- Estimare DCC pe date reale
+        \vspace{0.15cm}
+        \item \textbf{Exercițiu cu asistență AI} -- Gândire critică
+        \vspace{0.15cm}
+        \item \textbf{Rezumat} -- Concluzii cheie
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SECȚIUNEA 1: TEST
+%=============================================================================
+\section{Test de Recapitulare}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 1
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{De ce modelele GARCH univariate nu sunt suficiente pentru managementul riscului de portofoliu?}
+        \textcolor{MainBlue}{\textbf{(A)}} Nu pot modela volatility clustering\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Nu captează covarianțele variabile în timp între active\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Nu permit estimarea prin verosimilitate maximă\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Nu pot folosi distribuția Student-t
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Gândiți-vă la ce informații necesită calculul VaR de portofoliu...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 1}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Nu captează covarianțele variabile în timp între active}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explicație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VaR de portofoliu: $\sigma_{p,t}^2 = \mathbf{w}'\mathbf{H}_t\mathbf{w}$ necesită \textbf{întreaga matrice} $\mathbf{H}_t$
+            \item GARCH univariat dă doar varianțele individuale $h_{ii,t}$, nu și covarianțele $h_{ij,t}$
+            \item Corelațiile cresc în perioade de criză --- a le ignora \textbf{subestimează riscul}
+            \item Hedging-ul optim necesită $h_{12,t}/h_{22,t}$ --- imposibil fără model multivariat
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_motivation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_motivation}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 2
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Câte elemente unice are matricea de covarianță $\mathbf{H}_t$ pentru $N = 10$ active?}
+        \textcolor{MainBlue}{\textbf{(A)}} 10\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} 45\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} 55\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} 100
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{55}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Calculul}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\mathbf{H}_t$ este simetrică: $h_{ij,t} = h_{ji,t}$
+            \item Elemente unice: $N(N+1)/2 = 10 \times 11/2 = 55$
+            \item Din care: 10 varianțe ($h_{ii,t}$) și 45 covarianțe ($h_{ij,t}$, $i \neq j$)
+            \item Aceasta este \textbf{blestemul dimensionalității} --- motivația pentru modele structurate
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_curse\_dim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_curse_dim}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 3
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Ce proprietate garantează modelul BEKK prin construcție?}
+        \textcolor{MainBlue}{\textbf{(A)}} Stationaritatea\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Pozitiv-definirea matricei $\mathbf{H}_t$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Corelații constante\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Absența propagării volatilității
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 3}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Pozitiv-definirea matricei $\mathbf{H}_t$}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explicație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item BEKK: $\mathbf{H}_t = \mathbf{C}\mathbf{C}' + \mathbf{A}'\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}'\mathbf{A} + \mathbf{B}'\mathbf{H}_{t-1}\mathbf{B}$
+            \item $\mathbf{C}\mathbf{C}'$ este p.d.\ (dacă $\mathbf{C}$ are rang plin)
+            \item $\mathbf{A}'\mathbf{M}\mathbf{A}$ este p.s.d.\ pentru orice $\mathbf{M}$ p.s.d.
+            \item Suma de matrice p.d.\ și p.s.d.\ este p.d. $\Rightarrow$ $\mathbf{H}_t$ p.d.\ automat!
+            \item \textbf{Atenție}: stationaritatea necesită o condiție separată pe raza spectrală
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_bekk\_sim}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_bekk_sim}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 4
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{În modelul CCC, covarianța $h_{ij,t}$ este dată de:}
+        \textcolor{MainBlue}{\textbf{(A)}} $h_{ij,t} = \rho_{ij,t} \cdot \sigma_{i,t} \cdot \sigma_{j,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $h_{ij,t} = \rho_{ij} \cdot \sigma_{i,t} \cdot \sigma_{j,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} $h_{ij,t} = \alpha_{ij} \cdot \varepsilon_{i,t-1} \varepsilon_{j,t-1}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $h_{ij,t} = \rho_{ij} \cdot \bar{\sigma}_i \cdot \bar{\sigma}_j$
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 4}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $h_{ij,t} = \rho_{ij} \cdot \sigma_{i,t} \cdot \sigma_{j,t}$
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explicație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item CCC: $\mathbf{H}_t = \mathbf{D}_t \mathbf{R} \mathbf{D}_t$ cu $\mathbf{R}$ \textbf{constant}
+            \item Corelația $\rho_{ij}$ nu se schimbă în timp (de unde numele ``constantă'')
+            \item Covarianța variază doar prin $\sigma_{i,t}$ și $\sigma_{j,t}$ (modelate cu GARCH univariat)
+            \item (A) ar fi DCC (cu $\rho_{ij,t}$ variabil), (D) ar fi covarianța necondiționată
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_ccc\_dcc}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_ccc_dcc}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 5
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Câți parametri de corelație necesită DCC(1,1) indiferent de $N$?}
+        \textcolor{MainBlue}{\textbf{(A)}} $N(N-1)/2$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $N^2$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} 2\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $3N$
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 5}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{2} parametri ($a$ și $b$)
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explicație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item DCC: $\mathbf{Q}_t = (1-a-b)\bar{\mathbf{Q}} + a\mathbf{z}_{t-1}\mathbf{z}_{t-1}' + b\mathbf{Q}_{t-1}$
+            \item $a$ = reacția la șocuri, $b$ = persistența --- \textbf{scalari}, nu matrice!
+            \item Aceasta este cheia scalabilității DCC: $N = 2$ sau $N = 500$, tot 2 parametri
+            \item Plus $3N$ parametri GARCH univariați (estimați separat în Etapa 1)
+            \item Total: $3N + N(N-1)/2 + 2$ (incluzând corelația necondiționată $\bar{\mathbf{Q}}$)
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_estimation}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 6
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 6}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Ce se întâmplă cu corelațiile DCC în perioadele de criză?}
+        \textcolor{MainBlue}{\textbf{(A)}} Scad, deoarece activele se mișcă independent\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Rămân constante, deoarece DCC are revenire la medie\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Cresc, deoarece șocurile negative comune cresc $q_{12,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Devin negative, deoarece investitorii fug spre active sigure
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 6}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Cresc, deoarece șocurile negative comune cresc $q_{12,t}$}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Mecanismul}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Criză: $\varepsilon_{1,t-1} < 0$, $\varepsilon_{2,t-1} < 0$ $\Rightarrow$ $z_{1,t-1} < 0$, $z_{2,t-1} < 0$
+            \item Produsul: $z_{1,t-1} \cdot z_{2,t-1} > 0$ (pozitiv și mare!)
+            \item $q_{12,t}$ crește $\Rightarrow$ $\rho_{12,t}$ crește
+            \item \textbf{Diversificarea eșuează exact când este cel mai necesară}
+            \item Modelul aDCC captează acest efect și mai puternic prin termenul asimetric $g$
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_crisis\_corr}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_crisis_corr}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 7
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 7}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Care model GARCH multivariat captează propagarea volatilității (spillovers)?}
+        \textcolor{MainBlue}{\textbf{(A)}} CCC --- prin corelații constante\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} DCC --- prin corelații dinamice\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} BEKK complet --- prin elementele off-diagonale ale lui $\mathbf{A}$ și $\mathbf{B}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} BEKK diagonal --- prin elementele diagonale ale lui $\mathbf{A}$
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 7}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{BEKK complet --- prin elementele off-diagonale ale lui $\mathbf{A}$ și $\mathbf{B}$}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Explicație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $a_{21} \neq 0$: șocul din activul 1 afectează varianța activului 2 (shock spillover)
+            \item $b_{21} \neq 0$: volatilitatea trecută a activului 1 afectează volatilitatea curentă a activului 2
+            \item CCC/DCC: fiecare varianță urmează GARCH univariat --- \textbf{fără spillovers}
+            \item BEKK diagonal: $\mathbf{A}$, $\mathbf{B}$ diagonale $\Rightarrow$ spillovers eliminate
+            \item \textbf{Preț}: BEKK complet este fezabil doar pentru $N \leq 5$
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_bekk\_spillover}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_bekk_spillover}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 8
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 8}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Raportul optim de hedging cu varianță minimă este:}
+        \textcolor{MainBlue}{\textbf{(A)}} $h_t^* = h_{11,t} / h_{22,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $h_t^* = h_{12,t} / h_{22,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} $h_t^* = h_{12,t} / h_{11,t}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $h_t^* = \rho_t \cdot \sigma_{1,t} / \sigma_{2,t}$ doar dacă corelația este constantă
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 8}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (B)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $h_t^* = h_{12,t} / h_{22,t}$
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Demonstrație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Portofoliu acoperit: $r_{\text{hedged}} = r_{\text{spot}} - h \cdot r_{\text{futures}}$
+            \item Varianța: $\text{Var}(r_{\text{hedged}}) = h_{11,t} - 2h \cdot h_{12,t} + h^2 \cdot h_{22,t}$
+            \item Minimizăm: $\frac{\partial}{\partial h} = -2h_{12,t} + 2h \cdot h_{22,t} = 0$
+            \item $h_t^* = h_{12,t} / h_{22,t} = \rho_t \cdot \sigma_{1,t}/\sigma_{2,t}$
+            \item Cu DCC: $\rho_t$ variabil $\Rightarrow$ hedging mai precis în criză!
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_hedge\_ratio}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_hedge_ratio}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 9
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 9}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Ce test verifică dacă corelațiile sunt constante (CCC vs DCC)?}
+        \textcolor{MainBlue}{\textbf{(A)}} Testul ARCH-LM\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Testul Dickey-Fuller augmentat\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Testul Engle--Sheppard pentru corelație constantă\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Testul Ljung-Box pe randamente
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 9}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Testul Engle--Sheppard (2001) pentru corelație constantă}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Procedura}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $H_0$: corelațiile sunt constante (CCC adecvat)
+            \item $H_1$: corelațiile variază în timp (necesită DCC)
+            \item Se regresează $\text{vech}(\mathbf{z}_t\mathbf{z}_t' - \hat{\mathbf{R}})$ pe valori decalate
+            \item Statistica: $T \cdot R^2 \sim \chi^2$ sub $H_0$
+            \item \textbf{Empiric}: CCC este aproape întotdeauna respins în date financiare
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_ccc\_test}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_ccc_test}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Întrebarea 10
+%-----------------------------------------------------------------------------
+\begin{frame}{Întrebarea 10}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Ce model este potrivit pentru un portofoliu de 100 de acțiuni?}
+        \textcolor{MainBlue}{\textbf{(A)}} VEC(1,1)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} BEKK complet\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} DCC sau Factor GARCH\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} BEKK diagonal
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspuns Întrebarea 10}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns Corect: (C)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{DCC sau Factor GARCH}
+        \end{itemize}
+    \end{exampleblock}
+
+    \pause
+    \begin{block}{Justificare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item VEC: $\sim$25.500 parametri --- complet nefezabil
+            \item BEKK complet: $\sim$20.000 parametri --- nefezabil
+            \item BEKK diagonal: $\sim$5.250 parametri --- dificil
+            \item DCC: $302 + 2 = 304$ parametri (estimați în două etape) --- \textbf{fezabil}
+            \item Factor GARCH: $K$ factori ($K \ll N$) --- și mai eficient
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_model\_choice}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_model_choice}
+\end{frame}
+
+%=============================================================================
+% SECȚIUNEA 2: ADEVĂRAT/FALS
+%=============================================================================
+\section{Întrebări Adevărat/Fals}
+
+\begin{frame}{Adevărat sau Fals?}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Modelul CCC presupune că corelațiile între active se schimbă în timp.
+
+        \vspace{0.3cm}
+
+        \item Estimarea DCC în două etape este consistentă dar nu pe deplin eficientă.
+
+        \vspace{0.3cm}
+
+        \item EWMA multivariat este echivalent cu BEKK Scalar cu $\omega = 0$ și $\alpha + \beta = 1$.
+
+        \vspace{0.3cm}
+
+        \item Modelul BEKK diagonal captează propagarea volatilității între active.
+
+        \vspace{0.3cm}
+
+        \item aDCC adaugă doar un parametru suplimentar față de DCC.
+
+        \vspace{0.3cm}
+
+        \item VaR-ul de portofoliu bazat pe DCC este mereu mai mare decât cel bazat pe CCC.
+
+        \vspace{0.3cm}
+
+        \item GO-GARCH funcționează prin descompunerea randamentelor în factori necorelați.
+
+        \vspace{0.3cm}
+
+        \item Corelațiile între acțiuni scad de obicei în perioadele de criză financiară.
+    \end{enumerate}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Răspunsuri Adevărat/Fals}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item \textbf{FALS} --- CCC = Constant Conditional Correlation. $\mathbf{R}$ este fix.
+
+        \vspace{0.2cm}
+
+        \item \textbf{ADEVĂRAT} --- Consistent prin QML. Erori standard via sandwich estimator.
+
+        \vspace{0.2cm}
+
+        \item \textbf{ADEVĂRAT} --- $\mathbf{H}_t = (1-\lambda)\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}' + \lambda\mathbf{H}_{t-1}$ cu $\lambda = 0.94$.
+
+        \vspace{0.2cm}
+
+        \item \textbf{FALS} --- BEKK diagonal: $\mathbf{A}$, $\mathbf{B}$ diagonale, deci \textbf{fără spillovers}. Doar BEKK complet captează spillovers.
+
+        \vspace{0.2cm}
+
+        \item \textbf{ADEVĂRAT} --- Parametrul $g$ pentru asimetria negativă. Include DCC ($g=0$) ca caz particular.
+
+        \vspace{0.2cm}
+
+        \item \textbf{FALS} --- VaR-ul DCC este mai mare \textbf{în crize} (corelații crescute), dar poate fi mai mic în perioade calme (corelații scăzute). Depinde de regim.
+
+        \vspace{0.2cm}
+
+        \item \textbf{ADEVĂRAT} --- Folosește o matrice de mixare $\mathbf{Z}$ și factori cu GARCH individual.
+
+        \vspace{0.2cm}
+
+        \item \textbf{FALS} --- Corelațiile \textbf{cresc} în crize (contagiune). Diversificarea eșuează.
+    \end{enumerate}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SECȚIUNEA 3: PROBLEME PRACTICE
+%=============================================================================
+\section{Probleme Practice}
+
+\begin{frame}{Problema 1: VaR de portofoliu --- CCC vs DCC}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Enunț}
+        Un portofoliu egal ponderat ($w_1 = w_2 = 0.5$) conține două active cu:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Volatilități zilnice: $\sigma_{1,t} = 2\%$, $\sigma_{2,t} = 3\%$
+            \item Corelație CCC: $\rho = 0.4$
+            \item Corelație DCC (în criză): $\rho_t = 0.8$
+        \end{itemize}
+
+        \vspace{0.3cm}
+        Calculați:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} Volatilitatea portofoliului cu CCC
+            \item \textbf{(b)} Volatilitatea portofoliului cu DCC (în criză)
+            \item \textbf{(c)} VaR la 99\% (1 zi) pentru 1.000.000 EUR, ambele modele
+            \item \textbf{(d)} Cu cât subestimează CCC riscul în criză?
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Soluție Problema 1}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{exampleblock}{Răspunsuri}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} $\sigma_p^2 = 0.25 \times 0.04 + 0.25 \times 0.09 + 2 \times 0.25 \times 0.4 \times 0.02 \times 0.03 = 0.0445\%$
+
+            $\sigma_p = \sqrt{0.000445} = 2.11\%$
+
+            \vspace{0.15cm}
+
+            \item \textbf{(b)} Cu $\rho_t = 0.8$: $\sigma_p^2 = 0.0325 + 0.012 = 0.000565$
+
+            $\sigma_p = \sqrt{0.000565} = 2.38\%$
+
+            \vspace{0.15cm}
+
+            \item \textbf{(c)} VaR 99\% ($z_{0.01} = 2.326$):
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item CCC: $2.326 \times 0.0211 \times 1{,}000{,}000 = \textbf{49{,}069}$ EUR
+                \item DCC: $2.326 \times 0.0238 \times 1{,}000{,}000 = \textbf{55{,}359}$ EUR
+            \end{itemize}
+
+            \vspace{0.15cm}
+
+            \item \textbf{(d)} CCC subestimează VaR cu $(55{,}359 - 49{,}069)/49{,}069 = \textbf{12.8\%}$ în criză!
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_var\_ccc\_dcc}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_var_ccc_dcc}
+\end{frame}
+
+\begin{frame}{Problema 2: Hedging dinamic cu DCC}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Enunț}
+        Un fond deține acțiuni și le acoperă cu futures pe indice. La momentul $t$:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $\sigma_{\text{spot},t} = 1.5\%$, $\sigma_{\text{futures},t} = 1.2\%$
+            \item CCC: $\rho = 0.90$
+            \item DCC (criză): $\rho_t = 0.97$
+        \end{itemize}
+
+        \vspace{0.3cm}
+        Calculați:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} Raportul de hedging CCC: $h^* = \rho \cdot \sigma_{\text{spot}} / \sigma_{\text{futures}}$
+            \item \textbf{(b)} Raportul de hedging DCC (criză)
+            \item \textbf{(c)} Eficacitatea hedging-ului ($HE$) pentru fiecare model
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Soluție Problema 2}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspunsuri}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} CCC: $h^* = 0.90 \times 1.5/1.2 = \textbf{1.125}$
+
+            \vspace{0.2cm}
+
+            \item \textbf{(b)} DCC: $h_t^* = 0.97 \times 1.5/1.2 = \textbf{1.213}$
+
+            \vspace{0.2cm}
+
+            \item \textbf{(c)} Eficacitatea: $HE = \rho^2$
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item CCC: $HE = 0.90^2 = 81.0\%$ din varianță eliminată
+                \item DCC: $HE = 0.97^2 = 94.1\%$ din varianță eliminată
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            CCC sub-acoperă cu $1.213 - 1.125 = 0.088$ unități futures. Expunerea reziduală este semnificativă!
+        \end{itemize}
+    \end{exampleblock}
+
+    \begin{alertblock}{Concluzie}
+        DCC ajustează automat raportul de hedging la condițiile de piață. CCC ratează creșterea corelației în criză.
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_hedge\_ratio}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_hedge_ratio}
+\end{frame}
+
+\begin{frame}{Problema 3: Selecția modelului}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Enunț}
+        Un cercetător estimează modele pentru un portofoliu de 3 active:
+
+        \vspace{0.3cm}
+        \begin{center}
+        {\footnotesize
+            \begin{tabular}{lcccc}
+                \toprule
+                \textbf{Model} & \textbf{Parametri} & \textbf{Log-Lik} & \textbf{AIC} & \textbf{$\rho$ dinamic?} \\
+                \midrule
+                CCC & 12 & $-3{,}210$ & $6{,}444$ & Nu \\
+                DCC & 14 & $-3{,}185$ & $6{,}398$ & Da \\
+                aDCC & 15 & $-3{,}180$ & $6{,}390$ & Da \\
+                BEKK Diagonal & 12 & $-3{,}200$ & $6{,}424$ & Da \\
+                BEKK Complet & 24 & $-3{,}170$ & $6{,}388$ & Da \\
+                \bottomrule
+            \end{tabular}
+        }
+        \end{center}
+
+        \vspace{0.3cm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} Care model are AIC-ul cel mai bun?
+            \item \textbf{(b)} Puteți testa CCC vs DCC cu un test LR? Calculați statistica.
+            \item \textbf{(c)} Ce model recomandați și de ce?
+        \end{itemize}
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Soluție Problema 3}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{exampleblock}{Răspunsuri}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{(a)} BEKK complet are cel mai mic AIC ($6{,}388$), urmat de aDCC ($6{,}390$).
+
+            \vspace{0.15cm}
+
+            \item \textbf{(b)} Da, CCC este imbricat în DCC ($a = b = 0$):
+
+            $LR = 2 \times (-3{,}185 - (-3{,}210)) = 2 \times 25 = 50$
+
+            Sub $H_0$: $LR \sim \chi^2(2)$. Valoare critică la 1\%: 9.21.
+
+            $50 \gg 9.21$ $\Rightarrow$ \textbf{CCC puternic respins}!
+
+            \vspace{0.15cm}
+
+            \item \textbf{(c)} \textbf{aDCC}: AIC aproape de BEKK complet dar cu 9 parametri mai puțini. Pentru $N = 3$, BEKK complet este fezabil, dar aDCC oferă un compromis mai bun între flexibilitate și parsimonie. Dacă spillovers sunt importante $\Rightarrow$ BEKK complet.
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_model\_select}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_model_select}
+\end{frame}
+
+%=============================================================================
+% SECȚIUNEA 4: FLUX DE LUCRU PYTHON
+%=============================================================================
+\section{Flux de Lucru Python}
+
+\begin{frame}[fragile]{Pasul 1: Descărcare date și calcul randamente}
+    \begin{cminipage}{0.95\textwidth}
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+import yfinance as yf
+from arch import arch_model
+
+# Descarcam S&P 500 si DAX
+sp500 = yf.download('^GSPC', start='2010-01-01', end='2024-12-31')
+dax = yf.download('^GDAXI', start='2010-01-01', end='2024-12-31')
+
+# Randamente procentuale
+r_sp = (sp500['Close'].pct_change() * 100).dropna()
+r_dax = (dax['Close'].pct_change() * 100).dropna()
+
+# Aliniem datele pe zile comune
+returns = pd.concat([r_sp, r_dax], axis=1, join='inner')
+returns.columns = ['SP500', 'DAX']
+print(f'Observatii: {len(returns)}')
+\end{lstlisting}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_python}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_python}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 2: Corelații mobile și estimare DCC}
+    \begin{cminipage}{0.95\textwidth}
+\begin{lstlisting}
+# Corelatii pe fereastra mobila de 60 zile
+rolling_corr = returns['SP500'].rolling(60).corr(returns['DAX'])
+
+# Etapa 1: GARCH univariat pentru fiecare serie
+res_sp = arch_model(returns['SP500'], vol='Garch', p=1, q=1,
+                    dist='t').fit(disp='off')
+res_dax = arch_model(returns['DAX'], vol='Garch', p=1, q=1,
+                     dist='t').fit(disp='off')
+
+# Reziduuri standardizate
+z_sp = res_sp.std_resid
+z_dax = res_dax.std_resid
+
+# Etapa 2: DCC manual (forma scalara)
+z = np.column_stack([z_sp, z_dax])
+Qbar = np.corrcoef(z_sp, z_dax)  # Q neconditional
+\end{lstlisting}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_estimation}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 3: Corelații dinamice DCC}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+\begin{lstlisting}
+from scipy.optimize import minimize
+def dcc_loglik(params, z, Qbar):
+    a, b = params
+    T, N = z.shape
+    Qt, ll, rho_t = Qbar.copy(), 0, np.zeros(T)
+    for t in range(1, T):
+        Qt = (1-a-b)*Qbar + a*np.outer(z[t-1], z[t-1]) + b*Qt
+        Rt = Qt / np.sqrt(np.outer(np.diag(Qt), np.diag(Qt)))
+        rho_t[t] = Rt[0, 1]
+        ll += np.log(np.linalg.det(Rt)) + z[t]@np.linalg.inv(Rt)@z[t] - z[t]@z[t]
+    return 0.5 * ll, rho_t
+res = minimize(lambda p: dcc_loglik(p, z, Qbar)[0],
+    x0=[0.02, 0.95], bounds=[(0,0.3),(0,0.999)],
+    constraints={'type':'ineq','fun': lambda p: 0.999-p[0]-p[1]})
+a_hat, b_hat = res.x
+_, rho_dcc = dcc_loglik([a_hat, b_hat], z, Qbar)
+\end{lstlisting}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_dcc\_estimation}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_dcc_estimation}
+\end{frame}
+
+\begin{frame}[fragile]{Pasul 4: VaR portofoliu și vizualizare}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+COLORS = {'blue':'#1A3A6E', 'red':'#DC3545', 'green':'#2E7D32'}
+# VaR portofoliu cu DCC
+w = np.array([0.5, 0.5])
+sigma_sp = res_sp.conditional_volatility / 100
+sigma_dax = res_dax.conditional_volatility / 100
+port_vol = np.sqrt(w[0]**2*sigma_sp**2 + w[1]**2*sigma_dax**2
+                   + 2*w[0]*w[1]*rho_dcc*sigma_sp*sigma_dax)
+VaR_99 = 2.326 * port_vol * 1_000_000
+# Grafic
+fig, ax = plt.subplots(figsize=(14, 5))
+ax.plot(returns.index, rho_dcc, color=COLORS['blue'], lw=0.8)
+ax.plot(returns.index, rolling_corr, color=COLORS['red'], lw=0.8, alpha=0.5)
+ax.set_title('DCC vs Corelatii mobile: S&P 500 - DAX')
+ax.legend(['DCC', 'Mobile 60 zile'],
+          loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2)
+plt.tight_layout(); plt.show()
+\end{lstlisting}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_var\_portfolio}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_var_portfolio}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚIU CU ASISTENȚĂ AI
+%=============================================================================
+\section{Exercițiu cu asistență AI}
+
+\begin{frame}{Exercițiu AI: gândire critică}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Folosind yfinance, descarcă prețurile zilnice de închidere ale S\&P 500 (\^{}GSPC) și FTSE 100 (\^{}FTSE) din 2015-01-01 până în 2024-12-31. Calculează randamentele logaritmice. Estimează un model DCC-GARCH(1,1) în două etape: (1) GARCH(1,1) cu Student-t pentru fiecare serie, (2) parametrii DCC $(a, b)$ pe reziduurile standardizate. Vizualizează corelațiile dinamice în timp. Calculează VaR de portofoliu egal ponderat la 99\%. Compară cu VaR-ul CCC. Vreau cod Python complet cu grafice.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercițiu de evaluare critică}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Rulați prompt-ul și analizați critic codul generat.
+        \item Verifică dacă DCC este estimat corect în \textbf{două etape} sau face MLE simultan?
+        \item Rescalează $\mathbf{Q}_t$ corect la $\mathbf{R}_t$? (diagonal $\neq 1$ înainte de rescalare)
+        \item Verifică restricția $a + b < 1$? Raportează erorile standard?
+        \item VaR-ul folosește volatilitatea de portofoliu $\sigma_{p,t} = \sqrt{\mathbf{w}'\mathbf{H}_t\mathbf{w}}$, nu suma volatilităților?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Atenție}: Codul generat de AI poate produce grafice frumoase dar $\mathbf{R}_t$ \textit{incorect} (ex: fără rescalare).}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SECȚIUNEA 5: REZUMAT
+%=============================================================================
+\section{Rezumat}
+
+\begin{frame}{Rezumat Seminar}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \vspace{-2mm}
+    \begin{block}{Concepte cheie}
+        \begin{itemize}\setlength{\itemsep}{-1pt}
+            \item \textbf{BEKK}: pozitiv-definire automată, spillovers, dar max $N \leq 5$
+            \item \textbf{CCC}: $\mathbf{H}_t = \mathbf{D}_t\mathbf{R}\mathbf{D}_t$, $\rho$ constant --- benchmark
+            \item \textbf{DCC}: $\rho_t$ dinamic, doar 2 parametri suplimentari --- standard industrial
+            \item \textbf{aDCC}: adaugă asimetria corelațiilor (levier)
+        \end{itemize}
+    \end{block}
+    \vspace{-1mm}
+    \begin{block}{Formule importante}
+        \begin{itemize}\setlength{\itemsep}{-1pt}
+            \item $\sigma_{p,t}^2 = \mathbf{w}'\mathbf{H}_t\mathbf{w}$;\quad $h_t^* = h_{12,t}/h_{22,t}$;\quad $\text{VaR}_\alpha = z_\alpha \cdot \sigma_{p,t} \cdot V$
+        \end{itemize}
+    \end{block}
+    \vspace{-1mm}
+    \begin{alertblock}{Sfat: Începeți cu DCC-GARCH(1,1), testați CCC vs DCC cu Engle--Sheppard!}
+    \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exerciții pentru acasă}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \vspace{-2mm}
+    \begin{block}{Exerciții}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item Descărcați randamentele BET și DAX. Estimați DCC-GARCH(1,1). Vizualizați $\rho_t$. Când este maximă corelația?
+            \item Calculați VaR zilnic de portofoliu (50/50) cu DCC și CCC. Comparați backtesting-ul.
+            \item Pentru Bitcoin și Ethereum, estimați DCC. Este corelația mai volatilă decât între indici bursieri?
+            \item Calculați raportul de hedging dinamic pentru acțiuni BET acoperite cu futures pe indice. Comparați CCC vs DCC.
+            \item Estimați BEKK diagonal bivariat pentru S\&P 500 și EUR/USD. Există spillovers semnificative?
+        \end{enumerate}
+    \end{block}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_homework}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_homework}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚIU DE REPLICARE
+%=============================================================================
+\begin{frame}{Exercițiu de replicare: Engle (2002)}
+    \begin{cminipage}{0.95\textwidth}
+        \begin{block}{Obiectiv}
+            Replicați Tabelul 1 din Engle (2002) --- estimarea DCC pe indici bursieri.
+        \end{block}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            {\small
+            \item Descărcați randamentele zilnice S\&P 500 și DJIA (2000--2024)
+            \item Estimați GARCH(1,1) univariat pentru fiecare serie (Student-t)
+            \item Calculați reziduurile standardizate $\hat{z}_t$
+            \item Estimați parametrii DCC $(a, b)$ prin maximizarea $\mathcal{L}_2$
+            \item Vizualizați corelația dinamică $\rho_t$ și marcați perioadele de criză
+            \item \textbf{Întrebare}: corelația S\&P 500--DJIA este mai stabilă decât S\&P 500--DAX? De ce?
+            }
+        \end{enumerate}
+        {\tiny Ref: Engle, R.F.\ (2002). Dynamic Conditional Correlation: A Simple Class of Multivariate GARCH Models, \textit{JBES}, 20(3), 339--350.}
+    \end{cminipage}
+    \quantlet{TSA\_ch5b\_engle2002}{https://github.com/QuantLet/TSA/tree/main/TSA_ch5b/TSA_ch5b_engle2002}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\section{Bibliografie}
+
+\begin{frame}{Bibliografie I}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    \begin{block}{Modele GARCH multivariate}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Engle, R.F. (2002). Dynamic Conditional Correlation. \textit{JBES}, 20(3), 339--350.
+            \item Bollerslev, T. (1990). Modelling the Coherence in Short-Run Nominal Exchange Rates. \textit{REStat}, 72(3), 498--505.
+            \item Engle, R.F. \& Kroner, K.F. (1995). Multivariate Simultaneous Generalized ARCH. \textit{Econometric Theory}, 11(1), 122--150.
+            \item Cappiello, L., Engle, R.F. \& Sheppard, K. (2006). Asymmetric Dynamics in Correlations. \textit{JFE}, 4(4), 537--572.
+        \end{itemize}
+        }
+    \end{block}
+    \begin{exampleblock}{Serii de timp financiare}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Bauwens, L., Laurent, S. \& Rombouts, J.V.K. (2006). Multivariate GARCH Models: A Survey. \textit{JAE}, 21(1), 79--109.
+            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
+            \item Franke, J., Härdle, W.K. \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Vă mulțumesc!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Întrebări?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Materialele seminarului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}
