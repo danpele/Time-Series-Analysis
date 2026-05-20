@@ -1,0 +1,696 @@
+% Seminar 13: Modele LPPL pentru Detectarea Bulelor Speculative
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 13: Modele LPPL pentru Detectarea Bulelor Speculative}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% CUPRINS
+%=============================================================================
+\begin{frame}{Cuprins Seminar}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}
+        \item \textbf{Partea I: Nivel Anul 3} -- Creștere super-exponențială, ecuația LPPL, estimarea modelului
+        \vspace{0.15cm}
+        \item \textbf{Partea II: Nivel Master} -- Condiții de filtrare, benchmark-uri, bootstrap CI, stabilitate multi-fereastră, indicator LPPLS CI
+        \vspace{0.15cm}
+        \item \textbf{Partea III: Extensie Doctorat} -- Control negativ (COVID 2020), aplicație de gestionare a riscului
+        \vspace{0.15cm}
+        \item \textbf{Subiecte de Discuție} -- Gândire critică cu instrumente AI
+        \vspace{0.15cm}
+        \item \textbf{Exerciții pentru Acasă} -- Practică extinsă
+        \vspace{0.15cm}
+        \item \textbf{Rezumat} -- Concepte cheie pe nivele
+        \vspace{0.15cm}
+        \item \textbf{Bibliografie} -- Referințe și cod
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% PARTEA I: NIVEL ANUL 3
+%=============================================================================
+\section{Partea I: Nivel Anul 3}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 1: Creștere Super-Exponențială
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 1: Detectarea Creșterii Super-Exponențiale}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Descărcați prețurile zilnice BTC-USD din septembrie 2020 până în noiembrie 2021 (creșterea spre \$69k).
+        Testați dacă seria log-prețurilor prezintă \textbf{creștere super-exponențială}.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Reprezentați grafic prețul, log-prețul, randamentele zilnice și volatilitatea rulantă pe 30 de zile (4 panouri).
+            \item \textcolor{MainBlue}{\textbf{(B)}} Estimați trei modele pentru $\ln P_t$: liniar ($a + bt$), cuadratic ($a + bt + ct^2$) și exponențial ($a + be^{ct}$). Raportați $R^2$ pentru fiecare.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Dacă $R^2_{\text{cuadratic}} > R^2_{\text{liniar}}$, ce implică aceasta despre regimul de creștere? De ce este aceasta o condiție necesară pentru aplicabilitatea LPPL?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 1: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Prețul: creștere cu aspect exponențial de la \$10k la \$69k. Log-prețul: concav în sus (mai rapid decât liniar). Randamentele: heteroscedastice cu amplitudine crescândă. Volatilitatea rulantă: trend ascendent spre vârf.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Rezultate tipice: $R^2_{\text{lin}} \approx 0{,}92$, $R^2_{\text{cuad}} \approx 0{,}97$, $R^2_{\text{exp}} \approx 0{,}98$. Modelele neliniare depășesc semnificativ modelul liniar.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Dacă log-prețul crește mai rapid decât liniar, atunci prețul crește mai rapid decât exponențial --- aceasta este \textbf{creștere super-exponențială}. Apare din bucle de feedback pozitiv (comportament de turmă, tranzacționare pe moment) și este semnătura unui regim de bulă. Modelele LPPL descriu exact acest regim: singularitatea de tip lege de putere $B(t_c - t)^m$ cu $m < 1$ produce accelerarea super-exponențială.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_btc2021\_data}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_btc2021_data}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 2: Ecuația LPPL
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 2: Ecuația LPPL}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Modelul LPPL descrie log-prețul în timpul unei bule:
+        $\ln P(t) = A + B(t_c - t)^m + C(t_c - t)^m \cos\!\bigl(\omega \ln(t_c - t) - \varphi\bigr)$
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Folosind parametri sintetici ($A{=}11$, $B{=}{-}0{,}5$, $m{=}0{,}5$, $C{=}0{,}04$, $\omega{=}8$, $\varphi{=}1$, $t_c{=}300$), reprezentați grafic cele trei componente: trend lege de putere, oscilații log-periodice, LPPL complet.
+            \item \textcolor{MainBlue}{\textbf{(B)}} De ce trebuie $B < 0$ și $0 < m < 1$ pentru o bulă? Ce se întâmplă dacă $m \geq 1$?
+            \item \textcolor{MainBlue}{\textbf{(C)}} De ce oscilațiile se accelerează în timp calendaristic dar au frecvență constantă în $\ln(t_c - t)$?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 2: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Componenta 1: $A + B(t_c - t)^m$ curbă ascendentă pe măsură ce $t \to t_c$ (singularitate lege de putere). Componenta 2: $C(t_c - t)^m \cos(\omega \ln(t_c - t) - \varphi)$ --- oscilații cu amplitudine descrescândă și perioadă comprimată lângă $t_c$. Combinat: trend super-exponențial decorat cu oscilații accelerate.
+            \item \textcolor{MainBlue}{\textbf{(B)}} $B < 0$ asigură că funcția \emph{crește} pe măsură ce $t \to t_c$ (deoarece $(t_c - t)^m$ scade). $0 < m < 1$ asigură \textbf{creșterea super-exponențială}: rata de creștere $|\dot{P}/P|$ diverge când $t \to t_c$ (singularitate în timp finit). Dacă $m \geq 1$, creșterea decelerează --- fără semnătură de bulă.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Argumentul oscilației este $\omega \ln(t_c - t)$. Incrementele egale ale lui $\ln(t_c - t)$ corespund compresiei geometrice în $(t_c - t)$: ciclurile succesive durează $1/\lambda$ din timpul ciclului anterior, unde $\lambda = e^{2\pi/\omega} \approx 2$. Aceasta este \textbf{invarianța de scară discretă}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_lppl\_components}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_lppl_components}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 3: Estimarea LPPL prin Liniarizare Parțială
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 3: Estimarea LPPL prin Liniarizare Parțială}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        LPPL are 7 parametri $(A, B, C_1, C_2, t_c, m, \omega)$ unde $C_1 = C\cos\varphi$, $C_2 = C\sin\varphi$.
+        Pentru $(t_c, m, \omega)$ fixați, parametrii rămași pot fi găsiți prin OLS.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Scrieți matricea de design OLS $\mathbf{X}$ pentru sub-problema liniară. Identificați fiecare coloană.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Folosiți \texttt{scipy.optimize.differential\_evolution} pentru a căuta peste $(t_c, m, \omega)$ și estimați LPPL pe datele BTC 2021. Raportați parametrii estimați și $R^2$.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Reprezentați grafic estimarea LPPL față de log-prețul observat și reziduurile. Sunt reziduurile staționare?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 3: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Pentru $(t_c, m, \omega)$ fixați, definim $\Delta_i = t_c - t_i$ și $f_i = \Delta_i^m$:
+            \[
+                \mathbf{X} = \begin{bmatrix} 1 & f_1 & f_1\cos(\omega\ln\Delta_1) & f_1\sin(\omega\ln\Delta_1) \\ \vdots & \vdots & \vdots & \vdots \\ 1 & f_n & f_n\cos(\omega\ln\Delta_n) & f_n\sin(\omega\ln\Delta_n) \end{bmatrix}, \quad \boldsymbol{\beta} = \begin{pmatrix} A \\ B \\ C_1 \\ C_2 \end{pmatrix}
+            \]
+            \item \textcolor{MainBlue}{\textbf{(B)}} Limite: $t_c \in [N{-}5, N{+}60]$, $m \in [0{,}1;\; 0{,}9]$, $\omega \in [4, 25]$. Rezultate tipice BTC 2021: $t_c \approx N + 5$, $m \approx 0{,}4$, $\omega \approx 8$, $R^2 > 0{,}99$.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Estimarea urmărește îndeaproape log-prețul observat. Reziduurile fluctuează în jurul lui zero cu magnitudine mică; verificați staționaritatea prin testul Ljung-Box.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_lppl\_fit}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_lppl_fit}
+\end{frame}
+
+%=============================================================================
+% PARTEA II: NIVEL MASTER
+%=============================================================================
+\section{Partea II: Nivel Master}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 4: Cele 8 Condiții de Filtrare
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 4: Cele 8 Condiții de Filtrare}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Sornette et al.\ (2015) propun 8 condiții de filtrare pe care parametrii LPPL trebuie să le satisfacă pentru un semnal valid de bulă.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Enumerați cele 8 condiții și explicați rațiunea economică din spatele fiecăreia.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Verificați toate cele 8 condiții pe estimarea LPPL a BTC 2021. Afișați trece/pică pentru fiecare.
+            \item \textcolor{MainBlue}{\textbf{(C)}} De ce este condiția $B < 0$ esențială? Ce ar însemna $B > 0$ din punct de vedere economic?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 4: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Cele 8 condiții:
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item $B < 0$: creștere super-exponențială (prețul crește pe măsură ce $t \to t_c$)
+                \item $0{,}1 \leq m \leq 0{,}9$: exponentul legii de putere în intervalul empiric
+                \item $4 \leq \omega \leq 25$: log-frecvența în intervalul observat
+                \item $t_c > N$: timpul critic după ultima observație
+                \item $t_c < N + 0{,}2N$: timpul critic într-un orizont rezonabil
+                \item $|C| > 0$: oscilațiile log-periodice sunt prezente
+                \item $m|B| > 0$: singularitatea în timp finit are putere detectabilă
+                \item $\omega / (2\pi) \geq 1$: cel puțin un ciclu complet de oscilație
+            \end{enumerate}
+            \item \textcolor{MainBlue}{\textbf{(B)}} Pentru BTC 2021, de obicei 8/8 condiții sunt satisfăcute.
+            \item \textcolor{MainBlue}{\textbf{(C)}} $B > 0$ ar însemna că prețul \emph{scade} pe măsură ce $t \to t_c$ --- aceasta descrie o \textbf{anti-bulă} (spirală deflaționistă), nu o bulă speculativă.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_filter\_conditions}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_filter_conditions}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 5: Modele de Referință
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 5: Modele de Referință (Benchmark)}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Un model cu 7 parametri precum LPPL poate supraestima. Comparați-l cu alternative mai simple pentru a justifica utilizarea sa.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Estimați modele liniare ($k=2$), cuadratice ($k=3$), exponențiale ($k=3$) și lege de putere fără oscilații ($k=4$) pe aceleași date BTC 2021.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Calculați $R^2$, AIC și BIC pentru toate modelele inclusiv LPPL ($k=7$). Prezentați într-un tabel comparativ.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Este îmbunătățirea LPPL față de modelul lege de putere (care are același trend dar fără oscilații) semnificativă statistic? Ce ne spune aceasta despre rolul log-periodicității?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 5: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Lege de putere (fără oscilații): $\ln P(t) = A + B(t_c - t)^m$ cu 4 parametri. Estimare prin evoluție diferențială pentru $(t_c, m)$ și OLS pentru $(A, B)$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} LPPL obține de obicei cel mai mic AIC/BIC în ciuda celor 7 parametri, deoarece oscilațiile log-periodice captează structură omisă de modelele mai simple. AIC penalizează parametrii suplimentari, deci LPPL trebuie să ofere o îmbunătățire substanțială pentru a depăși această penalitate.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Comparația LPPL vs.\ lege de putere izolează contribuția termenului $\cos(\omega \ln(t_c - t))$. Dacă AIC(LPPL) $<$ AIC(lege de putere), oscilațiile log-periodice conțin informație predictivă reală despre momentul crash-ului --- nu estimează zgomot.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_btc2021\_fit}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_btc2021_fit}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 6: Intervale de Încredere Bootstrap
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 6: Intervale de Încredere Bootstrap}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Estimarea punctuală a lui $t_c$ este inutilă fără o măsură a incertitudinii.
+        Implementați bootstrap prin reeșantionarea reziduurilor pentru a construi IC de 95\%.
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Descrieți algoritmul bootstrap rezidual: (1) estimați pe datele originale, (2) calculați reziduurile, (3) reeșantionați cu înlocuire, (4) creați seria sintetică, (5) reestimați. Repetați $B = 200$ ori.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Reprezentați histogramele lui $t_c$, $m$ și $\omega$. Raportați IC 95\%. Convertiți IC-ul lui $t_c$ în date calendaristice.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Creați un grafic de dispersie $m$ vs.\ $\omega$. Ce ne spune forma distribuției comune despre identificabilitatea parametrilor?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 6: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Bootstrap-ul rezidual păstrează structura LPPL: $y^*_t = \hat{y}_t + \varepsilon^*_t$ unde $\varepsilon^*_t$ sunt extrase cu înlocuire din reziduurile originale $\hat{\varepsilon}_t = y_t - \hat{y}_t$. Fiecare eșantion bootstrap este reestimat de la zero folosind evoluția diferențială.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Pentru BTC 2021, un IC tipic de 95\% pentru $t_c$: aproximativ $\pm 5$--10 zile de tranzacționare în jurul estimării punctuale. $m$: de obicei IC strâns $\in [0{,}3;\; 0{,}6]$. $\omega$: dispersie moderată reflectând dificultatea localizării frecvenței oscilațiilor.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Graficul $m$--$\omega$ arată adesea o corelație negativă: valori mai mari ale lui $m$ se asociază cu valori mai mici ale lui $\omega$. O elipsă strânsă indică identificabilitate bună; un nor difuz sugerează că parametrii sunt slab identificați (optima locale multiple).
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_bootstrap\_ci}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_bootstrap_ci}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 7: Stabilitate Multi-Fereastră
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 7: Stabilitate Multi-Fereastră}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Un semnal robust de bulă trebuie să fie stabil pentru diferite lungimi ale ferestrei de estimare.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Estimați LPPL pe ferestre de $\{60, 90, 120, 150, 180, 200, 250, 300\}$ zile de tranzacționare, toate terminându-se la aceeași dată. Pentru fiecare fereastră, verificați cele 8 condiții de filtrare.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Reprezentați estimările $t_c$ vs.\ lungimea ferestrei. Codificați cromatic punctele după starea trece/pică. Este $t_c$ stabil între ferestre?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Reprezentați $m$ și $\omega$ pe ferestre într-un grafic cu axe duale. Converg parametrii pe măsură ce fereastra crește?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 7: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Fiecare fereastră produce o estimare LPPL independentă. Ferestrele care nu satisfac una sau mai multe condiții de filtrare sunt marcate. Pentru BTC 2021, majoritatea ferestrelor cu $\geq 90$ zile ar trebui să treacă toate cele 8 filtre.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Dacă estimările $t_c$ se grupează strâns (de exemplu $\pm 10$ zile), semnalul de bulă este \textbf{robust}. Estimări dispersate ale $t_c$ între ferestre indică instabilitate --- semnalul poate să nu fie fiabil.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Convergența lui $m$ și $\omega$ între ferestre întărește ipoteza că modelul LPPL captează un proces dinamic real subiacent, nu zgomot dintr-o fereastră particulară.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_confidence\_indicator}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_confidence_indicator}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 8: Indicatorul de Încredere LPPLS
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 8: Indicatorul de Încredere LPPLS}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Indicatorul de Încredere LPPLS (CI) oferă un sumar în timp real al riscului de bulă la fiecare dată.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Definiți CI: la fiecare dată $t$, estimați LPPL pe mai multe ferestre terminându-se la $t$, calculați CI$(t) = \frac{\text{\# estimări valide}}{\text{\# total ferestre}}$. Folosiți ferestrele $\{60, 90, 120, 150, 180\}$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Calculați CI la fiecare 5 zile de tranzacționare pentru BTC 2021. Reprezentați prețul și CI cu codificare de tip semafor: verde ($< 0{,}3$), galben ($0{,}3$--$0{,}6$), roșu ($\geq 0{,}6$).
+            \item \textcolor{MainBlue}{\textbf{(C)}} Crește CI înainte de prețul maxim, oferind un semnal de avertizare timpurie?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 8: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} La fiecare dată de evaluare, se estimează LPPL pe 5 ferestre suprapuse. O estimare este ``validă'' dacă toate cele 8 condiții de filtrare sunt satisfăcute. $\text{CI}(t) \in [0, 1]$ este fracția de estimări valide. CI mai mare = semnal de bulă mai puternic.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Clasificarea de tip semafor oferă un tablou de bord intuitiv al riscului:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textcolor{Forest}{\textbf{Verde}} ($\text{CI} < 0{,}3$): fără semnal semnificativ de bulă
+                    \item \textcolor{Orange}{\textbf{Galben}} ($0{,}3 \leq \text{CI} < 0{,}6$): semnal emergent --- creșteți monitorizarea
+                    \item \textcolor{Crimson}{\textbf{Roșu}} ($\text{CI} \geq 0{,}6$): avertizare puternică --- luați în considerare reducerea expunerii
+                \end{itemize}
+            \item \textcolor{MainBlue}{\textbf{(C)}} În cazul BTC 2021, CI devine de obicei roșu cu câteva săptămâni înainte de vârf, oferind avertizare timpurie acționabilă.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_confidence\_indicator}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_confidence_indicator}
+\end{frame}
+
+%=============================================================================
+% PARTEA III: EXTENSIE DOCTORAT
+%=============================================================================
+\section{Partea III: Extensie Doctorat}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 9: Control Negativ
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 9: Control Negativ --- COVID 2020}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        S\&P 500 a scăzut 34\% în feb--mar 2020 din cauza COVID-19 --- un șoc exogen, nu o bulă endogenă.
+        O metodă validă de detectare a bulelor nu ar trebui să producă o \textbf{alarmă falsă} pentru astfel de crash-uri.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Descărcați S\&P 500 din ian 2019 până la 19 feb 2020 (vârful pre-crash). Estimați LPPL.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Verificați cele 8 condiții de filtrare. Câte sunt satisfăcute?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Comparați estimarea BTC 2021 (bulă validă) vs.\ S\&P pre-COVID alăturat. De ce LPPL distinge corect între crash-uri endogene și exogene?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 9: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Perioada S\&P 500 pre-COVID arată creștere constantă dar nu accelerare super-exponențială. Estimarea LPPL este vizual slabă comparativ cu cazul BTC.
+            \item \textcolor{MainBlue}{\textbf{(B)}} De obicei doar 3--5 din 8 condiții sunt satisfăcute. Eșecuri cheie: $B$ poate să nu fie semnificativ negativ, $m$ poate cădea în afara $[0{,}1;\; 0{,}9]$, iar $\omega$ poate fi slab identificat.
+            \item \textcolor{MainBlue}{\textbf{(C)}} LPPL detectează \textbf{instabilitatea endogenă} (comportament de turmă, feedback pozitiv) care se acumulează gradual înainte de un crash. Crash-ul COVID a fost cauzat de un \textbf{eveniment extern} (pandemia), nu de dinamica internă a pieței. Fără buclă de feedback pozitiv $\Rightarrow$ fără creștere super-exponențială $\Rightarrow$ fără semnal LPPL valid. Aceasta validează LPPL ca instrument care distinge crash-urile cauzate de bule de șocurile exogene.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_covid2020\_case}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_covid2020_case}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 10: Aplicație de Gestionare a Riscului
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 10: Aplicație de Gestionare a Riscului}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Folosiți Indicatorul de Încredere LPPLS pentru a proiecta o strategie dinamică de dimensionare a poziției.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Definiți o regulă de dimensionare: $w(t) = \max\bigl(0{,}1;\; 1 - 1{,}5 \cdot \text{CI}(t)^{1{,}5}\bigr)$. Reprezentați dimensiunea poziției în timp alături de prețul BTC.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Comparați buy-and-hold vs.\ strategia ajustată LPPL: calculați randamentele cumulate, drawdown-ul maxim, raportul Sharpe anualizat și volatilitatea zilnică.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Care sunt limitările utilizării LPPL pentru gestionarea riscului în timp real? Cum ar afecta costurile de tranzacționare și look-ahead bias strategia?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 10: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Poziția scade lin de la 100\% la 10\% pe măsură ce CI crește. Aceasta evită deciziile binare ``totul sau nimic'' și oferă reducere proporțională a expunerii.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Strategia ajustată LPPL obține de obicei: drawdown maxim mai mic, volatilitate zilnică mai mică și randamente ajustate la risc mai mari (raport Sharpe) comparativ cu buy-and-hold, cu prețul unui randament total ușor mai mic.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Limitări: (i) întârziere în estimare --- fiecare estimare LPPL necesită $>60$ zile de date; (ii) costurile de tranzacționare din schimbările de poziție pot eroda randamentele; (iii) look-ahead bias dacă condițiile de filtrare referențiază $t_c$ din eșantion; (iv) alarme false --- unele ferestre pot produce semnale false; (v) LPPL nu poate prezice data exactă a crash-ului, doar fereastra aproximativă a timpului critic.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_risk\_management}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_risk_management}
+\end{frame}
+
+%=============================================================================
+% SUBIECTE DE DISCUȚIE
+%=============================================================================
+\section{Subiecte de Discuție}
+
+\begin{frame}{Subiecte de Discuție}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+    \begin{block}{Tema 1: EMH vs.\ LPPL}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item EMH spune că crash-urile sunt evenimente aleatorii imprevizibile. LPPL spune că unele crash-uri sunt precedate de creștere super-exponențială detectabilă. Pot ambele să fie parțial corecte?
+        \end{itemize}
+    \end{block}
+
+    \vspace{-2mm}
+
+    \begin{alertblock}{Tema 2: Riscul de Supraestimare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item LPPL are 7 parametri estimați uneori pe $<100$ observații. Cum protejează condițiile de filtrare, AIC/BIC și bootstrap împotriva supraestimării?
+            \item Ați avea încredere într-un semnal LPPL pentru o decizie reală de tranzacționare?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{-2mm}
+
+    \begin{exampleblock}{Tema 3: Dimensiuni Etice}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Dacă o bancă centrală detectează o bulă folosind LPPL, ar trebui să acționeze preventiv?
+            \item Dacă un fond speculativ folosește LPPL pentru a cronometra ieșirea din piață, ar putea deveni auto-contraproductiv dacă este adoptat pe scară largă?
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚIU ASISTAT DE AI
+%=============================================================================
+\section{Exercițiu Asistat de AI}
+
+\begin{frame}{Exercițiu Asistat de AI: Gândire Critică}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Exercițiu: Evaluarea Analizei LPPL Generate de AI}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Cereți unui asistent AI (ChatGPT, Claude etc.) să explice modelul LPPL și parametrii săi. Evaluați răspunsul: sunt constrângerile parametrilor corecte? Menționează condițiile de filtrare? Explică liniarizarea parțială?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Cereți AI-ului să scrie cod Python pentru estimarea LPPL pe o serie de prețuri. Testați codul: gestionează corect separarea neliniar/liniar? Folosește limite de optimizare adecvate?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Întrebați AI-ul: ``Poate LPPL prezice data exactă a unui crash?'' Evaluați critic răspunsul folosind ce ați învățat despre incertitudinea lui $t_c$ și diferența dintre ``cel mai probabil moment al schimbării de regim'' și ``data garantată a crash-ului.''
+        \end{itemize}
+        }
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚII PENTRU ACASĂ
+%=============================================================================
+\section{Exerciții pentru Acasă}
+
+\begin{frame}{Exerciții pentru Acasă}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{block}{Exercițiul A: Studiu de Caz Istoric}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item Alegeți unul dintre: Dot-Com 2000 (NASDAQ), Shanghai 2015 (SSE), Bitcoin 2017 sau Petrol 2008.
+            \item Descărcați datele, estimați LPPL, verificați cele 8 condiții de filtrare, rulați bootstrap ($n = 200$) și comparați cu modele de referință.
+            \item Scrieți un raport de 2 pagini cu $t_c$ estimat și IC-ul de 95\% în date calendaristice.
+        \end{itemize}
+    \end{block}
+
+    \vspace{-1mm}
+
+    \begin{exampleblock}{Exercițiul B: Scanarea Piețelor Actuale}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item Scanați 5 indici majori (S\&P 500, NASDAQ, DAX, Nikkei, Shanghai) pentru semnale de bulă folosind Indicatorul de Încredere LPPLS.
+            \item Pentru fiecare indice, calculați valoarea curentă a CI și clasificați ca verde/galben/roșu.
+            \item Discutați: vreuna dintre piețele actuale arată semne de exces speculativ?
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% REZUMAT
+%=============================================================================
+\section{Rezumat}
+
+\begin{frame}{Rezumat: Concepte Cheie pe Nivele}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{center}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Nivel} & \textbf{Exercițiu} & \textbf{Concept Cheie} \\
+        \midrule
+        \multirow{3}{*}{Anul 3} & Ex.\ 1 & Detectarea creșterii super-exponențiale \\
+        & Ex.\ 2 & Ecuația LPPL: lege de putere + oscilații log-periodice \\
+        & Ex.\ 3 & Liniarizare parțială: 3D neliniar + 4D OLS \\
+        \midrule
+        \multirow{5}{*}{Master} & Ex.\ 4 & 8 condiții de filtrare pentru semnal valid de bulă \\
+        & Ex.\ 5 & Comparație benchmark: AIC, BIC, $R^2$ \\
+        & Ex.\ 6 & Bootstrap IC pentru $t_c$, $m$, $\omega$ \\
+        & Ex.\ 7 & Analiză de robustețe multi-fereastră \\
+        & Ex.\ 8 & Indicatorul de Încredere LPPLS (timp real) \\
+        \midrule
+        \multirow{2}{*}{Doctorat} & Ex.\ 9 & Control negativ: crash-uri exogene vs.\ endogene \\
+        & Ex.\ 10 & Gestionarea riscului: dimensionare dinamică a poziției \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{3mm}
+
+    {\small \textbf{Compromis cheie:} Sensibilitate de detectare $\longleftrightarrow$ Rata de alarme false --- mai multe ferestre și filtre mai permisive $\Rightarrow$ detectare mai timpurie dar mai multe alarme false}
+    }
+
+    \vspace{0.2cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Întrebări?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\section{Bibliografie}
+
+\begin{frame}{Bibliografie I}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Teorie și Aplicații LPPL}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Sornette, D. (2003). \textit{Why Stock Markets Crash: Critical Events in Complex Financial Systems}. Princeton UP.
+            \item Johansen, A., Sornette, D. (1999). Critical crashes. \textit{Risk Magazine}, 12(1), 91--94.
+            \item Filimonov, V., Sornette, D. (2013). A stable and robust calibration scheme of the log-periodic power law model. \textit{Physica A}, 392(17), 3698--3707.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Studii de Caz și Validare}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Gerlach, J.C., Demos, G., Sornette, D. (2019). Dissection of Bitcoin's multiscale bubble history. \textit{Royal Society Open Science}, 6(7), 180643.
+            \item Sornette, D., Woodard, R., Zhou, W.X. (2009). The 2006--2008 oil bubble. \textit{Physica A}, 388(8), 1571--1576.
+            \item Blanchard, O.J., Watson, M.W. (1982). Bubbles, Rational Expectations and Financial Markets. \textit{NBER Working Paper 945}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliografie II}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Critici și Limitări}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Fama, E.F. (1970). Efficient capital markets: A review of theory and empirical work. \textit{Journal of Finance}, 25(2), 383--417.
+            \item Bouchaud, J.P., Potters, M. (2003). \textit{Theory of Financial Risk and Derivative Pricing}. Cambridge UP.
+            \item Cont, R., Bouchaud, J.P. (2000). Herd behavior and aggregate fluctuations in financial markets. \textit{Macroeconomic Dynamics}, 4(2), 170--196.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Resurse Online și Cod}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Depozitar de cod pentru metode cantitative
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Platformă de învățare a metodelor cantitative
+            \item \textbf{GitHub TSA}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch13} --- Cod Python pentru acest seminar
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Vă mulțumesc!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Întrebări?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Materialele seminarului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}

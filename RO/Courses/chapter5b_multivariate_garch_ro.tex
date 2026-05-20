@@ -86,29 +86,44 @@
 % POVESTEA CAPITOLULUI
 %=============================================================================
 
-\begin{frame}{Povestea acestui capitol}
+\begin{frame}{Povestea acestui capitol: problema}
     \begin{cminipage}{0.95\textwidth}
     {\footnotesize
+    \textit{\textbf{Întrebare fundamentală:} Cum modelăm riscul când activele se mișcă împreună --- și acea co-mișcare se schimbă în timp?}
+    \vspace{0.2cm}
     \begin{block}{Problema}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Corelațiile dintre active \textbf{se schimbă în timp} --- și cresc brusc în perioade de criză
             \item Ignorarea lor duce la portofolii greșite, hedging ineficient și risc subestimat
         \end{itemize}
     \end{block}
-    \begin{block}{Dificultatea}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    \vspace{0.1cm}
+    \begin{alertblock}{Dificultatea}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Modelarea a $N$ active necesită $N(N+1)/2$ elemente de covarianță variabile în timp
             \item \textbf{Blestemul dimensionalității} face cele mai multe abordări infezabile
-        \end{itemize}
-    \end{block}
-    \begin{alertblock}{Soluțiile (de la general la practic)}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-            \item \textbf{VEC}: cel mai general model --- dar inutilizabil în practică
-            \item \textbf{BEKK}: garantează pozitiv-definirea --- dar nu scalează
-            \item \textbf{CCC}: simplu și rapid --- dar corelațiile sunt \textit{constante} (greșit!)
-            \item \textcolor{Crimson}{\textbf{DCC}}: compromisul optim --- corelații dinamice cu \textbf{doar 2 parametri suplimentari}
+            \item Matricea de covarianță trebuie să fie \textbf{pozitiv definită} la fiecare pas
         \end{itemize}
     \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Povestea acestui capitol: soluțiile}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{Foaie de parcurs:} Fiecare model rezolvă o problemă dar creează alta --- până la DCC.}
+    \vspace{0.2cm}
+    \begin{block}{De la general la practic}
+        \begin{itemize}\setlength{\itemsep}{4pt}
+            \item \textbf{VEC}: cel mai general model --- dar inutilizabil în practică ($O(N^4)$ parametri)
+            \item \textbf{BEKK}: garantează pozitiv-definirea --- dar nu scalează peste $N = 5$
+            \item \textbf{CCC}: simplu și rapid --- dar corelațiile sunt \textit{constante} (greșit empiric)
+            \item \textcolor{Crimson}{\textbf{DCC}}: compromisul optim --- corelații dinamice cu \textbf{doar 2 parametri suplimentari}
+        \end{itemize}
+    \end{block}
+    \vspace{0.2cm}
+    \textit{\textbf{Concluzie cheie:} Acest capitol este o călătorie de la generalitate la practicabilitate. DCC câștigă pentru că scalează.}
     }
     \end{cminipage}
 \end{frame}
@@ -144,30 +159,41 @@
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{Întrebarea centrală: modelarea $\mathbf{H}_t$}
+\begin{frame}{Ce modelăm: matricea de covarianță $\mathbf{H}_t$}
     \begin{cminipage}{0.95\textwidth}
     {\footnotesize
+    \textit{\textbf{O propoziție:} $\mathbf{H}_t$ este ``prognoza meteo'' pentru risc --- se actualizează zilnic pe măsură ce sosesc informații noi.}
+    \vspace{0.2cm}
     \begin{block}{Formulare}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Având $N$ active cu vectorul de randamente $\mathbf{r}_t = (r_{1t}, \ldots, r_{Nt})'$, trebuie să modelăm:
         \end{itemize}
         \[
             \mathbf{H}_t = \text{Var}(\mathbf{r}_t \mid \mathcal{F}_{t-1})
         \]
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item \textbf{matricea de covarianță condițională variabilă în timp}
+            \item $\mathbf{H}_t$ conține toate varianțele \textbf{și} toate covarianțele perechi la momentul $t$
         \end{itemize}
     \end{block}
-    \vspace{0.1cm}
-    \begin{alertblock}{De ce este dificil?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{De ce este dificilă modelarea lui $\mathbf{H}_t$}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{O propoziție:} Numărul de parametri explodează odată cu dimensiunea portofoliului.}
+    \vspace{0.2cm}
+    \begin{alertblock}{Trei provocări simultane}
+        \begin{itemize}\setlength{\itemsep}{3pt}
             \item $\mathbf{H}_t$ are $N(N+1)/2$ elemente unice --- pentru $N = 50$: \textbf{1.275 parametri} la fiecare $t$
-            \item Trebuie să fie \textbf{pozitiv definită} la fiecare pas
+            \item Trebuie să fie \textbf{pozitiv definită} la fiecare pas (altfel: varianță negativă de portofoliu)
             \item Trebuie să capteze corelații \textbf{dinamice}, nu doar volatilități
         \end{itemize}
     \end{alertblock}
     \vspace{0.2cm}
-    \textit{\textbf{Intuiție:} $\mathbf{H}_t$ este ``prognoza meteo'' pentru risc --- se actualizează zilnic pe măsură ce sosesc informații noi.}
+    \textit{\textbf{Concluzie cheie:} Fiecare model GARCH multivariat este un răspuns diferit la același compromis: flexibilitate vs.\ fezabilitate.}
     }
     \end{cminipage}
 \end{frame}
@@ -683,33 +709,48 @@
 % TRANZIȚIE: VEC → BEKK
 %=============================================================================
 
-\begin{frame}{De la VEC la BEKK: de ce avem nevoie de pozitiv-definire garantată}
+\begin{frame}{De la VEC la BEKK: ce nu a funcționat?}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-2mm}
-    {\scriptsize
+    {\footnotesize
+    \textit{\textbf{O propoziție:} VEC este cel mai general model, dar nu garantează matrici pozitiv definite.}
+    \vspace{0.2cm}
     \begin{block}{Ce nu a funcționat la VEC?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item VEC este cel mai \textbf{general} GARCH multivariat --- fiecare element al lui $\mathbf{H}_t$ are dinamica proprie
-            \item Dar: (1) \textbf{nicio garanție} că $\mathbf{H}_t$ este pozitiv definită, (2) numărul de parametri \textbf{explodează} ($O(N^4)$)
+            \item Dar: (1) \textbf{nicio garanție} că $\mathbf{H}_t$ este pozitiv definită, (2) parametrii \textbf{explodează} ($O(N^4)$)
             \item VEC Diagonal rezolvă (2) dar eșuează la (1) --- și pierde efectele de spillover
         \end{itemize}
     \end{block}
-    \vspace{-2mm}
+    \vspace{0.1cm}
     \begin{alertblock}{Problema fundamentală}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item VEC scrie $\text{vech}(\mathbf{H}_t) = \mathbf{c} + \mathbf{A}\,\text{vech}(\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}') + \mathbf{B}\,\text{vech}(\mathbf{H}_{t-1})$
             \item Nimic din această ecuație \textbf{nu forțează} $\mathbf{H}_t$ să fie p.d.\ la fiecare $t$
-            \item Condiții suficiente există (Engle \& Kroner, 1995) dar sunt \textbf{dificil de impus} în optimizarea numerică
         \end{itemize}
     \end{alertblock}
-    \vspace{-2mm}
-    \begin{exampleblock}{Intuiția BEKK: construiește PD în structură}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Intuiția BEKK: construiește PD în structură}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{O propoziție:} BEKK garantează pozitiv-definirea prin forma pătratică $\mathbf{A}'\mathbf{M}\mathbf{A}$.}
+    \vspace{0.2cm}
+    \begin{block}{Soluția BEKK}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Scrie $\mathbf{H}_t = \mathbf{C}\mathbf{C}' + \mathbf{A}'\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}'\mathbf{A} + \mathbf{B}'\mathbf{H}_{t-1}\mathbf{B}$
             \item Fiecare termen este p.s.d.\ \textbf{prin construcție} ($\mathbf{X}'\mathbf{M}\mathbf{X} \succeq 0$ pentru orice $\mathbf{M} \succeq 0$)
             \item Suma de matrice p.s.d.\ + o matrice p.d.\ = p.d.\ întotdeauna
         \end{itemize}
-    \end{exampleblock}
+    \end{block}
+    \vspace{0.1cm}
+    \begin{alertblock}{Prețul plătit}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $2N^2 + N(N+1)/2$ parametri --- pentru $N = 10$: \textbf{255 parametri}
+            \item Estimare numerică instabilă cu optima locale multiple
+        \end{itemize}
+    \end{alertblock}
     }
     \end{cminipage}
 \end{frame}
@@ -950,6 +991,8 @@
             \item \textbf{vs.\ VEC}: aceeași flexibilitate, p.d.\ garantată \quad \textbf{vs.\ DCC}: DCC scalează mai bine dar nu identifică direcția spillover-ului
         \end{itemize}
     \end{alertblock}
+    \vspace{1mm}
+    \textit{\textbf{Concluzie cheie:} Folosiți BEKK când $N \leq 5$ și trebuie să știți \textbf{cine transmite volatilitate cui}.}
     }
     \end{cminipage}
 \end{frame}
@@ -995,11 +1038,15 @@
 %=============================================================================
 \section{Corelația Condițională Constantă --- CCC (\textit{Constant Conditional Correlation})}
 
-\begin{frame}{Modelul CCC --- \textit{Constant Conditional Correlation} (Bollerslev, 1990)}
+\begin{frame}{CCC: descompunerea $\mathbf{H}_t = \mathbf{D}_t \mathbf{R} \mathbf{D}_t$}
     \begin{cminipage}{0.95\textwidth}
     {\footnotesize
+    \textit{\textbf{O propoziție:} Covarianțele se schimbă doar pentru că volatilitățile se schimbă --- ``cablajul'' între active rămâne fix.}
+    \vspace{0.2cm}
     \begin{block}{Ideea cheie: separarea varianțelor de corelații}
-        Se descompune matricea de covarianță condițională:
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Se descompune matricea de covarianță condițională:
+        \end{itemize}
         \[
             \mathbf{H}_t = \underbrace{\mathbf{D}_t}_{\text{volatilități}} \underbrace{\mathbf{R}}_{\text{corelații}} \underbrace{\mathbf{D}_t}_{\text{volatilități}}
         \]
@@ -1009,15 +1056,32 @@
             \item Fiecare $h_{ii,t}$ urmează un \textbf{GARCH(1,1) univariat}:
                 $h_{ii,t} = \omega_i + \alpha_i \varepsilon_{i,t-1}^2 + \beta_i h_{ii,t-1}$
         \end{itemize}
-        \textit{Intuiție: covarianțele se schimbă doar pentru că volatilitățile se schimbă --- ``cablajul'' între active rămâne fix.}
     \end{block}
-    \begin{alertblock}{Proprietăți}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\mathbf{H}_t$ este p.d.\ dacă și numai dacă $\mathbf{R}$ este p.d.\ și toți $h_{ii,t} > 0$
-            \item Parametri: $3N + N(N-1)/2$ --- foarte \textit{parsimonious}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{CCC: proprietăți și număr de parametri}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{O propoziție:} CCC reduce o problemă imensă de estimare la $N$ GARCH-uri univariate simple plus o matrice de corelație.}
+    \vspace{0.2cm}
+    \begin{block}{Proprietăți}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item $\mathbf{H}_t$ p.d.\ iff $\mathbf{R}$ p.d.\ și toți $h_{ii,t} > 0$
             \item Covarianțe: $h_{ij,t} = \rho_{ij}\sqrt{h_{ii,t}}\sqrt{h_{jj,t}}$
+            \item Parametri: $3N$ (GARCH univariat) $+ N(N-1)/2$ (corelații)
+        \end{itemize}
+    \end{block}
+    \vspace{0.1cm}
+    \begin{alertblock}{Comparație}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $N = 50$: CCC necesită \textbf{1.375} parametri vs.\ BEKK $\approx$ 6.275
+            \item Estimare în două etape: fiecare etapă este de dimensiune redusă
         \end{itemize}
     \end{alertblock}
+    \vspace{0.2cm}
+    \textit{\textbf{Concluzie cheie:} CCC presupune corelații fixe --- covarianțele se schimbă doar pentru că volatilitățile se schimbă.}
     }
     \end{cminipage}
 \end{frame}
@@ -1073,6 +1137,7 @@
             \item Tse (2000) și Engle (2002) au propus teste pentru corelație constantă
         \end{itemize}
     \end{alertblock}
+    \textit{\textbf{Concluzie cheie:} CCC este benchmark-ul ideal --- simplu, rapid și întotdeauna punctul de plecare.}
     }
     \end{cminipage}
 \end{frame}
@@ -1129,6 +1194,8 @@
             \item \textbf{vs.\ BEKK}: mult mai simplu, fără propagare \quad \textbf{vs.\ DCC}: aceeași structură, dar $\mathbf{R}$ e fix
         \end{itemize}
     \end{alertblock}
+    \vspace{1mm}
+    \textit{\textbf{Concluzie cheie:} Estimați întotdeauna CCC mai întâi --- este ipoteza nulă pe care DCC trebuie s-o depășească.}
     }
     \end{cminipage}
 \end{frame}
@@ -1137,27 +1204,42 @@
 % TRANZIȚIE: CCC → DCC
 %=============================================================================
 
-\begin{frame}{De la CCC la DCC: când corelațiile trebuie să se miște}
+\begin{frame}{Dovezile împotriva corelațiilor constante}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-2mm}
-    {\scriptsize
-    \begin{block}{Dovezile empirice împotriva corelațiilor constante}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    {\footnotesize
+    \textit{\textbf{O propoziție:} Ipoteza de corelație constantă a CCC este respinsă în practic toate datele financiare.}
+    \vspace{0.2cm}
+    \begin{block}{Dovezile empirice}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item CCC presupune $\rho_{ij}$ \textbf{fix} --- dar crizele încalcă repetat această ipoteză
             \item Corelația S\&P~500--DAX: $\approx 0{,}40$ în piețe calme, $> 0{,}85$ în GFC (2008)
             \item Corelația acțiuni--obligațiuni \textbf{și-a schimbat semnul}: $+0{,}30$ pre-2000 $\to$ $-0{,}30$ post-2000 (flight to quality)
-            \item \textcolor{Crimson}{Tse (2000) și Engle--Sheppard (2001): corelația constantă respinsă la 1\% în majoritatea perechilor}
         \end{itemize}
     \end{block}
-    \vspace{-2mm}
-    \begin{alertblock}{Soluția lui Engle (2002): păstrează structura $\mathbf{D}_t\mathbf{R}_t\mathbf{D}_t$, face $\mathbf{R}_t$ dinamic}
+    \vspace{0.1cm}
+    \begin{alertblock}{Teste statistice}
         \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textcolor{Crimson}{Tse (2000) și Engle--Sheppard (2001): corelația constantă respinsă la 1\% în majoritatea perechilor}
+            \item CCC subestimează VaR-ul de portofoliu în perioade de stres cu 20--30\% față de DCC
+        \end{itemize}
+    \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Soluția lui Engle (2002): $\mathbf{R}_t$ dinamic}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{O propoziție:} Păstrează structura CCC, dar lasă corelațiile să răspundă la șocuri --- pentru doar 2 parametri suplimentari.}
+    \vspace{0.2cm}
+    \begin{block}{Ideea DCC}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Înlocuiește $\mathbf{R}$ cu $\mathbf{R}_t$ --- corelațiile răspund acum la șocuri simultane
             \item Truc cheie: modelează un proxy $\mathbf{Q}_t$ (care \textit{nu} este matrice de corelație), apoi rescalează
             \item \textbf{Doar 2 parametri suplimentari} $(a, b)$ indiferent de dimensiunea portofoliului $N$
         \end{itemize}
-    \end{alertblock}
-    \vspace{-2mm}
+    \end{block}
+    \vspace{0.1cm}
     \begin{exampleblock}{Ce păstrează DCC de la CCC}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Aceeași estimare în două etape: Etapa 1 este identică (GARCH-uri univariate)
@@ -1173,6 +1255,37 @@
 % SECȚIUNEA 6: MODELUL DCC
 %=============================================================================
 \section{Corelația Condițională Dinamică --- DCC (\textit{Dynamic Conditional Correlation})}
+
+\begin{frame}{DCC într-o propoziție}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{1cm}
+    {\Large
+    \begin{center}
+        \textcolor{MainBlue}{\textbf{DCC = CCC cu corelații dinamice}}
+    \end{center}
+    }
+    \vspace{0.5cm}
+    {\footnotesize
+    \begin{center}
+        $\mathbf{H}_t = \mathbf{D}_t\,\mathbf{R}_t\,\mathbf{D}_t$
+        \qquad unde $\mathbf{R}_t$ urmează un proces de tip GARCH cu \textbf{2 parametri} $(a, b)$
+    \end{center}
+    \vspace{0.5cm}
+    \begin{center}
+        \renewcommand{\arraystretch}{1.4}
+        \begin{tabular}{lccc}
+            \hline
+            & \textbf{CCC} & \textbf{DCC} & \textbf{Diferență} \\
+            \hline
+            Corelații & constante $\mathbf{R}$ & dinamice $\mathbf{R}_t$ & $+2$ parametri \\
+            Estimare & 2 etape & 2 etape & aceeași structură \\
+            $N = 50$ param. & 1.375 & \textbf{1.377} & neglijabilă \\
+            \hline
+        \end{tabular}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
 
 \begin{frame}{\textcolor{Crimson}{$\star$ Model Central}: DCC --- \textit{Dynamic Conditional Correlation} (Engle, 2002)}
     \begin{cminipage}{0.95\textwidth}
@@ -1463,6 +1576,8 @@
             \item \textbf{vs.\ CCC}: captează vârfurile de corelație din crize \quad \textbf{vs.\ BEKK}: fără direcție de spillover, dar scalează la $N > 100$
         \end{itemize}
     \end{alertblock}
+    \vspace{1mm}
+    \textit{\textbf{Concluzie cheie:} DCC este standardul industrial --- 2 parametri captează toate cele $N(N-1)/2$ corelații dinamice.}
     }
     \end{cminipage}
 \end{frame}
@@ -3825,6 +3940,64 @@ port_var = np.sqrt(w @ H_t @ w) * 2.326     # scor z 99%
         \item Test $g = 0$ în aDCC: semnificativ $\to$ aDCC; altfel $\to$ DCC
         \item \textbf{Final}: comparați prin backtest out-of-sample (nu AIC)
     \end{itemize}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Hartă de selecție a modelului: referință rapidă}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{@{}p{5.5cm}p{3cm}p{4.5cm}@{}}
+        \toprule
+        \textbf{Context} & \textbf{Model} & \textbf{De ce} \\
+        \midrule
+        $N \leq 3$, spillovers contează & BEKK (complet) & Identifică direcția șocurilor \\
+        $N \leq 10$, fără focus pe spillover & BEKK diagonal & PD prin construcție, scalabil \\
+        Orice $N$, benchmark / estimare rapidă & CCC & Cel mai simplu, întotdeauna start \\
+        Orice $N$, corelații dinamice & \textcolor{Crimson}{\textbf{DCC}} & Standard industrial, doar 2 param. \\
+        Piețe de acțiuni (leverage în $\rho$) & aDCC & Captează asimetria corelațiilor \\
+        $N > 50$, portofolii mari & Factor GARCH & Reducerea dimensionalității \\
+        $N > 100$, timp real & EWMA / RiskMetrics & Fără estimare, actualizare instant \\
+        \bottomrule
+    \end{tabular}
+    \vspace{3mm}
+
+    \textit{\textbf{Concluzie cheie:} Nu există model universal optim --- doar modelul potrivit pentru $N$-ul, întrebarea și datele tale.}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% ULTRA-SUMAR
+%=============================================================================
+
+\begin{frame}{Ultra-sumar: ce folosim în practică}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{0.3cm}
+    {\footnotesize
+    \begin{center}
+        \renewcommand{\arraystretch}{1.6}
+        \begin{tabular}{@{}cll@{}}
+            \toprule
+            \textbf{\#} & \textbf{Regulă} & \textbf{Model} \\
+            \midrule
+            1 & Întotdeauna pornește cu benchmark-ul & \textcolor{MainBlue}{\textbf{CCC}} \\
+            2 & Modelul implicit pentru orice aplicație & \textcolor{Crimson}{\textbf{DCC}} \\
+            3 & Dacă șocurile negative $\Rightarrow$ corelație mai mare & \textcolor{Forest}{\textbf{aDCC}} \\
+            4 & Dacă ai nevoie de \textit{direcția} spillover-ului ($N \leq 5$) & \textbf{BEKK} \\
+            5 & Dacă $N > 100$ & \textbf{Factor / GO-GARCH} \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    \vspace{0.3cm}
+    \begin{alertblock}{Versiunea de 10 secunde}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{90\% din practicieni}: DCC. \textbf{Dacă asimetria contează}: aDCC. \textbf{Restul}: modele de nișă.
+        \end{itemize}
+    \end{alertblock}
+    \vspace{0.2cm}
+    \textit{\textbf{Concluzie cheie:} Estimează CCC mai întâi. Dacă este respins, folosește DCC. Dacă șocurile negative domină, aDCC. Gata.}
     }
     \end{cminipage}
 \end{frame}

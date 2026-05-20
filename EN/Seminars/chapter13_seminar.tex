@@ -1,0 +1,696 @@
+% Seminar 13: LPPL Models for Bubble Detection
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 13: LPPL Models for Bubble Detection}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Seminar Outline}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}
+        \item \textbf{Part I: Year 3 Level} -- Super-exponential growth, LPPL equation, model fitting
+        \vspace{0.15cm}
+        \item \textbf{Part II: Master Level} -- Filter conditions, benchmarks, bootstrap CI, multi-window stability, LPPLS CI
+        \vspace{0.15cm}
+        \item \textbf{Part III: PhD Extension} -- Negative control (COVID 2020), risk management application
+        \vspace{0.15cm}
+        \item \textbf{Discussion Topics} -- Critical thinking with AI tools
+        \vspace{0.15cm}
+        \item \textbf{Take-Home Exercises} -- Extended practice
+        \vspace{0.15cm}
+        \item \textbf{Summary} -- Key concepts by level
+        \vspace{0.15cm}
+        \item \textbf{Bibliography} -- References and code
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% PART I: YEAR 3 LEVEL
+%=============================================================================
+\section{Part I: Year 3 Level}
+
+%-----------------------------------------------------------------------------
+% Exercise 1: Super-Exponential Growth
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 1: Super-Exponential Growth Detection}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Download BTC-USD daily prices from Sep 2020 to Nov 2021 (the run-up to \$69k).
+        Test whether the log-price series exhibits \textbf{super-exponential growth}.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Plot price, log-price, daily returns, and 30-day rolling volatility (4 panels).
+            \item \textcolor{MainBlue}{\textbf{(B)}} Fit three models to $\ln P_t$: linear ($a + bt$), quadratic ($a + bt + ct^2$), and exponential ($a + be^{ct}$). Report $R^2$ for each.
+            \item \textcolor{MainBlue}{\textbf{(C)}} If $R^2_{\text{quadratic}} > R^2_{\text{linear}}$, what does this imply about the growth regime? Why is this a necessary condition for LPPL applicability?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 1: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Price: exponential-looking surge from \$10k to \$69k. Log-price: concave upward (faster-than-linear). Returns: heteroskedastic with increasing amplitude. Rolling vol: rising trend toward the peak.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Typical results: $R^2_{\text{lin}} \approx 0.92$, $R^2_{\text{quad}} \approx 0.97$, $R^2_{\text{exp}} \approx 0.98$. The nonlinear models substantially outperform the linear fit.
+            \item \textcolor{MainBlue}{\textbf{(C)}} If log-price grows faster than linearly, then price grows faster than exponentially --- this is \textbf{super-exponential growth}. It arises from positive feedback loops (herding, momentum trading) and is the hallmark of a bubble regime. LPPL models specifically describe this regime: the power-law singularity $B(t_c - t)^m$ with $m < 1$ produces super-exponential acceleration.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_btc2021\_data}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_btc2021_data}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 2: The LPPL Equation
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 2: The LPPL Equation}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        The LPPL model describes log-price during a bubble:
+        $\ln P(t) = A + B(t_c - t)^m + C(t_c - t)^m \cos\!\bigl(\omega \ln(t_c - t) - \varphi\bigr)$
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Using synthetic parameters ($A{=}11$, $B{=}{-}0.5$, $m{=}0.5$, $C{=}0.04$, $\omega{=}8$, $\varphi{=}1$, $t_c{=}300$), plot the three components: power-law trend, log-periodic oscillations, full LPPL.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Why must $B < 0$ and $0 < m < 1$ for a bubble? What happens if $m \geq 1$?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Why do oscillations accelerate in calendar time but have constant frequency in $\ln(t_c - t)$?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 2: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Component 1: $A + B(t_c - t)^m$ curves upward as $t \to t_c$ (power-law singularity). Component 2: $C(t_c - t)^m \cos(\omega \ln(t_c - t) - \varphi)$ --- oscillations that shrink in amplitude and compress in period near $t_c$. Combined: super-exponential trend decorated with accelerating oscillations.
+            \item \textcolor{MainBlue}{\textbf{(B)}} $B < 0$ ensures the function \emph{increases} as $t \to t_c$ (since $(t_c - t)^m$ decreases). $0 < m < 1$ ensures \textbf{super-exponential growth}: the growth rate $|\dot{P}/P|$ diverges as $t \to t_c$ (finite-time singularity). If $m \geq 1$, growth decelerates --- no bubble signature.
+            \item \textcolor{MainBlue}{\textbf{(C)}} The oscillation argument is $\omega \ln(t_c - t)$. Equal increments of $\ln(t_c - t)$ correspond to geometric compression in $(t_c - t)$: successive cycles take $1/\lambda$ the time of the previous one, where $\lambda = e^{2\pi/\omega} \approx 2$. This is \textbf{discrete scale invariance}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_lppl\_components}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_lppl_components}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 3: LPPL Fitting via Partial Linearization
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 3: LPPL Fitting via Partial Linearization}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        The LPPL has 7 parameters $(A, B, C_1, C_2, t_c, m, \omega)$ where $C_1 = C\cos\varphi$, $C_2 = C\sin\varphi$.
+        For fixed $(t_c, m, \omega)$, the remaining parameters can be found by OLS.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Write the OLS design matrix $\mathbf{X}$ for the linear sub-problem. Identify each column.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Use \texttt{scipy.optimize.differential\_evolution} to search over $(t_c, m, \omega)$ and fit LPPL to the BTC 2021 data. Report estimated parameters and $R^2$.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Plot the LPPL fit against observed log-price and the residuals. Are residuals stationary?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 3: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} For fixed $(t_c, m, \omega)$, define $\Delta_i = t_c - t_i$ and $f_i = \Delta_i^m$:
+            \[
+                \mathbf{X} = \begin{bmatrix} 1 & f_1 & f_1\cos(\omega\ln\Delta_1) & f_1\sin(\omega\ln\Delta_1) \\ \vdots & \vdots & \vdots & \vdots \\ 1 & f_n & f_n\cos(\omega\ln\Delta_n) & f_n\sin(\omega\ln\Delta_n) \end{bmatrix}, \quad \boldsymbol{\beta} = \begin{pmatrix} A \\ B \\ C_1 \\ C_2 \end{pmatrix}
+            \]
+            \item \textcolor{MainBlue}{\textbf{(B)}} Bounds: $t_c \in [N{-}5, N{+}60]$, $m \in [0.1, 0.9]$, $\omega \in [4, 25]$. Typical BTC 2021 results: $t_c \approx N + 5$, $m \approx 0.4$, $\omega \approx 8$, $R^2 > 0.99$.
+            \item \textcolor{MainBlue}{\textbf{(C)}} The fit closely tracks the observed log-price. Residuals fluctuate around zero with small magnitude; check stationarity via Ljung-Box test on residuals.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_lppl\_fit}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_lppl_fit}
+\end{frame}
+
+%=============================================================================
+% PART II: MASTER LEVEL
+%=============================================================================
+\section{Part II: Master Level}
+
+%-----------------------------------------------------------------------------
+% Exercise 4: The 8 Filter Conditions
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 4: The Eight Filter Conditions}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Sornette et al.\ (2015) propose 8 filter conditions that LPPL parameters must satisfy for a valid bubble signal.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} List the 8 conditions and explain the economic rationale behind each.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Check all 8 conditions on your BTC 2021 LPPL fit. Display pass/fail for each.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Why is the condition $B < 0$ essential? What would $B > 0$ mean economically?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 4: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} The 8 conditions:
+            \begin{enumerate}\setlength{\itemsep}{0pt}
+                \item $B < 0$: super-exponential growth (price rises as $t \to t_c$)
+                \item $0.1 \leq m \leq 0.9$: power-law exponent in empirical range
+                \item $4 \leq \omega \leq 25$: log-frequency in observed range
+                \item $t_c > N$: critical time after the last observation
+                \item $t_c < N + 0.2N$: critical time within a reasonable horizon
+                \item $|C| > 0$: log-periodic oscillations are present
+                \item $m|B| > 0$: finite-time singularity has detectable strength
+                \item $\omega / (2\pi) \geq 1$: at least one full oscillation cycle
+            \end{enumerate}
+            \item \textcolor{MainBlue}{\textbf{(B)}} For BTC 2021, typically 8/8 conditions pass.
+            \item \textcolor{MainBlue}{\textbf{(C)}} $B > 0$ would mean price \emph{decreases} as $t \to t_c$ --- this describes an \textbf{anti-bubble} (deflationary spiral), not a speculative bubble.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_filter\_conditions}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_filter_conditions}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 5: Benchmark Models
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 5: Benchmark Models}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        A 7-parameter model like LPPL can overfit. Compare it against simpler alternatives to justify its use.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Fit linear ($k=2$), quadratic ($k=3$), exponential ($k=3$), and power-law without oscillations ($k=4$) models to the same BTC 2021 log-price data.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Compute $R^2$, AIC, and BIC for all models including LPPL ($k=7$). Present in a comparison table.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Is the LPPL improvement over the power-law model (which has the same trend but no oscillations) statistically significant? What does this tell us about the role of log-periodicity?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 5: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Power-law (no oscillations): $\ln P(t) = A + B(t_c - t)^m$ with 4 parameters. Fit using differential evolution for $(t_c, m)$ and OLS for $(A, B)$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} LPPL typically achieves the lowest AIC/BIC despite having 7 parameters, because the log-periodic oscillations capture structure missed by simpler models. The AIC penalizes extra parameters, so LPPL must provide a substantial fit improvement to overcome this penalty.
+            \item \textcolor{MainBlue}{\textbf{(C)}} The LPPL vs.\ power-law comparison isolates the contribution of the $\cos(\omega \ln(t_c - t))$ term. If AIC(LPPL) $<$ AIC(power-law), the log-periodic oscillations carry genuine predictive information about the timing of the crash --- they are not fitting noise.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_btc2021\_fit}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_btc2021_fit}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 6: Bootstrap Confidence Intervals
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 6: Bootstrap Confidence Intervals}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        The point estimate of $t_c$ is useless without an uncertainty measure.
+        Implement residual resampling bootstrap to construct 95\% CIs.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Describe the residual bootstrap algorithm for LPPL: (1) fit original data, (2) compute residuals, (3) resample residuals with replacement, (4) create synthetic series, (5) re-fit. Repeat $B = 200$ times.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Plot histograms of $t_c$, $m$, and $\omega$ from the bootstrap. Report 95\% CIs. Convert the $t_c$ CI to calendar dates.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Create a scatter plot of $m$ vs.\ $\omega$ from the bootstrap. What does the shape of the joint distribution tell us about parameter identifiability?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 6: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} The residual bootstrap preserves the LPPL structure: $y^*_t = \hat{y}_t + \varepsilon^*_t$ where $\varepsilon^*_t$ are drawn with replacement from the original residuals $\hat{\varepsilon}_t = y_t - \hat{y}_t$. Each bootstrap sample is re-fitted from scratch using differential evolution.
+            \item \textcolor{MainBlue}{\textbf{(B)}} For BTC 2021, a typical 95\% CI for $t_c$: approximately $\pm 5$--10 trading days around the point estimate. $m$: typically tight CI $\in [0.3, 0.6]$. $\omega$: moderate spread reflecting the challenge of pinpointing oscillation frequency.
+            \item \textcolor{MainBlue}{\textbf{(C)}} The $m$--$\omega$ scatter often shows a negative correlation: higher $m$ values pair with lower $\omega$. A tight ellipse indicates good identifiability; a diffuse cloud suggests the parameters are poorly identified (multiple local optima).
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_bootstrap\_ci}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_bootstrap_ci}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 7: Multi-Window Stability
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 7: Multi-Window Stability}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        A robust bubble signal should be stable across different fitting window lengths.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Fit LPPL over windows of $\{60, 90, 120, 150, 180, 200, 250, 300\}$ trading days, all ending at the same date. For each window, check all 8 filter conditions.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Plot $t_c$ estimates vs.\ window length. Color-code points by pass/fail status. Is $t_c$ stable across windows?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Plot $m$ and $\omega$ across windows on a dual-axis chart. Do the parameters converge as the window grows?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 7: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Each window produces an independent LPPL fit. Windows that fail one or more filter conditions are flagged. For BTC 2021, most windows with $\geq 90$ days should pass all 8 filters.
+            \item \textcolor{MainBlue}{\textbf{(B)}} If $t_c$ estimates cluster tightly (say within $\pm 10$ days), the bubble signal is \textbf{robust}. Scattered $t_c$ estimates across windows indicate instability --- the signal may not be reliable.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Convergence of $m$ and $\omega$ across windows strengthens the case that the LPPL model captures a genuine underlying dynamical process rather than fitting noise in a particular sample window.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_confidence\_indicator}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_confidence_indicator}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 8: LPPLS Confidence Indicator
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 8: LPPLS Confidence Indicator}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        The LPPLS Confidence Indicator (CI) provides a real-time summary of bubble risk at each date.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Define the CI: at each date $t$, fit LPPL over multiple windows ending at $t$, compute CI$(t) = \frac{\text{\# valid fits}}{\text{\# total windows}}$. Use windows $\{60, 90, 120, 150, 180\}$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Compute CI every 5 trading days for BTC 2021. Plot price and CI with traffic-light coloring: green ($< 0.3$), amber ($0.3$--$0.6$), red ($\geq 0.6$).
+            \item \textcolor{MainBlue}{\textbf{(C)}} Does the CI rise before the peak price, providing an early warning signal?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 8: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} At each evaluation date, fit LPPL on 5 overlapping windows. A fit is ``valid'' if all 8 filter conditions pass. $\text{CI}(t) \in [0, 1]$ is the fraction of valid fits. Higher CI = stronger bubble signal.
+            \item \textcolor{MainBlue}{\textbf{(B)}} The traffic-light classification provides an intuitive risk dashboard:
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item \textcolor{Forest}{\textbf{Green}} ($\text{CI} < 0.3$): no significant bubble signal
+                    \item \textcolor{Orange}{\textbf{Amber}} ($0.3 \leq \text{CI} < 0.6$): emerging bubble signal --- increase monitoring
+                    \item \textcolor{Crimson}{\textbf{Red}} ($\text{CI} \geq 0.6$): strong bubble warning --- consider reducing exposure
+                \end{itemize}
+            \item \textcolor{MainBlue}{\textbf{(C)}} In the BTC 2021 case, the CI typically turns red several weeks before the peak, providing actionable early warning.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_confidence\_indicator}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_confidence_indicator}
+\end{frame}
+
+%=============================================================================
+% PART III: PhD EXTENSION
+%=============================================================================
+\section{Part III: PhD Extension}
+
+%-----------------------------------------------------------------------------
+% Exercise 9: Negative Control
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 9: Negative Control --- COVID 2020}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        The S\&P 500 crashed 34\% in Feb--Mar 2020 due to COVID-19 --- an exogenous shock, not an endogenous bubble.
+        A valid bubble detection method should \textbf{not} produce a false alarm for such crashes.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Download S\&P 500 from Jan 2019 to Feb 19, 2020 (the pre-crash peak). Fit LPPL.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Check the 8 filter conditions. How many pass?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Compare the BTC 2021 fit (valid bubble) vs.\ the S\&P pre-COVID fit side by side. Why does LPPL correctly distinguish between endogenous and exogenous crashes?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 9: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} The S\&P 500 pre-COVID period shows steady growth but not super-exponential acceleration. The LPPL fit is visually poor compared to the BTC case.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Typically only 3--5 out of 8 conditions pass. The key failures: $B$ may not be significantly negative, $m$ may fall outside $[0.1, 0.9]$, and $\omega$ may be poorly identified.
+            \item \textcolor{MainBlue}{\textbf{(C)}} LPPL detects \textbf{endogenous} instability (herding, positive feedback) that builds up gradually before a crash. The COVID crash was driven by an \textbf{external} event (pandemic), not by internal market dynamics. No positive feedback loop $\Rightarrow$ no super-exponential growth $\Rightarrow$ no valid LPPL signal. This validates LPPL as a tool that distinguishes bubble-driven crashes from exogenous shocks.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_covid2020\_case}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_covid2020_case}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 10: Risk Management Application
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 10: Risk Management Application}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Use the LPPLS Confidence Indicator to design a dynamic position-sizing strategy.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Define a position-sizing rule: $w(t) = \max\bigl(0.1,\; 1 - 1.5 \cdot \text{CI}(t)^{1.5}\bigr)$. Plot the position size over time alongside the BTC price.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Compare buy-and-hold vs.\ the LPPL-adjusted strategy: compute cumulative returns, max drawdown, annualized Sharpe ratio, and daily volatility.
+            \item \textcolor{MainBlue}{\textbf{(C)}} What are the limitations of using LPPL for real-time risk management? How would transaction costs and look-ahead bias affect the strategy?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 10: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} The position shrinks smoothly from 100\% to 10\% as CI rises. This avoids binary ``all-in / all-out'' decisions and provides proportional exposure reduction.
+            \item \textcolor{MainBlue}{\textbf{(B)}} The LPPL-adjusted strategy typically achieves: lower maximum drawdown, lower daily volatility, and higher risk-adjusted returns (Sharpe ratio) compared to buy-and-hold, at the cost of slightly lower total return.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Limitations: (i) parameter estimation delay --- each LPPL fit requires $>60$ days of data, so the CI lags real-time price action; (ii) transaction costs from position changes can erode returns; (iii) look-ahead bias if filter conditions reference the in-sample $t_c$; (iv) false positives --- some windows may produce spurious bubble signals; (v) LPPL cannot predict the exact crash date, only the approximate critical time window.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch13\_risk\_management}{https://github.com/danpele/TSA/tree/main/TSA_ch13/TSA_ch13_risk_management}
+\end{frame}
+
+%=============================================================================
+% DISCUSSION TOPICS
+%=============================================================================
+\section{Discussion Topics}
+
+\begin{frame}{Discussion Topics}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+    \begin{block}{Topic 1: EMH vs.\ LPPL}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item EMH says crashes are unpredictable random events. LPPL says some crashes are preceded by detectable super-exponential growth. Can both be partially correct?
+        \end{itemize}
+    \end{block}
+
+    \vspace{-2mm}
+
+    \begin{alertblock}{Topic 2: Overfitting Risk}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item LPPL has 7 parameters fitted to sometimes $<100$ observations. How do filter conditions, AIC/BIC, and bootstrap protect against overfitting?
+            \item Would you trust an LPPL signal for a real trading decision?
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{-2mm}
+
+    \begin{exampleblock}{Topic 3: Ethical Dimensions}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item If a central bank detects a bubble using LPPL, should it act preemptively?
+            \item If a hedge fund uses LPPL to time a market exit, could this become self-defeating if widely adopted?
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% AI-ASSISTED EXERCISE
+%=============================================================================
+\section{AI-Assisted Exercise}
+
+\begin{frame}{AI-Assisted Exercise: Critical Thinking}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Exercise: Evaluating AI-Generated LPPL Analysis}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Ask an AI assistant (ChatGPT, Claude, etc.) to explain the LPPL model and its parameters. Evaluate the response: are the parameter constraints correct? Does it mention the filter conditions? Does it explain partial linearization?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Ask the AI to write Python code to fit LPPL to a price series. Test the code: does it handle the nonlinear/linear split correctly? Does it use appropriate optimization bounds?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Ask the AI: ``Can LPPL predict the exact date of a crash?'' Critically evaluate its answer using what you learned in this chapter about $t_c$ uncertainty and the difference between ``most probable regime change'' and ``guaranteed crash date.''
+        \end{itemize}
+        }
+    \end{block}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% TAKE-HOME EXERCISES
+%=============================================================================
+\section{Take-Home Exercises}
+
+\begin{frame}{Take-Home Exercises}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{block}{Exercise A: Historical Case Study}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item Choose one of: Dot-Com 2000 (NASDAQ), Shanghai 2015 (SSE), Bitcoin 2017, or Oil 2008.
+            \item Download data, fit LPPL, check all 8 filter conditions, run bootstrap ($n = 200$), and compare against benchmark models.
+            \item Write a 2-page report with your estimated $t_c$ and its 95\% CI in calendar dates.
+        \end{itemize}
+    \end{block}
+
+    \vspace{-1mm}
+
+    \begin{exampleblock}{Exercise B: Current Market Screening}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item Screen 5 major indices (S\&P 500, NASDAQ, DAX, Nikkei, Shanghai) for bubble signals using the LPPLS Confidence Indicator.
+            \item For each index, compute the current CI value and classify as green/amber/red.
+            \item Discuss: are any current markets showing signs of speculative excess?
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Summary: Key Concepts by Level}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{center}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Level} & \textbf{Exercise} & \textbf{Key Concept} \\
+        \midrule
+        \multirow{3}{*}{Year 3} & Ex.\ 1 & Super-exponential growth detection \\
+        & Ex.\ 2 & LPPL equation: power law + log-periodic oscillations \\
+        & Ex.\ 3 & Partial linearization: 3D nonlinear + 4D OLS \\
+        \midrule
+        \multirow{5}{*}{Master} & Ex.\ 4 & 8 filter conditions for valid bubble signal \\
+        & Ex.\ 5 & Benchmark comparison: AIC, BIC, $R^2$ \\
+        & Ex.\ 6 & Bootstrap CI for $t_c$, $m$, $\omega$ \\
+        & Ex.\ 7 & Multi-window robustness analysis \\
+        & Ex.\ 8 & LPPLS Confidence Indicator (real-time) \\
+        \midrule
+        \multirow{2}{*}{PhD} & Ex.\ 9 & Negative control: exogenous vs.\ endogenous crashes \\
+        & Ex.\ 10 & Risk management: dynamic position sizing \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \vspace{3mm}
+
+    {\small \textbf{Key tradeoff:} Detection sensitivity $\longleftrightarrow$ False alarm rate --- more windows and lenient filters $\Rightarrow$ earlier detection but more false positives}
+    }
+
+    \vspace{0.2cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Questions?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAPHY
+%=============================================================================
+\section{Bibliography}
+
+\begin{frame}{Bibliography I}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{LPPL Theory and Applications}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Sornette, D. (2003). \textit{Why Stock Markets Crash: Critical Events in Complex Financial Systems}. Princeton UP.
+            \item Johansen, A., Sornette, D. (1999). Critical crashes. \textit{Risk Magazine}, 12(1), 91--94.
+            \item Filimonov, V., Sornette, D. (2013). A stable and robust calibration scheme of the log-periodic power law model. \textit{Physica A}, 392(17), 3698--3707.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Case Studies and Validation}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Gerlach, J.C., Demos, G., Sornette, D. (2019). Dissection of Bitcoin's multiscale bubble history. \textit{Royal Society Open Science}, 6(7), 180643.
+            \item Sornette, D., Woodard, R., Zhou, W.X. (2009). The 2006--2008 oil bubble. \textit{Physica A}, 388(8), 1571--1576.
+            \item Blanchard, O.J., Watson, M.W. (1982). Bubbles, Rational Expectations and Financial Markets. \textit{NBER Working Paper 945}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliography II}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Critiques and Limitations}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Fama, E.F. (1970). Efficient capital markets: A review of theory and empirical work. \textit{Journal of Finance}, 25(2), 383--417.
+            \item Bouchaud, J.P., Potters, M. (2003). \textit{Theory of Financial Risk and Derivative Pricing}. Cambridge UP.
+            \item Cont, R., Bouchaud, J.P. (2000). Herd behavior and aggregate fluctuations in financial markets. \textit{Macroeconomic Dynamics}, 4(2), 170--196.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Online Resources and Code}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Code repository for quantitative methods
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Quantitative methods learning platform
+            \item \textbf{GitHub TSA}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch13} --- Python code for this seminar
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Thank You!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Questions?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Seminar materials are available at: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}

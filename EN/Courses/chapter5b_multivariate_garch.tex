@@ -86,29 +86,44 @@
 % STORY OF THE CHAPTER
 %=============================================================================
 
-\begin{frame}{The Story of This Chapter}
+\begin{frame}{The Story of This Chapter: The Problem}
     \begin{cminipage}{0.95\textwidth}
     {\footnotesize
+    \textit{\textbf{Core question:} How do we model risk when assets move together --- and that co-movement changes over time?}
+    \vspace{0.2cm}
     \begin{block}{The Problem}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Correlations between assets \textbf{change over time} --- and they spike during crises
             \item Ignoring this leads to wrong portfolios, bad hedges, and underestimated risk
         \end{itemize}
     \end{block}
-    \begin{block}{The Difficulty}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    \vspace{0.1cm}
+    \begin{alertblock}{The Difficulty}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Modeling $N$ assets requires $N(N+1)/2$ time-varying covariance elements
             \item The \textbf{curse of dimensionality} makes most approaches infeasible
-        \end{itemize}
-    \end{block}
-    \begin{alertblock}{The Solutions (from general to practical)}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-            \item \textbf{VEC}: the most general model --- but unusable in practice
-            \item \textbf{BEKK}: guarantees positive definiteness --- but does not scale
-            \item \textbf{CCC}: simple and fast --- but correlations are \textit{constant} (wrong!)
-            \item \textcolor{Crimson}{\textbf{DCC}}: the optimal compromise --- dynamic correlations with \textbf{only 2 extra parameters}
+            \item The covariance matrix must be \textbf{positive definite} at every time step
         \end{itemize}
     \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{The Story of This Chapter: The Solutions}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{Roadmap:} Each model solves one problem but creates another --- until DCC.}
+    \vspace{0.2cm}
+    \begin{block}{From general to practical}
+        \begin{itemize}\setlength{\itemsep}{4pt}
+            \item \textbf{VEC}: the most general model --- but unusable in practice ($O(N^4)$ parameters)
+            \item \textbf{BEKK}: guarantees positive definiteness --- but does not scale beyond $N = 5$
+            \item \textbf{CCC}: simple and fast --- but correlations are \textit{constant} (empirically wrong)
+            \item \textcolor{Crimson}{\textbf{DCC}}: the optimal compromise --- dynamic correlations with \textbf{only 2 extra parameters}
+        \end{itemize}
+    \end{block}
+    \vspace{0.2cm}
+    \textit{\textbf{Key takeaway:} This chapter is a journey from generality to practicality. DCC wins because it scales.}
     }
     \end{cminipage}
 \end{frame}
@@ -144,30 +159,41 @@
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{The Central Question: Modeling $\mathbf{H}_t$}
+\begin{frame}{What We Model: The Covariance Matrix $\mathbf{H}_t$}
     \begin{cminipage}{0.95\textwidth}
     {\footnotesize
+    \textit{\textbf{One sentence:} $\mathbf{H}_t$ is the ``weather forecast'' for risk --- it updates daily as new information arrives.}
+    \vspace{0.2cm}
     \begin{block}{Setup}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Given $N$ assets with return vector $\mathbf{r}_t = (r_{1t}, \ldots, r_{Nt})'$, we need to model:
         \end{itemize}
         \[
             \mathbf{H}_t = \text{Var}(\mathbf{r}_t \mid \mathcal{F}_{t-1})
         \]
-        \begin{itemize}\setlength{\itemsep}{0pt}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item the \textbf{time-varying conditional covariance matrix}
+            \item $\mathbf{H}_t$ contains all variances \textbf{and} all pairwise covariances at time $t$
         \end{itemize}
     \end{block}
-    \vspace{0.1cm}
-    \begin{alertblock}{Why is this hard?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Why Modeling $\mathbf{H}_t$ Is Hard}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{One sentence:} The number of parameters explodes with portfolio size.}
+    \vspace{0.2cm}
+    \begin{alertblock}{Three simultaneous challenges}
+        \begin{itemize}\setlength{\itemsep}{3pt}
             \item $\mathbf{H}_t$ has $N(N+1)/2$ unique elements --- for $N = 50$: \textbf{1,275 parameters} at each $t$
-            \item Must be \textbf{positive definite} at every time step
+            \item Must be \textbf{positive definite} at every time step (otherwise: negative portfolio variance)
             \item Must capture \textbf{dynamic} correlations, not just volatilities
         \end{itemize}
     \end{alertblock}
     \vspace{0.2cm}
-    \textit{\textbf{Intuition:} $\mathbf{H}_t$ is the ``weather forecast'' for risk --- it updates daily as new information arrives.}
+    \textit{\textbf{Key takeaway:} Every multivariate GARCH model is a different answer to this same trade-off: flexibility vs.\ feasibility.}
     }
     \end{cminipage}
 \end{frame}
@@ -551,30 +577,138 @@
     \end{cminipage}
 \end{frame}
 
-\begin{frame}{VEC: Limitations and Why We Move On}
+\begin{frame}{The Hadamard Product}
     \begin{cminipage}{0.95\textwidth}
     {\footnotesize
-    \textcolor{Crimson}{$\blacktriangleright$ \textbf{Limitation}: VEC is practically unusable for $N > 2$}
+    \begin{block}{Definition}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item For $N=3$: $\mathbf{A}$ is $6 \times 6$ $\Rightarrow$ \textbf{78 parameters}; for $N=5$: \textbf{465 parameters}
-            \item \textbf{No guarantee} that $\mathbf{H}_t$ is positive definite
-            \item Diagonal VEC reduces parameters but \textbf{kills all volatility spillovers}
+            \item Let $\mathbf{A}, \mathbf{B} \in \mathbb{R}^{m \times n}$. The \textbf{Hadamard product} $\mathbf{A} \odot \mathbf{B}$ is the \textbf{element-wise} multiplication:
+            \[
+                (\mathbf{A} \odot \mathbf{B})_{ij} = a_{ij} \cdot b_{ij}
+            \]
+            \item Matrices must have the \textbf{same dimensions} --- the result preserves dimension $m \times n$
         \end{itemize}
-    \vspace{1mm}
-    \textcolor{Forest}{$\blacktriangleright$ \textbf{When NOT to use VEC}}
+    \end{block}
+    \vspace{-2mm}
+    \begin{block}{Example: the $2 \times 2$ case}
+        \[
+            \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} \odot \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix} = \begin{pmatrix} 1 \cdot 5 & 2 \cdot 6 \\ 3 \cdot 7 & 4 \cdot 8 \end{pmatrix} = \begin{pmatrix} 5 & 12 \\ 21 & 32 \end{pmatrix}
+        \]
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{Role in Multivariate GARCH}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Never} use full VEC for $N > 2$ --- estimation diverges
-            \item \textbf{Avoid} Diagonal VEC for contagion studies --- it cannot capture spillovers
-            \item \textbf{Skip} VEC entirely if you need guaranteed positive definiteness
+            \item Diagonal VEC: $\text{vech}(\mathbf{H}_t) = \mathbf{c} + \mathbf{a} \odot \text{vech}(\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}') + \mathbf{b} \odot \text{vech}(\mathbf{H}_{t-1})$
+            \item Each element of $\mathbf{H}_t$ gets its \textbf{own coefficients} $a_k, b_k$ --- no cross-interactions. Reduces parameters from $N^{*2}$ (full VEC) to $3N^*$ (Diagonal VEC)
         \end{itemize}
-    \vspace{1mm}
-    \textcolor{MainBlue}{\textbf{Model Positioning}}
+    \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{The Diagonal VEC Model}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-3mm}
+    {\scriptsize
+    \begin{block}{Definition (Bollerslev, Engle \& Wooldridge, 1988)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Restrict $\mathbf{A}$ and $\mathbf{B}$ to be \textbf{diagonal}: $\text{vech}(\mathbf{H}_t) = \mathbf{c} + \mathbf{a} \odot \text{vech}(\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}') + \mathbf{b} \odot \text{vech}(\mathbf{H}_{t-1})$
+            \item $\odot$ = Hadamard product; $\mathbf{a}, \mathbf{b}$: vectors $N^* \times 1$
+        \end{itemize}
+    \end{block}
+    \vspace{-1mm}
+    \begin{block}{Element by element for $N=2$}
+        \vspace{-1mm}
+        \begin{align}
+            h_{11,t} &= c_{11} + a_{11}\,\varepsilon_{1,t-1}^2 + b_{11}\,h_{11,t-1} \\
+            h_{12,t} &= c_{12} + a_{12}\,\varepsilon_{1,t-1}\varepsilon_{2,t-1} + b_{12}\,h_{12,t-1} \\
+            h_{22,t} &= c_{22} + a_{22}\,\varepsilon_{2,t-1}^2 + b_{22}\,h_{22,t-1}
+        \end{align}
+        \vspace{-3mm}
+        \textit{Intuition: each variance/covariance follows its own GARCH --- the shock of asset 2 cannot affect the variance of asset 1.}
+    \end{block}
+    \vspace{-1mm}
+    \begin{alertblock}{Trade-off}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item $3N^*$ parameters (manageable), but each element evolves \textbf{independently} --- no cross-asset propagation
+        \end{itemize}
+    \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VEC: Bivariate Example}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{exampleblock}{Example: two assets ($N=2$)}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item With full VEC, $N^* = 3$:
+            \[
+                \begin{pmatrix} h_{11,t} \\ h_{12,t} \\ h_{22,t} \end{pmatrix} = \begin{pmatrix} c_1 \\ c_2 \\ c_3 \end{pmatrix} + \begin{pmatrix} a_{11} & a_{12} & a_{13} \\ a_{21} & a_{22} & a_{23} \\ a_{31} & a_{32} & a_{33} \end{pmatrix} \begin{pmatrix} \varepsilon_{1,t-1}^2 \\ \varepsilon_{1,t-1}\varepsilon_{2,t-1} \\ \varepsilon_{2,t-1}^2 \end{pmatrix} + \mathbf{B} \begin{pmatrix} h_{11,t-1} \\ h_{12,t-1} \\ h_{22,t-1} \end{pmatrix}
+            \]
+        \end{itemize}
+    \end{exampleblock}
+    \begin{block}{Interpretation}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Off-diagonal elements of $\mathbf{A}$ capture \textbf{shock spillovers between assets}
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item $a_{13}$: the impact of asset 2's shock on the variance of asset 1
+                \end{itemize}
+            \item Off-diagonal elements of $\mathbf{B}$ capture \textbf{volatility persistence spillovers}
+            \item Total parameters: $3 + 9 + 9 = 21$ (for just 2 assets!)
+        \end{itemize}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VEC: Key Insight and Common Pitfalls}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-2mm}
+    {\scriptsize
+    \begin{block}{\textcolor{MainBlue}{$\blacktriangleright$ Key Insight}: VEC is the ``mother'' of all MGARCH models}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Every multivariate GARCH model (BEKK, CCC, DCC) is a \textbf{restricted version} of VEC
+            \item The VEC equation is the most general linear dynamics for $\mathbf{H}_t$
+            \item All restrictions are choices about which parameters to eliminate
+        \end{itemize}
+    \end{block}
+    \vspace{-2mm}
+    \begin{alertblock}{\textcolor{Crimson}{$\blacktriangleright$ Common Pitfall}: confusing VEC and Diagonal VEC}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Diagonal VEC ($\mathbf{A}, \mathbf{B}$ diagonal) eliminates \textit{all cross-effects}
+            \item Each $h_{ij,t}$ depends only on its own lag and on $\varepsilon_{i,t-1}\varepsilon_{j,t-1}$
+            \item It does \textbf{not} just mean ``fewer parameters'': it fundamentally eliminates volatility propagation
+        \end{itemize}
+    \end{alertblock}
+    \vspace{-2mm}
+    \begin{exampleblock}{\textcolor{Forest}{$\blacktriangleright$ When NOT to use VEC}}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Never} use full VEC for $N > 2$ --- $O(N^4)$ parameters, estimation diverges
+            \item \textbf{Avoid} Diagonal VEC when spillovers matter (e.g., banking contagion studies)
+            \item \textbf{Skip} VEC if you only need portfolio variance --- CCC/DCC are faster and guaranteed p.d.
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{VEC Section Summary}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{block}{3 Things to Remember}
+        \begin{enumerate}\setlength{\itemsep}{2pt}
+            \item VEC is the most \textbf{general} linear MGARCH model --- all other models restrict it
+            \item Diagonal VEC is estimable but eliminates propagation; full VEC is rich but infeasible for $N > 2$
+            \item The central unresolved problem: \textbf{no guarantee of positive definiteness}
+        \end{enumerate}
+    \end{block}
+    \begin{alertblock}{Model Positioning}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item \textbf{Use when}: $N = 2$ and maximum flexibility is needed
             \item \textbf{vs.\ BEKK}: BEKK guarantees p.d.\ with same expressiveness --- prefer BEKK
         \end{itemize}
-    \vspace{2mm}
-    \textit{\textbf{Key takeaway:} VEC is the theoretical foundation --- but in practice, we need something better.}
+    \end{alertblock}
     }
     \end{cminipage}
 \end{frame}
@@ -583,33 +717,44 @@
 % TRANSITION: VEC → BEKK
 %=============================================================================
 
-\begin{frame}{From VEC to BEKK: Why We Need Guaranteed Positive Definiteness}
+\begin{frame}{From VEC to BEKK: What Went Wrong?}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-2mm}
-    {\scriptsize
-    \begin{block}{What went wrong with VEC?}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    {\footnotesize
+    \textit{\textbf{One sentence:} VEC has no built-in mechanism to ensure $\mathbf{H}_t$ stays positive definite.}
+    \vspace{0.2cm}
+    \begin{block}{VEC's two fatal flaws}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item VEC is the most \textbf{general} multivariate GARCH --- every element of $\mathbf{H}_t$ has its own dynamics
             \item But: (1) \textbf{no guarantee} that $\mathbf{H}_t$ is positive definite, (2) parameter count \textbf{explodes} ($O(N^4)$)
             \item Diagonal VEC solves (2) but still fails at (1) --- and loses spillover effects
         \end{itemize}
     \end{block}
-    \vspace{-2mm}
-    \begin{alertblock}{The Core Problem}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    \vspace{0.1cm}
+    \begin{alertblock}{The core problem}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item VEC writes $\text{vech}(\mathbf{H}_t) = \mathbf{c} + \mathbf{A}\,\text{vech}(\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}') + \mathbf{B}\,\text{vech}(\mathbf{H}_{t-1})$
             \item Nothing in this equation \textbf{forces} $\mathbf{H}_t$ to be p.d.\ at every $t$
-            \item Sufficient conditions exist (Engle \& Kroner, 1995) but are \textbf{hard to impose} during numerical optimization
+            \item Sufficient conditions exist (Engle \& Kroner, 1995) but are \textbf{hard to impose}
         \end{itemize}
     \end{alertblock}
-    \vspace{-2mm}
-    \begin{exampleblock}{BEKK's Insight: Build PD Into the Structure}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{BEKK's Insight: Build Positive Definiteness Into the Structure}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{One sentence:} Use quadratic forms --- they are always positive semi-definite by construction.}
+    \vspace{0.2cm}
+    \begin{exampleblock}{The key idea}
+        \begin{itemize}\setlength{\itemsep}{3pt}
             \item Write $\mathbf{H}_t = \mathbf{C}\mathbf{C}' + \mathbf{A}'\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}'\mathbf{A} + \mathbf{B}'\mathbf{H}_{t-1}\mathbf{B}$
-            \item Each term is p.s.d.\ \textbf{by construction} ($\mathbf{X}'\mathbf{M}\mathbf{X} \succeq 0$ for any $\mathbf{M} \succeq 0$)
-            \item Sum of p.s.d.\ matrices + a p.d.\ matrix = p.d.\ always
+            \item Each term is p.s.d.\ \textbf{by construction}: $\mathbf{X}'\mathbf{M}\mathbf{X} \succeq 0$ for any $\mathbf{M} \succeq 0$
+            \item Sum of p.s.d.\ matrices + a p.d.\ matrix ($\mathbf{C}\mathbf{C}'$) = p.d.\ always
         \end{itemize}
     \end{exampleblock}
+    \vspace{0.2cm}
+    \textit{\textbf{Key takeaway:} BEKK solves VEC's biggest flaw by making positive definiteness automatic --- no extra constraints needed.}
     }
     \end{cminipage}
 \end{frame}
@@ -642,12 +787,11 @@
         \end{itemize}
     \end{block}
     \vspace{-1mm}
-    \begin{alertblock}{\textcolor{Crimson}{$\blacktriangleright$ Practical Warning}: BEKK does not scale}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Conceptually important, but \textbf{infeasible for $N > 5$} (parameter explosion: $2N^2$)
-            \item BEKK = \textbf{B}aba, \textbf{E}ngle, \textbf{K}raft, \textbf{K}roner (1990)
-        \end{itemize}
-    \end{alertblock}
+    \textcolor{Crimson}{$\blacktriangleright$ \textbf{Practical Warning}: BEKK does not scale} --- $2N^2$ params $\Rightarrow$ infeasible for $N > 5$.
+    BEKK = \textbf{B}aba, \textbf{E}ngle, \textbf{K}raft, \textbf{K}roner (1990).
+    \vspace{1mm}
+
+    \textit{\textbf{Key takeaway:} BEKK trades scalability for guaranteed positive definiteness and spillover identification.}
     }
     \end{cminipage}
 \end{frame}
@@ -860,6 +1004,8 @@
             \item \textbf{vs.\ VEC}: same flexibility, guaranteed p.d. \quad \textbf{vs.\ DCC}: DCC scales better but cannot identify spillover direction
         \end{itemize}
     \end{alertblock}
+    \vspace{1mm}
+    \textit{\textbf{Key takeaway:} Use BEKK when $N \leq 5$ and you need to know \textbf{who transmits volatility to whom}.}
     }
     \end{cminipage}
 \end{frame}
@@ -905,9 +1051,11 @@
 %=============================================================================
 \section{Constant Conditional Correlation (CCC)}
 
-\begin{frame}{The CCC Model (Bollerslev, 1990)}
+\begin{frame}{CCC: The Decomposition $\mathbf{H}_t = \mathbf{D}_t \mathbf{R} \mathbf{D}_t$}
     \begin{cminipage}{0.95\textwidth}
     {\footnotesize
+    \textit{\textbf{One sentence:} Covariances change only because volatilities change --- the ``wiring'' between assets stays fixed.}
+    \vspace{0.2cm}
     \begin{block}{Key Idea: Separate Variances from Correlations}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Decompose the conditional covariance matrix:
@@ -921,16 +1069,32 @@
             \item Each $h_{ii,t}$ follows a \textbf{univariate GARCH(1,1)}:
                 $h_{ii,t} = \omega_i + \alpha_i \varepsilon_{i,t-1}^2 + \beta_i h_{ii,t-1}$
         \end{itemize}
-        \textit{Intuition: covariances change only because volatilities change --- the ``wiring'' between assets stays fixed.}
+    \end{block}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{CCC: Properties and Parameter Count}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{One sentence:} CCC reduces a massive joint problem to $N$ simple univariate GARCHs plus one correlation matrix.}
+    \vspace{0.2cm}
+    \begin{block}{Properties}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item $\mathbf{H}_t$ is p.d.\ iff $\mathbf{R}$ is p.d.\ and all $h_{ii,t} > 0$
+            \item Covariances: $h_{ij,t} = \rho_{ij}\sqrt{h_{ii,t}}\sqrt{h_{jj,t}}$
+            \item Parameters: $3N$ (univariate GARCH) $+ N(N-1)/2$ (correlations)
+        \end{itemize}
     \end{block}
     \vspace{0.1cm}
-    \begin{alertblock}{Properties}
+    \begin{alertblock}{Comparison}
         \begin{itemize}\setlength{\itemsep}{0pt}
-            \item $\mathbf{H}_t$ is p.d.\ if and only if $\mathbf{R}$ is p.d.\ and all $h_{ii,t} > 0$
-            \item Parameters: $3N + N(N-1)/2$ --- very parsimonious
-            \item Covariances: $h_{ij,t} = \rho_{ij}\sqrt{h_{ii,t}}\sqrt{h_{jj,t}}$
+            \item $N = 50$: CCC needs \textbf{1,375} parameters vs.\ BEKK's $\approx$ 6,275
+            \item Two-step estimation: each step is low-dimensional
         \end{itemize}
     \end{alertblock}
+    \vspace{0.2cm}
+    \textit{\textbf{Key takeaway:} CCC assumes correlations are fixed --- covariances change only because volatilities change.}
     }
     \end{cminipage}
 \end{frame}
@@ -988,6 +1152,7 @@
             \item Tse (2000) and Engle (2002) proposed tests for constant correlation
         \end{itemize}
     \end{alertblock}
+    \textit{\textbf{Key takeaway:} CCC is the ideal benchmark --- simple, fast, and always your starting point.}
     }
     \end{cminipage}
 \end{frame}
@@ -1043,6 +1208,8 @@
             \item \textbf{vs.\ BEKK}: much simpler, no spillovers \quad \textbf{vs.\ DCC}: same structure, but $\mathbf{R}$ is fixed
         \end{itemize}
     \end{alertblock}
+    \vspace{1mm}
+    \textit{\textbf{Key takeaway:} Always estimate CCC first --- it is the null hypothesis that DCC must beat.}
     }
     \end{cminipage}
 \end{frame}
@@ -1051,27 +1218,42 @@
 % TRANSITION: CCC → DCC
 %=============================================================================
 
-\begin{frame}{From CCC to DCC: When Correlations Must Move}
+\begin{frame}{Evidence Against Constant Correlations}
     \begin{cminipage}{0.95\textwidth}
-    \vspace{-3mm}
-    {\scriptsize
-    \begin{block}{The empirical evidence against constant correlations}
-        \begin{itemize}\setlength{\itemsep}{0pt}
+    {\footnotesize
+    \textit{\textbf{One sentence:} CCC's constant-correlation assumption is rejected in virtually all financial data.}
+    \vspace{0.2cm}
+    \begin{block}{The empirical evidence}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item CCC assumes $\rho_{ij}$ is \textbf{fixed} --- but crises repeatedly violate this
             \item S\&P~500--DAX correlation: $\approx 0.40$ in calm markets, $> 0.85$ during GFC (2008)
             \item Stock--bond correlation \textbf{flipped sign}: $+0.30$ pre-2000 $\to$ $-0.30$ post-2000 (flight to quality)
-            \item \textcolor{Crimson}{Tse (2000) and Engle--Sheppard (2001): constant correlation rejected at 1\% in most pairs}
         \end{itemize}
     \end{block}
-    \vspace{-2mm}
-    \begin{alertblock}{Engle's Solution (2002): Keep the $\mathbf{D}_t\mathbf{R}_t\mathbf{D}_t$ Structure, Make $\mathbf{R}_t$ Dynamic}
+    \vspace{0.1cm}
+    \begin{alertblock}{Statistical tests}
         \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textcolor{Crimson}{Tse (2000) and Engle--Sheppard (2001): constant correlation rejected at 1\% in most pairs}
+            \item CCC underestimates portfolio VaR during stress by 20--30\% vs.\ DCC
+        \end{itemize}
+    \end{alertblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Engle's Solution (2002): Make $\mathbf{R}_t$ Dynamic}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \textit{\textbf{One sentence:} Keep CCC's structure, but let correlations respond to shocks --- for just 2 extra parameters.}
+    \vspace{0.2cm}
+    \begin{block}{The DCC idea}
+        \begin{itemize}\setlength{\itemsep}{2pt}
             \item Replace $\mathbf{R}$ with $\mathbf{R}_t$ --- correlations now respond to joint shocks
             \item Key trick: model a proxy $\mathbf{Q}_t$ (which is \textit{not} a correlation matrix), then rescale
             \item \textbf{Only 2 extra parameters} $(a, b)$ regardless of portfolio size $N$
         \end{itemize}
-    \end{alertblock}
-    \vspace{-2mm}
+    \end{block}
+    \vspace{0.1cm}
     \begin{exampleblock}{What DCC preserves from CCC}
         \begin{itemize}\setlength{\itemsep}{0pt}
             \item Same two-step estimation: Step~1 is identical (univariate GARCHs)
@@ -1087,6 +1269,37 @@
 % SECTION 6: DCC MODEL
 %=============================================================================
 \section{Dynamic Conditional Correlation (DCC)}
+
+\begin{frame}{DCC in One Sentence}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{1cm}
+    {\Large
+    \begin{center}
+        \textcolor{MainBlue}{\textbf{DCC = CCC with dynamic correlations}}
+    \end{center}
+    }
+    \vspace{0.5cm}
+    {\footnotesize
+    \begin{center}
+        $\mathbf{H}_t = \mathbf{D}_t\,\mathbf{R}_t\,\mathbf{D}_t$
+        \qquad where $\mathbf{R}_t$ follows a GARCH-like process with \textbf{2 parameters} $(a, b)$
+    \end{center}
+    \vspace{0.5cm}
+    \begin{center}
+        \renewcommand{\arraystretch}{1.4}
+        \begin{tabular}{lccc}
+            \hline
+            & \textbf{CCC} & \textbf{DCC} & \textbf{Difference} \\
+            \hline
+            Correlations & constant $\mathbf{R}$ & dynamic $\mathbf{R}_t$ & $+2$ parameters \\
+            Estimation & 2-step & 2-step & same structure \\
+            $N = 50$ params & 1,375 & \textbf{1,377} & negligible \\
+            \hline
+        \end{tabular}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
 
 \begin{frame}{The DCC Model (Engle, 2002)}
     \begin{cminipage}{0.95\textwidth}
@@ -1383,6 +1596,8 @@
             \item \textbf{vs.\ CCC}: captures crisis correlation spikes \quad \textbf{vs.\ BEKK}: no spillover direction, but scales to $N > 100$
         \end{itemize}
     \end{alertblock}
+    \vspace{1mm}
+    \textit{\textbf{Key takeaway:} DCC is the industry standard --- 2 parameters capture all $N(N-1)/2$ dynamic correlations.}
     }
     \end{cminipage}
 \end{frame}
@@ -3769,6 +3984,64 @@ port_var = np.sqrt(w @ H_t @ w) * 2.326     # 99% z-score
         \item Test $g = 0$ in aDCC: significant $\to$ aDCC; otherwise $\to$ DCC
         \item \textbf{Final}: compare via out-of-sample backtest (not AIC)
     \end{itemize}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Model Selection Map: Quick Reference}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{@{}p{5.5cm}p{3cm}p{4.5cm}@{}}
+        \toprule
+        \textbf{Context} & \textbf{Model} & \textbf{Why} \\
+        \midrule
+        $N \leq 3$, spillovers matter & BEKK (full) & Identifies shock direction \\
+        $N \leq 10$, no spillover focus & BEKK diagonal & PD by construction, scalable \\
+        Any $N$, benchmark / quick estimate & CCC & Simplest, fastest, always start here \\
+        Any $N$, dynamic correlations needed & \textcolor{Crimson}{\textbf{DCC}} & Industry standard, only 2 params \\
+        Equity markets (leverage in $\rho$) & aDCC & Captures asymmetric correlation \\
+        $N > 50$, large portfolios & Factor GARCH & Dimensionality reduction \\
+        $N > 100$, real-time & EWMA / RiskMetrics & No estimation, instant update \\
+        \bottomrule
+    \end{tabular}
+    \vspace{3mm}
+
+    \textit{\textbf{Key takeaway:} There is no universally best model --- only the right model for your $N$, your question, and your data.}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% ULTRA-SUMMARY
+%=============================================================================
+
+\begin{frame}{Ultra-Summary: What We Use in Practice}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{0.3cm}
+    {\footnotesize
+    \begin{center}
+        \renewcommand{\arraystretch}{1.6}
+        \begin{tabular}{@{}cll@{}}
+            \toprule
+            \textbf{\#} & \textbf{Rule} & \textbf{Model} \\
+            \midrule
+            1 & Always start with the benchmark & \textcolor{MainBlue}{\textbf{CCC}} \\
+            2 & Default workhorse for everything & \textcolor{Crimson}{\textbf{DCC}} \\
+            3 & If negative shocks $\Rightarrow$ higher correlation & \textcolor{Forest}{\textbf{aDCC}} \\
+            4 & If you need spillover \textit{direction} ($N \leq 5$) & \textbf{BEKK} \\
+            5 & If $N > 100$ & \textbf{Factor / GO-GARCH} \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    \vspace{0.3cm}
+    \begin{alertblock}{The 10-Second Version}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{90\% of practitioners}: DCC. \textbf{If asymmetry matters}: aDCC. \textbf{Everything else}: niche.
+        \end{itemize}
+    \end{alertblock}
+    \vspace{0.2cm}
+    \textit{\textbf{Key takeaway:} Estimate CCC first. If rejected, use DCC. If negative shocks dominate, use aDCC. Done.}
     }
     \end{cminipage}
 \end{frame}
