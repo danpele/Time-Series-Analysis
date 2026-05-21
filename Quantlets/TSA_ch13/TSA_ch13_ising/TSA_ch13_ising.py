@@ -164,39 +164,66 @@ def bootstrap_ci(prices, p0, n_boot=200):
 # =========================================================================
 # TSA_ch13_ising
 # =========================================================================
+def _checkerboard_sweep(spins, beta, parity):
+    n = spins.shape[0]
+    rows, cols = np.meshgrid(np.arange(n), np.arange(n), indexing='ij')
+    mask = (rows + cols) % 2 == parity
+    nb = (np.roll(spins, 1, 0) + np.roll(spins, -1, 0) +
+          np.roll(spins, 1, 1) + np.roll(spins, -1, 1))
+    dE = 2.0 * spins * nb
+    prob = np.exp(-beta * dE)
+    flip = (dE <= 0) | (np.random.random((n, n)) < prob)
+    spins[mask & flip] *= -1
+    return spins
+
+
+def _equilibrate(spins, T, sweeps=3000):
+    if T < 0.01:
+        return spins
+    beta = 1.0 / T
+    for _ in range(sweeps):
+        _checkerboard_sweep(spins, beta, 0)
+        _checkerboard_sweep(spins, beta, 1)
+    return spins
+
+
 def chart_ising():
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    np.random.seed(42); N = 30
+    N = 60
+    Tc = 2.0 / np.log(1.0 + np.sqrt(2.0))
     cmap = LinearSegmentedColormap.from_list('ising', [Crimson, 'white', MainBlue])
 
-    # High T
+    # Low T — ordered (bubble regime)
+    np.random.seed(42)
     ax = axes[0]
-    ax.imshow(np.random.choice([-1, 1], (N, N)), cmap=cmap, vmin=-1, vmax=1)
-    ax.set_title('$T > T_c$: Disordered\n$m \\approx 0$ (No consensus)', fontweight='bold')
+    low_T = np.ones((N, N), dtype=int)
+    low_T = _equilibrate(low_T, 0.5 * Tc)
+    ax.imshow(low_T, cmap=cmap, vmin=-1, vmax=1)
+    ax.set_title('$T < T_c$: Ordered\n$|m| \\approx 1$ (Strong consensus)', fontweight='bold')
     ax.set_xticks([]); ax.set_yticks([])
-    ax.text(0.5, -0.12, 'Market: Random trading\nNo herding behavior',
+    ax.text(0.5, -0.12, 'Market: Strong herding\nBubble regime',
             transform=ax.transAxes, ha='center', fontsize=11, style='italic')
 
     # Critical
+    np.random.seed(42)
     ax = axes[1]
-    spins = np.random.choice([-1, 1], (N, N))
-    for _ in range(100):
-        i, j = np.random.randint(0, N, 2)
-        s = np.random.randint(2, 8)
-        spins[max(0, i-s):min(N, i+s), max(0, j-s):min(N, j+s)] = np.random.choice([-1, 1])
-    ax.imshow(spins, cmap=cmap, vmin=-1, vmax=1)
+    crit = np.ones((N, N), dtype=int)
+    crit = _equilibrate(crit, Tc)
+    ax.imshow(crit, cmap=cmap, vmin=-1, vmax=1)
     ax.set_title('$T = T_c$: Critical Point\nClusters of ALL sizes!', fontweight='bold')
     ax.set_xticks([]); ax.set_yticks([])
-    ax.text(0.5, -0.12, 'Market: Maximum instability\nSmall trigger → Large crash',
+    ax.text(0.5, -0.12, 'Market: Maximum instability\nSmall trigger $\\to$ large cascade',
             transform=ax.transAxes, ha='center', fontsize=11, style='italic', color=Crimson)
 
-    # Low T
+    # High T — disordered (normal market)
+    np.random.seed(42)
     ax = axes[2]
-    cold = np.ones((N, N)); cold[:3, :] = -1; cold[-2:, -5:] = -1
-    ax.imshow(cold, cmap=cmap, vmin=-1, vmax=1)
-    ax.set_title('$T < T_c$: Ordered\n$|m| \\approx 1$ (Strong consensus)', fontweight='bold')
+    high_T = np.ones((N, N), dtype=int)
+    high_T = _equilibrate(high_T, 2.0 * Tc)
+    ax.imshow(high_T, cmap=cmap, vmin=-1, vmax=1)
+    ax.set_title('$T > T_c$: Disordered\n$m \\approx 0$ (No consensus)', fontweight='bold')
     ax.set_xticks([]); ax.set_yticks([])
-    ax.text(0.5, -0.12, 'Market: Strong herding\nBubble forming',
+    ax.text(0.5, -0.12, 'Market: Random trading\nNo herding behavior',
             transform=ax.transAxes, ha='center', fontsize=11, style='italic')
 
     handles = [
