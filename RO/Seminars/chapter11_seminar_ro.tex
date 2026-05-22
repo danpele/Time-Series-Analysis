@@ -1,0 +1,820 @@
+% Capitolul 11: Seminar - LLM-uri și Modele Fundaționale pentru Serii de Timp
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 11: LLM-uri și Modele Fundaționale pentru Serii de Timp}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% CUPRINS SEMINAR
+%=============================================================================
+\begin{frame}{Cuprins Seminar}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}
+        \item \textbf{Partea I: Nivel Anul 3} -- Auto-atenție, codificare pozițională, arhitecturi, tokenizare
+        \vspace{0.15cm}
+        \item \textbf{Partea II: Nivel Master} -- Decizii zero-shot, ajustare fină LoRA, interpretarea benchmark-urilor
+        \vspace{0.15cm}
+        \item \textbf{Partea III: Extensie Doctorat} -- Legi de scalare, transfer cross-domeniu, strategii de ansamblu
+        \vspace{0.15cm}
+        \item \textbf{Subiecte de Discuție} -- Modele fundaționale vs.\ ARIMA, interpretabilitate, confidențialitatea datelor
+        \vspace{0.15cm}
+        \item \textbf{Exercițiu cu Inteligență Artificială} -- Gândire critică cu instrumente AI
+        \vspace{0.15cm}
+        \item \textbf{Exerciții pentru Acasă} -- Practică extinsă
+        \vspace{0.15cm}
+        \item \textbf{Rezumat} -- Concepte cheie pe niveluri
+        \vspace{0.15cm}
+        \item \textbf{Bibliografie} -- Referințe și cod
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% PARTEA I: NIVEL ANUL 3
+%=============================================================================
+\section{Partea I: Nivel Anul 3}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 1: Calculul Auto-Atenției
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 1: Calculul Auto-Atenției}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Întrebare}
+        Atenția scaled dot-product este definită ca
+        $\text{Attention}(Q,K,V) = \text{softmax}\!\bigl(QK^\top / \sqrt{d_k}\bigr)\,V$.
+        Date fiind matricele $3\times 3$ ($d_k = 3$):
+        \[
+            Q = \begin{pmatrix} 1 & 0 & 1 \\ 0 & 1 & 0 \\ 1 & 1 & 0 \end{pmatrix},\quad
+            K = \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix},\quad
+            V = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{pmatrix}
+        \]
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Calculați $QK^\top$ și interpretați fiecare element ca un ``scor de similaritate'' între interogarea $i$ și cheia $j$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Scalați cu $\sqrt{d_k}$, aplicați softmax pe linii și interpretați ponderile de atenție rezultate.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Înmulțiți matricea de ponderi cu $V$. Ce reprezintă fiecare linie a rezultatului?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 1: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}}
+                $QK^\top = \begin{pmatrix} 1 & 2 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 2 \end{pmatrix}$.
+                Elementul $(i,j)$ măsoară cât de mult interogarea $i$ ``acordă atenție'' cheii $j$. De ex.\ linia 1 atribuie scorul brut cel mai mare (2) cheii 2.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Împărțind la $\sqrt{3} \approx 1{,}732$:
+                $S = \begin{pmatrix} 0{,}577 & 1{,}155 & 0{,}577 \\ 0{,}577 & 0 & 0{,}577 \\ 0{,}577 & 0{,}577 & 1{,}155 \end{pmatrix}$.
+                Softmax pe linii produce ponderile $W$, de ex.\ linia 1 $\approx (0{,}25;\; 0{,}44;\; 0{,}31)$ --- poziția 1 acordă cea mai mare atenție poziției 2. Scalarea previne saturarea softmax-ului spre one-hot pentru $d_k$ mari.
+            \item \textcolor{MainBlue}{\textbf{(C)}} $\text{Output} = W \cdot V$: fiecare linie a rezultatului este o \textbf{medie ponderată} a vectorilor de valoare, unde ponderile codifică relevanța învățată a fiecărei poziții. Acesta este modul în care Transformer-ul agregă informația contextuală fără recurență.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_attention}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_attention}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 2: Codificarea Pozițională
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 2: Codificarea Pozițională}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Codificarea pozițională sinusoidală (Vaswani et al., 2017) este definită ca:
+        \[
+            PE_{(pos,2i)} = \sin\!\bigl(pos / 10000^{2i/d_{\text{model}}}\bigr), \quad
+            PE_{(pos,2i+1)} = \cos\!\bigl(pos / 10000^{2i/d_{\text{model}}}\bigr)
+        \]
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        Calculați codificările poziționale pentru pozițiile $\text{pos} = 0, 1, 2, 3$ cu $d_{\text{model}} = 4$ (deci $i \in \{0, 1\}$).
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Completați matricea PE de $4 \times 4$. Ce tipare observați de-a lungul liniilor și coloanelor?
+            \item \textcolor{MainBlue}{\textbf{(B)}} De ce fiecare poziție primește o codificare unică, deși $\sin$ și $\cos$ sunt periodice?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Arătați că pozițiile relative rămân calculabile: $PE_{pos+k}$ poate fi scris ca o transformare liniară a lui $PE_{pos}$.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 2: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Cu $\omega_0 = 1$, $\omega_1 = 1/100$:
+                \[
+                    PE = \begin{pmatrix}
+                        \sin(0) & \cos(0) & \sin(0) & \cos(0) \\
+                        \sin(1) & \cos(1) & \sin(0{,}01) & \cos(0{,}01) \\
+                        \sin(2) & \cos(2) & \sin(0{,}02) & \cos(0{,}02) \\
+                        \sin(3) & \cos(3) & \sin(0{,}03) & \cos(0{,}03)
+                    \end{pmatrix}
+                    \approx \begin{pmatrix}
+                        0 & 1 & 0 & 1 \\
+                        0{,}841 & 0{,}540 & 0{,}010 & 1{,}000 \\
+                        0{,}909 & \!-0{,}416 & 0{,}020 & 1{,}000 \\
+                        0{,}141 & \!-0{,}990 & 0{,}030 & 1{,}000
+                    \end{pmatrix}
+                \]
+                Dimensiunile cu indice mic oscilează rapid; cele cu indice mare se schimbă lent.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Fiecare poziție este codificată prin perechi $\sin/\cos$ la lungimi de undă \textbf{spațiate geometric}. Combinația mai multor frecvențe creează o ``amprentă'' unică, analog reprezentării unui număr în mai multe baze.
+            \item \textcolor{MainBlue}{\textbf{(C)}} $\sin(\omega(pos+k)) = \sin(\omega\, pos)\cos(\omega k) + \cos(\omega\, pos)\sin(\omega k)$, deci codificarea la $pos+k$ este o \textbf{matrice de rotație} aplicată codificării la $pos$. Modelul învață pozițiile relative prin proiecții liniare.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_positional\_enc}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_positional_enc}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 3: Compararea Arhitecturilor
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 3: Compararea Arhitecturilor}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{alertblock}{Întrebare}
+        Trei modele fundaționale pentru serii de timp folosesc arhitecturi Transformer diferite:
+        \begin{center}
+        {\footnotesize
+        \begin{tabular}{lll}
+            \toprule
+            \textbf{Model} & \textbf{Arhitectură} & \textbf{Bază} \\
+            \midrule
+            Chronos & Encoder-Decoder & T5 \\
+            TimesFM & Doar Decoder & Custom \\
+            Moirai  & Doar Encoder  & Stil BERT \\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} De ce este o arhitectură \textbf{doar decoder} naturală pentru prognoza autoregresivă?
+            \item \textcolor{MainBlue}{\textbf{(B)}} De ce permite un \textbf{encoder-decoder} lungimi flexibile pentru intrare/ieșire?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Cum poate un model \textbf{doar encoder} (Moirai) să realizeze prognoze dacă nu are un decoder autoregresiv?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 3: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Modelele doar decoder folosesc \textbf{atenție cauzală (de la stânga la dreapta)}: token-ul $t$ poate accesa doar token-urile $\leq t$. Aceasta reflectă factorizarea autoregresivă $p(y_{T+1}, \ldots, y_{T+H}) = \prod_h p(y_{T+h} \mid y_{\leq T+h-1})$. TimesFM generează câte un pas de prognoză la un moment dat, condiționat de toate valorile anterioare.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Encoder-ul procesează întreaga fereastră de context cu \textbf{atenție bidirecțională} (fiecare token vede toate celelalte), apoi decoder-ul accesează ieșirea encoder-ului prin \textbf{atenție încrucișată} generând prognoza autoregresiv. Intrarea și ieșirea pot avea lungimi diferite deoarece sunt procesate de module separate. Chronos codifică 512 token-uri de context și decodifică până la 64 de token-uri de prognoză.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Moirai folosește \textbf{predicție mascată}: pozițiile viitoare sunt înlocuite cu token-uri \texttt{[MASK]}, iar encoder-ul le prezice valorile folosind contextul bidirecțional din pozițiile observate. Aceasta este analogă modelării lingvistice mascate din BERT --- modelul completează ``spații goale'' în loc să genereze de la stânga la dreapta.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_architectures}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_architectures}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 4: Strategii de Tokenizare
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 4: Strategii de Tokenizare}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Întrebare}
+        Două strategii de tokenizare pentru serii de timp:
+        \textbf{Patching} (PatchTST): gruparea a $P$ pași de timp consecutivi într-un singur token.
+        \textbf{Cuantizare} (Chronos): discretizarea valorilor în $B$ bin-uri și utilizarea unui vocabular de $B$ token-uri.
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        Considerați o serie cu $T = 512$ pași de timp.
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Cu dimensiunea patch-ului $P = 32$, calculați numărul de token-uri și reducerea complexității atenției comparativ cu tokenizarea la nivel de punct ($P=1$). (Indiciu: auto-atenția este $O(n^2)$.)
+            \item \textcolor{MainBlue}{\textbf{(B)}} Cu cuantizare de tip Chronos folosind $B = 4096$ bin-uri uniform pe $[\text{min}, \text{max}]$, calculați eroarea maximă de cuantizare. Care este rezoluția pentru o serie cu domeniu $[0, 100]$?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Care strategie este mai bună pentru date financiare de înaltă frecvență (prețuri tick-level) și de ce?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 4: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Număr de token-uri: $512 / 32 = 16$. Complexitatea auto-atenției: $O(16^2) = O(256)$ vs.\ $O(512^2) = O(262{,}144)$ pentru $P = 1$. Factor de reducere: $P^2 = 32^2 = 1024\times$. Aceasta face fezabilă prognoza pe contexte lungi din punct de vedere computațional.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Lățimea bin-ului: $100 / 4096 \approx 0{,}0244$. Eroarea maximă de cuantizare: jumătate din lățimea bin-ului $= 0{,}0122$. Aceasta corespunde la $0{,}012\%$ din domeniu --- neglijabil pentru majoritatea aplicațiilor. Totuși, Chronos folosește de fapt \textbf{scalare prin medie} înainte de cuantizare, deci rezoluția efectivă depinde de scala fiecărei serii.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Cuantizarea este mai bună} pentru date financiare de înaltă frecvență:
+                (i) Patching-ul cu $P=32$ ar combina 32 de tick-uri într-un singur token, pierzând informații critice de microstructură (oscilații bid-ask, tipare de flux al ordinelor).
+                (ii) Cuantizarea păstrează \textbf{ordinea temporală} a fiecărui tick, permițând modelului să utilizeze un vocabular discret.
+                (iii) Pentru date financiare, un patch mai mic ($P = 4$ sau $P = 8$) ar putea fi utilizat, dar aceasta crește costul atenției.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_tokenization}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_tokenization}
+\end{frame}
+
+%=============================================================================
+% PARTEA II: NIVEL MASTER
+%=============================================================================
+\section{Partea II: Nivel Master}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 5: Cadrul de Decizie Zero-Shot
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 5: Cadrul de Decizie Zero-Shot}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+    \begin{alertblock}{Întrebare}
+        O companie de retail are 50{,}000 de serii de timp la nivel de produs, fiecare cu $\sim$200 de observații săptămânale la frecvențe mixte (vânzări săptămânale, promoții lunare, obiective trimestriale). Doresc să prognozeze 12 săptămâni înainte.
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Aplicați arborele de decizie: \textit{(1)} Există suficiente date specifice domeniului pentru ajustare fină? \textit{(2)} Sunt seriile suficient de diferite de datele de pre-antrenament pentru a necesita adaptare? Recomandați modele \textbf{zero-shot}, \textbf{ajustate fin} sau \textbf{tradiționale}.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Estimați costul computațional: ajustarea fină a unui model cu 200M parametri pe 50K serii (10 epoci, batch size 32) vs.\ inferența zero-shot. Presupuneți 1 oră-GPU per 100K pași de gradient.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Recomandați un model specific (Chronos, TimesFM sau Moirai) și justificați alegerea pe baza lungimii contextului, ieșirii probabilistice și compoziției datelor de pre-antrenament.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 5: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} 200 de observații per serie este relativ puțin, dar 50K serii $\times$ 200 $=$ 10M puncte de date în total --- suficient pentru ajustare fină. Totuși, datele de retail sunt bine reprezentate în corpusurile de pre-antrenament (Monash, M5). \textbf{Recomandare}: începeți cu \textbf{zero-shot}, apoi ajustați fin doar dacă performanța este nesatisfăcătoare. Folosiți ARIMA/ETS ca referință.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Ajustare fină: $50{,}000 \times 200 / 32 \approx 312{,}500$ pași per epocă $\times 10$ epoci $= 3{,}125$M pași $\approx$ \textbf{31 ore-GPU}. Inferență zero-shot: $50{,}000$ serii, $\sim$0,1 secunde fiecare $\approx$ \textbf{1,4 ore pe 1 GPU}. Zero-shot este $\sim$22$\times$ mai ieftin --- un avantaj convingător când funcționează suficient de bine.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Chronos-Large} (710M): antrenat pe 27 de seturi de date diverse, inclusiv retail; suportă context de până la 512 token-uri; oferă \textbf{prognoze probabilistice} complete (cuantile) prin abordarea de cuantizare; encoder-decoder-ul T5 gestionează orizonturi variabile. TimesFM este de asemenea potrivit, dar oferă doar prognoze punctuale. Moirai gestionează frecvențe mixte nativ prin cadrul său any-variate.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_zero\_shot}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_zero_shot}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 6: Ajustare Fină LoRA
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 6: Ajustare Fină LoRA}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Un model fundațional are 200M parametri. Doriți să-l adaptați la date de prognoză energetică folosind LoRA (Low-Rank Adaptation) cu rang $r = 8$ aplicat tuturor matricelor de atenție. Fiecare strat de atenție are $W_Q, W_K, W_V, W_O \in \mathbb{R}^{512 \times 512}$, iar modelul are 12 straturi.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Calculați numărul de parametri antrenabili LoRA. Fiecare adaptor LoRA descompune $\Delta W = BA$ unde $B \in \mathbb{R}^{512 \times 8}$, $A \in \mathbb{R}^{8 \times 512}$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Ce fracțiune din parametrii originali este antrenată? Comparați cerințele de memorie.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Explicați cum LoRA atenuează \textbf{uitarea catastrofală} comparativ cu ajustarea fină completă.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 6: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Per adaptor: $512 \times 8 + 8 \times 512 = 8{,}192$ parametri. Per strat: $4 \times 8{,}192 = 32{,}768$ (patru matrice de atenție). Total: $12 \times 32{,}768 = \mathbf{393{,}216}$ parametri antrenabili.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Fracțiune: $393{,}216 / 200{,}000{,}000 \approx \mathbf{0{,}2\%}$. Ajustarea fină completă necesită stocarea gradienților și stărilor optimizatorului pentru toți cei 200M parametri ($\sim$2,4 GB în FP32). LoRA necesită stări ale optimizatorului doar pentru 393K parametri ($\sim$4,7 MB), plus ponderile modelului înghețat încărcate o singură dată. Memoria GPU scade de la $\sim$6 GB la $\sim$1,5 GB.
+            \item \textcolor{MainBlue}{\textbf{(C)}} În LoRA, ponderile originale $W$ sunt \textbf{înghețate}: $W' = W + \Delta W = W + BA$. Cunoștințele pre-antrenate sunt păstrate exact în $W$; doar reziduul de rang redus $BA$ este învățat. Dacă datele de ajustare fină sunt nereprezentative, se poate pur și simplu elimina $BA$ și recupera modelul original. Ajustarea fină completă modifică toate ponderile direct, riscând \textbf{uitarea catastrofală} a tiparelor temporale generalizabile.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_lora}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_lora}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 7: Interpretarea Benchmark-urilor
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 7: Interpretarea Benchmark-urilor}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Întrebare}
+        Tabelul următor prezintă pierderea cuantilică ponderată (WQL, mai mic = mai bun) pe benchmark-ul Monash:
+        \begin{center}
+        {\footnotesize
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Model} & \textbf{Orizont scurt} & \textbf{Orizont lung} & \textbf{Total} \\
+            \midrule
+            ARIMA (auto) & 0,112 & 0,198 & 0,155 \\
+            Chronos-Large & 0,098 & 0,142 & 0,120 \\
+            TimesFM & 0,101 & 0,139 & 0,120 \\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Calculați îmbunătățirea relativă a Chronos față de ARIMA pentru orizont scurt și orizont lung.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Pe ce tipuri de seturi de date ARIMA tinde să depășească modelele fundaționale? De ce?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Propuneți o strategie de selecție a modelelor care combină modele statistice și fundaționale.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 7: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Orizont scurt: $(0{,}112 - 0{,}098)/0{,}112 = \mathbf{12{,}5\%}$ îmbunătățire. Orizont lung: $(0{,}198 - 0{,}142)/0{,}198 = \mathbf{28{,}3\%}$ îmbunătățire. Modelele fundaționale excelează la orizonturi mai lungi, unde extrapolarea liniară a ARIMA se deteriorează.
+            \item \textcolor{MainBlue}{\textbf{(B)}} ARIMA câștigă pe: \textbf{(i)} serii scurte, de frecvență joasă ($n < 100$) unde modelele fundaționale nu au suficient context; \textbf{(ii)} serii cu sezonalitate puternică și structură simplă (tip airline) unde ordinul ARIMA corect surprinde exact procesul generator; \textbf{(iii)} serii din domenii slab reprezentate în datele de pre-antrenament. Punctul forte al ARIMA este parcimonia când modelul real este într-adevăr liniar.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Strategie în cascadă}: (1) Rulați modelul fundațional zero-shot + auto-ARIMA pe un set de validare. (2) Pentru fiecare serie, selectați modelul cu pierderea mai mică pe validare. (3) Dacă modelul fundațional câștigă pe $> 70\%$ din serii, utilizați-l global (implementare mai simplă). (4) Altfel, mențineți selecția per serie --- aceasta depășește de obicei ambele modele individuale cu 5--10\%.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_benchmark}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_benchmark}
+\end{frame}
+
+%=============================================================================
+% PARTEA III: EXTENSIE DOCTORAT
+%=============================================================================
+\section{Partea III: Extensie Doctorat}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 8: Legi de Scalare
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 8: Legi de Scalare}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Chronos este disponibil în patru dimensiuni: Mini (20M), Small (46M), Base (200M) și Large (710M). Pe benchmark-ul Monash, scorurile WQL sunt 0,128, 0,125, 0,121 și respectiv 0,120 --- o curbă aproape plată dincolo de 200M parametri.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} În NLP, legile de scalare arată $L \propto N^{-\alpha}$ (pierderea scade ca o lege de putere în funcție de dimensiunea modelului $N$). Comparați aceasta cu rezultatele Chronos. Ce este diferit?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Explicați de ce scalarea seriilor de timp se saturează: considerați diversitatea datelor, raportul semnal-zgomot și complexitatea inerentă a tiparelor temporale vs.\ limbaj.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Propuneți ce ar putea depăși saturarea și reactiva scalarea.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 8: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} În NLP, GPT-3 (175B) depășește constant GPT-2 (1,5B) deoarece limbajul are o complexitate combinatorică vastă. Pentru Chronos, trecerea de la 200M la 710M ($3{,}5\times$) îmbunătățește WQL cu doar 0,8\% (0,121 $\to$ 0,120). Exponentul de scalare $\alpha \approx 0$ pentru modelele mari --- fundamental diferit de legea de putere din NLP.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Trei factori: \textbf{(i)} \textit{Diversitate limitată a datelor}: pre-antrenamentul a folosit $\sim$27 de seturi de date ($\sim$100K serii); NLP folosește trilioane de token-uri. Capacitatea modelului depășește complexitatea datelor. \textbf{(ii)} \textit{Raport semnal-zgomot scăzut}: seriile de timp au zgomot ireductibil ridicat, creând un prag de performanță pe care mai mulți parametri nu-l pot depăși. \textbf{(iii)} \textit{Tipare mai simple}: tiparele temporale (trenduri, sezonalitate, dinamici AR) necesită mult mai puțini parametri decât semantica limbajului natural.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Căi de depășire: \textbf{(i)} creștere masivă a datelor de antrenament --- miliarde de serii din IoT, piețe financiare, meteo; \textbf{(ii)} \textbf{pre-antrenament multimodal} combinând serii de timp cu metadate textuale; \textbf{(iii)} augmentare de date sintetice folosind simulări bazate pe fizică.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_scaling}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_scaling}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 9: Transfer Cross-Domeniu
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 9: Transfer Cross-Domeniu}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Un model pre-antrenat pe date de consum energetic (sarcină electrică orară din 370 substații, 4 ani) este aplicat zero-shot pentru a prognoza vânzări săptămânale de retail pentru 3{,}000 de magazine.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Ce tipare temporale se \textbf{transferă} de la energie la retail? De ce ar învăța un model aceste caracteristici ca fiind agnostice de domeniu?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Ce aspecte ale domeniului retail \textbf{nu se transferă} de la pre-antrenamentul pe energie?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Proiectați un experiment controlat pentru a măsura eficacitatea transferului cross-domeniu.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 9: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} \textbf{Tipare transferabile}: (i) \textit{Sezonalitate săptămânală}: cicluri de 7 zile în ambele domenii. (ii) \textit{Efecte de sărbători}: vârfuri/scăderi ale cererii. (iii) \textit{Schimbări de nivel}: modelul recunoaște rupturi structurale. (iv) \textit{Dinamici autoregresive}: dependențele pe termen scurt sunt universale. Transformer-ul învață caracteristici temporale abstracte, nu mecanisme cauzale specifice.
+            \item \textcolor{MainBlue}{\textbf{(B)}} \textbf{Netransferabile}: (i) \textit{Promoții}: vânzările cresc în reduceri --- energia nu are analog. (ii) \textit{Cerere intermitentă}: retail are inflație zero; sarcina electrică e pozitivă. (iii) \textit{Dependențe între serii}: canibalizare/substituție între magazine. (iv) \textit{Nepotrivire frecvență}: tiparele orare nu se mapează pe retail săptămânal.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Experiment}: Antrenați A (energie), B (retail), C (ambele). Evaluați pe test retail. $\Delta = \text{WQL}(A) - \text{WQL}(B)$: mic $\Rightarrow$ transfer eficient. Dacă C $>$ B, pre-antrenamentul pe energie oferă \textbf{transfer pozitiv}. Controlați dimensiunea și bugetul.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_transfer}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_transfer}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercițiul 10: Strategia de Ansamblu
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercițiul 10: Strategia de Ansamblu}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Aveți doi prognoziști: ARIMA care oferă o prognoză punctuală $\hat{y}^{A}_{T+h}$ cu RMSE cunoscut, și Chronos care oferă o distribuție predictivă completă $\hat{F}^{C}_{T+h}$ (cuantile la nivelurile 0,1, 0,5, 0,9). Doriți să le combinați.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercițiu}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Propuneți o schemă de ponderare pentru prognozele punctuale: $\hat{y}^{E}_{T+h} = w\,\hat{y}^{A}_{T+h} + (1-w)\,\hat{y}^{C}_{T+h}$. Cum estimați $w$?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Cum puteți utiliza \textbf{predicția conformă} pentru a calibra intervalele de predicție ale prognozei combinate?
+            \item \textcolor{MainBlue}{\textbf{(C)}} În ce condiții ansamblul depășește ambele componente individuale?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Răspuns pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiul 10: Soluție}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Soluție}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} \textbf{Ponderare inversă după varianță}: $w = \sigma_C^2 / (\sigma_A^2 + \sigma_C^2)$, unde $\sigma_A^2, \sigma_C^2$ sunt estimate pe un set de validare. Dacă erorile sunt necorelate, RMSE-ul ansamblului este $\sigma_E = \sigma_A \sigma_C / \sqrt{\sigma_A^2 + \sigma_C^2} < \min(\sigma_A, \sigma_C)$. În practică, folosiți \textbf{validare încrucișată pe serii de timp} (fereastră în expansiune) pentru a estima varianțele și a optimiza $w$ prin minimizarea pierderii pe setul de validare.
+            \item \textcolor{MainBlue}{\textbf{(B)}} \textbf{Predicție conformă}: (1) Pe un set de calibrare de $n$ prognoze anterioare, calculați reziduurile $e_i = |y_i - \hat{y}^{E}_i|$. (2) Sortați reziduurile și luați cuantila de ordin $(1-\alpha)(1 + 1/n)$, notată $\hat{q}$. (3) Intervalul de predicție $[\hat{y}^{E}_{T+h} - \hat{q},\; \hat{y}^{E}_{T+h} + \hat{q}]$ are acoperire marginală garantată de $(1-\alpha)$. Aceasta este \textbf{liberă de distribuție} --- nu presupune erori gaussiene.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Ansamblul depășește ambele componente când: (i) \textbf{erorile de prognoză sunt slab corelate} (ARIMA surprinde tipare liniare; Chronos surprinde cele neliniare); (ii) niciunul dintre modele nu domină pe toate orizonturile sau seriile; (iii) ponderarea este estimată pe date \textbf{din afara eșantionului} (optimizarea pe eșantion supraajustează $w$). Ansamblul eșuează când ambele modele fac aceleași erori sistematice.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_ensemble}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_ensemble}
+\end{frame}
+
+%=============================================================================
+% SUBIECTE DE DISCUȚIE
+%=============================================================================
+\section{Subiecte de Discuție}
+
+\begin{frame}{Discuție: Vor Înlocui Modelele Fundaționale ARIMA?}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+    \begin{alertblock}{Întrebare Cheie}
+        Modelele fundaționale egalează sau depășesc ARIMA pe benchmark-uri mari. ARIMA este depășit?
+    \end{alertblock}
+    \begin{block}{Argumente Pentru Înlocuire}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Modelele zero-shot nu necesită selecția modelului (fără reglare $p,d,q$)
+            \item Gestionează tipare neliniare, schimbări de regim și dependențe pe termen lung
+            \item Un singur model servește mii de serii --- simplificare operațională masivă
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}{Argumente Împotrivă}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item ARIMA este \textbf{interpretabil}: fiecare coeficient are semnificație statistică clară
+            \item ARIMA este \textbf{optim} pentru procese liniare gaussiene (descompunerea Wold)
+            \item ARIMA rulează în milisecunde pe CPU; FM necesită GPU-uri
+            \item ARIMA oferă IC \textbf{analitice}; FM necesită calibrare
+            \item \textbf{Complementare, nu competitive}: cea mai bună strategie este un ansamblu
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Discuție: Cutia Neagră vs.\ Interpretabilitate}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{alertblock}{Întrebare Cheie}
+        Modelele fundaționale sunt ``cutii negre.'' Când este acest lucru acceptabil și când este un impediment major?
+    \end{alertblock}
+    \begin{block}{Când Cutiile Negre Sunt Acceptabile}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Prognoza cererii}: acuratețea este obiectivul principal; explicațiile sunt secundare
+            \item \textbf{Detectarea anomaliilor}: modelul semnalizează valorile aberante; oamenii investighează cauzele
+            \item \textbf{Tranzacționare de înaltă frecvență}: viteza contează mai mult decât explicabilitatea
+            \item \textbf{Cercetare}: compararea performanței de prognoză între clase de modele
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}{Când Este Necesară Interpretabilitatea}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Conformitate reglementară}: Basel III/IV necesită modele de risc explicabile
+            \item \textbf{Banca centrală}: deciziile de politică monetară trebuie justificate public
+            \item \textbf{Sănătate}: prognoza cererii de medicamente are implicații pentru siguranța pacienților
+            \item \textbf{Răspundere juridică}: ``inteligența artificială a spus așa'' nu este o apărare în instanță
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Discuție: Confidențialitatea Datelor în Modelele Bazate pe API}
+    \begin{cminipage}{0.95\textwidth}
+    {\scriptsize
+    \begin{alertblock}{Întrebare Cheie}
+        TimeGPT funcționează ca API cloud: datele sunt trimise pe serverele Nixtla. Implicații?
+    \end{alertblock}
+    \begin{block}{Preocupări}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Suveranitatea datelor}: GDPR, CCPA, reglementări bancare
+            \item \textbf{Proprietate intelectuală}: semnale proprietare deduse din jurnalele API
+            \item \textbf{Dependență de furnizor}: API indisponibil $\Rightarrow$ pipeline oprit
+            \item \textbf{Reproductibilitate}: actualizările modelului modifică rezultatele silențios
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}{Strategii de Atenuare}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Modele open-source} (Chronos, Moirai, Lag-Llama) --- rulare locală
+            \item \textbf{Confidențialitate diferențială}: zgomot calibrat înainte de trimitere
+            \item \textbf{Acorduri DPA} cu furnizorii de API
+            \item \textbf{Model local de rezervă} (ARIMA/ETS) pentru continuitate
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚIU CU INTELIGENȚĂ ARTIFICIALĂ
+%=============================================================================
+\section{Exercițiu cu Inteligență Artificială}
+
+\begin{frame}{Exercițiu AI: Prognoză Chronos cu Verificare de Cod}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
+        {\scriptsize
+        „Scrieți cod Python pentru a prognoza următoarele 24 de luni ale setului de date AirPassengers folosind modelul Chronos de la Amazon. Includeți: încărcarea modelului pre-antrenat, pregătirea ferestrei de context, generarea de prognoze probabilistice (percentilele 10, 50, 90) și reprezentarea grafică a rezultatelor cu intervale de predicție."
+        }
+    \end{block}
+    \vspace{-3mm}
+    {\scriptsize
+    \textbf{Exercițiu} --- Verificați critic codul generat de AI:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Instalează codul pachetul corect (\texttt{chronos-forecasting}) și încarcă un checkpoint valid?
+        \item Este \textbf{fereastra de context} gestionată corect? (Chronos suportă până la 512 token-uri --- trunchiază/completează?)
+        \item Sunt cuantilele de prognoză generate cu \texttt{num\_samples} și \texttt{prediction\_length} corecte?
+        \item Folosește evaluarea date \textbf{din afara eșantionului}, sau evaluează accidental pe datele de antrenament?
+        \item Sunt intervalele de predicție calculate corect din traiectoriile eșantionate?
+    \end{enumerate}
+    }
+    \vspace{-3mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Aceasta nu înseamnă că este corect.}}
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_chronos\_demo}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_chronos_demo}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚII PENTRU ACASĂ
+%=============================================================================
+\section{Exerciții pentru Acasă}
+
+\begin{frame}{Exerciții pentru Acasă}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{enumerate}\setlength{\itemsep}{2pt}
+        \item \textbf{Teoretic}: Demonstrați că atenția multi-head cu $h$ capete și dimensiunea capului $d_k = d_{\text{model}}/h$ are același număr total de parametri ca atenția cu un singur cap de dimensiune $d_{\text{model}}$, dar poate acorda atenție simultan la informații din subspații de reprezentare diferite.
+
+        \item \textbf{Calcul}: Implementați patching-ul pentru o serie de timp cu $T = 1024$ observații:
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Calculați numărul de token-uri pentru dimensiuni ale patch-ului $P \in \{8, 16, 32, 64\}$
+                \item Măsurați timpul de execuție al auto-atenției pentru fiecare dimensiune de patch
+                \item Reprezentați grafic compromisul acuratețe-eficiență pe o sarcină de prognoză la alegere
+            \end{itemize}
+
+        \item \textbf{Aplicat}: Comparați Chronos (zero-shot) vs.\ auto-ARIMA vs.\ ETS pe 10 serii din setul de date M4 lunar:
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Raportați MASE și sMAPE pentru fiecare model și fiecare serie
+                \item Pe câte serii câștigă Chronos? Caracterizați seriile ``câștigătoare''
+            \end{itemize}
+
+        \item \textbf{Gândire Critică}: Modelele fundaționale sunt antrenate pe seturi de date disponibile public. Dacă datele proprietare ale unui practician au dinamici fundamental diferite (de ex.\ fluxul de ordine pe criptomonede), poate fi de încredere inferența zero-shot? Ce măsuri de siguranță ar trebui implementate?
+    \end{enumerate}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Indicii pentru Soluții}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\footnotesize
+    \begin{block}{Indicii}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item Multi-head: $h$ capete, fiecare cu $W^Q_i, W^K_i, W^V_i \in \mathbb{R}^{d_{\text{model}} \times d_k}$ și $W^O \in \mathbb{R}^{d_{\text{model}} \times d_{\text{model}}}$. Total: $h \cdot 3 \cdot d_{\text{model}} \cdot d_k + d_{\text{model}}^2 = 4d_{\text{model}}^2$, la fel ca un singur cap ($3d_{\text{model}}^2 + d_{\text{model}}^2$). Beneficiul este $h$ tipare de atenție independente.
+
+            \item Token-uri: $1024/P$. Complexitatea atenției: $O((1024/P)^2 \cdot P)$ per strat. Folosiți \texttt{torch.nn.MultiheadAttention} și \texttt{time.perf\_counter()}. Așteptați-vă la randamente descrescătoare dincolo de $P = 32$.
+
+            \item Folosiți pachetul \texttt{datasetsforecast} pentru datele M4. Chronos tinde să câștige pe serii cu sezonalitate complexă sau schimbări de nivel; ARIMA câștigă pe serii scurte, autoregresive simple. Raportați testul Wilcoxon cu perechi pentru semnificație statistică.
+
+            \item Măsura de siguranță cheie: \textbf{comparați întotdeauna cu o referință simplă pe propriile date}. Dacă performanța zero-shot este la mai puțin de 5\% de ARIMA, schimbarea de distribuție este gestionabilă. Dacă diferența este $> 20\%$, datele de pre-antrenament sunt prea diferite --- sunt necesare ajustarea fină sau modele specifice domeniului.
+        \end{enumerate}
+    \end{block}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_chronos\_demo}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_chronos_demo}
+\end{frame}
+
+%=============================================================================
+% REZUMAT
+%=============================================================================
+\section{Rezumat}
+
+\begin{frame}{Rezumat: Capitolul 11}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{center}
+    \begin{tabular}{p{2.2cm}p{2.5cm}p{7.5cm}}
+        \toprule
+        \textbf{Parte} & \textbf{Exerciții} & \textbf{Concepte Cheie} \\
+        \midrule
+        Anul 3 & Ex.\ 1--4 & Mecanica auto-atenției; codificare pozițională; arhitecturi encoder vs.\ decoder vs.\ enc-dec; tokenizare prin patching vs.\ cuantizare \\[4pt]
+        Master & Ex.\ 5--7 & Cadru de decizie zero-shot vs.\ ajustare fină; adaptare eficientă prin LoRA; interpretarea benchmark-urilor și selecția modelelor \\[4pt]
+        Doctorat & Ex.\ 8--10 & Saturarea legilor de scalare în ST vs.\ NLP; tipare de transfer cross-domeniu; ansamblu cu calibrare conformă \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    {\scriptsize \textbf{Ideea cheie:} Modelele fundaționale sunt un \textit{complement} puternic al metodelor statistice --- folosiți zero-shot pentru prototipare rapidă, ajustare fină pentru adaptare la domeniu și ansamblu pentru acuratețe în producție}
+    }
+
+    \vspace{0.2cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Întrebări?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\section{Bibliografie}
+
+\begin{frame}{Bibliografie I}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Fundamente Transformer}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Vaswani, A., et al.\ (2017). Attention is all you need. \textit{Advances in Neural Information Processing Systems}, 30.
+            \item Hu, E.J., et al.\ (2022). LoRA: Low-rank adaptation of large language models. \textit{ICLR 2022}.
+            \item Nie, Y., et al.\ (2023). A time series is worth 64 words: Long-term forecasting with Transformers. \textit{ICLR 2023}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Modele Fundaționale pentru Serii de Timp}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Ansari, A.F., et al.\ (2024). Chronos: Learning the language of time series. \textit{arXiv:2403.07815}.
+            \item Das, A., et al.\ (2024). A decoder-only foundation model for time-series forecasting. \textit{ICML 2024}.
+            \item Garza, A., \& Mergenthaler-Canseco, M. (2024). TimeGPT-1. \textit{arXiv:2310.03589}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliografie II}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Modele Fundaționale Suplimentare}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Rasul, K., et al.\ (2024). Lag-Llama: Towards foundation models for probabilistic time series forecasting. \textit{arXiv:2310.08278}.
+            \item Woo, G., et al.\ (2024). Unified training of universal time series forecasting transformers. \textit{ICML 2024}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Resurse Online și Cod}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Platformă de cod pentru metode cantitative
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Platformă de învățare pentru metode cantitative
+            \item \textbf{GitHub TSA}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch11} --- Cod Python pentru acest seminar
+            \item \textbf{Chronos}: \url{https://github.com/amazon-science/chronos-forecasting} --- Modelele Chronos de la Amazon
+            \item \textbf{Moirai}: \url{https://github.com/SalesforceAIResearch/uni2ts} --- Modelele Moirai de la Salesforce
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Vă mulțumesc!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Întrebări?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Materialele seminarului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,820 @@
+% Seminar 11: LLMs and Foundation Models for Time Series
+
+\documentclass[9pt, aspectratio=169, t]{beamer}
+\input{preamble}
+\subtitle{Seminar 11: LLMs and Foundation Models for Time Series}
+
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+
+%=============================================================================
+% OUTLINE
+%=============================================================================
+\begin{frame}{Seminar Outline}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}
+        \item \textbf{Part I: Year 3 Level} -- Self-attention, positional encoding, architectures, tokenization
+        \vspace{0.15cm}
+        \item \textbf{Part II: Master Level} -- Zero-shot decisions, LoRA fine-tuning, benchmark interpretation
+        \vspace{0.15cm}
+        \item \textbf{Part III: PhD Extension} -- Scaling laws, cross-domain transfer, ensemble strategies
+        \vspace{0.15cm}
+        \item \textbf{Discussion Topics} -- Foundation models vs.\ ARIMA, interpretability, data privacy
+        \vspace{0.15cm}
+        \item \textbf{AI-Assisted Exercise} -- Critical thinking with AI tools
+        \vspace{0.15cm}
+        \item \textbf{Take-Home Exercises} -- Extended practice
+        \vspace{0.15cm}
+        \item \textbf{Summary} -- Key concepts by level
+        \vspace{0.15cm}
+        \item \textbf{Bibliography} -- References and code
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% PART I: YEAR 3 LEVEL
+%=============================================================================
+\section{Part I: Year 3 Level}
+
+%-----------------------------------------------------------------------------
+% Exercise 1: Self-Attention Computation
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 1: Self-Attention Computation}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Question}
+        The scaled dot-product attention is defined as
+        $\text{Attention}(Q,K,V) = \text{softmax}\!\bigl(QK^\top / \sqrt{d_k}\bigr)\,V$.
+        Given the $3\times 3$ matrices ($d_k = 3$):
+        \[
+            Q = \begin{pmatrix} 1 & 0 & 1 \\ 0 & 1 & 0 \\ 1 & 1 & 0 \end{pmatrix},\quad
+            K = \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix},\quad
+            V = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{pmatrix}
+        \]
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Compute $QK^\top$ and interpret each entry as a ``similarity score'' between query $i$ and key $j$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Scale by $\sqrt{d_k}$, apply row-wise softmax, and interpret the resulting attention weights.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Multiply the weight matrix by $V$. What does each row of the output represent?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 1: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}}
+                $QK^\top = \begin{pmatrix} 1 & 2 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 2 \end{pmatrix}$.
+                Entry $(i,j)$ measures how much query $i$ ``attends to'' key $j$. E.g.\ row 1 assigns the highest raw score (2) to key 2.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Dividing by $\sqrt{3} \approx 1.732$:
+                $S = \begin{pmatrix} 0.577 & 1.155 & 0.577 \\ 0.577 & 0 & 0.577 \\ 0.577 & 0.577 & 1.155 \end{pmatrix}$.
+                Row-wise softmax yields weights $W$, e.g.\ row 1 $\approx (0.25, 0.44, 0.31)$ --- position 1 attends most strongly to position 2. Scaling prevents the softmax from saturating to one-hot for large $d_k$.
+            \item \textcolor{MainBlue}{\textbf{(C)}} $\text{Output} = W \cdot V$: each output row is a \textbf{weighted average} of the value vectors, where the weights encode the learned relevance of each position. This is how the Transformer aggregates contextual information without recurrence.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_attention}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_attention}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 2: Positional Encoding
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 2: Positional Encoding}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        The sinusoidal positional encoding (Vaswani et al., 2017) is defined as:
+        \[
+            PE_{(pos,2i)} = \sin\!\bigl(pos / 10000^{2i/d_{\text{model}}}\bigr), \quad
+            PE_{(pos,2i+1)} = \cos\!\bigl(pos / 10000^{2i/d_{\text{model}}}\bigr)
+        \]
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        Compute the positional encodings for positions $\text{pos} = 0, 1, 2, 3$ with $d_{\text{model}} = 4$ (so $i \in \{0, 1\}$).
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Fill in the $4 \times 4$ PE matrix. What patterns do you observe across rows and columns?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Why does each position receive a unique encoding, even though $\sin$ and $\cos$ are periodic?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Show that relative positions remain computable: $PE_{pos+k}$ can be written as a linear transformation of $PE_{pos}$.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 2: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} With $\omega_0 = 1$, $\omega_1 = 1/100$:
+                \[
+                    PE = \begin{pmatrix}
+                        \sin(0) & \cos(0) & \sin(0) & \cos(0) \\
+                        \sin(1) & \cos(1) & \sin(0.01) & \cos(0.01) \\
+                        \sin(2) & \cos(2) & \sin(0.02) & \cos(0.02) \\
+                        \sin(3) & \cos(3) & \sin(0.03) & \cos(0.03)
+                    \end{pmatrix}
+                    \approx \begin{pmatrix}
+                        0 & 1 & 0 & 1 \\
+                        0.841 & 0.540 & 0.010 & 1.000 \\
+                        0.909 & \!-0.416 & 0.020 & 1.000 \\
+                        0.141 & \!-0.990 & 0.030 & 1.000
+                    \end{pmatrix}
+                \]
+                Low-index dimensions oscillate fast (high frequency); high-index dimensions change slowly.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Each position is encoded by $\sin/\cos$ pairs at \textbf{geometrically spaced} wavelengths ($2\pi$ to $2\pi\cdot 10000$). The combination of many different frequencies creates a unique ``fingerprint'' for each position, analogous to how a number has a unique representation in multiple bases.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Since $\sin(\omega(pos+k)) = \sin(\omega\, pos)\cos(\omega k) + \cos(\omega\, pos)\sin(\omega k)$, the encoding at $pos+k$ is a \textbf{rotation matrix} applied to the encoding at $pos$. This enables the model to learn relative positions via linear projections.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_positional\_enc}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_positional_enc}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 3: Architectural Comparison
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 3: Architectural Comparison}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Question}
+        Three foundation models for time series use different Transformer architectures:
+        \begin{center}
+        {\footnotesize
+        \begin{tabular}{lll}
+            \toprule
+            \textbf{Model} & \textbf{Architecture} & \textbf{Base} \\
+            \midrule
+            Chronos & Encoder-Decoder & T5 \\
+            TimesFM & Decoder-only & Custom \\
+            Moirai  & Encoder-only  & BERT-style \\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Why is a \textbf{decoder-only} architecture natural for autoregressive forecasting?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Why does an \textbf{encoder-decoder} allow flexible input/output lengths?
+            \item \textcolor{MainBlue}{\textbf{(C)}} How can an \textbf{encoder-only} model (Moirai) perform forecasting if it has no autoregressive decoder?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 3: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Decoder-only models use \textbf{causal (left-to-right) attention}: token $t$ can only attend to tokens $\leq t$. This mirrors the autoregressive factorization $p(y_{T+1}, \ldots, y_{T+H}) = \prod_h p(y_{T+h} \mid y_{\leq T+h-1})$. TimesFM generates one forecast step at a time, conditioning on all prior values.
+            \item \textcolor{MainBlue}{\textbf{(B)}} The encoder processes the full context window with \textbf{bidirectional attention} (each token sees all others), then the decoder attends to the encoder output via \textbf{cross-attention} while generating the forecast autoregressively. Input and output can have different lengths because they are processed by separate modules. Chronos encodes 512 context tokens and decodes up to 64 forecast tokens.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Moirai uses \textbf{masked prediction}: future positions are replaced with \texttt{[MASK]} tokens, and the encoder predicts their values using bidirectional context from the observed positions. This is analogous to BERT's masked language modeling --- the model fills in ``blanks'' rather than generating left-to-right.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_architectures}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_architectures}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 4: Tokenization Strategies
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 4: Tokenization Strategies}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Question}
+        Two tokenization strategies for time series:
+        \textbf{Patching} (PatchTST): group $P$ consecutive time steps into one token.
+        \textbf{Quantization} (Chronos): discretize values into $B$ bins and use a vocabulary of $B$ tokens.
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercise}
+        Consider a series of $T = 512$ time steps.
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} With patch size $P = 32$, compute the number of tokens and the attention complexity reduction compared to point-level tokenization ($P=1$). (Hint: self-attention is $O(n^2)$.)
+            \item \textcolor{MainBlue}{\textbf{(B)}} With Chronos-style quantization using $B = 4096$ bins uniformly over $[\text{min}, \text{max}]$, compute the maximum quantization error. What is the resolution for a series with range $[0, 100]$?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Which strategy is better for high-frequency financial data (tick-level prices) and why?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 4: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Number of tokens: $512 / 32 = 16$. Self-attention complexity: $O(16^2) = O(256)$ vs.\ $O(512^2) = O(262{,}144)$ for $P = 1$. Reduction factor: $P^2 = 32^2 = 1024\times$. This makes long-context forecasting computationally feasible.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Bin width: $100 / 4096 \approx 0.0244$. Maximum quantization error: half a bin width $= 0.0122$. This corresponds to $0.012\%$ of the range --- negligible for most applications. However, Chronos actually uses \textbf{mean scaling} before quantization, so the effective resolution depends on the scale of each series.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Quantization is better} for high-frequency financial data:
+                (i) Patching with $P=32$ would merge 32 ticks into one token, losing critical microstructure information (bid-ask bounces, order flow patterns).
+                (ii) Quantization preserves the \textbf{temporal ordering} of each tick while enabling the model to use a discrete vocabulary.
+                (iii) For financial data, a smaller patch size ($P = 4$ or $P = 8$) could be used, but this increases attention cost.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_tokenization}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_tokenization}
+\end{frame}
+
+%=============================================================================
+% PART II: MASTER LEVEL
+%=============================================================================
+\section{Part II: Master Level}
+
+%-----------------------------------------------------------------------------
+% Exercise 5: Zero-Shot Decision Framework
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 5: Zero-Shot Decision Framework}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Question}
+        A retail company has 50{,}000 product-level time series, each with $\sim$200 weekly observations at mixed frequencies (weekly sales, monthly promotions, quarterly targets). They want to forecast 12 weeks ahead.
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Apply the decision tree: \textit{(1)} Is there enough domain-specific data to fine-tune? \textit{(2)} Are the series sufficiently different from pre-training data to require adaptation? Recommend \textbf{zero-shot}, \textbf{fine-tuned}, or \textbf{traditional} models.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Estimate the computational cost: fine-tuning a 200M-parameter model on 50K series (10 epochs, batch size 32) vs.\ zero-shot inference. Assume 1 GPU-hour per 100K gradient steps.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Recommend a specific model (Chronos, TimesFM, or Moirai) and justify your choice based on context length, probabilistic output, and pre-training data composition.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 5: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} 200 observations per series is relatively short, but 50K series $\times$ 200 $=$ 10M data points in total --- enough to fine-tune. However, retail data is well-represented in pre-training corpora (Monash, M5). \textbf{Recommendation}: start with \textbf{zero-shot}, then fine-tune only if performance is unsatisfactory. Use ARIMA/ETS as baselines.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Fine-tuning: $50{,}000 \times 200 / 32 \approx 312{,}500$ steps per epoch $\times 10$ epochs $= 3.125$M steps $\approx$ \textbf{31 GPU-hours}. Zero-shot inference: $50{,}000$ series, $\sim$0.1 seconds each $\approx$ \textbf{1.4 hours on 1 GPU}. Zero-shot is $\sim$22$\times$ cheaper --- a compelling advantage when it works well enough.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Chronos-Large} (710M): trained on 27 diverse datasets including retail; supports context up to 512 tokens; provides full \textbf{probabilistic forecasts} (quantiles) via the quantization approach; T5 encoder-decoder handles variable horizons. TimesFM is also suitable but provides only point forecasts. Moirai handles mixed frequencies natively via its any-variate framework.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_zero\_shot}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_zero_shot}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 6: LoRA Fine-Tuning
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 6: LoRA Fine-Tuning}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        A foundation model has 200M parameters. You want to adapt it to energy forecasting data using LoRA (Low-Rank Adaptation) with rank $r = 8$ applied to all attention weight matrices. Each attention layer has $W_Q, W_K, W_V, W_O \in \mathbb{R}^{512 \times 512}$, and the model has 12 layers.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Compute the number of trainable LoRA parameters. Each LoRA adapter decomposes $\Delta W = BA$ where $B \in \mathbb{R}^{512 \times 8}$, $A \in \mathbb{R}^{8 \times 512}$.
+            \item \textcolor{MainBlue}{\textbf{(B)}} What fraction of the original parameters are trained? Compare memory requirements.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Explain how LoRA mitigates \textbf{catastrophic forgetting} compared to full fine-tuning.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 6: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Per adapter: $512 \times 8 + 8 \times 512 = 8{,}192$ parameters. Per layer: $4 \times 8{,}192 = 32{,}768$ (four attention matrices). Total: $12 \times 32{,}768 = \mathbf{393{,}216}$ trainable parameters.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Fraction: $393{,}216 / 200{,}000{,}000 \approx \mathbf{0.2\%}$. Full fine-tuning requires storing gradients and optimizer states for all 200M parameters ($\sim$2.4 GB in FP32). LoRA requires optimizer states only for 393K parameters ($\sim$4.7 MB), plus the frozen model weights loaded once. GPU memory drops from $\sim$6 GB to $\sim$1.5 GB.
+            \item \textcolor{MainBlue}{\textbf{(C)}} In LoRA, the original weights $W$ are \textbf{frozen}: $W' = W + \Delta W = W + BA$. The pre-trained knowledge is preserved exactly in $W$; only the low-rank residual $BA$ is learned. If the fine-tuning data is unrepresentative, one can simply discard $BA$ and recover the original model. Full fine-tuning modifies all weights directly, risking \textbf{catastrophic forgetting} of generalizable temporal patterns.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_lora}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_lora}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 7: Benchmark Interpretation
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 7: Benchmark Interpretation}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Question}
+        The following table shows weighted quantile loss (WQL, lower is better) on the Monash benchmark:
+        \begin{center}
+        {\footnotesize
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Model} & \textbf{Short-horizon} & \textbf{Long-horizon} & \textbf{Overall} \\
+            \midrule
+            ARIMA (auto) & 0.112 & 0.198 & 0.155 \\
+            Chronos-Large & 0.098 & 0.142 & 0.120 \\
+            TimesFM & 0.101 & 0.139 & 0.120 \\
+            \bottomrule
+        \end{tabular}
+        }
+        \end{center}
+    \end{alertblock}
+
+    \vspace{0.1cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Compute the relative improvement of Chronos over ARIMA for short-horizon and long-horizon.
+            \item \textcolor{MainBlue}{\textbf{(B)}} On which dataset types does ARIMA tend to outperform foundation models? Why?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Propose a model selection strategy that combines statistical and foundation models.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 7: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Short-horizon: $(0.112 - 0.098)/0.112 = \mathbf{12.5\%}$ improvement. Long-horizon: $(0.198 - 0.142)/0.198 = \mathbf{28.3\%}$ improvement. Foundation models excel at longer horizons where ARIMA's linear extrapolation deteriorates.
+            \item \textcolor{MainBlue}{\textbf{(B)}} ARIMA wins on: \textbf{(i)} short, low-frequency series ($n < 100$) where foundation models lack sufficient context; \textbf{(ii)} strongly seasonal series with simple structure (airline-type) where the correct ARIMA order captures the DGP exactly; \textbf{(iii)} series from domains poorly represented in pre-training data. ARIMA's strength is parsimony when the true model is indeed linear.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Cascade strategy}: (1) Run zero-shot foundation model + auto-ARIMA on a holdout set. (2) For each series, select the model with lower holdout loss. (3) If the foundation model wins on $> 70\%$ of series, use it globally (simpler deployment). (4) Otherwise, maintain per-series selection --- this typically beats both individual models by 5--10\%.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_benchmark}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_benchmark}
+\end{frame}
+
+%=============================================================================
+% PART III: PHD EXTENSION
+%=============================================================================
+\section{Part III: PhD Extension}
+
+%-----------------------------------------------------------------------------
+% Exercise 8: Scaling Laws
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 8: Scaling Laws}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        Chronos comes in four sizes: Mini (20M), Small (46M), Base (200M), and Large (710M). On the Monash benchmark, the WQL scores are 0.128, 0.125, 0.121, and 0.120 respectively --- a nearly flat curve beyond 200M parameters.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} In NLP, scaling laws show $L \propto N^{-\alpha}$ (loss decreases as a power law in model size $N$). Contrast this with the Chronos results. What is different?
+            \item \textcolor{MainBlue}{\textbf{(B)}} Explain why time series scaling saturates: consider data diversity, signal-to-noise ratio, and the inherent complexity of temporal patterns vs.\ language.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Propose what could break the saturation and re-enable scaling.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 8: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} In NLP, GPT-3 (175B) consistently outperforms GPT-2 (1.5B) because language has vast combinatorial complexity. For Chronos, going from 200M to 710M ($3.5\times$) improves WQL by only 0.8\% (0.121 $\to$ 0.120). The scaling exponent $\alpha \approx 0$ for large models --- fundamentally different from the NLP power law.
+            \item \textcolor{MainBlue}{\textbf{(B)}} Three factors: \textbf{(i)} \textit{Limited data diversity}: pre-training used $\sim$27 datasets ($\sim$100K series); NLP uses trillions of tokens. Model capacity exceeds data complexity. \textbf{(ii)} \textit{Low signal-to-noise}: time series have high irreducible noise, creating a performance floor that more parameters cannot breach. \textbf{(iii)} \textit{Simpler patterns}: temporal patterns (trends, seasonality, AR dynamics) require far fewer parameters than natural language semantics.
+            \item \textcolor{MainBlue}{\textbf{(C)}} Breakthrough paths: \textbf{(i)} massive increase in training data --- billions of series from IoT, financial markets, weather; \textbf{(ii)} \textbf{multimodal pre-training} combining time series with text metadata; \textbf{(iii)} synthetic data augmentation using physics-informed simulations.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_scaling}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_scaling}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 9: Cross-Domain Transfer
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 9: Cross-Domain Transfer}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        A model pre-trained on energy consumption data (hourly electricity load across 370 substations, 4 years) is applied zero-shot to forecast weekly retail sales for 3{,}000 stores.
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} What temporal patterns \textbf{transfer} from energy to retail? Why would a model learn these as domain-agnostic features?
+            \item \textcolor{MainBlue}{\textbf{(B)}} What aspects of the retail domain \textbf{do not transfer} from energy pre-training?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Design a controlled experiment to measure the effectiveness of cross-domain transfer.
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 9: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\scriptsize
+        \begin{itemize}\setlength{\itemsep}{1pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} \textbf{Transferable patterns}: (i) \textit{Weekly seasonality}: both energy and retail show 7-day cycles. (ii) \textit{Holiday effects}: demand spikes/dips around holidays. (iii) \textit{Trend and level-shift detection}: the model learns to recognize structural breaks. (iv) \textit{Autoregressive dynamics}: short-range temporal dependencies are universal. These are domain-agnostic because the Transformer learns abstract temporal features, not domain-specific causal mechanisms.
+            \item \textcolor{MainBlue}{\textbf{(B)}} \textbf{Non-transferable}: (i) \textit{Promotion effects}: retail sales spike during discounts --- energy has no analog. (ii) \textit{Intermittent demand}: many retail products have zero-inflated sales; energy load is always positive. (iii) \textit{Cross-series dependencies}: store cannibalization and substitution effects are retail-specific. (iv) \textit{Frequency mismatch}: hourly energy patterns do not directly map to weekly retail.
+            \item \textcolor{MainBlue}{\textbf{(C)}} \textbf{Experiment}: (1) Train model A on energy only, B on retail only, C on both. (2) Evaluate all three on held-out retail test set. (3) Compute $\Delta = \text{WQL}(A) - \text{WQL}(B)$: if $\Delta$ is small, transfer is effective. (4) If C beats B, energy pre-training provides \textbf{positive transfer}. (5) Control for model size and compute budget.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_transfer}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_transfer}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Exercise 10: Ensemble Strategy
+%-----------------------------------------------------------------------------
+\begin{frame}{Exercise 10: Ensemble Strategy}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Question}
+        You have two forecasters: ARIMA providing a point forecast $\hat{y}^{A}_{T+h}$ with known RMSE, and Chronos providing a full predictive distribution $\hat{F}^{C}_{T+h}$ (quantiles at levels 0.1, 0.5, 0.9). You want to combine them.
+    \end{alertblock}
+
+    \vspace{0.15cm}
+
+    \begin{block}{Exercise}
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} Propose a weighting scheme for the point forecasts: $\hat{y}^{E}_{T+h} = w\,\hat{y}^{A}_{T+h} + (1-w)\,\hat{y}^{C}_{T+h}$. How do you estimate $w$?
+            \item \textcolor{MainBlue}{\textbf{(B)}} How can you use \textbf{conformal prediction} to calibrate the combined forecast's prediction intervals?
+            \item \textcolor{MainBlue}{\textbf{(C)}} Under what conditions does the ensemble beat both individual components?
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.15cm}
+
+    \begin{center}
+        \textit{Answer on next slide...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise 10: Solution}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Solution}
+        {\footnotesize
+        \begin{itemize}\setlength{\itemsep}{3pt}
+            \item \textcolor{MainBlue}{\textbf{(A)}} \textbf{Inverse-variance weighting}: $w = \sigma_C^2 / (\sigma_A^2 + \sigma_C^2)$, where $\sigma_A^2, \sigma_C^2$ are estimated on a validation set. If errors are uncorrelated, the ensemble RMSE is $\sigma_E = \sigma_A \sigma_C / \sqrt{\sigma_A^2 + \sigma_C^2} < \min(\sigma_A, \sigma_C)$. In practice, use \textbf{time-series cross-validation} (expanding window) to estimate the variances and optimize $w$ by minimizing holdout loss.
+            \item \textcolor{MainBlue}{\textbf{(B)}} \textbf{Conformal prediction}: (1) On a calibration set of $n$ past forecasts, compute residuals $e_i = |y_i - \hat{y}^{E}_i|$. (2) Sort residuals and take the $(1-\alpha)(1 + 1/n)$-th quantile $\hat{q}$. (3) The prediction interval $[\hat{y}^{E}_{T+h} - \hat{q},\; \hat{y}^{E}_{T+h} + \hat{q}]$ has guaranteed $(1-\alpha)$ marginal coverage. This is \textbf{distribution-free} --- it does not assume Gaussian errors.
+            \item \textcolor{MainBlue}{\textbf{(C)}} The ensemble beats both when: (i) forecast \textbf{errors are weakly correlated} (ARIMA captures linear patterns; Chronos captures nonlinear ones); (ii) neither model dominates across all horizons or series; (iii) the weighting is estimated on \textbf{out-of-sample} data (in-sample optimization overfits $w$). The ensemble fails when both models make the same systematic errors.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_ensemble}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_ensemble}
+\end{frame}
+
+%=============================================================================
+% DISCUSSION TOPICS
+%=============================================================================
+\section{Discussion Topics}
+
+\begin{frame}{Discussion: Will Foundation Models Replace ARIMA?}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Key Question}
+        Foundation models match or beat ARIMA on large benchmarks. Does this mean ARIMA is obsolete?
+    \end{alertblock}
+    \begin{block}{Arguments For Replacement}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Zero-shot models require no model selection (no $p,d,q$ tuning)
+            \item Foundation models handle non-linear patterns, regime changes, and long-range dependencies
+            \item One model serves thousands of series --- massive operational simplification
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}{Arguments Against}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item ARIMA is \textbf{interpretable}: each coefficient has a clear statistical meaning
+            \item ARIMA is \textbf{optimal} for linear Gaussian processes (Wold decomposition)
+            \item ARIMA runs on a laptop in milliseconds; foundation models need GPUs
+            \item ARIMA provides \textbf{analytical} confidence intervals; foundation model intervals require calibration
+            \item \textbf{Complementary, not competitive}: the best strategy is often an ensemble
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Discussion: Black Box vs.\ Interpretability}
+    \begin{cminipage}{0.95\textwidth}
+    {\small
+    \begin{alertblock}{Key Question}
+        Foundation models are ``black boxes.'' When is this acceptable, and when is it a dealbreaker?
+    \end{alertblock}
+    \begin{block}{When Black Boxes Are Acceptable}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Demand forecasting}: accuracy is the primary objective; explanations are secondary
+            \item \textbf{Anomaly detection}: the model flags outliers; humans investigate causes
+            \item \textbf{High-frequency trading}: speed matters more than explainability
+            \item \textbf{Research}: comparing forecasting performance across model classes
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}{When Interpretability Is Required}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Regulatory compliance}: Basel III/IV requires explainable risk models
+            \item \textbf{Central banking}: monetary policy decisions must be justified to the public
+            \item \textbf{Healthcare}: drug demand forecasting has patient safety implications
+            \item \textbf{Legal liability}: ``the AI said so'' is not a defense in court
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Discussion: Data Privacy in API-Based Models}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{alertblock}{Key Question}
+        TimeGPT (Nixtla) operates as a cloud API: you send your time series data to their servers. What are the implications?
+    \end{alertblock}
+    \begin{block}{Privacy and Security Concerns}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Data sovereignty}: financial data may be subject to GDPR, CCPA, or banking regulations
+            \item \textbf{Intellectual property}: proprietary signals could be reverse-engineered from API logs
+            \item \textbf{Vendor lock-in}: if the API goes offline, your forecasting pipeline breaks
+            \item \textbf{Reproducibility}: model updates by the provider can change results silently
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}{Mitigation Strategies}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Use \textbf{open-weight models} (Chronos, Moirai, Lag-Llama) --- run locally, full control
+            \item Apply \textbf{differential privacy}: add calibrated noise before sending data to the API
+            \item Negotiate \textbf{data processing agreements} (DPAs) with API providers
+            \item Maintain a \textbf{local fallback} model (ARIMA/ETS) for business continuity
+        \end{itemize}
+    \end{exampleblock}
+    }
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% AI-ASSISTED EXERCISE
+%=============================================================================
+\section{AI-Assisted Exercise}
+
+\begin{frame}{AI Exercise: Chronos Forecasting with Code Verification}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    \begin{block}{\footnotesize Prompt to test in ChatGPT / Claude / Copilot}
+        {\scriptsize
+        ``Write Python code to forecast the next 24 months of the AirPassengers dataset using the Chronos model from Amazon. Include: loading the pre-trained model, preparing the context window, generating probabilistic forecasts (10th, 50th, 90th percentiles), and plotting the results with prediction intervals.''
+        }
+    \end{block}
+    \vspace{-3mm}
+    {\scriptsize
+    \textbf{Exercise} --- Verify the AI-generated code critically:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Does the code install the correct package (\texttt{chronos-forecasting}) and load a valid checkpoint?
+        \item Is the \textbf{context window} handled correctly? (Chronos supports up to 512 tokens --- truncate/pad?)
+        \item Are forecast quantiles generated with correct \texttt{num\_samples} and \texttt{prediction\_length}?
+        \item Does evaluation use \textbf{out-of-sample} data, or does it accidentally evaluate on training data?
+        \item Are prediction intervals correctly computed from the sampled trajectories?
+    \end{enumerate}
+    }
+    \vspace{-3mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Warning}: AI-generated code may run without errors and look professional. \textit{That does not mean it is correct.}}
+    \end{alertblock}
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_chronos\_demo}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_chronos_demo}
+\end{frame}
+
+%=============================================================================
+% TAKE-HOME EXERCISES
+%=============================================================================
+\section{Take-Home Exercises}
+
+\begin{frame}{Take-Home Exercises}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{enumerate}\setlength{\itemsep}{2pt}
+        \item \textbf{Theoretical}: Prove that multi-head attention with $h$ heads and head dimension $d_k = d_{\text{model}}/h$ has the same total parameter count as single-head attention with dimension $d_{\text{model}}$, but can attend to information from different representation subspaces simultaneously.
+
+        \item \textbf{Computational}: Implement patching for a time series of $T = 1024$ observations:
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Compute the number of tokens for patch sizes $P \in \{8, 16, 32, 64\}$
+                \item Measure wall-clock time for self-attention at each patch size
+                \item Plot the accuracy-efficiency tradeoff on a forecasting task of your choice
+            \end{itemize}
+
+        \item \textbf{Applied}: Compare Chronos (zero-shot) vs.\ auto-ARIMA vs.\ ETS on 10 series from the M4 monthly dataset:
+            \begin{itemize}\setlength{\itemsep}{0pt}
+                \item Report MASE and sMAPE for each model and each series
+                \item On how many series does Chronos win? Characterize the ``winning'' series
+            \end{itemize}
+
+        \item \textbf{Critical Thinking}: Foundation models are trained on publicly available datasets. If a practitioner's proprietary data has fundamentally different dynamics (e.g.\ cryptocurrency order flow), can zero-shot inference be trusted? What safeguards should be in place?
+    \end{enumerate}
+    }
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercise Solution Hints}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    {\footnotesize
+    \begin{block}{Hints}
+        \begin{enumerate}\setlength{\itemsep}{1pt}
+            \item Multi-head: $h$ heads each with $W^Q_i, W^K_i, W^V_i \in \mathbb{R}^{d_{\text{model}} \times d_k}$ and $W^O \in \mathbb{R}^{d_{\text{model}} \times d_{\text{model}}}$. Total: $h \cdot 3 \cdot d_{\text{model}} \cdot d_k + d_{\text{model}}^2 = 4d_{\text{model}}^2$, same as single-head ($3d_{\text{model}}^2 + d_{\text{model}}^2$). The benefit is $h$ independent attention patterns.
+
+            \item Tokens: $1024/P$. Attention complexity: $O((1024/P)^2 \cdot P)$ per layer. Use \texttt{torch.nn.MultiheadAttention} and \texttt{time.perf\_counter()}. Expect diminishing returns beyond $P = 32$.
+
+            \item Use the \texttt{datasetsforecast} package for M4 data. Chronos tends to win on series with complex seasonality or level shifts; ARIMA wins on short, simple autoregressive series. Report paired Wilcoxon test for statistical significance.
+
+            \item Key safeguard: \textbf{always benchmark against a simple baseline on your own data}. If zero-shot performance is within 5\% of ARIMA, the distribution shift is manageable. If the gap is $> 20\%$, the pre-training data is too different --- fine-tuning or domain-specific models are needed.
+        \end{enumerate}
+    \end{block}
+    }
+    \end{cminipage}
+    \quantlet{TSA\_ch11\_chronos\_demo}{https://github.com/danpele/TSA/tree/main/TSA_ch11/TSA_ch11_chronos_demo}
+\end{frame}
+
+%=============================================================================
+% SUMMARY
+%=============================================================================
+\section{Summary}
+
+\begin{frame}{Summary: Chapter 11}
+    \begin{cminipage}{0.95\textwidth}
+    {\footnotesize
+    \begin{center}
+    \begin{tabular}{p{2.2cm}p{2.5cm}p{7.5cm}}
+        \toprule
+        \textbf{Part} & \textbf{Exercises} & \textbf{Key Concepts} \\
+        \midrule
+        Year 3 & Ex.\ 1--4 & Self-attention mechanics; positional encoding; encoder vs.\ decoder vs.\ enc-dec architectures; patching vs.\ quantization tokenization \\[4pt]
+        Master & Ex.\ 5--7 & Zero-shot vs.\ fine-tuning decision framework; LoRA parameter-efficient adaptation; benchmark interpretation and model selection \\[4pt]
+        PhD & Ex.\ 8--10 & Scaling law saturation in TS vs.\ NLP; cross-domain transfer patterns; ensemble with conformal calibration \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    {\scriptsize \textbf{Key insight:} Foundation models are a powerful \textit{complement} to statistical methods --- use zero-shot for rapid prototyping, fine-tune for domain adaptation, and ensemble for production accuracy}
+    }
+
+    \vspace{0.2cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Questions?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% BIBLIOGRAPHY
+%=============================================================================
+\section{Bibliography}
+
+\begin{frame}{Bibliography I}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Transformer Foundations}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Vaswani, A., et al.\ (2017). Attention is all you need. \textit{Advances in Neural Information Processing Systems}, 30.
+            \item Hu, E.J., et al.\ (2022). LoRA: Low-rank adaptation of large language models. \textit{ICLR 2022}.
+            \item Nie, Y., et al.\ (2023). A time series is worth 64 words: Long-term forecasting with Transformers. \textit{ICLR 2023}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Foundation Models for Time Series}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Ansari, A.F., et al.\ (2024). Chronos: Learning the language of time series. \textit{arXiv:2403.07815}.
+            \item Das, A., et al.\ (2024). A decoder-only foundation model for time-series forecasting. \textit{ICML 2024}.
+            \item Garza, A., \& Mergenthaler-Canseco, M. (2024). TimeGPT-1. \textit{arXiv:2310.03589}.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliography II}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Additional Foundation Models}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Rasul, K., et al.\ (2024). Lag-Llama: Towards foundation models for probabilistic time series forecasting. \textit{arXiv:2310.08278}.
+            \item Woo, G., et al.\ (2024). Unified training of universal time series forecasting transformers. \textit{ICML 2024}.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Online Resources and Code}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Code repository for quantitative methods
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Quantitative methods learning platform
+            \item \textbf{GitHub TSA}: \url{https://github.com/danpele/TSA/tree/main/TSA_ch11} --- Python code for this seminar
+            \item \textbf{Chronos}: \url{https://github.com/amazon-science/chronos-forecasting} --- Amazon's Chronos models
+            \item \textbf{Moirai}: \url{https://github.com/SalesforceAIResearch/uni2ts} --- Salesforce's Moirai models
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Thank You!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Questions?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Seminar materials are available at: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}
