@@ -372,10 +372,15 @@
                 id: 'cointegration', num: 7,
                 title: { en: 'Cointegration and VECM', ro: 'Cointegrare și VECM' },
                 topics: {
-                    en: ['Spurious regression and cointegration; long-run equilibrium and error correction', 'The Engle–Granger two-step method; the Johansen trace and maximum-eigenvalue tests', 'Vector error correction models (VECM): adjustment coefficients, weak exogeneity, forecasts'],
-                    ro: ['Regresia falsă și cointegrarea; echilibrul pe termen lung și corecția erorii', 'Metoda Engle–Granger în doi pași; testele Johansen ale urmei și ale valorii proprii maxime', 'Modele vectoriale cu corecția erorii (VECM): coeficienți de ajustare, exogenitate slabă, prognoze']
+                    en: ['Cointegration as common stochastic trends (the drunk and her dog); the Engle–Granger two-step method with MacKinnon critical values and the Phillips–Ouliaris test; error correction models, speed of adjustment and half-life', 'The VECM and the Granger representation theorem; Johansen trace and maximum-eigenvalue tests and deterministic terms; cointegrating vectors, adjustment coefficients and weak exogeneity; VECM against a VAR in differences out of sample', 'Applications: the US term structure, purchasing power parity for EUR/RON, ROBOR and Euribor, Central European currencies, pairs trading on the Bucharest Stock Exchange out of sample and after costs'],
+                    ro: ['Cointegrarea ca trend stochastic comun (exemplul bețivei și al cîinelui ei); metoda Engle–Granger în doi pași, cu valorile critice MacKinnon, și testul Phillips–Ouliaris; modele cu corecția erorii, viteza de ajustare și timpul de înjumătățire', 'Modelul VECM și teorema de reprezentare a lui Granger; testele Johansen ale urmei și ale valorii proprii maxime, termenii determiniști; vectori de cointegrare, coeficienți de ajustare și exogenitate slabă; VECM comparat cu un VAR în diferențe, în afara eșantionului', 'Aplicații: structura la termen a ratelor dobînzii din SUA, paritatea puterii de cumpărare pentru EUR/RON, ROBOR și Euribor, monedele central-europene, pairs trading la Bursa de Valori București, în afara eșantionului și după costuri']
                 },
-                links: old('chapter7_cointegration_vecm', 'chapter7_seminar', 'chapter7', 'Quantlets/TSA_ch7'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter7_cointegration_vecm.pdf'), pdf('seminar', 'EN/Seminars/seminar7_cointegration_vecm.pdf'),
+                         nb('notebooks/EN/chapter7_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter7_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_07')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol7_cointegrare_vecm.pdf'), pdf('seminar', 'RO/Seminarii/seminar7_cointegrare_vecm_ro.pdf'),
+                         nb('notebooks/EN/chapter7_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter7_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_07')]
+                },
                 quantinar: q('tsaPython')
             },
             {

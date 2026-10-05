@@ -87,3 +87,13 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch6_sims_nobel_lecture_2011.jpg | https://commons.wikimedia.org/wiki/File:Nobel_Prize_2011-Nobel_lectures_KVA-DSC_8085.jpg | Holger Motzkau (2011), CC BY-SA 3.0 |
 | ch6_eccles_building_2011.jpg | https://commons.wikimedia.org/wiki/File:Eccles_Building_(26088200676).jpg | Federal Reserve (2011), public domain |
 | ch6_frankfurt_exchange_2015.jpg | https://commons.wikimedia.org/wiki/File:Frankfurt_Stock_Exchange_(Ank_Kumar)_01.jpg | Ank Kumar (2015), CC BY-SA 4.0 |
+
+## Chapter 7 — Cointegration and VECM
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch7_dog_walking_2018.jpg | https://commons.wikimedia.org/wiki/File:Dog_walking_woman.jpg | Amin (2018), CC BY-SA 4.0 |
+| ch7_robert_engle_2022.jpg | https://commons.wikimedia.org/wiki/File:0603_KRBN-RobertEngle-JonDemske-10.jpg | Jon Demske (2022), CC BY-SA 4.0 (cropped) |
+| ch7_granger_building_2012.jpg | https://commons.wikimedia.org/wiki/File:University_Park_MMB_«24_Sir_Clive_Granger_Building.jpg | mattbuck (2012), CC BY-SA 3.0 |
+| ch7_copenhagen_university_2011.jpg | https://commons.wikimedia.org/wiki/File:Copenhagen_University_Main_Entrance_DSC09700.jpg | Per Meistrup (2011), CC BY-SA 4.0 |
+| ch7_bnr_palace_2015.jpg | https://commons.wikimedia.org/wiki/File:Bucharest_-_BNR_Palace_(19644434340).jpg | Ștefan Jurcă (2015), CC BY 2.0 |
