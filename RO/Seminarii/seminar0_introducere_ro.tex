@@ -1,0 +1,666 @@
+% Seminarul 0: Introducere: componente și netezire exponențială
+% Serii de timp -- Programele de licență Informatică economică și Cibernetică economică, Academia de Studii Economice din București
+% CONVERTIT de latex/build_chapter0.py -- din deck-ul vechi; se editează direct sau se mută într-un generator.
+% Implicit versiunea pentru studenți; versiunea profesorului este wrapper-ul *_solutions.tex.
+\makeatletter\@ifundefined{ifsolutions}{\expandafter\newif\csname ifsolutions\endcsname}{}\makeatother
+
+\newcommand{\coursename}{Serii de timp}
+\def\tsalang{ro}
+\input{../../latex/preamble}
+
+\newcommand{\qlurl}[1]{https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_00/#1}
+\renewcommand{\nb}{\colaburl{notebooks/EN/chapter0_seminar_notebook.ipynb}}
+\renewcommand{\nbname}{chapter0\_seminar\_notebook.ipynb}
+% left column: full width in the student version, narrower next to the solution
+\newcommand{\taskw}{\ifsolutions 0.47\textwidth\else 0.96\textwidth\fi}
+\newcommand{\solw}{\ifsolutions 0.49\textwidth\else 0pt\fi}
+
+\title[Serii de timp]{Serii de timp}
+\subtitle{Seminarul 0: Introducere: componente și netezire exponențială\ifsolutions\ (versiunea profesorului)\fi}
+\author[D.T. Pele]{Daniel Traian PELE}
+\institute{Academia de Studii Economice din București\\
+IDA Institute Digital Assets\\
+Blockchain Research Center\\
+AI4EFin Artificial Intelligence for Energy Finance\\
+Academia Română, Institutul de Prognoză Economică\\
+MSCA Digital Finance}
+\date{}
+
+\providecommand{\tsaapplink}[3]{\hypertarget{#2}{}\hyperlink{#1}{\beamergotobutton{#3}}}  % APPLINKS-MACROS
+\providecommand{\tsaappback}[2]{\begin{tikzpicture}[remember picture,overlay]\node[anchor=south east] at ([xshift=-3mm,yshift=7mm]current page.south east){\hyperlink{#1}{\beamerreturnbutton{#2}}};\end{tikzpicture}}  % APPLINKS-MACROS
+\providecommand{\tsachlink}[2]{\href{#1}{#2}}  % APPLINKS-MACROS
+\providecommand{\tsachlinkt}[2]{\href{#1}{\usebeamercolor[fg]{frametitle}#2}}  % APPLINKS-MACROS
+\begin{document}
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \titlepage
+\end{frame}
+}
+% BEGIN-ACRONYMS (generat de latex/acronyms.py; nu editati manual)
+\begin{frame}{Acronime folosite în acest material}
+\setbeamertemplate{itemize/enumerate body begin}{\tiny}
+\begin{columns}[T]
+\begin{column}{0.49\textwidth}
+\begin{itemize}\setlength{\itemsep}{0pt}
+    \item \textbf{AI}: Artificial Intelligence (inteligență artificială)
+    \item \textbf{CV}: Cross-Validation (validare încrucișată)
+    \item \textbf{LLM}: Large Language Model (model lingvistic de mari dimensiuni)
+    \item \textbf{MA}: Moving Average (medie mobilă)
+    \item \textbf{MA-5}: 5-period Moving Average (medie mobilă pe 5 perioade)
+    \item \textbf{MAE}: Mean Absolute Error (eroarea absolută medie)
+    \item \textbf{MAPE}: Mean Absolute Percentage Error (eroarea procentuală absolută medie)
+    \item \textbf{MSE}: Mean Squared Error (eroarea pătratică medie)
+    \item \textbf{RMSE}: Root Mean Squared Error (rădăcina erorii pătratice medii)
+    \item \textbf{SES}: Simple Exponential Smoothing (netezire exponențială simplă)
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\end{column}
+\end{columns}
+\end{frame}
+% END-ACRONYMS
+
+%=============================================================================
+% SEMINAR OUTLINE
+%=============================================================================
+\begin{frame}{Cuprins Seminar}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{itemize}\setlength{\itemsep}{0pt}
+        \item \textbf{Test grilă} -- Verificare cunoștințe
+        \vspace{0.15cm}
+        \item \textbf{Adevărat/Fals} -- Verificări conceptuale
+        \vspace{0.15cm}
+        \item \textbf{Exerciții de calcul} -- Practică aplicată
+        \vspace{0.15cm}
+        \item \textbf{Exercițiu cu asistență AI} -- Gândire critică
+        \vspace{0.15cm}
+        \item \textbf{Rezumat} -- Concluzii cheie
+    \end{itemize}
+    \end{cminipage}
+\end{frame}
+
+
+%=============================================================================
+% TEST GRILĂ
+%=============================================================================
+\section{Test grilă}
+
+\begin{frame}{Quiz 1: Bazele seriilor de timp}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Care dintre următoarele \emph{nu} este o caracteristică a datelor de tip serie de timp?
+    \end{alertblock}
+
+    \vspace{0.4cm}
+
+    \begin{block}{Variante de răspuns}
+        \textcolor{MainBlue}{\textbf{(A)}} Observațiile sunt ordonate în timp\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Observațiile consecutive sunt de obicei corelate\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Observațiile sunt independente și identic distribuite\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Datele au o ordonare temporală naturală
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 1: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns: C -- Observațiile sunt independente și identic distribuite}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Întrebare:} Care \emph{nu} este o caracteristică a datelor de tip serie de timp?
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+    \begin{block}{Variante de răspuns}
+        \textcolor{MainBlue}{\textbf{(A)}} Observațiile sunt ordonate în timp \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Observațiile consecutive sunt de obicei corelate \incorrect\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Observațiile sunt independente și identic distribuite}} \correct\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Datele au o ordonare temporală naturală \incorrect
+    \end{block}
+
+        \vspace{0.3cm}
+
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Observațiile seriilor de timp sunt \textbf{dependente} (autocorelate), nu independente
+            \item Ipoteza i.i.d.\ este fundamentală pentru analiza transversală, dar este \textbf{încălcată} în seriile de timp
+            \item Această dependență temporală necesită \textbf{metode specializate}
+        \end{itemize}
+    \end{exampleblock}
+    
+    \end{cminipage}
+    \quantlet{TSA\_ch0\_definition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_definition}
+\end{frame}
+
+\begin{frame}{Quiz 2: Descompunere}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Când ar trebui să folosiți descompunerea multiplicativă în loc de cea aditivă?
+    \end{alertblock}
+
+    \vspace{0.4cm}
+
+    \begin{block}{Variante de răspuns}
+        \textcolor{MainBlue}{\textbf{(A)}} Când tiparul sezonier are amplitudine constantă\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Când varianța seriei este stabilă în timp\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Când fluctuațiile sezoniere cresc proporțional cu nivelul\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Când seria nu are componentă de trend
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 2: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns: C -- Când fluctuațiile sezoniere cresc proporțional cu nivelul}
+    {\footnotesize
+        \begin{block}{Variante de răspuns}
+            \textcolor{MainBlue}{\textbf{(A)}} Când tiparul sezonier are amplitudine constantă \incorrect\\[2pt]
+            \textcolor{MainBlue}{\textbf{(B)}} Când varianța seriei este stabilă în timp \incorrect\\[2pt]
+            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Când fluctuațiile sezoniere cresc proporțional cu nivelul}} \correct\\[2pt]
+            \textcolor{MainBlue}{\textbf{(D)}} Când seria nu are componentă de trend \incorrect
+        \end{block}
+
+        \vspace{0.05cm}
+
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{additive_vs_multiplicative.png}
+        \end{center}
+        \vspace{-0.2cm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Multiplicativă}: $X_t = T_t \times S_t \times \varepsilon_t$ --- amplitudinea sezonieră \textbf{scalează cu nivelul}
+            \item \textbf{Aditivă}: $X_t = T_t + S_t + \varepsilon_t$ --- amplitudine constantă
+        \end{itemize}
+    }
+    \end{exampleblock}
+    
+    \end{cminipage}
+    \quantlet{TSA\_ch0\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_decomposition}
+\end{frame}
+
+\begin{frame}{Quiz 3: Netezire exponențială}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        În Netezirea exponențială Simplă cu $\alpha = 0.9$, ce se întâmplă?
+    \end{alertblock}
+
+    \vspace{0.4cm}
+
+    \begin{block}{Variante de răspuns}
+        \textcolor{MainBlue}{\textbf{(A)}} Prognozele sunt foarte netede și stabile\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Observațiile recente au foarte puțină pondere\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Prognozele reacționează rapid la schimbările recente\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Prognoza este în esență o medie pe termen lung
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 3: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns: C -- Prognozele reacționează rapid la schimbările recente}
+    {\small
+        \begin{block}{Variante de răspuns}
+            \textcolor{MainBlue}{\textbf{(A)}} Prognozele sunt foarte netede și stabile \incorrect\\[3pt]
+            \textcolor{MainBlue}{\textbf{(B)}} Observațiile recente au foarte puțină pondere \incorrect\\[3pt]
+            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Prognozele reacționează rapid la schimbările recente}} \correct\\[3pt]
+            \textcolor{MainBlue}{\textbf{(D)}} Prognoza este în esență o medie pe termen lung \incorrect
+        \end{block}
+
+        \vspace{0.1cm}
+
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Cu $\alpha = 0.9$: $\hat{X}_{t+1} = 0.9 X_t + 0.1 \hat{X}_t$
+            \item \textbf{$\alpha$ mare} (ex.\ 0.9): 90\% pondere pe ultima observație
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Prognoze foarte receptive la date noi
+                \end{itemize}
+            \item \textbf{$\alpha$ mic} (ex.\ 0.1): prognoze mai netede, mai stabile
+                \begin{itemize}\setlength{\itemsep}{0pt}
+                    \item Ia în calcul mai multe observații din trecut
+                \end{itemize}
+        \end{itemize}
+    }
+    \end{exampleblock}
+    
+    \end{cminipage}
+    \quantlet{TSA\_ch0\_smoothing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_smoothing}
+\end{frame}
+
+\begin{frame}{Quiz 4: Medii mobile}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Ce observații folosește o medie mobilă centrată de ordin 5 (MA-5) pentru a estima trendul la momentul $t$?
+    \end{alertblock}
+
+    \vspace{0.4cm}
+
+    \begin{block}{Variante de răspuns}
+        \textcolor{MainBlue}{\textbf{(A)}} $X_t, X_{t+1}, X_{t+2}, X_{t+3}, X_{t+4}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} $X_{t-4}, X_{t-3}, X_{t-2}, X_{t-1}, X_t$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} $X_{t-2}, X_{t-1}, X_t, X_{t+1}, X_{t+2}$\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} $X_{t-1}, X_t, X_{t+1}$
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 4: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns: C -- $X_{t-2}, X_{t-1}, X_t, X_{t+1}, X_{t+2}$}
+    {\footnotesize
+        \begin{block}{Variante de răspuns}
+            \textcolor{MainBlue}{\textbf{(A)}} $X_t, X_{t+1}, X_{t+2}, X_{t+3}, X_{t+4}$ \incorrect\\[2pt]
+            \textcolor{MainBlue}{\textbf{(B)}} $X_{t-4}, X_{t-3}, X_{t-2}, X_{t-1}, X_t$ \incorrect\\[2pt]
+            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{$X_{t-2}, X_{t-1}, X_t, X_{t+1}, X_{t+2}$}} \correct\\[2pt]
+            \textcolor{MainBlue}{\textbf{(D)}} $X_{t-1}, X_t, X_{t+1}$ \incorrect
+        \end{block}
+
+        \vspace{0.05cm}
+
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{ch1_moving_average.png}
+        \end{center}
+        \vspace{-0.2cm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{MA centrată}: folosește $(k-1)/2$ observații de fiecare parte a lui $t$
+            \item \textbf{MA-5}: 2 înainte + $t$ + 2 după $\Rightarrow$ fereastră mai mare = mai neted
+        \end{itemize}
+    }
+    \end{exampleblock}
+    
+    \end{cminipage}
+    \quantlet{TSA\_ch0\_definition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_definition}
+\end{frame}
+
+\begin{frame}{Quiz 5: Evaluarea prognozei}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        Care metrică este cea mai potrivită pentru compararea acurateței prognozei între serii cu scale diferite?
+    \end{alertblock}
+
+    \vspace{0.4cm}
+
+    \begin{block}{Variante de răspuns}
+        \textcolor{MainBlue}{\textbf{(A)}} Eroarea Absolută Medie (MAE)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Rădăcina Erorii Medii Pătratice (RMSE)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Eroarea Absolută Medie Procentuală (MAPE)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Eroarea Medie Pătratică (MSE)
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 5: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns: C -- Eroarea Absolută Medie Procentuală (MAPE)}
+    {\small
+        \begin{block}{Variante de răspuns}
+            \textcolor{MainBlue}{\textbf{(A)}} Eroarea Absolută Medie (MAE) \incorrect\\[3pt]
+            \textcolor{MainBlue}{\textbf{(B)}} Rădăcina Erorii Medii Pătratice (RMSE) \incorrect\\[3pt]
+            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Eroarea Absolută Medie Procentuală (MAPE)}} \correct\\[3pt]
+            \textcolor{MainBlue}{\textbf{(D)}} Eroarea Medie Pătratică (MSE) \incorrect
+        \end{block}
+
+        \vspace{0.1cm}
+
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item MAPE $= \frac{100}{n}\sum\left|\frac{e_t}{X_t}\right|$ exprimă erorile ca \textbf{procente}
+            \item MAE, RMSE, MSE sunt \textbf{dependente de scală} (unități ale lui $X_t$)
+            \item MAPE este \textbf{independentă de scală} (întotdeauna în \%)
+            \item Atenție: MAPE devine instabilă când $X_t \approx 0$
+        \end{itemize}
+    }
+    \end{exampleblock}
+    
+    \end{cminipage}
+    \quantlet{TSA\_ch0\_forecast\_eval}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_forecast_eval}
+\end{frame}
+
+\begin{frame}{Quiz 6: Validare încrucișată}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Întrebare}
+        De ce nu putem folosi validarea încrucișată standard k-fold pentru seriile de timp?
+    \end{alertblock}
+
+    \vspace{0.4cm}
+
+    \begin{block}{Variante de răspuns}
+        \textcolor{MainBlue}{\textbf{(A)}} Datele seriilor de timp sunt prea mici\\[3pt]
+        \textcolor{MainBlue}{\textbf{(B)}} Ar încălca ordonarea temporală (viitorul prezicând trecutul)\\[3pt]
+        \textcolor{MainBlue}{\textbf{(C)}} Validarea încrucișată este întotdeauna invalidă\\[3pt]
+        \textcolor{MainBlue}{\textbf{(D)}} Seriile de timp nu au nevoie de validare
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textit{Răspunsul pe slide-ul următor...}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Quiz 6: Răspuns}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Răspuns: B -- Ar încălca ordonarea temporală}
+    {\footnotesize
+        \begin{block}{Variante de răspuns}
+            \textcolor{MainBlue}{\textbf{(A)}} Datele seriilor de timp sunt prea mici \incorrect\\[2pt]
+            \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Ar încălca ordonarea temporală (viitorul prezicând trecutul)}} \correct\\[2pt]
+            \textcolor{MainBlue}{\textbf{(C)}} Validarea încrucișată este întotdeauna invalidă \incorrect\\[2pt]
+            \textcolor{MainBlue}{\textbf{(D)}} Seriile de timp nu au nevoie de validare \incorrect
+        \end{block}
+
+        \vspace{0.05cm}
+
+        \begin{center}
+            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{ch8_timeseries_cv.png}
+        \end{center}
+        \vspace{-0.2cm}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Principiu}: datele viitoare nu pot fi folosite pentru a prezice trecutul. Se recomandă CV cu fereastră mobilă/în expansiune.
+        \end{itemize}
+    }
+    \end{exampleblock}
+    
+    \end{cminipage}
+    \quantlet{TSA\_ch0\_forecast\_eval}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_forecast_eval}
+\end{frame}
+
+\begin{frame}{Vizual: Descompunerea seriei de timp}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    \begin{center}
+        \includegraphics[width=0.88\textwidth, height=0.55\textheight, keepaspectratio]{ch1_decomposition.png}
+    \end{center}
+    \vspace{-0.3cm}
+    {\footnotesize
+    \begin{exampleblock}{Componentele descompunerii}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Trend}: mișcare pe termen lung \quad \textbf{Sezonalitate}: tipar periodic \quad \textbf{Reziduu}: zgomot aleatoriu
+        \end{itemize}
+    \end{exampleblock}
+    }
+    
+    \end{cminipage}
+    \quantlet{TSA\_ch0\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_decomposition}
+\end{frame}
+
+%=============================================================================
+% ADEVĂRAT/FALS
+%=============================================================================
+\section{Adevărat/Fals}
+
+\begin{frame}{Adevărat sau Fals? --- Întrebări}
+    \begin{cminipage}{0.95\textwidth}
+    \footnotesize
+    \begin{center}
+    \begin{tabular}{p{9cm}c}
+        \toprule
+        \textbf{Afirmație} & \textbf{A/F?} \\
+        \midrule
+        1. Prognozele SES sunt plate (constante pentru toate orizonturile). & ? \\[0.15cm]
+        2. RMSE penalizează erorile mari mai mult decât MAE. & ? \\[0.15cm]
+        3. Descompunerea multiplicativă necesită date pozitive. & ? \\[0.15cm]
+        4. Un $\alpha$ mai mare înseamnă mai multă netezire. & ? \\[0.15cm]
+        5. Setul de test se folosește pentru ajustarea hiperparametrilor. & ? \\[0.15cm]
+        6. Naive sezonier folosește valoarea de acum un sezon. & ? \\[0.15cm]
+        7. MAPE poate fi infinit dacă valorile reale sunt zero. & ? \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Adevărat sau Fals? --- Răspunsuri}
+    \begin{cminipage}{0.95\textwidth}
+    \footnotesize
+    \begin{center}
+    \begin{tabular}{p{7.5cm}cc}
+        \toprule
+        \textbf{Afirmație} & \textbf{A/F} & \textbf{Explicație} \\
+        \midrule
+        1. Prognozele SES sunt plate (constante pentru toate orizonturile). & \textcolor{Forest}{\textbf{A}} & {\scriptsize Fără trend} \\[0.08cm]
+        2. RMSE penalizează erorile mari mai mult decât MAE. & \textcolor{Forest}{\textbf{A}} & {\scriptsize Erori pătratice} \\[0.08cm]
+        3. Descompunerea multiplicativă necesită date pozitive. & \textcolor{Forest}{\textbf{A}} & {\scriptsize Nu se poate aplica pe valori negative} \\[0.08cm]
+        4. Un $\alpha$ mai mare înseamnă mai multă netezire. & \textcolor{Crimson}{\textbf{F}} & {\scriptsize $\alpha$ mare = mai puțin neted} \\[0.08cm]
+        5. Setul de test se folosește pentru ajustarea hiperparametrilor. & \textcolor{Crimson}{\textbf{F}} & {\scriptsize Folosiți validare.} \\[0.08cm]
+        6. Naive sezonier folosește valoarea de acum un sezon. & \textcolor{Forest}{\textbf{A}} & {\scriptsize $\hat{X}_{t+h} = X_{t+h-m}$} \\[0.08cm]
+        7. MAPE poate fi infinit dacă valorile reale sunt zero. & \textcolor{Forest}{\textbf{A}} & {\scriptsize Împărțire la zero} \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚII DE CALCUL
+%=============================================================================
+\section{Exerciții de calcul}
+
+\begin{frame}{Exercițiu 1: Netezire Exponențială Simplă}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problemă}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Date}: $X = [10, 12, 11, 14, 13]$ cu $\alpha = 0.3$, $\hat{X}_1 = 10$
+            \item \textbf{Calculați}: a) Prognozele $\hat{X}_2$ până la $\hat{X}_6$; b) MAE și RMSE
+            \item \textbf{Formula}: $\hat{X}_{t+1} = \alpha X_t + (1-\alpha)\hat{X}_t$
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{Soluție}
+        \begin{center}
+        \small
+        \begin{tabular}{c|ccccc|c}
+            $t$ & 1 & 2 & 3 & 4 & 5 & 6\\
+            \hline
+            $X_t$ & 10 & 12 & 11 & 14 & 13 & ?\\
+            $\hat{X}_t$ & 10 & 10 & 10.6 & 10.72 & 11.70 & \textbf{12.09}\\
+        \end{tabular}
+        \end{center}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{MAE} $= 1.745$ \quad \textbf{RMSE} $= 2.04$
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiu 2: Metrici de eroare}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problemă}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Date}: $X = [100, 110, 105, 120]$, $\hat{X} = [95, 108, 110, 115]$
+            \item \textbf{Calculați}: MAE, MSE, RMSE, MAPE
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{Soluție}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Erori}: $e = [5, 2, -5, 5]$
+            \item \textbf{MAE} $= (|5|+|2|+|-5|+|5|)/4 = 4.25$
+            \item \textbf{MSE} $= (25+4+25+25)/4 = 19.75$
+            \item \textbf{RMSE} $= \sqrt{19.75} = 4.44$
+            \item \textbf{MAPE} $= 25 \times (0.05+0.018+0.048+0.042) = 3.95\%$
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Exercițiu 3: Indici sezonieri}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{alertblock}{Problemă}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Date}: Indici sezonieri: $S = [0.85, 1.05, 0.90, 1.20]$, Trend T4: $T = 1000$
+            \item \textbf{Calculați}: a) Verificați normalizarea. b) Prognoza T4. c) Desezonalizați $X_{T4} = 1150$
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{Soluție}
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{a) Normalizare}: $\sum S_i = 0.85+1.05+0.90+1.20 = 4.00$ \checkmark
+            \item \textbf{b) Prognoză}: $\hat{X}_{T4} = 1000 \times 1.20 = \textbf{1200}$
+            \item \textbf{c) Desezonalizare}: $X_{desezonalizat} = 1150/1.20 = \textbf{958.33}$ (sub trend)
+        \end{itemize}
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% EXERCIȚIU CU ASISTENȚĂ AI
+%=============================================================================
+\section{Exercițiu cu asistență AI}
+
+\begin{frame}{Exercițiu AI: Gândire critică}
+    \begin{cminipage}{0.95\textwidth}
+    \vspace{-0.3cm}
+    \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
+        {\footnotesize
+        ``Folosind yfinance, descarcă prețurile de închidere ajustate pentru SPY din 2015 până în 2024. Aplică descompunerea sezonieră (aditivă și multiplicativă) și compară rezultatele vizual. Apoi împarte datele în set de antrenare (2015--2023) și set de test (2024). Ajustează trei modele de netezire exponențială (SES, Holt, Holt-Winters) pe setul de antrenare și evaluează-le pe setul de test folosind RMSE și MAPE. Care model e cel mai bun? Arată graficele și tabelul comparativ.''
+        }
+    \end{block}
+    \vspace{-2mm}
+    {\footnotesize
+    \textbf{Exercițiu}:
+    \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Rulați prompt-ul într-un LLM la alegere și analizați critic răspunsul.
+        \item AI alege descompunere aditivă sau multiplicativă? Alegerea e justificată?
+        \item Cum evaluează modelele --- folosește RMSE pe antrenare sau pe test?
+        \item Verificați parametrii de netezire ($\alpha$, $\beta$, $\gamma$). Valori aproape de 1{,}0 sunt problematice?
+        \item Codul împarte corect datele în antrenare/test, sau evaluează pe date de antrenare?
+    \end{enumerate}
+    }
+    \vspace{-2mm}
+    \begin{alertblock}{}
+        {\footnotesize \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Asta nu înseamnă că e corect.}}
+    \end{alertblock}
+    \end{cminipage}
+\end{frame}
+
+%=============================================================================
+% SFÂRȘIT
+%=============================================================================
+\section{Rezumat}
+
+\begin{frame}{Rezumat: \tsachlinkt{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0}}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{exampleblock}{Concepte cheie}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Serii de timp}: observații ordonate temporal, cu dependență (autocorelație)
+            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Descompunere}: aditivă ($X_t = T_t + S_t + \varepsilon_t$) vs multiplicativă ($X_t = T_t \times S_t \times \varepsilon_t$)
+            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Netezire exponențială}: SES, Holt, Holt-Winters --- parametrul $\alpha$ controlează reactivitatea
+            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Evaluarea prognozei}: MAE, RMSE, MAPE --- alegerea depinde de context
+            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Sezonalitate}: indici sezonieri, prognoză și desezonalizare
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \Large\textcolor{MainBlue}{Întrebări?}
+    \end{center}
+    \end{cminipage}
+\end{frame}
+%=============================================================================
+% BIBLIOGRAFIE
+%=============================================================================
+\section{Bibliografie}
+
+\begin{frame}{Bibliografie I}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Fundamentele Seriilor de Timp}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
+            \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
+            \item Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}, 3rd ed., Springer.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Serii de Timp Financiare}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
+            \item Franke, J., H\"ardle, W.K., \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{Bibliografie II}
+    \begin{cminipage}{0.95\textwidth}
+    \begin{block}{Abordări Moderne și Machine Learning}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item Nielsen, A. (2019). \textit{Practical Time Series Analysis}, O'Reilly Media.
+            \item Petropoulos, F., et al. (2022). \textit{Forecasting: Theory and Practice}, International Journal of Forecasting.
+            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, International Journal of Forecasting.
+        \end{itemize}
+        }
+    \end{block}
+
+    \begin{exampleblock}{Resurse Online și Cod}
+        {\small
+        \begin{itemize}\setlength{\itemsep}{0pt}
+            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Depozit de cod pentru statistică
+            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Platformă de învățare metode cantitative
+            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch0} --- Cod Python pentru acest seminar
+        \end{itemize}
+        }
+    \end{exampleblock}
+    \end{cminipage}
+\end{frame}
+
+\begin{frame}{}
+    \begin{cminipage}{0.95\textwidth}
+    \centering
+    \Huge\textcolor{IDAred}{Vă mulțumesc!}
+
+    \vspace{1cm}
+
+    \Large\textcolor{MainBlue}{Întrebări?}
+
+    \vspace{0.8cm}
+
+    \normalsize
+    Materialele seminarului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+
+    \vspace{0.2cm}
+
+    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
+    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
+    \end{cminipage}
+\end{frame}
+
+\end{document}
