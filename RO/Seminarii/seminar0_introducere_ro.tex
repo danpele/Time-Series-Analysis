@@ -1,6 +1,6 @@
 % Seminarul 0: Introducere: componente și netezire exponențială
 % Serii de timp -- Programele de licență Informatică economică și Cibernetică economică, Academia de Studii Economice din București
-% CONVERTIT de latex/build_chapter0.py -- din deck-ul vechi; se editează direct sau se mută într-un generator.
+% GENERAT de latex/build_seminar0.py -- modificați generatorul, nu acest fișier.
 % Implicit versiunea pentru studenți; versiunea profesorului este wrapper-ul *_solutions.tex.
 \makeatletter\@ifundefined{ifsolutions}{\expandafter\newif\csname ifsolutions\endcsname}{}\makeatother
 
@@ -26,16 +26,18 @@ Academia Română, Institutul de Prognoză Economică\\
 MSCA Digital Finance}
 \date{}
 
+%=============================================================================
 \providecommand{\tsaapplink}[3]{\hypertarget{#2}{}\hyperlink{#1}{\beamergotobutton{#3}}}  % APPLINKS-MACROS
 \providecommand{\tsaappback}[2]{\begin{tikzpicture}[remember picture,overlay]\node[anchor=south east] at ([xshift=-3mm,yshift=7mm]current page.south east){\hyperlink{#1}{\beamerreturnbutton{#2}}};\end{tikzpicture}}  % APPLINKS-MACROS
 \providecommand{\tsachlink}[2]{\href{#1}{#2}}  % APPLINKS-MACROS
 \providecommand{\tsachlinkt}[2]{\href{#1}{\usebeamercolor[fg]{frametitle}#2}}  % APPLINKS-MACROS
 \begin{document}
+%=============================================================================
 
 {
 \setbeamertemplate{headline}{}
 \setbeamertemplate{footline}{}
-\begin{frame}
+\begin{frame}[noframenumbering]
     \titlepage
 \end{frame}
 }
@@ -45,16 +47,16 @@ MSCA Digital Finance}
 \begin{columns}[T]
 \begin{column}{0.49\textwidth}
 \begin{itemize}\setlength{\itemsep}{0pt}
+    \item \textbf{ACF}: Autocorrelation Function (funcția de autocorelație)
     \item \textbf{AI}: Artificial Intelligence (inteligență artificială)
-    \item \textbf{CV}: Cross-Validation (validare încrucișată)
-    \item \textbf{LLM}: Large Language Model (model lingvistic de mari dimensiuni)
-    \item \textbf{MA}: Moving Average (medie mobilă)
-    \item \textbf{MA-5}: 5-period Moving Average (medie mobilă pe 5 perioade)
+    \item \textbf{BNR}: Banca Națională a României
+    \item \textbf{HICP}: Harmonised Index of Consumer Prices (indicele armonizat al prețurilor de consum)
+    \item \textbf{IAPC}: Indicele armonizat al prețurilor de consum
+    \item \textbf{INS}: Institutul Național de Statistică
     \item \textbf{MAE}: Mean Absolute Error (eroarea absolută medie)
-    \item \textbf{MAPE}: Mean Absolute Percentage Error (eroarea procentuală absolută medie)
-    \item \textbf{MSE}: Mean Squared Error (eroarea pătratică medie)
+    \item \textbf{PIB}: Produsul intern brut
     \item \textbf{RMSE}: Root Mean Squared Error (rădăcina erorii pătratice medii)
-    \item \textbf{SES}: Simple Exponential Smoothing (netezire exponențială simplă)
+    \item \textbf{STL}: Seasonal and Trend decomposition using Loess (descompunerea în sezonalitate și trend cu Loess)
 \end{itemize}
 \end{column}
 \begin{column}{0.49\textwidth}
@@ -64,603 +66,692 @@ MSCA Digital Finance}
 % END-ACRONYMS
 
 %=============================================================================
-% SEMINAR OUTLINE
+\section{Traseu și noțiuni necesare}
 %=============================================================================
-\begin{frame}{Cuprins Seminar}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{itemize}\setlength{\itemsep}{0pt}
-        \item \textbf{Test grilă} -- Verificare cunoștințe
-        \vspace{0.15cm}
-        \item \textbf{Adevărat/Fals} -- Verificări conceptuale
-        \vspace{0.15cm}
-        \item \textbf{Exerciții de calcul} -- Practică aplicată
-        \vspace{0.15cm}
-        \item \textbf{Exercițiu cu asistență AI} -- Gândire critică
-        \vspace{0.15cm}
-        \item \textbf{Rezumat} -- Concluzii cheie
+
+\begin{frame}{Întrebările de azi și traseul}
+\itemsize{\small}
+\begin{itemize}
+    \item Primul seminar, înaintea cursului din \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0}: noțiunile necesare se găsesc pe slide-urile următoare
+    \item \textbf{Întrebările seminarului}
+    \begin{itemize}
+        \item cum deschidem notebook-urile cursului și cum încărcăm o serie?
+        \item ce rată de creștere arată starea economiei?
+        \item spune valoarea de azi ceva despre cea de mîine?
+        \item cît de bună este cea mai simplă prognoză posibilă?
     \end{itemize}
-    \end{cminipage}
+    \item \textbf{Partea I}: pregătirea mediului de lucru, calcule pe hîrtie (A1--A3), aceleași idei pe date reale (B1, B2)
+    \item \textbf{Partea a II-a}: rîndul dumneavoastră (A4, B3, B4), o idee de proiect (C1) și critica unui răspuns generat de AI (C2)
+    \item Deschideți \href{\nb}{notebook-ul seminarului} în Google Colab; nu se predă nimic
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Harta exercițiilor}
+\itemsize{\footnotesize}
+\begin{center}
+\footnotesize
+\begin{tabular}{l>{\raggedright\arraybackslash}p{6.4cm}ll}
+\toprule
+\textbf{Exercițiu} & \textbf{Întrebare} & \textbf{Tip} & \textbf{Model} \\
+\midrule
+A1 & rate de creștere ale unei serii trimestriale & Rezolvat & -- \\
+A2 & o autocorelație de selecție calculată de mînă & Rezolvat & -- \\
+A3 & prognoze naive și erorile lor & Rezolvat & -- \\
+B1 & PIB-ul României: ce rată de creștere? & Rezolvat & -- \\
+B2 & EUR/RON: memoria nivelurilor și a variațiilor & Rezolvat & -- \\
+A4 & aceleași calcule pe alte cifre & Propus & A1--A3 \\
+B3 & inflația din România: lunară și anuală & Propus & B1, B2 \\
+B4 & electricitatea: naivă sau naivă sezonieră? & Propus & A3 \\
+C1 & o idee de proiect & Deschis & -- \\
+C2 & greșelile dintr-un răspuns generat de AI & Propus & A1, A3, B1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}
+    \item \textbf{[Rezolvat]}: rezolvarea completă în slide-uri și în notebook, un model de urmat; \textbf{[Propus]}: îl rezolvați dumneavoastră, rezolvarea se discută la seminar
+    \item Partea A: pe hîrtie; Partea B: date reale, fiecare cerință încheindu-se cu o întrebare de interpretare; Partea C: deschisă
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Noțiuni necesare azi (1/2): serii și rate de creștere}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Serie de timp} $y_1, \ldots, y_T$: o variabilă observată în momente succesive
+    \begin{itemize}
+        \item frecvența: trimestrială ($m = 4$ trimestre pe an), lunară ($m = 12$), zilnică
+        \item seriile neajustate conțin \textbf{sezonalitate}: un tipar care se repetă la fiecare $m$ perioade
+    \end{itemize}
+    \item \textbf{Creșterea pe o perioadă}: $100\,(y_t / y_{t-1} - 1)$, în \%
+    \begin{itemize}
+        \item pentru date trimestriale: față de trimestrul anterior
+    \end{itemize}
+    \item \textbf{Creșterea pe un an}: $100\,(y_t / y_{t-m} - 1)$, față de aceeași perioadă a anului anterior
+    \begin{itemize}
+        \item compară același sezon, deci tiparul sezonier se anulează
+    \end{itemize}
+    \item \textbf{Diferența logaritmilor}: $100\,(\ln y_t - \ln y_{t-1}) \approx 100\,(y_t / y_{t-1} - 1)$ pentru variații mici
+    \begin{itemize}
+        \item pentru un preț, este \textbf{randamentul logaritmic}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Noțiuni necesare azi (2/2): autocorelație și prognoze naive}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Autocorelația de selecție} la decalajul $k$
+    \begin{itemize}
+        \item $r_k = \dfrac{\sum_{t=k+1}^{T} (y_t - \bar y)(y_{t-k} - \bar y)}{\sum_{t=1}^{T} (y_t - \bar y)^2}$, între $-1$ și $1$
+        \item ACF (autocorrelation function, funcția de autocorelație): $r_1, r_2, \ldots$ în funcție de $k$; banda $\pm 1{,}96/\sqrt T$ pentru un zgomot independent
+    \end{itemize}
+    \item \textbf{Prognoza naivă}: $\hat y_{T+h} = y_T$; \textbf{naivă sezonieră}: $\hat y_{T+h} = y_{T+h-m}$ ($h \le m$)
+    \item \textbf{Setul de antrenare și setul de test}: împărțire în timp
+    \begin{itemize}
+        \item prognozele se construiesc pe setul de antrenare și se compară cu setul de test, pe care nu l-au văzut
+    \end{itemize}
+    \item \textbf{Erorile} $e = y - \hat y$ pe setul de test
+    \begin{itemize}
+        \item MAE (mean absolute error, eroarea absolută medie) $= \frac1h \sum |e|$; RMSE (root mean squared error, rădăcina erorii pătratice medii) $= \sqrt{\frac1h \sum e^2}$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Datele folosite azi}
+\itemsize{\footnotesize}
+\begin{center}
+\footnotesize
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{2.4cm}l}
+\toprule
+\textbf{Serie} & \textbf{Sursă} & \textbf{Unitate} & \textbf{Frecvență} & \textbf{Exercițiu} \\
+\midrule
+PIB-ul real al României & Eurostat, neajustat & miliarde EUR, prețurile din 2010 & trimestrial & B1, C2 \\
+EUR/RON & cursul de referință BNR & lei pentru un euro & zilnic, din 2015 & B2 \\
+IAPC, România & Eurostat & indice, 2015 = 100 & lunar, din 2015 & B3 \\
+Producția de electricitate & Eurostat & TWh pe lună & lunar, din 2008 & B4 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}
+    \item IAPC: indicele armonizat al prețurilor de consum (HICP); BNR: Banca Națională a României; TWh: terawatt-oră
+    \item Surse publice, citite online, fără cheie; notebook-ul definește cîte o funcție pentru fiecare sursă
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pregătire (1/2): deschiderea notebook-ului și salvarea unei copii}
+\itemsize{\small}
+\begin{itemize}
+\item \textbf{Întrebarea}: puteți rula Python pe datele cursului, în browser?
+\item \textbf{Date}: Google Colab: serviciul gratuit de notebook-uri al Google; Python rulează pe serverele Google, este suficient un cont Google
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Deschideți \href{\nb}{notebook-ul seminarului} în Colab.
+    \item Alegeți \emph{File $\to$ Save a copy in Drive}, ca să vă păstrați modificările.
+    \item Rulați în ordine celulele secțiunii \emph{Setup}, cu Shift + Enter; ele importă bibliotecile și definesc funcțiile de citire a datelor.
+    \item Dacă o celulă dă eroare, alegeți \emph{Runtime $\to$ Restart session} și rulați din nou de la început.
+\end{enumerate}
+\item \textbf{Raportați}: nimic; sînteți gata atunci cînd verificarea de pe slide-ul următor afișează rezultatele așteptate
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Pregătire (2/2): încărcarea unei serii}
+\itemsize{\footnotesize}
+\begin{columns}[T]
+\begin{column}{0.56\textwidth}
+\begin{lstlisting}
+# Romanian real GDP, quarterly, unadjusted
+g = read_eurostat('namq_10_gdp',
+                  'Q.CLV10_MEUR.NSA.B1GQ.RO') / 1000
+print(len(g), g.index[0].date(), g.index[-1].date())
+print(g.tail(2).round(1))
+g.plot()          # a first chart
+\end{lstlisting}
+\begin{itemize}
+    \item \texttt{read\_eurostat(dataset, cheie)} citește o serie Eurostat; cheia enumeră dimensiunile (frecvență, unitate, ajustare, indicator, țară)
+\end{itemize}
+\end{column}
+\begin{column}{0.41\textwidth}
+\begin{itemize}
+    \item \textbf{Rezultatul așteptat}
+    \begin{itemize}
+        \item 126 de trimestre, de la T1 1995 la T2 2026
+        \item ultima valoare: 45{,}88 miliarde EUR
+    \end{itemize}
+    \item Eurostat revizuiește datele: o ultimă valoare ușor diferită este normală
+    \item Dacă numărul de observații diferă mult, verificați cheia înainte de a continua
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 
 %=============================================================================
-% TEST GRILĂ
+\section{Partea A: pe hîrtie}
 %=============================================================================
-\section{Test grilă}
 
-\begin{frame}{Quiz 1: Bazele seriilor de timp}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        Care dintre următoarele \emph{nu} este o caracteristică a datelor de tip serie de timp?
-    \end{alertblock}
-
-    \vspace{0.4cm}
-
-    \begin{block}{Variante de răspuns}
-        \textcolor{MainBlue}{\textbf{(A)}} Observațiile sunt ordonate în timp\\[3pt]
-        \textcolor{MainBlue}{\textbf{(B)}} Observațiile consecutive sunt de obicei corelate\\[3pt]
-        \textcolor{MainBlue}{\textbf{(C)}} Observațiile sunt independente și identic distribuite\\[3pt]
-        \textcolor{MainBlue}{\textbf{(D)}} Datele au o ordonare temporală naturală
-    \end{block}
-
-    \vspace{0.5cm}
-
-    \begin{center}
-        \textit{Răspunsul pe slide-ul următor...}
-    \end{center}
-    \end{cminipage}
+\begin{frame}{A1 [Rezolvat]: Rate de creștere --- cerință}
+\itemsize{\small}
+\begin{itemize}
+\item \textbf{Întrebarea}: s-a prăbușit economia României în primul trimestru din 2025?
+\item \textbf{Date}: PIB real, miliarde EUR: 38{,}7; 45{,}6; 52{,}8; 59{,}2 (T1--T4 2024), 38{,}9; 46{,}8 (T1--T2 2025)
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Calculați ratele de creștere față de trimestrul anterior, pentru T2 2024 -- T2 2025.
+    \item Calculați ratele de creștere față de același trimestru al anului anterior, pentru T1 2025 și T2 2025.
+    \item Calculați diferența logaritmilor pentru T1 2025 și comparați-o cu rata față de trimestrul anterior.
+\end{enumerate}
+\item \textbf{Raportați}: cele două tipuri de rate de creștere și o propoziție care răspunde la întrebare
+\item Notebook: secțiunea A1
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Quiz 1: Răspuns}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{exampleblock}{Răspuns: C -- Observațiile sunt independente și identic distribuite}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Întrebare:} Care \emph{nu} este o caracteristică a datelor de tip serie de timp?
-        \end{itemize}
-
-        \vspace{0.3cm}
-
-    \begin{block}{Variante de răspuns}
-        \textcolor{MainBlue}{\textbf{(A)}} Observațiile sunt ordonate în timp \incorrect\\[3pt]
-        \textcolor{MainBlue}{\textbf{(B)}} Observațiile consecutive sunt de obicei corelate \incorrect\\[3pt]
-        \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Observațiile sunt independente și identic distribuite}} \correct\\[3pt]
-        \textcolor{MainBlue}{\textbf{(D)}} Datele au o ordonare temporală naturală \incorrect
-    \end{block}
-
-        \vspace{0.3cm}
-
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Observațiile seriilor de timp sunt \textbf{dependente} (autocorelate), nu independente
-            \item Ipoteza i.i.d.\ este fundamentală pentru analiza transversală, dar este \textbf{încălcată} în seriile de timp
-            \item Această dependență temporală necesită \textbf{metode specializate}
-        \end{itemize}
-    \end{exampleblock}
-    
-    \end{cminipage}
-    \quantlet{TSA\_ch0\_definition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_definition}
+\begin{frame}{A1 [Rezolvat]: Rezolvare}
+\itemsize{\footnotesize}
+\begin{columns}[T]
+\begin{column}{0.42\textwidth}
+\begin{center}
+\footnotesize
+\begin{tabular}{lrrr}
+\toprule
+Trimestru & $y_t$ & (1), \% & (2), \% \\
+\midrule
+T1 2024 & 38{,}7 & -- & -- \\
+T2 2024 & 45{,}6 & $+$17{,}8 & -- \\
+T3 2024 & 52{,}8 & $+$15{,}8 & -- \\
+T4 2024 & 59{,}2 & $+$12{,}1 & -- \\
+T1 2025 & 38{,}9 & -34{,}3 & $+$0{,}5 \\
+T2 2025 & 46{,}8 & $+$20{,}3 & $+$2{,}6 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}
+    \item (1): față de trimestrul anterior; (2): față de același trimestru al anului anterior
+\end{itemize}
+\end{column}
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+    \item \textbf{Pas cu pas}
+    \begin{itemize}
+        \item T1 2025, față de trimestrul anterior: $100\,(38{,}9/59{,}2 - 1) = $ -34{,}3\%
+        \item T1 2025, față de T1 2024: $100\,(38{,}9/38{,}7 - 1) = +$0{,}5\%
+        \item diferența logaritmilor: $100\,(\ln 38{,}9 - \ln 59{,}2) = $ -42{,}0\%, departe de -34{,}3\%: aproximarea nu funcționează pentru variații mari
+    \end{itemize}
+    \item \textbf{Interpretare}
+    \begin{itemize}
+        \item nu a fost o prăbușire: scăderea de o treime din T4 în T1 apare în fiecare iarnă; față de anul anterior, PIB a crescut cu 0{,}5\%
+    \end{itemize}
+\end{itemize}
+\end{column}
+\end{columns}
+\quantlet{TSA\_ch0\_seminar}{\qlurl{TSA_ch0_seminar}}
 \end{frame}
 
-\begin{frame}{Quiz 2: Descompunere}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        Când ar trebui să folosiți descompunerea multiplicativă în loc de cea aditivă?
-    \end{alertblock}
-
-    \vspace{0.4cm}
-
-    \begin{block}{Variante de răspuns}
-        \textcolor{MainBlue}{\textbf{(A)}} Când tiparul sezonier are amplitudine constantă\\[3pt]
-        \textcolor{MainBlue}{\textbf{(B)}} Când varianța seriei este stabilă în timp\\[3pt]
-        \textcolor{MainBlue}{\textbf{(C)}} Când fluctuațiile sezoniere cresc proporțional cu nivelul\\[3pt]
-        \textcolor{MainBlue}{\textbf{(D)}} Când seria nu are componentă de trend
-    \end{block}
-
-    \vspace{0.5cm}
-
-    \begin{center}
-        \textit{Răspunsul pe slide-ul următor...}
-    \end{center}
-    \end{cminipage}
+\begin{frame}{A2 [Rezolvat]: O autocorelație calculată de mînă --- cerință}
+\itemsize{\small}
+\begin{itemize}
+\item \textbf{Întrebarea}: este, de obicei, o valoare mare urmată de o valoare mare în această serie scurtă?
+\item \textbf{Date}: $y = 2, 4, 3, 5, 4, 6$ ($T = 6$)
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Calculați media $\bar y$ și abaterile $y_t - \bar y$.
+    \item Calculați suma pătratelor abaterilor și suma produselor abaterilor consecutive.
+    \item Calculați $r_1$ și $r_2$ și comparați-le cu banda $\pm 1{,}96/\sqrt T$.
+\end{enumerate}
+\item \textbf{Raportați}: $\bar y$, $r_1$, $r_2$, banda și o propoziție despre ce se poate concluziona din 6 observații
+\item Notebook: secțiunea A2
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Quiz 2: Răspuns}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{exampleblock}{Răspuns: C -- Când fluctuațiile sezoniere cresc proporțional cu nivelul}
-    {\footnotesize
-        \begin{block}{Variante de răspuns}
-            \textcolor{MainBlue}{\textbf{(A)}} Când tiparul sezonier are amplitudine constantă \incorrect\\[2pt]
-            \textcolor{MainBlue}{\textbf{(B)}} Când varianța seriei este stabilă în timp \incorrect\\[2pt]
-            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Când fluctuațiile sezoniere cresc proporțional cu nivelul}} \correct\\[2pt]
-            \textcolor{MainBlue}{\textbf{(D)}} Când seria nu are componentă de trend \incorrect
-        \end{block}
+\begin{frame}{A2 [Rezolvat]: Rezolvare}
+\itemsize{\footnotesize}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{center}
+\footnotesize
+\begin{tabular}{rrrr}
+\toprule
+$t$ & $y_t$ & $d_t = y_t - \bar y$ & $d_t d_{t-1}$ \\
+\midrule
+1 & 2 & $-2$ & -- \\
+2 & 4 & $0$ & $0$ \\
+3 & 3 & $-1$ & $0$ \\
+4 & 5 & $1$ & $-1$ \\
+5 & 4 & $0$ & $0$ \\
+6 & 6 & $2$ & $0$ \\
+\midrule sumă & 24 & 0 & $-1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-        \vspace{0.05cm}
-
-        \begin{center}
-            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{additive_vs_multiplicative.png}
-        \end{center}
-        \vspace{-0.2cm}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Multiplicativă}: $X_t = T_t \times S_t \times \varepsilon_t$ --- amplitudinea sezonieră \textbf{scalează cu nivelul}
-            \item \textbf{Aditivă}: $X_t = T_t + S_t + \varepsilon_t$ --- amplitudine constantă
-        \end{itemize}
-    }
-    \end{exampleblock}
-    
-    \end{cminipage}
-    \quantlet{TSA\_ch0\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_decomposition}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{itemize}
+    \item $\bar y = 24/6 = 4$; $\sum d_t^2 = 4 + 0 + 1 + 1 + 0 + 4 = 10$
+    \item $r_1 = -1/10 = $ -0{,}10
+    \item decalajul 2: $\sum d_t d_{t-2} = (-1)(-2) + (1)(0) + (0)(-1) + (2)(1) = 4$, deci $r_2 = $ 0{,}40
+    \item banda: $\pm 1{,}96/\sqrt 6 = \pm$0{,}80
+    \item \textbf{Interpretare}
+    \begin{itemize}
+        \item ambele valori sînt mult în interiorul benzii: 6 observații sînt mult prea puține pentru a detecta memoria
+    \end{itemize}
+\end{itemize}
+\end{column}
+\end{columns}
+\quantlet{TSA\_ch0\_seminar}{\qlurl{TSA_ch0_seminar}}
 \end{frame}
 
-\begin{frame}{Quiz 3: Netezire exponențială}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        În Netezirea exponențială Simplă cu $\alpha = 0.9$, ce se întâmplă?
-    \end{alertblock}
-
-    \vspace{0.4cm}
-
-    \begin{block}{Variante de răspuns}
-        \textcolor{MainBlue}{\textbf{(A)}} Prognozele sunt foarte netede și stabile\\[3pt]
-        \textcolor{MainBlue}{\textbf{(B)}} Observațiile recente au foarte puțină pondere\\[3pt]
-        \textcolor{MainBlue}{\textbf{(C)}} Prognozele reacționează rapid la schimbările recente\\[3pt]
-        \textcolor{MainBlue}{\textbf{(D)}} Prognoza este în esență o medie pe termen lung
-    \end{block}
-
-    \vspace{0.5cm}
-
-    \begin{center}
-        \textit{Răspunsul pe slide-ul următor...}
-    \end{center}
-    \end{cminipage}
+\begin{frame}{A3 [Rezolvat]: Prognoze naive și erorile lor --- cerință}
+\itemsize{\small}
+\begin{itemize}
+\item \textbf{Întrebarea}: pentru o serie sezonieră, ce prognoză simplă este mai bună: ultima valoare sau același trimestru de anul trecut?
+\item \textbf{Date}: vînzări trimestriale; setul de antrenare: 10, 14, 18, 12 (anul 1) și 11, 15, 20, 13 (anul 2); setul de test: 12, 16, 21, 14 (anul 3)
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Scrieți prognozele naive și prognozele naive sezoniere ($m = 4$) pentru cele patru trimestre ale anului 3.
+    \item Calculați erorile $e = y - \hat y$ ale fiecărei metode.
+    \item Calculați MAE și RMSE pentru fiecare metodă.
+\end{enumerate}
+\item \textbf{Raportați}: un tabel cu prognozele și erorile, cele patru măsuri ale erorii și o propoziție care numește metoda mai bună
+\item Notebook: secțiunea A3
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Quiz 3: Răspuns}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{exampleblock}{Răspuns: C -- Prognozele reacționează rapid la schimbările recente}
-    {\small
-        \begin{block}{Variante de răspuns}
-            \textcolor{MainBlue}{\textbf{(A)}} Prognozele sunt foarte netede și stabile \incorrect\\[3pt]
-            \textcolor{MainBlue}{\textbf{(B)}} Observațiile recente au foarte puțină pondere \incorrect\\[3pt]
-            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Prognozele reacționează rapid la schimbările recente}} \correct\\[3pt]
-            \textcolor{MainBlue}{\textbf{(D)}} Prognoza este în esență o medie pe termen lung \incorrect
-        \end{block}
+\begin{frame}{A3 [Rezolvat]: Rezolvare}
+\itemsize{\footnotesize}
+\begin{columns}[T]
+\begin{column}{0.47\textwidth}
+\begin{center}
+\footnotesize
+\begin{tabular}{lrrrr}
+\toprule
+& T1 & T2 & T3 & T4 \\
+\midrule
+observat (anul 3) & 12 & 16 & 21 & 14 \\
+naivă & 13 & 13 & 13 & 13 \\
+eroare & $-1$ & 3 & 8 & 1 \\
+\midrule naivă sezonieră & 11 & 15 & 20 & 13 \\
+eroare & 1 & 1 & 1 & 1 \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-        \vspace{0.1cm}
-
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Cu $\alpha = 0.9$: $\hat{X}_{t+1} = 0.9 X_t + 0.1 \hat{X}_t$
-            \item \textbf{$\alpha$ mare} (ex.\ 0.9): 90\% pondere pe ultima observație
-                \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Prognoze foarte receptive la date noi
-                \end{itemize}
-            \item \textbf{$\alpha$ mic} (ex.\ 0.1): prognoze mai netede, mai stabile
-                \begin{itemize}\setlength{\itemsep}{0pt}
-                    \item Ia în calcul mai multe observații din trecut
-                \end{itemize}
-        \end{itemize}
-    }
-    \end{exampleblock}
-    
-    \end{cminipage}
-    \quantlet{TSA\_ch0\_smoothing}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_smoothing}
+\end{column}
+\begin{column}{0.50\textwidth}
+\begin{itemize}
+    \item \textbf{Naivă}: fiecare prognoză este ultima valoare, 13
+    \begin{itemize}
+        \item MAE $= (1 + 3 + 8 + 1)/4 = $ 3{,}25; RMSE $= \sqrt{(1 + 9 + 64 + 1)/4} = $ 4{,}33
+    \end{itemize}
+    \item \textbf{Naivă sezonieră}: fiecare trimestru din anul 2
+    \begin{itemize}
+        \item MAE $=$ 1{,}00; RMSE $=$ 1{,}00
+    \end{itemize}
+    \item \textbf{Interpretare}
+    \begin{itemize}
+        \item prognoza naivă sezonieră este mai bună: păstrează tiparul sezonier; eroarea mare din T3 crește RMSE-ul prognozei naive
+    \end{itemize}
+\end{itemize}
+\end{column}
+\end{columns}
+\quantlet{TSA\_ch0\_seminar}{\qlurl{TSA_ch0_seminar}}
 \end{frame}
 
-\begin{frame}{Quiz 4: Medii mobile}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        Ce observații folosește o medie mobilă centrată de ordin 5 (MA-5) pentru a estima trendul la momentul $t$?
-    \end{alertblock}
-
-    \vspace{0.4cm}
-
-    \begin{block}{Variante de răspuns}
-        \textcolor{MainBlue}{\textbf{(A)}} $X_t, X_{t+1}, X_{t+2}, X_{t+3}, X_{t+4}$\\[3pt]
-        \textcolor{MainBlue}{\textbf{(B)}} $X_{t-4}, X_{t-3}, X_{t-2}, X_{t-1}, X_t$\\[3pt]
-        \textcolor{MainBlue}{\textbf{(C)}} $X_{t-2}, X_{t-1}, X_t, X_{t+1}, X_{t+2}$\\[3pt]
-        \textcolor{MainBlue}{\textbf{(D)}} $X_{t-1}, X_t, X_{t+1}$
-    \end{block}
-
-    \vspace{0.5cm}
-
-    \begin{center}
-        \textit{Răspunsul pe slide-ul următor...}
-    \end{center}
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Quiz 4: Răspuns}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{exampleblock}{Răspuns: C -- $X_{t-2}, X_{t-1}, X_t, X_{t+1}, X_{t+2}$}
-    {\footnotesize
-        \begin{block}{Variante de răspuns}
-            \textcolor{MainBlue}{\textbf{(A)}} $X_t, X_{t+1}, X_{t+2}, X_{t+3}, X_{t+4}$ \incorrect\\[2pt]
-            \textcolor{MainBlue}{\textbf{(B)}} $X_{t-4}, X_{t-3}, X_{t-2}, X_{t-1}, X_t$ \incorrect\\[2pt]
-            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{$X_{t-2}, X_{t-1}, X_t, X_{t+1}, X_{t+2}$}} \correct\\[2pt]
-            \textcolor{MainBlue}{\textbf{(D)}} $X_{t-1}, X_t, X_{t+1}$ \incorrect
-        \end{block}
-
-        \vspace{0.05cm}
-
-        \begin{center}
-            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{ch1_moving_average.png}
-        \end{center}
-        \vspace{-0.2cm}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{MA centrată}: folosește $(k-1)/2$ observații de fiecare parte a lui $t$
-            \item \textbf{MA-5}: 2 înainte + $t$ + 2 după $\Rightarrow$ fereastră mai mare = mai neted
-        \end{itemize}
-    }
-    \end{exampleblock}
-    
-    \end{cminipage}
-    \quantlet{TSA\_ch0\_definition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_definition}
-\end{frame}
-
-\begin{frame}{Quiz 5: Evaluarea prognozei}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        Care metrică este cea mai potrivită pentru compararea acurateței prognozei între serii cu scale diferite?
-    \end{alertblock}
-
-    \vspace{0.4cm}
-
-    \begin{block}{Variante de răspuns}
-        \textcolor{MainBlue}{\textbf{(A)}} Eroarea Absolută Medie (MAE)\\[3pt]
-        \textcolor{MainBlue}{\textbf{(B)}} Rădăcina Erorii Medii Pătratice (RMSE)\\[3pt]
-        \textcolor{MainBlue}{\textbf{(C)}} Eroarea Absolută Medie Procentuală (MAPE)\\[3pt]
-        \textcolor{MainBlue}{\textbf{(D)}} Eroarea Medie Pătratică (MSE)
-    \end{block}
-
-    \vspace{0.5cm}
-
-    \begin{center}
-        \textit{Răspunsul pe slide-ul următor...}
-    \end{center}
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Quiz 5: Răspuns}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{exampleblock}{Răspuns: C -- Eroarea Absolută Medie Procentuală (MAPE)}
-    {\small
-        \begin{block}{Variante de răspuns}
-            \textcolor{MainBlue}{\textbf{(A)}} Eroarea Absolută Medie (MAE) \incorrect\\[3pt]
-            \textcolor{MainBlue}{\textbf{(B)}} Rădăcina Erorii Medii Pătratice (RMSE) \incorrect\\[3pt]
-            \textcolor{MainBlue}{\textbf{(C)}} \textbf{\textcolor{Forest}{Eroarea Absolută Medie Procentuală (MAPE)}} \correct\\[3pt]
-            \textcolor{MainBlue}{\textbf{(D)}} Eroarea Medie Pătratică (MSE) \incorrect
-        \end{block}
-
-        \vspace{0.1cm}
-
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item MAPE $= \frac{100}{n}\sum\left|\frac{e_t}{X_t}\right|$ exprimă erorile ca \textbf{procente}
-            \item MAE, RMSE, MSE sunt \textbf{dependente de scală} (unități ale lui $X_t$)
-            \item MAPE este \textbf{independentă de scală} (întotdeauna în \%)
-            \item Atenție: MAPE devine instabilă când $X_t \approx 0$
-        \end{itemize}
-    }
-    \end{exampleblock}
-    
-    \end{cminipage}
-    \quantlet{TSA\_ch0\_forecast\_eval}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_forecast_eval}
-\end{frame}
-
-\begin{frame}{Quiz 6: Validare încrucișată}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Întrebare}
-        De ce nu putem folosi validarea încrucișată standard k-fold pentru seriile de timp?
-    \end{alertblock}
-
-    \vspace{0.4cm}
-
-    \begin{block}{Variante de răspuns}
-        \textcolor{MainBlue}{\textbf{(A)}} Datele seriilor de timp sunt prea mici\\[3pt]
-        \textcolor{MainBlue}{\textbf{(B)}} Ar încălca ordonarea temporală (viitorul prezicând trecutul)\\[3pt]
-        \textcolor{MainBlue}{\textbf{(C)}} Validarea încrucișată este întotdeauna invalidă\\[3pt]
-        \textcolor{MainBlue}{\textbf{(D)}} Seriile de timp nu au nevoie de validare
-    \end{block}
-
-    \vspace{0.5cm}
-
-    \begin{center}
-        \textit{Răspunsul pe slide-ul următor...}
-    \end{center}
-    \end{cminipage}
-\end{frame}
-
-\begin{frame}{Quiz 6: Răspuns}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{exampleblock}{Răspuns: B -- Ar încălca ordonarea temporală}
-    {\footnotesize
-        \begin{block}{Variante de răspuns}
-            \textcolor{MainBlue}{\textbf{(A)}} Datele seriilor de timp sunt prea mici \incorrect\\[2pt]
-            \textcolor{MainBlue}{\textbf{(B)}} \textbf{\textcolor{Forest}{Ar încălca ordonarea temporală (viitorul prezicând trecutul)}} \correct\\[2pt]
-            \textcolor{MainBlue}{\textbf{(C)}} Validarea încrucișată este întotdeauna invalidă \incorrect\\[2pt]
-            \textcolor{MainBlue}{\textbf{(D)}} Seriile de timp nu au nevoie de validare \incorrect
-        \end{block}
-
-        \vspace{0.05cm}
-
-        \begin{center}
-            \includegraphics[width=0.95\textwidth, height=0.22\textheight, keepaspectratio]{ch8_timeseries_cv.png}
-        \end{center}
-        \vspace{-0.2cm}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Principiu}: datele viitoare nu pot fi folosite pentru a prezice trecutul. Se recomandă CV cu fereastră mobilă/în expansiune.
-        \end{itemize}
-    }
-    \end{exampleblock}
-    
-    \end{cminipage}
-    \quantlet{TSA\_ch0\_forecast\_eval}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_forecast_eval}
-\end{frame}
-
-\begin{frame}{Vizual: Descompunerea seriei de timp}
-    \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.3cm}
-    \begin{center}
-        \includegraphics[width=0.88\textwidth, height=0.55\textheight, keepaspectratio]{ch1_decomposition.png}
-    \end{center}
-    \vspace{-0.3cm}
-    {\footnotesize
-    \begin{exampleblock}{Componentele descompunerii}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Trend}: mișcare pe termen lung \quad \textbf{Sezonalitate}: tipar periodic \quad \textbf{Reziduu}: zgomot aleatoriu
-        \end{itemize}
-    \end{exampleblock}
-    }
-    
-    \end{cminipage}
-    \quantlet{TSA\_ch0\_decomposition}{https://github.com/QuantLet/TSA/tree/main/TSA_ch0/TSA_ch0_decomposition}
-\end{frame}
 
 %=============================================================================
-% ADEVĂRAT/FALS
+\section{Partea B: date reale}
 %=============================================================================
-\section{Adevărat/Fals}
 
-\begin{frame}{Adevărat sau Fals? --- Întrebări}
-    \begin{cminipage}{0.95\textwidth}
-    \footnotesize
-    \begin{center}
-    \begin{tabular}{p{9cm}c}
-        \toprule
-        \textbf{Afirmație} & \textbf{A/F?} \\
-        \midrule
-        1. Prognozele SES sunt plate (constante pentru toate orizonturile). & ? \\[0.15cm]
-        2. RMSE penalizează erorile mari mai mult decât MAE. & ? \\[0.15cm]
-        3. Descompunerea multiplicativă necesită date pozitive. & ? \\[0.15cm]
-        4. Un $\alpha$ mai mare înseamnă mai multă netezire. & ? \\[0.15cm]
-        5. Setul de test se folosește pentru ajustarea hiperparametrilor. & ? \\[0.15cm]
-        6. Naive sezonier folosește valoarea de acum un sezon. & ? \\[0.15cm]
-        7. MAPE poate fi infinit dacă valorile reale sunt zero. & ? \\
-        \bottomrule
-    \end{tabular}
-    \end{center}
-    \end{cminipage}
+\begin{frame}{B1 [Rezolvat]: PIB-ul României --- cerință}
+\itemsize{\footnotesize}
+\begin{itemize}
+\item \textbf{Întrebarea}: ce rată de creștere trebuie raportată pentru o serie trimestrială neajustată?
+\item \textbf{Date}: PIB-ul real al României, neajustat, T1 1995 -- T2 2026 (Eurostat)
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Calculați ratele de creștere față de trimestrul anterior și față de același trimestru al anului anterior, pentru întreaga serie.
+    \item Reprezentați cele două rate de creștere din 2010 pe același grafic.
+    \item Numărați valorile negative ale fiecărei rate și calculați media creșterii față de trimestrul anterior pentru trimestrele I.
+    \item Interpretare: care dintre cele două rate arată recesiunile?
+\end{enumerate}
+\item \textbf{Raportați}: numărul valorilor negative, creșterea medie a trimestrelor I, ultimele două rate și răspunsul la întrebarea de interpretare
+\item Notebook: secțiunea B1
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Adevărat sau Fals? --- Răspunsuri}
-    \begin{cminipage}{0.95\textwidth}
-    \footnotesize
-    \begin{center}
-    \begin{tabular}{p{7.5cm}cc}
-        \toprule
-        \textbf{Afirmație} & \textbf{A/F} & \textbf{Explicație} \\
-        \midrule
-        1. Prognozele SES sunt plate (constante pentru toate orizonturile). & \textcolor{Forest}{\textbf{A}} & {\scriptsize Fără trend} \\[0.08cm]
-        2. RMSE penalizează erorile mari mai mult decât MAE. & \textcolor{Forest}{\textbf{A}} & {\scriptsize Erori pătratice} \\[0.08cm]
-        3. Descompunerea multiplicativă necesită date pozitive. & \textcolor{Forest}{\textbf{A}} & {\scriptsize Nu se poate aplica pe valori negative} \\[0.08cm]
-        4. Un $\alpha$ mai mare înseamnă mai multă netezire. & \textcolor{Crimson}{\textbf{F}} & {\scriptsize $\alpha$ mare = mai puțin neted} \\[0.08cm]
-        5. Setul de test se folosește pentru ajustarea hiperparametrilor. & \textcolor{Crimson}{\textbf{F}} & {\scriptsize Folosiți validare.} \\[0.08cm]
-        6. Naive sezonier folosește valoarea de acum un sezon. & \textcolor{Forest}{\textbf{A}} & {\scriptsize $\hat{X}_{t+h} = X_{t+h-m}$} \\[0.08cm]
-        7. MAPE poate fi infinit dacă valorile reale sunt zero. & \textcolor{Forest}{\textbf{A}} & {\scriptsize Împărțire la zero} \\
-        \bottomrule
-    \end{tabular}
-    \end{center}
-    \end{cminipage}
+\begin{frame}{B1 [Rezolvat]: Rezolvare (1/2) --- pas cu pas}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Față de trimestrul anterior}: 125 de valori, dintre care 32 negative
+    \begin{itemize}
+        \item trimestrele I au în medie -36{,}3\%: o scădere de o treime în fiecare iarnă
+        \item abaterea standard: 24{,}6 puncte procentuale, dominată de sezonalitate
+    \end{itemize}
+    \item \textbf{Față de anul anterior}: 122 de valori, dintre care 28 negative
+    \begin{itemize}
+        \item negative în anii 1997, 1998, 1999, 2000, 2001, 2009, 2010, 2012, 2013, 2020, 2025, 2026
+        \item media 2{,}9\%, abaterea standard 4{,}9 puncte procentuale
+    \end{itemize}
+    \item \textbf{Ultimul trimestru}, T2 2026
+    \begin{itemize}
+        \item față de trimestrul anterior: $+$19{,}6\% (primăvara după iarnă); față de anul anterior: -1{,}9\%
+    \end{itemize}
+\end{itemize}
+\quantlet{TSA\_ch0\_seminar}{\qlurl{TSA_ch0_seminar}}
 \end{frame}
 
-%=============================================================================
-% EXERCIȚII DE CALCUL
-%=============================================================================
-\section{Exerciții de calcul}
-
-\begin{frame}{Exercițiu 1: Netezire Exponențială Simplă}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Problemă}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Date}: $X = [10, 12, 11, 14, 13]$ cu $\alpha = 0.3$, $\hat{X}_1 = 10$
-            \item \textbf{Calculați}: a) Prognozele $\hat{X}_2$ până la $\hat{X}_6$; b) MAE și RMSE
-            \item \textbf{Formula}: $\hat{X}_{t+1} = \alpha X_t + (1-\alpha)\hat{X}_t$
-        \end{itemize}
-    \end{alertblock}
-
-    \vspace{0.2cm}
-    \begin{exampleblock}{Soluție}
-        \begin{center}
-        \small
-        \begin{tabular}{c|ccccc|c}
-            $t$ & 1 & 2 & 3 & 4 & 5 & 6\\
-            \hline
-            $X_t$ & 10 & 12 & 11 & 14 & 13 & ?\\
-            $\hat{X}_t$ & 10 & 10 & 10.6 & 10.72 & 11.70 & \textbf{12.09}\\
-        \end{tabular}
-        \end{center}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{MAE} $= 1.745$ \quad \textbf{RMSE} $= 2.04$
-        \end{itemize}
-    \end{exampleblock}
-    \end{cminipage}
+\begin{frame}{B1 [Rezolvat]: Rezolvare (2/2) --- grafic și interpretare}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.94\textwidth,height=0.5\textheight,keepaspectratio]{ch0_sem_b1_growth.pdf}
+\end{center}
+\vspace{-2mm}
+\begin{itemize}
+    \item Albastru: rata față de trimestrul anterior oscilează în fiecare an între aproximativ $-35\%$ și $+20\%$; roșu: rata față de anul anterior se mișcă lent, odată cu ciclul economic
+    \item \textbf{Interpretare}: doar rata față de anul anterior arată recesiunile (2009--2010, 2020) și încetinirea din 2025--2026; pentru datele neajustate, raportați creșterea față de anul anterior
+\end{itemize}
+\quantlet{TSA\_ch0\_seminar}{\qlurl{TSA_ch0_seminar}}
 \end{frame}
 
-\begin{frame}{Exercițiu 2: Metrici de eroare}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Problemă}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Date}: $X = [100, 110, 105, 120]$, $\hat{X} = [95, 108, 110, 115]$
-            \item \textbf{Calculați}: MAE, MSE, RMSE, MAPE
-        \end{itemize}
-    \end{alertblock}
-
-    \vspace{0.2cm}
-    \begin{exampleblock}{Soluție}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Erori}: $e = [5, 2, -5, 5]$
-            \item \textbf{MAE} $= (|5|+|2|+|-5|+|5|)/4 = 4.25$
-            \item \textbf{MSE} $= (25+4+25+25)/4 = 19.75$
-            \item \textbf{RMSE} $= \sqrt{19.75} = 4.44$
-            \item \textbf{MAPE} $= 25 \times (0.05+0.018+0.048+0.042) = 3.95\%$
-        \end{itemize}
-    \end{exampleblock}
-    \end{cminipage}
+\begin{frame}{B2 [Rezolvat]: EUR/RON: memoria nivelurilor și a variațiilor --- cerință}
+\itemsize{\footnotesize}
+\begin{itemize}
+\item \textbf{Întrebarea}: ajută cursul de azi la prognoza cursului de mîine? Dar variația de azi la prognoza variației de mîine?
+\item \textbf{Date}: cursul de referință EUR/RON al BNR, 5 ianuarie 2015 -- 18 septembrie 2026 (2\,939 de zile)
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Calculați randamentele logaritmice zilnice $r_t = 100\,(\ln P_t - \ln P_{t-1})$.
+    \item Calculați ACF de selecție a nivelului și a randamentelor pentru decalajele 1--20.
+    \item Comparați $r_1$ al randamentelor cu banda $\pm 1{,}96/\sqrt T$ și numărați decalajele din afara benzii.
+    \item Interpretare: este prognoza naivă un reper potrivit pentru cursul de schimb?
+\end{enumerate}
+\item \textbf{Raportați}: $r_1$ și $r_{20}$ ale nivelului, $r_1$ și $r_2$ ale randamentelor, banda, numărul decalajelor din afara ei și răspunsul la întrebarea de interpretare
+\item Notebook: secțiunea B2
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Exercițiu 3: Indici sezonieri}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{alertblock}{Problemă}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Date}: Indici sezonieri: $S = [0.85, 1.05, 0.90, 1.20]$, Trend T4: $T = 1000$
-            \item \textbf{Calculați}: a) Verificați normalizarea. b) Prognoza T4. c) Desezonalizați $X_{T4} = 1150$
-        \end{itemize}
-    \end{alertblock}
-
-    \vspace{0.2cm}
-    \begin{exampleblock}{Soluție}
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{a) Normalizare}: $\sum S_i = 0.85+1.05+0.90+1.20 = 4.00$ \checkmark
-            \item \textbf{b) Prognoză}: $\hat{X}_{T4} = 1000 \times 1.20 = \textbf{1200}$
-            \item \textbf{c) Desezonalizare}: $X_{desezonalizat} = 1150/1.20 = \textbf{958.33}$ (sub trend)
-        \end{itemize}
-    \end{exampleblock}
-    \end{cminipage}
+\begin{frame}{B2 [Rezolvat]: Rezolvare (1/2) --- pas cu pas}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Nivelul}: $r_1 = $ 1{,}00, $r_{20} = $ 0{,}97
+    \begin{itemize}
+        \item nivelul își amintește valorile pe parcursul a mai multe săptămîni: o descreștere lentă, semnătura unui trend
+    \end{itemize}
+    \item \textbf{Randamentele}: abaterea standard 0{,}13\% pe zi; $r_1 = $ 0{,}078, $r_2 = $ -0{,}0003
+    \begin{itemize}
+        \item banda $\pm$0{,}036; 8 din cele 20 de decalaje se află în afara ei
+        \item $r_1$ este semnificativ, dar mic: variația de ieri explică mai puțin de 1\% din varianța variației de azi ($r_1^2$)
+    \end{itemize}
+\end{itemize}
+\quantlet{TSA\_ch0\_seminar}{\qlurl{TSA_ch0_seminar}}
 \end{frame}
 
-%=============================================================================
-% EXERCIȚIU CU ASISTENȚĂ AI
-%=============================================================================
-\section{Exercițiu cu asistență AI}
-
-\begin{frame}{Exercițiu AI: Gândire critică}
-    \begin{cminipage}{0.95\textwidth}
-    \vspace{-0.3cm}
-    \begin{block}{\footnotesize Prompt de testat în ChatGPT / Claude / Copilot}
-        {\footnotesize
-        ``Folosind yfinance, descarcă prețurile de închidere ajustate pentru SPY din 2015 până în 2024. Aplică descompunerea sezonieră (aditivă și multiplicativă) și compară rezultatele vizual. Apoi împarte datele în set de antrenare (2015--2023) și set de test (2024). Ajustează trei modele de netezire exponențială (SES, Holt, Holt-Winters) pe setul de antrenare și evaluează-le pe setul de test folosind RMSE și MAPE. Care model e cel mai bun? Arată graficele și tabelul comparativ.''
-        }
-    \end{block}
-    \vspace{-2mm}
-    {\footnotesize
-    \textbf{Exercițiu}:
-    \begin{enumerate}\setlength{\itemsep}{0pt}
-        \item Rulați prompt-ul într-un LLM la alegere și analizați critic răspunsul.
-        \item AI alege descompunere aditivă sau multiplicativă? Alegerea e justificată?
-        \item Cum evaluează modelele --- folosește RMSE pe antrenare sau pe test?
-        \item Verificați parametrii de netezire ($\alpha$, $\beta$, $\gamma$). Valori aproape de 1{,}0 sunt problematice?
-        \item Codul împarte corect datele în antrenare/test, sau evaluează pe date de antrenare?
-    \end{enumerate}
-    }
-    \vspace{-2mm}
-    \begin{alertblock}{}
-        {\footnotesize \textbf{Atenție}: Codul generat de AI poate rula fără erori și arăta profesional. \textit{Asta nu înseamnă că e corect.}}
-    \end{alertblock}
-    \end{cminipage}
+\begin{frame}{B2 [Rezolvat]: Rezolvare (2/2) --- grafic și interpretare}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.94\textwidth,height=0.46\textheight,keepaspectratio]{ch0_sem_b2_acf.pdf}
+\end{center}
+\vspace{-2mm}
+\begin{itemize}
+    \item Stînga: ACF a nivelului rămîne aproape de 1; dreapta: ACF a randamentelor este aproape plată; zona colorată: banda $\pm 1{,}96/\sqrt T$
+    \item \textbf{Interpretare}: da; nivelul de azi este cea mai bună prognoză simplă a nivelului de mîine, iar variațiile trecute adaugă foarte puțin: prognoza naivă este reperul de depășit
+\end{itemize}
+\quantlet{TSA\_ch0\_seminar}{\qlurl{TSA_ch0_seminar}}
 \end{frame}
 
-%=============================================================================
-% SFÂRȘIT
-%=============================================================================
-\section{Rezumat}
 
-\begin{frame}{Rezumat: \tsachlinkt{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0}}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{exampleblock}{Concepte cheie}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-            \item[\textcolor{MainBlue}{\textbf{1.}}] \textbf{Serii de timp}: observații ordonate temporal, cu dependență (autocorelație)
-            \item[\textcolor{MainBlue}{\textbf{2.}}] \textbf{Descompunere}: aditivă ($X_t = T_t + S_t + \varepsilon_t$) vs multiplicativă ($X_t = T_t \times S_t \times \varepsilon_t$)
-            \item[\textcolor{MainBlue}{\textbf{3.}}] \textbf{Netezire exponențială}: SES, Holt, Holt-Winters --- parametrul $\alpha$ controlează reactivitatea
-            \item[\textcolor{MainBlue}{\textbf{4.}}] \textbf{Evaluarea prognozei}: MAE, RMSE, MAPE --- alegerea depinde de context
-            \item[\textcolor{MainBlue}{\textbf{5.}}] \textbf{Sezonalitate}: indici sezonieri, prognoză și desezonalizare
-        \end{itemize}
-    \end{exampleblock}
-
-    \vspace{0.5cm}
-    \begin{center}
-        \Large\textcolor{MainBlue}{Întrebări?}
-    \end{center}
-    \end{cminipage}
-\end{frame}
 %=============================================================================
-% BIBLIOGRAFIE
+\section{Rîndul dumneavoastră}
 %=============================================================================
-\section{Bibliografie}
 
-\begin{frame}{Bibliografie I}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Fundamentele Seriilor de Timp}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Hyndman, R.J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice}, 3rd ed., OTexts.
-            \item Shumway, R.H., \& Stoffer, D.S. (2017). \textit{Time Series Analysis and Its Applications}, 4th ed., Springer.
-            \item Brockwell, P.J., \& Davis, R.A. (2016). \textit{Introduction to Time Series and Forecasting}, 3rd ed., Springer.
-        \end{itemize}
-        }
-    \end{block}
-
-    \begin{exampleblock}{Serii de Timp Financiare}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Tsay, R.S. (2010). \textit{Analysis of Financial Time Series}, 3rd ed., Wiley.
-            \item Franke, J., H\"ardle, W.K., \& Hafner, C.M. (2019). \textit{Statistics of Financial Markets}, 4th ed., Springer.
-        \end{itemize}
-        }
-    \end{exampleblock}
-    \end{cminipage}
+\begin{frame}{A4 [Propus]: Alte cifre --- cerință}
+\itemsize{\footnotesize}
+\begin{itemize}
+\item \textbf{Întrebarea}: puteți repeta A1--A3 fără rezolvarea în față?
+\item \textbf{Date}: o serie trimestrială 120, 150, 132, 168, 126 (T1 din anul 1 -- T1 din anul 2); o serie 5, 7, 6, 8, 9; o serie cu $m = 3$: antrenare 20, 30, 25, 22, 32, 27, test 23, 33, 29
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Model: A1, A2 și A3 [Rezolvat].
+    \item Calculați ratele de creștere față de perioada anterioară, diferențele logaritmilor și rata față de anul anterior a ultimului trimestru.
+    \item Calculați $r_1$ pentru seria 5, 7, 6, 8, 9 și banda $\pm 1{,}96/\sqrt T$.
+    \item Calculați MAE și RMSE ale prognozelor naive și naive sezoniere pentru valorile de test.
+\end{enumerate}
+\item \textbf{Raportați}: tabelul ratelor de creștere, $r_1$ și banda, cele patru măsuri ale erorii și o propoziție care numește prognoza mai bună
+\item Notebook: secțiunea A4
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Bibliografie II}
-    \begin{cminipage}{0.95\textwidth}
-    \begin{block}{Abordări Moderne și Machine Learning}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item Nielsen, A. (2019). \textit{Practical Time Series Analysis}, O'Reilly Media.
-            \item Petropoulos, F., et al. (2022). \textit{Forecasting: Theory and Practice}, International Journal of Forecasting.
-            \item Makridakis, S., Spiliotis, E., \& Assimakopoulos, V. (2020). The M4 Competition, International Journal of Forecasting.
-        \end{itemize}
-        }
-    \end{block}
+\ifsolutions
+\begin{frame}{A4: Rezolvare (profesor)}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Creștere}
+    \begin{itemize}
+        \item față de perioada anterioară, \%: $+$25{,}0; -12{,}0, $+$27{,}3; -25{,}0; diferențele logaritmilor: $+$22{,}3; -12{,}8, $+$24{,}1; -28{,}8
+        \item față de anul anterior (T1 din anul 2): $100\,(126/120 - 1) = +$5{,}0\%
+    \end{itemize}
+    \item \textbf{Autocorelația}: $\bar y = 7$, $\sum d^2 = 10$, $\sum d_t d_{t-1} = 1$
+    \begin{itemize}
+        \item $r_1 = $ 0{,}10; banda $\pm$0{,}88: nu se deosebește de 0
+    \end{itemize}
+    \item \textbf{Prognoze} (naivă: 27, 27, 27; naivă sezonieră: 22, 32, 27)
+    \begin{itemize}
+        \item naivă: MAE 4{,}00, RMSE 4{,}32; naivă sezonieră: MAE 1{,}33, RMSE 1{,}41; cîștigă prognoza naivă sezonieră
+    \end{itemize}
+\end{itemize}
+\end{frame}
+\fi
 
-    \begin{exampleblock}{Resurse Online și Cod}
-        {\small
-        \begin{itemize}\setlength{\itemsep}{0pt}
-            \item \textbf{Quantlet}: \url{https://quantlet.com} --- Depozit de cod pentru statistică
-            \item \textbf{Quantinar}: \url{https://quantinar.com} --- Platformă de învățare metode cantitative
-            \item \textbf{GitHub TSA}: \url{https://github.com/QuantLet/TSA/tree/main/TSA_ch0} --- Cod Python pentru acest seminar
-        \end{itemize}
-        }
-    \end{exampleblock}
-    \end{cminipage}
+\begin{frame}{B3 [Propus]: Inflația din România --- cerință}
+\itemsize{\footnotesize}
+\begin{itemize}
+\item \textbf{Întrebarea}: are inflația lunară un tipar sezonier pe care rata anuală îl ascunde?
+\item \textbf{Date}: IAPC al României, 2015 = 100, lunar, 1 ianuarie 2015 -- 1 august 2026 (Eurostat)
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Model: B1 și B2 [Rezolvat].
+    \item Calculați rata lunară și rata anuală a inflației, în \%.
+    \item Calculați inflația lunară medie pentru fiecare lună calendaristică.
+    \item Calculați ACF a ratei lunare pentru decalajele 1--24 și pe cea a ratei anuale la decalajul 1.
+    \item Interpretare: de ce este rata anuală atît de persistentă?
+\end{enumerate}
+\item \textbf{Raportați}: ultimele rate lunară și anuală, lunile cu media cea mai mare și cea mai mică, $r_1$ și $r_{12}$ ale ratei lunare, $r_1$ al ratei anuale și răspunsul la întrebarea de interpretare
+\item Notebook: secțiunea B3
+\end{itemize}
 \end{frame}
 
-\begin{frame}{}
-    \begin{cminipage}{0.95\textwidth}
-    \centering
-    \Huge\textcolor{IDAred}{Vă mulțumesc!}
+\ifsolutions
+\begin{frame}{B3: Rezolvare (profesor)}
+\itemsize{\footnotesize}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[width=0.94\textwidth,height=0.42\textheight,keepaspectratio]{ch0_sem_b3_acf.pdf}
+\end{center}
+\vspace{-2mm}
 
-    \vspace{1cm}
+\end{column}
+\begin{column}{0.47\textwidth}
+\begin{itemize}
+    \item august 2026: lunar $+$0{,}3\%, anual 6{,}3\%; vîrful ratei anuale: 14{,}6\%, în noiembrie 2022
+    \item luna cu media cea mai mare: octombrie (0{,}7\%); cea mai mică: iunie (-0{,}1\%)
+    \item rata lunară: $r_1 = $ 0{,}48, $r_{12} = $ 0{,}29 (banda $\pm$0{,}17): memorie și un vîrf sezonier
+    \item rata anuală: $r_1 = $ 0{,}98: două rate anuale consecutive au în comun 11 din cele 12 variații lunare (ca în sumele mobile ale lui Slutsky)
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+\fi
 
-    \Large\textcolor{MainBlue}{Întrebări?}
+\begin{frame}{B4 [Propus]: Electricitatea: naivă sau naivă sezonieră? --- cerință}
+\itemsize{\footnotesize}
+\begin{itemize}
+\item \textbf{Întrebarea}: pentru producția lunară de electricitate, este prognoza naivă sezonieră mai bună decît cea naivă?
+\item \textbf{Date}: producția netă de electricitate a României, TWh pe lună (Eurostat); setul de test: august 2024 -- iulie 2026 (24 de luni)
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Model: A3 [Rezolvat].
+    \item Împărțiți seria în timp: ultimele 24 de luni formează setul de test.
+    \item Prognozați setul de test cu metoda naivă și cu metoda naivă sezonieră ($m = 12$), folosind doar setul de antrenare.
+    \item Calculați MAE și RMSE pentru fiecare metodă și reprezentați grafic ambele prognoze, alături de datele de test.
+    \item Interpretare: de ce metoda naivă sezonieră nu cîștigă clar aici?
+\end{enumerate}
+\item \textbf{Raportați}: cele patru măsuri ale erorii, graficul și răspunsul la întrebarea de interpretare
+\item Notebook: secțiunea B4
+\end{itemize}
+\end{frame}
 
-    \vspace{0.8cm}
+\ifsolutions
+\begin{frame}{B4: Rezolvare (profesor)}
+\itemsize{\footnotesize}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[width=0.94\textwidth,height=0.42\textheight,keepaspectratio]{ch0_sem_b4_forecast.pdf}
+\end{center}
+\vspace{-2mm}
 
-    \normalsize
-    Materialele seminarului sunt disponibile la: \url{https://danpele.github.io/Time-Series-Analysis/}
+\end{column}
+\begin{column}{0.47\textwidth}
+\begin{itemize}
+    \item naivă (toate prognozele 3{,}97 TWh): MAE 0{,}28, RMSE 0{,}33
+    \item naivă sezonieră: MAE 0{,}28, RMSE 0{,}38
+    \item cele două sînt aproape egale: metoda naivă sezonieră copiază iarna puternică din anul de antrenare peste o perioadă de test cu nivel mai scăzut, deci erorile ei de iarnă sînt mari
+    \item o metodă care combină sezonalitatea și nivelul (Holt--Winters, la curs) se descurcă mai bine
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+\fi
 
-    \vspace{0.2cm}
 
-    \href{https://quantlet.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{ql_logo.png}} Quantlet} \hspace{0.5cm}
-    \href{https://quantinar.com}{\raisebox{-0.15em}{\includegraphics[height=0.8em]{qr_logo.png}} Quantinar}
-    \end{cminipage}
+%=============================================================================
+\section{Partea C: întrebări deschise}
+%=============================================================================
+
+\begin{frame}{C1: O idee de proiect}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Întrebarea}: cît din variația unei serii lunare românești este sezonieră și se schimbă tiparul sezonier în timp?
+    \item \textbf{Serii posibile} (Eurostat sau INS)
+    \begin{itemize}
+        \item producția de electricitate, sosirile de turiști, comerțul cu amănuntul, producția industrială
+    \end{itemize}
+    \item \textbf{Pași}
+    \begin{itemize}
+        \item reprezentați grafic seria și creșterea ei față de anul anterior
+        \item comparați media fiecărei luni calendaristice în primii și în ultimii cinci ani
+        \item după curs: descompuneți seria cu STL și comparați amplitudinea sezonieră în timp
+    \end{itemize}
+    \item Un prim pas bun pentru proiectul de echipă, legat de \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolele 0} și 4
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{C2 [Propus]: Critica unui răspuns generat de AI --- răspunsul}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Cererea} trimisă unui asistent AI: „Din PIB-ul real trimestrial al României, calculează rata medie anuală de creștere și RMSE pentru o prognoză naivă.”
+\end{itemize}
+\begin{lstlisting}
+g = read_eurostat('namq_10_gdp', 'Q.CLV10_MEUR.NSA.B1GQ.RO') / 1000
+growth = g.diff()                                # annual growth rate, %
+print('average annual growth:', growth.mean())
+test = g.sample(frac=0.2, random_state=1).sort_index()   # test set
+train = g.drop(test.index)                               # training set
+fc = train.reindex(g.index).ffill().shift(1).reindex(test.index)  # naive
+rmse = ((test - fc) ** 2).mean()
+print('RMSE of the naive forecast:', rmse)
+\end{lstlisting}
+\begin{itemize}
+    \item \textbf{Concluzia AI}: „PIB-ul României crește cu doar 0{,}24\% pe an, iar prognoza naivă are un RMSE de 111{,}9 miliarde EUR, mai mare decît PIB-ul însuși: prognoza PIB este fără speranță.”
+\end{itemize}
+\end{frame}
+
+\begin{frame}{C2 [Propus]: Critica unui răspuns generat de AI --- cerință}
+\itemsize{\small}
+\begin{itemize}
+\item \textbf{Întrebarea}: puteți avea încredere într-un cod care rulează fără niciun mesaj de eroare?
+\item \textbf{Date}: codul și concluzia de pe slide-ul anterior; definițiile din noțiunile necesare
+\item \textbf{Cerințe}
+\begin{enumerate}
+    \item Model: A1, A3 și B1 [Rezolvat].
+    \item Găsiți cele trei greșeli introduse intenționat în cod.
+    \item Pentru fiecare greșeală, precizați cum ați detecta-o: o verificare a rezultatului, noțiunile necesare sau un exercițiu rezolvat.
+    \item Scrieți codul corectat, cu ultimele 8 trimestre ca set de test, și raportați rezultatele corectate.
+    \item Precizați dacă mai rămîne valabilă concluzia „prognoza PIB este fără speranță”.
+\end{enumerate}
+\item \textbf{Raportați}: cîte o linie pentru fiecare greșeală, în formatul: cerere, răspuns, greșeală, cum a fost găsită, corectare; creșterea și RMSE corectate
+\item Notebook: secțiunea C2
+\end{itemize}
+\end{frame}
+
+\ifsolutions
+\begin{frame}{C2: Rezolvare (profesor)}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Greșeala 1}: \texttt{g.diff()} este o variație în miliarde EUR pe un trimestru, nu o rată anuală de creștere în \%
+    \begin{itemize}
+        \item detectare: unitățile de măsură (A1, B1); corectare: \texttt{100 * (g / g.shift(4) - 1)}, media 2{,}9\% pe an
+    \end{itemize}
+    \item \textbf{Greșeala 2}: un set de test aleator; trimestrele de test mai vechi sînt prognozate cu date ulterioare
+    \begin{itemize}
+        \item detectare: noțiunile necesare (împărțire în timp); corectare: \texttt{train, test = g.iloc[:-8], g.iloc[-8:]}
+    \end{itemize}
+    \item \textbf{Greșeala 3}: eroarea pătratică medie fără rădăcina pătrată, în (miliarde EUR)$^2$
+    \begin{itemize}
+        \item detectare: un RMSE mai mare decît seria însăși (A3); corectare: \texttt{np.sqrt(...)}
+    \end{itemize}
+    \item Corectat, ultimele 8 trimestre: RMSE 8{,}36 miliarde EUR (naivă), 0{,}56 (naivă sezonieră): concluzia nu se susține; un reper sezonier prognozează PIB-ul cu o eroare de aproximativ 1\%
+\end{itemize}
+\end{frame}
+\fi
+
+
+%=============================================================================
+\section{Încheiere}
+%=============================================================================
+
+\begin{frame}{Exerciții pentru acasă}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Terminați exercițiile propuse}: A4, B3, B4 și C2
+    \begin{itemize}
+        \item fiecare indică exercițiul rezolvat care servește drept model
+    \end{itemize}
+    \item \textbf{Încercați încă o serie}
+    \begin{itemize}
+        \item repetați B1 pentru PIB-ul zonei euro (cheia \texttt{Q.CLV10\_MEUR.NSA.B1GQ.EA20}) și comparați oscilațiile sezoniere cu cele ale României
+    \end{itemize}
+    \item \textbf{Rezolvați quiz-ul \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolului 0}} pe site-ul cursului: 20 de întrebări, cu explicație pentru fiecare răspuns
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recapitulare; urmează cursul din \tsachlinkt{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0}}
+\itemsize{\footnotesize}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\begin{itemize}
+    \item \textbf{Azi}
+    \begin{itemize}
+        \item pentru datele neajustate, raportați creșterea pe un an, nu pe un trimestru
+        \item $r_k$: cît își amintește o serie valoarea de acum $k$ perioade
+        \item nivelurile cu trend au memorie lungă; variațiile zilnice ale prețurilor au memorie redusă
+        \item prognozele naivă și naivă sezonieră sînt reperele; împărțiți în timp, apoi măsurați MAE și RMSE
+        \item codul generat de AI poate rula și totuși să fie greșit
+    \end{itemize}
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}
+    \item \textbf{La curs}
+    \begin{itemize}
+        \item Cum este organizat și evaluat cursul?
+        \item Ce componente alcătuiesc o serie de timp?
+        \item Cum prognozează netezirea exponențială?
+        \item Ce prognoze cîștigă pe datele reale ale României?
+    \end{itemize}
+    \item Seminarul are rol de exercițiu și nu se notează; rezolvările cerințelor [Propus] se discută la seminar
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 \end{document}

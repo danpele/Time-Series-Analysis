@@ -1,7 +1,6 @@
 // ============================================================
 // Chapter 0 quiz bank: Introduction: components and exponential smoothing (EN + RO)
-// 20 questions ported from the 2025/2026 site; 20 drawn per attempt.
-// The bank grows to 24 questions when the chapter is rebuilt.
+// 24 questions, 20 drawn per attempt.
 // correct = index (0-3) of the right option in the original order.
 // incorrectExplanation must not name a letter: the engine prepends
 // "The correct answer is X) ..." after shuffling the options.
@@ -10,17 +9,71 @@ window.TSA_DATA.quizzes['intro'] = {
     "draw": 20,
     "questions": [
         {
+            "correct": 0,
+            "en": {
+                "title": "What a time series is",
+                "text": "What distinguishes a time series from a cross-section?",
+                "options": [
+                    "Its observations are ordered in time and usually depend on each other",
+                    "It always contains more observations than a cross-section",
+                    "Its observations are independent draws from one distribution",
+                    "It can only be analysed with a regression on time"
+                ],
+                "correctExplanation": "A time series follows one variable over time; consecutive observations are usually related, and this dependence is the information used for forecasting.",
+                "incorrectExplanation": "The number of observations and the choice of method do not define a time series; the key is the order in time and the dependence between consecutive observations, which also rules out the independence assumption."
+            },
+            "ro": {
+                "title": "Ce este o serie de timp",
+                "text": "Ce deosebește o serie de timp de un set de date transversale?",
+                "options": [
+                    "Observațiile ei sînt ordonate în timp și depind, de obicei, unele de altele",
+                    "Conține întotdeauna mai multe observații decît un set de date transversale",
+                    "Observațiile ei sînt extrageri independente din aceeași distribuție",
+                    "Poate fi analizată doar printr-o regresie pe timp"
+                ],
+                "correctExplanation": "O serie de timp urmărește o variabilă în timp; observațiile consecutive sînt de obicei legate între ele, iar această dependență este informația folosită pentru prognoză.",
+                "incorrectExplanation": "Numărul de observații și metoda aleasă nu definesc o serie de timp; esențiale sînt ordinea în timp și dependența dintre observațiile consecutive, care exclude și ipoteza de independență."
+            }
+        },
+        {
             "correct": 1,
+            "en": {
+                "title": "Seasonality and cycle",
+                "text": "What distinguishes seasonality from a cycle?",
+                "options": [
+                    "A cycle repeats every 12 months; seasonality has no fixed length",
+                    "Seasonality repeats with a fixed, known period; a cycle has no fixed period",
+                    "Seasonality appears only in financial data; cycles only in macroeconomic data",
+                    "There is no difference: the two words mean the same component"
+                ],
+                "correctExplanation": "Seasonality has a fixed period known in advance (4 quarters, 12 months); cycles such as recessions arrive at irregular moments and last an irregular time.",
+                "incorrectExplanation": "The distinction is the period: fixed and known for seasonality, irregular for cycles. It does not depend on the field, and the two are different components with different forecastability."
+            },
+            "ro": {
+                "title": "Sezonalitate și ciclu",
+                "text": "Ce deosebește sezonalitatea de un ciclu?",
+                "options": [
+                    "Ciclul se repetă la fiecare 12 luni; sezonalitatea nu are o durată fixă",
+                    "Sezonalitatea se repetă cu o perioadă fixă și cunoscută; ciclul nu are o perioadă fixă",
+                    "Sezonalitatea apare doar în datele financiare, iar ciclurile doar în cele macroeconomice",
+                    "Nu există nicio diferență: cele două cuvinte desemnează aceeași componentă"
+                ],
+                "correctExplanation": "Sezonalitatea are o perioadă fixă, cunoscută dinainte (4 trimestre, 12 luni); ciclurile, precum recesiunile, apar în momente neregulate și durează un timp neregulat.",
+                "incorrectExplanation": "Diferența ține de perioadă: fixă și cunoscută pentru sezonalitate, neregulată pentru cicluri. Nu depinde de domeniu, iar cele două sînt componente distincte, cu previzibilitate diferită."
+            }
+        },
+        {
+            "correct": 2,
             "en": {
                 "title": "Additive and multiplicative decomposition",
                 "text": "When should additive decomposition be preferred to multiplicative decomposition?",
                 "options": [
                     "When the seasonal amplitude grows with the level of the series",
-                    "When the seasonal amplitude stays constant over time",
                     "When the series has a strong downward trend",
+                    "When the seasonal amplitude stays constant over time",
                     "When the series contains missing values"
                 ],
-                "correctExplanation": "Additive decomposition $Y_t = T_t + S_t + R_t$ fits series whose seasonal swings keep the same size whatever the level. Multiplicative decomposition $Y_t = T_t \\times S_t \\times R_t$ fits series whose seasonal swings scale with the level.",
+                "correctExplanation": "Additive decomposition $y_t = T_t + S_t + R_t$ fits series whose seasonal swings keep the same size whatever the level. Multiplicative decomposition $y_t = T_t \\times S_t \\times R_t$ fits series whose seasonal swings scale with the level.",
                 "incorrectExplanation": "The choice depends on how the seasonal amplitude behaves, not on the direction of the trend or on missing values. A seasonal amplitude that grows with the level calls for the multiplicative form; a constant amplitude calls for the additive form."
             },
             "ro": {
@@ -28,147 +81,66 @@ window.TSA_DATA.quizzes['intro'] = {
                 "text": "Cînd este preferabilă descompunerea aditivă celei multiplicative?",
                 "options": [
                     "Cînd amplitudinea sezonieră crește odată cu nivelul seriei",
-                    "Cînd amplitudinea sezonieră rămîne constantă în timp",
                     "Cînd seria are un trend descendent puternic",
+                    "Cînd amplitudinea sezonieră rămîne constantă în timp",
                     "Cînd seria conține valori lipsă"
                 ],
-                "correctExplanation": "Descompunerea aditivă $Y_t = T_t + S_t + R_t$ se potrivește seriilor ale căror oscilații sezoniere păstrează aceeași mărime indiferent de nivel. Descompunerea multiplicativă $Y_t = T_t \\times S_t \\times R_t$ se potrivește seriilor ale căror oscilații sezoniere cresc proporțional cu nivelul.",
+                "correctExplanation": "Descompunerea aditivă $y_t = T_t + S_t + R_t$ se potrivește seriilor ale căror oscilații sezoniere păstrează aceeași mărime indiferent de nivel. Descompunerea multiplicativă $y_t = T_t \\times S_t \\times R_t$ se potrivește seriilor ale căror oscilații sezoniere cresc proporțional cu nivelul.",
                 "incorrectExplanation": "Alegerea depinde de comportamentul amplitudinii sezoniere, nu de sensul trendului sau de valorile lipsă. O amplitudine care crește odată cu nivelul cere forma multiplicativă; o amplitudine constantă cere forma aditivă."
             }
         },
         {
-            "correct": 1,
+            "correct": 3,
             "en": {
-                "title": "Exponential smoothing methods",
-                "text": "Which exponential smoothing method should be used for a series with both trend and seasonality?",
+                "title": "Seasonal factor",
+                "text": "In a multiplicative decomposition of quarterly GDP, the seasonal factor of the first quarter is 0.76. What does it mean?",
                 "options": [
-                    "Simple exponential smoothing (SES)",
-                    "The Holt-Winters method",
-                    "A simple moving average",
-                    "Holt's linear method"
+                    "GDP falls by 0.76% every first quarter",
+                    "76% of the variance of GDP is seasonal",
+                    "The first quarter is 0.76 billion EUR below the trend",
+                    "A typical first quarter is about 24% below the trend-cycle"
                 ],
-                "correctExplanation": "Holt-Winters (triple exponential smoothing) has three smoothing equations, for the level, the trend and the seasonal component, so it is built for series with both trend and seasonality.",
-                "incorrectExplanation": "SES models only the level and suits series without trend or seasonality; Holt's linear method adds a trend but no seasonality; a simple moving average is a smoother, not a forecasting method with trend and seasonal components. Only Holt-Winters covers level, trend and seasonality."
+                "correctExplanation": "In the multiplicative model $y_t = T_t \\times S_t \\times R_t$, a factor of 0.76 multiplies the trend-cycle: the typical first quarter is $1 - 0.76 = 24\\%$ below it.",
+                "incorrectExplanation": "A multiplicative factor is a ratio to the trend-cycle, not a percentage change, a share of variance or an amount in euros; 0.76 means 24% below the trend-cycle."
             },
             "ro": {
-                "title": "Metode de netezire exponențială",
-                "text": "Ce metodă de netezire exponențială trebuie folosită pentru o serie care prezintă atît trend, cît și sezonalitate?",
+                "title": "Factorul sezonier",
+                "text": "Într-o descompunere multiplicativă a PIB-ului trimestrial, factorul sezonier al trimestrului I este 0,76. Ce înseamnă?",
                 "options": [
-                    "Netezirea exponențială simplă (SES)",
-                    "Metoda Holt-Winters",
-                    "Media mobilă simplă",
-                    "Metoda liniară Holt"
+                    "PIB-ul scade cu 0,76% în fiecare trimestru I",
+                    "76% din varianța PIB este sezonieră",
+                    "Trimestrul I se află cu 0,76 miliarde EUR sub trend",
+                    "Un trimestru I tipic se află cu aproximativ 24% sub trend-ciclu"
                 ],
-                "correctExplanation": "Holt-Winters (netezirea exponențială triplă) are trei ecuații de netezire, pentru nivel, trend și componenta sezonieră, deci este construită pentru serii cu trend și sezonalitate.",
-                "incorrectExplanation": "SES modelează doar nivelul și se potrivește seriilor fără trend și fără sezonalitate; metoda liniară Holt adaugă trendul, dar nu și sezonalitatea; media mobilă simplă este un instrument de netezire, nu o metodă de prognoză cu componente de trend și sezonalitate. Numai Holt-Winters acoperă nivelul, trendul și sezonalitatea."
+                "correctExplanation": "În modelul multiplicativ $y_t = T_t \\times S_t \\times R_t$, factorul 0,76 înmulțește trend-ciclul: trimestrul I tipic se află cu $1 - 0,76 = 24\\%$ sub acesta.",
+                "incorrectExplanation": "Un factor multiplicativ este un raport față de trend-ciclu, nu o variație procentuală, o pondere a varianței sau o sumă în euro; 0,76 înseamnă 24% sub trend-ciclu."
             }
         },
         {
-            "correct": 1,
+            "correct": 0,
             "en": {
-                "title": "Cross-validation for time series",
-                "text": "Why is standard k-fold cross-validation problematic for time series data?",
+                "title": "Centred moving average",
+                "text": "What is the main purpose of a centred $2 \\times m$ moving average in a decomposition?",
                 "options": [
-                    "It requires too much data",
-                    "It would use future observations to predict past observations",
-                    "It does not work with seasonal data",
-                    "It is too slow computationally"
-                ],
-                "correctExplanation": "Standard k-fold assigns observations to folds at random, so the model is often trained on observations that come after the ones it is evaluated on. This leaks future information and overstates forecast accuracy. Time series cross-validation keeps the chronological order.",
-                "incorrectExplanation": "The problem is neither sample size, seasonality nor computing time: it is the violation of temporal order. Training on future observations to predict past ones is data leakage; rolling-origin validation avoids it."
-            },
-            "ro": {
-                "title": "Validarea încrucișată pentru serii de timp",
-                "text": "De ce este problematică validarea încrucișată k-fold standard pentru seriile de timp?",
-                "options": [
-                    "Necesită prea multe date",
-                    "Ar folosi observații viitoare pentru a prognoza observații trecute",
-                    "Nu funcționează cu date sezoniere",
-                    "Este prea lentă din punct de vedere computațional"
-                ],
-                "correctExplanation": "K-fold standard repartizează aleator observațiile în subeșantioane, astfel încît modelul este adesea antrenat pe observații ulterioare celor pe care este evaluat. Se scurge astfel informație din viitor, iar acuratețea prognozei este supraestimată. Validarea încrucișată pentru serii de timp păstrează ordinea cronologică.",
-                "incorrectExplanation": "Problema nu ține de volumul de date, de sezonalitate sau de timpul de calcul, ci de încălcarea ordinii temporale. Antrenarea pe observații viitoare pentru a prognoza observații trecute este o scurgere de informație (data leakage); validarea cu origine mobilă (rolling origin) o evită."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Smoothing parameter",
-                "text": "What happens when the smoothing parameter $\\alpha$ of simple exponential smoothing moves towards 1?",
-                "options": [
-                    "The forecast becomes smoother and more stable",
-                    "The forecast reacts more strongly to recent observations",
-                    "The forecast converges to the sample mean of the series",
-                    "The model gains additional parameters"
-                ],
-                "correctExplanation": "In SES, $\\hat{y}_{t+1} = \\alpha y_t + (1-\\alpha)\\hat{y}_t$. A value of $\\alpha$ close to 1 puts almost all the weight on the latest observation, so the forecast reacts quickly to changes but is also more volatile; at $\\alpha = 1$ it becomes the naive forecast.",
-                "incorrectExplanation": "A smooth, stable forecast corresponds to a small $\\alpha$, and a forecast close to the overall mean arises as $\\alpha \\to 0$ with a long history. The number of parameters does not change with $\\alpha$. As $\\alpha \\to 1$, the weight shifts to the most recent observations."
-            },
-            "ro": {
-                "title": "Parametrul de netezire",
-                "text": "Ce se întîmplă cînd parametrul de netezire $\\alpha$ al netezirii exponențiale simple se apropie de 1?",
-                "options": [
-                    "Prognoza devine mai netedă și mai stabilă",
-                    "Prognoza reacționează mai puternic la observațiile recente",
-                    "Prognoza converge către media de selecție a seriei",
-                    "Modelul capătă parametri suplimentari"
-                ],
-                "correctExplanation": "În SES, $\\hat{y}_{t+1} = \\alpha y_t + (1-\\alpha)\\hat{y}_t$. O valoare a lui $\\alpha$ apropiată de 1 pune aproape toată ponderea pe ultima observație, deci prognoza reacționează rapid la schimbări, dar este și mai volatilă; pentru $\\alpha = 1$ se obține prognoza naivă.",
-                "incorrectExplanation": "O prognoză netedă și stabilă corespunde unui $\\alpha$ mic, iar o prognoză apropiată de media generală apare cînd $\\alpha \\to 0$ și istoricul este lung. Numărul de parametri nu depinde de $\\alpha$. Cînd $\\alpha \\to 1$, ponderea se mută pe observațiile cele mai recente."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Deterministic and stochastic trend",
-                "text": "What is the correct way to handle the two types of trend?",
-                "options": [
-                    "Always use differencing, whatever the type of trend",
-                    "Deterministic trend: regression on time; stochastic trend: differencing",
-                    "Always use regression on time, whatever the type of trend",
-                    "Ignore the trend, because it vanishes in long samples"
-                ],
-                "correctExplanation": "A deterministic trend is a fixed function of time and is removed by regressing the series on time. A stochastic trend comes from a unit root (random walk component) and is removed by differencing.",
-                "incorrectExplanation": "Differencing a trend-stationary series over-differences it and creates a non-invertible MA component; regressing a unit-root series on time leaves a non-stationary residual and can produce spurious results. A trend never vanishes in long samples. The treatment must match the type of trend."
-            },
-            "ro": {
-                "title": "Trend determinist și trend stochastic",
-                "text": "Care este modul corect de tratare a celor două tipuri de trend?",
-                "options": [
-                    "Se folosește întotdeauna diferențierea, indiferent de tipul trendului",
-                    "Trend determinist: regresie pe timp; trend stochastic: diferențiere",
-                    "Se folosește întotdeauna regresia pe timp, indiferent de tipul trendului",
-                    "Trendul se ignoră, deoarece dispare în eșantioanele lungi"
-                ],
-                "correctExplanation": "Un trend determinist este o funcție fixă de timp și se elimină prin regresia seriei pe timp. Un trend stochastic provine dintr-o rădăcină unitară (o componentă de mers aleator) și se elimină prin diferențiere.",
-                "incorrectExplanation": "Diferențierea unei serii staționare în jurul unui trend o supradiferențiază și creează o componentă MA neinversabilă; regresia pe timp a unei serii cu rădăcină unitară lasă reziduuri nestaționare și poate produce rezultate false. Trendul nu dispare în eșantioanele lungi. Tratamentul trebuie să corespundă tipului de trend."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Moving average",
-                "text": "What is the main purpose of a centred moving average in time series analysis?",
-                "options": [
-                    "To forecast future values",
-                    "To extract the trend component by smoothing out noise and seasonality",
+                    "To estimate the trend-cycle by averaging out the seasonal pattern and the noise",
+                    "To forecast the next $m$ values",
                     "To increase the variance of the series",
                     "To detect outliers"
                 ],
-                "correctExplanation": "A centred moving average whose window spans a full seasonal cycle averages out the seasonal effect and short-term noise, leaving an estimate of the trend (trend-cycle).",
-                "incorrectExplanation": "A centred average uses observations on both sides of $t$, so it cannot forecast; it reduces rather than increases variance, and it is not an outlier detector. Its role in classical decomposition is to estimate the trend."
+                "correctExplanation": "A moving average over one full season gives every season the same weight, so the seasonal effects cancel; what remains is a smooth estimate of the trend-cycle.",
+                "incorrectExplanation": "A centred moving average uses future values as well as past ones, so it cannot forecast; it reduces the variance instead of increasing it, and it is not an outlier test. Its role is to estimate the trend-cycle."
             },
             "ro": {
-                "title": "Media mobilă",
-                "text": "Care este scopul principal al unei medii mobile centrate în analiza seriilor de timp?",
+                "title": "Media mobilă centrată",
+                "text": "Care este rolul principal al unei medii mobile centrate $2 \\times m$ într-o descompunere?",
                 "options": [
-                    "Prognoza valorilor viitoare",
-                    "Extragerea componentei de trend prin netezirea zgomotului și a sezonalității",
+                    "Estimarea trend-ciclului, prin compensarea tiparului sezonier și a zgomotului",
+                    "Prognoza următoarelor $m$ valori",
                     "Creșterea varianței seriei",
-                    "Detectarea valorilor aberante"
+                    "Detectarea valorilor extreme"
                 ],
-                "correctExplanation": "O medie mobilă centrată a cărei fereastră acoperă un ciclu sezonier complet elimină prin mediere efectul sezonier și zgomotul de termen scurt, lăsînd o estimare a trendului (trend-ciclu).",
-                "incorrectExplanation": "O medie centrată folosește observații de ambele părți ale lui $t$, deci nu poate prognoza; reduce varianța, nu o crește, și nu este un instrument de detectare a valorilor aberante. Rolul ei în descompunerea clasică este estimarea trendului."
+                "correctExplanation": "O medie mobilă pe un sezon complet acordă aceeași pondere fiecărui sezon, deci efectele sezoniere se compensează; rămîne o estimare netedă a trend-ciclului.",
+                "incorrectExplanation": "O medie mobilă centrată folosește și valori viitoare, nu doar trecute, deci nu poate prognoza; reduce varianța în loc să o crească și nu este un test pentru valori extreme. Rolul ei este estimarea trend-ciclului."
             }
         },
         {
@@ -177,133 +149,430 @@ window.TSA_DATA.quizzes['intro'] = {
                 "title": "STL decomposition",
                 "text": "What is the main advantage of STL decomposition over classical decomposition?",
                 "options": [
-                    "It is faster to compute",
-                    "It allows the seasonal component to change over time and is robust to outliers",
+                    "It handles calendar effects such as Easter automatically",
+                    "It lets the seasonal component change over time and is robust to outliers",
                     "It requires no parameters",
                     "It works only with monthly data"
                 ],
-                "correctExplanation": "STL (Seasonal-Trend decomposition using LOESS) lets the seasonal pattern evolve over time and has a robust option that downweights outliers, so a few extreme values do not distort the trend and seasonal estimates.",
-                "incorrectExplanation": "Speed is not its selling point, it does require parameters (the seasonal and trend window lengths), and it works with any seasonal period. Its advantages are a time-varying seasonal component and robustness to outliers."
+                "correctExplanation": "STL (Seasonal and Trend decomposition using LOESS) lets the seasonal pattern evolve slowly, estimates the trend up to the last observation and, in its robust version, sends outliers into the remainder.",
+                "incorrectExplanation": "STL needs choices such as the period and the smoothness, works with any seasonal period and does not treat calendar effects; its advantage is a seasonal pattern that may change and robustness to outliers."
             },
             "ro": {
                 "title": "Descompunerea STL",
                 "text": "Care este principalul avantaj al descompunerii STL față de descompunerea clasică?",
                 "options": [
-                    "Se calculează mai rapid",
-                    "Permite componentei sezoniere să se modifice în timp și este robustă la valori aberante",
+                    "Tratează automat efectele de calendar, precum Paștele",
+                    "Permite componentei sezoniere să se modifice în timp și este robustă la valori extreme",
                     "Nu necesită parametri",
                     "Funcționează doar cu date lunare"
                 ],
-                "correctExplanation": "STL (Seasonal-Trend decomposition using LOESS) permite tiparului sezonier să evolueze în timp și are o variantă robustă care reduce ponderea valorilor aberante, astfel încît cîteva valori extreme nu distorsionează estimările trendului și ale sezonalității.",
-                "incorrectExplanation": "Viteza nu este avantajul ei, necesită parametri (lungimile ferestrelor pentru sezonalitate și trend) și funcționează cu orice perioadă sezonieră. Avantajele sînt componenta sezonieră variabilă în timp și robustețea la valori aberante."
+                "correctExplanation": "STL (Seasonal and Trend decomposition using LOESS) permite tiparului sezonier să evolueze lent, estimează trendul pînă la ultima observație și, în varianta robustă, trimite valorile extreme în componenta neregulată.",
+                "incorrectExplanation": "STL cere alegeri precum perioada și gradul de netezire, funcționează cu orice perioadă sezonieră și nu tratează efectele de calendar; avantajul ei este un tipar sezonier care se poate modifica și robustețea la valori extreme."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Seasonal period",
+                "text": "For monthly data with a yearly seasonal pattern, what is the seasonal period $m$?",
+                "options": [
+                    "$m = 4$",
+                    "$m = 52$",
+                    "$m = 12$",
+                    "$m = 365$"
+                ],
+                "correctExplanation": "The pattern repeats every year and a year has 12 monthly observations, so $m = 12$; quarterly data have $m = 4$.",
+                "incorrectExplanation": "The period counts the observations in one full seasonal cycle: 4 for quarterly data, 52 for weekly data, 365 for daily data; monthly data with a yearly pattern have $m = 12$."
+            },
+            "ro": {
+                "title": "Perioada sezonieră",
+                "text": "Pentru date lunare cu un tipar sezonier anual, cît este perioada sezonieră $m$?",
+                "options": [
+                    "$m = 4$",
+                    "$m = 52$",
+                    "$m = 12$",
+                    "$m = 365$"
+                ],
+                "correctExplanation": "Tiparul se repetă în fiecare an, iar un an are 12 observații lunare, deci $m = 12$; datele trimestriale au $m = 4$.",
+                "incorrectExplanation": "Perioada numără observațiile dintr-un ciclu sezonier complet: 4 pentru date trimestriale, 52 pentru date săptămînale, 365 pentru date zilnice; datele lunare cu tipar anual au $m = 12$."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Growth rate of an unadjusted series",
+                "text": "Unadjusted Romanian GDP falls by about a third from the fourth quarter to the next first quarter. Which growth rate should be reported?",
+                "options": [
+                    "The growth over the previous quarter, $100\\,(y_t / y_{t-1} - 1)$",
+                    "The first difference $y_t - y_{t-1}$ in billion EUR",
+                    "The sum of the last four quarterly growth rates",
+                    "The growth over the same quarter of the previous year, $100\\,(y_t / y_{t-4} - 1)$"
+                ],
+                "correctExplanation": "Comparing a quarter with the same quarter a year earlier cancels the seasonal pattern; the fall from Q4 to Q1 is winter, not a recession.",
+                "incorrectExplanation": "Changes over one quarter, in percent or in euros, are dominated by the season for unadjusted data, and adding quarterly rates mixes the seasonal swings; the year-on-year rate compares like with like."
+            },
+            "ro": {
+                "title": "Rata de creștere a unei serii neajustate",
+                "text": "PIB-ul neajustat al României scade cu aproximativ o treime din trimestrul IV în trimestrul I următor. Ce rată de creștere trebuie raportată?",
+                "options": [
+                    "Creșterea față de trimestrul anterior, $100\\,(y_t / y_{t-1} - 1)$",
+                    "Diferența de ordinul întîi $y_t - y_{t-1}$, în miliarde EUR",
+                    "Suma ultimelor patru rate trimestriale de creștere",
+                    "Creșterea față de același trimestru al anului anterior, $100\\,(y_t / y_{t-4} - 1)$"
+                ],
+                "correctExplanation": "Comparația cu același trimestru din anul anterior anulează tiparul sezonier; scăderea din trimestrul IV în trimestrul I este iarna, nu o recesiune.",
+                "incorrectExplanation": "Variațiile pe un trimestru, procentuale sau în euro, sînt dominate de sezonalitate în cazul datelor neajustate, iar suma ratelor trimestriale amestecă oscilațiile sezoniere; rata față de anul anterior compară perioade comparabile."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Log transformation",
+                "text": "When is a logarithmic transformation appropriate for a time series?",
+                "options": [
+                    "When the variance grows with the level, or when the patterns are multiplicative",
+                    "When the series has negative values",
+                    "When the data are already stationary",
+                    "When the variance should be increased"
+                ],
+                "correctExplanation": "The logarithm turns multiplicative patterns into additive ones and stabilises a variance that grows with the level; differences of logs are approximately percentage changes.",
+                "incorrectExplanation": "The logarithm is not defined for negative values, it is not needed when the variance is already stable, and it reduces rather than increases the spread of large values."
+            },
+            "ro": {
+                "title": "Transformarea logaritmică",
+                "text": "Cînd este potrivită transformarea logaritmică a unei serii de timp?",
+                "options": [
+                    "Cînd varianța crește odată cu nivelul sau cînd tiparele sînt multiplicative",
+                    "Cînd seria are valori negative",
+                    "Cînd datele sînt deja staționare",
+                    "Cînd se dorește creșterea varianței"
+                ],
+                "correctExplanation": "Logaritmul transformă tiparele multiplicative în tipare aditive și stabilizează o varianță care crește odată cu nivelul; diferențele logaritmilor sînt aproximativ variații procentuale.",
+                "incorrectExplanation": "Logaritmul nu este definit pentru valori negative, nu este necesar cînd varianța este deja stabilă și reduce, nu crește, dispersia valorilor mari."
             }
         },
         {
             "correct": 1,
             "en": {
-                "title": "Forecast error metrics",
-                "text": "Which error metric is scale-independent and allows comparisons across different time series?",
+                "title": "ACF of a trending series",
+                "text": "The sample ACF of a monthly series decays very slowly and is still about 0.8 at lag 36. What does this suggest?",
                 "options": [
-                    "Mean absolute error (MAE)",
-                    "Mean absolute percentage error (MAPE)",
-                    "Root mean squared error (RMSE)",
-                    "Sum of squared errors (SSE)"
+                    "The series is independent noise",
+                    "The series has a trend: its level stays close to its past values for years",
+                    "The series has a seasonal period of 36 months",
+                    "The series has no memory beyond one month"
                 ],
-                "correctExplanation": "MAPE expresses each error as a percentage of the actual value, so it does not depend on the units of the series and can be compared across series with different scales.",
-                "incorrectExplanation": "MAE, RMSE and SSE are measured in the units of the series (or their square), so they change when the series is rescaled. MAPE is unit-free because it divides by the actual values."
+                "correctExplanation": "A slow, almost linear decay of the ACF is the signature of a trend (or of a stochastic trend): values far apart in time are still on the same side of the mean.",
+                "incorrectExplanation": "Independent noise has autocorrelations inside the band $\\pm 1.96/\\sqrt T$, a season shows peaks at multiples of its period, and a series without memory has $r_k$ close to 0 after the first lag."
             },
             "ro": {
-                "title": "Indicatori ai erorii de prognoză",
-                "text": "Ce indicator al erorii este independent de scală și permite comparații între serii de timp diferite?",
+                "title": "ACF-ul unei serii cu trend",
+                "text": "ACF de selecție a unei serii lunare descrește foarte lent și este încă aproximativ 0,8 la decalajul 36. Ce sugerează acest lucru?",
                 "options": [
-                    "Eroarea medie absolută (MAE)",
-                    "Eroarea medie absolută procentuală (MAPE)",
-                    "Rădăcina erorii pătratice medii (RMSE)",
-                    "Suma pătratelor erorilor (SSE)"
+                    "Seria este un zgomot independent",
+                    "Seria are un trend: nivelul ei rămîne apropiat de valorile trecute ani de zile",
+                    "Seria are o perioadă sezonieră de 36 de luni",
+                    "Seria nu are memorie dincolo de o lună"
                 ],
-                "correctExplanation": "MAPE exprimă fiecare eroare ca procent din valoarea efectivă, deci nu depinde de unitatea de măsură a seriei și poate fi comparată între serii cu scale diferite.",
-                "incorrectExplanation": "MAE, RMSE și SSE se măsoară în unitățile seriei (sau în pătratul lor), deci se modifică atunci cînd seria este rescalată. MAPE nu are unitate de măsură, deoarece împarte la valorile efective."
+                "correctExplanation": "O descreștere lentă, aproape liniară, a ACF este semnătura unui trend (sau a unui trend stochastic): valori îndepărtate în timp se află încă de aceeași parte a mediei.",
+                "incorrectExplanation": "Un zgomot independent are autocorelațiile în interiorul benzii $\\pm 1,96/\\sqrt T$, o sezonalitate produce vîrfuri la multiplii perioadei, iar o serie fără memorie are $r_k$ aproape de 0 după primul decalaj."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "The band of the correlogram",
+                "text": "A series has $T = 400$ observations. Which band is drawn around zero on its correlogram?",
+                "options": [
+                    "$\\pm 1.96/400 = \\pm 0.0049$",
+                    "$\\pm 1.96$",
+                    "$\\pm 1.96/\\sqrt{400} = \\pm 0.098$",
+                    "$\\pm 1/\\sqrt{1.96 \\times 400}$"
+                ],
+                "correctExplanation": "For independent noise the sample autocorrelations are approximately Normal with standard deviation $1/\\sqrt T$, so about 95% of them lie within $\\pm 1.96/\\sqrt T = \\pm 0.098$.",
+                "incorrectExplanation": "The standard deviation of $r_k$ under independence is $1/\\sqrt T$, not $1/T$ or 1; the band is 1.96 times that standard deviation."
+            },
+            "ro": {
+                "title": "Banda corelogramei",
+                "text": "O serie are $T = 400$ de observații. Ce bandă se trasează în jurul lui zero pe corelograma ei?",
+                "options": [
+                    "$\\pm 1,96/400 = \\pm 0,0049$",
+                    "$\\pm 1,96$",
+                    "$\\pm 1,96/\\sqrt{400} = \\pm 0,098$",
+                    "$\\pm 1/\\sqrt{1,96 \\times 400}$"
+                ],
+                "correctExplanation": "Pentru un zgomot independent, autocorelațiile de selecție urmează aproximativ distribuția Normală cu abaterea standard $1/\\sqrt T$, deci aproximativ 95% dintre ele se află în intervalul $\\pm 1,96/\\sqrt T = \\pm 0,098$.",
+                "incorrectExplanation": "Abaterea standard a lui $r_k$ în ipoteza de independență este $1/\\sqrt T$, nu $1/T$ sau 1; banda este de 1,96 ori această abatere standard."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Slutsky's experiment",
+                "text": "Slutsky replaced each of many independent random numbers by the sum of the last 10. What did he find?",
+                "options": [
+                    "The moving sums are again independent random numbers",
+                    "The moving sums show an exact 10-period cycle",
+                    "The moving sums have a linear trend",
+                    "The moving sums show smooth waves that look like business cycles"
+                ],
+                "correctExplanation": "Neighbouring moving sums share 9 of their 10 shocks, so they are strongly correlated and form irregular waves: cycles can arise from random shocks alone.",
+                "incorrectExplanation": "Overlapping sums cannot be independent; the waves have irregular lengths, not an exact period of 10; and the shocks have mean zero, so no trend appears."
+            },
+            "ro": {
+                "title": "Experimentul lui Slutsky",
+                "text": "Slutsky a înlocuit fiecare dintre numeroase numere aleatoare independente cu suma ultimelor 10. Ce a constatat?",
+                "options": [
+                    "Sumele mobile sînt din nou numere aleatoare independente",
+                    "Sumele mobile au un ciclu exact de 10 perioade",
+                    "Sumele mobile au un trend liniar",
+                    "Sumele mobile formează valuri netede care seamănă cu ciclurile economice"
+                ],
+                "correctExplanation": "Sumele mobile vecine au în comun 9 din cele 10 șocuri, deci sînt puternic corelate și formează valuri neregulate: ciclurile pot apărea doar din șocuri aleatoare.",
+                "incorrectExplanation": "Sumele care se suprapun nu pot fi independente; valurile au lungimi neregulate, nu o perioadă exactă de 10; iar șocurile au media zero, deci nu apare niciun trend."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Smoothing constant",
+                "text": "What happens when the smoothing constant $\\alpha$ of simple exponential smoothing moves towards 1?",
+                "options": [
+                    "The forecast reacts more strongly to the most recent observations",
+                    "The forecast becomes smoother and more stable",
+                    "The forecast converges to the sample mean of the series",
+                    "The model gains additional parameters"
+                ],
+                "correctExplanation": "In $\\ell_t = \\alpha y_t + (1-\\alpha)\\ell_{t-1}$ a large $\\alpha$ puts almost all the weight on the latest value; at $\\alpha = 1$ the forecast is the naive one.",
+                "incorrectExplanation": "Smooth, stable forecasts come from a small $\\alpha$; the sample mean corresponds to equal weights on all observations; the number of parameters does not change with $\\alpha$."
+            },
+            "ro": {
+                "title": "Constanta de netezire",
+                "text": "Ce se întîmplă cînd constanta de netezire $\\alpha$ a netezirii exponențiale simple se apropie de 1?",
+                "options": [
+                    "Prognoza reacționează mai puternic la cele mai recente observații",
+                    "Prognoza devine mai netedă și mai stabilă",
+                    "Prognoza converge către media de selecție a seriei",
+                    "Modelul capătă parametri suplimentari"
+                ],
+                "correctExplanation": "În $\\ell_t = \\alpha y_t + (1-\\alpha)\\ell_{t-1}$, un $\\alpha$ mare pune aproape toată ponderea pe ultima valoare; pentru $\\alpha = 1$, prognoza este cea naivă.",
+                "incorrectExplanation": "Prognozele netede și stabile provin dintr-un $\\alpha$ mic; media de selecție corespunde unor ponderi egale pentru toate observațiile; numărul de parametri nu se schimbă odată cu $\\alpha$."
             }
         },
         {
             "correct": 1,
+            "en": {
+                "title": "Estimated smoothing constant close to 1",
+                "text": "Simple exponential smoothing fitted to the monthly EUR/RON gives an estimated $\\hat\\alpha \\approx 1$. What does this say?",
+                "options": [
+                    "The method failed and the estimate should be ignored",
+                    "The last value contains almost all the information: SES reduces to the naive forecast",
+                    "The exchange rate has a strong seasonal pattern",
+                    "The best forecast is the average of the whole sample"
+                ],
+                "correctExplanation": "With $\\alpha = 1$ the level equals the last observation, as for a random walk; this is typical of exchange rates and prices and is a finding about the series.",
+                "incorrectExplanation": "An estimate near 1 is a valid result, not a failure; seasonality is not modelled by SES at all; and the sample average corresponds to the opposite extreme of very small weights on each observation."
+            },
+            "ro": {
+                "title": "Constantă de netezire estimată apropiată de 1",
+                "text": "Netezirea exponențială simplă aplicată cursului EUR/RON lunar conduce la $\\hat\\alpha \\approx 1$. Ce arată acest rezultat?",
+                "options": [
+                    "Metoda a eșuat, iar estimarea trebuie ignorată",
+                    "Ultima valoare conține aproape toată informația: SES se reduce la prognoza naivă",
+                    "Cursul de schimb are un tipar sezonier puternic",
+                    "Cea mai bună prognoză este media întregului eșantion"
+                ],
+                "correctExplanation": "Pentru $\\alpha = 1$, nivelul este egal cu ultima observație, ca la un mers aleator; rezultatul este tipic pentru cursurile de schimb și prețuri și spune ceva despre serie.",
+                "incorrectExplanation": "O estimare apropiată de 1 este un rezultat valid, nu un eșec; SES nu modelează deloc sezonalitatea; iar media eșantionului corespunde extremei opuse, cu ponderi foarte mici pentru fiecare observație."
+            }
+        },
+        {
+            "correct": 2,
             "en": {
                 "title": "Holt's linear method",
                 "text": "Which components does Holt's linear method model?",
                 "options": [
                     "Level only",
-                    "Level and trend",
                     "Level, trend and seasonality",
+                    "Level and trend",
                     "Seasonality only"
                 ],
-                "correctExplanation": "Holt's method (double exponential smoothing) has one smoothing equation for the level and one for the trend; it has no seasonal component.",
-                "incorrectExplanation": "The level alone is simple exponential smoothing, and level, trend and seasonality together are Holt-Winters. Holt's method adds a trend equation to SES, nothing more."
+                "correctExplanation": "Holt (1957) adds a trend equation to simple exponential smoothing; its forecasts are a straight line $\\ell_T + h\\,b_T$.",
+                "incorrectExplanation": "The level alone is simple exponential smoothing, and seasonality is added by the Holt-Winters method; Holt's method models the level and the trend."
             },
             "ro": {
                 "title": "Metoda liniară Holt",
                 "text": "Ce componente modelează metoda liniară Holt?",
                 "options": [
                     "Doar nivelul",
-                    "Nivelul și trendul",
                     "Nivelul, trendul și sezonalitatea",
+                    "Nivelul și trendul",
                     "Doar sezonalitatea"
                 ],
-                "correctExplanation": "Metoda Holt (netezirea exponențială dublă) are o ecuație de netezire pentru nivel și una pentru trend; nu are componentă sezonieră.",
-                "incorrectExplanation": "Doar nivelul corespunde netezirii exponențiale simple, iar nivelul, trendul și sezonalitatea împreună corespund metodei Holt-Winters. Metoda Holt adaugă la SES doar ecuația trendului."
+                "correctExplanation": "Holt (1957) adaugă netezirii exponențiale simple o ecuație pentru trend; prognozele ei formează o dreaptă $\\ell_T + h\\,b_T$.",
+                "incorrectExplanation": "Doar nivelul înseamnă netezirea exponențială simplă, iar sezonalitatea este adăugată de metoda Holt-Winters; metoda Holt modelează nivelul și trendul."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Damped trend",
+                "text": "What is the purpose of the damping parameter in Holt's method?",
+                "options": [
+                    "To make the trend grow faster",
+                    "To remove seasonality",
+                    "To speed up computation",
+                    "To flatten the trend at long horizons and prevent unrealistic extrapolation"
+                ],
+                "correctExplanation": "A damped trend lets the forecast slope shrink as the horizon grows, so long-horizon forecasts level off instead of growing without limit.",
+                "incorrectExplanation": "Damping slows the trend rather than accelerating it, it has nothing to do with seasonality, and it adds a parameter instead of saving computation."
+            },
+            "ro": {
+                "title": "Trendul amortizat",
+                "text": "Care este rolul parametrului de amortizare în metoda Holt?",
+                "options": [
+                    "Accelerează creșterea trendului",
+                    "Elimină sezonalitatea",
+                    "Crește viteza de calcul",
+                    "Aplatizează trendul la orizonturi lungi și previne extrapolarea nerealistă"
+                ],
+                "correctExplanation": "Un trend amortizat face ca panta prognozei să scadă pe măsură ce orizontul crește, astfel încît prognozele pe termen lung se stabilizează în loc să crească nelimitat.",
+                "incorrectExplanation": "Amortizarea încetinește trendul, nu îl accelerează, nu are legătură cu sezonalitatea și adaugă un parametru, în loc să reducă timpul de calcul."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Exponential smoothing with trend and season",
+                "text": "Which exponential smoothing method should be used for a series with both trend and seasonality?",
+                "options": [
+                    "The Holt-Winters method",
+                    "Simple exponential smoothing (SES)",
+                    "A simple moving average",
+                    "Holt's linear method"
+                ],
+                "correctExplanation": "Holt-Winters (1960) has three smoothing equations: level, trend and seasonal factors, so it captures both patterns.",
+                "incorrectExplanation": "SES has a level only, Holt adds a trend but no season, and a moving average does not forecast trend or season; only Holt-Winters models both."
+            },
+            "ro": {
+                "title": "Netezirea exponențială pentru trend și sezonalitate",
+                "text": "Ce metodă de netezire exponențială trebuie folosită pentru o serie cu trend și sezonalitate?",
+                "options": [
+                    "Metoda Holt-Winters",
+                    "Netezirea exponențială simplă (SES)",
+                    "Media mobilă simplă",
+                    "Metoda liniară Holt"
+                ],
+                "correctExplanation": "Holt-Winters (1960) are trei ecuații de netezire: nivel, trend și factori sezonieri, deci surprinde ambele tipare.",
+                "incorrectExplanation": "SES are doar nivel, metoda Holt adaugă un trend, dar nu și sezonalitate, iar media mobilă nu prognozează nici trendul, nici sezonalitatea; doar Holt-Winters le modelează pe amîndouă."
             }
         },
         {
             "correct": 1,
             "en": {
-                "title": "Seasonal period",
-                "text": "For monthly data with yearly seasonality, what is the seasonal period $m$?",
+                "title": "ETS notation",
+                "text": "In the notation ETS(A,A,A), what do the three letters stand for?",
                 "options": [
-                    "$m = 4$",
-                    "$m = 12$",
-                    "$m = 52$",
-                    "$m = 365$"
+                    "Average, average, average",
+                    "Additive error, additive trend, additive seasonality",
+                    "Three alpha parameters",
+                    "Autocorrelation at lags 1, 2 and 3"
                 ],
-                "correctExplanation": "One yearly cycle contains 12 monthly observations, so $m = 12$.",
-                "incorrectExplanation": "The other values are the periods for other frequencies with yearly seasonality: $m = 4$ for quarterly data, $m = 52$ for weekly data, $m = 365$ for daily data. Monthly data give $m = 12$."
+                "correctExplanation": "ETS stands for Error, Trend, Seasonal; each letter gives the form of one component: N (none), A (additive), A$_d$ (damped) or M (multiplicative).",
+                "incorrectExplanation": "The letters are not averages, smoothing parameters or autocorrelations; they describe the form of the error, the trend and the seasonal component."
             },
             "ro": {
-                "title": "Perioada sezonieră",
-                "text": "Pentru date lunare cu sezonalitate anuală, cît este perioada sezonieră $m$?",
+                "title": "Notația ETS",
+                "text": "În notația ETS(A,A,A), ce reprezintă cele trei litere?",
                 "options": [
-                    "$m = 4$",
-                    "$m = 12$",
-                    "$m = 52$",
-                    "$m = 365$"
+                    "Medie, medie, medie",
+                    "Eroare aditivă, trend aditiv, sezonalitate aditivă",
+                    "Trei parametri alfa",
+                    "Autocorelațiile la decalajele 1, 2 și 3"
                 ],
-                "correctExplanation": "Un ciclu anual conține 12 observații lunare, deci $m = 12$.",
-                "incorrectExplanation": "Celelalte valori sînt perioadele pentru alte frecvențe cu sezonalitate anuală: $m = 4$ pentru date trimestriale, $m = 52$ pentru date săptămînale, $m = 365$ pentru date zilnice. Datele lunare au $m = 12$."
+                "correctExplanation": "ETS înseamnă Error, Trend, Seasonal (eroare, trend, sezonalitate); fiecare literă indică forma unei componente: N (absentă), A (aditivă), A$_d$ (amortizată) sau M (multiplicativă).",
+                "incorrectExplanation": "Literele nu sînt medii, parametri de netezire sau autocorelații; ele descriu forma erorii, a trendului și a componentei sezoniere."
             }
         },
         {
-            "correct": 1,
+            "correct": 2,
+            "en": {
+                "title": "Naive forecast",
+                "text": "What is the naive forecast and why is it useful?",
+                "options": [
+                    "The most complex model available; useful for maximum accuracy",
+                    "The mean of all observations; useful for trending data",
+                    "The last observation used as the forecast; a benchmark that a model must beat",
+                    "A random forecast; useful for testing"
+                ],
+                "correctExplanation": "The naive forecast $\\hat y_{T+h} = y_T$ is optimal for a random walk and costs nothing; a model that cannot beat it on a test set is not worth using.",
+                "incorrectExplanation": "The naive forecast is the simplest method, not the most complex; the mean forecast performs badly on trending data; and nothing in it is random."
+            },
+            "ro": {
+                "title": "Prognoza naivă",
+                "text": "Ce este prognoza naivă și de ce este utilă?",
+                "options": [
+                    "Cel mai complex model disponibil; utilă pentru acuratețe maximă",
+                    "Media tuturor observațiilor; utilă pentru date cu trend",
+                    "Ultima observație folosită ca prognoză; un reper pe care un model trebuie să-l depășească",
+                    "O prognoză aleatoare; utilă pentru testare"
+                ],
+                "correctExplanation": "Prognoza naivă $\\hat y_{T+h} = y_T$ este optimă pentru un mers aleator și nu costă nimic; un model care nu o depășește pe un set de test nu merită folosit.",
+                "incorrectExplanation": "Prognoza naivă este cea mai simplă metodă, nu cea mai complexă; prognoza prin medie funcționează prost pe datele cu trend; iar în ea nu există nimic aleator."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Seasonal naive forecast",
+                "text": "For monthly data, what does the seasonal naive method forecast for next January?",
+                "options": [
+                    "The value of last December",
+                    "The average of all months",
+                    "Zero",
+                    "The value of last January"
+                ],
+                "correctExplanation": "The seasonal naive forecast is $\\hat y_{T+h} = y_{T+h-m}$: the value of the same season one period earlier, here last January.",
+                "incorrectExplanation": "Last December is the naive forecast, the average of all months is the mean forecast, and zero is not a forecast of a seasonal level; the seasonal naive method copies the same month of the previous year."
+            },
+            "ro": {
+                "title": "Prognoza naivă sezonieră",
+                "text": "Pentru date lunare, ce prognozează metoda naivă sezonieră pentru luna ianuarie următoare?",
+                "options": [
+                    "Valoarea din decembrie anterior",
+                    "Media tuturor lunilor",
+                    "Zero",
+                    "Valoarea din ianuarie anterior"
+                ],
+                "correctExplanation": "Prognoza naivă sezonieră este $\\hat y_{T+h} = y_{T+h-m}$: valoarea aceluiași sezon cu o perioadă mai devreme, aici ianuarie anterior.",
+                "incorrectExplanation": "Decembrie anterior este prognoza naivă, media lunilor este prognoza prin medie, iar zero nu este o prognoză a unui nivel sezonier; metoda naivă sezonieră copiază aceeași lună din anul anterior."
+            }
+        },
+        {
+            "correct": 0,
             "en": {
                 "title": "Training and test split",
                 "text": "In time series forecasting, how should the data be split into a training set and a test set?",
                 "options": [
-                    "Shuffle the observations at random and split",
-                    "Use the earlier observations for training and the later ones for testing",
-                    "Alternate between training and test observations",
-                    "Use the middle part of the sample for testing"
+                    "The earlier observations form the training set and the later ones the test set",
+                    "The observations are shuffled at random and then split",
+                    "Training and test observations alternate",
+                    "The middle part of the sample is used for testing"
                 ],
-                "correctExplanation": "The temporal order must be respected: the model is estimated on the past and evaluated on the future, exactly as it will be used in practice.",
-                "incorrectExplanation": "Random shuffling, alternating observations or a test block in the middle all let the model see observations that come after the test period, which leaks future information. The test set must be the most recent part of the sample."
+                "correctExplanation": "A forecast may use only the past; keeping the last observations hidden reproduces the real situation of forecasting the future.",
+                "incorrectExplanation": "Random, alternating or middle splits let the method see observations that come after the ones it forecasts, so the errors look smaller than they will be in practice."
             },
             "ro": {
-                "title": "Împărțirea în set de antrenare și set de test",
-                "text": "În prognoza seriilor de timp, cum trebuie împărțite datele în set de antrenare și set de test?",
+                "title": "Setul de antrenare și setul de test",
+                "text": "În prognoza seriilor de timp, cum se împart datele în set de antrenare și set de test?",
                 "options": [
+                    "Observațiile mai vechi formează setul de antrenare, iar cele mai recente setul de test",
                     "Observațiile se amestecă aleator și apoi se împart",
-                    "Observațiile mai vechi se folosesc pentru antrenare, iar cele mai recente pentru testare",
-                    "Observațiile se alternează între antrenare și test",
-                    "Partea din mijloc a eșantionului se folosește pentru testare"
+                    "Observațiile de antrenare și de test alternează",
+                    "Partea din mijloc a eșantionului se folosește pentru test"
                 ],
-                "correctExplanation": "Ordinea temporală trebuie respectată: modelul se estimează pe trecut și se evaluează pe viitor, exact cum va fi folosit în practică.",
-                "incorrectExplanation": "Amestecarea aleatoare, alternarea observațiilor sau un bloc de test la mijloc permit modelului să vadă observații ulterioare perioadei de test, ceea ce înseamnă scurgere de informație din viitor. Setul de test trebuie să fie partea cea mai recentă a eșantionului."
+                "correctExplanation": "O prognoză poate folosi doar trecutul; ascunderea ultimelor observații reproduce situația reală a prognozei viitorului.",
+                "incorrectExplanation": "Împărțirile aleatoare, alternante sau la mijloc îi permit metodei să vadă observații care urmează celor prognozate, deci erorile par mai mici decît vor fi în practică."
             }
         },
         {
@@ -314,11 +583,11 @@ window.TSA_DATA.quizzes['intro'] = {
                 "options": [
                     "When all errors should be weighted equally",
                     "When large errors are particularly costly and should be penalised more",
-                    "When the data contain many outliers",
-                    "When a percentage-based metric is needed"
+                    "When the data contain many outliers that should be ignored",
+                    "When a percentage measure is needed"
                 ],
-                "correctExplanation": "RMSE squares the errors before averaging, so large errors weigh disproportionately. It is the natural choice when big misses are much more costly than small ones.",
-                "incorrectExplanation": "Equal weighting of errors is what MAE does, and MAE is also the more robust choice when the data contain many outliers. Neither RMSE nor MAE is a percentage metric. RMSE is chosen precisely because it penalises large errors more."
+                "correctExplanation": "RMSE squares the errors before averaging, so a few large errors raise it much more than they raise the MAE.",
+                "incorrectExplanation": "Equal weighting of all errors is the MAE; squaring makes RMSE more, not less, sensitive to outliers; and neither measure is a percentage."
             },
             "ro": {
                 "title": "RMSE și MAE",
@@ -326,227 +595,65 @@ window.TSA_DATA.quizzes['intro'] = {
                 "options": [
                     "Cînd toate erorile trebuie ponderate egal",
                     "Cînd erorile mari sînt deosebit de costisitoare și trebuie penalizate mai mult",
-                    "Cînd datele conțin multe valori aberante",
-                    "Cînd este nevoie de un indicator procentual"
+                    "Cînd datele conțin multe valori extreme care trebuie ignorate",
+                    "Cînd este nevoie de o măsură procentuală"
                 ],
-                "correctExplanation": "RMSE ridică erorile la pătrat înainte de mediere, deci erorile mari au o pondere disproporționată. Este alegerea firească atunci cînd erorile mari sînt mult mai costisitoare decît cele mici.",
-                "incorrectExplanation": "Ponderarea egală a erorilor este proprietatea MAE, iar MAE este și alegerea mai robustă cînd datele conțin multe valori aberante. Nici RMSE, nici MAE nu sînt indicatori procentuali. RMSE se alege tocmai pentru că penalizează mai mult erorile mari."
+                "correctExplanation": "RMSE ridică erorile la pătrat înainte de mediere, deci cîteva erori mari o cresc mult mai mult decît cresc MAE.",
+                "incorrectExplanation": "Ponderarea egală a tuturor erorilor corespunde MAE; ridicarea la pătrat face RMSE mai sensibilă, nu mai puțin sensibilă, la valori extreme; iar niciuna dintre cele două nu este procentuală."
             }
         },
         {
-            "correct": 1,
+            "correct": 2,
             "en": {
-                "title": "Detecting seasonality",
-                "text": "How can seasonality be detected visually in a time series?",
+                "title": "MASE",
+                "text": "A forecasting method has MASE = 0.5 on the test set. What does this mean?",
                 "options": [
-                    "Look for a straight-line pattern",
-                    "Look for patterns that repeat at regular intervals, or use seasonal subseries plots",
-                    "Check whether the mean is zero",
-                    "Compute the standard deviation"
+                    "Half of its forecasts are correct",
+                    "Its forecasts are off by 0.5% on average",
+                    "Its MAE is half the in-sample MAE of the seasonal naive method",
+                    "It explains 50% of the variance of the test set"
                 ],
-                "correctExplanation": "Seasonality shows up as a pattern that repeats at a fixed interval (every year, quarter or week). Seasonal subseries plots group the observations by season and make the pattern easy to see.",
-                "incorrectExplanation": "A straight line indicates a linear trend, a zero mean says nothing about periodic behaviour, and a standard deviation is a single number with no time structure. Seasonality is a pattern that repeats at regular intervals."
+                "correctExplanation": "MASE divides the MAE on the test set by the in-sample MAE of the seasonal naive method; values below 1 beat that benchmark, and the measure is comparable across series.",
+                "incorrectExplanation": "MASE is a ratio of mean absolute errors: it does not count correct forecasts, it is not a percentage error, and it is not a share of explained variance."
             },
             "ro": {
-                "title": "Detectarea sezonalității",
-                "text": "Cum poate fi detectată vizual sezonalitatea într-o serie de timp?",
+                "title": "MASE",
+                "text": "O metodă de prognoză are MASE = 0,5 pe setul de test. Ce înseamnă acest lucru?",
                 "options": [
-                    "Se caută un tipar de linie dreaptă",
-                    "Se caută tipare care se repetă la intervale regulate sau se folosesc grafice pe subserii sezoniere",
-                    "Se verifică dacă media este zero",
-                    "Se calculează abaterea standard"
+                    "Jumătate dintre prognozele ei sînt corecte",
+                    "Prognozele ei greșesc în medie cu 0,5%",
+                    "MAE-ul ei este jumătate din MAE-ul în eșantion al metodei naive sezoniere",
+                    "Explică 50% din varianța setului de test"
                 ],
-                "correctExplanation": "Sezonalitatea apare ca un tipar care se repetă la un interval fix (anual, trimestrial sau săptămînal). Graficele pe subserii sezoniere grupează observațiile după sezon și fac tiparul ușor de observat.",
-                "incorrectExplanation": "O linie dreaptă indică un trend liniar, o medie nulă nu spune nimic despre comportamentul periodic, iar abaterea standard este un singur număr, fără structură temporală. Sezonalitatea este un tipar care se repetă la intervale regulate."
+                "correctExplanation": "MASE împarte MAE de pe setul de test la MAE în eșantion a metodei naive sezoniere; valorile sub 1 depășesc acest reper, iar măsura este comparabilă între serii.",
+                "incorrectExplanation": "MASE este un raport între erori absolute medii: nu numără prognozele corecte, nu este o eroare procentuală și nu este o pondere a varianței explicate."
             }
         },
         {
-            "correct": 1,
-            "en": {
-                "title": "Damped trend",
-                "text": "What is the purpose of the damping parameter in Holt's method?",
-                "options": [
-                    "To make the trend grow faster",
-                    "To flatten the trend in the long run and prevent unrealistic extrapolation",
-                    "To remove seasonality",
-                    "To speed up computation"
-                ],
-                "correctExplanation": "With a damping parameter $0 < \\phi < 1$, the trend contribution to the $h$-step forecast is $(\\phi + \\phi^2 + \\dots + \\phi^h) b_t$, which converges, so long-horizon forecasts level off instead of growing linearly forever.",
-                "incorrectExplanation": "Damping slows the trend down rather than accelerating it, has nothing to do with seasonality and is not a computational device. Its role is to stop the trend from being extrapolated indefinitely."
-            },
-            "ro": {
-                "title": "Trend amortizat",
-                "text": "Care este rolul parametrului de amortizare în metoda Holt?",
-                "options": [
-                    "Accelerează creșterea trendului",
-                    "Aplatizează trendul pe termen lung și previne extrapolarea nerealistă",
-                    "Elimină sezonalitatea",
-                    "Crește viteza de calcul"
-                ],
-                "correctExplanation": "Cu un parametru de amortizare $0 < \\phi < 1$, contribuția trendului la prognoza pe $h$ pași este $(\\phi + \\phi^2 + \\dots + \\phi^h) b_t$, care converge, deci prognozele pe orizonturi lungi se stabilizează în loc să crească liniar la nesfîrșit.",
-                "incorrectExplanation": "Amortizarea încetinește trendul, nu îl accelerează, nu are legătură cu sezonalitatea și nu este un artificiu de calcul. Rolul ei este să împiedice extrapolarea trendului la nesfîrșit."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Log transformation",
-                "text": "When is a logarithmic transformation appropriate for time series data?",
-                "options": [
-                    "When the series has negative values",
-                    "When the variance increases with the level, or when the patterns are multiplicative",
-                    "When the data are already stationary",
-                    "When the variance should be increased"
-                ],
-                "correctExplanation": "The logarithm stabilises a variance that grows with the level and turns multiplicative effects into additive ones: $\\ln(T_t S_t R_t) = \\ln T_t + \\ln S_t + \\ln R_t$.",
-                "incorrectExplanation": "The logarithm is not defined for zero or negative values, it is not needed when the data are already stationary with constant variance, and it compresses rather than increases variability. It is used when the spread grows with the level."
-            },
-            "ro": {
-                "title": "Transformarea logaritmică",
-                "text": "Cînd este adecvată transformarea logaritmică a unei serii de timp?",
-                "options": [
-                    "Cînd seria are valori negative",
-                    "Cînd varianța crește odată cu nivelul sau cînd tiparele sînt multiplicative",
-                    "Cînd datele sînt deja staționare",
-                    "Cînd se dorește creșterea varianței"
-                ],
-                "correctExplanation": "Logaritmul stabilizează o varianță care crește odată cu nivelul și transformă efectele multiplicative în efecte aditive: $\\ln(T_t S_t R_t) = \\ln T_t + \\ln S_t + \\ln R_t$.",
-                "incorrectExplanation": "Logaritmul nu este definit pentru valori nule sau negative, nu este necesar cînd datele sînt deja staționare și au varianță constantă și comprimă variabilitatea, nu o mărește. Se folosește cînd dispersia crește odată cu nivelul."
-            }
-        },
-        {
-            "correct": 1,
+            "correct": 3,
             "en": {
                 "title": "Forecast horizon",
-                "text": "What typically happens to forecast accuracy as the forecast horizon increases?",
+                "text": "What typically happens to forecast accuracy as the forecast horizon grows?",
                 "options": [
-                    "Accuracy improves because more data are averaged",
-                    "Accuracy decreases because uncertainty accumulates",
-                    "Accuracy stays constant",
-                    "Accuracy depends only on the model, not on the horizon"
+                    "It improves, because more data are averaged",
+                    "It stays constant",
+                    "It depends only on the model, not on the horizon",
+                    "It decreases, because uncertainty accumulates"
                 ],
-                "correctExplanation": "Each additional step ahead adds the uncertainty of new, unobserved shocks, so forecast error variance grows with the horizon and accuracy falls.",
-                "incorrectExplanation": "A longer horizon does not bring more data, and accuracy is not constant: for virtually every model the forecast error variance grows with $h$. Prediction intervals therefore widen as the horizon lengthens."
+                "correctExplanation": "Each additional step adds unknown shocks, so the forecast errors and the width of the forecast intervals grow with $h$.",
+                "incorrectExplanation": "Longer horizons do not average more data; accuracy depends on both the model and the horizon, and for almost every series it worsens as the horizon grows."
             },
             "ro": {
                 "title": "Orizontul de prognoză",
-                "text": "Ce se întîmplă de obicei cu acuratețea prognozei pe măsură ce orizontul de prognoză crește?",
+                "text": "Ce se întîmplă de obicei cu acuratețea prognozei pe măsură ce orizontul crește?",
                 "options": [
-                    "Acuratețea crește, deoarece se mediază mai multe date",
-                    "Acuratețea scade, deoarece incertitudinea se acumulează",
-                    "Acuratețea rămîne constantă",
-                    "Acuratețea depinde doar de model, nu și de orizont"
+                    "Crește, deoarece se mediază mai multe date",
+                    "Rămîne constantă",
+                    "Depinde doar de model, nu și de orizont",
+                    "Scade, deoarece incertitudinea se acumulează"
                 ],
-                "correctExplanation": "Fiecare pas suplimentar adaugă incertitudinea unor șocuri noi, neobservate, deci varianța erorii de prognoză crește odată cu orizontul, iar acuratețea scade.",
-                "incorrectExplanation": "Un orizont mai lung nu aduce date suplimentare, iar acuratețea nu este constantă: pentru practic orice model, varianța erorii de prognoză crește odată cu $h$. De aceea intervalele de prognoză se lărgesc pe măsură ce orizontul crește."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Naive forecast",
-                "text": "What is a naive forecast and why is it useful?",
-                "options": [
-                    "The most complex model available; useful for maximum accuracy",
-                    "The last observation used as the forecast; useful as a benchmark to beat",
-                    "The mean of all observations; useful for trending data",
-                    "A random forecast; useful for testing"
-                ],
-                "correctExplanation": "The naive forecast sets $\\hat{y}_{T+h} = y_T$. It costs nothing to compute and is hard to beat for random-walk-like series, so any more elaborate model should be compared against it.",
-                "incorrectExplanation": "The naive method is the simplest possible model, not the most complex. The mean forecast is a different benchmark and performs badly on trending data, and a random forecast is not a meaningful benchmark. The naive forecast repeats the last observation."
-            },
-            "ro": {
-                "title": "Prognoza naivă",
-                "text": "Ce este prognoza naivă și de ce este utilă?",
-                "options": [
-                    "Cel mai complex model disponibil; utilă pentru acuratețe maximă",
-                    "Ultima observație folosită ca prognoză; utilă ca reper care trebuie depășit",
-                    "Media tuturor observațiilor; utilă pentru date cu trend",
-                    "O prognoză aleatoare; utilă pentru testare"
-                ],
-                "correctExplanation": "Prognoza naivă este $\\hat{y}_{T+h} = y_T$. Nu costă nimic și este greu de depășit pentru seriile apropiate de un mers aleator, deci orice model mai elaborat trebuie comparat cu ea.",
-                "incorrectExplanation": "Metoda naivă este cel mai simplu model posibil, nu cel mai complex. Prognoza prin medie este un alt reper și funcționează prost pe date cu trend, iar o prognoză aleatoare nu este un reper util. Prognoza naivă repetă ultima observație."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Seasonal naive forecast",
-                "text": "For monthly data, what does the seasonal naive method forecast for next January?",
-                "options": [
-                    "The value of last December",
-                    "The value of last January (same month, previous year)",
-                    "The average of all months",
-                    "Zero"
-                ],
-                "correctExplanation": "The seasonal naive forecast is $\\hat{y}_{T+h} = y_{T+h-m}$ (for $h \\le m$): each month is forecast by the value of the same month one seasonal cycle earlier, with $m = 12$ for monthly data.",
-                "incorrectExplanation": "Last December's value is the plain naive forecast, and the average of all months is the mean forecast. The seasonal version looks back exactly $m = 12$ months, to the same month of the previous year."
-            },
-            "ro": {
-                "title": "Prognoza naivă sezonieră",
-                "text": "Pentru date lunare, ce valoare prognozează metoda naivă sezonieră pentru luna ianuarie următoare?",
-                "options": [
-                    "Valoarea din decembrie anterior",
-                    "Valoarea din ianuarie anterior (aceeași lună, anul precedent)",
-                    "Media tuturor lunilor",
-                    "Zero"
-                ],
-                "correctExplanation": "Prognoza naivă sezonieră este $\\hat{y}_{T+h} = y_{T+h-m}$ (pentru $h \\le m$): fiecare lună este prognozată prin valoarea aceleiași luni dintr-un ciclu sezonier anterior, cu $m = 12$ pentru date lunare.",
-                "incorrectExplanation": "Valoarea din decembrie anterior este prognoza naivă simplă, iar media tuturor lunilor este prognoza prin medie. Varianta sezonieră privește înapoi exact $m = 12$ luni, la aceeași lună din anul precedent."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Residual analysis",
-                "text": "What should the residuals of a good forecasting model look like?",
-                "options": [
-                    "They should show a clear trend",
-                    "They should be uncorrelated with zero mean, like white noise",
-                    "Their variance should increase over time",
-                    "They should be exactly zero"
-                ],
-                "correctExplanation": "If the model has captured the systematic structure, what is left is unpredictable: uncorrelated residuals with zero mean and, ideally, constant variance.",
-                "incorrectExplanation": "A trend or a growing variance in the residuals signals structure the model has missed, and residuals that are exactly zero indicate a model that interpolates the data (overfitting). Good residuals behave like white noise."
-            },
-            "ro": {
-                "title": "Analiza reziduurilor",
-                "text": "Cum trebuie să arate reziduurile unui model de prognoză bun?",
-                "options": [
-                    "Să prezinte un trend clar",
-                    "Să fie necorelate și de medie zero, asemenea unui zgomot alb",
-                    "Să aibă o varianță care crește în timp",
-                    "Să fie exact zero"
-                ],
-                "correctExplanation": "Dacă modelul a captat structura sistematică, ceea ce rămîne este imprevizibil: reziduuri necorelate, de medie zero și, ideal, cu varianță constantă.",
-                "incorrectExplanation": "Un trend sau o varianță crescătoare în reziduuri indică o structură pe care modelul nu a captat-o, iar reziduurile exact nule arată un model care interpolează datele (supraajustare). Reziduurile bune se comportă ca un zgomot alb."
-            }
-        },
-        {
-            "correct": 0,
-            "en": {
-                "title": "ETS framework",
-                "text": "In the notation ETS(A,A,A), what do the three letters stand for?",
-                "options": [
-                    "Additive error, additive trend, additive seasonality",
-                    "Average, average, average",
-                    "Three alpha parameters",
-                    "Autocorrelation at lags 1, 2 and 3"
-                ],
-                "correctExplanation": "ETS stands for Error, Trend, Seasonality. Each component can be additive (A), multiplicative (M) or absent (N, none); the trend can also be additive damped (Ad).",
-                "incorrectExplanation": "The letters are not averages, smoothing parameters or autocorrelations: they describe the form of each component. ETS(A,A,A) has additive error, additive trend and additive seasonality."
-            },
-            "ro": {
-                "title": "Cadrul ETS",
-                "text": "În notația ETS(A,A,A), ce reprezintă cele trei litere?",
-                "options": [
-                    "Eroare aditivă, trend aditiv, sezonalitate aditivă",
-                    "Medie, medie, medie",
-                    "Trei parametri alfa",
-                    "Autocorelațiile la lag-urile 1, 2 și 3"
-                ],
-                "correctExplanation": "ETS înseamnă Error, Trend, Seasonality (eroare, trend, sezonalitate). Fiecare componentă poate fi aditivă (A), multiplicativă (M) sau absentă (N, none); trendul poate fi și aditiv amortizat (Ad).",
-                "incorrectExplanation": "Literele nu sînt medii, parametri de netezire sau autocorelații, ci descriu forma fiecărei componente. ETS(A,A,A) are eroare aditivă, trend aditiv și sezonalitate aditivă."
+                "correctExplanation": "Fiecare pas suplimentar adaugă șocuri necunoscute, deci erorile de prognoză și lățimea intervalelor de prognoză cresc odată cu $h$.",
+                "incorrectExplanation": "Orizonturile mai lungi nu mediază mai multe date; acuratețea depinde atît de model, cît și de orizont și, pentru aproape orice serie, se înrăutățește cînd orizontul crește."
             }
         }
     ]
