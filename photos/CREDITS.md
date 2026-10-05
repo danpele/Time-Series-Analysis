@@ -41,3 +41,12 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch0_wiener.jpg | https://commons.wikimedia.org/wiki/File:Norbert_wiener.jpg | Konrad Jacobs, CC BY-SA 2.0 de |
 | ch0_box.jpg | https://commons.wikimedia.org/wiki/File:GeorgeEPBox_(cropped).jpg | DavidMCEddy, CC BY-SA 3.0 |
 | ch0_keeling_2001.jpg | https://commons.wikimedia.org/wiki/File:Charles_David_Keeling_2001.jpg | NSF, public domain |
+
+## Chapter 2 — ARMA models
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch2_george_box.jpg | https://commons.wikimedia.org/wiki/File:GeorgeEPBox.jpg | DavidMCEddy, CC BY-SA 3.0 |
+| ch2_gilbert_walker.jpg | https://commons.wikimedia.org/wiki/File:Gilbert_Walker.jpg | unknown author (1925), public domain |
+| ch2_hirotugu_akaike.jpg | https://commons.wikimedia.org/wiki/File:Akaike.jpg | The Institute of Statistical Mathematics (2017), CC BY-SA 4.0 |
+| ch2_ins_bucharest_2009.jpg | https://commons.wikimedia.org/wiki/File:Institutul_Național_de_Statistică.jpg | Dan Mihai Pitea (2009), CC BY-SA 3.0 |

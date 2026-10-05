@@ -297,10 +297,15 @@
                 id: 'arma', num: 2,
                 title: { en: 'ARMA models', ro: 'Modele ARMA' },
                 topics: {
-                    en: ['AR(p) and MA(q) processes: stationarity, invertibility, characteristic roots; ARMA(p,q)', 'Identification with the ACF and PACF, estimation (Yule–Walker, maximum likelihood), the AIC and BIC information criteria', 'Residual diagnostics and forecasting with ARMA models; the Box–Jenkins methodology'],
-                    ro: ['Procesele AR(p) și MA(q): staționaritate, inversabilitate, rădăcini caracteristice; procesul ARMA(p,q)', 'Identificarea cu ACF și PACF, estimarea (Yule–Walker, verosimilitate maximă), criteriile informaționale AIC și BIC', 'Diagnosticarea reziduurilor și prognoza cu modele ARMA; metodologia Box–Jenkins']
+                    en: ['AR(p), MA(q) and ARMA(p,q): characteristic roots, stationarity, invertibility, ψ weights and impulse responses', 'Identification with the ACF and PACF; estimation by Yule–Walker, conditional least squares and maximum likelihood; AIC and BIC', 'Residual diagnostics (Ljung–Box with m−p−q degrees of freedom, Jarque–Bera), forecasts with intervals, the Box–Jenkins method on Romanian GDP and inflation, BET, EUR/RON and the sunspots'],
+                    ro: ['AR(p), MA(q) și ARMA(p,q): rădăcini caracteristice, staționaritate, invertibilitate, ponderi ψ și răspunsuri la impuls', 'Identificarea cu ACF și PACF; estimarea prin Yule–Walker, cele mai mici pătrate condiționate și verosimilitate maximă; AIC și BIC', 'Diagnosticarea reziduurilor (Ljung–Box cu m−p−q grade de libertate, Jarque–Bera), prognoze cu intervale, metoda Box–Jenkins pentru PIB-ul și inflația României, BET, EUR/RON și petele solare']
                 },
-                links: old('chapter2_arma_models', 'chapter2_seminar', 'chapter2', 'Quantlets/TSA_ch2'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter2_arma_models.pdf'), pdf('seminar', 'EN/Seminars/seminar2_arma_models.pdf'),
+                         nb('notebooks/EN/chapter2_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter2_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_02')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol2_modele_arma.pdf'), pdf('seminar', 'RO/Seminarii/seminar2_modele_arma_ro.pdf'),
+                         nb('notebooks/EN/chapter2_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter2_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_02')]
+                },
                 quantinar: q('tsaPython')
             },
             {
