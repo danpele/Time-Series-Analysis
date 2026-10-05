@@ -357,10 +357,15 @@
                 id: 'var', num: 6,
                 title: { en: 'VAR models and Granger causality', ro: 'Modele VAR și cauzalitate Granger' },
                 topics: {
-                    en: ['Vector autoregressions: the VAR(p) specification, stability, lag selection, estimation by OLS', 'Granger causality and its limits', 'Impulse responses (Cholesky ordering), forecast-error variance decomposition and VAR forecasts'],
-                    ro: ['Modele vectoriale autoregresive: specificarea VAR(p), stabilitate, alegerea numărului de lag-uri, estimarea prin OLS', 'Cauzalitatea Granger și limitele ei', 'Funcții de răspuns la impuls (ordonarea Cholesky), descompunerea varianței erorii de prognoză și prognoze VAR']
+                    en: ['Vector processes and cross-correlations; the VAR(p) model: stability (companion matrix), OLS estimation, lag selection by AIC, BIC and HQ, residual diagnostics', 'Granger causality: F and Wald tests and their pitfalls (omitted variables, instantaneous causality, non-stationarity); Romanian GDP, inflation and ROBOR; S&P 500, DAX and BET', 'Impulse responses (Cholesky ordering, generalised), forecast error variance decomposition, the Diebold–Yilmaz spillover index, VAR forecasts against univariate benchmarks; structural VARs and Stock–Watson (2001)'],
+                    ro: ['Procese vectoriale și corelații încrucișate; modelul VAR(p): stabilitatea (matricea companion), estimarea prin OLS, alegerea numărului de decalaje după AIC, BIC și HQ, diagnosticarea reziduurilor', 'Cauzalitatea Granger: testele F și Wald și capcanele lor (variabile omise, cauzalitate instantanee, nestaționaritate); PIB, inflație și ROBOR în România; S&P 500, DAX și BET', 'Funcții de răspuns la impuls (ordinea Cholesky, răspunsuri generalizate), descompunerea varianței erorii de prognoză, indicele de spillover Diebold–Yilmaz, prognoze VAR comparate cu metode univariate; VAR-uri structurale și Stock–Watson (2001)']
                 },
-                links: old('chapter6_var_granger', 'chapter6_seminar', 'chapter6', 'Quantlets/TSA_ch6'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter6_var_models_granger_causality.pdf'), pdf('seminar', 'EN/Seminars/seminar6_var_models_granger_causality.pdf'),
+                         nb('notebooks/EN/chapter6_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter6_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_06')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf'), pdf('seminar', 'RO/Seminarii/seminar6_modele_var_cauzalitate_granger_ro.pdf'),
+                         nb('notebooks/EN/chapter6_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter6_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_06')]
+                },
                 quantinar: q('tsaPython')
             },
             {

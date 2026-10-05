@@ -78,3 +78,12 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch4_romanian_easter_eggs.jpg | https://commons.wikimedia.org/wiki/File:Painted_Romanian_Easter_Eggs.jpg | jackmac34 (Pixabay), CC0 |
 | ch4_portile_de_fier_ii.jpg | https://commons.wikimedia.org/wiki/File:Porțile_de_Fier_II_(01).jpg | Nenea hartia (2016), CC BY-SA 4.0 |
 | ch4_mamaia_2013.jpg | https://commons.wikimedia.org/wiki/File:Mamaia_Beach_(September_2013).JPG | Razvan Socol (2013), CC BY-SA 4.0 |
+
+## Chapter 6 — VAR models and Granger causality
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch6_christopher_sims_2011.jpg | https://commons.wikimedia.org/wiki/File:Christopher_A._Sims_close-up_(cropped).jpg | Holger Motzkau (2011), CC BY-SA 3.0 |
+| ch6_sims_nobel_lecture_2011.jpg | https://commons.wikimedia.org/wiki/File:Nobel_Prize_2011-Nobel_lectures_KVA-DSC_8085.jpg | Holger Motzkau (2011), CC BY-SA 3.0 |
+| ch6_eccles_building_2011.jpg | https://commons.wikimedia.org/wiki/File:Eccles_Building_(26088200676).jpg | Federal Reserve (2011), public domain |
+| ch6_frankfurt_exchange_2015.jpg | https://commons.wikimedia.org/wiki/File:Frankfurt_Stock_Exchange_(Ank_Kumar)_01.jpg | Ank Kumar (2015), CC BY-SA 4.0 |
