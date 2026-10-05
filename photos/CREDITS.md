@@ -113,3 +113,13 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch10_kalman_2007.jpg | https://commons.wikimedia.org/wiki/File:ETH-BIB-Kalman,_Rudolf_E._(1930-2016)-HK_04-01925.jpg | ETH-Bibliothek Zürich, Bildarchiv (2007), CC BY-SA 4.0 |
 | ch10_apollo8_navigation_1968.jpg | https://commons.wikimedia.org/wiki/File:Apollo_8_Lovell_at_Guidance_and_Navigation_station.jpg | NASA (1968), public domain |
 | ch10_nber_offices_2022.jpg | https://commons.wikimedia.org/wiki/File:National_Bureau_of_Economic_Research_offices.jpg | Astrophobe (2022), CC BY-SA 4.0 |
+
+## Chapter 9 — Machine learning for time series
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch9_mark1_perceptron_1960.png | https://commons.wikimedia.org/wiki/File:Mark_I_Perceptron,_Figure_2_of_operator%27s_manual.png | John C. Hay, Albert E. Murray (1960, operator's manual), public domain |
+| ch9_sepp_hochreiter_2015.jpg | https://commons.wikimedia.org/wiki/File:Sepp_Hochreiter.JPG | Eulenreich (2015), CC BY-SA 4.0 |
+| ch9_marasesti_750kv_2022.jpg | https://commons.wikimedia.org/wiki/File:750_kV_electricity_tower_at_M%C4%83r%C4%83%C8%99e%C8%99ti,_Romania.jpg | TrainSimFan (2022), CC BY-SA 4.0 |
+| ch9_walmart_store.jpg | https://commons.wikimedia.org/wiki/File:Walmart_store_exterior_5266815680.jpg | Walmart Corporate, CC BY 2.0 |
+| ch9_harper_center_2013.jpg | https://commons.wikimedia.org/wiki/File:University_of_Chicago_July_2013_01_(Charles_M._Harper_Center).jpg | Michael Barera (2013), CC BY-SA 4.0 |

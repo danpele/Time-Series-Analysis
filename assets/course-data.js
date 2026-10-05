@@ -402,11 +402,15 @@
                 id: 'ml', num: 9,
                 title: { en: 'Machine learning for time series', ro: 'Învățare automată pentru serii de timp' },
                 topics: {
-                    en: ['Forecasting as supervised learning: lagged values as features, rolling statistics, time-series cross-validation without leakage', 'Random forest and gradient boosting; LSTM networks', 'Comparing machine learning with ARIMA and the naive forecast on the same test period'],
-                    ro: ['Prognoza ca problemă de învățare supervizată: valorile întîrziate ca variabile explicative, statistici pe ferestre mobile, validare încrucișată fără scurgere de informație', 'Random forest și gradient boosting; rețele LSTM', 'Compararea modelelor de învățare automată cu ARIMA și cu prognoza naivă pe aceeași perioadă de test']
+                    en: ['Forecasting as supervised learning: lags, rolling windows and calendar features; recursive, direct and multi-output strategies; walk-forward validation and leakage', 'Ridge and lasso, regression trees, random forest, gradient boosting, small neural networks and the LSTM; prediction intervals by quantile regression and conformal prediction', 'Machine learning against ARIMA, ETS and naive benchmarks with MASE and Diebold–Mariano: Romanian electricity load and inflation (local and global models), realised volatility, the sign of returns; the M4 and M5 competitions'],
+                    ro: ['Prognoza ca învățare supervizată: decalaje, ferestre mobile și variabile de calendar; strategiile recursivă, directă și cu ieșiri multiple; validarea walk-forward și scurgerea de informație', 'Ridge și lasso, arbori de regresie, random forest, gradient boosting, rețele neuronale mici și LSTM; intervale de prognoză prin regresie cuantilică și predicție conformală', 'Machine learning comparat cu ARIMA, ETS și metodele naive, cu MASE și Diebold–Mariano: consumul de energie electrică și inflația din România (modele locale și globale), volatilitatea realizată, semnul randamentelor; competițiile M4 și M5']
                 },
-                links: old('chapter8_modern_extensions', 'chapter8_seminar', 'chapter8', 'Quantlets/TSA_ch8',
-                    { label: { en: 'Slides: long memory and machine learning', ro: 'Slide-uri: memorie lungă și învățare automată' } }),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter9_machine_learning_time_series.pdf'), pdf('seminar', 'EN/Seminars/seminar9_machine_learning_time_series.pdf'),
+                         nb('notebooks/EN/chapter9_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter9_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_09')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf'), pdf('seminar', 'RO/Seminarii/seminar9_invatare_automata_serii_timp_ro.pdf'),
+                         nb('notebooks/EN/chapter9_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter9_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_09')]
+                },
                 quantinar: q('rf', 'mlRisk')
             },
             {
