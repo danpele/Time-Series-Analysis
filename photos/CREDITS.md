@@ -50,3 +50,10 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch2_gilbert_walker.jpg | https://commons.wikimedia.org/wiki/File:Gilbert_Walker.jpg | unknown author (1925), public domain |
 | ch2_hirotugu_akaike.jpg | https://commons.wikimedia.org/wiki/File:Akaike.jpg | The Institute of Statistical Mathematics (2017), CC BY-SA 4.0 |
 | ch2_ins_bucharest_2009.jpg | https://commons.wikimedia.org/wiki/File:Institutul_Național_de_Statistică.jpg | Dan Mihai Pitea (2009), CC BY-SA 3.0 |
+
+## Chapter 3 — Unit roots and ARIMA models
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch3_clive_granger_2008.jpg | https://commons.wikimedia.org/wiki/File:Clive_Granger_by_Olaf_Storbeck_(3x4_cropped).jpg | Olaf Storbeck (2008), CC BY-SA 2.0 |
+| ch3_snedecor_hall_2023.jpg | https://commons.wikimedia.org/wiki/File:Snedecor_Hall,_Iowa_State_University.tif | Maitra (2023), CC BY-SA 4.0 |

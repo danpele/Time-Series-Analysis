@@ -312,10 +312,15 @@
                 id: 'arima', num: 3,
                 title: { en: 'Unit roots and ARIMA models', ro: 'Rădăcini unitare și modele ARIMA' },
                 topics: {
-                    en: ['Deterministic and stochastic trends, integrated processes I(d), spurious regression', 'Unit-root and stationarity tests: ADF, Phillips–Perron and KPSS, and how to use them together', 'ARIMA(p,d,q) models: differencing, over-differencing, estimation and forecasts with widening intervals'],
-                    ro: ['Trend determinist și trend stochastic, procese integrate I(d), regresia falsă', 'Teste de rădăcină unitară și de staționaritate: ADF, Phillips–Perron și KPSS, folosite împreună', 'Modele ARIMA(p,d,q): diferențiere, supradiferențiere, estimare și prognoze cu intervale tot mai largi']
+                    en: ['Deterministic and stochastic trends, integrated processes I(d), spurious regression (Yule, Granger–Newbold)', 'Unit-root and stationarity tests: Dickey–Fuller and ADF (deterministic terms, lags, critical values), Phillips–Perron, KPSS and their joint use; structural breaks (Perron, Zivot–Andrews)', 'ARIMA(p,d,q): identification, estimation, diagnostics, forecasts with widening intervals, over-differencing, automatic ARIMA used with care'],
+                    ro: ['Trend determinist și trend stochastic, procese integrate I(d), regresia falsă (Yule, Granger–Newbold)', 'Teste de rădăcină unitară și de staționaritate: Dickey–Fuller și ADF (termeni determiniști, decalaje, valori critice), Phillips–Perron, KPSS și folosirea lor împreună; rupturi structurale (Perron, Zivot–Andrews)', 'Modele ARIMA(p,d,q): identificare, estimare, diagnosticare, prognoze cu intervale tot mai largi, supradiferențiere, selecția automată folosită cu grijă']
                 },
-                links: old('chapter3_arima_models', 'chapter3_seminar', 'chapter3', 'Quantlets/TSA_ch3'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter3_unit_roots_arima_models.pdf'), pdf('seminar', 'EN/Seminars/seminar3_unit_roots_arima_models.pdf'),
+                         nb('notebooks/EN/chapter3_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter3_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_03')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf'), pdf('seminar', 'RO/Seminarii/seminar3_radacini_unitare_modele_arima_ro.pdf'),
+                         nb('notebooks/EN/chapter3_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter3_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_03')]
+                },
                 quantinar: q('tsaPython')
             },
             {
