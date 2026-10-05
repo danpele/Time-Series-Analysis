@@ -1,525 +1,659 @@
 // ============================================================
 // Chapter 15 quiz bank: Review and exam preparation (EN + RO)
-// 19 questions ported from the 2025/2026 site; 19 drawn per attempt.
-// The bank grows to 24 questions when the chapter is rebuilt.
-// correct = index (0-3) of the right option in the original order.
-// incorrectExplanation must not name a letter: the engine prepends
-// "The correct answer is X) ..." after shuffling the options.
+// 24 questions from Chapters 0-10, 20 drawn per attempt.
+// correct = index (0-3) of the right option in the original order
+// (spread 6/6/6/6). incorrectExplanation does not name a letter:
+// the engine prepends "The correct answer is X) ..." after shuffling.
 // ============================================================
 window.TSA_DATA.quizzes['review'] = {
     "draw": 20,
     "questions": [
         {
-            "correct": 1,
+            "correct": 0,
             "en": {
-                "title": "Analysis workflow",
-                "text": "What is the correct order of the time series analysis workflow?",
+                "title": "Box–Jenkins workflow",
+                "text": "What is the correct order of the Box–Jenkins workflow?",
                 "options": [
-                    "Model estimation, data exploration, diagnostics, forecasting",
-                    "Data exploration, stationarity testing, model selection and estimation, diagnostics, forecasting",
-                    "Forecasting, data exploration, model estimation, diagnostics",
-                    "Diagnostics, model selection, data exploration, forecasting"
+                    "Plot and transform, test for unit roots, identify with ACF and PACF, estimate, check the residuals, forecast",
+                    "Estimate several models, keep the best in-sample fit, then plot the data",
+                    "Forecast first, then check the residuals of the forecast errors, then identify",
+                    "Identify with ACF and PACF on the raw levels, estimate, and skip the residual checks if BIC is low"
                 ],
-                "correctExplanation": "A systematic workflow runs: explore and plot the data, transform and test for stationarity, select and estimate candidate models, check the residual diagnostics, validate out of sample and only then forecast.",
-                "incorrectExplanation": "Estimating or diagnosing a model before looking at the data, or forecasting before checking the model, reverses the logic: diagnostics can only be run on an estimated model, and the model choice depends on what the exploration and stationarity tests reveal. The workflow starts with the data."
+                "correctExplanation": "The method starts from the data: plot, transform and decide the differences with ADF and KPSS; then identify with the correlogram of the stationary series, estimate, check the residuals and only then forecast.",
+                "incorrectExplanation": "Estimating or forecasting before looking at the data reverses the logic, and the correlogram of non-stationary levels decays slowly whatever the model; a low BIC never replaces the residual checks."
             },
             "ro": {
-                "title": "Etapele analizei",
-                "text": "Care este ordinea corectă a etapelor în analiza unei serii de timp?",
+                "title": "Etapele metodei Box–Jenkins",
+                "text": "Care este ordinea corectă a etapelor metodei Box–Jenkins?",
                 "options": [
-                    "Estimarea modelului, explorarea datelor, diagnosticarea, prognoza",
-                    "Explorarea datelor, testarea staționarității, alegerea și estimarea modelului, diagnosticarea, prognoza",
-                    "Prognoza, explorarea datelor, estimarea modelului, diagnosticarea",
-                    "Diagnosticarea, alegerea modelului, explorarea datelor, prognoza"
+                    "Grafic și transformare, teste de rădăcină unitară, identificare cu ACF și PACF, estimare, verificarea reziduurilor, prognoză",
+                    "Estimăm mai multe modele, îl păstrăm pe cel mai bine potrivit în eșantion, apoi facem graficul datelor",
+                    "Întîi prognoza, apoi verificarea reziduurilor din erorile de prognoză, apoi identificarea",
+                    "Identificare cu ACF și PACF pe nivelurile brute, estimare și renunțarea la verificarea reziduurilor dacă BIC este mic"
                 ],
-                "correctExplanation": "O analiză sistematică urmează pașii: explorarea și reprezentarea grafică a datelor, transformarea și testarea staționarității, alegerea și estimarea modelelor candidate, verificarea reziduurilor, validarea în afara eșantionului și abia apoi prognoza.",
-                "incorrectExplanation": "Estimarea sau diagnosticarea unui model înainte de examinarea datelor, ori prognoza înainte de verificarea modelului, inversează logica: diagnosticarea se poate face doar pe un model estimat, iar alegerea modelului depinde de ce arată explorarea datelor și testele de staționaritate. Analiza începe cu datele."
+                "correctExplanation": "Metoda pornește de la date: grafic, transformare și decizia asupra diferențierilor cu ADF și KPSS; apoi identificarea din corelograma seriei staționare, estimarea, verificarea reziduurilor și abia apoi prognoza.",
+                "incorrectExplanation": "Estimarea sau prognoza înaintea examinării datelor inversează logica, iar corelograma nivelurilor nestaționare scade lent oricare ar fi modelul; un BIC mic nu înlocuiește niciodată verificarea reziduurilor."
             }
         },
         {
             "correct": 1,
             "en": {
-                "title": "RMSE much larger than MAE",
-                "text": "If RMSE is much larger than MAE, this suggests that:",
+                "title": "ADF and KPSS together",
+                "text": "ADF does not reject its null hypothesis and KPSS rejects its null hypothesis. What do you conclude?",
                 "options": [
-                    "The model is overfitting",
-                    "There are a few large errors",
-                    "The model is underfitting",
-                    "The data are stationary"
+                    "Both point to stationarity: model the levels",
+                    "Both point to a unit root: difference the series",
+                    "The tests contradict each other: the result is inconclusive",
+                    "The series is white noise"
                 ],
-                "correctExplanation": "Because RMSE squares the errors, it is pulled up by a few large ones, while MAE weighs all errors linearly. Always $\\text{RMSE} \\geq \\text{MAE}$, and a large ratio $\\text{RMSE}/\\text{MAE}$ points to a heavy-tailed error distribution with some very large misses.",
-                "incorrectExplanation": "The RMSE/MAE ratio describes the shape of the error distribution, not whether the model over- or underfits, and it says nothing about stationarity. A large gap means a few errors are much larger than the rest."
+                "correctExplanation": "ADF has a unit root under the null and KPSS has stationarity under the null; not rejecting the first and rejecting the second both indicate a unit root.",
+                "incorrectExplanation": "The two tests have opposite null hypotheses. Here they agree: one keeps the unit root and the other rejects stationarity. They would be inconclusive if neither rejected or both rejected."
             },
             "ro": {
-                "title": "RMSE mult mai mare decît MAE",
-                "text": "Dacă RMSE este mult mai mare decît MAE, aceasta sugerează că:",
+                "title": "ADF și KPSS împreună",
+                "text": "ADF nu respinge ipoteza nulă, iar KPSS respinge ipoteza nulă. Ce concluzie trageți?",
                 "options": [
-                    "Modelul este supraajustat (overfitting)",
-                    "Există cîteva erori mari",
-                    "Modelul este subajustat (underfitting)",
-                    "Datele sînt staționare"
+                    "Ambele indică staționaritatea: modelăm nivelurile",
+                    "Ambele indică o rădăcină unitară: diferențiem seria",
+                    "Testele se contrazic: rezultatul este neconcludent",
+                    "Seria este zgomot alb"
                 ],
-                "correctExplanation": "Deoarece RMSE ridică erorile la pătrat, cîteva erori mari o cresc puternic, în timp ce MAE ponderează toate erorile liniar. Întotdeauna $\\text{RMSE} \\geq \\text{MAE}$, iar un raport $\\text{RMSE}/\\text{MAE}$ mare indică o distribuție a erorilor cu cozi groase, cu cîteva erori foarte mari.",
-                "incorrectExplanation": "Raportul RMSE/MAE descrie forma distribuției erorilor, nu supraajustarea sau subajustarea modelului, și nu spune nimic despre staționaritate. O diferență mare înseamnă că cîteva erori sînt mult mai mari decît celelalte."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Limitation of MAPE",
-                "text": "MAPE is problematic when:",
-                "options": [
-                    "The data have a trend",
-                    "The actual values are close to or equal to zero",
-                    "The forecast horizon is long",
-                    "Several models are being compared"
-                ],
-                "correctExplanation": "$\\text{MAPE} = \\frac{100}{n}\\sum_t\\left|\\frac{y_t - \\hat{y}_t}{y_t}\\right|$. Dividing by small $y_t$ produces extreme values, and $y_t = 0$ makes it undefined.",
-                "incorrectExplanation": "A trend, a long horizon or the comparison of several models are not problems for MAPE as such; comparing models is in fact what it is used for. Its weakness is the division by actual values close to zero."
-            },
-            "ro": {
-                "title": "Limita indicatorului MAPE",
-                "text": "MAPE este problematic atunci cînd:",
-                "options": [
-                    "Datele au trend",
-                    "Valorile efective sînt apropiate de zero sau egale cu zero",
-                    "Orizontul de prognoză este lung",
-                    "Se compară mai multe modele"
-                ],
-                "correctExplanation": "$\\text{MAPE} = \\frac{100}{n}\\sum_t\\left|\\frac{y_t - \\hat{y}_t}{y_t}\\right|$. Împărțirea la valori $y_t$ mici produce valori extreme, iar pentru $y_t = 0$ indicatorul nu este definit.",
-                "incorrectExplanation": "Trendul, orizontul lung sau compararea mai multor modele nu sînt probleme pentru MAPE ca atare; compararea modelelor este chiar scopul lui. Slăbiciunea lui este împărțirea la valori efective apropiate de zero."
+                "correctExplanation": "La ADF ipoteza nulă este rădăcina unitară, la KPSS staționaritatea; nerespingerea primei și respingerea celei de-a doua indică amîndouă o rădăcină unitară.",
+                "incorrectExplanation": "Cele două teste au ipoteze nule opuse. Aici ele concordă: unul păstrează rădăcina unitară, celălalt respinge staționaritatea. Rezultatul ar fi neconcludent dacă niciunul nu ar respinge sau dacă ambele ar respinge."
             }
         },
         {
             "correct": 2,
             "en": {
-                "title": "Volatility clustering",
-                "text": "S&P 500 returns show periods of high volatility followed by further high volatility. Which model should you consider?",
+                "title": "Ljung–Box on residuals",
+                "text": "The residuals of an ARMA(1,1) model give a Ljung–Box statistic Q(10). Which distribution do you compare it with?",
                 "options": [
-                    "An ARIMA model of higher order",
-                    "Exponential smoothing",
-                    "A GARCH model for the conditional variance",
-                    "Seasonal differencing"
+                    "χ² with 10 degrees of freedom",
+                    "χ² with 2 degrees of freedom",
+                    "χ² with 8 degrees of freedom",
+                    "Student-t with 10 degrees of freedom"
                 ],
-                "correctExplanation": "Volatility clustering is a stylised fact of financial returns. GARCH(1,1) models it through $\\sigma_t^2 = \\omega + \\alpha \\varepsilon_{t-1}^2 + \\beta \\sigma_{t-1}^2$, so large shocks raise future conditional variance.",
-                "incorrectExplanation": "ARIMA models and exponential smoothing describe the conditional mean, not the conditional variance, and seasonal differencing removes seasonal patterns. Time-varying volatility calls for a GARCH-type model."
+                "correctExplanation": "On the residuals of a fitted ARMA(p,q) the statistic loses one degree of freedom for each estimated ARMA parameter: m − p − q = 10 − 2 = 8.",
+                "incorrectExplanation": "Using m degrees of freedom makes the test too lenient on residuals; the statistic is a sum of squared autocorrelations and follows a χ², not a Student distribution."
             },
             "ro": {
-                "title": "Volatility clustering",
-                "text": "Randamentele S&P 500 prezintă perioade de volatilitate ridicată urmate de alte perioade de volatilitate ridicată. Ce model trebuie luat în considerare?",
+                "title": "Ljung–Box pe reziduuri",
+                "text": "Reziduurile unui model ARMA(1,1) dau statistica Ljung–Box Q(10). Cu ce distribuție o comparați?",
                 "options": [
-                    "Un model ARIMA de ordin mai mare",
-                    "Netezirea exponențială",
-                    "Un model GARCH pentru varianța condiționată",
-                    "Diferențierea sezonieră"
+                    "χ² cu 10 grade de libertate",
+                    "χ² cu 2 grade de libertate",
+                    "χ² cu 8 grade de libertate",
+                    "Student-t cu 10 grade de libertate"
                 ],
-                "correctExplanation": "Volatility clustering este un fapt stilizat al randamentelor financiare. GARCH(1,1) îl modelează prin $\\sigma_t^2 = \\omega + \\alpha \\varepsilon_{t-1}^2 + \\beta \\sigma_{t-1}^2$, astfel încît șocurile mari cresc varianța condiționată viitoare.",
-                "incorrectExplanation": "Modelele ARIMA și netezirea exponențială descriu media condiționată, nu varianța condiționată, iar diferențierea sezonieră elimină tiparele sezoniere. Volatilitatea variabilă în timp cere un model de tip GARCH."
+                "correctExplanation": "Pe reziduurile unui ARMA(p,q) estimat, statistica pierde cîte un grad de libertate pentru fiecare parametru ARMA estimat: m − p − q = 10 − 2 = 8.",
+                "incorrectExplanation": "Cu m grade de libertate testul este prea îngăduitor pe reziduuri; statistica este o sumă de pătrate de autocorelații și urmează o distribuție χ², nu Student."
             }
         },
         {
-            "correct": 1,
+            "correct": 3,
             "en": {
-                "title": "Combining ADF and KPSS",
-                "text": "Both tests include a constant and a linear trend. If the ADF test does not reject its null and the KPSS test rejects its null, the series is most likely:",
-                "options": [
-                    "Stationary",
-                    "Non-stationary (unit root)",
-                    "Trend-stationary",
-                    "White noise"
-                ],
-                "correctExplanation": "ADF: $H_0$ unit root; KPSS: $H_0$ stationarity (here around a trend). Failing to reject the unit root and rejecting stationarity point in the same direction: the series has a unit root.",
-                "incorrectExplanation": "Stationarity, trend stationarity or white noise would make KPSS (with trend) unlikely to reject and ADF likely to reject. The two results agree on a unit root."
-            },
-            "ro": {
-                "title": "Combinarea testelor ADF și KPSS",
-                "text": "Ambele teste includ o constantă și un trend liniar. Dacă testul ADF nu își respinge ipoteza nulă, iar testul KPSS și-o respinge, seria este cel mai probabil:",
-                "options": [
-                    "Staționară",
-                    "Nestaționară (cu rădăcină unitară)",
-                    "Staționară în jurul unui trend",
-                    "Zgomot alb"
-                ],
-                "correctExplanation": "ADF: $H_0$ rădăcină unitară; KPSS: $H_0$ staționaritate (aici în jurul unui trend). Nerespingerea rădăcinii unitare și respingerea staționarității indică același lucru: seria are rădăcină unitară.",
-                "incorrectExplanation": "Dacă seria ar fi staționară, staționară în jurul unui trend sau zgomot alb, KPSS (cu trend) ar respinge greu, iar ADF ar respinge probabil. Cele două rezultate concordă asupra existenței unei rădăcini unitare."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Multiplicative seasonality",
-                "text": "The airline passengers series shows a seasonal amplitude that increases over time. Which decomposition is appropriate?",
-                "options": [
-                    "Additive: $Y_t = T_t + S_t + R_t$",
-                    "Multiplicative: $Y_t = T_t \\times S_t \\times R_t$",
-                    "Both work equally well",
-                    "Neither; differencing should be used instead"
-                ],
-                "correctExplanation": "When the seasonal amplitude grows in proportion to the level, the multiplicative form is appropriate. Taking logarithms turns it into an additive decomposition.",
-                "incorrectExplanation": "The additive form assumes seasonal swings of constant size, so it does not fit growing swings, and the two forms are therefore not equivalent here. Differencing is a modelling tool, not a decomposition. Proportional seasonal effects call for the multiplicative form."
-            },
-            "ro": {
-                "title": "Sezonalitate multiplicativă",
-                "text": "Seria numărului de pasageri ai companiilor aeriene are o amplitudine sezonieră care crește în timp. Ce descompunere este potrivită?",
-                "options": [
-                    "Aditivă: $Y_t = T_t + S_t + R_t$",
-                    "Multiplicativă: $Y_t = T_t \\times S_t \\times R_t$",
-                    "Ambele funcționează la fel de bine",
-                    "Niciuna; trebuie folosită diferențierea"
-                ],
-                "correctExplanation": "Cînd amplitudinea sezonieră crește proporțional cu nivelul, forma multiplicativă este cea potrivită. Prin logaritmare, ea devine o descompunere aditivă.",
-                "incorrectExplanation": "Forma aditivă presupune oscilații sezoniere de mărime constantă, deci nu se potrivește unor oscilații crescătoare, iar cele două forme nu sînt echivalente aici. Diferențierea este un instrument de modelare, nu o descompunere. Efectele sezoniere proporționale cer forma multiplicativă."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "SARIMA for monthly data",
-                "text": "For monthly data with yearly seasonality, the seasonal period $m$ in SARIMA is:",
-                "options": [
-                    "4",
-                    "7",
-                    "12",
-                    "52"
-                ],
-                "correctExplanation": "A yearly pattern in monthly data repeats every 12 observations, so $m = 12$. For comparison: quarterly data $m = 4$, weekly data $m = 52$, daily data with a weekly pattern $m = 7$.",
-                "incorrectExplanation": "The values 4, 7 and 52 correspond to quarterly data, daily data with a weekly pattern and weekly data with a yearly pattern. Monthly data with yearly seasonality have $m = 12$."
-            },
-            "ro": {
-                "title": "SARIMA pentru date lunare",
-                "text": "Pentru date lunare cu sezonalitate anuală, perioada sezonieră $m$ din SARIMA este:",
-                "options": [
-                    "4",
-                    "7",
-                    "12",
-                    "52"
-                ],
-                "correctExplanation": "Un tipar anual în date lunare se repetă la fiecare 12 observații, deci $m = 12$. Pentru comparație: date trimestriale $m = 4$, date săptămînale $m = 52$, date zilnice cu tipar săptămînal $m = 7$.",
-                "incorrectExplanation": "Valorile 4, 7 și 52 corespund datelor trimestriale, datelor zilnice cu tipar săptămînal și datelor săptămînale cu tipar anual. Datele lunare cu sezonalitate anuală au $m = 12$."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Comparing models across scales",
-                "text": "When comparing SARIMA and Prophet forecasts across series measured in different units, which metric is scale-independent?",
-                "options": [
-                    "RMSE",
-                    "MAE",
-                    "MAPE",
-                    "MSE"
-                ],
-                "correctExplanation": "MAPE expresses errors as percentages of the actual values, so it can be compared across series and data sets with different scales (provided the actual values are not close to zero).",
-                "incorrectExplanation": "RMSE, MAE and MSE are expressed in the units of the series (or their square), so they change when the data are rescaled. MAPE is the unit-free choice among these four."
-            },
-            "ro": {
-                "title": "Compararea modelelor pe scale diferite",
-                "text": "La compararea prognozelor SARIMA și Prophet pe serii măsurate în unități diferite, ce indicator este independent de scală?",
-                "options": [
-                    "RMSE",
-                    "MAE",
-                    "MAPE",
-                    "MSE"
-                ],
-                "correctExplanation": "MAPE exprimă erorile ca procente din valorile efective, deci poate fi comparată între serii și seturi de date cu scale diferite (cu condiția ca valorile efective să nu fie apropiate de zero).",
-                "incorrectExplanation": "RMSE, MAE și MSE se exprimă în unitățile seriei (sau în pătratul lor), deci se modifică dacă datele sînt rescalate. Dintre cei patru indicatori, MAPE este cel fără unitate de măsură."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Structural breaks in Prophet",
-                "text": "US retail sales experienced a structural break during COVID-19. Prophet handles such a break through:",
-                "options": [
-                    "Automatic differencing",
-                    "Changepoints in the trend",
-                    "Seasonal adjustment",
-                    "GARCH modelling"
-                ],
-                "correctExplanation": "Prophet's piecewise trend lets the growth rate change at a set of changepoints, with a sparsity prior on the size of the changes, so it can adapt to breaks such as the COVID-19 shock.",
-                "incorrectExplanation": "Prophet does not difference the series, its seasonal terms model recurring patterns rather than breaks, and GARCH models volatility. Breaks in the trend are captured by changepoints."
-            },
-            "ro": {
-                "title": "Rupturi structurale în Prophet",
-                "text": "Vînzările cu amănuntul din SUA au suferit o ruptură structurală în timpul pandemiei de COVID-19. Prophet tratează o astfel de ruptură prin:",
-                "options": [
-                    "Diferențiere automată",
-                    "Puncte de schimbare (changepoints) ale trendului",
-                    "Ajustare sezonieră",
-                    "Modelare GARCH"
-                ],
-                "correctExplanation": "Trendul pe porțiuni din Prophet permite modificarea ratei de creștere într-un set de puncte de schimbare (changepoints), cu o distribuție a priori care favorizează puține modificări, așa că se poate adapta unor rupturi precum șocul COVID-19.",
-                "incorrectExplanation": "Prophet nu diferențiază seria, termenii lui sezonieri modelează tipare recurente, nu rupturi, iar GARCH modelează volatilitatea. Rupturile de trend sînt captate prin changepoints."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Ljung-Box test",
-                "text": "After fitting an ARIMA model, the Ljung-Box test on the residuals checks for:",
-                "options": [
-                    "Normality",
-                    "Remaining autocorrelation",
-                    "Heteroscedasticity",
-                    "Stationarity"
-                ],
-                "correctExplanation": "The Ljung-Box statistic $Q = n(n+2)\\sum_{k=1}^{h}\\hat{\\rho}_k^2/(n-k)$ tests whether the first $h$ residual autocorrelations are jointly zero. Rejection means the model has left linear structure in the residuals.",
-                "incorrectExplanation": "Normality is checked with tests such as Jarque-Bera, heteroscedasticity with ARCH-LM (or Ljung-Box on squared residuals), and stationarity with ADF or KPSS. Ljung-Box on the residuals targets remaining autocorrelation."
-            },
-            "ro": {
-                "title": "Testul Ljung-Box",
-                "text": "După estimarea unui model ARIMA, testul Ljung-Box aplicat reziduurilor verifică existența:",
-                "options": [
-                    "Normalității",
-                    "Autocorelației reziduale",
-                    "Heteroscedasticității",
-                    "Staționarității"
-                ],
-                "correctExplanation": "Statistica Ljung-Box $Q = n(n+2)\\sum_{k=1}^{h}\\hat{\\rho}_k^2/(n-k)$ testează dacă primele $h$ autocorelații ale reziduurilor sînt simultan nule. Respingerea arată că modelul a lăsat structură liniară în reziduuri.",
-                "incorrectExplanation": "Normalitatea se verifică prin teste precum Jarque-Bera, heteroscedasticitatea prin ARCH-LM (sau Ljung-Box pe pătratele reziduurilor), iar staționaritatea prin ADF sau KPSS. Testul Ljung-Box pe reziduuri vizează autocorelația rămasă."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Interpreting the ACF and PACF",
-                "text": "The ACF decays geometrically and the PACF cuts off after lag 2. This suggests:",
+                "title": "Reading ACF and PACF",
+                "text": "The ACF decays geometrically and the PACF cuts off after lag 2. Which model is suggested?",
                 "options": [
                     "MA(2)",
-                    "AR(2)",
                     "ARMA(2,2)",
-                    "A random walk"
+                    "A random walk",
+                    "AR(2)"
                 ],
-                "correctExplanation": "A PACF cut-off gives the AR order and an ACF cut-off gives the MA order. A decaying ACF together with a PACF that cuts off at lag 2 identifies AR(2).",
-                "incorrectExplanation": "MA(2) would show the cut-off in the ACF, ARMA(2,2) would show decay in both functions, and a random walk would have an ACF that stays close to 1 over many lags. The pattern described is that of AR(2)."
+                "correctExplanation": "For an AR(p) the PACF is zero after lag p while the ACF decays; here p = 2.",
+                "incorrectExplanation": "An MA(q) has the opposite pattern (the ACF cuts off); an ARMA has both decaying; a random walk has an ACF that stays close to 1 for many lags."
             },
             "ro": {
-                "title": "Interpretarea ACF și PACF",
-                "text": "ACF scade geometric, iar PACF se anulează după lag-ul 2. Ce model sugerează acest tipar?",
+                "title": "Citirea ACF și PACF",
+                "text": "ACF scade geometric, iar PACF se anulează după decalajul 2. Ce model este sugerat?",
                 "options": [
                     "MA(2)",
-                    "AR(2)",
                     "ARMA(2,2)",
-                    "Un mers aleator"
+                    "Un mers aleator",
+                    "AR(2)"
                 ],
-                "correctExplanation": "Anularea PACF dă ordinul AR, iar anularea ACF dă ordinul MA. O ACF descrescătoare împreună cu o PACF care se anulează după lag-ul 2 identifică un AR(2).",
-                "incorrectExplanation": "Un MA(2) ar avea anularea în ACF, un ARMA(2,2) ar avea scădere treptată în ambele funcții, iar un mers aleator ar avea o ACF apropiată de 1 pe multe lag-uri. Tiparul descris este cel al unui AR(2)."
+                "correctExplanation": "La un AR(p), PACF este zero după decalajul p, iar ACF descrește; aici p = 2.",
+                "incorrectExplanation": "Un MA(q) are tiparul opus (ACF se anulează); un ARMA are ambele funcții descrescătoare; un mers aleator are o ACF care rămîne aproape de 1 pe multe decalaje."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "MA(1) autocorrelation",
+                "text": "For an MA(1) process $X_t = \\varepsilon_t + 0.5\\,\\varepsilon_{t-1}$, what is $\\rho(1)$?",
+                "options": [
+                    "0.4",
+                    "0.5",
+                    "0.25",
+                    "0.8"
+                ],
+                "correctExplanation": "ρ(1) = θ/(1 + θ²) = 0.5/1.25 = 0.4; all higher autocorrelations are zero.",
+                "incorrectExplanation": "The autocorrelation is not θ itself: the variance of the MA(1) is σ²(1 + θ²), so θ is divided by 1 + θ²."
+            },
+            "ro": {
+                "title": "Autocorelația unui MA(1)",
+                "text": "Pentru procesul MA(1) $X_t = \\varepsilon_t + 0{,}5\\,\\varepsilon_{t-1}$, cît este $\\rho(1)$?",
+                "options": [
+                    "0,4",
+                    "0,5",
+                    "0,25",
+                    "0,8"
+                ],
+                "correctExplanation": "ρ(1) = θ/(1 + θ²) = 0,5/1,25 = 0,4; toate autocorelațiile de ordin mai mare sînt zero.",
+                "incorrectExplanation": "Autocorelația nu este chiar θ: varianța unui MA(1) este σ²(1 + θ²), deci θ se împarte la 1 + θ²."
             }
         },
         {
             "correct": 1,
             "en": {
-                "title": "Why use log returns",
-                "text": "For the S&P 500 we model log returns $r_t = \\ln(P_t/P_{t-1})$ rather than prices because:",
+                "title": "Over-differencing",
+                "text": "Which sign suggests that a series has been differenced once too often?",
                 "options": [
-                    "Prices are always stationary",
-                    "Returns are approximately stationary, while prices are not",
-                    "Log returns are easier to compute",
-                    "Returns have stronger autocorrelation"
+                    "A slowly decaying ACF",
+                    "A first autocorrelation near −0.5 and an estimated MA coefficient near −1",
+                    "A large positive first autocorrelation",
+                    "A significant seasonal spike at lag 12"
                 ],
-                "correctExplanation": "Log prices behave like a random walk (non-stationary). Their first difference, the log return, is approximately stationary and therefore suitable for ARMA and GARCH modelling.",
-                "incorrectExplanation": "Prices are not stationary, ease of computation is not the reason, and returns in fact have much weaker autocorrelation than prices. The motivation is stationarity."
+                "correctExplanation": "Differencing a stationary series creates a non-invertible MA component: the first autocorrelation moves towards −0.5, the variance rises and the MA coefficient approaches −1.",
+                "incorrectExplanation": "A slowly decaying ACF signals too few differences, not too many; a seasonal spike calls for seasonal terms."
             },
             "ro": {
-                "title": "De ce folosim randamente logaritmice",
-                "text": "Pentru S&P 500 modelăm randamentele logaritmice $r_t = \\ln(P_t/P_{t-1})$ în locul prețurilor deoarece:",
+                "title": "Supradiferențierea",
+                "text": "Ce semn arată că o serie a fost diferențiată o dată în plus?",
                 "options": [
-                    "Prețurile sînt întotdeauna staționare",
-                    "Randamentele sînt aproximativ staționare, iar prețurile nu",
-                    "Randamentele logaritmice se calculează mai ușor",
-                    "Randamentele au autocorelație mai puternică"
+                    "O ACF care scade lent",
+                    "O primă autocorelație în jur de −0,5 și un coeficient MA estimat aproape de −1",
+                    "O primă autocorelație mare și pozitivă",
+                    "O valoare sezonieră semnificativă la decalajul 12"
                 ],
-                "correctExplanation": "Logaritmul prețului se comportă ca un mers aleator (nestaționar). Prima lui diferență, randamentul logaritmic, este aproximativ staționară și deci potrivită pentru modelarea ARMA și GARCH.",
-                "incorrectExplanation": "Prețurile nu sînt staționare, ușurința calculului nu este motivul, iar randamentele au de fapt autocorelații mult mai slabe decît prețurile. Motivul este staționaritatea."
+                "correctExplanation": "Diferențierea unei serii staționare creează o componentă MA neinvertibilă: prima autocorelație se apropie de −0,5, varianța crește, iar coeficientul MA se apropie de −1.",
+                "incorrectExplanation": "O ACF care scade lent arată prea puține diferențieri, nu prea multe; o valoare sezonieră mare cere termeni sezonieri."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "SARIMA forecast by hand",
+                "text": "For $z_t = \\Delta\\Delta_{12}\\ln P_t$ an AR(1) × SAR(1) model is $(1 - \\phi L)(1 - \\Phi L^{12})z_t = \\varepsilon_t$. What is $\\hat z_{T+1}$?",
+                "options": [
+                    "$\\phi z_T + \\Phi z_{T-12}$",
+                    "$\\phi z_{T+1} + \\Phi z_{T-11}$",
+                    "$\\phi z_T + \\Phi z_{T-11} - \\phi\\Phi z_{T-12}$",
+                    "$(\\phi + \\Phi) z_T$"
+                ],
+                "correctExplanation": "Multiplying the two polynomials gives $z_t = \\phi z_{t-1} + \\Phi z_{t-12} - \\phi\\Phi z_{t-13} + \\varepsilon_t$; at $t = T + 1$ the lags are $T$, $T - 11$ and $T - 12$.",
+                "incorrectExplanation": "The cross term $\\phi\\Phi$ of the multiplicative model is easy to forget, and the seasonal lag of $T + 1$ is $T - 11$, not $T - 12$."
+            },
+            "ro": {
+                "title": "Prognoză SARIMA de mînă",
+                "text": "Pentru $z_t = \\Delta\\Delta_{12}\\ln P_t$, un model AR(1) × SAR(1) este $(1 - \\phi L)(1 - \\Phi L^{12})z_t = \\varepsilon_t$. Cît este $\\hat z_{T+1}$?",
+                "options": [
+                    "$\\phi z_T + \\Phi z_{T-12}$",
+                    "$\\phi z_{T+1} + \\Phi z_{T-11}$",
+                    "$\\phi z_T + \\Phi z_{T-11} - \\phi\\Phi z_{T-12}$",
+                    "$(\\phi + \\Phi) z_T$"
+                ],
+                "correctExplanation": "Înmulțirea celor două polinoame dă $z_t = \\phi z_{t-1} + \\Phi z_{t-12} - \\phi\\Phi z_{t-13} + \\varepsilon_t$; la $t = T + 1$, decalajele sînt $T$, $T - 11$ și $T - 12$.",
+                "incorrectExplanation": "Termenul încrucișat $\\phi\\Phi$ al modelului multiplicativ se uită ușor, iar decalajul sezonier al lui $T + 1$ este $T - 11$, nu $T - 12$."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Reading EViews output",
+                "text": "An EViews output has the dependent variable DLOG(IPC,1,12). What is modelled?",
+                "options": [
+                    "$\\ln \\mathrm{IPC}_t$ in levels",
+                    "$\\Delta\\ln \\mathrm{IPC}_t$ only",
+                    "$\\Delta_{12}\\mathrm{IPC}_t$ without logarithms",
+                    "$\\Delta\\Delta_{12}\\ln \\mathrm{IPC}_t$: the monthly change of annual inflation"
+                ],
+                "correctExplanation": "DLOG(X,d,s) takes the logarithm and applies d regular differences and one seasonal difference of period s: here one regular and one seasonal difference.",
+                "incorrectExplanation": "Without the seasonal difference the series would be monthly inflation, and without the regular difference it would be annual inflation; DLOG always works on the logarithm."
+            },
+            "ro": {
+                "title": "Citirea rezultatelor EViews",
+                "text": "Un rezultat EViews are variabila dependentă DLOG(IPC,1,12). Ce se modelează?",
+                "options": [
+                    "$\\ln \\mathrm{IPC}_t$ în niveluri",
+                    "doar $\\Delta\\ln \\mathrm{IPC}_t$",
+                    "$\\Delta_{12}\\mathrm{IPC}_t$ fără logaritm",
+                    "$\\Delta\\Delta_{12}\\ln \\mathrm{IPC}_t$: variația lunară a inflației anuale"
+                ],
+                "correctExplanation": "DLOG(X,d,s) ia logaritmul și aplică d diferențe obișnuite și o diferență sezonieră de perioadă s: aici o diferență obișnuită și una sezonieră.",
+                "incorrectExplanation": "Fără diferența sezonieră seria ar fi inflația lunară, iar fără diferența obișnuită ar fi inflația anuală; DLOG lucrează întotdeauna pe logaritm."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Spurious regression",
+                "text": "You regress one random walk on another, independent random walk. What do you typically find?",
+                "options": [
+                    "A large t statistic, a high $R^2$ and a Durbin–Watson statistic close to 0",
+                    "A t statistic close to 0 and $R^2$ close to 0",
+                    "White-noise residuals",
+                    "A slope that converges to zero as T grows"
+                ],
+                "correctExplanation": "Granger and Newbold (1974): with I(1) series the t statistic grows with the sample, $R^2$ is high and the residuals are themselves a random walk (DW near 0).",
+                "incorrectExplanation": "Independent random walks look related in levels; more data make the problem worse, not better. The remedy is to test the order of integration and cointegration."
+            },
+            "ro": {
+                "title": "Regresia falsă",
+                "text": "Regresați un mers aleator pe un alt mers aleator, independent. Ce obțineți de obicei?",
+                "options": [
+                    "O statistică t mare, un $R^2$ mare și o statistică Durbin–Watson apropiată de 0",
+                    "O statistică t apropiată de 0 și un $R^2$ apropiat de 0",
+                    "Reziduuri de tip zgomot alb",
+                    "O pantă care tinde la zero cînd T crește"
+                ],
+                "correctExplanation": "Granger și Newbold (1974): pentru serii I(1), statistica t crește cu eșantionul, $R^2$ este mare, iar reziduurile sînt ele însele un mers aleator (DW aproape de 0).",
+                "incorrectExplanation": "Mersurile aleatoare independente par legate în niveluri; mai multe date agravează problema. Remediul este testarea ordinului de integrare și a cointegrării."
             }
         },
         {
             "correct": 1,
+            "en": {
+                "title": "Engle–Granger critical values",
+                "text": "In the Engle–Granger test, the ADF statistic of the OLS residuals is compared with:",
+                "options": [
+                    "The usual Dickey–Fuller critical values",
+                    "MacKinnon critical values, more negative than the Dickey–Fuller ones",
+                    "Standard Normal critical values (−1.96)",
+                    "Student-t critical values with T − 2 degrees of freedom"
+                ],
+                "correctExplanation": "OLS chooses the coefficients that make the residuals look as stationary as possible, so the critical values must be more negative and depend on the number of variables.",
+                "incorrectExplanation": "Dickey–Fuller values would reject too often; Normal and Student values are wrong for any unit-root statistic."
+            },
+            "ro": {
+                "title": "Valorile critice Engle–Granger",
+                "text": "În testul Engle–Granger, statistica ADF a reziduurilor OLS se compară cu:",
+                "options": [
+                    "Valorile critice Dickey–Fuller obișnuite",
+                    "Valorile critice MacKinnon, mai negative decît cele Dickey–Fuller",
+                    "Valorile critice ale distribuției Normale (−1,96)",
+                    "Valorile critice Student-t cu T − 2 grade de libertate"
+                ],
+                "correctExplanation": "OLS alege coeficienții care fac reziduurile să pară cît mai staționare, deci valorile critice trebuie să fie mai negative și depind de numărul de variabile.",
+                "incorrectExplanation": "Valorile Dickey–Fuller ar respinge prea des; valorile Normale și Student sînt greșite pentru orice statistică de rădăcină unitară."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Adjustment coefficients in a VECM",
+                "text": "In a VECM, the adjustment coefficient α of one variable is small and not significant. What does this mean?",
+                "options": [
+                    "The series are not cointegrated",
+                    "The variable is stationary",
+                    "That variable does not adjust to the equilibrium error: it is weakly exogenous",
+                    "The long-run coefficient β is zero"
+                ],
+                "correctExplanation": "α measures how each variable reacts to last period's equilibrium error; a zero row of α means the variable drives the common trend and the others do the adjusting.",
+                "incorrectExplanation": "Cointegration is decided by the rank of Π = αβ′, not by one coefficient; at least one other variable must adjust when the series are cointegrated."
+            },
+            "ro": {
+                "title": "Coeficienții de ajustare dintr-un VECM",
+                "text": "Într-un VECM, coeficientul de ajustare α al unei variabile este mic și nesemnificativ. Ce înseamnă acest lucru?",
+                "options": [
+                    "Seriile nu sînt cointegrate",
+                    "Variabila este staționară",
+                    "Variabila nu se ajustează la eroarea de echilibru: este slab exogenă",
+                    "Coeficientul pe termen lung β este zero"
+                ],
+                "correctExplanation": "α măsoară reacția fiecărei variabile la eroarea de echilibru din perioada anterioară; un rînd nul al lui α înseamnă că variabila conduce trendul comun, iar celelalte se ajustează.",
+                "incorrectExplanation": "Cointegrarea se decide prin rangul lui Π = αβ′, nu printr-un singur coeficient; cînd seriile sînt cointegrate, cel puțin o altă variabilă trebuie să se ajusteze."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Johansen trace test",
+                "text": "With three variables, the trace test rejects r = 0, does not reject r ≤ 1. What is the cointegration rank?",
+                "options": [
+                    "r = 0",
+                    "r = 2",
+                    "r = 3: all variables are stationary",
+                    "r = 1, with two common stochastic trends"
+                ],
+                "correctExplanation": "The test is sequential: stop at the first null that is not rejected; r = 1 cointegrating vector and n − r = 2 common trends.",
+                "incorrectExplanation": "Rejecting r = 0 already excludes the rank 0; r = 3 would mean that every variable is stationary, which contradicts their being I(1)."
+            },
+            "ro": {
+                "title": "Testul urmei Johansen",
+                "text": "Cu trei variabile, testul urmei respinge r = 0 și nu respinge r ≤ 1. Care este rangul de cointegrare?",
+                "options": [
+                    "r = 0",
+                    "r = 2",
+                    "r = 3: toate variabilele sînt staționare",
+                    "r = 1, cu două trenduri stochastice comune"
+                ],
+                "correctExplanation": "Testul este secvențial: ne oprim la prima ipoteză nulă care nu se respinge; un vector de cointegrare și n − r = 2 trenduri comune.",
+                "incorrectExplanation": "Respingerea lui r = 0 exclude deja rangul 0; r = 3 ar însemna că fiecare variabilă este staționară, ceea ce contrazice faptul că sînt I(1)."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Meaning of Granger causality",
+                "text": "Inflation Granger-causes the interbank rate (p = 0.01). What does this establish?",
+                "options": [
+                    "Past inflation improves the forecast of the interbank rate, given the past of the rate",
+                    "Inflation causes the central bank to raise rates",
+                    "The interbank rate does not affect inflation",
+                    "The two series are cointegrated"
+                ],
+                "correctExplanation": "Granger causality is incremental predictability within the chosen information set; it says nothing about structural causation or about the reverse direction.",
+                "incorrectExplanation": "A causal policy claim needs identification (Chapter 6, structural VAR); the reverse direction has its own test; cointegration is a different property of the levels."
+            },
+            "ro": {
+                "title": "Semnificația cauzalității Granger",
+                "text": "Inflația cauzează Granger dobînda interbancară (p = 0,01). Ce stabilește acest rezultat?",
+                "options": [
+                    "Inflația trecută îmbunătățește prognoza dobînzii, dată fiind istoria dobînzii",
+                    "Inflația determină banca centrală să crească dobînzile",
+                    "Dobînda interbancară nu influențează inflația",
+                    "Cele două serii sînt cointegrate"
+                ],
+                "correctExplanation": "Cauzalitatea Granger înseamnă predictibilitate suplimentară în setul de informații ales; nu spune nimic despre cauzalitatea structurală sau despre direcția inversă.",
+                "incorrectExplanation": "O afirmație cauzală despre politica monetară cere identificare (Capitolul 6, VAR structural); direcția inversă are propriul test; cointegrarea este o altă proprietate, a nivelurilor."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "Granger F from two RSS",
+                "text": "Restricted RSS = 110, unrestricted RSS = 100, p = 2 lags tested, 100 residual degrees of freedom. What is F?",
+                "options": [
+                    "10",
+                    "5",
+                    "0.05",
+                    "1.1"
+                ],
+                "correctExplanation": "F = [(110 − 100)/2] / [100/100] = 5/1 = 5, compared with F(2, 100), whose 5% critical value is about 3.09.",
+                "incorrectExplanation": "The numerator is divided by the number of restrictions and the denominator by its degrees of freedom; the ratio of the two RSS is not the F statistic."
+            },
+            "ro": {
+                "title": "Testul Granger F din două RSS",
+                "text": "RSS restricționat = 110, RSS nerestricționat = 100, p = 2 decalaje testate, 100 de grade de libertate ale reziduurilor. Cît este F?",
+                "options": [
+                    "10",
+                    "5",
+                    "0,05",
+                    "1,1"
+                ],
+                "correctExplanation": "F = [(110 − 100)/2] / [100/100] = 5/1 = 5, comparat cu F(2, 100), a cărui valoare critică la 5% este circa 3,09.",
+                "incorrectExplanation": "Numărătorul se împarte la numărul de restricții, iar numitorul la gradele lui de libertate; raportul celor două RSS nu este statistica F."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "GARCH half-life",
+                "text": "A GARCH(1,1) has α + β = 0.98. After how many days does a volatility shock halve?",
+                "options": [
+                    "50 days",
+                    "About 2 days",
+                    "About 34 days",
+                    "Never"
+                ],
+                "correctExplanation": "The half-life is ln 0.5 / ln(α + β) = −0.693 / −0.0202 ≈ 34 days.",
+                "incorrectExplanation": "1/(1 − α − β) = 50 is not a half-life; the shock does halve because α + β < 1; it would never fade only for α + β = 1 (IGARCH)."
+            },
+            "ro": {
+                "title": "Timpul de înjumătățire GARCH",
+                "text": "Un GARCH(1,1) are α + β = 0,98. După cîte zile se înjumătățește un șoc al volatilității?",
+                "options": [
+                    "După 50 de zile",
+                    "După circa 2 zile",
+                    "După circa 34 de zile",
+                    "Niciodată"
+                ],
+                "correctExplanation": "Timpul de înjumătățire este ln 0,5 / ln(α + β) = −0,693 / −0,0202 ≈ 34 de zile.",
+                "incorrectExplanation": "1/(1 − α − β) = 50 nu este un timp de înjumătățire; șocul se înjumătățește, pentru că α + β < 1; nu s-ar stinge niciodată doar pentru α + β = 1 (IGARCH)."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "GARCH long-run variance",
+                "text": "A GARCH(1,1) for daily returns in % has ω = 0.02, α = 0.08, β = 0.90. What is the long-run daily variance?",
+                "options": [
+                    "0.02",
+                    "0.2",
+                    "It does not exist",
+                    "1"
+                ],
+                "correctExplanation": "σ̄² = ω/(1 − α − β) = 0.02/0.02 = 1, a daily volatility of 1%, about 16% a year with 252 days.",
+                "incorrectExplanation": "ω alone is not the long-run variance; the long-run variance exists because α + β = 0.98 < 1."
+            },
+            "ro": {
+                "title": "Varianța pe termen lung GARCH",
+                "text": "Un GARCH(1,1) pentru randamente zilnice în % are ω = 0,02, α = 0,08, β = 0,90. Cît este varianța zilnică pe termen lung?",
+                "options": [
+                    "0,02",
+                    "0,2",
+                    "Nu există",
+                    "1"
+                ],
+                "correctExplanation": "σ̄² = ω/(1 − α − β) = 0,02/0,02 = 1, o volatilitate zilnică de 1%, circa 16% pe an, cu 252 de zile.",
+                "incorrectExplanation": "ω singur nu este varianța pe termen lung; varianța pe termen lung există, pentru că α + β = 0,98 < 1."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "VaR convention",
+                "text": "How does the course write the loss that is exceeded on 1% of days?",
+                "options": [
+                    "VaR 1%, a positive number: $\\mathrm{VaR}_{0.01} = -q_{0.01}$",
+                    "VaR 99%, a negative number",
+                    "VaR 99%, the 99% quantile of returns",
+                    "VaR 1%, the 1% quantile of returns, a negative number"
+                ],
+                "correctExplanation": "The level is the tail probability and VaR is reported as a positive loss: minus the 1% quantile of the return distribution.",
+                "incorrectExplanation": "Writing VaR 99% or reporting the raw (negative) quantile mixes two conventions; the course uses VaR 1% with a positive sign."
+            },
+            "ro": {
+                "title": "Convenția VaR",
+                "text": "Cum scriem în curs pierderea depășită în 1% din zile?",
+                "options": [
+                    "VaR 1%, un număr pozitiv: $\\mathrm{VaR}_{0{,}01} = -q_{0{,}01}$",
+                    "VaR 99%, un număr negativ",
+                    "VaR 99%, cuantila de 99% a randamentelor",
+                    "VaR 1%, cuantila de 1% a randamentelor, un număr negativ"
+                ],
+                "correctExplanation": "Nivelul este probabilitatea cozii, iar VaR se raportează ca pierdere pozitivă: minus cuantila de 1% a distribuției randamentelor.",
+                "incorrectExplanation": "Scrierea „VaR 99%” sau raportarea cuantilei brute (negative) amestecă două convenții; în curs folosim VaR 1%, cu semn pozitiv."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "MASE below one",
+                "text": "A SARIMA forecast has MASE = 0.66 on the test sample. What does it mean?",
+                "options": [
+                    "It is 66% accurate",
+                    "Its mean absolute error is 66% of that of the in-sample seasonal naive method",
+                    "It beats the seasonal naive method significantly",
+                    "Its errors are 0.66 percentage points"
+                ],
+                "correctExplanation": "MASE scales the MAE by the in-sample MAE of the seasonal naive method; below 1 the model is better on average, whatever the units of the series.",
+                "incorrectExplanation": "MASE is not a share of correct forecasts and not a test: significance needs a Diebold–Mariano test; it has no units."
+            },
+            "ro": {
+                "title": "MASE sub unu",
+                "text": "O prognoză SARIMA are MASE = 0,66 pe eșantionul de test. Ce înseamnă?",
+                "options": [
+                    "Are o acuratețe de 66%",
+                    "Eroarea ei absolută medie este 66% din cea a metodei naive sezoniere în eșantion",
+                    "Bate semnificativ metoda naivă sezonieră",
+                    "Erorile ei sînt de 0,66 puncte procentuale"
+                ],
+                "correctExplanation": "MASE împarte MAE la MAE din eșantion al metodei naive sezoniere; sub 1, modelul este mai bun în medie, oricare ar fi unitatea de măsură a seriei.",
+                "incorrectExplanation": "MASE nu este o proporție de prognoze corecte și nici un test: semnificația cere testul Diebold–Mariano; MASE nu are unitate de măsură."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Diebold–Mariano test",
+                "text": "Two forecasts on 24 test months: Diebold–Mariano (HLN) statistic −1.40, p = 0.17. What do you conclude?",
+                "options": [
+                    "The first forecast is significantly better",
+                    "The second forecast is significantly better",
+                    "Equal accuracy is not rejected: the gain may be due to chance",
+                    "The forecasts are identical"
+                ],
+                "correctExplanation": "The test compares the mean loss difference with its standard error; p = 0.17 > 0.05, so 24 months do not show a real difference.",
+                "incorrectExplanation": "A negative statistic favours the first forecast, but not significantly; not rejecting equal accuracy does not mean the forecasts are identical."
+            },
+            "ro": {
+                "title": "Testul Diebold–Mariano",
+                "text": "Două prognoze pe 24 de luni de test: statistica Diebold–Mariano (HLN) este −1,40, p = 0,17. Ce concluzie trageți?",
+                "options": [
+                    "Prima prognoză este semnificativ mai bună",
+                    "A doua prognoză este semnificativ mai bună",
+                    "Acuratețea egală nu se respinge: cîștigul poate fi întîmplător",
+                    "Prognozele sînt identice"
+                ],
+                "correctExplanation": "Testul compară media diferențelor de pierdere cu eroarea ei standard; p = 0,17 > 0,05, deci 24 de luni nu arată o diferență reală.",
+                "incorrectExplanation": "O statistică negativă favorizează prima prognoză, dar nu semnificativ; nerespingerea acurateței egale nu înseamnă că prognozele sînt identice."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Cross-validation for time series",
+                "text": "How should a forecasting model of a time series be validated?",
+                "options": [
+                    "Random k-fold cross-validation",
+                    "Leave-one-out on randomly chosen days",
+                    "On the training sample, with the highest $R^2$",
+                    "Rolling origins: train on the past, test on the following block, move forward"
+                ],
+                "correctExplanation": "Walk-forward (rolling-origin) validation respects the order of time, so no information from the future enters the estimation.",
+                "incorrectExplanation": "Random folds put future observations into the training set (leakage) and produce spectacular but false scores; in-sample $R^2$ says nothing about forecasting."
+            },
+            "ro": {
+                "title": "Validarea încrucișată pentru serii de timp",
+                "text": "Cum se validează un model de prognoză pentru o serie de timp?",
+                "options": [
+                    "Validare încrucișată aleatoare în k grupuri",
+                    "Leave-one-out pe zile alese aleator",
+                    "Pe eșantionul de antrenare, după cel mai mare $R^2$",
+                    "Cu origini mobile: antrenare pe trecut, test pe blocul următor, apoi mai departe"
+                ],
+                "correctExplanation": "Validarea walk-forward (cu origini mobile) respectă ordinea timpului, deci nicio informație din viitor nu intră în estimare.",
+                "incorrectExplanation": "Grupurile aleatoare pun observații din viitor în setul de antrenare (scurgere de informație) și dau scoruri spectaculoase, dar false; $R^2$ în eșantion nu spune nimic despre prognoză."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "ARFIMA with d = 0.3",
+                "text": "An ARFIMA(0,d,0) has d = 0.3. Which statement is correct?",
+                "options": [
+                    "It is stationary with long memory; H = 0.8",
+                    "It is non-stationary; H = 0.3",
+                    "It has short memory like an AR(1); H = 0.5",
+                    "It is not mean-reverting"
+                ],
+                "correctExplanation": "For 0 < d < 1/2 the process is stationary, its ACF decays hyperbolically, and H = d + 1/2 = 0.8; it is mean-reverting since d < 1.",
+                "incorrectExplanation": "Non-stationarity starts at d = 1/2 and the loss of mean reversion at d = 1; an AR(1) has an exponentially decaying ACF."
+            },
+            "ro": {
+                "title": "ARFIMA cu d = 0,3",
+                "text": "Un ARFIMA(0,d,0) are d = 0,3. Care afirmație este corectă?",
+                "options": [
+                    "Este staționar, cu memorie lungă; H = 0,8",
+                    "Este nestaționar; H = 0,3",
+                    "Are memorie scurtă, ca un AR(1); H = 0,5",
+                    "Nu revine la medie"
+                ],
+                "correctExplanation": "Pentru 0 < d < 1/2 procesul este staționar, ACF scade hiperbolic, iar H = d + 1/2 = 0,8; revine la medie, pentru că d < 1.",
+                "incorrectExplanation": "Nestaționaritatea începe la d = 1/2, iar pierderea revenirii la medie la d = 1; un AR(1) are o ACF care scade exponențial."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "Kalman filter and smoothing",
+                "text": "In the local level model, what is the steady-state Kalman gain $\\bar K$?",
+                "options": [
+                    "The variance of the measurement noise",
+                    "The weight α of simple exponential smoothing",
+                    "The probability of a regime change",
+                    "The AR coefficient of the level"
+                ],
+                "correctExplanation": "In the steady state the update is $a_{t+1} = a_t + \\bar K(y_t - a_t)$, which is the SES recursion with α = $\\bar K$ (Muth, 1960).",
+                "incorrectExplanation": "The gain is a weight between 0 and 1, not a variance or a probability; the level in this model is a random walk, with no AR coefficient."
+            },
+            "ro": {
+                "title": "Filtrul Kalman și netezirea",
+                "text": "În modelul local level, ce este cîștigul Kalman de echilibru $\\bar K$?",
+                "options": [
+                    "Varianța zgomotului de măsurare",
+                    "Ponderea α a netezirii exponențiale simple",
+                    "Probabilitatea unei schimbări de regim",
+                    "Coeficientul AR al nivelului"
+                ],
+                "correctExplanation": "În starea de echilibru actualizarea este $a_{t+1} = a_t + \\bar K(y_t - a_t)$, adică recurența SES cu α = $\\bar K$ (Muth, 1960).",
+                "incorrectExplanation": "Cîștigul este o pondere între 0 și 1, nu o varianță și nici o probabilitate; nivelul din acest model este un mers aleator, fără coeficient AR."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Markov switching durations",
+                "text": "In a two-regime Markov switching model, $p_{11} = 0.9$. What is the expected duration of regime 1?",
+                "options": [
+                    "9 periods",
+                    "0.9 periods",
+                    "10 periods",
+                    "1.1 periods"
+                ],
+                "correctExplanation": "The duration is geometric with mean 1/(1 − p₁₁) = 1/0.1 = 10 periods.",
+                "incorrectExplanation": "p₁₁/(1 − p₁₁) = 9 counts only the extra periods after the first; 0.9 is a probability, not a duration."
+            },
+            "ro": {
+                "title": "Durata regimurilor Markov switching",
+                "text": "Într-un model Markov switching cu două regimuri, $p_{11} = 0{,}9$. Cît durează în medie regimul 1?",
+                "options": [
+                    "9 perioade",
+                    "0,9 perioade",
+                    "10 perioade",
+                    "1,1 perioade"
+                ],
+                "correctExplanation": "Durata este geometrică, cu media 1/(1 − p₁₁) = 1/0,1 = 10 perioade.",
+                "incorrectExplanation": "p₁₁/(1 − p₁₁) = 9 numără doar perioadele de după prima; 0,9 este o probabilitate, nu o durată."
+            }
+        },
+        {
+            "correct": 3,
             "en": {
                 "title": "AIC and BIC",
                 "text": "Compared with AIC, BIC typically selects:",
                 "options": [
-                    "More complex models",
-                    "Simpler (more parsimonious) models",
-                    "Exactly the same models as AIC",
-                    "Models with a better in-sample fit"
+                    "Larger models",
+                    "Exactly the same models",
+                    "Models with a better in-sample fit",
+                    "Smaller, more parsimonious models"
                 ],
-                "correctExplanation": "$\\text{BIC} = -2\\ln L + k\\ln n$ and $\\text{AIC} = -2\\ln L + 2k$. For $n \\geq 8$, $\\ln n > 2$, so BIC penalises each extra parameter more heavily and favours smaller models.",
-                "incorrectExplanation": "The heavier penalty pushes BIC towards fewer parameters, not more, so the two criteria often disagree, and the larger models preferred by AIC typically have the better in-sample fit. BIC selects more parsimonious models."
+                "correctExplanation": "BIC penalises each parameter with ln T instead of 2, so for T > 7 it prefers fewer parameters; it is consistent, while AIC targets forecasting accuracy.",
+                "incorrectExplanation": "The heavier penalty of BIC works against larger models and against in-sample fit; the two criteria often disagree."
             },
             "ro": {
                 "title": "AIC și BIC",
-                "text": "Comparativ cu AIC, BIC selectează de regulă:",
+                "text": "În comparație cu AIC, BIC alege de obicei:",
                 "options": [
-                    "Modele mai complexe",
-                    "Modele mai simple (mai parcimonioase)",
-                    "Exact aceleași modele ca AIC",
-                    "Modele cu o ajustare mai bună în eșantion"
+                    "Modele mai mari",
+                    "Exact aceleași modele",
+                    "Modele cu o potrivire mai bună în eșantion",
+                    "Modele mai mici, mai parcimonioase"
                 ],
-                "correctExplanation": "$\\text{BIC} = -2\\ln L + k\\ln n$, iar $\\text{AIC} = -2\\ln L + 2k$. Pentru $n \\geq 8$, $\\ln n > 2$, deci BIC penalizează mai sever fiecare parametru suplimentar și favorizează modelele mai mici.",
-                "incorrectExplanation": "Penalizarea mai severă împinge BIC spre mai puțini parametri, nu spre mai mulți, deci cele două criterii diferă adesea, iar modelele mai mari preferate de AIC au de regulă o ajustare mai bună în eșantion. BIC selectează modele mai parcimonioase."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Cross-validation for time series",
-                "text": "For time series cross-validation we use:",
-                "options": [
-                    "Random k-fold cross-validation",
-                    "Leave-one-out cross-validation",
-                    "Rolling-origin (expanding-window) cross-validation",
-                    "Stratified cross-validation"
-                ],
-                "correctExplanation": "Rolling-origin validation estimates the model on data up to time $t$, forecasts the following observations, then moves the origin forward. Training data always precede the evaluation data.",
-                "incorrectExplanation": "Random k-fold, leave-one-out and stratified schemes mix past and future observations, so the model is trained on data that come after the points it is evaluated on. Time series validation must keep the chronological order."
-            },
-            "ro": {
-                "title": "Validarea încrucișată pentru serii de timp",
-                "text": "Pentru validarea încrucișată a seriilor de timp folosim:",
-                "options": [
-                    "Validarea încrucișată k-fold aleatoare",
-                    "Validarea încrucișată leave-one-out",
-                    "Validarea cu origine mobilă (fereastră extinsă)",
-                    "Validarea încrucișată stratificată"
-                ],
-                "correctExplanation": "Validarea cu origine mobilă (rolling origin) estimează modelul pe datele pînă la momentul $t$, prognozează observațiile următoare, apoi mută originea înainte. Datele de antrenare preced întotdeauna datele de evaluare.",
-                "incorrectExplanation": "Schemele k-fold aleatoare, leave-one-out și stratificate amestecă observațiile trecute cu cele viitoare, deci modelul este antrenat pe date ulterioare punctelor pe care este evaluat. Validarea pentru serii de timp trebuie să păstreze ordinea cronologică."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Multiple seasonality",
-                "text": "Hourly data with daily, weekly and yearly patterns are best handled by:",
-                "options": [
-                    "SARIMA with $m = 24$",
-                    "Simple exponential smoothing",
-                    "TBATS or Prophet",
-                    "ARIMA with differencing"
-                ],
-                "correctExplanation": "Standard SARIMA has a single seasonal period. TBATS (with trigonometric seasonal terms) and Prophet (with Fourier terms for each period) can include several seasonal cycles at once.",
-                "incorrectExplanation": "SARIMA with $m = 24$ captures only the daily cycle, simple exponential smoothing has no seasonal component at all, and ordinary differencing does not model seasonality. Several seasonal periods require TBATS, Prophet or similar models."
-            },
-            "ro": {
-                "title": "Sezonalitate multiplă",
-                "text": "Datele orare cu tipare zilnice, săptămînale și anuale sînt modelate cel mai bine cu:",
-                "options": [
-                    "SARIMA cu $m = 24$",
-                    "Netezirea exponențială simplă",
-                    "TBATS sau Prophet",
-                    "ARIMA cu diferențiere"
-                ],
-                "correctExplanation": "SARIMA standard are o singură perioadă sezonieră. TBATS (cu termeni sezonieri trigonometrici) și Prophet (cu termeni Fourier pentru fiecare perioadă) pot include simultan mai multe cicluri sezoniere.",
-                "incorrectExplanation": "SARIMA cu $m = 24$ captează doar ciclul zilnic, netezirea exponențială simplă nu are deloc componentă sezonieră, iar diferențierea obișnuită nu modelează sezonalitatea. Mai multe perioade sezoniere cer TBATS, Prophet sau modele similare."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Persistence in GARCH",
-                "text": "In GARCH(1,1), high volatility persistence means that $\\alpha + \\beta$ is:",
-                "options": [
-                    "Close to 0",
-                    "Close to 1",
-                    "Greater than 1",
-                    "Negative"
-                ],
-                "correctExplanation": "$\\alpha + \\beta$ measures persistence: the effect of a shock on future conditional variance decays like $(\\alpha + \\beta)^h$. Values close to 1 mean slow decay; $\\alpha + \\beta < 1$ is required for covariance stationarity.",
-                "incorrectExplanation": "A value close to 0 means shocks die out almost immediately, a value above 1 implies an explosive, non-stationary variance, and negative values are ruled out by $\\alpha, \\beta \\geq 0$. High persistence means $\\alpha + \\beta$ just below 1."
-            },
-            "ro": {
-                "title": "Persistența în GARCH",
-                "text": "În GARCH(1,1), o persistență ridicată a volatilității înseamnă că $\\alpha + \\beta$ este:",
-                "options": [
-                    "Apropiat de 0",
-                    "Apropiat de 1",
-                    "Mai mare decît 1",
-                    "Negativ"
-                ],
-                "correctExplanation": "$\\alpha + \\beta$ măsoară persistența: efectul unui șoc asupra varianței condiționate viitoare scade ca $(\\alpha + \\beta)^h$. Valorile apropiate de 1 înseamnă o scădere lentă; condiția $\\alpha + \\beta < 1$ este necesară pentru staționaritatea în covarianță.",
-                "incorrectExplanation": "O valoare apropiată de 0 înseamnă că șocurile se sting aproape imediat, o valoare peste 1 implică o varianță explozivă, nestaționară, iar valorile negative sînt excluse de $\\alpha, \\beta \\geq 0$. Persistența ridicată înseamnă $\\alpha + \\beta$ puțin sub 1."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Forecast uncertainty",
-                "text": "As the forecast horizon increases, prediction intervals typically:",
-                "options": [
-                    "Narrow",
-                    "Stay constant",
-                    "Widen",
-                    "Oscillate"
-                ],
-                "correctExplanation": "Each additional step adds the variance of new shocks, so the forecast error variance grows with the horizon. For a stationary model it converges to the unconditional variance; for a unit-root model it grows without bound.",
-                "incorrectExplanation": "Intervals cannot narrow as uncertainty accumulates, they stay constant only in trivial cases, and they do not oscillate. Prediction intervals widen with the horizon."
-            },
-            "ro": {
-                "title": "Incertitudinea prognozei",
-                "text": "Pe măsură ce orizontul de prognoză crește, intervalele de prognoză de regulă:",
-                "options": [
-                    "Se îngustează",
-                    "Rămîn constante",
-                    "Se lărgesc",
-                    "Oscilează"
-                ],
-                "correctExplanation": "Fiecare pas suplimentar adaugă varianța unor șocuri noi, deci varianța erorii de prognoză crește odată cu orizontul. Pentru un model staționar ea converge către varianța necondiționată; pentru un model cu rădăcină unitară crește nemărginit.",
-                "incorrectExplanation": "Intervalele nu se pot îngusta cînd incertitudinea se acumulează, rămîn constante doar în cazuri banale și nu oscilează. Intervalele de prognoză se lărgesc odată cu orizontul."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Directional accuracy below 50%",
-                "text": "On a long test sample in which up and down days are about equally frequent, a model has 45% directional accuracy for stock returns. The model is:",
-                "options": [
-                    "Better than a coin flip",
-                    "Worse than a coin flip",
-                    "Optimal for trading",
-                    "Statistically significantly better than chance"
-                ],
-                "correctExplanation": "With balanced up and down moves, random guessing gets about 50% of directions right. A 45% hit rate is below that benchmark; financial returns are notoriously hard to predict.",
-                "incorrectExplanation": "A hit rate under 50% cannot be better than a coin flip, let alone significantly better than chance or optimal for trading. On a balanced sample, 45% is worse than random guessing."
-            },
-            "ro": {
-                "title": "Acuratețe direcțională sub 50%",
-                "text": "Pe un eșantion de test lung, în care zilele de creștere și de scădere sînt aproximativ la fel de frecvente, un model are o acuratețe direcțională de 45% pentru randamentele acțiunilor. Modelul este:",
-                "options": [
-                    "Mai bun decît aruncarea unei monede",
-                    "Mai slab decît aruncarea unei monede",
-                    "Optim pentru tranzacționare",
-                    "Semnificativ statistic mai bun decît hazardul"
-                ],
-                "correctExplanation": "Cînd creșterile și scăderile sînt echilibrate, ghicirea la întîmplare nimerește aproximativ 50% dintre direcții. O rată de 45% este sub acest reper; randamentele financiare sînt notoriu greu de prognozat.",
-                "incorrectExplanation": "O rată de reușită sub 50% nu poate fi mai bună decît aruncarea unei monede, cu atît mai puțin semnificativ mai bună decît hazardul sau optimă pentru tranzacționare. Pe un eșantion echilibrat, 45% este mai slab decît ghicirea la întîmplare."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Principle of parsimony",
-                "text": "The principle of parsimony suggests choosing:",
-                "options": [
-                    "The model with the best in-sample fit",
-                    "The simplest model that fits the data adequately",
-                    "The most complex model available",
-                    "The model with the most parameters"
-                ],
-                "correctExplanation": "Occam's razor: among models that describe the data adequately, prefer the simplest. Extra parameters improve in-sample fit but usually hurt out-of-sample forecasts through overfitting.",
-                "incorrectExplanation": "The best in-sample fit is usually obtained by the most complex model, which is exactly what parsimony warns against. Choose the simplest adequate model."
-            },
-            "ro": {
-                "title": "Principiul parcimoniei",
-                "text": "Principiul parcimoniei recomandă alegerea:",
-                "options": [
-                    "Modelului cu cea mai bună ajustare în eșantion",
-                    "Celui mai simplu model care descrie adecvat datele",
-                    "Celui mai complex model disponibil",
-                    "Modelului cu cei mai mulți parametri"
-                ],
-                "correctExplanation": "Briciul lui Occam: dintre modelele care descriu adecvat datele, îl preferăm pe cel mai simplu. Parametrii suplimentari îmbunătățesc ajustarea în eșantion, dar de regulă înrăutățesc prognozele în afara eșantionului, prin supraajustare.",
-                "incorrectExplanation": "Cea mai bună ajustare în eșantion este obținută de regulă de modelul cel mai complex, tocmai ceea ce principiul parcimoniei ne cere să evităm. Alegem cel mai simplu model adecvat."
+                "correctExplanation": "BIC penalizează fiecare parametru cu ln T în loc de 2, deci pentru T > 7 preferă mai puțini parametri; este consistent, în timp ce AIC țintește acuratețea prognozei.",
+                "incorrectExplanation": "Penalizarea mai mare a BIC defavorizează modelele mari și potrivirea în eșantion; cele două criterii nu concordă adesea."
             }
         }
     ]
