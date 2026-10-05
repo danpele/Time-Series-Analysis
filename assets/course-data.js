@@ -343,10 +343,15 @@
                 id: 'garch', num: 5,
                 title: { en: 'Conditional volatility: ARCH and GARCH', ro: 'Volatilitate condiționată: ARCH și GARCH' },
                 topics: {
-                    en: ['Volatility clustering and the ARCH effect: the ACF of squared returns, the ARCH-LM test', 'ARCH(q) and GARCH(1,1): persistence, long-run variance, maximum-likelihood estimation with Student-t innovations', 'Asymmetric models (EGARCH, GJR-GARCH), volatility forecasts and VaR 1%'],
-                    ro: ['Volatility clustering și efectul ARCH: ACF al randamentelor la pătrat, testul ARCH-LM', 'ARCH(q) și GARCH(1,1): persistență, varianța pe termen lung, estimarea prin verosimilitate maximă cu inovații Student-t', 'Modele asimetrice (EGARCH, GJR-GARCH), prognoza volatilității și VaR 1%']
+                    en: ['Stylised facts of returns: volatility clustering, heavy tails, the ACF of squared returns and the ARCH-LM test', 'ARCH(q), GARCH(1,1) and ARMA-GARCH: persistence, half-life, long-run variance, IGARCH and EWMA; maximum-likelihood estimation with the arch package and Student-t innovations', 'Asymmetry (GJR-GARCH, EGARCH, news impact curve), diagnostics on standardised residuals, variance forecasts evaluated with QLIKE and Diebold–Mariano, VaR 1%'],
+                    ro: ['Faptele stilizate ale randamentelor: volatility clustering, cozi groase, ACF al randamentelor la pătrat și testul ARCH-LM', 'ARCH(q), GARCH(1,1) și ARMA-GARCH: persistență, timp de înjumătățire, varianța pe termen lung, IGARCH și EWMA; estimarea prin verosimilitate maximă cu pachetul arch și inovații Student-t', 'Asimetria (GJR-GARCH, EGARCH, curba de impact a știrilor), diagnosticarea pe reziduurile standardizate, prognoza varianței evaluată cu QLIKE și Diebold–Mariano, VaR 1%']
                 },
-                links: old('chapter5_garch_volatility', 'chapter5_garch_seminar', 'chapter5_garch', 'Quantlets/TSA_ch5'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter5_conditional_volatility_garch.pdf'), pdf('seminar', 'EN/Seminars/seminar5_conditional_volatility_garch.pdf'),
+                         nb('notebooks/EN/chapter5_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter5_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_05')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf'), pdf('seminar', 'RO/Seminarii/seminar5_volatilitate_conditionata_garch_ro.pdf'),
+                         nb('notebooks/EN/chapter5_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter5_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_05')]
+                },
                 quantinar: q('tsaPython', 'statRisk')
             },
             {

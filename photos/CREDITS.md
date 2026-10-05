@@ -57,3 +57,13 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 |---|---|---|
 | ch3_clive_granger_2008.jpg | https://commons.wikimedia.org/wiki/File:Clive_Granger_by_Olaf_Storbeck_(3x4_cropped).jpg | Olaf Storbeck (2008), CC BY-SA 2.0 |
 | ch3_snedecor_hall_2023.jpg | https://commons.wikimedia.org/wiki/File:Snedecor_Hall,_Iowa_State_University.tif | Maitra (2023), CC BY-SA 4.0 |
+
+## Chapter 5 — Conditional volatility: ARCH and GARCH
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch5_robert_engle_2022.jpg | https://commons.wikimedia.org/wiki/File:0603-Kraneshares_KRBN-RobertEngle-JonDemske-16_(cropped).jpg | Jon Demske (2022), CC BY-SA 4.0 |
+| ch5_stockholm_concert_hall.jpg | https://commons.wikimedia.org/wiki/File:Konserthuset_Stockholm_(Stockholm_Concert_Hall).jpg | Karen Zhou (2025), CC BY-SA 4.0 |
+| ch5_ucsd_geisel_2010.jpg | https://commons.wikimedia.org/wiki/File:Geisel_Library,_UC_San_Diego.jpg | Stephen Bay (2010), CC BY 4.0 |
+| ch5_lehman_2008.jpg | https://commons.wikimedia.org/wiki/File:Lehman_Brothers-NYC-20080915.jpg | Robert Scoble (2008), CC BY 2.0 |
+| ch5_fidi_2020.jpg | https://commons.wikimedia.org/wiki/File:Subdued_FiDi_(50063555551).jpg | Billie Grace Ward (2020), CC BY 2.0 |
