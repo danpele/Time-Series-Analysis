@@ -492,10 +492,15 @@
                 id: 'review', num: 15,
                 title: { en: 'Review and exam preparation', ro: 'Recapitulare și pregătire pentru examen' },
                 topics: {
-                    en: ['The course map: from components and stationarity to ARIMA, GARCH, VAR and VECM', 'The right model for each question: decision steps, diagnostics and common mistakes', 'The exam format and worked exam-type problems; the team project and its oral defence'],
-                    ro: ['Harta cursului: de la componente și staționaritate la ARIMA, GARCH, VAR și VECM', 'Modelul potrivit pentru fiecare întrebare: pașii de decizie, diagnosticarea și greșelile frecvente', 'Formatul examenului și probleme de tip examen rezolvate; proiectul de echipă și susținerea orală']
+                    en: ['The course map and one recap per chapter: key formulas, empirical facts on Romanian and international series, common mistakes; Chapters 11–14 for self-study', 'The toolbox and the Box–Jenkins method from start to finish on Romanian inflation: tests, identification, SARIMA, diagnostics, out-of-sample evaluation', 'The written exam (70%): format, grading and eight worked problems on software output; the team project (20%), its oral defence and AI_USE.md; attendance (10%)'],
+                    ro: ['Harta cursului și cîte o recapitulare pentru fiecare capitol: formule-cheie, fapte empirice pe serii românești și internaționale, greșeli frecvente; capitolele 11–14 pentru studiu individual', 'Trusa de instrumente și metoda Box–Jenkins de la un capăt la altul pe inflația din România: teste, identificare, SARIMA, diagnosticare, evaluare în afara eșantionului', 'Examenul scris (70%): format, criterii și opt probleme rezolvate pe rezultate obținute cu software; proiectul de echipă (20%), susținerea orală și AI_USE.md; prezența (10%)']
                 },
-                links: old('chapter10_comprehensive_review', null, 'chapter10', 'Quantlets/TSA_ch10', { nbSem: false })
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter15_review.pdf'), pdf('seminar', 'EN/Seminars/seminar15_review.pdf'), pdf('seminarExtra', 'exam/practice/exam_problems_en.pdf', { en: 'Exam practice problems', ro: 'Probleme de examen' }),
+                         nb('notebooks/EN/chapter15_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter15_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_15')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol15_recapitulare.pdf'), pdf('seminar', 'RO/Seminarii/seminar15_recapitulare_ro.pdf'), pdf('seminarExtra', 'exam/practice/probleme_examen_ro.pdf', { en: 'Exam practice problems', ro: 'Probleme de examen' }),
+                         nb('notebooks/EN/chapter15_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter15_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_15')]
+                }
             }
         ],
 
