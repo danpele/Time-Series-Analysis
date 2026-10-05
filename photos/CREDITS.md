@@ -19,3 +19,12 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | photo_sepp_hochreiter.jpg | LSTM (old chapter 8) | to verify |
 | photo_juergen_schmidhuber.jpg | LSTM (old chapter 8) | to verify |
 | photo_rob_hyndman.jpg | Prophet and TBATS (old chapter 9) | to verify |
+
+## Chapter 1 — Stochastic processes and stationarity
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch1_herman_wold_1969.jpg | https://commons.wikimedia.org/wiki/File:Professor_Herman_Wold,_Uppsala,_1969_(cropped).jpg | Uppsala-Bild (1969), CC BY 4.0 |
+| ch1_bvb_2024.jpg | https://commons.wikimedia.org/wiki/File:Bursa_de_Valori_București.jpg | Corina Chitu (2024), CC BY-SA 4.0 |
+| ch1_bnr_2018.jpg | https://commons.wikimedia.org/wiki/File:National_Bank_of_Romania_(old_building),_Bucharest_by_nickispeaki_01.jpg | Nickispeaki (2018), CC BY-SA 4.0 |
+| ch1_nilometer_cairo.jpg | https://commons.wikimedia.org/wiki/File:Kairo_Nilometer_BW_1.jpg | Berthold Werner (2010), CC BY-SA 3.0 |

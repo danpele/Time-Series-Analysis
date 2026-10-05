@@ -52,7 +52,7 @@ INSTRUCTOR = os.path.join(os.path.dirname(REPO), 'instructor', 'Quantlets')
 sys.path.insert(0, HERE)
 from split_seminar_notebooks import PLACEHOLDER, split as split_course_notebook   # noqa: E402
 
-CHAPTERS = range(17)
+CHAPTERS = range(16)   # TSA chapters 0-15
 
 # folderele de seminar mixte sau de Part C fara legatura vizibila pentru studenti -> doar la profesor
 INSTRUCTOR_ONLY = {

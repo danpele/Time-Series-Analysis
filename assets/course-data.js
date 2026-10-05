@@ -282,10 +282,15 @@
                 id: 'stationarity', num: 1,
                 title: { en: 'Stochastic processes and stationarity', ro: 'Procese stochastice și staționaritate' },
                 topics: {
-                    en: ['Stochastic processes, the mean, autocovariance and autocorrelation functions; strict and weak stationarity, ergodicity', 'White noise, the random walk, the lag operator and differencing; the Wold decomposition', 'Sample ACF and PACF, the Ljung–Box test; a first look at real series (GDP, exchange rates, stock indices)'],
-                    ro: ['Procese stochastice, media, funcția de autocovarianță și funcția de autocorelație; staționaritate strictă și slabă, ergodicitate', 'Zgomotul alb, mersul aleator, operatorul lag și diferențierea; descompunerea Wold', 'ACF și PACF de selecție, testul Ljung–Box; prima analiză a unor serii reale (PIB, cursuri de schimb, indici bursieri)']
+                    en: ['Stochastic processes, mean, autocovariance and autocorrelation functions; strict and weak stationarity, ergodicity', 'White noise (weak, i.i.d., Gaussian), the random walk, the lag operator, differencing and the Wold decomposition', 'Sample ACF and PACF with confidence bands, Box–Pierce and Ljung–Box tests; log, differencing and Box–Cox transformations on Romanian GDP and inflation, EUR/RON, BET and S&P 500'],
+                    ro: ['Procese stochastice, funcțiile de medie, autocovarianță și autocorelație; staționaritate strictă și slabă, ergodicitate', 'Zgomotul alb (slab, i.i.d., gaussian), mersul aleator, operatorul de decalaj, diferențierea și descompunerea Wold', 'ACF și PACF de selecție cu benzi de încredere, testele Box–Pierce și Ljung–Box; transformări (logaritm, diferențiere, Box–Cox) pentru PIB-ul și inflația României, EUR/RON, BET și S&P 500']
                 },
-                links: old('chapter1_intro_timeseries', 'chapter1_seminar', 'chapter1', 'Quantlets/TSA_ch1'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter1_stochastic_processes_stationarity.pdf'), pdf('seminar', 'EN/Seminars/seminar1_stochastic_processes_stationarity.pdf'),
+                         nb('notebooks/EN/chapter1_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter1_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_01')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf'), pdf('seminar', 'RO/Seminarii/seminar1_procese_stochastice_stationaritate_ro.pdf'),
+                         nb('notebooks/EN/chapter1_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter1_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_01')]
+                },
                 quantinar: q('tsaPython')
             },
             {
