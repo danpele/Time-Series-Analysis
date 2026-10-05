@@ -123,3 +123,19 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch9_marasesti_750kv_2022.jpg | https://commons.wikimedia.org/wiki/File:750_kV_electricity_tower_at_M%C4%83r%C4%83%C8%99e%C8%99ti,_Romania.jpg | TrainSimFan (2022), CC BY-SA 4.0 |
 | ch9_walmart_store.jpg | https://commons.wikimedia.org/wiki/File:Walmart_store_exterior_5266815680.jpg | Walmart Corporate, CC BY 2.0 |
 | ch9_harper_center_2013.jpg | https://commons.wikimedia.org/wiki/File:University_of_Chicago_July_2013_01_(Charles_M._Harper_Center).jpg | Michael Barera (2013), CC BY-SA 4.0 |
+
+## Chapter 11 — Foundation models for time series
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch11_google_dalles_2011.jpg | https://commons.wikimedia.org/wiki/File:Google_Data_Center,_The_Dalles.jpg | Visitor7 (2011), CC BY-SA 3.0 |
+| ch11_attention_figure_2017.png | https://commons.wikimedia.org/wiki/File:Attention_Is_All_You_Need_-_Encoder-decoder_Architecture.png | Vaswani et al. (2017), Google, CC BY-SA 4.0 |
+| ch11_amazon_spheres_2018.jpg | https://commons.wikimedia.org/wiki/File:Amazon_Spheres_2018.jpg | Andy Li (2018), CC0 |
+| ch11_salesforce_tower_2020.jpg | https://commons.wikimedia.org/wiki/File:Salesforce_Tower_2020.jpg | Saggittarius A (2020), CC BY-SA 4.0 |
+
+## Chapter 12 — Spectral analysis
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch12_joseph_fourier.jpg | https://commons.wikimedia.org/wiki/File:Joseph_Fourier.jpg | A. F. B. Geille after J.-L. Boilly (1839–1840), public domain |
+| ch12_arthur_schuster.jpg | https://commons.wikimedia.org/wiki/File:Arthur_Schuster.jpg | unknown author (1900s), public domain |

@@ -432,20 +432,30 @@
                 id: 'foundation-models', num: 11, selfStudy: true,
                 title: { en: 'Foundation models for time series', ro: 'Foundation models pentru serii de timp' },
                 topics: {
-                    en: ['From transformers to time-series foundation models: tokenisation, patching, pre-training', 'Chronos, TimesFM, Moirai and Lag-Llama: zero-shot forecasting and fine-tuning', 'A fair comparison with statistical benchmarks; limitations'],
-                    ro: ['De la transformer la foundation models pentru serii de timp: tokenizare, patching, pre-antrenare', 'Chronos, TimesFM, Moirai și Lag-Llama: prognoză zero-shot și fine-tuning', 'Comparația corectă cu modelele statistice de referință; limite']
+                    en: ['Foundation models and zero-shot forecasting: attention, mean scaling, quantisation and patching; Chronos, Chronos-Bolt, Chronos-2, TimesFM, Moirai, Lag-Llama (TimeGPT as a closed API)', 'Probabilistic forecasts and their scores: pinball loss, CRPS and weighted quantile loss, MASE, coverage of the 80% interval', 'An honest test against seasonal naive, ETS and ARIMA on Romanian and US series; context length, model size, leakage and benchmark contamination'],
+                    ro: ['Foundation models și prognoza zero-shot: atenția, scalarea prin medie, cuantizarea și patching-ul; Chronos, Chronos-Bolt, Chronos-2, TimesFM, Moirai, Lag-Llama (TimeGPT ca API închis)', 'Prognozele probabiliste și scorurile lor: pierderea pinball, CRPS și pierderea cuantilică ponderată, MASE, acoperirea intervalului de 80%', 'Un test corect față de prognoza sezonieră naivă, ETS și ARIMA pe serii din România și SUA; lungimea contextului, dimensiunea modelului, scurgerea de informație și contaminarea benchmark-urilor']
                 },
-                links: old('chapter11_llm_foundation_models', 'chapter11_seminar', 'chapter11', null),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter11_foundation_models_time_series.pdf'),
+                         nb('notebooks/EN/chapter11_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_11')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol11_foundation_models_serii_timp.pdf'),
+                         nb('notebooks/EN/chapter11_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_11')]
+                },
                 quantinar: q('nextWord')
             },
             {
                 id: 'spectral', num: 12, selfStudy: true,
                 title: { en: 'Spectral analysis', ro: 'Analiză spectrală' },
                 topics: {
-                    en: ['The Fourier transform, the periodogram and the spectral density', 'Smoothing the periodogram (Welch), filters (Hodrick–Prescott) and business cycles', 'Coherence between two series; wavelets as a time–frequency tool'],
-                    ro: ['Transformata Fourier, periodograma și densitatea spectrală', 'Netezirea periodogramei (Welch), filtre (Hodrick–Prescott) și ciclul economic', 'Coerența dintre două serii; wavelets ca instrument timp–frecvență']
+                    en: ['Cycles and Fourier frequencies, the periodogram and the spectral density of white noise and ARMA models; aliasing and leakage', 'Estimating the spectrum: tapering, Daniell and Welch smoothing, chi-square confidence bands, Fisher\'s test; cycles in sunspots, US and Romanian GDP and the Romanian electricity load', 'The spectral pole of long memory, filter gains (differencing, Hodrick–Prescott), coherence and phase between two series; wavelets as a pointer'],
+                    ro: ['Cicluri și frecvențe Fourier, periodograma și densitatea spectrală a zgomotului alb și a modelelor ARMA; aliasing și scurgerea spectrală', 'Estimarea spectrului: ferestre de atenuare, netezirea Daniell și Welch, benzi de încredere chi-pătrat, testul lui Fisher; cicluri în petele solare, în PIB-ul SUA și al României și în consumul de energie electrică al României', 'Polul spectral al memoriei lungi, cîștigul filtrelor (diferențiere, Hodrick–Prescott), coerența și faza a două serii; o trimitere spre wavelets']
                 },
-                links: old('chapter12_spectral_analysis', 'chapter12_seminar', 'chapter12', null),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter12_spectral_analysis.pdf'),
+                         nb('notebooks/EN/chapter12_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_12')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol12_analiza_spectrala.pdf'),
+                         nb('notebooks/EN/chapter12_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_12')]
+                },
                 quantinar: q('xfg')
             },
             {
