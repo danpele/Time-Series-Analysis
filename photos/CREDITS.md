@@ -67,3 +67,14 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch5_ucsd_geisel_2010.jpg | https://commons.wikimedia.org/wiki/File:Geisel_Library,_UC_San_Diego.jpg | Stephen Bay (2010), CC BY 4.0 |
 | ch5_lehman_2008.jpg | https://commons.wikimedia.org/wiki/File:Lehman_Brothers-NYC-20080915.jpg | Robert Scoble (2008), CC BY 2.0 |
 | ch5_fidi_2020.jpg | https://commons.wikimedia.org/wiki/File:Subdued_FiDi_(50063555551).jpg | Billie Grace Ward (2020), CC BY 2.0 |
+
+## Chapter 4 — Seasonality and forecasting
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch4_pan_am_707_1958.jpg | https://commons.wikimedia.org/wiki/File:Three_Pan_Am_Boeing_707_awaiting_delivery.jpg | unknown author (1958), public domain |
+| ch4_robert_engle_2017.jpg | https://commons.wikimedia.org/wiki/File:Robert_Engle_SantiagoWEAI2017.png | Econterms (2017), CC BY-SA 4.0 |
+| ch4_census_bureau_2007.jpg | https://commons.wikimedia.org/wiki/File:Census_Bureau_headquarters,_Suitland,_Maryland,_2007.jpg | United States Census Bureau (2007), public domain |
+| ch4_romanian_easter_eggs.jpg | https://commons.wikimedia.org/wiki/File:Painted_Romanian_Easter_Eggs.jpg | jackmac34 (Pixabay), CC0 |
+| ch4_portile_de_fier_ii.jpg | https://commons.wikimedia.org/wiki/File:Porțile_de_Fier_II_(01).jpg | Nenea hartia (2016), CC BY-SA 4.0 |
+| ch4_mamaia_2013.jpg | https://commons.wikimedia.org/wiki/File:Mamaia_Beach_(September_2013).JPG | Razvan Socol (2013), CC BY-SA 4.0 |

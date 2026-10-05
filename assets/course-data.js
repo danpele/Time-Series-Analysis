@@ -327,16 +327,15 @@
                 id: 'seasonal', num: 4,
                 title: { en: 'Seasonality and forecasting: SARIMA, TBATS, Prophet', ro: 'Sezonalitate și prognoză: SARIMA, TBATS, Prophet' },
                 topics: {
-                    en: ['Seasonal differencing and SARIMA(p,d,q)(P,D,Q)s models; the airline model; seasonal unit roots', 'Multiple and complex seasonality: Fourier terms, TBATS and Prophet', 'Comparing forecasts out of sample: MASE, rolling-origin evaluation and the Diebold–Mariano test'],
-                    ro: ['Diferențierea sezonieră și modelele SARIMA(p,d,q)(P,D,Q)s; modelul airline; rădăcini unitare sezoniere', 'Sezonalitate multiplă și complexă: termeni Fourier, TBATS și Prophet', 'Compararea prognozelor în afara eșantionului: MASE, evaluarea cu origine mobilă și testul Diebold–Mariano']
+                    en: ['Seasonal differencing and seasonal unit roots (HEGY, Canova–Hansen, OCSB); SARIMA(p,d,q)(P,D,Q)s models, the airline model and Romanian GDP', 'Seasonal adjustment in practice (X-13ARIMA-SEATS, Eurostat NSA and SCA series), Fourier terms and calendar effects (working days, Orthodox Easter)', 'Multiple seasonality in electricity load (MSTL, dynamic harmonic regression, TBATS, Prophet); time-series cross-validation, MASE, the Diebold–Mariano test and forecast combination'],
+                    ro: ['Diferențierea sezonieră și rădăcinile unitare sezoniere (HEGY, Canova–Hansen, OCSB); modele SARIMA(p,d,q)(P,D,Q)s, modelul airline și PIB-ul României', 'Ajustarea sezonieră în practică (X-13ARIMA-SEATS, seriile Eurostat NSA și SCA), termeni Fourier și efecte de calendar (zile lucrătoare, Paștele ortodox)', 'Sezonalitatea multiplă a consumului de electricitate (MSTL, regresia armonică dinamică, TBATS, Prophet); validarea încrucișată pentru serii de timp, MASE, testul Diebold–Mariano și combinarea prognozelor']
                 },
-                links: old('chapter4_sarima_models', 'chapter4_seminar', 'chapter4', 'Quantlets/TSA_ch4', {
-                    extraEn: [pdf('slidesExtra', 'EN/Courses/chapter9_prophet_tbats.pdf', { en: 'Slides: Prophet and TBATS', ro: 'Slide-uri: Prophet și TBATS' })],
-                    extraRo: [pdf('slidesExtra', 'RO/Courses/chapter9_prophet_tbats_ro.pdf', { en: 'Slides: Prophet and TBATS', ro: 'Slide-uri: Prophet și TBATS' })],
-                    extraSemEn: [pdf('seminarExtra', 'EN/Seminars/chapter9_seminar.pdf', { en: 'Seminar: Prophet and TBATS', ro: 'Seminar: Prophet și TBATS' })],
-                    extraSemRo: [pdf('seminarExtra', 'RO/Seminars/chapter9_seminar_ro.pdf', { en: 'Seminar: Prophet and TBATS', ro: 'Seminar: Prophet și TBATS' })],
-                    extraNb: [nb('EN/Course_Notebooks/chapter9_lecture_notebook.ipynb', { en: 'Notebook: Prophet and TBATS', ro: 'Notebook: Prophet și TBATS' })]
-                }),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter4_seasonality_forecasting.pdf'), pdf('seminar', 'EN/Seminars/seminar4_seasonality_forecasting.pdf'),
+                         nb('notebooks/EN/chapter4_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter4_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_04')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol4_sezonalitate_prognoza.pdf'), pdf('seminar', 'RO/Seminarii/seminar4_sezonalitate_prognoza_ro.pdf'),
+                         nb('notebooks/EN/chapter4_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter4_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_04')]
+                },
                 quantinar: q('tsaPython')
             },
             {
