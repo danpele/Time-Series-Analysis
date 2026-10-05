@@ -1,0 +1,1214 @@
+% Capitolul 12: Analiză spectrală
+% Serii de timp -- Programele de licență Informatică economică și Cibernetică economică, Academia de Studii Economice din București
+% GENERAT de latex/build_chapter12.py -- modificați generatorul, nu acest fișier.
+
+\newcommand{\coursename}{Serii de timp}
+\def\tsalang{ro}
+\input{../../latex/preamble}
+
+\newcommand{\qlurl}[1]{https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_12/#1}
+
+% Clickable citations (DOIs verified via Crossref)
+\newcommand{\refHP}{\href{https://doi.org/10.1007/978-3-031-13584-2}{Huang și Petukhina (2022)}}
+\newcommand{\refSS}{\href{https://doi.org/10.1007/978-3-319-52452-8}{Shumway și Stoffer (2017)}}
+\newcommand{\refBDtm}{\href{https://doi.org/10.1007/978-1-4419-0320-4}{Brockwell și Davis (1991)}}
+\newcommand{\refHamTS}{\href{https://doi.org/10.1515/9780691218632}{Hamilton (1994)}}
+\newcommand{\refSchuster}{\href{https://doi.org/10.1029/TM003i001p00013}{Schuster (1898)}}
+\newcommand{\refYule}{\href{https://doi.org/10.1098/rsta.1927.0007}{Yule (1927)}}
+\newcommand{\refFisher}{\href{https://doi.org/10.1098/rspa.1929.0151}{Fisher (1929)}}
+\newcommand{\refBartlett}{\href{https://doi.org/10.1093/biomet/37.1-2.1}{Bartlett (1950)}}
+\newcommand{\refBT}{\href{https://doi.org/10.1002/j.1538-7305.1958.tb03874.x}{Blackman și Tukey (1958)}}
+\newcommand{\refCT}{\href{https://doi.org/10.1090/S0025-5718-1965-0178586-1}{Cooley și Tukey (1965)}}
+\newcommand{\refGranger}{\href{https://doi.org/10.2307/1909859}{Granger (1966)}}
+\newcommand{\refWelch}{\href{https://doi.org/10.1109/TAU.1967.1161901}{Welch (1967)}}
+\newcommand{\refGPH}{\href{https://doi.org/10.1111/j.1467-9892.1983.tb00371.x}{Geweke și Porter-Hudak (1983)}}
+\newcommand{\refHPf}{\href{https://doi.org/10.2307/2953682}{Hodrick și Prescott (1997)}}
+\newcommand{\refTC}{\href{https://doi.org/10.1175/1520-0477(1998)079<0061:APGTWA>2.0.CO;2}{Torrence și Compo (1998)}}
+\newcommand{\refBK}{\href{https://doi.org/10.1162/003465399558454}{Baxter și King (1999)}}
+\newcommand{\refHamHP}{\href{https://doi.org/10.1162/rest_a_00706}{Hamilton (2018)}}
+
+\title[Serii de timp]{Serii de timp}
+\subtitle{Capitolul 12: Analiză spectrală}
+\author[D.T. Pele]{Daniel Traian PELE}
+\institute{Academia de Studii Economice din București\\
+IDA Institute Digital Assets\\
+Blockchain Research Center\\
+AI4EFin Artificial Intelligence for Energy Finance\\
+Academia Română, Institutul de Prognoză Economică\\
+MSCA Digital Finance}
+\date{}
+
+%=============================================================================
+\providecommand{\tsaapplink}[3]{\hypertarget{#2}{}\hyperlink{#1}{\beamergotobutton{#3}}}  % APPLINKS-MACROS
+\providecommand{\tsaappback}[2]{\begin{tikzpicture}[remember picture,overlay]\node[anchor=south east] at ([xshift=-3mm,yshift=7mm]current page.south east){\hyperlink{#1}{\beamerreturnbutton{#2}}};\end{tikzpicture}}  % APPLINKS-MACROS
+\providecommand{\tsachlink}[2]{\href{#1}{#2}}  % APPLINKS-MACROS
+\providecommand{\tsachlinkt}[2]{\href{#1}{\usebeamercolor[fg]{frametitle}#2}}  % APPLINKS-MACROS
+\begin{document}
+%=============================================================================
+
+{
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}[noframenumbering]
+    \titlepage
+\end{frame}
+}
+% BEGIN-ACRONYMS (generat de latex/acronyms.py; nu editati manual)
+\begin{frame}{Acronime folosite în acest material}
+\setbeamertemplate{itemize/enumerate body begin}{\tiny}
+\begin{columns}[T]
+\begin{column}{0.49\textwidth}
+\begin{itemize}\setlength{\itemsep}{0pt}
+    \item \textbf{ACF}: Autocorrelation Function (funcția de autocorelație)
+    \item \textbf{AI}: Artificial Intelligence (inteligență artificială)
+    \item \textbf{AR}: AutoRegressive (model); in event studies: Abnormal Return (model autoregresiv; în studiile de eveniment: randament anormal)
+    \item \textbf{ARFIMA}: AutoRegressive Fractionally Integrated Moving Average (model) — model autoregresiv fracționar integrat cu medie mobilă
+    \item \textbf{ARMA}: AutoRegressive Moving Average (model) — model autoregresiv cu medie mobilă
+    \item \textbf{CWT}: Continuous Wavelet Transform (transformata wavelet continuă)
+    \item \textbf{DFT}: Discrete Fourier Transform (transformata Fourier discretă)
+    \item \textbf{ENTSO-E}: European Network of Transmission System Operators for Electricity (rețeaua europeană a operatorilor de transport și de sistem pentru energie electrică)
+    \item \textbf{EODHD}: EOD Historical Data (market-data provider) — furnizor de date de piață
+    \item \textbf{FFT}: Fast Fourier Transform (transformata Fourier rapidă)
+    \item \textbf{FRED}: Federal Reserve Economic Data (baza de date economice a Rezervei Federale din St. Louis)
+    \item \textbf{GDPC1}: Real Gross Domestic Product, chained dollars (FRED series code) — codul FRED al PIB-ului real al SUA
+    \item \textbf{GPH}: Geweke–Porter-Hudak (estimator) — estimatorul Geweke–Porter-Hudak al parametrului de memorie lungă
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\begin{itemize}\setlength{\itemsep}{0pt}
+    \item \textbf{HP}: Hodrick–Prescott (filter) — filtrul Hodrick–Prescott
+    \item \textbf{INDPRO}: Industrial Production Index (FRED series code) — codul FRED al indicelui producției industriale din SUA
+    \item \textbf{LPPL}: Log-Periodic Power Law (legea de putere log-periodică)
+    \item \textbf{MA}: Moving Average (medie mobilă)
+    \item \textbf{MW}: Megawatt (megawatt)
+    \item \textbf{OLS}: Ordinary Least Squares (metoda celor mai mici pătrate)
+    \item \textbf{PIB}: Produsul intern brut
+    \item \textbf{SILSO}: Sunspot Index and Long-term Solar Observations (centrul mondial de date pentru numărul de pete solare (Observatorul Regal al Belgiei))
+    \item \textbf{STFT}: Short-Time Fourier Transform (transformata Fourier pe ferestre scurte)
+    \item \textbf{SUA}: Statele Unite ale Americii
+    \item \textbf{UE}: Uniunea Europeană
+    \item \textbf{UNRATE}: Unemployment Rate (FRED series code) — codul FRED al ratei șomajului din SUA
+    \item \textbf{UTC}: Coordinated Universal Time (Temps Universel Coordonné) — timpul universal coordonat
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+% END-ACRONYMS
+
+\begin{frame}{Întrebarea capitolului și traseul}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Întrebarea}: ce cicluri conține o serie și cît din varianța ei explică fiecare ciclu?
+    \begin{itemize}
+        \item exemple: ciclul de 11 ani al petelor solare, ciclul economic, ritmul zilnic și săptămînal al consumului de energie electrică
+    \end{itemize}
+    \item \textbf{Traseul} capitolului
+    \begin{itemize}
+        \item cicluri, frecvențe și transformata Fourier discretă
+        \item densitatea spectrală a zgomotului alb și a modelelor ARMA
+        \item periodograma, slăbiciunile ei și netezirea ei
+        \item cicluri în date; memoria lungă; filtre; două serii; o trimitere spre wavelets
+    \end{itemize}
+    \item Capitol de studiu individual: exemple rezolvate, slide-uri de interpretare și o recapitulare după fiecare secțiune; autoevaluare cu răspunsuri la final
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Rezultatele învățării}
+\itemsize{\small}
+\begin{itemize}
+    \item Treceți de la frecvență la perioadă și la frecvența unghiulară și găsiți frecvențele Fourier ale unui eșantion
+    \item Calculați densitatea spectrală a zgomotului alb și a modelelor AR(1), MA(1) și AR(2) și interpretați forma ei
+    \item Calculați de mînă periodograma unei serii scurte și explicați de ce periodograma brută nu este consistentă
+    \item Netezați periodograma (Daniell, Bartlett, Welch), aplicați o fereastră de atenuare și construiți benzi de încredere chi-pătrat
+    \item Identificați cicluri în petele solare, în PIB și în consumul de energie electrică; interpretați coerența și faza dintre două serii
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Bibliografie și instrumente}
+\itemsize{\small}
+\begin{itemize}
+    \item Referința principală a capitolului: \refSS, \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{capitolul 4} (analiză spectrală și filtrare)
+    \begin{itemize}
+        \item teorie: \refBDtm, \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{capitolele 4} și \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol10_spatiul_starilor_kalman_markov_switching.pdf}{10}; \refHamTS, \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf}{capitolul 6}; aplicații în Python: \refHP
+        \item \refSS\ măsoară frecvența în cicluri pe observație; în \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{Capitolul 8} am folosit frecvența unghiulară $\lambda = 2\pi\nu$
+    \end{itemize}
+    \item Quantlet-urile Python ale capitolului: \href{https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_12}{Quantlets/Ch\_12}
+    \begin{itemize}
+        \item periodograma, netezirea Daniell și wavelet-ul Morlet sînt scrise explicit în \texttt{numpy}; Welch și coerența provin din \texttt{scipy.signal}
+    \end{itemize}
+    \item Notebook-ul cursului: \href{\colaburl{notebooks/EN/chapter12_lecture_notebook.ipynb}}{deschideți în Google Colab}
+    \item Curs video: \quantinar{Applied Time Series Analysis with Python}{https://quantinar.com/course/137/applied-time-series-analysis-with-python}
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Cicluri și frecvențe}
+%=============================================================================
+
+\begin{frame}{Joseph Fourier și ideea capitolului}
+\itemsize{\small}
+\begin{columns}[T]
+\begin{column}{0.36\textwidth}
+\centering
+\includegraphics[height=0.5\textheight]{ch12_joseph_fourier.jpg}\\[1mm]
+\imgcap{J. B. J. Fourier (1768--1830)}
+\imgcredit{https://commons.wikimedia.org/wiki/File:Joseph_Fourier.jpg}{Gravură: A. F. B. Geille, după J.-L. Boilly (1839--1840); domeniu public; Wikimedia Commons}
+\end{column}
+\begin{column}{0.62\textwidth}
+\begin{itemize}
+    \item Fourier (1807, conducția căldurii): o funcție se poate scrie ca sumă de sinusuri și cosinusuri
+    \begin{itemize}
+        \item fiecare termen este un ciclu pur, cu frecvența și amplitudinea lui
+    \end{itemize}
+    \item Aplicat unei serii de timp: cîtă varianță se află la fiecare frecvență?
+    \begin{itemize}
+        \item \textbf{domeniul timpului} (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf}{Capitolele 1}--\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{8}) descrie seria prin autocorelațiile ei
+        \item \textbf{domeniul frecvenței} descrie aceeași informație prin spectru
+    \end{itemize}
+    \item Cele două perspective sînt echivalente; spectrul face ciclurile vizibile dintr-o privire
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Un ciclu: amplitudine, frecvență, fază}
+\itemsize{\small}
+\begin{itemize}
+    \item Un ciclu pur: $x_t = A\cos(2\pi\nu t + \varphi)$, $t = 1, 2, \ldots$
+    \begin{itemize}
+        \item $A$: \textbf{amplitudinea} (înălțimea undei); $\varphi$: \textbf{faza} (punctul de pornire al undei)
+        \item $\nu$: \textbf{frecvența}, în cicluri pe observație; \textbf{perioada} $1/\nu$ este numărul de observații dintr-un ciclu
+        \item frecvența unghiulară $\omega = 2\pi\nu$, în radiani pe observație
+    \end{itemize}
+    \item Exemplu: date lunare cu un ciclu anual: $\nu = 1/12$ cicluri pe lună, perioada 12 luni
+    \begin{itemize}
+        \item date orare cu un ciclu zilnic: $\nu = 1/24$; date trimestriale cu un ciclu de 6 ani: tot $\nu = 1/24$
+    \end{itemize}
+    \item Forma echivalentă: $A\cos(2\pi\nu t + \varphi) = a\cos(2\pi\nu t) + b\sin(2\pi\nu t)$
+    \begin{itemize}
+        \item cu $a = A\cos\varphi$, $b = -A\sin\varphi$ și $A^2 = a^2 + b^2$: liniară în $a$ și $b$, deci se poate estima prin OLS
+    \end{itemize}
+    \item Cea mai mare frecvență vizibilă în date discrete este $\nu = 1/2$ (un ciclu la două observații): \textbf{frecvența Nyquist}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Două cicluri plus zgomot}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch12_fourier.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Serie simulată, $T = 120$: $x_t = 2\cos(2\pi t/12) + \cos(2\pi t/4 + 1) + \varepsilon_t$, $\varepsilon_t \sim N(0;\ 0{,}49)$; dreapta: periodograma ei (definită în secțiunea 3)
+\end{itemize}
+\quantlet{TSA\_ch12\_fourier}{\qlurl{TSA_ch12_fourier}}
+\end{frame}
+
+\begin{frame}{Interpretarea celor două cicluri plus zgomot}
+\itemsize{\small}
+\begin{itemize}
+    \item În domeniul timpului cele două cicluri sînt greu de separat cu ochiul liber
+    \begin{itemize}
+        \item în domeniul frecvenței ele sînt două vîrfuri izolate, la $\nu = 1/12$ și $\nu = 1/4$
+    \end{itemize}
+    \item Înălțimea vîrfurilor: 139{,}7 și 29{,}6; teoria, pentru un ciclu de amplitudine $A$ la o frecvență Fourier: $A^2T/4$, adică 120 și 30
+    \begin{itemize}
+        \item vîrful crește cu pătratul amplitudinii: ciclul mai mare domină
+    \end{itemize}
+    \item Cele două vîrfuri concentrează 85\% din puterea totală; zgomotul împrăștie restul uniform pe toate frecvențele
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Frecvențele Fourier și transformata Fourier discretă}
+\itemsize{\small}
+\begin{itemize}
+    \item Pentru un eșantion $x_1, \ldots, x_T$, \textbf{frecvențele Fourier} sînt $\nu_j = j/T$, $j = 0, 1, \ldots, \lfloor T/2 \rfloor$
+    \begin{itemize}
+        \item ciclurile care încap de un număr întreg de ori ($j$ ori) în eșantion
+    \end{itemize}
+    \item \textbf{Transformata Fourier discretă} (DFT): $d(\nu_j) = T^{-1/2}\sum_{t=1}^{T} x_t\, e^{-2\pi i \nu_j t}$
+    \begin{itemize}
+        \item $e^{-i\theta} = \cos\theta - i\sin\theta$: DFT corelează seria cu un cosinus și un sinus de frecvență $\nu_j$
+        \item cele $T$ valori $d(\nu_j)$ conțin exact aceeași informație ca cele $T$ observații
+    \end{itemize}
+    \item \textbf{Parseval}: $\sum_{t=1}^{T}(x_t - \bar x)^2 = \sum_{j=1}^{T-1}|d(\nu_j)|^2$: varianța se împarte pe frecvențe
+    \begin{itemize}
+        \item \textbf{transformata Fourier rapidă} (FFT) a lui \refCT\ calculează toate valorile $d(\nu_j)$ în $O(T\log T)$ operații în loc de $O(T^2)$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exemplu rezolvat: DFT pentru patru numere}
+\itemsize{\small}
+\begin{itemize}
+    \item Datele: $x = (4, 2, 0, 2)$, $T = 4$; media $\bar x = 2$, abaterile $y = (2, 0, -2, 0)$
+    \begin{itemize}
+        \item Frecvențele Fourier: $\nu_1 = 1/4$ (perioada 4) și $\nu_2 = 1/2$ (perioada 2)
+    \end{itemize}
+    \item La $\nu = 1/4$: $e^{-2\pi i t/4} = e^{-i\pi t/2}$ este $-i$ pentru $t = 1$ și $i$ pentru $t = 3$
+    \begin{itemize}
+        \item $\sum_t y_t e^{-i\pi t/2} = 2(-i) + (-2)(i) = -4i$, deci $d(1/4) = -4i/\sqrt{4} = -2i$ și $|d(1/4)|^2 = 4$
+    \end{itemize}
+    \item La $\nu = 1/2$: $e^{-i\pi t} = (-1)^t$, deci $\sum_t y_t(-1)^t = -2 + 2 = 0$ și $|d(1/2)|^2 = 0$
+    \begin{itemize}
+        \item prin simetrie $|d(3/4)|^2 = |d(1/4)|^2 = 4$
+    \end{itemize}
+    \item Parseval: $4 + 0 + 4 = 8 = 2^2 + 0^2 + (-2)^2 + 0^2$; toată varianța ($8/4 = 2$) se află la perioada 4
+    \item Verificare în Python: \texttt{abs(np.fft.fft([2, 0, -2, 0]))**2 / 4} dă $(0, 4, 0, 4)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Aliasing}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_aliasing.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Un ciclu de 4 luni ($\nu = 1/4$ pe lună), observat doar o dată pe trimestru (la fiecare 3 luni)
+\end{itemize}
+\quantlet{TSA\_ch12\_aliasing}{\qlurl{TSA_ch12_aliasing}}
+\end{frame}
+
+\begin{frame}{Interpretarea fenomenului de aliasing}
+\itemsize{\small}
+\begin{itemize}
+    \item Pe trimestru, frecvența adevărată este $3 \times 1/4 = 3/4$ cicluri, peste frecvența Nyquist $1/2$
+    \begin{itemize}
+        \item ea se pliază înapoi la $|3/4 - 1| = 1/4$ cicluri pe trimestru: o perioadă de 4 trimestre, adică 12 luni
+    \end{itemize}
+    \item Punctele trimestriale cad exact pe o undă de 12 luni: datele nu pot deosebi cele două cicluri
+    \begin{itemize}
+        \item acesta este \textbf{aliasing}: ciclurile mai rapide decît două observații apar ca cicluri mai lente, false
+    \end{itemize}
+    \item Regula practică: eșantionați de cel puțin două ori pe ciclul de interes; la agregarea pe o frecvență mai mică, faceți media valorilor, nu alegeți una dintre ele
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recapitulare: cicluri și frecvențe}
+\itemsize{\small}
+\begin{itemize}
+    \item Un ciclu are o amplitudine, o frecvență $\nu$ (cicluri pe observație), o perioadă $1/\nu$ și o fază
+    \item DFT la frecvențele Fourier $j/T$ rescrie datele ca sumă de cicluri; Parseval împarte varianța pe frecvențe
+    \item Sînt vizibile doar frecvențele pînă la $1/2$; ciclurile mai rapide apar ca aliasuri
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Densitatea spectrală}
+%=============================================================================
+
+\begin{frame}{De la autocovarianțe la spectru}
+\itemsize{\small}
+\begin{itemize}
+    \item Pentru o serie staționară cu autocovarianțele $\gamma(h)$, $\sum_h|\gamma(h)| < \infty$, \textbf{densitatea spectrală} este
+    \begin{itemize}
+        \item $f(\nu) = \sum_{h=-\infty}^{\infty}\gamma(h)e^{-2\pi i\nu h} = \gamma(0) + 2\sum_{h=1}^{\infty}\gamma(h)\cos(2\pi\nu h)$, $-1/2 \le \nu \le 1/2$
+    \end{itemize}
+    \item Relația inversă: $\gamma(h) = \int_{-1/2}^{1/2} f(\nu)e^{2\pi i\nu h}\,d\nu$
+    \begin{itemize}
+        \item perechea $\gamma \leftrightarrow f$ este teorema \textbf{Wiener--Khinchin}: ACF și spectrul conțin aceeași informație
+        \item pentru $h = 0$: $\mathrm{Var}(x_t) = \gamma(0) = \int_{-1/2}^{1/2} f(\nu)\,d\nu$: aria de sub $f$ este varianța
+    \end{itemize}
+    \item Proprietăți: $f(\nu) \ge 0$, $f(-\nu) = f(\nu)$; este suficient să desenăm $f$ pe $[0, 1/2]$
+    \begin{itemize}
+        \item $f(\nu)\,d\nu$ este partea din varianță datorată ciclurilor cu frecvențe în $[\nu, \nu + d\nu]$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Zgomot alb, AR(1) și MA(1)}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Zgomot alb}, varianța $\sigma^2$: $\gamma(h) = 0$ pentru $h \ne 0$, deci $f(\nu) = \sigma^2$ pentru orice $\nu$
+    \begin{itemize}
+        \item un spectru plat: toate frecvențele contribuie în mod egal, ca lumina albă
+    \end{itemize}
+    \item \textbf{AR(1)} $x_t = \phi x_{t-1} + w_t$: $f(\nu) = \dfrac{\sigma^2}{1 - 2\phi\cos(2\pi\nu) + \phi^2}$
+    \begin{itemize}
+        \item $\phi > 0$: putere la frecvențele joase (serie netedă, persistentă); $\phi < 0$: putere la frecvențele înalte (serie în zigzag)
+    \end{itemize}
+    \item \textbf{MA(1)} $x_t = w_t + \theta w_{t-1}$: $f(\nu) = \sigma^2\,[1 + 2\theta\cos(2\pi\nu) + \theta^2]$
+    \begin{itemize}
+        \item direct din definiție: $\gamma(0) = \sigma^2(1 + \theta^2)$, $\gamma(1) = \sigma^2\theta$, deci $f = \gamma(0) + 2\gamma(1)\cos(2\pi\nu)$
+    \end{itemize}
+    \item \textbf{ARMA}$(p,q)$, $\phi(L)x_t = \theta(L)w_t$: $f(\nu) = \sigma^2\dfrac{|\theta(e^{-2\pi i\nu})|^2}{|\phi(e^{-2\pi i\nu})|^2}$
+    \begin{itemize}
+        \item un raport de două polinoame în $\cos(2\pi\nu)$: neted și ușor de calculat (\refBDtm, secț.~4.4)
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exemplu rezolvat: spectrele AR(1) și MA(1)}
+\itemsize{\small}
+\begin{itemize}
+    \item AR(1) cu $\phi = 0{,}6$, $\sigma^2 = 1$
+    \begin{itemize}
+        \item $\nu = 0$: $\cos 0 = 1$, $f(0) = 1/(1 - 0{,}6)^2 = 1/0{,}16 = 6{,}25$
+        \item $\nu = 1/2$: $\cos\pi = -1$, $f(1/2) = 1/(1 + 0{,}6)^2 = 1/2{,}56 = 0{,}39$
+        \item raportul 16: ciclurile lente poartă mult mai multă varianță decît cele rapide
+    \end{itemize}
+    \item MA(1) cu $\theta = 0{,}5$, $\sigma^2 = 1$
+    \begin{itemize}
+        \item $f(0) = (1 + 0{,}5)^2 = 2{,}25$ și $f(1/2) = (1 - 0{,}5)^2 = 0{,}25$
+    \end{itemize}
+    \item Verificarea ariei pentru AR(1): $\int_{-1/2}^{1/2} f = \gamma(0) = 1/(1 - \phi^2) = 1/0{,}64 = 1{,}5625$
+    \begin{itemize}
+        \item integrala numerică a formulei dă aceeași valoare
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{AR(2) și pseudo-ciclurile}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{AR(2)} $x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t$: $f(\nu) = \dfrac{\sigma^2}{|1 - \phi_1 e^{-2\pi i\nu} - \phi_2 e^{-4\pi i\nu}|^2}$
+    \begin{itemize}
+        \item pentru rădăcini complexe ($\phi_1^2 + 4\phi_2 < 0$) ACF este o undă amortizată, iar spectrul are un vîrf în interiorul intervalului $(0, 1/2)$
+        \item vîrful se află la $\cos(2\pi\nu^*) = \phi_1(\phi_2 - 1)/(4\phi_2)$, cînd membrul drept este în $[-1, 1]$
+    \end{itemize}
+    \item Un \textbf{pseudo-ciclu}: un ciclu neregulat, a cărui lungime și amplitudine variază de la o rundă la alta
+    \begin{itemize}
+        \item \refYule\ a estimat un AR(2) pentru numerele de pete solare ale lui Wolfer: primul model autoregresiv, o alternativă la undele sinusoidale fixe
+    \end{itemize}
+    \item Ciclurile economice sînt pseudo-cicluri de acest fel: recurente, dar niciodată de aceeași lungime (secțiunea 5)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exemplu rezolvat: vîrful spectrului unui AR(2)}
+\itemsize{\small}
+\begin{itemize}
+    \item $\phi_1 = 1{,}5$, $\phi_2 = -0{,}75$, $\sigma^2 = 1$; rădăcini complexe, deoarece $1{,}5^2 + 4(-0{,}75) = -0{,}75 < 0$
+    \begin{itemize}
+        \item $\cos(2\pi\nu^*) = 1{,}5 \cdot (-1{,}75)/(-3) = 0{,}875$, deci $\nu^* = \arccos(0{,}875)/(2\pi) = 0{,}0804$
+        \item perioada $1/\nu^* = 12{,}4$ observații; pentru date anuale, un ciclu de aproximativ 12 ani
+    \end{itemize}
+    \item Înălțimea: $f(\nu^*) = 64$, față de $f(0) = 1/(1 - 1{,}5 + 0{,}75)^2 = 16$
+    \begin{itemize}
+        \item un vîrf clar: seria oscilează cu o perioadă tipică de aproximativ 12 observații
+    \end{itemize}
+    \item Același AR(2) este folosit în secțiunea 4 pentru a testa estimatorii spectrului
+\end{itemize}
+\end{frame}
+
+\begin{frame}{O galerie de densități spectrale}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.66\textheight,keepaspectratio]{tsa_ch12_spectra.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Spectre teoretice, cu $\sigma^2 = 1$, pe $0 \le \nu \le 1/2$; aria hașurată este jumătate din varianță
+\end{itemize}
+\quantlet{TSA\_ch12\_spectra}{\qlurl{TSA_ch12_spectra}}
+\end{frame}
+
+\begin{frame}{Interpretarea galeriei}
+\itemsize{\small}
+\begin{itemize}
+    \item Locul în care se află puterea arată tipul de dependență
+    \begin{itemize}
+        \item plat: nicio dependență (zgomot alb); descrescător: persistență pozitivă (AR(1) cu $\phi > 0$, MA(1) cu $\theta > 0$, ARMA(1,1))
+        \item crescător: alternanță de semne (AR(1) cu $\phi < 0$); o cocoașă în interiorul benzii: un pseudo-ciclu (AR(2))
+    \end{itemize}
+    \item AR(2) își concentrează varianța 8{,}62 într-o bandă îngustă în jurul lui $\nu = 0{,}0804$
+    \begin{itemize}
+        \item ARMA(1,1) adaugă termenul MA la AR(1): $f(0) = 12{,}25$, o scădere mai abruptă
+    \end{itemize}
+    \item Ordinea de lucru: estimați spectrul din date, priviți forma lui, apoi alegeți un model care are un spectru asemănător
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recapitulare: densitatea spectrală}
+\itemsize{\small}
+\begin{itemize}
+    \item $f(\nu) = \sum_h\gamma(h)e^{-2\pi i\nu h}$; aria de sub $f$ este varianța; $f$ și ACF sînt echivalente
+    \item Zgomotul alb are spectrul plat; AR(1) cu $\phi > 0$ pune puterea la frecvențele joase; AR(2) cu rădăcini complexe dă un vîrf
+    \item Spectrele ARMA: $\sigma^2|\theta(e^{-2\pi i\nu})|^2/|\phi(e^{-2\pi i\nu})|^2$
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Periodograma}
+%=============================================================================
+
+\begin{frame}{Arthur Schuster și periodicitățile ascunse}
+\itemsize{\small}
+\begin{columns}[T]
+\begin{column}{0.36\textwidth}
+\centering
+\includegraphics[height=0.5\textheight]{ch12_arthur_schuster.jpg}\\[1mm]
+\imgcap{A. Schuster (1851--1934)}
+\imgcredit{https://commons.wikimedia.org/wiki/File:Arthur_Schuster.jpg}{Foto: autor necunoscut (1900s); domeniu public; Wikimedia Commons}
+\end{column}
+\begin{column}{0.62\textwidth}
+\begin{itemize}
+    \item \refSchuster\ a introdus \textbf{periodograma} pentru a căuta „periodicități ascunse” în date meteorologice
+    \begin{itemize}
+        \item un presupus ciclu de 26 de zile; a arătat cum se judecă dacă un vîrf poate fi întîmplător
+    \end{itemize}
+    \item Petele solare: numărate zilnic încă din secolul al XVIII-lea; Rudolf Wolf a construit indicele standard în 1848
+    \begin{itemize}
+        \item ciclul lor de 11 ani este cazul clasic de test al analizei spectrale (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0})
+    \end{itemize}
+    \item Întrebarea secțiunii: cum estimăm $f(\nu)$ dintr-un singur eșantion și cît de sigură este estimarea?
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Periodograma}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Periodograma}: $I(\nu_j) = |d(\nu_j)|^2$ la frecvențele Fourier $\nu_j = j/T$ (după eliminarea mediei)
+    \begin{itemize}
+        \item echivalent $I(\nu_j) = \sum_{|h| < T}\hat\gamma(h)e^{-2\pi i\nu_j h}$: formula spectrului cu autocovarianțele de selecție $\hat\gamma(h)$
+    \end{itemize}
+    \item Interpretarea prin regresie: regresați $x_t$ pe $\cos(2\pi\nu_j t)$ și $\sin(2\pi\nu_j t)$ prin OLS, cu coeficienții $a_j, b_j$
+    \begin{itemize}
+        \item $I(\nu_j) = \frac{T}{4}(a_j^2 + b_j^2)$: pătratul amplitudinii celui mai bun ciclu la $\nu_j$, înmulțit cu $T/4$
+    \end{itemize}
+    \item Descompunerea varianței: $\hat\gamma(0) = \frac{1}{T}\sum_{j=1}^{T-1} I(\nu_j)$
+    \begin{itemize}
+        \item ponderea unei benzi de frecvențe este suma ordonatelor ei împărțită la total
+    \end{itemize}
+    \item În Python: \texttt{np.abs(np.fft.fft(x - x.mean()))**2 / T}; se păstrează $j = 1, \ldots, \lfloor T/2\rfloor$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Petele solare și periodograma lor}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch12_sunspots.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Numărul mediu anual de pete solare, 1700--2008, 309 observații (seria Wolf / SILSO, statsmodels); dreapta: periodograma brută
+\end{itemize}
+\quantlet{TSA\_ch12\_sunspots}{\qlurl{TSA_ch12_sunspots}}
+\end{frame}
+
+\begin{frame}{Interpretarea periodogramei petelor solare}
+\itemsize{\small}
+\begin{itemize}
+    \item Cea mai mare ordonată este la $j = 28$: $\nu = 28/309 = 0{,}0906$ cicluri pe an, o perioadă de 11{,}0 ani
+    \begin{itemize}
+        \item următoarele ordonate ca mărime sînt la 10{,}0 și 10{,}7 ani: ciclul nu este perfect regulat
+    \end{itemize}
+    \item Perioadele între 9 și 13 ani explică 60\% din varianță
+    \begin{itemize}
+        \item ordonatele mici din apropierea lui $\nu = 0$ reflectă schimbările lente ale înălțimii ciclurilor (de exemplu ciclurile slabe din jurul anului 1800)
+    \end{itemize}
+    \item Periodograma brută este foarte zimțată: ordonatele vecine sar în sus și în jos; slide-urile următoare explică de ce
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Proprietățile statistice ale periodogramei}
+\itemsize{\small}
+\begin{itemize}
+    \item Pentru $T$ mare, la o frecvență Fourier $0 < \nu_j < 1/2$ (\refBDtm, secț.~10.3; \refSS, secț.~4.3):
+    \begin{itemize}
+        \item $\dfrac{2I(\nu_j)}{f(\nu_j)} \approx \chi^2_2$: deci $E[I(\nu_j)] \approx f(\nu_j)$ (nedeplasată) și $\mathrm{Var}[I(\nu_j)] \approx f(\nu_j)^2$
+        \item ordonatele de la frecvențe Fourier diferite sînt aproximativ independente
+    \end{itemize}
+    \item Varianța \textbf{nu} scade cînd $T$ crește: periodograma \textbf{nu este un estimator consistent} al lui $f$
+    \begin{itemize}
+        \item un $T$ mai mare dă mai multe ordonate (o grilă mai fină), nu ordonate mai precise
+    \end{itemize}
+    \item $\chi^2_2/2$ este o distribuție exponențială cu media 1: o singură ordonată poate depăși ușor de 3 ori valoarea adevărată
+    \begin{itemize}
+        \item cuantila ei de 95\% este 3{,}00: aproximativ 1 ordonată din 20 depășește întîmplător $3{,}00\,f(\nu)$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Periodograma zgomotului alb}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_inconsistency.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Zgomot alb gaussian cu $\sigma^2 = 1$, deci spectrul adevărat este constant, egal cu 1; eșantioane de $T = 128$ și $T = 2048$
+\end{itemize}
+\quantlet{TSA\_ch12\_inconsistency}{\qlurl{TSA_ch12_inconsistency}}
+\end{frame}
+
+\begin{frame}{Interpretarea periodogramei zgomotului alb}
+\itemsize{\small}
+\begin{itemize}
+    \item $T = 128$: media ordonatelor 1{,}03, abaterea standard 1{,}03
+    \begin{itemize}
+        \item $T = 2048$: media 1{,}01, abaterea standard 1{,}00: de 16 ori mai multe date, aceeași împrăștiere
+    \end{itemize}
+    \item Cea mai mare ordonată pentru $T = 2048$ este 10{,}5: din 1024 de ordonate, apar întîmplător vîrfuri înalte izolate
+    \begin{itemize}
+        \item un vîrf înalt nu este încă un ciclu: are nevoie de un test (slide-ul următor) sau de o estimare netezită (secțiunea 4)
+    \end{itemize}
+    \item Media este corectă (aproximativ 1): periodograma este nedeplasată, dar zgomotoasă; media ordonatelor vecine va reduce zgomotul
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Testul lui Fisher pentru o periodicitate ascunsă}
+\itemsize{\small}
+\begin{itemize}
+    \item $H_0$: zgomot alb gaussian; $H_1$: zgomot alb plus un ciclu la o frecvență Fourier necunoscută
+    \begin{itemize}
+        \item statistica lui \refFisher: $g = \max_j I(\nu_j)\,/\,\sum_{j=1}^{m} I(\nu_j)$, cu $m$ ordonate în $(0, 1/2)$
+        \item sub $H_0$ fiecare ordonată reprezintă aproximativ $1/m$ din total; un $g$ mult mai mare decît $1/m$ semnalează un ciclu
+        \item p-value exactă: $P(g > x) = \sum_{k \ge 1,\ kx < 1}(-1)^{k-1}\binom{m}{k}(1 - kx)^{m-1}$
+    \end{itemize}
+    \item Petele solare: $m = 154$, $g = 0{,}268$, față de $1/m = 0{,}0065$; p-value $<$\,0{,}001
+    \begin{itemize}
+        \item vîrful de 11 ani este mult prea mare pentru a fi întîmplător
+    \end{itemize}
+    \item Atenție: $H_0$ este zgomotul alb; pe un fond „roșu” (de tip AR(1)), vîrfurile de joasă frecvență apar mai ușor din întîmplare, deci comparați cu un spectru de fond neted
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recapitulare: periodograma}
+\itemsize{\small}
+\begin{itemize}
+    \item $I(\nu_j) = |d(\nu_j)|^2$: pătratul amplitudinii ciclului la fiecare frecvență Fourier; suma dă varianța
+    \item $2I/f \approx \chi^2_2$: nedeplasată, dar neconsistentă; ordonatele vecine sînt aproape independente
+    \item Petele solare: un vîrf la 11{,}0 ani; testul $g$ al lui Fisher respinge zgomotul alb
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Estimarea spectrului}
+%=============================================================================
+
+\begin{frame}{Scurgerea spectrală și ferestrele de atenuare}
+\itemsize{\small}
+\begin{itemize}
+    \item Un ciclu a cărui frecvență nu este o frecvență Fourier nu încape de un număr întreg de ori în eșantion
+    \begin{itemize}
+        \item tăierea seriei la $t = 1$ și $t = T$ creează un salt; puterea lui se \textbf{scurge} la toate celelalte frecvențe
+        \item scurgerea dintr-un vîrf puternic poate ascunde un ciclu slab în altă parte
+    \end{itemize}
+    \item \textbf{Atenuarea} (tapering): înmulțiți datele cu o fereastră $h_t$ care scade lin spre 0 la ambele capete, înainte de DFT
+    \begin{itemize}
+        \item fereastra Hann (clopot cosinus): $h_t = \frac12[1 - \cos(2\pi(t - 0{,}5)/T)]$, rescalată pentru a păstra puterea totală
+        \item prețul: un vîrf principal puțin mai lat (rezoluție mai mică) pentru o scurgere mult mai mică
+    \end{itemize}
+    \item În practică: aplicați întotdeauna o atenuare ușoară; eliminați întîi media (și trendul, dacă există)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Scurgerea: periodograma brută și cea cu atenuare}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_leakage.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item $T = 256$: $\cos(2\pi\cdot 0{,}0996\,t)$ (între două frecvențe Fourier) plus $0{,}02\cos(2\pi\cdot 0{,}3\,t)$ și un zgomot foarte mic; scară logaritmică
+\end{itemize}
+\quantlet{TSA\_ch12\_leakage}{\qlurl{TSA_ch12_leakage}}
+\end{frame}
+
+\begin{frame}{Interpretarea scurgerii spectrale}
+\itemsize{\small}
+\begin{itemize}
+    \item Periodograma brută: ciclul puternic își scurge puterea peste tot; la $\nu = 0{,}3$ ciclul slab este doar de 7{,}7 ori peste fondul scurs
+    \begin{itemize}
+        \item cu un zgomot real adăugat, acest vîrf slab ar fi invizibil
+    \end{itemize}
+    \item Fereastra Hann: fondul scade cu mai multe ordine de mărime, iar ciclul slab ajunge de 4\,230 ori peste el
+    \begin{itemize}
+        \item vîrful principal este puțin mai lat: atenuarea schimbă rezoluție pentru o scurgere mai mică
+    \end{itemize}
+    \item Scara logaritmică este esențială: pe o scară liniară ambele curbe arată ca un singur vîrf
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Netezirea periodogramei}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item Ideea: $f$ este netedă, iar ordonatele sînt aproape independente: faceți media a $L = 2m + 1$ ordonate vecine
+    \begin{itemize}
+        \item estimatorul \textbf{Daniell}: $\hat f(\nu_j) = \frac{1}{L}\sum_{k=-m}^{m} I(\nu_{j+k})$; varianța aproximativ $f^2/L$
+        \item \textbf{lățimea de bandă} $B = L/T$: lățimea benzii de frecvențe peste care se face media
+    \end{itemize}
+    \item Compromisul deplasare--varianță: un $L$ mai mare reduce varianța, dar aplatizează vîrfurile înguste (deplasare)
+    \begin{itemize}
+        \item consistența cere $L \to \infty$ și $L/T \to 0$, de exemplu $L \approx \sqrt T$
+    \end{itemize}
+    \item Perspective echivalente: netezirea în frecvență $=$ ponderi mai mici pentru autocovarianțele îndepărtate (ferestre de decalaj)
+    \begin{itemize}
+        \item fereastra Bartlett: $\hat f(\nu) = \sum_{|h| \le M}(1 - |h|/M)\hat\gamma(h)e^{-2\pi i\nu h}$ (\refBartlett; \refBT)
+    \end{itemize}
+    \item \textbf{Welch} \refWelch: împărțiți seria în $K$ segmente care se suprapun, aplicați fereastra pe fiecare, faceți media periodogramelor
+    \begin{itemize}
+        \item \texttt{scipy.signal.welch}; lungimea segmentului fixează rezoluția
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Estimări netezite ale spectrului unui AR(2)}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_smoothing.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item AR(2) simulat, $\phi = (1{,}5;\ -0{,}75)$, $T = 512$; spectrul adevărat (linie întreruptă), periodograma brută (stînga) și trei estimări netezite (dreapta)
+\end{itemize}
+\quantlet{TSA\_ch12\_smoothing}{\qlurl{TSA_ch12_smoothing}}
+\end{frame}
+
+\begin{frame}{Interpretarea estimărilor netezite}
+\itemsize{\small}
+\begin{itemize}
+    \item Vîrful adevărat este la $\nu = 0{,}080$; cea mai mare ordonată brută este la $\nu = 0{,}102$: o singură ordonată zgomotoasă plasează greșit vîrful
+    \begin{itemize}
+        \item vîrful Daniell $m = 2$: $\nu = 0{,}102$; Daniell $m = 10$: $\nu = 0{,}086$; Welch ($K = 7$ segmente de 128): $\nu = 0{,}102$
+    \end{itemize}
+    \item Eroarea pătratică medie a lui $\log\hat f$: brută 1{,}86; Daniell $m = 2$: 0{,}25; $m = 10$: 0{,}09; Welch: 0{,}24
+    \begin{itemize}
+        \item prețul netezirii puternice: înălțimea vîrfului scade de la 64 la 44 (deplasare)
+    \end{itemize}
+    \item Alegeți lățimea de bandă privind mai multe valori: păstrați-o pe cea mai îngustă la care estimarea nu mai este dominată de zgomot
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Benzi de încredere pentru spectru}
+\itemsize{\small}
+\begin{itemize}
+    \item Estimarea Daniell cu $L$ termeni: $\dfrac{2L\,\hat f(\nu)}{f(\nu)} \approx \chi^2_{2L}$ (grade de libertate $df = 2L$)
+    \begin{itemize}
+        \item intervalul de 95\%: $\left[\dfrac{df\,\hat f(\nu)}{\chi^2_{df}(0{,}975)};\ \dfrac{df\,\hat f(\nu)}{\chi^2_{df}(0{,}025)}\right]$
+    \end{itemize}
+    \item Intervalul este un multiplu fix al lui $\hat f$: pe scară logaritmică lățimea lui este aceeași la toate frecvențele
+    \begin{itemize}
+        \item un vîrf este semnificativ dacă banda de la vîrf se află deasupra benzii fondului din jur
+    \end{itemize}
+    \item Welch cu $K$ segmente care nu se suprapun: $df \approx 2K$; suprapunerea și atenuarea modifică puțin $df$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exemplu rezolvat: o bandă de 95\% pentru $L = 5$}
+\itemsize{\small}
+\begin{itemize}
+    \item $L = 5$ ($m = 2$), deci $df = 10$; din tabelul $\chi^2_{10}$: $\chi^2_{10}(0{,}025) = 3{,}25$ și $\chi^2_{10}(0{,}975) = 20{,}48$
+    \begin{itemize}
+        \item limita inferioară: $10/20{,}48 = 0{,}49$ ori $\hat f$; limita superioară: $10/3{,}25 = 3{,}08$ ori $\hat f$
+    \end{itemize}
+    \item Petele solare: la vîrful netezit (perioada 10{,}3 ani) $\hat f = 26\,095$
+    \begin{itemize}
+        \item intervalul de 95\%: [12\,740, 80\,367]: asimetric, mai lat în sus
+    \end{itemize}
+    \item Cu doar 5 ordonate estimarea are încă o incertitudine de un factor de 2--3; o netezire mai puternică îngustează banda, dar estompează vîrful
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Petele solare: spectrul netezit cu bandă de încredere}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_sunspot_ci.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Netezire Daniell cu $m = 2$ ($L = 5$, $df = 10$, lățimea de bandă $B = 5/309 = 0{,}016$ cicluri pe an) și banda de 95\%; scară logaritmică
+\end{itemize}
+\quantlet{TSA\_ch12\_sunspot\_ci}{\qlurl{TSA_ch12_sunspot_ci}}
+\end{frame}
+
+\begin{frame}{Interpretarea spectrului netezit al petelor solare}
+\itemsize{\small}
+\begin{itemize}
+    \item Banda de la vîrf (perioada 10{,}3 ani) se află în întregime deasupra benzii fondului de la frecvențele mai înalte
+    \begin{itemize}
+        \item ciclul de 11 ani este o trăsătură robustă, nu un vîrf întîmplător
+    \end{itemize}
+    \item O a doua cocoașă, mai mică, în jurul lui $\nu \approx 0{,}18$ (aproximativ 5,5 ani) este prima \textbf{armonică}
+    \begin{itemize}
+        \item ciclul petelor solare nu este o sinusoidă: crește repede și scade lent, iar un ciclu nesinusoidal are putere la multiplii frecvenței lui
+    \end{itemize}
+    \item Puterea crește și spre $\nu = 0$: înălțimea ciclurilor se schimbă de-a lungul deceniilor și secolelor
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recapitulare: estimarea spectrului}
+\itemsize{\small}
+\begin{itemize}
+    \item Aplicați o fereastră de atenuare pentru a reduce scurgerea; reprezentați spectrele pe scară logaritmică
+    \item Netezați peste $L$ ordonate (Daniell, Bartlett, Welch): varianța $\approx f^2/L$, dar vîrfurile înguste sînt aplatizate
+    \item Banda de 95\%: $[df\,\hat f/\chi^2_{df}(0{,}975);\ df\,\hat f/\chi^2_{df}(0{,}025)]$, cu $df = 2L$
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Cicluri în datele economice și energetice}
+%=============================================================================
+
+\begin{frame}{Forma spectrală tipică și ciclul economic}
+\itemsize{\small}
+\begin{itemize}
+    \item \refGranger: spectrul majorității nivelurilor economice (PIB, prețuri) scade abrupt de la $\nu = 0$: \textbf{forma spectrală tipică}
+    \begin{itemize}
+        \item trendurile și rădăcinile aproape unitare pun aproape toată varianța la frecvențele cele mai joase și ascund ciclurile
+        \item de aceea transformăm întîi seria într-una staționară: rate de creștere (diferențe) sau un ciclu fără trend
+    \end{itemize}
+    \item \textbf{Banda ciclului economic}: fluctuații care durează între 1,5 și 8 ani, adică între 6 și 32 de trimestre (\refBK)
+    \begin{itemize}
+        \item în frecvență: $1/32 \le \nu \le 1/6$ cicluri pe trimestru
+    \end{itemize}
+    \item Datele: PIB-ul real al SUA (FRED GDPC1, 291 de rate de creștere trimestriale) și PIB-ul real al României (Eurostat, ajustat sezonier, 99 de rate de creștere)
+    \begin{itemize}
+        \item ambele pînă în T4 2019: prăbușirea și revenirea din 2020 ar domina orice periodogramă
+        \item ciclul este extras și cu filtrul HP, $\lambda = 1600$ (\refHPf; \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol10_spatiul_starilor_kalman_markov_switching.pdf}{Capitolul 10})
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Creșterea PIB și ciclurile HP}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_gdp_series.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Creșterea trimestrială $100\,\Delta\ln \mathrm{PIB}_t$ și ciclul HP ($100\ln\mathrm{PIB}_t$ minus trendul HP), Statele Unite 1947--2019 și România 1995--2019
+\end{itemize}
+\quantlet{TSA\_ch12\_gdp\_series}{\qlurl{TSA_ch12_gdp_series}}
+\end{frame}
+
+\begin{frame}{Interpretarea seriilor PIB}
+\itemsize{\small}
+\begin{itemize}
+    \item Statele Unite: creșterea medie 0{,}78\% pe trimestru, abaterea standard 0{,}93; abaterea standard a ciclului HP 1{,}58\% din trend
+    \begin{itemize}
+        \item ciclul arată recesiunile ca minime adînci (1958, 1975, 1982, 2009)
+    \end{itemize}
+    \item România: creșterea medie 0{,}73\%, abaterea standard 2{,}85: de trei ori mai volatilă
+    \begin{itemize}
+        \item un singur ciclu mare de expansiune și recesiune (2004--2010) domină un eșantion de doar 25 de ani
+    \end{itemize}
+    \item Rata de creștere este zgomotoasă și de scurtă durată; ciclul HP este neted și persistent: spectrele lor vor fi diferite
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Spectrele creșterii PIB și ale ciclurilor HP}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_gdp_spectra.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Netezire Daniell, $m = 2$; fiecare spectru este împărțit la varianța seriei sale; hașurat: perioade între 6 și 32 de trimestre
+\end{itemize}
+\quantlet{TSA\_ch12\_gdp\_spectra}{\qlurl{TSA_ch12_gdp_spectra}}
+\end{frame}
+
+\begin{frame}{Interpretarea spectrelor PIB}
+\itemsize{\small}
+\begin{itemize}
+    \item Creșterea SUA: 49\% din varianță în banda ciclului economic; vîrful netezit este la aproximativ 8{,}8 trimestre
+    \begin{itemize}
+        \item creșterea României: doar 16\%; cea mai mare parte a varianței este la frecvențe înalte (zgomot de la un trimestru la altul și revizuiri)
+    \end{itemize}
+    \item Ciclul HP al SUA: 80\% din varianță în bandă, vîrful la 24{,}3 trimestre (aproximativ 6{,}1 ani)
+    \begin{itemize}
+        \item ciclul HP al României: 49\% în bandă și 17\% la perioade de peste 8 ani: un singur ciclu lung într-un eșantion scurt
+    \end{itemize}
+    \item Atenție: filtrul HP elimină el însuși frecvențele joase și poate modela vîrful (secțiunea 7); cele 99 de observații ale României dau o bandă de încredere foarte largă
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ritmul consumului de energie electrică}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.58\textheight,keepaspectratio]{tsa_ch12_load.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Consumul orar de energie electrică al României (ENTSO-E, MW, ore UTC), 2022--2026, 39\,408 de ore, media 6\,176 MW (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{Capitolul 4}); spectrul Welch cu segmente de 8 săptămîni
+\end{itemize}
+\quantlet{TSA\_ch12\_load}{\qlurl{TSA_ch12_load}}
+\end{frame}
+
+\begin{frame}{Interpretarea spectrului consumului}
+\itemsize{\small}
+\begin{itemize}
+    \item Vîrfuri ascuțite la 24, 12 și 8 ore: ciclul zilnic și armonicele lui (vîrfurile de dimineață și de seară nu formează o sinusoidă)
+    \begin{itemize}
+        \item ciclul zilnic și armonicele lui explică 34\% din varianță
+    \end{itemize}
+    \item Un vîrf la 167{,}7 ore (o săptămînă) și armonica lui la 84{,}0 ore: zilele lucrătoare față de sfîrșitul de săptămînă
+    \begin{itemize}
+        \item componentele săptămînale: 16\%; perioadele mai lungi de o lună (iarna față de vară): 33\%
+    \end{itemize}
+    \item De aceea în \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{Capitolul 4} am modelat consumul cu termeni Fourier zilnici și săptămînali: spectrul arată ce perioade trebuie incluse
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recapitulare: ciclurile din date}
+\itemsize{\small}
+\begin{itemize}
+    \item Eliminați întîi trendurile (rate de creștere, cicluri fără trend): nivelurile au forma spectrală tipică
+    \item PIB-ul SUA: un vîrf al ciclului economic de aproximativ 6{,}1 ani în ciclul HP; România: un eșantion prea scurt pentru un răspuns clar
+    \item Consumul de energie electrică: cicluri zilnice și săptămînale cu armonice; spectrul alege termenii Fourier ai unui model de prognoză
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Memoria lungă: polul de la zero}
+%=============================================================================
+
+\begin{frame}{Memoria lungă în domeniul frecvenței}
+\itemsize{\small}
+\begin{itemize}
+    \item \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{Capitolul 8}: o serie cu memorie lungă are $\rho(h) \sim Ch^{2d-1}$; atunci $\sum_h\gamma(h) = \infty$ și $f(0) = \infty$
+    \begin{itemize}
+        \item ARFIMA$(0,d,0)$: $f(\nu) = \sigma^2\,|2\sin(\pi\nu)|^{-2d} \approx \sigma^2(2\pi\nu)^{-2d}$ în apropierea lui $\nu = 0$: un \textbf{pol} la zero
+    \end{itemize}
+    \item Pe un grafic log--log spectrul de joasă frecvență este o dreaptă cu panta $-2d$
+    \begin{itemize}
+        \item \refGPH\ regresează $\log I(\nu_j)$ pe $-\log(4\sin^2(\pi\nu_j))$ pentru $j = 1, \ldots, m$: panta este $\hat d$, cu eroarea standard $\pi/\sqrt{24m}$
+        \item se folosesc doar cele mai joase $m = \lfloor T^{0{,}65}\rfloor$ frecvențe, unde polul domină
+    \end{itemize}
+    \item Memoria scurtă (ARMA) are $f(0)$ finit: graficul log--log devine orizontal la frecvențele joase
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Polul de la zero în datele bursiere}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.58\textheight,keepaspectratio]{tsa_ch12_long_memory.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Randamentele logaritmice zilnice S\&P 500, 2000--2026, $T = 6\,714$ (EODHD); periodograma mediată în 40 de intervale logaritmice de frecvență; dreptele GPH pe cele mai joase $m = 307$ frecvențe (perioade de peste 22 de zile)
+\end{itemize}
+\quantlet{TSA\_ch12\_long\_memory}{\qlurl{TSA_ch12_long_memory}}
+\end{frame}
+
+\begin{frame}{Interpretarea periodogramei log--log}
+\itemsize{\small}
+\begin{itemize}
+    \item Randamentele $r_t$: spectru plat la frecvențele joase, GPH $\hat d = 0{,}02$ (eroarea standard 0{,}037): nicio memorie lungă în randamente
+    \begin{itemize}
+        \item un spectru plat este ceea ce prevede eficiența pieței pentru randamente (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf}{Capitolul 1})
+    \end{itemize}
+    \item Randamentele absolute $|r_t|$: puterea crește constant spre $\nu = 0$, panta $-2\hat d$, cu $\hat d = 0{,}56$
+    \begin{itemize}
+        \item memoria lungă a volatilității (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{Capitolul 8}); un $\hat d$ apropiat de 0,5 sau peste reflectă și rupturi precum 2008 și 2020
+    \end{itemize}
+    \item Aceeași imagine spectrală explică de ce GPH și Whittle local (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{Capitolul 8}) sînt estimatori din domeniul frecvenței
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Filtre liniare}
+%=============================================================================
+
+\begin{frame}{Filtrele liniare și cîștigul lor}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item Un \textbf{filtru liniar}: $y_t = \sum_j a_j x_{t-j}$; \textbf{răspunsul lui în frecvență} este $A(\nu) = \sum_j a_j e^{-2\pi i\nu j}$
+    \begin{itemize}
+        \item rezultatul de bază: $f_y(\nu) = |A(\nu)|^2 f_x(\nu)$; $|A(\nu)|^2$ este \textbf{cîștigul pătratic}
+        \item filtrul înmulțește puterea de la fiecare frecvență: amplifică unele cicluri și le elimină pe altele
+    \end{itemize}
+    \item Prima diferență $y_t = x_t - x_{t-1}$: $|A(\nu)|^2 = |1 - e^{-2\pi i\nu}|^2 = 4\sin^2(\pi\nu)$
+    \begin{itemize}
+        \item zero la $\nu = 0$ (elimină trendul), 4 la $\nu = 1/2$ (amplifică zgomotul); la o perioadă de 40 de trimestre: 0{,}025; la 4 trimestre: 2
+    \end{itemize}
+    \item Diferența sezonieră $1 - L^4$: $4\sin^2(4\pi\nu)$, zero la $\nu = 0, 1/4, 1/2$ (trendul și ciclurile sezoniere)
+    \begin{itemize}
+        \item filtrul HP pentru ciclu: cîștigul pătratic $\dfrac{4\lambda(1 - \cos 2\pi\nu)^2}{1 + 4\lambda(1 - \cos 2\pi\nu)^2}$, un filtru trece-sus
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Cîștigurile pătratice ale filtrelor uzuale}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.6\textheight,keepaspectratio]{tsa_ch12_filters.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Stînga: prima diferență și diferența sezonieră ($s = 4$); dreapta: filtrele HP pentru ciclu și pentru trend, $\lambda = 1600$ (date trimestriale); hașurat: 6--32 de trimestre
+\end{itemize}
+\quantlet{TSA\_ch12\_filters}{\qlurl{TSA_ch12_filters}}
+\end{frame}
+
+\begin{frame}{Interpretarea cîștigurilor filtrelor}
+\itemsize{\small}
+\begin{itemize}
+    \item Diferențierea nu este neutră: slăbește ciclurile economice și amplifică frecvențele cele mai înalte
+    \begin{itemize}
+        \item de aceea ratele de creștere par mai zgomotoase decît nivelurile; filtrarea unui zgomot alb poate crea chiar cicluri false (efectul Slutsky, \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0})
+    \end{itemize}
+    \item Filtrul HP pentru ciclu: cîștig 0{,}998 la 8 trimestre, 0{,}70 la 32 de trimestre, 0{,}49 la 40 de trimestre; jumătate din putere la aproximativ 40 de trimestre
+    \begin{itemize}
+        \item păstrează tot ce este mai rapid de 10 ani, inclusiv zgomotul: nu este un filtru trece-bandă (\refBK)
+    \end{itemize}
+    \item Aplicat unui mers aleator, filtrul HP produce un ciclu cu un vîrf care provine din filtru, nu din date (\refHamHP)
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Două serii: coerență și fază}
+%=============================================================================
+
+\begin{frame}{Spectrul încrucișat, coerența și faza}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item Pentru două serii staționare cu covarianțele încrucișate $\gamma_{xy}(h) = \mathrm{Cov}(x_{t+h}, y_t)$:
+    \begin{itemize}
+        \item \textbf{spectrul încrucișat} $f_{xy}(\nu) = \sum_h\gamma_{xy}(h)e^{-2\pi i\nu h}$, un număr complex la fiecare frecvență
+    \end{itemize}
+    \item \textbf{Coerența pătratică}: $\rho^2_{xy}(\nu) = \dfrac{|f_{xy}(\nu)|^2}{f_x(\nu)f_y(\nu)} \in [0, 1]$
+    \begin{itemize}
+        \item un pătrat al corelației, frecvență cu frecvență: cît de bine se mișcă împreună ciclurile lui $x$ și $y$ la frecvența $\nu$
+    \end{itemize}
+    \item \textbf{Faza} $\varphi(\nu) = \arg f_{xy}(\nu)$: decalajul dintre cele două cicluri, în radiani
+    \begin{itemize}
+        \item un decalaj de $k$ perioade dă o fază liniară în frecvență: $\varphi(\nu) = \pm 2\pi\nu k$; deci decalajul este $|\varphi|/(2\pi\nu)$
+    \end{itemize}
+    \item Estimarea: netezim periodograma încrucișată la fel ca periodograma; coerența brută este întotdeauna 1, deci netezirea este obligatorie
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Producția industrială și șomajul}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.56\textheight,keepaspectratio]{tsa_ch12_coherence.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Date lunare din SUA, 1948--2019 (FRED INDPRO, UNRATE), $T = 863$: $x_t = 100\,\Delta\ln \mathrm{IP}_t$ și $y_t = -\Delta u_t$ (scăderea ratei șomajului); Welch cu $K = 8$ segmente de 96 de luni
+\end{itemize}
+\quantlet{TSA\_ch12\_coherence}{\qlurl{TSA_ch12_coherence}}
+\end{frame}
+
+\begin{frame}{Interpretarea coerenței și fazei}
+\itemsize{\small}
+\begin{itemize}
+    \item În banda ciclului economic (18--96 de luni) coerența pătratică are media 0{,}87 (maximum 0{,}95), mult peste pragul de 5\%, 0{,}35
+    \begin{itemize}
+        \item la frecvențele mai rapide de 6 luni media este doar 0{,}17: zgomotul lunar al celor două serii nu este legat
+        \item corelația obișnuită, 0{,}49, amestecă legătura puternică a ciclurilor cu legătura slabă a zgomotului
+    \end{itemize}
+    \item Faza la ciclul de 48 de luni: -0{,}23 radiani, un decalaj de aproximativ 1{,}7 luni
+    \begin{itemize}
+        \item scăderea șomajului urmează revenirea producției cu o mică întîrziere (legea lui Okun, cu decalaj)
+    \end{itemize}
+    \item Acolo unde coerența este mică, faza nu are sens: citiți faza doar în benzile cu coerență semnificativă
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{O trimitere: wavelets}
+%=============================================================================
+
+\begin{frame}{Wavelets: frecvența care se schimbă în timp}
+\itemsize{\small}
+\begin{itemize}
+    \item Spectrul presupune staționaritate: aceleași cicluri la orice dată
+    \begin{itemize}
+        \item \textbf{transformata Fourier pe ferestre scurte} (STFT) calculează spectre în ferestre mobile de lungime fixă
+    \end{itemize}
+    \item Un \textbf{wavelet} este un pachet scurt de unde; \textbf{transformata wavelet continuă} (CWT) îl întinde la fiecare perioadă și îl glisează de-a lungul seriei
+    \begin{itemize}
+        \item rezultatul, \textbf{scalograma}, arată puterea la fiecare perioadă și la fiecare dată (\refTC)
+        \item ferestre scurte pentru ciclurile rapide, ferestre lungi pentru ciclurile lente: rezoluție bună la toate scările
+    \end{itemize}
+    \item Dincolo de acest curs; o temă naturală de proiect (Python: \texttt{pywt} sau codul Morlet al acestui capitol)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Puterea wavelet a petelor solare}
+\itemsize{\footnotesize}
+\begin{center}
+\includegraphics[width=0.97\textwidth,height=0.56\textheight,keepaspectratio]{tsa_ch12_wavelet.pdf}
+\end{center}
+\vspace{-0.25cm}
+\begin{itemize}
+    \item Puterea wavelet Morlet a numerelor anuale standardizate de pete solare, 1700--2008, perioade între 2 și 64 de ani; culorile deschise indică putere mare
+\end{itemize}
+\quantlet{TSA\_ch12\_wavelet}{\qlurl{TSA_ch12_wavelet}}
+\end{frame}
+
+\begin{frame}{Interpretarea scalogramei}
+\itemsize{\small}
+\begin{itemize}
+    \item Banda de 11 ani este prezentă tot timpul, dar intensitatea ei se schimbă
+    \begin{itemize}
+        \item puterea medie în banda de 8--14 ani: 2{,}0 în 1795--1830 (minimul Dalton, cu cicluri slabe), față de 5{,}7 pe întregul eșantion; maximul este în jurul anului 1956
+    \end{itemize}
+    \item Periodograma a mediat aceste schimbări într-un singur vîrf; scalograma arată cînd ciclul a fost puternic sau slab
+    \item Marginile graficului sînt mai puțin sigure (wavelet-ul rămîne fără date): această regiune se numește conul de influență
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recapitulare: memoria lungă, filtre, două serii, wavelets}
+\itemsize{\small}
+\begin{itemize}
+    \item Memoria lungă este un pol la $\nu = 0$: panta $-2d$ pe un grafic log--log (GPH)
+    \item Un filtru înmulțește spectrul cu cîștigul lui pătratic: diferențierea și filtrul HP remodelează ciclurile
+    \item Coerența este o corelație pe frecvențe; faza arată avansul sau întîrzierea
+    \item Wavelets arată cum se schimbă ciclurile în timp
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Contribuția posibilă a AI}
+%=============================================================================
+
+\begin{frame}{Contribuția posibilă a AI}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Cod}: o primă versiune a unei periodograme, a unei neteziri Daniell, a unei estimări Welch sau a unui grafic al coerenței
+    \item \textbf{Explicații}: o a doua explicație a scurgerii spectrale, a fenomenului de aliasing sau a compromisului deplasare--varianță al lățimii de bandă
+    \item \textbf{Explorare}: spectrele multor serii deodată (consumul mai multor țări, PIB-ul tuturor statelor UE) și o primă interpretare a vîrfurilor
+    \item Exemplu de prompt
+    \begin{itemize}
+        \item \aiprompt{Write Python code that reads hourly electricity load, removes the mean, computes the periodogram with a Hann taper and a Welch estimate with 8-week segments, plots both on a log-log scale against the period in hours, and marks 24, 12 and 168 hours.}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Verificări necesare}
+\itemsize{\small}
+\begin{itemize}
+    \item Unitățile: frecvența în cicluri pe observație sau în radiani; \texttt{scipy.signal.welch} întoarce o densitate unilaterală (dublul lui $f$)
+    \item Perioada: $1/\nu$ în observații; transformați-o singuri în ani, trimestre sau ore
+    \item Parseval: ordonatele trebuie să se adune la $T$ înmulțit cu varianța; testați codul pe un cosinus cu frecvență cunoscută
+    \item Un vîrf este un ciclu doar cu un test sau cu o bandă de încredere; o periodogramă brută are întotdeauna vîrfuri înalte
+    \item Trendurile, rupturile și filtrele creează putere la frecvențele joase și vîrfuri false: verificați întîi datele și transformarea
+    \item Fiecare referință citată: trebuie să existe; verificați DOI-ul
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Rezumat}
+%=============================================================================
+
+\begin{frame}{Idei de reținut}
+\itemsize{\small}
+\begin{itemize}
+    \item Spectrul împarte varianța unei serii staționare pe frecvențe; conține aceeași informație ca ACF
+    \item Interpretați forma lui: plat (zgomot alb), descrescător (persistență), cu vîrfuri (cicluri), cu pol la zero (memorie lungă)
+    \item Periodograma brută este nedeplasată, dar neconsistentă: aplicați atenuarea, netezirea și benzile de încredere
+    \item Cicluri reale: 11 ani la petele solare, 4--8 ani în PIB, 24 de ore și o săptămînă în consumul de energie electrică
+    \item Filtrele remodelează spectrele; coerența și faza leagă ciclurile a două serii
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Formule de reținut}
+\itemsize{\small}
+{\renewcommand{\arraystretch}{1.35}\begin{center}
+\scriptsize
+\begin{tabular}{ll}
+\toprule
+\textbf{Mărimea} & \textbf{Formula} \\
+\midrule
+Densitatea spectrală & $f(\nu) = \sum_h\gamma(h)e^{-2\pi i\nu h}$, \quad $\gamma(0) = \int_{-1/2}^{1/2} f(\nu)\,d\nu$ \\
+AR(1), MA(1) & $\sigma^2/(1 - 2\phi\cos 2\pi\nu + \phi^2)$, \quad $\sigma^2(1 + 2\theta\cos 2\pi\nu + \theta^2)$ \\
+ARMA & $\sigma^2|\theta(e^{-2\pi i\nu})|^2/|\phi(e^{-2\pi i\nu})|^2$ \\
+Periodograma & $I(\nu_j) = |T^{-1/2}\sum_t x_t e^{-2\pi i\nu_j t}|^2$, \quad $\nu_j = j/T$, \quad $2I/f \approx \chi^2_2$ \\
+Daniell & $\hat f(\nu_j) = \frac1L\sum_{|k| \le m} I(\nu_{j+k})$, \quad $L = 2m + 1$, \quad $B = L/T$ \\
+Banda de 95\% & $[2L\hat f/\chi^2_{2L}(0{,}975),\ 2L\hat f/\chi^2_{2L}(0{,}025)]$ \\
+Filtru liniar & $f_y(\nu) = |A(\nu)|^2 f_x(\nu)$, \quad $|1 - e^{-2\pi i\nu}|^2 = 4\sin^2(\pi\nu)$ \\
+Coerența, faza & $\rho^2_{xy} = |f_{xy}|^2/(f_x f_y)$, \quad $\varphi = \arg f_{xy}$, \quad decalaj $= |\varphi|/(2\pi\nu)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+}
+\end{frame}
+
+\begin{frame}{Autoevaluare (1/2)}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Întrebare}: niște date săptămînale au un vîrf la $\nu = 0{,}0192$. Care este perioada?
+    \begin{itemize}
+        \item \textbf{Răspuns}: $1/0{,}0192 \approx 52$ de săptămîni: un ciclu anual
+    \end{itemize}
+    \item \textbf{Întrebare}: cît sînt $f(0)$ și $f(1/2)$ pentru un AR(1) cu $\phi = -0{,}5$, $\sigma^2 = 1$?
+    \begin{itemize}
+        \item \textbf{Răspuns}: $f(0) = 1/1{,}5^2 = 0{,}44$ și $f(1/2) = 1/0{,}5^2 = 4$: puterea este la frecvențele înalte
+    \end{itemize}
+    \item \textbf{Întrebare}: de ce un eșantion mai lung nu face periodograma brută mai precisă?
+    \begin{itemize}
+        \item \textbf{Răspuns}: fiecare ordonată are în continuare varianța aproximativ $f^2$; mai multe date adaugă doar ordonate; precizia cere o mediere
+    \end{itemize}
+    \item \textbf{Întrebare}: pentru $L = 5$, cît de largă este banda de 95\% în raport cu $\hat f$?
+    \begin{itemize}
+        \item \textbf{Răspuns}: de la 0{,}49 la 3{,}08 ori $\hat f$ ($df = 10$)
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Autoevaluare (2/2)}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Întrebare}: o serie lunară observată doar o dată la două luni are un ciclu de 3 luni. Unde apare acesta?
+    \begin{itemize}
+        \item \textbf{Răspuns}: $\nu = 2/3$ cicluri la două luni este peste $1/2$; se pliază la $1/3$: un ciclu fals de 3 observații, adică 6 luni
+    \end{itemize}
+    \item \textbf{Întrebare}: ce efect are prima diferență asupra unui ciclu de 40 de trimestre?
+    \begin{itemize}
+        \item \textbf{Răspuns}: îi înmulțește puterea cu $4\sin^2(\pi/40) = 0{,}025$: ciclul aproape dispare
+    \end{itemize}
+    \item \textbf{Întrebare}: periodograma log--log a unei serii are panta $-0{,}6$ în apropierea lui zero. Cît este $d$?
+    \begin{itemize}
+        \item \textbf{Răspuns}: panta $= -2d$, deci $d = 0{,}3$: memorie lungă staționară (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{Capitolul 8})
+    \end{itemize}
+    \item \textbf{Întrebare}: coerența pătratică a două serii este 0,9 la ciclurile de 5 ani și 0,1 la ciclurile lunare. Ce înseamnă aceasta?
+    \begin{itemize}
+        \item \textbf{Răspuns}: ciclurile lor economice se mișcă împreună; zgomotul lor pe termen scurt nu
+    \end{itemize}
+    \item Urmează: \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol13_bule_lppl.pdf}{Capitolul 13}, bule speculative și modele LPPL
+\end{itemize}
+\end{frame}
+
+
+%=============================================================================
+\section{Bibliografie}
+%=============================================================================
+
+\begin{frame}{Bibliografie (1/2)}
+\itemsize{\tiny}
+\begin{itemize}
+    \item Bartlett, M. S. (1950). Periodogram analysis and continuous spectra. \textit{Biometrika}, 37(1--2), 1--16. \href{https://doi.org/10.1093/biomet/37.1-2.1}{doi:10.1093/biomet/37.1-2.1}
+    \item Baxter, M., \& King, R. G. (1999). Measuring business cycles: Approximate band-pass filters for economic time series. \textit{Review of Economics and Statistics}, 81(4), 575--593. \href{https://doi.org/10.1162/003465399558454}{doi:10.1162/003465399558454}
+    \item Blackman, R. B., \& Tukey, J. W. (1958). The measurement of power spectra from the point of view of communications engineering, Part I. \textit{Bell System Technical Journal}, 37(1), 185--282. \href{https://doi.org/10.1002/j.1538-7305.1958.tb03874.x}{doi:10.1002/j.1538-7305.1958.tb03874.x}
+    \item Brockwell, P. J., \& Davis, R. A. (1991). \textit{Time Series: Theory and Methods} (2nd ed.). Springer. \href{https://doi.org/10.1007/978-1-4419-0320-4}{doi:10.1007/978-1-4419-0320-4}
+    \item Cooley, J. W., \& Tukey, J. W. (1965). An algorithm for the machine calculation of complex Fourier series. \textit{Mathematics of Computation}, 19(90), 297--301. \href{https://doi.org/10.1090/S0025-5718-1965-0178586-1}{doi:10.1090/S0025-5718-1965-0178586-1}
+    \item Fisher, R. A. (1929). Tests of significance in harmonic analysis. \textit{Proceedings of the Royal Society of London, Series A}, 125(796), 54--59. \href{https://doi.org/10.1098/rspa.1929.0151}{doi:10.1098/rspa.1929.0151}
+    \item Geweke, J., \& Porter-Hudak, S. (1983). The estimation and application of long memory time series models. \textit{Journal of Time Series Analysis}, 4(4), 221--238. \href{https://doi.org/10.1111/j.1467-9892.1983.tb00371.x}{doi:10.1111/j.1467-9892.1983.tb00371.x}
+    \item Granger, C. W. J. (1966). The typical spectral shape of an economic variable. \textit{Econometrica}, 34(1), 150--161. \href{https://doi.org/10.2307/1909859}{doi:10.2307/1909859}
+    \item Hamilton, J. D. (1994). \textit{Time Series Analysis}. Princeton University Press. \href{https://doi.org/10.1515/9780691218632}{doi:10.1515/9780691218632}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Bibliografie (2/2)}
+\itemsize{\tiny}
+\begin{itemize}
+    \item Hamilton, J. D. (2018). Why you should never use the Hodrick--Prescott filter. \textit{Review of Economics and Statistics}, 100(5), 831--843. \href{https://doi.org/10.1162/rest_a_00706}{doi:10.1162/rest\_a\_00706}
+    \item Hodrick, R. J., \& Prescott, E. C. (1997). Postwar U.S. business cycles: An empirical investigation. \textit{Journal of Money, Credit and Banking}, 29(1), 1--16. \href{https://doi.org/10.2307/2953682}{doi:10.2307/2953682}
+    \item Huang, C., \& Petukhina, A. (2022). \textit{Applied Time Series Analysis and Forecasting with Python}. Springer. \href{https://doi.org/10.1007/978-3-031-13584-2}{doi:10.1007/978-3-031-13584-2}
+    \item Schuster, A. (1898). On the investigation of hidden periodicities with application to a supposed 26 day period of meteorological phenomena. \textit{Terrestrial Magnetism}, 3(1), 13--41. \href{https://doi.org/10.1029/TM003i001p00013}{doi:10.1029/TM003i001p00013}
+    \item Shumway, R. H., \& Stoffer, D. S. (2017). \textit{Time Series Analysis and Its Applications: With R Examples} (4th ed.). Springer. \href{https://doi.org/10.1007/978-3-319-52452-8}{doi:10.1007/978-3-319-52452-8}
+    \item Torrence, C., \& Compo, G. P. (1998). A practical guide to wavelet analysis. \textit{Bulletin of the American Meteorological Society}, 79(1), 61--78. \href{https://doi.org/10.1175/1520-0477(1998)079<0061:APGTWA>2.0.CO;2}{doi:10.1175/1520-0477(1998)079<0061:APGTWA>2.0.CO;2}
+    \item Welch, P. D. (1967). The use of fast Fourier transform for the estimation of power spectra: A method based on time averaging over short, modified periodograms. \textit{IEEE Transactions on Audio and Electroacoustics}, 15(2), 70--73. \href{https://doi.org/10.1109/TAU.1967.1161901}{doi:10.1109/TAU.1967.1161901}
+    \item Yule, G. U. (1927). On a method of investigating periodicities in disturbed series, with special reference to Wolfer's sunspot numbers. \textit{Philosophical Transactions of the Royal Society of London, Series A}, 226, 267--298. \href{https://doi.org/10.1098/rsta.1927.0007}{doi:10.1098/rsta.1927.0007}
+\end{itemize}
+\end{frame}
+
+\end{document}
