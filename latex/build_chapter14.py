@@ -256,7 +256,7 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 # =============================================================================
 # 1. DE CE VOLATILITATE MULTIVARIATĂ
 # =============================================================================
-D.section('Why multivariate volatility', 'De ce volatilitate multivariată')
+D.section('Why multivariate volatility', 'Rolul volatilității multivariate')
 
 D.frame(T('Three questions that need covariances', 'Trei întrebări care cer covarianțe'), items(
     (T('\\textbf{Portfolio risk}: the variance of a portfolio with weights $\\mathbf{w}$ is $\\sigma_p^2 = \\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$ \\refMark',

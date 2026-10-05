@@ -311,7 +311,7 @@ D.frame('⟦Seminars||Seminarii⟧', items(
     ('⟦\\textbf{Two kinds of exercises}||\\textbf{Două tipuri de exerciții}⟧',
      ['⟦\\textbf{[Solved]}: full solution in the slides and in the notebook, a model to follow||\\textbf{[Rezolvat]}: rezolvarea completă în slide-uri și în notebook, un model de urmat⟧',
       '⟦\\textbf{[Proposed]}: you solve it; the solution is discussed in class||\\textbf{[Propus]}: îl rezolvați dumneavoastră; rezolvarea se discută la seminar⟧']),
-    '⟦\\textbf{Nothing is handed in}: the seminar is practice for the exam and for the project||\\textbf{Nu se predă nimic}: seminarul are rol de exercițiu pentru examen și pentru proiect⟧'))
+    '⟦\\textbf{Nothing is handed in}: the seminar is practice for the exam and for the project||\\textbf{Seminarul nu se notează}: are rol de exercițiu pentru examen și pentru proiect⟧'))
 
 D.frame('⟦The Team Project||Proiectul de echipă⟧', items(
     '⟦\\textbf{Question}: one forecasting or modelling question on real time series, chosen by the team||\\textbf{Întrebarea}: o întrebare de prognoză sau de modelare pe serii de timp reale, aleasă de echipă⟧',
@@ -340,7 +340,7 @@ D.recap(('Organisation', 'organizarea cursului'), [
     '⟦Grade: 70\\% written exam, 20\\% team project, 10\\% attendance||Nota: 70\\% examen scris, 20\\% proiect de echipă, 10\\% prezență⟧',
     '⟦Textbook: \\refHP; free companion: \\refFPP||Manual: \\refHP; manual însoțitor gratuit: \\refFPP⟧',
     '⟦Chapters 0--15; Chapters 11--14 are self-study||Capitolele 0--15; Capitolele 11--14 sînt de studiu individual⟧',
-    '⟦Seminars come before lectures; nothing is handed in||Seminariile preced cursurile; nu se predă nimic⟧',
+    '⟦Seminars come before lectures; nothing is handed in||Seminariile preced cursurile și nu se notează⟧',
     '⟦AI is allowed, declared in \\texttt{AI\\_USE.md}, and checked at the oral defence||AI este permis, declarat în \\texttt{AI\\_USE.md} și verificat la susținerea orală⟧'])
 
 # ===============================================================================================================
@@ -369,7 +369,7 @@ D.frame('⟦Three Kinds of Data||Trei tipuri de date⟧', table(
       '⟦the classical formulas for independent samples (standard errors, tests) must be adapted||formulele clasice pentru eșantioane independente (erori standard, teste) trebuie adaptate⟧']),
     '⟦EU: European Union||UE: Uniunea Europeană⟧'), size='footnotesize')
 
-D.frame('⟦Why Time Series Matter||De ce contează seriile de timp⟧', table(
+D.frame('⟦Why Time Series Matter||Importanța seriilor de timp⟧', table(
     '>{\\raggedright\\arraybackslash}p{1.9cm}>{\\raggedright\\arraybackslash}p{4.3cm}>{\\raggedright\\arraybackslash}p{6.2cm}',
     '\\textbf{⟦Field||Domeniu⟧} & \\textbf{⟦Series||Serie⟧} & \\textbf{⟦Typical question||Întrebare tipică⟧}',
     ['⟦Economics||Economie⟧ & ⟦GDP, inflation, unemployment||PIB, inflație, șomaj⟧ & ⟦Where will inflation be in a year?||Unde va fi inflația peste un an?⟧',

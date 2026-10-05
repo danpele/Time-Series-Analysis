@@ -365,7 +365,7 @@ D.recap(('Bubbles in history', 'bule în istorie'), [
 # =============================================================================
 D.section('Rational bubbles and explosive roots', 'Bule raționale și rădăcini explozive')
 
-D.frame(T('Why a rational bubble must explode', 'De ce o bulă rațională trebuie să explodeze'), items(
+D.frame(T('Why a rational bubble must explode', 'Bula rațională și explozia ei inevitabilă'), items(
     (T('No-arbitrage pricing: $P_t = \\dfrac{E_t[P_{t+1} + D_{t+1}]}{1+r}$; the fundamental value $F_t$ is one solution', 'Evaluarea fără arbitraj: $P_t = \\dfrac{E_t[P_{t+1} + D_{t+1}]}{1+r}$; valoarea fundamentală $F_t$ este o soluție'),
      [T('every $P_t = F_t + B_t$ with $E_t[B_{t+1}] = (1+r)\\,B_t$ is also a solution', 'orice $P_t = F_t + B_t$ cu $E_t[B_{t+1}] = (1+r)\\,B_t$ este tot o soluție')]),
     (T('The bubble must grow, in expectation, at the rate $r$: $E_t[B_{t+k}] = (1+r)^k B_t$', 'Bula trebuie să crească, în medie, cu rata $r$: $E_t[B_{t+k}] = (1+r)^k B_t$'),

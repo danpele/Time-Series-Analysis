@@ -725,7 +725,7 @@ D.frame(T('Residual diagnostics', 'Diagnosticarea reziduurilor'), items(
      [T('$S$ = skewness, $K$ = kurtosis; non-Normal residuals do not bias $\\hat\\phi$, but they make Normal intervals wrong', '$S$ = asimetria, $K$ = boltirea; reziduurile ne-normale nu deplasează $\\hat\\phi$, dar fac greșite intervalele construite cu distribuția Normală')]),
     T('\\textbf{Squared residuals}: Ljung--Box on $\\hat\\varepsilon_t^2$ detects volatility clustering (Chapter 5)', '\\textbf{Pătratele reziduurilor}: testul Ljung--Box pentru $\\hat\\varepsilon_t^2$ detectează volatility clustering (Capitolul 5)')))
 
-chart(T('Why $m - p - q$ degrees of freedom', 'De ce $m - p - q$ grade de libertate'), 'tsa_ch2_lb_df', 'TSA_ch2_selection', [
+chart(T('Why $m - p - q$ degrees of freedom', 'Justificarea celor $m - p - q$ grade de libertate'), 'tsa_ch2_lb_df', 'TSA_ch2_selection', [
     T('Ljung--Box at 5\\% on the residuals of the \\textbf{true} model; @{lbdf.nrep} samples of AR(1), half as many of ARMA(1,1)', 'Testul Ljung--Box la 5\\% pentru reziduurile modelului \\textbf{adevărat}; @{lbdf.nrep} de eșantioane AR(1), jumătate pentru ARMA(1,1)')],
     h='0.72\\textheight')
 

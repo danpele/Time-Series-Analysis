@@ -437,7 +437,7 @@ interp(('the cross-correlations', 'corelațiilor încrucișate'), [
     (T('ROBOR with inflation: the largest correlation, @{cc.ipmax}, is at $k = @{cc.k}$ quarters (inflation leads)', 'ROBOR cu inflația: cea mai mare corelație, @{cc.ipmax}, apare la $k = @{cc.k}$ trimestre (inflația precedă)'),
      [T('but every value is large (@{cc.ipm4} at $k = -4$, @{cc.ip4} at $k = 4$): two persistent series; the CCF alone cannot separate lead from persistence', 'dar toate valorile sînt mari (@{cc.ipm4} la $k = -4$, @{cc.ip4} la $k = 4$): două serii persistente; CCF singură nu poate separa precedența de persistență')])])
 
-D.frame(T('Why one model for all series', 'De ce un singur model pentru toate seriile'), items(
+D.frame(T('Why one model for all series', 'Avantajul unui singur model pentru toate seriile'), items(
     (T('Univariate models (Chapters 2--3) forecast each series from its own past', 'Modelele univariate (Capitolele 2--3) prognozează fiecare serie din propriul trecut'),
      [T('they ignore that last quarter\'s inflation may help to forecast this quarter\'s interest rate', 'ele ignoră faptul că inflația din trimestrul trecut poate ajuta la prognoza dobînzii din acest trimestru')]),
     (T('\\textbf{Feedback}: the central bank reacts to inflation, inflation reacts to the interest rate', '\\textbf{Feedback}: banca centrală reacționează la inflație, inflația reacționează la dobîndă'),

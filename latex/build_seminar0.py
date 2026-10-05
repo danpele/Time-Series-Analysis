@@ -109,7 +109,7 @@ D.frame('⟦Today\'s Questions and Route||Întrebările de azi și traseul⟧', 
       '⟦how good is the simplest possible forecast?||cît de bună este cea mai simplă prognoză posibilă?⟧']),
     ('⟦\\textbf{Part I}: setup, calculations on paper (A1--A3), the same ideas on real data (B1, B2)||\\textbf{Partea I}: pregătirea mediului de lucru, calcule pe hîrtie (A1--A3), aceleași idei pe date reale (B1, B2)⟧', []),
     ('⟦\\textbf{Part II}: your turn (A4, B3, B4), a project idea (C1) and the critique of an AI answer (C2)||\\textbf{Partea a II-a}: rîndul dumneavoastră (A4, B3, B4), o idee de proiect (C1) și critica unui răspuns generat de AI (C2)⟧', []),
-    f'⟦Open the {NB_EN} in Google Colab; nothing is handed in||Deschideți {NB_RO} în Google Colab; nu se predă nimic⟧')))
+    f'⟦Open the {NB_EN} in Google Colab; nothing is handed in||Deschideți {NB_RO} în Google Colab; seminarul nu se notează⟧')))
 
 MAP = [
     'A1 & ⟦growth rates of a quarterly series||rate de creștere ale unei serii trimestriale⟧ & ⟦Solved||Rezolvat⟧ & --',
