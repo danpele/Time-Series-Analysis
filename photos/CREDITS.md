@@ -28,3 +28,16 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch1_bvb_2024.jpg | https://commons.wikimedia.org/wiki/File:Bursa_de_Valori_București.jpg | Corina Chitu (2024), CC BY-SA 4.0 |
 | ch1_bnr_2018.jpg | https://commons.wikimedia.org/wiki/File:National_Bank_of_Romania_(old_building),_Bucharest_by_nickispeaki_01.jpg | Nickispeaki (2018), CC BY-SA 4.0 |
 | ch1_nilometer_cairo.jpg | https://commons.wikimedia.org/wiki/File:Kairo_Nilometer_BW_1.jpg | Berthold Werner (2010), CC BY-SA 3.0 |
+
+## Chapter 0 — Introduction
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch0_ase_2014.jpg | https://commons.wikimedia.org/wiki/File:Bucharest_-_Academie_de_Studii_Economice_01.jpg | Joe Mabel, CC BY 3.0 |
+| ch0_wolf.jpg | https://commons.wikimedia.org/wiki/File:ETH-BIB-Wolf,_Johann_Rudolf_(1816-1893)-Portrait-Portr_12033-RE.tif_(cropped).jpg | Emil Gassler, public domain, ETH-Bibliothek |
+| ch0_sunspots_1859.jpg | https://commons.wikimedia.org/wiki/File:Carrington_Richard_drawing_of_1859_sunspots.jpeg | Richard Carrington, public domain |
+| ch0_slutsky.jpg | https://commons.wikimedia.org/wiki/File:Слуцький_Євген.jpg | unknown author, public domain |
+| ch0_kolmogorov.jpg | https://commons.wikimedia.org/wiki/File:Andrej_Nikolajewitsch_Kolmogorov.jpg | Konrad Jacobs, CC BY-SA 2.0 de |
+| ch0_wiener.jpg | https://commons.wikimedia.org/wiki/File:Norbert_wiener.jpg | Konrad Jacobs, CC BY-SA 2.0 de |
+| ch0_box.jpg | https://commons.wikimedia.org/wiki/File:GeorgeEPBox_(cropped).jpg | DavidMCEddy, CC BY-SA 3.0 |
+| ch0_keeling_2001.jpg | https://commons.wikimedia.org/wiki/File:Charles_David_Keeling_2001.jpg | NSF, public domain |

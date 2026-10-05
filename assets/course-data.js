@@ -267,14 +267,14 @@
                 id: 'intro', num: 0,
                 title: { en: 'Introduction: components and exponential smoothing', ro: 'Introducere: componente și netezire exponențială' },
                 topics: {
-                    en: ['Time series and their components: trend, seasonality, cycle and noise; additive and multiplicative decomposition, STL', 'Exponential smoothing: simple, Holt, Holt–Winters and the ETS framework', 'Forecast evaluation: training and test sets, MAE, RMSE, MAPE, MASE, rolling-origin validation; course organisation, assessment and tools'],
-                    ro: ['Seria de timp și componentele ei: trend, sezonalitate, ciclu și componenta neregulată; descompunerea aditivă și multiplicativă, STL', 'Netezirea exponențială: simplă, Holt, Holt–Winters și cadrul ETS', 'Evaluarea prognozei: setul de antrenare și setul de test, MAE, RMSE, MAPE, MASE, validarea cu origine mobilă; organizarea cursului, evaluarea și instrumentele']
+                    en: ['Course organisation, assessment and tools; time series on real data (Romanian GDP, inflation, EUR/RON, BET, electricity, CO2); a short history from Yule and Slutsky to Box–Jenkins', 'Components (trend, seasonality, cycle, remainder), additive and multiplicative decomposition, moving averages, STL; growth rates and a first look at the ACF', 'Exponential smoothing (SES, Holt, Holt–Winters, ETS) and forecast evaluation: benchmarks, training and test sets, MAE, RMSE, MAPE, MASE, the M4 competition'],
+                    ro: ['Organizarea cursului, evaluarea și instrumentele; serii de timp pe date reale (PIB, inflație, EUR/RON, BET, electricitate, CO2); o scurtă istorie, de la Yule și Slutsky la Box–Jenkins', 'Componente (trend, sezonalitate, ciclu, componenta neregulată), descompunere aditivă și multiplicativă, medii mobile, STL; rate de creștere și o primă privire asupra ACF', 'Netezirea exponențială (SES, Holt, Holt–Winters, ETS) și evaluarea prognozei: metode de referință, set de antrenare și set de test, MAE, RMSE, MAPE, MASE, competiția M4']
                 },
                 links: {
                     en: [pdf('slides', 'EN/Courses/chapter0_introduction.pdf'), pdf('seminar', 'EN/Seminars/seminar0_introduction.pdf'),
-                         OLD.nbL('chapter0'), OLD.nbS('chapter0'), ql('Quantlets/TSA_ch0')],
+                         nb('notebooks/EN/chapter0_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter0_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_00')],
                     ro: [pdf('slides', 'RO/Cursuri/capitol0_introducere.pdf'), pdf('seminar', 'RO/Seminarii/seminar0_introducere_ro.pdf'),
-                         OLD.nbL('chapter0'), OLD.nbS('chapter0'), ql('Quantlets/TSA_ch0')]
+                         nb('notebooks/EN/chapter0_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter0_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_00')]
                 },
                 quantinar: q('tsaPython')
             },

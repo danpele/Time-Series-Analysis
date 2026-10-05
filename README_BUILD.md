@@ -14,7 +14,7 @@ How the materials of *Serii de timp / Time Series Analysis* (bachelor, year 3, s
 | `latex/preamble.tex` | Shared Beamer preamble. It defines the logos, `\quantlet`, `\tsaquantlet`, `\colaburl`, `\nb`, `\itemsize`, `\imgcredit`, `\imgcap`, `\ifsolutions`/`\solonly`/`\propsub`, the appendix and chapter-link macros, and the vector macros of the older TSA decks. |
 | `latex/tsa_chapters.py` | Chapter registry (titles as in `assets/course-data.js`) and the file-naming scheme. |
 | `latex/tsa_build.py` | Common generator framework: `⟦EN‖RO⟧` text, `@{key}` numbers, the `Deck` class, legacy conversion, compilation. |
-| `latex/build_chapterN.py`, `latex/build_seminarN.py` | One generator per deck. `build_chapter0.py` currently converts the 2025/2026 chapter 0 decks. |
+| `latex/build_chapterN.py`, `latex/build_seminarN.py` | One bilingual generator per deck (⟦EN‖RO⟧), as in SFM. |
 | `latex/acronyms.py`, `_acr_scan.py`, `acronyms_extra/chN.py` | Acronym glossary, inserted after the title page. |
 | `latex/appendix_links.py` | Appendix buttons and back-buttons; "Chapter N" mentions become links to the PDF on the site. |
 | `data/market/*.csv`, `data/manifest.csv` | Daily market data from EODHD, saved once (91 series, copied from SFM/MFM, ending 18.09.2026). |
@@ -88,7 +88,7 @@ Before publishing, update the chapter's links in `assets/course-data.js` (slides
 python3 latex/tsa_build.py convert <old.tex> N en|ro [lecture|seminar]
 ```
 
-The converter keeps everything after `\begin{document}`. It replaces the old `\input{preamble}` header with the shared preamble and the standard title, and writes the deck under its new name. Chapter 0 is built this way by `latex/build_chapter0.py`, which also applies small text and spacing replacements (0 errors and 0 overfull vbox in all six PDFs).
+The converter keeps everything after `\begin{document}`. It replaces the old `\input{preamble}` header with the shared preamble and the standard title, and writes the deck under its new name. Rebuilt chapters do not use the converter: they have their own generators (`build_chapterN.py`, `build_seminarN.py`).
 
 ## Writing a generator
 
@@ -124,5 +124,5 @@ The converter keeps everything after `\begin{document}`. It replaces the old `\i
 ## Chapter 0 (pipeline check)
 
 ```bash
-python3 latex/build_chapter0.py && python3 latex/tsa_build.py compile 0
+python3 latex/build_chapter0.py && python3 latex/build_seminar0.py && python3 latex/tsa_build.py compile 0
 ```
