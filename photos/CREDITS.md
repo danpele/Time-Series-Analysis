@@ -97,3 +97,11 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch7_granger_building_2012.jpg | https://commons.wikimedia.org/wiki/File:University_Park_MMB_«24_Sir_Clive_Granger_Building.jpg | mattbuck (2012), CC BY-SA 3.0 |
 | ch7_copenhagen_university_2011.jpg | https://commons.wikimedia.org/wiki/File:Copenhagen_University_Main_Entrance_DSC09700.jpg | Per Meistrup (2011), CC BY-SA 4.0 |
 | ch7_bnr_palace_2015.jpg | https://commons.wikimedia.org/wiki/File:Bucharest_-_BNR_Palace_(19644434340).jpg | Ștefan Jurcă (2015), CC BY 2.0 |
+
+## Chapter 8 — Long memory and ARFIMA
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch8_hurst_1953.jpg | https://commons.wikimedia.org/wiki/File:Harold_Edwin_Hurst_in_1953.jpg | Elliott & Fry (1953), public domain |
+| ch8_mandelbrot_2006.jpg | https://commons.wikimedia.org/wiki/File:Mandelbrot_p1130876.jpg | David Monniaux (2006), CC BY-SA 3.0 |
+| ch8_aswan_low_dam.jpg | https://commons.wikimedia.org/wiki/File:Aswan_Low_Dam_Egypt_1.jpg | Karelj (2010), public domain |

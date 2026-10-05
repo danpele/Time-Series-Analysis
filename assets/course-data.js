@@ -387,11 +387,15 @@
                 id: 'long-memory', num: 8,
                 title: { en: 'Long memory and ARFIMA', ro: 'Memorie lungă și ARFIMA' },
                 topics: {
-                    en: ['Long memory: hyperbolic decay of the ACF, the Hurst exponent', 'Estimating H: R/S analysis, DFA and the GPH estimator', 'Fractional differencing and ARFIMA(p,d,q) models; spurious long memory caused by structural breaks'],
-                    ro: ['Memoria lungă: descreșterea hiperbolică a ACF, exponentul Hurst', 'Estimarea lui H: analiza R/S, DFA și estimatorul GPH', 'Diferențierea fracționară și modelele ARFIMA(p,d,q); memoria lungă aparentă, cauzată de rupturi structurale']
+                    en: ['Short and long memory: exponential and hyperbolic ACF decay, the spectral pole at zero, the Hurst exponent; the Nile, Romanian and US inflation, US unemployment', 'Fractional differencing (1−L)^d and ARFIMA(p,d,q): ranges of d (stationarity, invertibility, mean reversion), fBm and fGn; estimation by R/S, DFA, GPH, local Whittle and maximum likelihood; ARFIMA forecasts against AR', 'Long memory in volatility (|r|, realised volatility, FIGARCH, HAR) for the S&P 500, BET and EUR/RON; spurious long memory from breaks and regime shifts'],
+                    ro: ['Memorie scurtă și memorie lungă: descreșterea exponențială și hiperbolică a ACF, polul spectral la zero, exponentul Hurst; Nilul, inflația din România și din SUA, șomajul din SUA', 'Diferențierea fracționară (1−L)^d și modelele ARFIMA(p,d,q): intervalele lui d (staționaritate, invertibilitate, revenire la medie), fBm și fGn; estimarea prin R/S, DFA, GPH, Whittle local și verosimilitate maximă; prognoze ARFIMA comparate cu AR', 'Memoria lungă a volatilității (|r|, volatilitate realizată, FIGARCH, HAR) pentru S&P 500, BET și EUR/RON; memoria lungă aparentă, produsă de rupturi și schimbări de regim']
                 },
-                links: old('chapter8_modern_extensions', 'chapter8_seminar', 'chapter8', 'Quantlets/TSA_ch8',
-                    { label: { en: 'Slides: long memory and machine learning', ro: 'Slide-uri: memorie lungă și învățare automată' } }),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter8_long_memory_arfima.pdf'), pdf('seminar', 'EN/Seminars/seminar8_long_memory_arfima.pdf'),
+                         nb('notebooks/EN/chapter8_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter8_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_08')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol8_memorie_lunga_arfima.pdf'), pdf('seminar', 'RO/Seminarii/seminar8_memorie_lunga_arfima_ro.pdf'),
+                         nb('notebooks/EN/chapter8_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter8_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_08')]
+                },
                 quantinar: q('cryptoEfficiency')
             },
             {
