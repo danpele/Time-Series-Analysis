@@ -12,11 +12,11 @@
 // ============================================================
 window.TSA_CONFIG = {
     GOOGLE_CLIENT_ID: '1095360272769-rhjjncfor0gumhev6a0l6tnnrnmdrnna.apps.googleusercontent.com',
-    // TODO: deploy the TSA Apps Scripts (quiz scores, attendance) and paste their URLs here
-    ATTENDANCE_FORM_URL: 'YOUR_ATTENDANCE_FORM_URL',
-    ATTENDANCE_QR_URL: 'YOUR_ATTENDANCE_QR_URL',
+    // Apps Script projects "TSA Quiz Scores 2026-2027" and "TSA Prezenta 2026-2027" (Drive: TSA 2026-2027 - Prezență și quiz)
+    ATTENDANCE_FORM_URL: 'https://forms.gle/114MpQMCwrM8mbxU8',
+    ATTENDANCE_QR_URL: 'https://script.google.com/a/macros/ase.ro/s/AKfycby9J0gXXdHFeOet34ME52-n4nTVQDCXblU4yBdMPJI9PUjlRFoxeFBnyXaXTlePQDIWEw/exec',
     // The QR links appear on the site only after one of these accounts signs in with Google
     // TODO: replace the placeholder with the seminar instructor's ASE address
     INSTRUCTORS: ['danpele@ase.ro', 'YOUR_SEMINAR_INSTRUCTOR_EMAIL'],
-    QUIZ_SCORES_URL: 'YOUR_QUIZ_SCORES_URL'
+    QUIZ_SCORES_URL: 'https://script.google.com/macros/s/AKfycbw3pTvDTI_2jjj7OJ-gejwOGkIEzogX39AP45I_N3jn5tVx6BJeUTpsZ2d2VZ_WL1IjAw/exec'
 };
