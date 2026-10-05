@@ -1000,7 +1000,8 @@ solution(8, [
 D.recap(('The exam', 'examenul'), [
     T('Written, 2 hours, five subjects, 70\\% of the grade; Chapters 0--10', 'Scris, 2 ore, cinci subiecte, 70\\% din notă; Capitolele 0--10'),
     T('Points for the method, the result with its unit and sign, and the interpretation', 'Punctajul se acordă pentru metodă, pentru rezultat (cu unitate și semn) și pentru interpretare'),
-    T('Practise with Part A of every seminar and with Seminar 15', 'Exersați cu Partea A a fiecărui seminar și cu Seminarul 15')])
+    T('Practise with Part A of every seminar, with Seminar 15 and with the \\href{' + SITE + 'exam/practice/exam_problems_en.pdf}{practice set} (25 problems with numerical answers)',
+      'Exersați cu Partea A a fiecărui seminar, cu Seminarul 15 și cu \\href{' + SITE + 'exam/practice/probleme_examen_ro.pdf}{setul de probleme de exercițiu} (25 de probleme cu rezultatele numerice)')])
 
 # =============================================================================
 # 9. PROIECTUL DE ECHIPĂ ȘI PREZENȚA

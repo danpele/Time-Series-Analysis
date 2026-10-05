@@ -538,6 +538,8 @@ D.frame(T('After the seminar', 'După seminar'), items(
       'Cursul 15 adună întreaga materie: harta cursului, cîte un slide de recapitulare pentru fiecare capitol, trusa de instrumente, Box--Jenkins pe inflația din România, opt probleme de tip examen rezolvate, proiectul'),
     T('Try the [Proposed] tasks on paper first, then check them in the notebook', 'Încercați cerințele [Propus] întîi pe hîrtie, apoi verificați-le în notebook'),
     T('C1 can grow into a team project', 'C1 poate deveni un proiect de echipă'),
+    T('More practice: the \\href{https://danpele.github.io/Time-Series-Analysis/exam/practice/exam_problems_en.pdf}{practice set} of 25 exam problems with numerical answers',
+      'Exerciții suplimentare: \\href{https://danpele.github.io/Time-Series-Analysis/exam/practice/probleme_examen_ro.pdf}{setul de probleme de exercițiu}, 25 de probleme de examen cu rezultatele numerice'),
     T('Reading: \\refHP; \\refFPP; \\refBJ', 'Lectură: \\refHP; \\refFPP; \\refBJ'),
     CLOSE))
 
