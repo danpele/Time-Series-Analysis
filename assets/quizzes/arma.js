@@ -1,7 +1,6 @@
 // ============================================================
 // Chapter 2 quiz bank: ARMA models (EN + RO)
-// 21 questions ported from the 2025/2026 site; 20 drawn per attempt.
-// The bank grows to 24 questions when the chapter is rebuilt.
+// 24 questions, 20 drawn per attempt.
 // correct = index (0-3) of the right option in the original order.
 // incorrectExplanation must not name a letter: the engine prepends
 // "The correct answer is X) ..." after shuffling the options.
@@ -10,570 +9,651 @@ window.TSA_DATA.quizzes['arma'] = {
     "draw": 20,
     "questions": [
         {
-            "correct": 2,
+            "correct": 0,
             "en": {
                 "title": "AR(1) stationarity",
                 "text": "For which value of $\\phi$ is the AR(1) process $X_t = c + \\phi X_{t-1} + \\varepsilon_t$ stationary?",
                 "options": [
+                    "$\\phi = -0.8$",
                     "$\\phi = 1.2$",
                     "$\\phi = 1.0$",
-                    "$\\phi = -0.8$",
                     "$\\phi = -1.5$"
                 ],
-                "correctExplanation": "AR(1) is stationary if and only if $|\\phi| < 1$. Only $|-0.8| = 0.8 < 1$.",
-                "incorrectExplanation": "The condition is on the modulus, so a negative $\\phi$ is fine as long as $|\\phi|<1$. $\\phi = 1$ is a unit root (random walk), and $|\\phi| > 1$ gives an explosive process, whatever the sign."
+                "correctExplanation": "AR(1) is stationary if and only if $|\\phi| < 1$; only $|-0.8| = 0.8 < 1$.",
+                "incorrectExplanation": "The condition is on the modulus, so a negative $\\phi$ is fine as long as $|\\phi| < 1$. $\\phi = 1$ is a unit root (random walk), and $|\\phi| > 1$ gives an explosive process, whatever the sign."
             },
             "ro": {
                 "title": "Staționaritatea AR(1)",
                 "text": "Pentru ce valoare a lui $\\phi$ este staționar procesul AR(1) $X_t = c + \\phi X_{t-1} + \\varepsilon_t$?",
                 "options": [
+                    "$\\phi = -0{,}8$",
                     "$\\phi = 1{,}2$",
                     "$\\phi = 1{,}0$",
-                    "$\\phi = -0{,}8$",
                     "$\\phi = -1{,}5$"
                 ],
-                "correctExplanation": "AR(1) este staționar dacă și numai dacă $|\\phi| < 1$. Doar $|-0{,}8| = 0{,}8 < 1$.",
-                "incorrectExplanation": "Condiția privește modulul, deci un $\\phi$ negativ este acceptabil atîta timp cît $|\\phi|<1$. $\\phi = 1$ înseamnă rădăcină unitară (mers aleator), iar $|\\phi| > 1$ dă un proces exploziv, indiferent de semn."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Recognising ACF and PACF patterns",
-                "text": "The ACF has a single significant spike at lag 1 and then cuts off, while the PACF decays gradually. Which model is suggested?",
-                "options": [
-                    "AR(1)",
-                    "MA(1)",
-                    "ARMA(1,1)",
-                    "White noise"
-                ],
-                "correctExplanation": "An ACF that cuts off after lag 1 indicates an MA(1); the gradually decaying PACF confirms it.",
-                "incorrectExplanation": "For an AR(1) the pattern is reversed (ACF decays, PACF cuts off after lag 1); for an ARMA(1,1) both decay; white noise has no significant spikes at all."
-            },
-            "ro": {
-                "title": "Recunoașterea tiparelor ACF și PACF",
-                "text": "ACF-ul are un singur vîrf semnificativ la lag-ul 1 și apoi se anulează, iar PACF-ul scade treptat. Ce model este sugerat?",
-                "options": [
-                    "AR(1)",
-                    "MA(1)",
-                    "ARMA(1,1)",
-                    "Zgomot alb"
-                ],
-                "correctExplanation": "Un ACF care se anulează după lag-ul 1 indică un MA(1); PACF-ul care scade treptat confirmă acest lucru.",
-                "incorrectExplanation": "Pentru un AR(1) tiparul este inversat (ACF scade treptat, PACF se anulează după lag-ul 1); pentru un ARMA(1,1) ambele scad treptat; zgomotul alb nu are niciun vîrf semnificativ."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "MA(1) invertibility",
-                "text": "Is the MA(1) process $X_t = \\varepsilon_t + 1.5\\varepsilon_{t-1}$ invertible?",
-                "options": [
-                    "Yes, MA processes are always invertible",
-                    "Yes, because $\\theta = 1.5 > 0$",
-                    "No, because $|\\theta| = 1.5 > 1$",
-                    "No, MA processes are never invertible"
-                ],
-                "correctExplanation": "Invertibility requires $|\\theta| < 1$. Here $|\\theta| = 1.5 > 1$, so the process is NOT invertible (although, like every finite MA, it is stationary).",
-                "incorrectExplanation": "MA processes are always STATIONARY, not always invertible; invertibility depends on $|\\theta|$, not on its sign. With $|\\theta|<1$ an MA process is invertible, so it is not true that MA processes are never invertible."
-            },
-            "ro": {
-                "title": "Invertibilitatea MA(1)",
-                "text": "Este invertibil procesul MA(1) $X_t = \\varepsilon_t + 1{,}5\\varepsilon_{t-1}$?",
-                "options": [
-                    "Da, procesele MA sînt întotdeauna invertibile",
-                    "Da, deoarece $\\theta = 1{,}5 > 0$",
-                    "Nu, deoarece $|\\theta| = 1{,}5 > 1$",
-                    "Nu, procesele MA nu sînt niciodată invertibile"
-                ],
-                "correctExplanation": "Invertibilitatea cere $|\\theta| < 1$. Aici $|\\theta| = 1{,}5 > 1$, deci procesul NU este invertibil (deși, ca orice MA finit, este staționar).",
-                "incorrectExplanation": "Procesele MA sînt întotdeauna STAȚIONARE, nu întotdeauna invertibile; invertibilitatea depinde de $|\\theta|$, nu de semnul lui. Pentru $|\\theta|<1$ un proces MA este invertibil, deci nu este adevărat că procesele MA nu sînt niciodată invertibile."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "ARMA representation",
-                "text": "Which model does the compact form $\\phi(L)X_t = \\theta(L)\\varepsilon_t$ represent, with $\\phi(L)$ of degree $p \\ge 1$ and $\\theta(L)$ of degree $q \\ge 1$?",
-                "options": [
-                    "A pure AR model",
-                    "A pure MA model",
-                    "An ARMA($p,q$) model",
-                    "An exponential smoothing model"
-                ],
-                "correctExplanation": "$\\phi(L)$ is the AR polynomial and $\\theta(L)$ the MA polynomial, so the equation describes an ARMA($p,q$) process.",
-                "incorrectExplanation": "A pure AR model has $\\theta(L) = 1$, a pure MA model has $\\phi(L) = 1$. Exponential smoothing corresponds to ARIMA models with a differencing factor $(1-L)$, which this form does not contain."
-            },
-            "ro": {
-                "title": "Reprezentarea ARMA",
-                "text": "Ce model reprezintă forma compactă $\\phi(L)X_t = \\theta(L)\\varepsilon_t$, cu $\\phi(L)$ de grad $p \\ge 1$ și $\\theta(L)$ de grad $q \\ge 1$?",
-                "options": [
-                    "Un model AR pur",
-                    "Un model MA pur",
-                    "Un model ARMA($p,q$)",
-                    "Un model de netezire exponențială"
-                ],
-                "correctExplanation": "$\\phi(L)$ este polinomul AR, iar $\\theta(L)$ este polinomul MA, deci ecuația descrie un proces ARMA($p,q$).",
-                "incorrectExplanation": "Un model AR pur are $\\theta(L) = 1$, iar un model MA pur are $\\phi(L) = 1$. Netezirea exponențială corespunde unor modele ARIMA cu factorul de diferențiere $(1-L)$, pe care această formă nu îl conține."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "The lag operator",
-                "text": "What is $(1-L)^2 X_t$?",
-                "options": [
-                    "$X_t - X_{t-1}$",
-                    "$X_t - 2X_{t-1} + X_{t-2}$",
-                    "$X_t + X_{t-1} + X_{t-2}$",
-                    "$X_t - X_{t-2}$"
-                ],
-                "correctExplanation": "$(1-L)^2 = 1 - 2L + L^2$, so $(1-L)^2 X_t = X_t - 2X_{t-1} + X_{t-2}$ (the second difference).",
-                "incorrectExplanation": "$X_t - X_{t-1}$ is only the first difference and $X_t - X_{t-2}$ is $(1-L^2)X_t$. Expanding the square gives the middle term $-2L$."
-            },
-            "ro": {
-                "title": "Operatorul lag",
-                "text": "Cît este $(1-L)^2 X_t$?",
-                "options": [
-                    "$X_t - X_{t-1}$",
-                    "$X_t - 2X_{t-1} + X_{t-2}$",
-                    "$X_t + X_{t-1} + X_{t-2}$",
-                    "$X_t - X_{t-2}$"
-                ],
-                "correctExplanation": "$(1-L)^2 = 1 - 2L + L^2$, deci $(1-L)^2 X_t = X_t - 2X_{t-1} + X_{t-2}$ (a doua diferență).",
-                "incorrectExplanation": "$X_t - X_{t-1}$ este doar prima diferență, iar $X_t - X_{t-2}$ este $(1-L^2)X_t$. Dezvoltarea pătratului dă termenul din mijloc $-2L$."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Information criteria",
-                "text": "ARMA(1,1) and ARMA(2,1) are compared using BIC. Which statement is correct?",
-                "options": [
-                    "A lower BIC always means better forecasts",
-                    "BIC penalises complexity less than AIC",
-                    "The model with the lower BIC is preferred",
-                    "BIC can only compare models with the same number of parameters"
-                ],
-                "correctExplanation": "BIC $= -2\\ln L + k\\ln T$: a lower value means a better trade-off between fit and complexity, so the model with the lower BIC is preferred.",
-                "incorrectExplanation": "BIC penalises each parameter by $\\ln T$, MORE than AIC's 2 as soon as $T \\ge 8$. Its purpose is precisely to compare models of different size, and a lower BIC does not guarantee better out-of-sample forecasts."
-            },
-            "ro": {
-                "title": "Criterii informaționale",
-                "text": "Modelele ARMA(1,1) și ARMA(2,1) sînt comparate cu ajutorul BIC. Care afirmație este corectă?",
-                "options": [
-                    "Un BIC mai mic înseamnă întotdeauna prognoze mai bune",
-                    "BIC penalizează complexitatea mai puțin decît AIC",
-                    "Este preferat modelul cu BIC mai mic",
-                    "BIC poate compara doar modele cu același număr de parametri"
-                ],
-                "correctExplanation": "BIC $= -2\\ln L + k\\ln T$: o valoare mai mică înseamnă un compromis mai bun între ajustare și complexitate, deci este preferat modelul cu BIC mai mic.",
-                "incorrectExplanation": "BIC penalizează fiecare parametru cu $\\ln T$, MAI MULT decît penalizarea 2 a AIC îndată ce $T \\ge 8$. Scopul său este tocmai compararea unor modele de dimensiuni diferite, iar un BIC mai mic nu garantează prognoze mai bune în afara eșantionului."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "The Ljung-Box test",
-                "text": "After fitting an ARMA model, the Ljung-Box test on the residuals gives a $p$-value of 0.03. What does this mean?",
-                "options": [
-                    "The model is adequate: the residuals are white noise",
-                    "The model is inadequate: the residuals are autocorrelated",
-                    "The sample size must be increased",
-                    "The test is inconclusive"
-                ],
-                "correctExplanation": "$p < 0.05$ rejects $H_0$ (no autocorrelation up to the chosen lag): autocorrelation remains in the residuals, so the model is inadequate at the 5% level.",
-                "incorrectExplanation": "White-noise residuals would give a large $p$-value. A small $p$-value is a clear rejection, not an inconclusive result, and it calls for re-specifying the model rather than collecting more data."
-            },
-            "ro": {
-                "title": "Testul Ljung-Box",
-                "text": "După estimarea unui model ARMA, testul Ljung-Box aplicat reziduurilor dă o $p$-valoare de 0,03. Ce înseamnă acest rezultat?",
-                "options": [
-                    "Modelul este adecvat: reziduurile sînt zgomot alb",
-                    "Modelul este inadecvat: reziduurile sînt autocorelate",
-                    "Trebuie mărită dimensiunea eșantionului",
-                    "Testul este neconcludent"
-                ],
-                "correctExplanation": "$p < 0{,}05$ respinge $H_0$ (absența autocorelației pînă la lag-ul ales): în reziduuri rămîne autocorelație, deci modelul este inadecvat la pragul de 5%.",
-                "incorrectExplanation": "Reziduurile de tip zgomot alb ar da o $p$-valoare mare. O $p$-valoare mică este o respingere clară, nu un rezultat neconcludent, și cere respecificarea modelului, nu colectarea mai multor date."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Long-horizon forecasts",
-                "text": "For a stationary AR(1) model, what happens to the forecasts as the horizon $h \\to \\infty$?",
-                "options": [
-                    "They grow without bound",
-                    "They oscillate forever",
-                    "They converge to the unconditional mean $\\mu$",
-                    "They become more accurate"
-                ],
-                "correctExplanation": "$\\hat{X}_{n+h|n} = \\mu + \\phi^h(X_n - \\mu) \\to \\mu$ as $h \\to \\infty$, since $|\\phi|<1$: mean reversion.",
-                "incorrectExplanation": "Since $\\phi^h \\to 0$, any oscillation (for $\\phi<0$) dies out and nothing explodes. Accuracy worsens with the horizon: the forecast error variance rises towards the unconditional variance."
-            },
-            "ro": {
-                "title": "Prognoze pe orizont lung",
-                "text": "Pentru un model AR(1) staționar, ce se întîmplă cu prognozele cînd orizontul $h \\to \\infty$?",
-                "options": [
-                    "Cresc nelimitat",
-                    "Oscilează la nesfîrșit",
-                    "Converg la media necondiționată $\\mu$",
-                    "Devin mai precise"
-                ],
-                "correctExplanation": "$\\hat{X}_{n+h|n} = \\mu + \\phi^h(X_n - \\mu) \\to \\mu$ cînd $h \\to \\infty$, deoarece $|\\phi|<1$: revenire la medie.",
-                "incorrectExplanation": "Cum $\\phi^h \\to 0$, orice oscilație (pentru $\\phi<0$) se stinge și nimic nu explodează. Precizia scade odată cu orizontul: varianța erorii de prognoză crește spre varianța necondiționată."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "AR(1) variance",
-                "text": "For the stationary AR(1) process $X_t = \\phi X_{t-1} + \\varepsilon_t$ ($|\\phi|<1$) with $\\text{Var}(\\varepsilon_t) = \\sigma^2$, what is $\\text{Var}(X_t)$?",
-                "options": [
-                    "$\\sigma^2$",
-                    "$\\sigma^2 / (1 - \\phi)$",
-                    "$\\sigma^2 / (1 - \\phi^2)$",
-                    "$\\sigma^2 (1 + \\phi^2)$"
-                ],
-                "correctExplanation": "Taking variances: $\\gamma(0) = \\phi^2 \\gamma(0) + \\sigma^2$, so $\\gamma(0) = \\sigma^2 / (1 - \\phi^2)$.",
-                "incorrectExplanation": "$\\sigma^2$ ignores the persistence; $1-\\phi$ appears in the MEAN $c/(1-\\phi)$, not in the variance; $\\sigma^2(1+\\phi^2)$ mimics the MA(1) variance $\\sigma^2(1+\\theta^2)$ and ignores all higher powers of $\\phi$."
-            },
-            "ro": {
-                "title": "Varianța AR(1)",
-                "text": "Pentru procesul AR(1) staționar $X_t = \\phi X_{t-1} + \\varepsilon_t$ ($|\\phi|<1$) cu $\\text{Var}(\\varepsilon_t) = \\sigma^2$, cît este $\\text{Var}(X_t)$?",
-                "options": [
-                    "$\\sigma^2$",
-                    "$\\sigma^2 / (1 - \\phi)$",
-                    "$\\sigma^2 / (1 - \\phi^2)$",
-                    "$\\sigma^2 (1 + \\phi^2)$"
-                ],
-                "correctExplanation": "Aplicînd varianța: $\\gamma(0) = \\phi^2 \\gamma(0) + \\sigma^2$, deci $\\gamma(0) = \\sigma^2 / (1 - \\phi^2)$.",
-                "incorrectExplanation": "$\\sigma^2$ ignoră persistența; $1-\\phi$ apare în MEDIE, $c/(1-\\phi)$, nu în varianță; $\\sigma^2(1+\\phi^2)$ imită varianța unui MA(1), $\\sigma^2(1+\\theta^2)$, și ignoră toate puterile mai mari ale lui $\\phi$."
+                "correctExplanation": "AR(1) este staționar dacă și numai dacă $|\\phi| < 1$; doar $|-0{,}8| = 0{,}8 < 1$.",
+                "incorrectExplanation": "Condiția privește modulul, deci un $\\phi$ negativ este acceptabil atîta timp cît $|\\phi| < 1$. $\\phi = 1$ înseamnă rădăcină unitară (mers aleator), iar $|\\phi| > 1$ dă un proces exploziv, indiferent de semn."
             }
         },
         {
             "correct": 3,
             "en": {
-                "title": "MA(1) autocorrelation",
-                "text": "For an MA(1) process $X_t = \\varepsilon_t + \\theta \\varepsilon_{t-1}$, what is $\\rho(2)$?",
-                "options": [
-                    "$\\theta / (1 + \\theta^2)$",
-                    "$\\theta^2 / (1 + \\theta^2)$",
-                    "$\\theta^2$",
-                    "0"
-                ],
-                "correctExplanation": "An MA($q$) has $\\rho(h) = 0$ for $h > q$. For an MA(1), $q = 1$, so $\\rho(2) = 0$.",
-                "incorrectExplanation": "$\\theta/(1+\\theta^2)$ is $\\rho(1)$, the only nonzero autocorrelation. $X_t$ and $X_{t-2}$ share no common shock, so their correlation is exactly zero; powers of $\\theta$ belong to AR-type decay."
-            },
-            "ro": {
-                "title": "Autocorelația MA(1)",
-                "text": "Pentru un proces MA(1) $X_t = \\varepsilon_t + \\theta \\varepsilon_{t-1}$, cît este $\\rho(2)$?",
-                "options": [
-                    "$\\theta / (1 + \\theta^2)$",
-                    "$\\theta^2 / (1 + \\theta^2)$",
-                    "$\\theta^2$",
-                    "0"
-                ],
-                "correctExplanation": "Un MA($q$) are $\\rho(h) = 0$ pentru $h > q$. Pentru MA(1), $q = 1$, deci $\\rho(2) = 0$.",
-                "incorrectExplanation": "$\\theta/(1+\\theta^2)$ este $\\rho(1)$, singura autocorelație nenulă. $X_t$ și $X_{t-2}$ nu au niciun șoc comun, deci corelația lor este exact zero; puterile lui $\\theta$ țin de scăderea de tip AR."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "AR(1) mean",
-                "text": "For the AR(1) process $X_t = c + \\phi X_{t-1} + \\varepsilon_t$ with $c = 2$ and $\\phi = 0.6$, what is $E[X_t]$?",
+                "title": "The mean of an AR(1)",
+                "text": "For $X_t = 2 + 0.6X_{t-1} + \\varepsilon_t$, what is $E[X_t]$?",
                 "options": [
                     "2",
+                    "1.2",
                     "3.33",
-                    "5",
-                    "0.8"
+                    "5"
                 ],
-                "correctExplanation": "$\\mu = c / (1 - \\phi) = 2 / (1 - 0.6) = 2 / 0.4 = 5$.",
-                "incorrectExplanation": "The constant $c$ is not the mean: taking expectations, $\\mu = c + \\phi\\mu$, so $\\mu = c/(1-\\phi)$. 3.33 results from dividing $c$ by $\\phi$ instead of $1-\\phi$, and 0.8 from multiplying $c$ by $1-\\phi$."
+                "correctExplanation": "Taking expectations with $E[X_t] = E[X_{t-1}] = \\mu$: $\\mu = 2 + 0.6\\mu$, so $\\mu = 2/0.4 = 5$.",
+                "incorrectExplanation": "The intercept 2 is not the mean; $1.2 = 2 \\times 0.6$ and $3.33 = 2/0.6$ use the wrong formula. The mean is $c/(1 - \\phi)$."
             },
             "ro": {
-                "title": "Media AR(1)",
-                "text": "Pentru procesul AR(1) $X_t = c + \\phi X_{t-1} + \\varepsilon_t$ cu $c = 2$ și $\\phi = 0{,}6$, cît este $E[X_t]$?",
+                "title": "Media unui AR(1)",
+                "text": "Pentru $X_t = 2 + 0{,}6X_{t-1} + \\varepsilon_t$, cît este $E[X_t]$?",
                 "options": [
                     "2",
+                    "1,2",
                     "3,33",
-                    "5",
-                    "0,8"
+                    "5"
                 ],
-                "correctExplanation": "$\\mu = c / (1 - \\phi) = 2 / (1 - 0{,}6) = 2 / 0{,}4 = 5$.",
-                "incorrectExplanation": "Termenul liber $c$ nu este media: aplicînd media, $\\mu = c + \\phi\\mu$, deci $\\mu = c/(1-\\phi)$. 3,33 rezultă din împărțirea lui $c$ la $\\phi$ în loc de $1-\\phi$, iar 0,8 din înmulțirea lui $c$ cu $1-\\phi$."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "AR(2) stationarity",
-                "text": "For the AR(2) process $X_t = \\phi_1 X_{t-1} + \\phi_2 X_{t-2} + \\varepsilon_t$, which conditions ensure stationarity?",
-                "options": [
-                    "$|\\phi_1| < 1$ and $|\\phi_2| < 1$",
-                    "$\\phi_1 + \\phi_2 < 1$, $\\phi_2 - \\phi_1 < 1$, $|\\phi_2| < 1$",
-                    "$\\phi_1^2 + \\phi_2^2 < 1$",
-                    "$|\\phi_1 + \\phi_2| < 1$"
-                ],
-                "correctExplanation": "The three inequalities $\\phi_1 + \\phi_2 < 1$, $\\phi_2 - \\phi_1 < 1$ and $|\\phi_2| < 1$ define the stationarity triangle, equivalent to both roots of $1 - \\phi_1 z - \\phi_2 z^2$ lying outside the unit circle.",
-                "incorrectExplanation": "Bounding each coefficient separately is neither necessary nor sufficient: $\\phi_1 = 1.2$, $\\phi_2 = -0.5$ is stationary, while $\\phi_1 = 0.6$, $\\phi_2 = 0.6$ is not. A unit disc or a single bound on $\\phi_1 + \\phi_2$ also misses parts of the triangle."
-            },
-            "ro": {
-                "title": "Staționaritatea AR(2)",
-                "text": "Pentru procesul AR(2) $X_t = \\phi_1 X_{t-1} + \\phi_2 X_{t-2} + \\varepsilon_t$, ce condiții asigură staționaritatea?",
-                "options": [
-                    "$|\\phi_1| < 1$ și $|\\phi_2| < 1$",
-                    "$\\phi_1 + \\phi_2 < 1$, $\\phi_2 - \\phi_1 < 1$, $|\\phi_2| < 1$",
-                    "$\\phi_1^2 + \\phi_2^2 < 1$",
-                    "$|\\phi_1 + \\phi_2| < 1$"
-                ],
-                "correctExplanation": "Cele trei inegalități $\\phi_1 + \\phi_2 < 1$, $\\phi_2 - \\phi_1 < 1$ și $|\\phi_2| < 1$ definesc triunghiul de staționaritate, echivalent cu faptul că ambele rădăcini ale lui $1 - \\phi_1 z - \\phi_2 z^2$ se află în afara cercului unitate.",
-                "incorrectExplanation": "Limitarea separată a fiecărui coeficient nu este nici necesară, nici suficientă: $\\phi_1 = 1{,}2$, $\\phi_2 = -0{,}5$ este staționar, în timp ce $\\phi_1 = 0{,}6$, $\\phi_2 = 0{,}6$ nu este. Un disc unitate sau o singură limită pentru $\\phi_1 + \\phi_2$ ratează, de asemenea, părți din triunghi."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Yule-Walker equations",
-                "text": "The Yule-Walker equations are used to:",
-                "options": [
-                    "Test for stationarity",
-                    "Estimate AR parameters from the autocorrelations",
-                    "Estimate MA parameters",
-                    "Compute forecasts"
-                ],
-                "correctExplanation": "Yule-Walker: $\\boldsymbol{\\phi} = \\mathbf{R}^{-1} \\boldsymbol{\\rho}$ links the AR parameters to the ACF; replacing the theoretical autocorrelations with sample ones gives a method-of-moments estimator.",
-                "incorrectExplanation": "The equations are linear only for AR models; for MA parameters the moment equations are nonlinear and inefficient. They do not test stationarity and are not a forecasting formula."
-            },
-            "ro": {
-                "title": "Ecuațiile Yule-Walker",
-                "text": "Ecuațiile Yule-Walker sînt folosite pentru:",
-                "options": [
-                    "Testarea staționarității",
-                    "Estimarea parametrilor AR pe baza autocorelațiilor",
-                    "Estimarea parametrilor MA",
-                    "Calculul prognozelor"
-                ],
-                "correctExplanation": "Yule-Walker: $\\boldsymbol{\\phi} = \\mathbf{R}^{-1} \\boldsymbol{\\rho}$ leagă parametrii AR de ACF; înlocuirea autocorelațiilor teoretice cu cele de selecție dă un estimator prin metoda momentelor.",
-                "incorrectExplanation": "Ecuațiile sînt liniare doar pentru modelele AR; pentru parametrii MA, ecuațiile de momente sînt neliniare și ineficiente. Ele nu testează staționaritatea și nu sînt o formulă de prognoză."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Interpreting the PACF",
-                "text": "The PACF at lag $k$ measures:",
-                "options": [
-                    "The total correlation between $X_t$ and $X_{t-k}$",
-                    "The correlation between $X_t$ and $X_{t-k}$ after removing the effect of the intermediate lags",
-                    "The MA coefficient at lag $k$",
-                    "The variance at lag $k$"
-                ],
-                "correctExplanation": "The PACF is the direct correlation between $X_t$ and $X_{t-k}$ after controlling for $X_{t-1}, \\dots, X_{t-k+1}$; it equals the last coefficient of an AR($k$) regression.",
-                "incorrectExplanation": "The total correlation, including indirect links through intermediate lags, is the ACF. The PACF is not an MA coefficient (it relates to AR regressions) and has nothing to do with a variance at lag $k$."
-            },
-            "ro": {
-                "title": "Interpretarea PACF",
-                "text": "PACF la lag-ul $k$ măsoară:",
-                "options": [
-                    "Corelația totală dintre $X_t$ și $X_{t-k}$",
-                    "Corelația dintre $X_t$ și $X_{t-k}$ după eliminarea efectului lag-urilor intermediare",
-                    "Coeficientul MA la lag-ul $k$",
-                    "Varianța la lag-ul $k$"
-                ],
-                "correctExplanation": "PACF este corelația directă dintre $X_t$ și $X_{t-k}$ după controlul pentru $X_{t-1}, \\dots, X_{t-k+1}$; este egală cu ultimul coeficient al unei regresii AR($k$).",
-                "incorrectExplanation": "Corelația totală, inclusiv legăturile indirecte prin lag-urile intermediare, este ACF. PACF nu este un coeficient MA (ține de regresiile AR) și nu are legătură cu o varianță la lag-ul $k$."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "The parsimony principle",
-                "text": "In ARMA modelling, the parsimony principle recommends:",
-                "options": [
-                    "Always using the highest-order model",
-                    "Choosing the simplest adequate model",
-                    "Using only AR models",
-                    "Always including seasonal terms"
-                ],
-                "correctExplanation": "Parsimony: among adequate models prefer the one with fewest parameters, to avoid overfitting and to improve out-of-sample performance.",
-                "incorrectExplanation": "High-order models fit noise and forecast worse; restricting oneself to AR models can require many lags where a short ARMA would do; seasonal terms belong in the model only when the data are seasonal."
-            },
-            "ro": {
-                "title": "Principiul parcimoniei",
-                "text": "În modelarea ARMA, principiul parcimoniei recomandă:",
-                "options": [
-                    "Folosirea întotdeauna a modelului de ordin maxim",
-                    "Alegerea celui mai simplu model adecvat",
-                    "Folosirea doar a modelelor AR",
-                    "Includerea întotdeauna a termenilor sezonieri"
-                ],
-                "correctExplanation": "Parcimonie: dintre modelele adecvate se preferă cel cu cei mai puțini parametri, pentru a evita supraajustarea și a îmbunătăți performanța în afara eșantionului.",
-                "incorrectExplanation": "Modelele de ordin mare ajustează zgomotul și prognozează mai slab; limitarea la modele AR poate cere multe lag-uri acolo unde un ARMA scurt ar fi suficient; termenii sezonieri își au locul doar dacă datele au sezonalitate."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Characteristic roots",
-                "text": "For an AR(1) with $\\phi = 0.9$, the root of the characteristic equation $1 - \\phi z = 0$ is:",
-                "options": [
-                    "0.9",
-                    "$1/0.9 \\approx 1.11$",
-                    "-0.9",
-                    "0.81"
-                ],
-                "correctExplanation": "$1 - 0.9z = 0 \\Rightarrow z = 1/0.9 \\approx 1.11$. Since $|z| > 1$ (outside the unit circle), the process is stationary.",
-                "incorrectExplanation": "0.9 is the inverse root (the root of $z - \\phi = 0$), a different convention; $-0.9$ has the wrong sign and 0.81 is $\\phi^2$, i.e. $\\rho(2)$. In the lag-polynomial convention stationarity requires the root to lie outside the unit circle."
-            },
-            "ro": {
-                "title": "Rădăcini caracteristice",
-                "text": "Pentru un AR(1) cu $\\phi = 0{,}9$, rădăcina ecuației caracteristice $1 - \\phi z = 0$ este:",
-                "options": [
-                    "0,9",
-                    "$1/0{,}9 \\approx 1{,}11$",
-                    "-0,9",
-                    "0,81"
-                ],
-                "correctExplanation": "$1 - 0{,}9z = 0 \\Rightarrow z = 1/0{,}9 \\approx 1{,}11$. Deoarece $|z| > 1$ (în afara cercului unitate), procesul este staționar.",
-                "incorrectExplanation": "0,9 este rădăcina inversă (rădăcina lui $z - \\phi = 0$), o altă convenție; $-0{,}9$ are semnul greșit, iar 0,81 este $\\phi^2$, adică $\\rho(2)$. În convenția polinomului de lag, staționaritatea cere ca rădăcina să fie în afara cercului unitate."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Estimation methods",
-                "text": "Which estimation method is generally preferred for ARMA models?",
-                "options": [
-                    "Ordinary least squares (OLS)",
-                    "Maximum likelihood estimation (MLE)",
-                    "The method of moments only",
-                    "Simple averaging"
-                ],
-                "correctExplanation": "MLE is asymptotically efficient and handles the AR and MA parts jointly, including the unobserved past errors.",
-                "incorrectExplanation": "OLS works for pure AR models but cannot handle the unobserved MA errors directly; the method of moments (Yule-Walker) is inefficient for MA terms; simple averaging estimates only the mean."
-            },
-            "ro": {
-                "title": "Metode de estimare",
-                "text": "Ce metodă de estimare este preferată, în general, pentru modelele ARMA?",
-                "options": [
-                    "Metoda celor mai mici pătrate (OLS)",
-                    "Metoda verosimilității maxime (MLE)",
-                    "Exclusiv metoda momentelor",
-                    "Medierea simplă"
-                ],
-                "correctExplanation": "MLE este asimptotic eficientă și tratează simultan partea AR și partea MA, inclusiv erorile trecute neobservate.",
-                "incorrectExplanation": "OLS funcționează pentru modelele AR pure, dar nu poate trata direct erorile MA neobservate; metoda momentelor (Yule-Walker) este ineficientă pentru termenii MA; medierea simplă estimează doar media."
+                "correctExplanation": "Aplicînd media, cu $E[X_t] = E[X_{t-1}] = \\mu$: $\\mu = 2 + 0{,}6\\mu$, deci $\\mu = 2/0{,}4 = 5$.",
+                "incorrectExplanation": "Termenul liber 2 nu este media; $1{,}2 = 2 \\times 0{,}6$ și $3{,}33 = 2/0{,}6$ folosesc o formulă greșită. Media este $c/(1 - \\phi)$."
             }
         },
         {
             "correct": 2,
             "en": {
-                "title": "Forecast error variance",
-                "text": "For a stationary ARMA model, as the forecast horizon increases, the forecast error variance:",
+                "title": "The variance of an AR(1)",
+                "text": "For a stationary AR(1) $X_t = \\phi X_{t-1} + \\varepsilon_t$ with $\\mathrm{Var}(\\varepsilon_t) = \\sigma^2$, what is $\\gamma(0)$?",
                 "options": [
-                    "Decreases to zero",
-                    "Increases without bound",
-                    "Converges to the unconditional variance",
-                    "Remains constant"
+                    "$\\sigma^2/(1 - \\phi)$",
+                    "$\\sigma^2$",
+                    "$\\sigma^2/(1 - \\phi^2)$",
+                    "$\\phi^2\\sigma^2$"
                 ],
-                "correctExplanation": "$\\text{Var}(e_{n+h}) = \\sigma^2 \\sum_{j=0}^{h-1} \\psi_j^2 \\to \\sigma^2 \\sum_{j\\ge 0} \\psi_j^2 = \\gamma(0)$ as $h \\to \\infty$.",
-                "incorrectExplanation": "The variance rises with $h$ because more future shocks enter the error, so it neither falls nor stays constant. Unbounded growth is the I(1) case; for a stationary model the sum of squared $\\psi$ weights is finite."
+                "correctExplanation": "$\\gamma(0) = \\phi^2\\gamma(0) + \\sigma^2$, because $\\varepsilon_t$ is uncorrelated with $X_{t-1}$; hence $\\gamma(0) = \\sigma^2/(1 - \\phi^2)$.",
+                "incorrectExplanation": "$\\sigma^2$ ignores the propagation of past shocks, $\\phi^2\\sigma^2$ ignores the new shock, and $\\sigma^2/(1 - \\phi)$ confuses the variance with the mean formula."
             },
             "ro": {
-                "title": "Varianța erorii de prognoză",
-                "text": "Pentru un model ARMA staționar, pe măsură ce orizontul de prognoză crește, varianța erorii de prognoză:",
+                "title": "Varianța unui AR(1)",
+                "text": "Pentru un AR(1) staționar $X_t = \\phi X_{t-1} + \\varepsilon_t$, cu $\\mathrm{Var}(\\varepsilon_t) = \\sigma^2$, cît este $\\gamma(0)$?",
                 "options": [
-                    "Scade la zero",
-                    "Crește nelimitat",
-                    "Converge la varianța necondiționată",
-                    "Rămîne constantă"
+                    "$\\sigma^2/(1 - \\phi)$",
+                    "$\\sigma^2$",
+                    "$\\sigma^2/(1 - \\phi^2)$",
+                    "$\\phi^2\\sigma^2$"
                 ],
-                "correctExplanation": "$\\text{Var}(e_{n+h}) = \\sigma^2 \\sum_{j=0}^{h-1} \\psi_j^2 \\to \\sigma^2 \\sum_{j\\ge 0} \\psi_j^2 = \\gamma(0)$ cînd $h \\to \\infty$.",
-                "incorrectExplanation": "Varianța crește odată cu $h$, deoarece în eroare intră tot mai multe șocuri viitoare, deci nici nu scade, nici nu rămîne constantă. Creșterea nelimitată este cazul I(1); pentru un model staționar, suma pătratelor ponderilor $\\psi$ este finită."
+                "correctExplanation": "$\\gamma(0) = \\phi^2\\gamma(0) + \\sigma^2$, deoarece $\\varepsilon_t$ este necorelat cu $X_{t-1}$; deci $\\gamma(0) = \\sigma^2/(1 - \\phi^2)$.",
+                "incorrectExplanation": "$\\sigma^2$ ignoră propagarea șocurilor trecute, $\\phi^2\\sigma^2$ ignoră șocul nou, iar $\\sigma^2/(1 - \\phi)$ confundă varianța cu formula mediei."
             }
         },
         {
             "correct": 1,
             "en": {
-                "title": "The Box-Jenkins methodology",
-                "text": "What is the correct order of steps in the Box-Jenkins methodology?",
-                "options": [
-                    "Estimation → Identification → Diagnostics",
-                    "Identification → Estimation → Diagnostics",
-                    "Diagnostics → Identification → Estimation",
-                    "Estimation → Diagnostics → Identification"
-                ],
-                "correctExplanation": "Box-Jenkins: (1) identify the model order from the ACF/PACF, (2) estimate the parameters, (3) check the residuals; if the checks fail, go back to step 1.",
-                "incorrectExplanation": "Nothing can be estimated before the orders are chosen, and diagnostics need the residuals of an estimated model. The loop returns to identification only after the diagnostic step."
-            },
-            "ro": {
-                "title": "Metodologia Box-Jenkins",
-                "text": "Care este ordinea corectă a etapelor în metodologia Box-Jenkins?",
-                "options": [
-                    "Estimare → Identificare → Diagnosticare",
-                    "Identificare → Estimare → Diagnosticare",
-                    "Diagnosticare → Identificare → Estimare",
-                    "Estimare → Diagnosticare → Identificare"
-                ],
-                "correctExplanation": "Box-Jenkins: (1) identificarea ordinelor modelului pe baza ACF/PACF, (2) estimarea parametrilor, (3) verificarea reziduurilor; dacă verificările eșuează, se revine la etapa 1.",
-                "incorrectExplanation": "Nimic nu poate fi estimat înainte de alegerea ordinelor, iar diagnosticarea are nevoie de reziduurile unui model estimat. Ciclul revine la identificare doar după etapa de diagnosticare."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Wold's theorem",
-                "text": "According to Wold's decomposition theorem, any covariance-stationary process can be written as:",
-                "options": [
-                    "A finite-order AR process",
-                    "An infinite-order MA process, MA($\\infty$), plus a deterministic component",
-                    "A random walk",
-                    "Pure white noise"
-                ],
-                "correctExplanation": "Wold: $X_t = \\sum_{j=0}^{\\infty} \\psi_j \\varepsilon_{t-j} + D_t$, with $\\psi_0 = 1$, $\\sum_j \\psi_j^2 < \\infty$, $\\varepsilon_t$ white noise and $D_t$ deterministic.",
-                "incorrectExplanation": "Finite-order AR models are only approximations of the general case; a random walk is not stationary at all; white noise is the special case where all $\\psi_j$ beyond $j=0$ are zero. The theorem justifies using ARMA models as parsimonious approximations of MA($\\infty$)."
-            },
-            "ro": {
-                "title": "Teorema lui Wold",
-                "text": "Conform teoremei de descompunere a lui Wold, orice proces staționar în covarianță poate fi scris ca:",
-                "options": [
-                    "Un proces AR de ordin finit",
-                    "Un proces MA de ordin infinit, MA($\\infty$), plus o componentă deterministă",
-                    "Un mers aleator",
-                    "Un zgomot alb pur"
-                ],
-                "correctExplanation": "Wold: $X_t = \\sum_{j=0}^{\\infty} \\psi_j \\varepsilon_{t-j} + D_t$, cu $\\psi_0 = 1$, $\\sum_j \\psi_j^2 < \\infty$, $\\varepsilon_t$ zgomot alb și $D_t$ determinist.",
-                "incorrectExplanation": "Modelele AR de ordin finit sînt doar aproximări ale cazului general; mersul aleator nu este deloc staționar; zgomotul alb este cazul particular în care toți $\\psi_j$ cu $j \\ge 1$ sînt nuli. Teorema justifică folosirea modelelor ARMA ca aproximări parcimonioase ale MA($\\infty$)."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "ACF of an AR(1) process",
-                "text": "For an AR(1) with $\\phi = 0.7$, what is the autocorrelation at lag 3, $\\rho(3)$?",
+                "title": "The ACF of an AR(1)",
+                "text": "For an AR(1) with $\\phi = 0.7$, what is $\\rho(3)$?",
                 "options": [
                     "0.7",
                     "0.343",
-                    "2.1",
-                    "0.49"
+                    "0.49",
+                    "2.1"
                 ],
-                "correctExplanation": "For an AR(1), $\\rho(k) = \\phi^k$, so $\\rho(3) = 0.7^3 = 0.343$.",
-                "incorrectExplanation": "The ACF of an AR(1) decays geometrically: 0.7 is $\\rho(1)$ and 0.49 is $\\rho(2)$, while 2.1 ($3\\phi$) is not even a valid correlation, since $|\\rho| \\le 1$."
+                "correctExplanation": "For an AR(1), $\\rho(h) = \\phi^h$, so $\\rho(3) = 0.7^3 = 0.343$.",
+                "incorrectExplanation": "0.7 is $\\rho(1)$ and 0.49 is $\\rho(2)$; 2.1 is $3\\phi$, which cannot be an autocorrelation since $|\\rho(h)| \\le 1$."
             },
             "ro": {
-                "title": "ACF-ul procesului AR(1)",
-                "text": "Pentru un AR(1) cu $\\phi = 0{,}7$, cît este autocorelația la lag-ul 3, $\\rho(3)$?",
+                "title": "ACF a unui AR(1)",
+                "text": "Pentru un AR(1) cu $\\phi = 0{,}7$, cît este $\\rho(3)$?",
                 "options": [
                     "0,7",
                     "0,343",
-                    "2,1",
-                    "0,49"
+                    "0,49",
+                    "2,1"
                 ],
-                "correctExplanation": "Pentru un AR(1), $\\rho(k) = \\phi^k$, deci $\\rho(3) = 0{,}7^3 = 0{,}343$.",
-                "incorrectExplanation": "ACF-ul unui AR(1) scade geometric: 0,7 este $\\rho(1)$, iar 0,49 este $\\rho(2)$, în timp ce 2,1 ($3\\phi$) nici nu este o corelație validă, deoarece $|\\rho| \\le 1$."
+                "correctExplanation": "Pentru un AR(1), $\\rho(h) = \\phi^h$, deci $\\rho(3) = 0{,}7^3 = 0{,}343$.",
+                "incorrectExplanation": "0,7 este $\\rho(1)$, iar 0,49 este $\\rho(2)$; 2,1 este $3\\phi$, care nu poate fi o autocorelație, deoarece $|\\rho(h)| \\le 1$."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Roots of an AR(2)",
+                "text": "Is $X_t = 1.2X_{t-1} - 0.32X_{t-2} + \\varepsilon_t$ stationary?",
+                "options": [
+                    "No: $\\phi_1 = 1.2 > 1$",
+                    "No: the roots 0.8 and 0.4 lie inside the unit circle",
+                    "Yes: $1 - 1.2z + 0.32z^2 = (1 - 0.8z)(1 - 0.4z)$ has roots 1.25 and 2.5, outside the unit circle",
+                    "It cannot be decided without data"
+                ],
+                "correctExplanation": "Stationarity requires all roots of $\\phi(z)$ outside the unit circle; here they are 1.25 and 2.5 (the inverse roots 0.8 and 0.4 are inside, which is the same statement).",
+                "incorrectExplanation": "A single coefficient above 1 does not decide stationarity: only the roots do. 0.8 and 0.4 are the inverse roots, which must lie inside the circle, and the model is known, so no data are needed."
+            },
+            "ro": {
+                "title": "Rădăcinile unui AR(2)",
+                "text": "Este staționar procesul $X_t = 1{,}2X_{t-1} - 0{,}32X_{t-2} + \\varepsilon_t$?",
+                "options": [
+                    "Nu: $\\phi_1 = 1{,}2 > 1$",
+                    "Nu: rădăcinile 0,8 și 0,4 sînt în interiorul cercului unitate",
+                    "Da: $1 - 1{,}2z + 0{,}32z^2 = (1 - 0{,}8z)(1 - 0{,}4z)$ are rădăcinile 1,25 și 2,5, în afara cercului unitate",
+                    "Nu se poate decide fără date"
+                ],
+                "correctExplanation": "Staționaritatea cere ca toate rădăcinile lui $\\phi(z)$ să fie în afara cercului unitate; aici ele sînt 1,25 și 2,5 (rădăcinile inverse 0,8 și 0,4 sînt în interior, ceea ce înseamnă același lucru).",
+                "incorrectExplanation": "Un singur coeficient mai mare decît 1 nu decide staționaritatea: o decid doar rădăcinile. 0,8 și 0,4 sînt rădăcinile inverse, care trebuie să fie în interiorul cercului, iar modelul este cunoscut, deci nu sînt necesare date."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Complex roots",
+                "text": "The AR(2) $X_t = 1.0X_{t-1} - 0.6X_{t-2} + \\varepsilon_t$ has complex roots. What does its ACF look like?",
+                "options": [
+                    "A damped wave (pseudo-cycles)",
+                    "It cuts off after lag 2",
+                    "A geometric decay without sign changes",
+                    "It does not decay (a unit root)"
+                ],
+                "correctExplanation": "Since $\\phi_1^2 + 4\\phi_2 = 1 - 2.4 < 0$, the roots are complex and the ACF is a damped cosine; the damping factor per lag is $\\sqrt{0.6} \\approx 0.77$.",
+                "incorrectExplanation": "A cut-off after lag 2 is the ACF of an MA(2), not of an AR(2). A geometric decay without sign changes corresponds to real positive roots, and the process is stationary, so the ACF does decay."
+            },
+            "ro": {
+                "title": "Rădăcini complexe",
+                "text": "Procesul AR(2) $X_t = 1{,}0X_{t-1} - 0{,}6X_{t-2} + \\varepsilon_t$ are rădăcini complexe. Cum arată ACF?",
+                "options": [
+                    "O undă amortizată (pseudo-cicluri)",
+                    "Se anulează după decalajul 2",
+                    "O descreștere geometrică fără schimbări de semn",
+                    "Nu descrește (rădăcină unitară)"
+                ],
+                "correctExplanation": "Deoarece $\\phi_1^2 + 4\\phi_2 = 1 - 2{,}4 < 0$, rădăcinile sînt complexe, iar ACF este un cosinus amortizat; factorul de amortizare pe decalaj este $\\sqrt{0{,}6} \\approx 0{,}77$.",
+                "incorrectExplanation": "Anularea după decalajul 2 caracterizează ACF a unui MA(2), nu a unui AR(2). O descreștere geometrică fără schimbări de semn corespunde unor rădăcini reale pozitive, iar procesul este staționar, deci ACF descrește."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Identifying an AR model",
+                "text": "The PACF has significant values at lags 1 and 2 and none after; the ACF decays gradually. Which model is suggested?",
+                "options": [
+                    "MA(2)",
+                    "ARMA(1,1)",
+                    "AR(2)",
+                    "White noise"
+                ],
+                "correctExplanation": "A PACF that cuts off after lag $p$ together with a decaying ACF is the signature of an AR($p$), here AR(2).",
+                "incorrectExplanation": "For an MA(2) the roles are reversed (the ACF cuts off); for an ARMA(1,1) both functions decay; white noise has no significant lags."
+            },
+            "ro": {
+                "title": "Identificarea unui model AR",
+                "text": "PACF are valori semnificative la decalajele 1 și 2 și niciuna după aceea; ACF descrește treptat. Ce model este sugerat?",
+                "options": [
+                    "MA(2)",
+                    "ARMA(1,1)",
+                    "AR(2)",
+                    "Zgomot alb"
+                ],
+                "correctExplanation": "O PACF care se anulează după decalajul $p$, împreună cu o ACF care descrește, este semnătura unui AR($p$), aici AR(2).",
+                "incorrectExplanation": "Pentru un MA(2) rolurile sînt inversate (ACF se anulează); pentru un ARMA(1,1) ambele funcții descresc; zgomotul alb nu are decalaje semnificative."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Identifying an MA model",
+                "text": "The ACF has a single significant value at lag 1 and then cuts off, while the PACF decays gradually. Which model is suggested?",
+                "options": [
+                    "MA(1)",
+                    "AR(1)",
+                    "ARMA(1,1)",
+                    "White noise"
+                ],
+                "correctExplanation": "An ACF that cuts off after lag 1 indicates an MA(1); the decaying PACF confirms it.",
+                "incorrectExplanation": "For an AR(1) the pattern is reversed (the ACF decays, the PACF cuts off after lag 1); for an ARMA(1,1) both decay; white noise has no significant values."
+            },
+            "ro": {
+                "title": "Identificarea unui model MA",
+                "text": "ACF are o singură valoare semnificativă, la decalajul 1, și apoi se anulează, iar PACF descrește treptat. Ce model este sugerat?",
+                "options": [
+                    "MA(1)",
+                    "AR(1)",
+                    "ARMA(1,1)",
+                    "Zgomot alb"
+                ],
+                "correctExplanation": "O ACF care se anulează după decalajul 1 indică un MA(1); PACF care descrește treptat confirmă acest lucru.",
+                "incorrectExplanation": "Pentru un AR(1) tiparul este inversat (ACF descrește, PACF se anulează după decalajul 1); pentru un ARMA(1,1) ambele descresc; zgomotul alb nu are nicio valoare semnificativă."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "The largest MA(1) autocorrelation",
+                "text": "A series has $\\hat\\rho(1) = 0.7$ and no other significant autocorrelation, with a large sample. Can it be an MA(1)?",
+                "options": [
+                    "Yes, with $\\theta = 0.7$",
+                    "No: an MA(1) always has $|\\rho(1)| \\le 0.5$",
+                    "Yes, with $\\theta = 1/0.7$",
+                    "Yes, but only if $\\sigma^2 > 1$"
+                ],
+                "correctExplanation": "$\\rho(1) = \\theta/(1 + \\theta^2)$ reaches its maximum 0.5 at $\\theta = 1$, so no MA(1) produces 0.7; try an MA($q$) with more terms or another model.",
+                "incorrectExplanation": "$\\theta = 0.7$ gives $\\rho(1) = 0.47$, and $\\theta = 1/0.7$ gives the same 0.47; the noise variance $\\sigma^2$ does not enter $\\rho(1)$ at all."
+            },
+            "ro": {
+                "title": "Cea mai mare autocorelație a unui MA(1)",
+                "text": "O serie are $\\hat\\rho(1) = 0{,}7$ și nicio altă autocorelație semnificativă, pe un eșantion mare. Poate fi un MA(1)?",
+                "options": [
+                    "Da, cu $\\theta = 0{,}7$",
+                    "Nu: un MA(1) are întotdeauna $|\\rho(1)| \\le 0{,}5$",
+                    "Da, cu $\\theta = 1/0{,}7$",
+                    "Da, dar doar dacă $\\sigma^2 > 1$"
+                ],
+                "correctExplanation": "$\\rho(1) = \\theta/(1 + \\theta^2)$ își atinge maximul 0,5 în $\\theta = 1$, deci niciun MA(1) nu produce 0,7; încercați un MA($q$) cu mai mulți termeni sau alt model.",
+                "incorrectExplanation": "$\\theta = 0{,}7$ dă $\\rho(1) = 0{,}47$, iar $\\theta = 1/0{,}7$ dă același 0,47; varianța zgomotului $\\sigma^2$ nu intră deloc în $\\rho(1)$."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "MA(1) invertibility",
+                "text": "Is the MA(1) process $X_t = \\varepsilon_t + 1.5\\varepsilon_{t-1}$ invertible?",
+                "options": [
+                    "No, because $|\\theta| = 1.5 > 1$",
+                    "Yes, MA processes are always invertible",
+                    "Yes, because $\\theta = 1.5 > 0$",
+                    "No, MA processes are never invertible"
+                ],
+                "correctExplanation": "Invertibility requires $|\\theta| < 1$ (the root of $1 + \\theta z$ outside the unit circle). Here $|\\theta| = 1.5$, so the process is not invertible, although, like every finite MA, it is stationary.",
+                "incorrectExplanation": "MA processes are always stationary, not always invertible; invertibility depends on $|\\theta|$, not on its sign, and with $|\\theta| < 1$ an MA(1) is invertible."
+            },
+            "ro": {
+                "title": "Invertibilitatea MA(1)",
+                "text": "Este invertibil procesul MA(1) $X_t = \\varepsilon_t + 1{,}5\\varepsilon_{t-1}$?",
+                "options": [
+                    "Nu, deoarece $|\\theta| = 1{,}5 > 1$",
+                    "Da, procesele MA sînt întotdeauna invertibile",
+                    "Da, deoarece $\\theta = 1{,}5 > 0$",
+                    "Nu, procesele MA nu sînt niciodată invertibile"
+                ],
+                "correctExplanation": "Invertibilitatea cere $|\\theta| < 1$ (rădăcina lui $1 + \\theta z$ în afara cercului unitate). Aici $|\\theta| = 1{,}5$, deci procesul nu este invertibil, deși, ca orice MA finit, este staționar.",
+                "incorrectExplanation": "Procesele MA sînt întotdeauna staționare, nu întotdeauna invertibile; invertibilitatea depinde de $|\\theta|$, nu de semnul lui, iar pentru $|\\theta| < 1$ un MA(1) este invertibil."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "$\\theta$ and $1/\\theta$",
+                "text": "Compare $X_t = \\varepsilon_t + 2\\varepsilon_{t-1}$, $\\sigma^2 = 1$, with $Y_t = u_t + 0.5u_{t-1}$, $\\mathrm{Var}(u_t) = 4$. Which statement is correct?",
+                "options": [
+                    "They differ in variance: 5 against 4",
+                    "Only $X_t$ is stationary",
+                    "They have the same autocovariances and both are invertible",
+                    "They have the same autocovariances; only $Y_t$ is invertible"
+                ],
+                "correctExplanation": "Both have $\\gamma(0) = 5$ and $\\gamma(1) = 2$; with Gaussian shocks they have the same distribution. Only $|0.5| < 1$ is invertible, so we report $Y_t$.",
+                "incorrectExplanation": "$\\gamma(0)$ of $Y_t$ is $4 \\times 1.25 = 5$, not 4; every finite MA is stationary; $|\\theta| = 2$ is not invertible."
+            },
+            "ro": {
+                "title": "$\\theta$ și $1/\\theta$",
+                "text": "Comparați $X_t = \\varepsilon_t + 2\\varepsilon_{t-1}$, $\\sigma^2 = 1$, cu $Y_t = u_t + 0{,}5u_{t-1}$, $\\mathrm{Var}(u_t) = 4$. Ce afirmație este corectă?",
+                "options": [
+                    "Diferă prin varianță: 5 față de 4",
+                    "Doar $X_t$ este staționar",
+                    "Au aceleași autocovarianțe și ambele sînt invertibile",
+                    "Au aceleași autocovarianțe; doar $Y_t$ este invertibil"
+                ],
+                "correctExplanation": "Ambele au $\\gamma(0) = 5$ și $\\gamma(1) = 2$; cu șocuri gaussiene au aceeași distribuție. Doar $|0{,}5| < 1$ dă un proces invertibil, deci raportăm $Y_t$.",
+                "incorrectExplanation": "$\\gamma(0)$ pentru $Y_t$ este $4 \\times 1{,}25 = 5$, nu 4; orice MA finit este staționar; $|\\theta| = 2$ nu este invertibil."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Common factors",
+                "text": "What is the process $X_t = 0.5X_{t-1} + \\varepsilon_t - 0.5\\varepsilon_{t-1}$?",
+                "options": [
+                    "An ARMA(1,1) with a slowly decaying ACF",
+                    "A non-stationary process",
+                    "White noise: $(1 - 0.5L)$ cancels on both sides",
+                    "An MA(1) with $\\theta = -0.5$"
+                ],
+                "correctExplanation": "$(1 - 0.5L)X_t = (1 - 0.5L)\\varepsilon_t$, so $X_t = \\varepsilon_t$. Estimating an ARMA(1,1) on such data gives $\\hat\\phi \\approx -\\hat\\theta$ with huge standard errors.",
+                "incorrectExplanation": "The AR and MA factors are identical and cancel, so there is no ARMA dynamics left; $|0.5| < 1$, so nothing is non-stationary; the MA part does not survive alone."
+            },
+            "ro": {
+                "title": "Factori comuni",
+                "text": "Ce proces este $X_t = 0{,}5X_{t-1} + \\varepsilon_t - 0{,}5\\varepsilon_{t-1}$?",
+                "options": [
+                    "Un ARMA(1,1) cu o ACF care descrește lent",
+                    "Un proces nestaționar",
+                    "Zgomot alb: $(1 - 0{,}5L)$ se simplifică în ambii membri",
+                    "Un MA(1) cu $\\theta = -0{,}5$"
+                ],
+                "correctExplanation": "$(1 - 0{,}5L)X_t = (1 - 0{,}5L)\\varepsilon_t$, deci $X_t = \\varepsilon_t$. Estimarea unui ARMA(1,1) pe astfel de date dă $\\hat\\phi \\approx -\\hat\\theta$, cu erori standard foarte mari.",
+                "incorrectExplanation": "Factorii AR și MA sînt identici și se simplifică, deci nu rămîne nicio dinamică ARMA; $|0{,}5| < 1$, deci nimic nu este nestaționar; partea MA nu rămîne singură."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "$\\psi$ weights",
+                "text": "For the ARMA(1,1) $X_t = 0.5X_{t-1} + \\varepsilon_t + 0.3\\varepsilon_{t-1}$, what is $\\psi_1$, the effect of a unit shock after one period?",
+                "options": [
+                    "0.5",
+                    "0.8",
+                    "0.3",
+                    "0.15"
+                ],
+                "correctExplanation": "From $\\psi_j = \\theta_j + \\phi\\psi_{j-1}$ with $\\psi_0 = 1$: $\\psi_1 = 0.3 + 0.5 = 0.8$; then $\\psi_j = 0.5^{j-1} \\times 0.8$.",
+                "incorrectExplanation": "0.5 counts only the AR part, 0.3 only the MA part, and 0.15 is their product; the first response adds them."
+            },
+            "ro": {
+                "title": "Ponderile $\\psi$",
+                "text": "Pentru ARMA(1,1) $X_t = 0{,}5X_{t-1} + \\varepsilon_t + 0{,}3\\varepsilon_{t-1}$, cît este $\\psi_1$, efectul unui șoc unitar după o perioadă?",
+                "options": [
+                    "0,5",
+                    "0,8",
+                    "0,3",
+                    "0,15"
+                ],
+                "correctExplanation": "Din $\\psi_j = \\theta_j + \\phi\\psi_{j-1}$, cu $\\psi_0 = 1$: $\\psi_1 = 0{,}3 + 0{,}5 = 0{,}8$; apoi $\\psi_j = 0{,}5^{j-1} \\times 0{,}8$.",
+                "incorrectExplanation": "0,5 ține seama doar de partea AR, 0,3 doar de partea MA, iar 0,15 este produsul lor; primul răspuns le adună."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Yule–Walker for an AR(2)",
+                "text": "A series has $\\hat\\rho(1) = 0.5$ and $\\hat\\rho(2) = 0.4$. What is the Yule–Walker estimate $\\hat\\phi_2$?",
+                "options": [
+                    "0.4",
+                    "0.15",
+                    "0.2",
+                    "-0.2"
+                ],
+                "correctExplanation": "$\\hat\\phi_2 = (\\hat\\rho_2 - \\hat\\rho_1^2)/(1 - \\hat\\rho_1^2) = (0.4 - 0.25)/0.75 = 0.2$; it equals the sample PACF at lag 2.",
+                "incorrectExplanation": "0.4 is $\\hat\\rho(2)$ itself, 0.15 is only the numerator, and the sign is positive because $\\hat\\rho_2 > \\hat\\rho_1^2$."
+            },
+            "ro": {
+                "title": "Yule–Walker pentru un AR(2)",
+                "text": "O serie are $\\hat\\rho(1) = 0{,}5$ și $\\hat\\rho(2) = 0{,}4$. Cît este estimarea Yule–Walker $\\hat\\phi_2$?",
+                "options": [
+                    "0,4",
+                    "0,15",
+                    "0,2",
+                    "−0,2"
+                ],
+                "correctExplanation": "$\\hat\\phi_2 = (\\hat\\rho_2 - \\hat\\rho_1^2)/(1 - \\hat\\rho_1^2) = (0{,}4 - 0{,}25)/0{,}75 = 0{,}2$; este egală cu PACF de selecție la decalajul 2.",
+                "incorrectExplanation": "0,4 este chiar $\\hat\\rho(2)$, 0,15 este doar numărătorul, iar semnul este pozitiv deoarece $\\hat\\rho_2 > \\hat\\rho_1^2$."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Annual growth of quarterly data",
+                "text": "Quarterly GDP growth $g_t$ is close to white noise. Which model fits the annual growth $y_t = g_t + g_{t-1} + g_{t-2} + g_{t-3}$?",
+                "options": [
+                    "MA(3): consecutive annual rates share three quarters",
+                    "AR(1): growth is persistent",
+                    "White noise: a sum of white noises is white noise",
+                    "AR(4): one lag per quarter"
+                ],
+                "correctExplanation": "$y_t$ and $y_{t-h}$ share $4 - h$ quarterly shocks for $h \\le 3$ and none for $h \\ge 4$, so the ACF cuts off after lag 3: an MA(3). For Romania, BIC chooses exactly this model.",
+                "incorrectExplanation": "The persistence is created by the overlap, not by an autoregression; a moving sum of white noise is correlated, not white; the ACF cuts off, which rules out an AR."
+            },
+            "ro": {
+                "title": "Creșterea anuală a datelor trimestriale",
+                "text": "Creșterea trimestrială a PIB-ului, $g_t$, este aproape de un zgomot alb. Ce model se potrivește creșterii anuale $y_t = g_t + g_{t-1} + g_{t-2} + g_{t-3}$?",
+                "options": [
+                    "MA(3): ratele anuale consecutive au trei trimestre comune",
+                    "AR(1): creșterea este persistentă",
+                    "Zgomot alb: o sumă de zgomote albe este zgomot alb",
+                    "AR(4): cîte un decalaj pentru fiecare trimestru"
+                ],
+                "correctExplanation": "$y_t$ și $y_{t-h}$ au $4 - h$ șocuri trimestriale comune pentru $h \\le 3$ și niciunul pentru $h \\ge 4$, deci ACF se anulează după decalajul 3: un MA(3). Pentru România, BIC alege exact acest model.",
+                "incorrectExplanation": "Persistența este creată de suprapunere, nu de o autoregresie; o sumă mobilă de zgomote albe este corelată, nu este zgomot alb; ACF se anulează, ceea ce exclude un AR."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "AIC and BIC",
+                "text": "Which statement about AIC $= -2\\ln L + 2k$ and BIC $= -2\\ln L + k\\ln T$ is correct?",
+                "options": [
+                    "AIC always selects the true model in large samples",
+                    "The model with the largest criterion is preferred",
+                    "AIC and BIC can compare models fitted to different samples",
+                    "BIC penalises parameters more once $T \\ge 8$ and is consistent; AIC may overfit even in large samples"
+                ],
+                "correctExplanation": "$\\ln T > 2$ for $T \\ge 8$, so BIC prefers smaller models; it finds the true order with probability tending to 1, while AIC keeps a positive probability of choosing too large a model.",
+                "incorrectExplanation": "It is BIC, not AIC, that is consistent; the smallest value wins; and the criteria are comparable only on the same observations."
+            },
+            "ro": {
+                "title": "AIC și BIC",
+                "text": "Ce afirmație despre AIC $= -2\\ln L + 2k$ și BIC $= -2\\ln L + k\\ln T$ este corectă?",
+                "options": [
+                    "AIC alege întotdeauna modelul adevărat în eșantioane mari",
+                    "Este preferat modelul cu valoarea cea mai mare a criteriului",
+                    "AIC și BIC pot compara modele estimate pe eșantioane diferite",
+                    "BIC penalizează mai mult parametrii de îndată ce $T \\ge 8$ și este consistent; AIC poate supraparametriza chiar în eșantioane mari"
+                ],
+                "correctExplanation": "$\\ln T > 2$ pentru $T \\ge 8$, deci BIC preferă modele mai mici; găsește ordinul adevărat cu o probabilitate care tinde la 1, pe cînd AIC păstrează o probabilitate pozitivă de a alege un model prea mare.",
+                "incorrectExplanation": "BIC, nu AIC, este consistent; cîștigă valoarea cea mai mică; iar criteriile sînt comparabile doar pe aceleași observații."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "Computing AIC",
+                "text": "An AR(2) with a constant is estimated on $T = 100$ observations: $\\ln L = -210.9$ and $k = 4$ parameters. What is its AIC?",
+                "options": [
+                    "421.8",
+                    "429.8",
+                    "440.2",
+                    "214.9"
+                ],
+                "correctExplanation": "AIC $= -2(-210.9) + 2 \\times 4 = 421.8 + 8 = 429.8$.",
+                "incorrectExplanation": "421.8 omits the penalty, 440.2 is the BIC ($421.8 + 4\\ln 100$), and 214.9 forgets the factor 2 on the log-likelihood."
+            },
+            "ro": {
+                "title": "Calculul AIC",
+                "text": "Un AR(2) cu termen liber este estimat pe $T = 100$ de observații: $\\ln L = -210{,}9$ și $k = 4$ parametri. Cît este AIC?",
+                "options": [
+                    "421,8",
+                    "429,8",
+                    "440,2",
+                    "214,9"
+                ],
+                "correctExplanation": "AIC $= -2(-210{,}9) + 2 \\times 4 = 421{,}8 + 8 = 429{,}8$.",
+                "incorrectExplanation": "421,8 omite penalizarea, 440,2 este BIC ($421{,}8 + 4\\ln 100$), iar 214,9 uită factorul 2 al log-verosimilității."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "Ljung–Box degrees of freedom",
+                "text": "The Ljung–Box statistic $Q^*(10)$ is computed on the residuals of an ARMA(2,1). How many degrees of freedom does its $\\chi^2$ distribution have?",
+                "options": [
+                    "10",
+                    "7",
+                    "9",
+                    "13"
+                ],
+                "correctExplanation": "Estimating $p + q = 3$ coefficients uses up 3 degrees of freedom: $m - p - q = 10 - 3 = 7$ (Box and Pierce, 1970).",
+                "incorrectExplanation": "10 ignores the estimated coefficients and makes the test too lenient; 9 subtracts only one coefficient; 13 adds instead of subtracting."
+            },
+            "ro": {
+                "title": "Gradele de libertate Ljung–Box",
+                "text": "Statistica Ljung–Box $Q^*(10)$ se calculează pe reziduurile unui ARMA(2,1). Cîte grade de libertate are distribuția $\\chi^2$?",
+                "options": [
+                    "10",
+                    "7",
+                    "9",
+                    "13"
+                ],
+                "correctExplanation": "Estimarea a $p + q = 3$ coeficienți consumă 3 grade de libertate: $m - p - q = 10 - 3 = 7$ (Box și Pierce, 1970).",
+                "incorrectExplanation": "10 ignoră coeficienții estimați și face testul prea indulgent; 9 scade doar un coeficient; 13 adună în loc să scadă."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Reading a Ljung–Box test",
+                "text": "After fitting an ARMA model, Ljung–Box on the residuals gives a p-value of 0.03. What does this mean at the 5% level?",
+                "options": [
+                    "The residuals are white noise",
+                    "The test is inconclusive, so more data are needed",
+                    "The residuals are Normal",
+                    "Autocorrelation remains in the residuals: the model is inadequate"
+                ],
+                "correctExplanation": "$p < 0.05$ rejects $H_0$ of no autocorrelation up to lag $m$: the model has not captured all the dependence and must be re-specified.",
+                "incorrectExplanation": "White-noise residuals would give a large p-value; a small p-value is a clear rejection, not an inconclusive result; normality is tested by Jarque–Bera, not by Ljung–Box."
+            },
+            "ro": {
+                "title": "Interpretarea testului Ljung–Box",
+                "text": "După estimarea unui model ARMA, testul Ljung–Box pentru reziduuri dă o valoare p de 0,03. Ce înseamnă aceasta la pragul de 5%?",
+                "options": [
+                    "Reziduurile sînt zgomot alb",
+                    "Testul este neconcludent, deci sînt necesare mai multe date",
+                    "Reziduurile urmează distribuția Normală",
+                    "În reziduuri rămîne autocorelație: modelul este inadecvat"
+                ],
+                "correctExplanation": "$p < 0{,}05$ respinge $H_0$ (absența autocorelației pînă la decalajul $m$): modelul nu a surprins toată dependența și trebuie respecificat.",
+                "incorrectExplanation": "Reziduurile de tip zgomot alb ar da o valoare p mare; o valoare p mică este o respingere clară, nu un rezultat neconcludent; normalitatea se testează cu Jarque–Bera, nu cu Ljung–Box."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Forecasting an AR(1)",
+                "text": "$X_t = 2 + 0.8X_{t-1} + \\varepsilon_t$ (mean 10) and $X_T = 12$. What is the forecast $\\hat X_{T+2|T}$?",
+                "options": [
+                    "11.6",
+                    "12",
+                    "10",
+                    "11.28"
+                ],
+                "correctExplanation": "$\\hat X_{T+h|T} = \\mu + \\phi^h(X_T - \\mu) = 10 + 0.64 \\times 2 = 11.28$: the forecast moves back towards the mean.",
+                "incorrectExplanation": "11.6 is the one-step forecast, 12 is the no-change forecast, and 10 is the limit as $h \\to \\infty$."
+            },
+            "ro": {
+                "title": "Prognoza unui AR(1)",
+                "text": "$X_t = 2 + 0{,}8X_{t-1} + \\varepsilon_t$ (media 10) și $X_T = 12$. Cît este prognoza $\\hat X_{T+2|T}$?",
+                "options": [
+                    "11,6",
+                    "12",
+                    "10",
+                    "11,28"
+                ],
+                "correctExplanation": "$\\hat X_{T+h|T} = \\mu + \\phi^h(X_T - \\mu) = 10 + 0{,}64 \\times 2 = 11{,}28$: prognoza revine spre medie.",
+                "incorrectExplanation": "11,6 este prognoza cu un pas, 12 este prognoza fără schimbare, iar 10 este limita pentru $h \\to \\infty$."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "Forecasting an MA(2)",
+                "text": "What is the forecast of an MA(2) process three steps ahead, $\\hat X_{T+3|T}$?",
+                "options": [
+                    "The last observation $X_T$",
+                    "The mean $\\mu$",
+                    "$\\mu + \\theta_2\\varepsilon_T$",
+                    "It cannot be computed"
+                ],
+                "correctExplanation": "$X_{T+3} = \\mu + \\varepsilon_{T+3} + \\theta_1\\varepsilon_{T+2} + \\theta_2\\varepsilon_{T+1}$ contains only future shocks, all forecast by 0; beyond $q$ steps the forecast is $\\mu$.",
+                "incorrectExplanation": "An MA(2) does not carry $X_T$ forward; $\\theta_2\\varepsilon_T$ enters the forecast for $T + 2$, not $T + 3$; and the forecast is perfectly well defined."
+            },
+            "ro": {
+                "title": "Prognoza unui MA(2)",
+                "text": "Cît este prognoza unui proces MA(2) cu trei pași înainte, $\\hat X_{T+3|T}$?",
+                "options": [
+                    "Ultima observație $X_T$",
+                    "Media $\\mu$",
+                    "$\\mu + \\theta_2\\varepsilon_T$",
+                    "Nu se poate calcula"
+                ],
+                "correctExplanation": "$X_{T+3} = \\mu + \\varepsilon_{T+3} + \\theta_1\\varepsilon_{T+2} + \\theta_2\\varepsilon_{T+1}$ conține doar șocuri viitoare, toate prognozate cu 0; după $q$ pași prognoza este $\\mu$.",
+                "incorrectExplanation": "Un MA(2) nu transmite mai departe valoarea $X_T$; $\\theta_2\\varepsilon_T$ intră în prognoza pentru $T + 2$, nu pentru $T + 3$; iar prognoza este bine definită."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Forecast error variance",
+                "text": "For a stationary ARMA model, what happens to the forecast error variance as the horizon $h$ grows?",
+                "options": [
+                    "It increases towards the unconditional variance $\\gamma(0)$",
+                    "It stays equal to $\\sigma^2$",
+                    "It grows without bound",
+                    "It decreases to 0"
+                ],
+                "correctExplanation": "$\\sigma_h^2 = \\sigma^2(1 + \\psi_1^2 + \\dots + \\psi_{h-1}^2)$ increases with $h$ and converges to $\\sigma^2\\sum_j\\psi_j^2 = \\gamma(0)$.",
+                "incorrectExplanation": "$\\sigma^2$ is the one-step value only; unbounded growth is the case of a unit root (Chapter 3); uncertainty never falls with the horizon."
+            },
+            "ro": {
+                "title": "Varianța erorii de prognoză",
+                "text": "Pentru un model ARMA staționar, ce se întîmplă cu varianța erorii de prognoză cînd orizontul $h$ crește?",
+                "options": [
+                    "Crește spre varianța necondiționată $\\gamma(0)$",
+                    "Rămîne egală cu $\\sigma^2$",
+                    "Crește nelimitat",
+                    "Scade la 0"
+                ],
+                "correctExplanation": "$\\sigma_h^2 = \\sigma^2(1 + \\psi_1^2 + \\dots + \\psi_{h-1}^2)$ crește cu $h$ și converge la $\\sigma^2\\sum_j\\psi_j^2 = \\gamma(0)$.",
+                "incorrectExplanation": "$\\sigma^2$ este doar valoarea pentru un pas; creșterea nelimitată este cazul unei rădăcini unitare (Capitolul 3); incertitudinea nu scade niciodată cu orizontul."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "The Box–Jenkins method",
+                "text": "What is the order of the steps in the Box–Jenkins method?",
+                "options": [
+                    "Estimation, identification, forecasting, diagnostic checking",
+                    "Forecasting, estimation, identification",
+                    "Identification, estimation, diagnostic checking, forecasting (and back to identification if the check fails)",
+                    "Diagnostic checking, identification, estimation"
+                ],
+                "correctExplanation": "Box and Jenkins proposed a loop: identify candidates from the ACF and PACF of a stationary series, estimate them, check the residuals, and forecast only with a model that passes.",
+                "incorrectExplanation": "A model cannot be estimated before its orders are chosen, and forecasting before checking would use a model that may leave structure in its residuals."
+            },
+            "ro": {
+                "title": "Metoda Box–Jenkins",
+                "text": "Care este ordinea pașilor în metoda Box–Jenkins?",
+                "options": [
+                    "Estimare, identificare, prognoză, verificarea diagnosticelor",
+                    "Prognoză, estimare, identificare",
+                    "Identificare, estimare, verificarea diagnosticelor, prognoză (și revenire la identificare dacă verificarea eșuează)",
+                    "Verificarea diagnosticelor, identificare, estimare"
+                ],
+                "correctExplanation": "Box și Jenkins au propus o buclă: identificăm candidații din ACF și PACF ale unei serii staționare, îi estimăm, verificăm reziduurile și prognozăm doar cu un model acceptat.",
+                "incorrectExplanation": "Un model nu poate fi estimat înainte de alegerea ordinelor, iar prognoza înainte de verificare ar folosi un model care poate lăsa structură în reziduuri."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Significant or useful?",
+                "text": "An AR(1) for BET daily returns gives $\\hat\\phi = 0.11$ with $t = 21$. What follows?",
+                "options": [
+                    "Yesterday's return explains most of today's return",
+                    "The coefficient is not significant",
+                    "Returns are a random walk",
+                    "The effect is statistically real but explains only about 1% of the variance"
+                ],
+                "correctExplanation": "$t = 21$ makes $\\phi \\ne 0$ certain, but $R^2 \\approx \\hat\\phi^2 \\approx 1.2\\%$: too small to trade on after costs. Significance is not size.",
+                "incorrectExplanation": "A high $t$-ratio reflects the many observations, not a large effect; the coefficient is clearly significant; and the random walk describes prices, not returns."
+            },
+            "ro": {
+                "title": "Semnificativ sau util?",
+                "text": "Un AR(1) pentru randamentele zilnice ale BET dă $\\hat\\phi = 0{,}11$, cu $t = 21$. Ce rezultă?",
+                "options": [
+                    "Randamentul de ieri explică cea mai mare parte a randamentului de azi",
+                    "Coeficientul nu este semnificativ",
+                    "Randamentele sînt un mers aleator",
+                    "Efectul este real din punct de vedere statistic, dar explică doar aproximativ 1% din varianță"
+                ],
+                "correctExplanation": "$t = 21$ face ca $\\phi \\ne 0$ să fie sigur, dar $R^2 \\approx \\hat\\phi^2 \\approx 1{,}2\\%$: prea puțin pentru tranzacționare după costuri. Semnificația nu este mărime.",
+                "incorrectExplanation": "Un raport $t$ mare reflectă numărul mare de observații, nu un efect mare; coeficientul este clar semnificativ; iar mersul aleator descrie prețurile, nu randamentele."
             }
         }
     ]
