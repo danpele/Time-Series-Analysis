@@ -105,3 +105,11 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 | ch8_hurst_1953.jpg | https://commons.wikimedia.org/wiki/File:Harold_Edwin_Hurst_in_1953.jpg | Elliott & Fry (1953), public domain |
 | ch8_mandelbrot_2006.jpg | https://commons.wikimedia.org/wiki/File:Mandelbrot_p1130876.jpg | David Monniaux (2006), CC BY-SA 3.0 |
 | ch8_aswan_low_dam.jpg | https://commons.wikimedia.org/wiki/File:Aswan_Low_Dam_Egypt_1.jpg | Karelj (2010), public domain |
+
+## Chapter 10 — State space models, Kalman filter and Markov switching
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch10_kalman_2007.jpg | https://commons.wikimedia.org/wiki/File:ETH-BIB-Kalman,_Rudolf_E._(1930-2016)-HK_04-01925.jpg | ETH-Bibliothek Zürich, Bildarchiv (2007), CC BY-SA 4.0 |
+| ch10_apollo8_navigation_1968.jpg | https://commons.wikimedia.org/wiki/File:Apollo_8_Lovell_at_Guidance_and_Navigation_station.jpg | NASA (1968), public domain |
+| ch10_nber_offices_2022.jpg | https://commons.wikimedia.org/wiki/File:National_Bureau_of_Economic_Research_offices.jpg | Astrophobe (2022), CC BY-SA 4.0 |

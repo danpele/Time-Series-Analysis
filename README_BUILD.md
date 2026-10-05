@@ -49,7 +49,7 @@ Glossary and chapter-link processing only touches decks that sit at these paths 
 |---|---|---|---|
 | 0 | intro | Introducere: componente și netezire exponențială | converted to the new preamble (content of 2025/2026) |
 | 1–9 | stationarity, arma, arima, seasonal, garch, var, cointegration, long-memory, ml | see `latex/tsa_chapters.py` | 2025/2026 decks linked |
-| 10 | state-space | Modele în spațiul stărilor, filtrul Kalman și modele Markov switching | new, in preparation |
+| 10 | state-space | Modele în spațiul stărilor, filtrul Kalman și modele Markov switching | rebuilt |
 | 11–14 | foundation-models, spectral, lppl, mgarch | studiu individual (`selfStudy: true`) | 2025/2026 decks linked |
 | 15 | review | Recapitulare și pregătire pentru examen | 2025/2026 deck linked |
 

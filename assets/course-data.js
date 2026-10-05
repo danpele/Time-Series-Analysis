@@ -413,10 +413,15 @@
                 id: 'state-space', num: 10,
                 title: { en: 'State space models, Kalman filter and Markov switching', ro: 'Modele în spațiul stărilor, filtrul Kalman și modele Markov switching' },
                 topics: {
-                    en: ['The state space form: measurement and transition equations; the local level and local linear trend models', 'The Kalman filter and smoother, maximum-likelihood estimation, missing values', 'Markov-switching models: regimes, transition probabilities, filtered and smoothed regime probabilities (Hamilton, 1989)'],
-                    ro: ['Forma în spațiul stărilor: ecuația de măsurare și ecuația de tranziție; modelele local level și local linear trend', 'Filtrul și netezitorul Kalman, estimarea prin verosimilitate maximă, valori lipsă', 'Modele Markov switching: regimuri, probabilități de tranziție, probabilitățile filtrate și netezite ale regimurilor (Hamilton, 1989)']
+                    en: ['The state space form: measurement and transition equations; local level, local linear trend, ARMA and time-varying regression; the Kalman filter by hand and exponential smoothing as its steady state', 'Smoothing, likelihood, diagnostics and missing data (the Nile); trend and cycle of Romanian GDP with unobserved components, the HP filter and the Hamilton (2018) critique; dynamic factors and nowcasting', 'Markov-switching models (Hamilton, 1989): transition probabilities, durations, filtered and smoothed regime probabilities; US recessions against the NBER dates, Romanian growth regimes, volatility regimes, links to GARCH and long memory'],
+                    ro: ['Forma în spațiul stărilor: ecuația de măsurare și ecuația de tranziție; local level, local linear trend, ARMA și regresia cu parametri variabili; filtrul Kalman calculat de mînă și netezirea exponențială ca stare de echilibru a acestuia', 'Netezirea, verosimilitatea, diagnosticarea și valorile lipsă (Nilul); trendul și ciclul PIB-ului României cu componente neobservate, filtrul HP și critica lui Hamilton (2018); factori dinamici și nowcasting', 'Modele Markov switching (Hamilton, 1989): probabilități de tranziție, durate, probabilitățile filtrate și netezite ale regimurilor; recesiunile din SUA comparate cu datările NBER, regimuri ale creșterii în România, regimuri de volatilitate, legături cu GARCH și memoria lungă']
                 },
-                links: { en: [soon('slides'), soon('seminar')], ro: [soon('slides'), soon('seminar')] },
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter10_state_space_kalman_markov_switching.pdf'), pdf('seminar', 'EN/Seminars/seminar10_state_space_kalman_markov_switching.pdf'),
+                         nb('notebooks/EN/chapter10_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter10_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_10')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol10_spatiul_starilor_kalman_markov_switching.pdf'), pdf('seminar', 'RO/Seminarii/seminar10_spatiul_starilor_kalman_markov_switching_ro.pdf'),
+                         nb('notebooks/EN/chapter10_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter10_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_10')]
+                },
                 quantinar: q('kalman')
             },
             {
