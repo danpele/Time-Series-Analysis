@@ -1,7 +1,6 @@
 // ============================================================
 // Chapter 5 quiz bank: Conditional volatility: ARCH and GARCH (EN + RO)
-// 20 questions ported from the 2025/2026 site; 20 drawn per attempt.
-// The bank grows to 24 questions when the chapter is rebuilt.
+// 24 questions, 20 drawn per attempt.
 // correct = index (0-3) of the right option in the original order.
 // incorrectExplanation must not name a letter: the engine prepends
 // "The correct answer is X) ..." after shuffling the options.
@@ -10,543 +9,651 @@ window.TSA_DATA.quizzes['garch'] = {
     "draw": 20,
     "questions": [
         {
-            "correct": 1,
+            "correct": 0,
             "en": {
                 "title": "Volatility clustering",
                 "text": "What does \"volatility clustering\" mean?",
                 "options": [
-                    "Volatility is constant over time",
-                    "Periods of high volatility tend to be followed by further periods of high volatility",
-                    "Returns are autocorrelated over time",
+                    "Large changes tend to be followed by large changes, of either sign, and small changes by small changes",
+                    "Returns are positively autocorrelated, so a rise is followed by a rise",
+                    "Volatility is the same in every year of the sample",
                     "Returns follow the Normal distribution"
                 ],
-                "correctExplanation": "Volatility clustering (Mandelbrot, 1963): turbulent periods tend to be followed by turbulent periods and calm periods by calm ones. This persistence of volatility motivates ARCH/GARCH models.",
-                "incorrectExplanation": "Clustering concerns the magnitude of returns (squared or absolute returns are autocorrelated), not the returns themselves, which are close to uncorrelated; and it is incompatible with constant volatility. In Mandelbrot's words, \"large changes tend to be followed by large changes\"."
+                "correctExplanation": "Mandelbrot (1963): \"large changes tend to be followed by large changes, of either sign\". The size of the moves is persistent, not their direction; this is what ARCH and GARCH models describe.",
+                "incorrectExplanation": "Clustering concerns the size of the returns (their squares or absolute values), not their sign: daily returns are almost uncorrelated. It also rules out a constant volatility and does not require Normality."
             },
             "ro": {
                 "title": "Volatility clustering",
-                "text": "Ce reprezintă fenomenul de „volatility clustering”?",
+                "text": "Ce înseamnă fenomenul de „volatility clustering”?",
                 "options": [
-                    "Volatilitatea este constantă în timp",
-                    "Perioadele de volatilitate ridicată tind să fie urmate de alte perioade de volatilitate ridicată",
-                    "Randamentele sînt autocorelate în timp",
+                    "Variațiile mari tind să fie urmate de variații mari, de orice semn, iar cele mici de variații mici",
+                    "Randamentele sînt pozitiv autocorelate, deci o creștere este urmată de o creștere",
+                    "Volatilitatea este aceeași în fiecare an al eșantionului",
                     "Randamentele au distribuția Normală"
                 ],
-                "correctExplanation": "Volatility clustering (Mandelbrot, 1963): perioadele agitate tind să fie urmate de perioade agitate, iar cele calme de perioade calme. Această persistență a volatilității motivează modelele ARCH/GARCH.",
-                "incorrectExplanation": "Fenomenul privește mărimea randamentelor (randamentele la pătrat sau în valoare absolută sînt autocorelate), nu randamentele propriu-zise, care sînt aproape necorelate; în plus, este incompatibil cu o volatilitate constantă. În formularea lui Mandelbrot, „large changes tend to be followed by large changes”."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "GARCH parameters",
-                "text": "In the GARCH(1,1) model σₜ² = ω + α·εₜ₋₁² + β·σₜ₋₁², what does α represent?",
-                "options": [
-                    "The persistence of volatility",
-                    "The baseline level of volatility",
-                    "The reaction to recent shocks (news coefficient)",
-                    "The unconditional variance"
-                ],
-                "correctExplanation": "α is the ARCH coefficient: it measures how strongly volatility reacts to the latest squared shock εₜ₋₁². β measures persistence (the memory of volatility) and ω sets the baseline level.",
-                "incorrectExplanation": "Persistence is governed by β (and overall by α + β), the baseline by ω, and the unconditional variance is ω/(1 − α − β), a combination of all three. A large α means volatility reacts strongly to recent news."
-            },
-            "ro": {
-                "title": "Parametrii GARCH",
-                "text": "În modelul GARCH(1,1) σₜ² = ω + α·εₜ₋₁² + β·σₜ₋₁², ce reprezintă α?",
-                "options": [
-                    "Persistența volatilității",
-                    "Nivelul de bază al volatilității",
-                    "Reacția la șocurile recente (news coefficient)",
-                    "Varianța necondiționată"
-                ],
-                "correctExplanation": "α este coeficientul ARCH: măsoară cît de puternic reacționează volatilitatea la ultimul șoc la pătrat, εₜ₋₁². β măsoară persistența (memoria volatilității), iar ω fixează nivelul de bază.",
-                "incorrectExplanation": "Persistența este dată de β (și, global, de α + β), nivelul de bază de ω, iar varianța necondiționată este ω/(1 − α − β), o combinație a tuturor celor trei. Un α mare înseamnă că volatilitatea reacționează puternic la veștile recente."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Stationarity condition",
-                "text": "With ω > 0, α ≥ 0 and β ≥ 0, what is the condition for covariance stationarity of a GARCH(1,1)?",
-                "options": [
-                    "ω > 0",
-                    "α + β = 1",
-                    "α + β < 1",
-                    "α > β"
-                ],
-                "correctExplanation": "α + β < 1 ensures mean reversion: volatility reverts to the unconditional level σ̄² = ω/(1 − α − β). If α + β = 1 the model is IGARCH (shocks to volatility persist indefinitely).",
-                "incorrectExplanation": "ω > 0 only guarantees a positive variance; α + β = 1 is the IGARCH boundary, where the unconditional variance is infinite; the relative size of α and β is irrelevant for stationarity. The condition α + β < 1 guarantees a finite unconditional variance."
-            },
-            "ro": {
-                "title": "Condiția de staționaritate",
-                "text": "Cu ω > 0, α ≥ 0 și β ≥ 0, care este condiția de staționaritate în covarianță pentru un GARCH(1,1)?",
-                "options": [
-                    "ω > 0",
-                    "α + β = 1",
-                    "α + β < 1",
-                    "α > β"
-                ],
-                "correctExplanation": "Condiția α + β < 1 asigură revenirea la medie: volatilitatea revine la nivelul necondiționat σ̄² = ω/(1 − α − β). Dacă α + β = 1, modelul devine IGARCH (șocurile de volatilitate persistă la nesfîrșit).",
-                "incorrectExplanation": "ω > 0 garantează doar o varianță pozitivă; α + β = 1 este limita IGARCH, unde varianța necondiționată este infinită; mărimea relativă a lui α și β nu contează pentru staționaritate. Condiția α + β < 1 garantează o varianță necondiționată finită."
-            }
-        },
-        {
-            "correct": 2,
-            "en": {
-                "title": "Unconditional variance",
-                "text": "What is the unconditional variance of a covariance-stationary GARCH(1,1)?",
-                "options": [
-                    "σ̄² = ω",
-                    "σ̄² = ω / (1 − α)",
-                    "σ̄² = ω / (1 − α − β)",
-                    "σ̄² = ω / (α + β)"
-                ],
-                "correctExplanation": "From E[σₜ²] = ω + (α + β)·E[σₜ²] we get σ̄² = ω/(1 − α − β). Example with daily returns: ω = 0.00001, α = 0.05, β = 0.93 give σ̄² = 0.0005, i.e. a daily volatility of about 2.24%, roughly 35% annualised (×√252).",
-                "incorrectExplanation": "ω alone ignores the feedback from past shocks and past variance; ω/(1 − α) is the ARCH(1) formula, which omits β; ω/(α + β) has no derivation. The formula ω/(1 − α − β) requires α + β < 1."
-            },
-            "ro": {
-                "title": "Varianța necondiționată",
-                "text": "Care este varianța necondiționată a unui GARCH(1,1) staționar în covarianță?",
-                "options": [
-                    "σ̄² = ω",
-                    "σ̄² = ω / (1 − α)",
-                    "σ̄² = ω / (1 − α − β)",
-                    "σ̄² = ω / (α + β)"
-                ],
-                "correctExplanation": "Din E[σₜ²] = ω + (α + β)·E[σₜ²] rezultă σ̄² = ω/(1 − α − β). Exemplu pentru randamente zilnice: ω = 0,00001, α = 0,05 și β = 0,93 dau σ̄² = 0,0005, adică o volatilitate zilnică de aproximativ 2,24%, circa 35% anualizat (×√252).",
-                "incorrectExplanation": "ω singur ignoră efectul șocurilor și al varianței din trecut; ω/(1 − α) este formula pentru ARCH(1), care omite β; ω/(α + β) nu are nicio justificare. Formula ω/(1 − α − β) cere α + β < 1."
+                "correctExplanation": "Mandelbrot (1963): „variațiile mari tind să fie urmate de variații mari, de orice semn”. Mărimea variațiilor este persistentă, nu direcția lor; acest fenomen este descris de modelele ARCH și GARCH.",
+                "incorrectExplanation": "Fenomenul privește mărimea randamentelor (pătratele sau valorile absolute), nu semnul lor: randamentele zilnice sînt aproape necorelate. El exclude o volatilitate constantă și nu cere distribuția Normală."
             }
         },
         {
             "correct": 1,
             "en": {
-                "title": "Leverage effect",
-                "text": "What is the \"leverage effect\"?",
+                "title": "ACF of returns and squared returns",
+                "text": "For daily S&P 500 returns since 2000, what do the sample ACFs of $r_t$ and $r_t^2$ typically show?",
                 "options": [
-                    "Positive shocks raise volatility more than negative ones",
-                    "Negative shocks raise volatility more than positive shocks of the same size",
-                    "Volatility does not depend on the sign of shocks",
-                    "Returns have an asymmetric distribution"
+                    "Both ACFs are close to zero at every lag",
+                    "The ACF of $r_t$ is close to zero, while the ACF of $r_t^2$ is positive and decays slowly",
+                    "The ACF of $r_t$ decays slowly, while the ACF of $r_t^2$ is close to zero",
+                    "Both ACFs are large and negative at lag 1"
                 ],
-                "correctExplanation": "Leverage effect (Black, 1976): a fall in the share price raises the debt-to-equity ratio, the firm becomes riskier and volatility rises. A standard GARCH cannot capture this, because it depends on ε² and is symmetric in the sign of the shock.",
-                "incorrectExplanation": "The asymmetry runs from bad news to higher volatility, not the other way round; sign independence is exactly what the standard GARCH assumes; skewness of returns is a different property of the unconditional distribution. Bad news amplifies volatility more than good news."
+                "correctExplanation": "Returns are close to white noise (Chapter 1), so the direction of tomorrow's move is almost unpredictable; their squares have a positive, slowly decaying ACF (about 0.3 at lag 1 and still positive at lag 50): the size of the move is predictable.",
+                "incorrectExplanation": "The sign of daily returns is almost unpredictable, so the ACF of $r_t$ stays near zero; the squares are strongly and persistently autocorrelated. Uncorrelated does not mean independent."
             },
             "ro": {
-                "title": "Leverage effect",
-                "text": "Ce este „leverage effect”?",
+                "title": "ACF a randamentelor și a pătratelor lor",
+                "text": "Pentru randamentele zilnice S&P 500 din 2000, ce arată de obicei ACF de selecție a lui $r_t$ și a lui $r_t^2$?",
                 "options": [
-                    "Șocurile pozitive cresc volatilitatea mai mult decît cele negative",
-                    "Șocurile negative cresc volatilitatea mai mult decît șocurile pozitive de aceeași mărime",
-                    "Volatilitatea nu depinde de semnul șocurilor",
-                    "Randamentele au o distribuție asimetrică"
+                    "Ambele ACF sînt apropiate de zero la toate decalajele",
+                    "ACF a lui $r_t$ este apropiată de zero, iar ACF a lui $r_t^2$ este pozitivă și scade lent",
+                    "ACF a lui $r_t$ scade lent, iar ACF a lui $r_t^2$ este apropiată de zero",
+                    "Ambele ACF sînt mari și negative la decalajul 1"
                 ],
-                "correctExplanation": "Leverage effect (Black, 1976): o scădere a prețului acțiunii crește raportul dintre datorii și capitalul propriu, firma devine mai riscantă, iar volatilitatea crește. Un GARCH standard nu poate surprinde acest efect, deoarece depinde de ε² și este simetric în raport cu semnul șocului.",
-                "incorrectExplanation": "Asimetria merge de la veștile proaste spre volatilitate mai mare, nu invers; independența de semn este exact ipoteza GARCH standard; asimetria randamentelor este o altă proprietate, a distribuției necondiționate. Veștile proaste amplifică volatilitatea mai mult decît veștile bune."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "EGARCH asymmetry parameter",
-                "text": "In the EGARCH model ln(σₜ²) = ω + α|zₜ₋₁| + γzₜ₋₁ + β·ln(σₜ₋₁²), a negative γ indicates:",
-                "options": [
-                    "No leverage effect",
-                    "The presence of a leverage effect",
-                    "Constant volatility",
-                    "A nonstationary model"
-                ],
-                "correctExplanation": "EGARCH (Nelson, 1991): with γ < 0 a negative standardised shock (zₜ₋₁ < 0) raises ln(σₜ²) by α|z| − γ|z| = (α + |γ|)|z|, more than a positive shock of the same size, i.e. a leverage effect.",
-                "incorrectExplanation": "γ = 0 would mean symmetry (no leverage effect); volatility is constant only if α = γ = β = 0; stationarity depends on |β| < 1, not on the sign of γ. A negative γ confirms that negative returns raise volatility more."
-            },
-            "ro": {
-                "title": "Parametrul de asimetrie din EGARCH",
-                "text": "În modelul EGARCH ln(σₜ²) = ω + α|zₜ₋₁| + γzₜ₋₁ + β·ln(σₜ₋₁²), un parametru γ negativ indică:",
-                "options": [
-                    "Absența leverage effect",
-                    "Prezența leverage effect",
-                    "Volatilitate constantă",
-                    "Un model nestaționar"
-                ],
-                "correctExplanation": "EGARCH (Nelson, 1991): cu γ < 0, un șoc standardizat negativ (zₜ₋₁ < 0) crește ln(σₜ²) cu α|z| − γ|z| = (α + |γ|)|z|, mai mult decît un șoc pozitiv de aceeași mărime, adică apare leverage effect.",
-                "incorrectExplanation": "γ = 0 ar însemna simetrie (fără leverage effect); volatilitatea este constantă doar dacă α = γ = β = 0; staționaritatea depinde de |β| < 1, nu de semnul lui γ. Un γ negativ confirmă că randamentele negative cresc volatilitatea mai mult."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Advantage of EGARCH",
-                "text": "What is the main advantage of EGARCH over GARCH?",
-                "options": [
-                    "It is faster to estimate",
-                    "It needs no non-negativity restrictions on the parameters",
-                    "It has fewer parameters",
-                    "It is easier to interpret"
-                ],
-                "correctExplanation": "EGARCH models ln(σ²) rather than σ². Any value of ln(σ²) gives σ² > 0 automatically, without the restrictions ω > 0, α ≥ 0, β ≥ 0 required in GARCH; it also captures asymmetry.",
-                "incorrectExplanation": "EGARCH is not faster to estimate and has at least as many parameters as GARCH(1,1) (the extra γ); its log-scale parameters are, if anything, harder to interpret. The key gain is positivity without parameter constraints."
-            },
-            "ro": {
-                "title": "Avantajul EGARCH",
-                "text": "Care este principalul avantaj al EGARCH față de GARCH?",
-                "options": [
-                    "Se estimează mai rapid",
-                    "Nu necesită restricții de nenegativitate asupra parametrilor",
-                    "Are mai puțini parametri",
-                    "Este mai ușor de interpretat"
-                ],
-                "correctExplanation": "EGARCH modelează ln(σ²), nu σ². Orice valoare a lui ln(σ²) dă automat σ² > 0, fără restricțiile ω > 0, α ≥ 0, β ≥ 0 necesare în GARCH; în plus, surprinde asimetria.",
-                "incorrectExplanation": "EGARCH nu se estimează mai rapid și are cel puțin tot atîția parametri cît GARCH(1,1) (în plus, γ); parametrii pe scară logaritmică sînt, mai degrabă, mai greu de interpretat. Avantajul esențial este pozitivitatea fără restricții asupra parametrilor."
+                "correctExplanation": "Randamentele sînt apropiate de zgomotul alb (Capitolul 1), deci direcția variației de mîine este aproape imprevizibilă; pătratele lor au o ACF pozitivă care scade lent (circa 0,3 la decalajul 1 și încă pozitivă la decalajul 50): mărimea variației este previzibilă.",
+                "incorrectExplanation": "Semnul randamentelor zilnice este aproape imprevizibil, deci ACF a lui $r_t$ rămîne aproape de zero; pătratele sînt autocorelate puternic și persistent. Necorelat nu înseamnă independent."
             }
         },
         {
             "correct": 2,
             "en": {
                 "title": "ARCH-LM test",
-                "text": "Which test is used to detect ARCH effects in residuals?",
+                "text": "An ARCH-LM regression of $\\hat\\varepsilon_t^2$ on a constant and 5 lags uses $n = 500$ observations and gives $R^2 = 0.05$. What do you conclude at 5% ($\\chi^2_{0.95}(5) = 11.07$)?",
                 "options": [
-                    "The Dickey-Fuller test",
-                    "The Ljung-Box test on the residuals",
-                    "Engle's ARCH-LM test",
-                    "The Breusch-Pagan test"
+                    "$\\mathrm{LM} = 0.05$: no ARCH effects",
+                    "$\\mathrm{LM} = 2.5$: no ARCH effects",
+                    "$\\mathrm{LM} = 25$: reject $H_0$, there are ARCH effects",
+                    "The test cannot be computed without the coefficients"
                 ],
-                "correctExplanation": "ARCH-LM (Engle, 1982): regress ε̂ₜ² on ε̂ₜ₋₁², …, ε̂ₜ₋q² and use T·R² ~ χ²(q). Rejection indicates conditional heteroskedasticity.",
-                "incorrectExplanation": "Dickey-Fuller tests for unit roots; Ljung-Box on the residuals themselves detects autocorrelation in the mean (on squared residuals it becomes the McLeod-Li test, a close relative of ARCH-LM); Breusch-Pagan tests heteroskedasticity linked to regressors, not to past shocks."
+                "correctExplanation": "$\\mathrm{LM} = nR^2 = 500 \\times 0.05 = 25 > 11.07$: the squared residuals are predictable from their own past, so the conditional variance is not constant.",
+                "incorrectExplanation": "The statistic is $nR^2$, compared with $\\chi^2(q)$; here $500 \\times 0.05 = 25$, well above 11.07. The coefficients are not needed, only $R^2$ and $n$."
             },
             "ro": {
                 "title": "Testul ARCH-LM",
-                "text": "Ce test se folosește pentru a detecta efecte ARCH în reziduuri?",
+                "text": "O regresie ARCH-LM a lui $\\hat\\varepsilon_t^2$ pe o constantă și 5 decalaje folosește $n = 500$ de observații și dă $R^2 = 0,05$. Ce concluzie trageți la 5% ($\\chi^2_{0,95}(5) = 11,07$)?",
                 "options": [
-                    "Testul Dickey-Fuller",
-                    "Testul Ljung-Box aplicat reziduurilor",
-                    "Testul ARCH-LM al lui Engle",
-                    "Testul Breusch-Pagan"
+                    "$\\mathrm{LM} = 0,05$: nu există efecte ARCH",
+                    "$\\mathrm{LM} = 2,5$: nu există efecte ARCH",
+                    "$\\mathrm{LM} = 25$: respingem $H_0$, există efecte ARCH",
+                    "Testul nu se poate calcula fără coeficienți"
                 ],
-                "correctExplanation": "ARCH-LM (Engle, 1982): se regresează ε̂ₜ² pe ε̂ₜ₋₁², …, ε̂ₜ₋q² și se folosește T·R² ~ χ²(q). Respingerea ipotezei nule indică heteroscedasticitate condiționată.",
-                "incorrectExplanation": "Testul Dickey-Fuller privește rădăcinile unitare; Ljung-Box aplicat reziduurilor propriu-zise detectează autocorelația în medie (aplicat pătratelor reziduurilor devine testul McLeod-Li, înrudit cu ARCH-LM); Breusch-Pagan testează heteroscedasticitatea legată de regresori, nu de șocurile trecute."
+                "correctExplanation": "$\\mathrm{LM} = nR^2 = 500 \\times 0,05 = 25 > 11,07$: pătratele reziduurilor sînt previzibile din propriul trecut, deci varianța condiționată nu este constantă.",
+                "incorrectExplanation": "Statistica este $nR^2$, comparată cu $\\chi^2(q)$; aici $500 \\times 0,05 = 25$, mult peste 11,07. Coeficienții nu sînt necesari, doar $R^2$ și $n$."
             }
         },
         {
-            "correct": 2,
+            "correct": 3,
             "en": {
-                "title": "Typical persistence",
-                "text": "For daily S&P 500 returns, typical estimates of α + β in a GARCH(1,1) are:",
+                "title": "Conditional and unconditional variance",
+                "text": "Which statement about $\\sigma_t^2 = \\mathrm{Var}(r_t \\mid \\mathcal{F}_{t-1})$ is correct?",
                 "options": [
-                    "0.50 – 0.70",
-                    "0.70 – 0.85",
-                    "0.95 – 0.99",
-                    "Greater than 1"
+                    "It is the same number for every day of the sample",
+                    "It can only be computed after day $t$ has ended",
+                    "It equals $r_t^2$ exactly",
+                    "It is known at $t-1$, changes over time, and its average is the unconditional variance"
                 ],
-                "correctExplanation": "Typical daily S&P 500 estimates: α ≈ 0.04–0.08 and β ≈ 0.90–0.94, so α + β ≈ 0.97–0.99. Persistence is very high: volatility shocks fade slowly (a half-life of several weeks).",
-                "incorrectExplanation": "Values of 0.5–0.85 would imply that volatility shocks vanish within days, which contradicts the observed clustering; values above 1 would imply an explosive, nonstationary variance. Market volatility is highly persistent, with α + β close to but below 1."
+                "correctExplanation": "The conditional variance uses only the information up to $t-1$, so it is known one day ahead and moves with the news; by the law of total variance, its average (with a constant mean) is the unconditional variance.",
+                "incorrectExplanation": "The unconditional variance is one number; the conditional variance moves from day to day and is known one day in advance. $r_t^2$ is only a noisy proxy of $\\sigma_t^2$, since $E_{t-1}[r_t^2] = \\sigma_t^2$ when the mean is zero."
             },
             "ro": {
-                "title": "Valori tipice ale persistenței",
-                "text": "Pentru randamentele zilnice ale indicelui S&P 500, valorile tipice estimate pentru α + β într-un GARCH(1,1) sînt:",
+                "title": "Varianța condiționată și varianța necondiționată",
+                "text": "Care afirmație despre $\\sigma_t^2 = \\mathrm{Var}(r_t \\mid \\mathcal{F}_{t-1})$ este corectă?",
                 "options": [
-                    "0,50 – 0,70",
-                    "0,70 – 0,85",
-                    "0,95 – 0,99",
-                    "Mai mari decît 1"
+                    "Este același număr pentru fiecare zi a eșantionului",
+                    "Poate fi calculată doar după încheierea zilei $t$",
+                    "Este exact egală cu $r_t^2$",
+                    "Este cunoscută la $t-1$, se schimbă în timp, iar media ei este varianța necondiționată"
                 ],
-                "correctExplanation": "Estimări tipice pentru S&P 500, date zilnice: α ≈ 0,04–0,08 și β ≈ 0,90–0,94, deci α + β ≈ 0,97–0,99. Persistența este foarte ridicată: șocurile de volatilitate se sting lent (timp de înjumătățire de cîteva săptămîni).",
-                "incorrectExplanation": "Valori de 0,5–0,85 ar însemna că șocurile de volatilitate dispar în cîteva zile, ceea ce contrazice volatility clustering observat; valori peste 1 ar implica o varianță explozivă, nestaționară. Volatilitatea piețelor este foarte persistentă, cu α + β apropiat de 1, dar sub 1."
+                "correctExplanation": "Varianța condiționată folosește doar informația pînă la $t-1$, deci este cunoscută cu o zi înainte și se schimbă odată cu știrile; din legea varianței totale, media ei (cu medie constantă) este varianța necondiționată.",
+                "incorrectExplanation": "Varianța necondiționată este un singur număr; varianța condiționată se schimbă de la o zi la alta și este cunoscută cu o zi înainte. $r_t^2$ este doar o aproximare zgomotoasă a lui $\\sigma_t^2$, deoarece $E_{t-1}[r_t^2] = \\sigma_t^2$ cînd media este zero."
             }
         },
         {
-            "correct": 2,
+            "correct": 0,
             "en": {
-                "title": "Innovation distribution",
-                "text": "Which distribution is most often used for GARCH innovations in order to capture fat tails?",
+                "title": "ARCH(1)",
+                "text": "An ARCH(1) model has $\\omega = 0.2$ and $\\alpha = 0.6$. What is its unconditional variance?",
                 "options": [
-                    "The Normal distribution",
-                    "The uniform distribution",
-                    "Student's t distribution",
-                    "The exponential distribution"
+                    "$0.5$",
+                    "$0.2$",
+                    "$0.12$",
+                    "$0.8$"
                 ],
-                "correctExplanation": "Student's t with ν degrees of freedom (rescaled to unit variance) captures fat tails (leptokurtosis); as ν → ∞ it converges to the Normal distribution. A common alternative is the GED (generalised error distribution).",
-                "incorrectExplanation": "Even a GARCH with Normal innovations has fat-tailed unconditional returns, but its standardised residuals are usually still too fat-tailed for the Normal distribution; the uniform distribution has thin, bounded tails; the exponential distribution is one-sided. Student's t fits the residual tails best among these."
+                "correctExplanation": "Taking expectations in $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2$ gives $\\bar\\sigma^2 = \\omega + \\alpha\\bar\\sigma^2$, so $\\bar\\sigma^2 = \\omega/(1 - \\alpha) = 0.2/0.4 = 0.5$.",
+                "incorrectExplanation": "The unconditional variance solves $\\bar\\sigma^2 = \\omega + \\alpha\\bar\\sigma^2$, which gives $\\omega/(1 - \\alpha) = 0.5$; $\\omega$ alone is the variance after a zero shock, not the average variance."
             },
             "ro": {
-                "title": "Distribuția inovațiilor",
-                "text": "Ce distribuție se folosește cel mai des pentru inovațiile GARCH, pentru a surprinde cozile groase?",
+                "title": "ARCH(1)",
+                "text": "Un model ARCH(1) are $\\omega = 0,2$ și $\\alpha = 0,6$. Cît este varianța lui necondiționată?",
                 "options": [
-                    "Distribuția Normală",
-                    "Distribuția uniformă",
-                    "Distribuția Student t",
-                    "Distribuția exponențială"
+                    "$0,5$",
+                    "$0,2$",
+                    "$0,12$",
+                    "$0,8$"
                 ],
-                "correctExplanation": "Distribuția Student t cu ν grade de libertate (rescalată la varianță unitară) surprinde cozile groase (leptocurtoză); cînd ν → ∞, converge către distribuția Normală. O alternativă frecventă este GED (generalised error distribution).",
-                "incorrectExplanation": "Chiar și un GARCH cu inovații Normale produce randamente necondiționate cu cozi groase, dar reziduurile standardizate au de obicei cozi încă prea groase pentru distribuția Normală; distribuția uniformă are cozi subțiri și mărginite; distribuția exponențială este unilaterală. Dintre acestea, distribuția Student t descrie cel mai bine cozile reziduurilor."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "News impact curve",
-                "text": "What does the news impact curve of a GARCH-type model show?",
-                "options": [
-                    "The relationship between returns and trading volume",
-                    "How shocks (positive and negative) affect next-period volatility",
-                    "The forecast of prices",
-                    "The correlation between assets"
-                ],
-                "correctExplanation": "News impact curve (Engle and Ng, 1993): σₜ² plotted against εₜ₋₁, with past variance held at its unconditional level. GARCH gives a symmetric parabola; EGARCH and GJR give an asymmetric curve, steeper for negative shocks.",
-                "incorrectExplanation": "The curve does not involve volume, prices or cross-asset correlation; it maps the size and sign of a shock into next-period conditional variance, which is why it is the standard way to visualise asymmetry."
-            },
-            "ro": {
-                "title": "News impact curve",
-                "text": "Ce arată news impact curve pentru un model de tip GARCH?",
-                "options": [
-                    "Relația dintre randamente și volumul tranzacțiilor",
-                    "Cum afectează șocurile (pozitive și negative) volatilitatea din perioada următoare",
-                    "Prognoza prețurilor",
-                    "Corelația dintre active"
-                ],
-                "correctExplanation": "News impact curve (Engle și Ng, 1993): graficul lui σₜ² în funcție de εₜ₋₁, cu varianța trecută fixată la nivelul ei necondiționat. GARCH dă o parabolă simetrică; EGARCH și GJR dau o curbă asimetrică, mai abruptă pentru șocurile negative.",
-                "incorrectExplanation": "Curba nu implică volumul, prețurile sau corelația dintre active; ea transformă mărimea și semnul unui șoc în varianța condiționată din perioada următoare, de aceea este modul standard de a vizualiza asimetria."
+                "correctExplanation": "Aplicînd media în $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2$ obținem $\\bar\\sigma^2 = \\omega + \\alpha\\bar\\sigma^2$, deci $\\bar\\sigma^2 = \\omega/(1 - \\alpha) = 0,2/0,4 = 0,5$.",
+                "incorrectExplanation": "Varianța necondiționată rezolvă ecuația $\\bar\\sigma^2 = \\omega + \\alpha\\bar\\sigma^2$, de unde $\\omega/(1 - \\alpha) = 0,5$; $\\omega$ singur este varianța după un șoc nul, nu varianța medie."
             }
         },
         {
             "correct": 1,
             "en": {
                 "title": "GARCH and ARCH",
-                "text": "What is the main advantage of GARCH over ARCH?",
+                "text": "What is the main advantage of GARCH(1,1) over ARCH($q$)?",
                 "options": [
-                    "It is faster to estimate",
-                    "It models the persistence of volatility with fewer parameters",
-                    "It needs no historical data",
-                    "It works only with daily data"
+                    "It removes the need to estimate any parameter",
+                    "With three parameters it reproduces a long memory of the variance that ARCH needs many lags for",
+                    "It makes the returns Normally distributed",
+                    "It models the conditional mean instead of the variance"
                 ],
-                "correctExplanation": "GARCH(1,1) captures persistent volatility with only 3 parameters (ω, α, β) and is equivalent to an ARCH(∞) with geometrically declining weights. An ARCH(q) would need q + 1 parameters, with q large, for the same persistence.",
-                "incorrectExplanation": "Estimation speed is similar, both models need historical data, and both can be applied at any frequency. The gain comes from the term β·σₜ₋₁², which captures the memory of volatility parsimoniously."
+                "correctExplanation": "GARCH(1,1) is an ARCH($\\infty$) with geometrically decaying weights $\\alpha\\beta^j$: one extra parameter replaces a long ARCH($q$). On the S&P 500, GARCH(1,1) beats ARCH(10) by AIC and BIC.",
+                "incorrectExplanation": "GARCH still has parameters, still models the variance, and does not make returns Normal; its advantage is parsimony: $\\beta\\sigma_{t-1}^2$ carries the effect of all past shocks."
             },
             "ro": {
-                "title": "GARCH față de ARCH",
-                "text": "Care este principalul avantaj al GARCH față de ARCH?",
+                "title": "GARCH și ARCH",
+                "text": "Care este principalul avantaj al GARCH(1,1) față de ARCH($q$)?",
                 "options": [
-                    "Se estimează mai rapid",
-                    "Modelează persistența volatilității cu mai puțini parametri",
-                    "Nu necesită date istorice",
-                    "Funcționează doar cu date zilnice"
+                    "Nu mai este nevoie de estimarea vreunui parametru",
+                    "Cu trei parametri reproduce o memorie lungă a varianței pentru care ARCH are nevoie de multe decalaje",
+                    "Face ca randamentele să aibă distribuția Normală",
+                    "Modelează media condiționată în locul varianței"
                 ],
-                "correctExplanation": "GARCH(1,1) surprinde persistența volatilității cu doar 3 parametri (ω, α, β) și este echivalent cu un ARCH(∞) cu ponderi descrescătoare geometric. Un ARCH(q) ar avea nevoie de q + 1 parametri, cu q mare, pentru aceeași persistență.",
-                "incorrectExplanation": "Viteza de estimare este similară, ambele modele necesită date istorice și ambele se pot aplica la orice frecvență. Avantajul provine din termenul β·σₜ₋₁², care surprinde parcimonios memoria volatilității."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Value at Risk",
-                "text": "The one-day VaR 1% of a position represents:",
-                "options": [
-                    "The maximum gain achieved with probability 1%",
-                    "The loss that is exceeded with a probability of only 1%",
-                    "The mean return",
-                    "The average volatility"
-                ],
-                "correctExplanation": "VaR 1% is minus the 1% quantile of the return distribution: VaR₀.₀₁ = −q₀.₀₁. With GARCH, VaRₜ = −(μ + z₀.₀₁·σₜ), where z₀.₀₁ = −2.326 for the Normal distribution and is larger in absolute value for a standardised Student t.",
-                "incorrectExplanation": "VaR is a loss measure, not a gain, a mean or a volatility; it is a quantile, so it says nothing about how large the losses beyond it are (that is what ES measures). With daily data, VaR 1% is exceeded on about 1% of days, roughly 2.5 days a year."
-            },
-            "ro": {
-                "title": "Value at Risk",
-                "text": "VaR 1% la orizont de o zi pentru o poziție reprezintă:",
-                "options": [
-                    "Cîștigul maxim obținut cu probabilitate 1%",
-                    "Pierderea care este depășită cu o probabilitate de numai 1%",
-                    "Randamentul mediu",
-                    "Volatilitatea medie"
-                ],
-                "correctExplanation": "VaR 1% este cuantila de 1% a distribuției randamentelor, cu semn schimbat: VaR₀,₀₁ = −q₀,₀₁. Cu GARCH, VaRₜ = −(μ + z₀,₀₁·σₜ), unde z₀,₀₁ = −2,326 pentru distribuția Normală și este mai mare în valoare absolută pentru o distribuție Student t standardizată.",
-                "incorrectExplanation": "VaR este o măsură a pierderii, nu un cîștig, o medie sau o volatilitate; fiind o cuantilă, nu spune cît de mari sînt pierderile de dincolo de ea (aceasta măsoară ES). Pe date zilnice, VaR 1% este depășit în aproximativ 1% din zile, adică în circa 2,5 zile pe an."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "GJR-GARCH",
-                "text": "In the GJR-GARCH model, the term γ·I(εₜ₋₁ < 0)·εₜ₋₁² captures:",
-                "options": [
-                    "The effect of positive shocks",
-                    "The additional impact of negative shocks (leverage effect)",
-                    "The constant of the model",
-                    "The persistence of volatility"
-                ],
-                "correctExplanation": "GJR-GARCH (Glosten, Jagannathan and Runkle, 1993): the indicator I(εₜ₋₁ < 0) equals 1 only for negative shocks. With γ > 0, bad news raises next-period variance by (α + γ)·ε² instead of α·ε².",
-                "incorrectExplanation": "Positive shocks enter only through α·ε²; the constant is ω and persistence is governed by β (overall α + β + γ/2 for symmetric innovations). The indicator term switches on γ only when the shock is negative."
-            },
-            "ro": {
-                "title": "GJR-GARCH",
-                "text": "În modelul GJR-GARCH, termenul γ·I(εₜ₋₁ < 0)·εₜ₋₁² surprinde:",
-                "options": [
-                    "Efectul șocurilor pozitive",
-                    "Impactul suplimentar al șocurilor negative (leverage effect)",
-                    "Constanta modelului",
-                    "Persistența volatilității"
-                ],
-                "correctExplanation": "GJR-GARCH (Glosten, Jagannathan și Runkle, 1993): indicatorul I(εₜ₋₁ < 0) este 1 doar pentru șocurile negative. Cu γ > 0, veștile proaste cresc varianța din perioada următoare cu (α + γ)·ε², în loc de α·ε².",
-                "incorrectExplanation": "Șocurile pozitive intră doar prin α·ε²; constanta este ω, iar persistența este dată de β (global, α + β + γ/2 pentru inovații simetrice). Termenul cu indicator îl activează pe γ doar cînd șocul este negativ."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "IGARCH",
-                "text": "An IGARCH (integrated GARCH) model has the property that:",
-                "options": [
-                    "Volatility reverts quickly to its mean",
-                    "α + β = 1, so volatility does not revert to a finite mean level",
-                    "Volatility is constant",
-                    "α + β < 0.5"
-                ],
-                "correctExplanation": "IGARCH: α + β = 1, i.e. unit persistence. Shocks to volatility do not die out in the forecasts, and the unconditional variance ω/(1 − 1) does not exist (it is infinite). The RiskMetrics EWMA is an IGARCH with ω = 0.",
-                "incorrectExplanation": "Fast mean reversion corresponds to a small α + β, and constant volatility to α = β = 0; IGARCH is the opposite extreme. It is the volatility analogue of a unit root."
-            },
-            "ro": {
-                "title": "IGARCH",
-                "text": "Un model IGARCH (GARCH integrat) are proprietatea că:",
-                "options": [
-                    "Volatilitatea revine rapid la medie",
-                    "α + β = 1, deci volatilitatea nu revine la un nivel mediu finit",
-                    "Volatilitatea este constantă",
-                    "α + β < 0,5"
-                ],
-                "correctExplanation": "IGARCH: α + β = 1, adică persistență unitară. Șocurile de volatilitate nu se sting în prognoze, iar varianța necondiționată ω/(1 − 1) nu există (este infinită). Modelul EWMA din RiskMetrics este un IGARCH cu ω = 0.",
-                "incorrectExplanation": "Revenirea rapidă la medie corespunde unui α + β mic, iar volatilitatea constantă cazului α = β = 0; IGARCH este extrema opusă. El reprezintă, pentru volatilitate, analogul unei rădăcini unitare."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "Standardised residuals",
-                "text": "The standardised residuals of a GARCH model are:",
-                "options": [
-                    "εₜ (the raw residuals)",
-                    "εₜ / σₜ (the residuals divided by the conditional volatility)",
-                    "σₜ² (the conditional variance)",
-                    "εₜ × σₜ"
-                ],
-                "correctExplanation": "zₜ = εₜ/σₜ should be i.i.d. with mean 0 and variance 1 if the model is correct (Normal or Student t, as assumed). Diagnostics: Ljung-Box on zₜ and zₜ² (no remaining ARCH) and Jarque-Bera or a QQ plot on zₜ.",
-                "incorrectExplanation": "Raw residuals still contain the volatility clustering, the conditional variance is a fitted quantity rather than a residual, and multiplying by σₜ amplifies heteroskedasticity instead of removing it. Standardisation divides by the estimated σₜ."
-            },
-            "ro": {
-                "title": "Reziduuri standardizate",
-                "text": "Reziduurile standardizate ale unui model GARCH sînt:",
-                "options": [
-                    "εₜ (reziduurile brute)",
-                    "εₜ / σₜ (reziduurile împărțite la volatilitatea condiționată)",
-                    "σₜ² (varianța condiționată)",
-                    "εₜ × σₜ"
-                ],
-                "correctExplanation": "Dacă modelul este corect, zₜ = εₜ/σₜ trebuie să fie i.i.d., cu media 0 și varianța 1 (Normale sau Student t, după ipoteza făcută). Diagnosticare: Ljung-Box pe zₜ și pe zₜ² (fără efecte ARCH rămase) și Jarque-Bera sau QQ plot pe zₜ.",
-                "incorrectExplanation": "Reziduurile brute conțin încă volatility clustering, varianța condiționată este o mărime estimată, nu un reziduu, iar înmulțirea cu σₜ amplifică heteroscedasticitatea în loc să o elimine. Standardizarea înseamnă împărțirea la σₜ estimat."
-            }
-        },
-        {
-            "correct": 1,
-            "en": {
-                "title": "TGARCH",
-                "text": "In its underlying idea, the TGARCH (threshold GARCH) model is closest to:",
-                "options": [
-                    "The standard GARCH",
-                    "GJR-GARCH (both capture asymmetry)",
-                    "ARCH(1)",
-                    "The random walk"
-                ],
-                "correctExplanation": "TGARCH (Zakoian, 1994) models σₜ rather than σₜ², while GJR-GARCH models σₜ². Both use a threshold at zero to separate the impact of positive and negative shocks.",
-                "incorrectExplanation": "Standard GARCH and ARCH(1) are symmetric in the sign of the shock, and the random walk is a model for the level of a series, not for its volatility. TGARCH and GJR-GARCH are related asymmetric models that capture the leverage effect through indicator functions."
-            },
-            "ro": {
-                "title": "TGARCH",
-                "text": "Ca idee de bază, modelul TGARCH (threshold GARCH) este cel mai apropiat de:",
-                "options": [
-                    "GARCH standard",
-                    "GJR-GARCH (ambele surprind asimetria)",
-                    "ARCH(1)",
-                    "Mersul aleator"
-                ],
-                "correctExplanation": "TGARCH (Zakoian, 1994) modelează σₜ, nu σₜ², în timp ce GJR-GARCH modelează σₜ². Ambele folosesc un prag în zero pentru a separa impactul șocurilor pozitive de cel al șocurilor negative.",
-                "incorrectExplanation": "GARCH standard și ARCH(1) sînt simetrice în raport cu semnul șocului, iar mersul aleator este un model pentru nivelul unei serii, nu pentru volatilitatea ei. TGARCH și GJR-GARCH sînt modele asimetrice înrudite, care surprind leverage effect prin funcții indicator."
+                "correctExplanation": "GARCH(1,1) este un ARCH($\\infty$) cu ponderi care scad geometric, $\\alpha\\beta^j$: un singur parametru în plus înlocuiește un ARCH($q$) lung. Pe S&P 500, GARCH(1,1) este mai bun decît ARCH(10) după AIC și BIC.",
+                "incorrectExplanation": "GARCH are tot parametri, modelează tot varianța și nu face randamentele Normale; avantajul lui este parcimonia: $\\beta\\sigma_{t-1}^2$ transmite efectul tuturor șocurilor trecute."
             }
         },
         {
             "correct": 2,
             "en": {
-                "title": "Kurtosis of returns",
-                "text": "Financial returns usually have:",
+                "title": "GARCH parameters",
+                "text": "In $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2 + \\beta\\sigma_{t-1}^2$, what does $\\alpha$ measure?",
                 "options": [
-                    "Kurtosis = 3 (as for the Normal distribution)",
-                    "Kurtosis < 3 (thin tails)",
-                    "Kurtosis > 3 (fat tails, leptokurtic)",
-                    "Kurtosis = 0"
+                    "The long-run level of the variance",
+                    "The memory of the variance",
+                    "The reaction of the variance to yesterday's shock",
+                    "The mean return"
                 ],
-                "correctExplanation": "Financial returns are leptokurtic: fat tails (kurtosis > 3, i.e. positive excess kurtosis) and a sharper peak than the Normal distribution. This stylised fact motivates Student t innovations in GARCH models.",
-                "incorrectExplanation": "Kurtosis 3 is the Normal benchmark, which returns typically exceed; kurtosis below 3 would mean thin tails; kurtosis cannot be 0 for any non-degenerate distribution (it is at least 1). Excess kurtosis above 0 is one of the stylised facts of returns."
+                "correctExplanation": "$\\alpha$ multiplies the squared shock of yesterday: the larger $\\alpha$, the larger the jump of the variance after news. $\\beta$ is the memory and $\\omega$ fixes, together with $\\alpha + \\beta$, the long-run level.",
+                "incorrectExplanation": "The memory of the variance is $\\beta$; the long-run level is $\\omega/(1 - \\alpha - \\beta)$; the mean return is $\\mu$. $\\alpha$ is the reaction to the latest squared shock."
             },
             "ro": {
-                "title": "Boltirea randamentelor",
-                "text": "Randamentele financiare au de obicei:",
+                "title": "Parametrii GARCH",
+                "text": "În $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2 + \\beta\\sigma_{t-1}^2$, ce măsoară $\\alpha$?",
                 "options": [
-                    "Coeficient de boltire = 3 (ca la distribuția Normală)",
-                    "Coeficient de boltire < 3 (cozi subțiri)",
-                    "Coeficient de boltire > 3 (cozi groase, leptocurtică)",
-                    "Coeficient de boltire = 0"
+                    "Nivelul de lungă durată al varianței",
+                    "Memoria varianței",
+                    "Reacția varianței la șocul de ieri",
+                    "Randamentul mediu"
                 ],
-                "correctExplanation": "Randamentele financiare sînt leptocurtice: cozi groase (coeficient de boltire > 3, adică exces de boltire pozitiv) și un vîrf mai ascuțit decît la distribuția Normală. Acest fapt stilizat motivează inovațiile Student t în modelele GARCH.",
-                "incorrectExplanation": "Valoarea 3 este reperul distribuției Normale, pe care randamentele îl depășesc de regulă; un coeficient sub 3 ar însemna cozi subțiri; coeficientul de boltire nu poate fi 0 pentru nicio distribuție nedegenerată (este cel puțin 1). Excesul de boltire pozitiv este unul dintre faptele stilizate ale randamentelor."
+                "correctExplanation": "$\\alpha$ înmulțește pătratul șocului de ieri: cu cît $\\alpha$ este mai mare, cu atît varianța sare mai mult după o știre. $\\beta$ este memoria, iar $\\omega$ fixează, împreună cu $\\alpha + \\beta$, nivelul de lungă durată.",
+                "incorrectExplanation": "Memoria varianței este $\\beta$; nivelul de lungă durată este $\\omega/(1 - \\alpha - \\beta)$; randamentul mediu este $\\mu$. $\\alpha$ este reacția la ultimul șoc la pătrat."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Stationarity condition",
+                "text": "With $\\omega > 0$, $\\alpha \\ge 0$ and $\\beta \\ge 0$, when is a GARCH(1,1) covariance stationary?",
+                "options": [
+                    "When $\\beta < \\alpha$",
+                    "When $\\omega < 1$",
+                    "When $\\alpha + \\beta > 1$",
+                    "When $\\alpha + \\beta < 1$"
+                ],
+                "correctExplanation": "GARCH(1,1) is an ARMA(1,1) for $\\varepsilon_t^2$ with AR coefficient $\\alpha + \\beta$; the variance has a finite mean $\\omega/(1 - \\alpha - \\beta)$ only if $\\alpha + \\beta < 1$.",
+                "incorrectExplanation": "The condition concerns the persistence $\\alpha + \\beta$, the AR coefficient of $\\varepsilon_t^2$; $\\omega$ only scales the level, and $\\alpha + \\beta \\ge 1$ gives an IGARCH or an explosive variance."
+            },
+            "ro": {
+                "title": "Condiția de staționaritate",
+                "text": "Cu $\\omega > 0$, $\\alpha \\ge 0$ și $\\beta \\ge 0$, cînd este un GARCH(1,1) staționar în covarianță?",
+                "options": [
+                    "Cînd $\\beta < \\alpha$",
+                    "Cînd $\\omega < 1$",
+                    "Cînd $\\alpha + \\beta > 1$",
+                    "Cînd $\\alpha + \\beta < 1$"
+                ],
+                "correctExplanation": "GARCH(1,1) este un ARMA(1,1) pentru $\\varepsilon_t^2$, cu coeficientul AR $\\alpha + \\beta$; varianța are o medie finită, $\\omega/(1 - \\alpha - \\beta)$, doar dacă $\\alpha + \\beta < 1$.",
+                "incorrectExplanation": "Condiția privește persistența $\\alpha + \\beta$, coeficientul AR al lui $\\varepsilon_t^2$; $\\omega$ doar scalează nivelul, iar $\\alpha + \\beta \\ge 1$ dă un IGARCH sau o varianță explozivă."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Long-run variance",
+                "text": "A GARCH(1,1) for daily returns in % has $\\omega = 0.03$, $\\alpha = 0.07$, $\\beta = 0.90$. What is its long-run variance?",
+                "options": [
+                    "$1.0$",
+                    "$0.03$",
+                    "$0.3$",
+                    "$3.0$"
+                ],
+                "correctExplanation": "$\\bar\\sigma^2 = \\omega/(1 - \\alpha - \\beta) = 0.03/0.03 = 1.0$, a daily volatility of 1%, about 15.9% per year with 252 trading days.",
+                "incorrectExplanation": "The long-run variance divides $\\omega$ by $1 - \\alpha - \\beta = 0.03$; dividing by $1 - \\alpha$ or ignoring $\\beta$ gives wrong values."
+            },
+            "ro": {
+                "title": "Varianța de lungă durată",
+                "text": "Un GARCH(1,1) pentru randamente zilnice în % are $\\omega = 0,03$, $\\alpha = 0,07$, $\\beta = 0,90$. Cît este varianța lui de lungă durată?",
+                "options": [
+                    "$1,0$",
+                    "$0,03$",
+                    "$0,3$",
+                    "$3,0$"
+                ],
+                "correctExplanation": "$\\bar\\sigma^2 = \\omega/(1 - \\alpha - \\beta) = 0,03/0,03 = 1,0$, o volatilitate zilnică de 1%, circa 15,9% pe an, cu 252 de zile de tranzacționare.",
+                "incorrectExplanation": "Varianța de lungă durată se obține împărțind $\\omega$ la $1 - \\alpha - \\beta = 0,03$; împărțirea la $1 - \\alpha$ sau ignorarea lui $\\beta$ dau valori greșite."
             }
         },
         {
             "correct": 1,
             "en": {
-                "title": "Volatility forecasts",
-                "text": "In a covariance-stationary GARCH(1,1), long-horizon variance forecasts converge to:",
+                "title": "Half-life",
+                "text": "A GARCH(1,1) has $\\alpha + \\beta = 0.95$. After how many days has half of a variance shock disappeared?",
                 "options": [
-                    "Zero",
-                    "The unconditional variance ω/(1 − α − β)",
-                    "Infinity",
-                    "The last observed variance"
+                    "About 2 days",
+                    "About 13.5 days",
+                    "About 50 days",
+                    "Never"
                 ],
-                "correctExplanation": "σ²ₜ₊ₕ|ₜ − σ̄² = (α + β)ʰ⁻¹(σ²ₜ₊₁|ₜ − σ̄²), so σ²ₜ₊ₕ|ₜ → σ̄² = ω/(1 − α − β) as h → ∞. The closer α + β is to 1, the slower the convergence.",
-                "incorrectExplanation": "Forecasts tend to zero or infinity only in degenerate or explosive cases, and staying at the last variance is the IGARCH (α + β = 1) behaviour. With α + β < 1, variance forecasts revert to the unconditional variance."
+                "correctExplanation": "The deviation from the long-run variance shrinks by the factor $\\alpha + \\beta$ each day, so $h_{1/2} = \\ln 0.5/\\ln 0.95 = 13.5$ days.",
+                "incorrectExplanation": "The half-life is $\\ln 0.5/\\ln(\\alpha + \\beta)$; with 0.95 it is 13.5 days. A shock never halves only when $\\alpha + \\beta = 1$ (IGARCH)."
             },
             "ro": {
-                "title": "Prognoza volatilității",
-                "text": "Într-un GARCH(1,1) staționar în covarianță, prognozele varianței pe orizonturi lungi converg către:",
+                "title": "Timpul de înjumătățire",
+                "text": "Un GARCH(1,1) are $\\alpha + \\beta = 0,95$. După cîte zile a dispărut jumătate dintr-un șoc de varianță?",
                 "options": [
-                    "Zero",
-                    "Varianța necondiționată ω/(1 − α − β)",
-                    "Infinit",
-                    "Ultima varianță observată"
+                    "Circa 2 zile",
+                    "Circa 13,5 zile",
+                    "Circa 50 de zile",
+                    "Niciodată"
                 ],
-                "correctExplanation": "σ²ₜ₊ₕ|ₜ − σ̄² = (α + β)ʰ⁻¹(σ²ₜ₊₁|ₜ − σ̄²), deci σ²ₜ₊ₕ|ₜ → σ̄² = ω/(1 − α − β) cînd h → ∞. Cu cît α + β este mai aproape de 1, cu atît convergența este mai lentă.",
-                "incorrectExplanation": "Prognozele tind la zero sau la infinit doar în cazuri degenerate sau explozive, iar menținerea ultimei varianțe este comportamentul IGARCH (α + β = 1). Cu α + β < 1, prognozele varianței revin la varianța necondiționată."
+                "correctExplanation": "Abaterea de la varianța de lungă durată se micșorează cu factorul $\\alpha + \\beta$ în fiecare zi, deci $h_{1/2} = \\ln 0,5/\\ln 0,95 = 13,5$ zile.",
+                "incorrectExplanation": "Timpul de înjumătățire este $\\ln 0,5/\\ln(\\alpha + \\beta)$; pentru 0,95 obținem 13,5 zile. Un șoc nu se înjumătățește niciodată doar cînd $\\alpha + \\beta = 1$ (IGARCH)."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "GARCH as an ARMA model",
+                "text": "Writing $\\varepsilon_t^2 = \\sigma_t^2 + v_t$, which model does GARCH(1,1) imply for $\\varepsilon_t^2$?",
+                "options": [
+                    "A white noise",
+                    "An MA(1) with coefficient $\\alpha$",
+                    "An ARMA(1,1) with AR coefficient $\\alpha + \\beta$ and MA coefficient $-\\beta$",
+                    "A random walk"
+                ],
+                "correctExplanation": "Substituting $\\sigma_t^2 = \\varepsilon_t^2 - v_t$ gives $\\varepsilon_t^2 = \\omega + (\\alpha + \\beta)\\varepsilon_{t-1}^2 + v_t - \\beta v_{t-1}$: an ARMA(1,1) (Chapter 2), whose ACF decays like $(\\alpha + \\beta)^k$.",
+                "incorrectExplanation": "The squared shocks are autocorrelated, so they are not white noise; the AR part is $\\alpha + \\beta$ and the MA part is $-\\beta$. A random walk would need $\\alpha + \\beta = 1$ and no MA term."
+            },
+            "ro": {
+                "title": "GARCH ca model ARMA",
+                "text": "Scriind $\\varepsilon_t^2 = \\sigma_t^2 + v_t$, ce model implică GARCH(1,1) pentru $\\varepsilon_t^2$?",
+                "options": [
+                    "Un zgomot alb",
+                    "Un MA(1) cu coeficientul $\\alpha$",
+                    "Un ARMA(1,1) cu coeficientul AR $\\alpha + \\beta$ și coeficientul MA $-\\beta$",
+                    "Un mers aleator"
+                ],
+                "correctExplanation": "Înlocuind $\\sigma_t^2 = \\varepsilon_t^2 - v_t$ obținem $\\varepsilon_t^2 = \\omega + (\\alpha + \\beta)\\varepsilon_{t-1}^2 + v_t - \\beta v_{t-1}$: un ARMA(1,1) (Capitolul 2), a cărui ACF scade ca $(\\alpha + \\beta)^k$.",
+                "incorrectExplanation": "Pătratele șocurilor sînt autocorelate, deci nu sînt zgomot alb; partea AR este $\\alpha + \\beta$, iar partea MA este $-\\beta$. Un mers aleator ar cere $\\alpha + \\beta = 1$ și niciun termen MA."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "EWMA",
+                "text": "Which GARCH(1,1) is the EWMA (RiskMetrics) estimator $\\sigma_t^2 = 0.94\\,\\sigma_{t-1}^2 + 0.06\\,r_{t-1}^2$?",
+                "options": [
+                    "$\\omega = 0.06$, $\\alpha = 0.94$, $\\beta = 0$",
+                    "$\\omega = 0.94$, $\\alpha = 0$, $\\beta = 0.06$",
+                    "A stationary GARCH with $\\alpha + \\beta = 0.94$",
+                    "$\\omega = 0$, $\\alpha = 0.06$, $\\beta = 0.94$: an IGARCH"
+                ],
+                "correctExplanation": "EWMA has no constant and $\\alpha + \\beta = 1$: an IGARCH. It is simple exponential smoothing (Chapter 0) applied to the squared returns.",
+                "incorrectExplanation": "The weight 0.06 is on yesterday's squared return ($\\alpha$) and 0.94 on yesterday's variance ($\\beta$); there is no $\\omega$, and the persistence is exactly 1."
+            },
+            "ro": {
+                "title": "EWMA",
+                "text": "Ce GARCH(1,1) este estimatorul EWMA (RiskMetrics) $\\sigma_t^2 = 0,94\\,\\sigma_{t-1}^2 + 0,06\\,r_{t-1}^2$?",
+                "options": [
+                    "$\\omega = 0,06$, $\\alpha = 0,94$, $\\beta = 0$",
+                    "$\\omega = 0,94$, $\\alpha = 0$, $\\beta = 0,06$",
+                    "Un GARCH staționar cu $\\alpha + \\beta = 0,94$",
+                    "$\\omega = 0$, $\\alpha = 0,06$, $\\beta = 0,94$: un IGARCH"
+                ],
+                "correctExplanation": "EWMA nu are constantă și are $\\alpha + \\beta = 1$: un IGARCH. Este netezirea exponențială simplă (Capitolul 0) aplicată pătratelor randamentelor.",
+                "incorrectExplanation": "Ponderea 0,06 este pe pătratul randamentului de ieri ($\\alpha$), iar 0,94 pe varianța de ieri ($\\beta$); nu există $\\omega$, iar persistența este exact 1."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "IGARCH",
+                "text": "What is true for an IGARCH model ($\\alpha + \\beta = 1$)?",
+                "options": [
+                    "Variance shocks never die out: there is no half-life and no finite long-run variance",
+                    "The variance returns to its long-run level within a week",
+                    "The returns become Normal",
+                    "The model cannot be estimated"
+                ],
+                "correctExplanation": "With $\\alpha + \\beta = 1$ the deviation from any level is never reduced, so forecasts for every horizon equal tomorrow's variance. EUR/RON and Bitcoin are close to IGARCH.",
+                "incorrectExplanation": "Mean reversion needs $\\alpha + \\beta < 1$; IGARCH can be estimated (it is found on the boundary) and says nothing about Normality."
+            },
+            "ro": {
+                "title": "IGARCH",
+                "text": "Ce este adevărat pentru un model IGARCH ($\\alpha + \\beta = 1$)?",
+                "options": [
+                    "Șocurile varianței nu se sting niciodată: nu există timp de înjumătățire și nici varianță de lungă durată finită",
+                    "Varianța revine la nivelul de lungă durată într-o săptămînă",
+                    "Randamentele devin Normale",
+                    "Modelul nu poate fi estimat"
+                ],
+                "correctExplanation": "Cu $\\alpha + \\beta = 1$, abaterea de la orice nivel nu se reduce niciodată, deci prognozele pentru orice orizont sînt egale cu varianța de mîine. EUR/RON și Bitcoin sînt apropiate de IGARCH.",
+                "incorrectExplanation": "Revenirea la medie cere $\\alpha + \\beta < 1$; IGARCH poate fi estimat (estimarea ajunge pe frontieră) și nu spune nimic despre distribuția Normală."
             }
         },
         {
             "correct": 1,
             "en": {
                 "title": "Estimating GARCH models",
-                "text": "GARCH models are usually estimated by:",
+                "text": "How are the parameters of a GARCH model estimated?",
                 "options": [
-                    "OLS (ordinary least squares)",
-                    "Maximum likelihood (MLE)",
-                    "Yule-Walker equations",
-                    "A simple linear regression of returns on time"
+                    "By OLS of $r_t^2$ on $\\sigma_{t-1}^2$",
+                    "By maximising the conditional log-likelihood numerically, with $\\sigma_t^2$ computed recursively",
+                    "By the method of moments from the sample variance only",
+                    "By reading them from the ACF of $r_t$"
                 ],
-                "correctExplanation": "MLE maximises the log-likelihood ℓ = −½ Σ[ln(σₜ²) + εₜ²/σₜ²] (Normal case, up to a constant). OLS does not apply because the conditional variance depends nonlinearly on the parameters through the recursion. Quasi-MLE (QMLE) with robust standard errors protects against a misspecified distribution.",
-                "incorrectExplanation": "OLS and a regression on time ignore the variance equation, and Yule-Walker equations are a moment method for AR models of the mean. GARCH requires MLE (or QMLE) because of the nonlinear recursion for σₜ²."
+                "correctExplanation": "$\\sigma_t^2$ is not observed, so OLS is impossible; for each candidate $\\theta$ the variances are computed recursively and $\\ell(\\theta) = -\\frac12\\sum[\\ln 2\\pi + \\ln\\sigma_t^2 + (r_t - \\mu)^2/\\sigma_t^2]$ is maximised numerically.",
+                "incorrectExplanation": "The regressor $\\sigma_{t-1}^2$ is not observed, the sample variance identifies only the long-run level, and the ACF of $r_t$ is close to zero: maximum likelihood is the standard method."
             },
             "ro": {
                 "title": "Estimarea modelelor GARCH",
-                "text": "Modelele GARCH se estimează de obicei prin:",
+                "text": "Cum se estimează parametrii unui model GARCH?",
                 "options": [
-                    "OLS (metoda celor mai mici pătrate)",
-                    "Metoda verosimilității maxime (MLE)",
-                    "Ecuațiile Yule-Walker",
-                    "O regresie liniară simplă a randamentelor în funcție de timp"
+                    "Prin OLS a lui $r_t^2$ pe $\\sigma_{t-1}^2$",
+                    "Prin maximizarea numerică a log-verosimilității condiționate, cu $\\sigma_t^2$ calculat recursiv",
+                    "Prin metoda momentelor, doar din varianța de selecție",
+                    "Prin citirea lor din ACF a lui $r_t$"
                 ],
-                "correctExplanation": "MLE maximizează log-verosimilitatea ℓ = −½ Σ[ln(σₜ²) + εₜ²/σₜ²] (cazul Normal, pînă la o constantă). OLS nu se poate aplica, deoarece varianța condiționată depinde neliniar de parametri prin recursivitate. Quasi-MLE (QMLE), cu erori standard robuste, protejează împotriva unei distribuții greșit specificate.",
-                "incorrectExplanation": "OLS și regresia în funcție de timp ignoră ecuația varianței, iar ecuațiile Yule-Walker sînt o metodă a momentelor pentru modelele AR ale mediei. GARCH necesită MLE (sau QMLE) din cauza recursivității neliniare a lui σₜ²."
+                "correctExplanation": "$\\sigma_t^2$ nu este observat, deci OLS este imposibil; pentru fiecare $\\theta$ candidat varianțele se calculează recursiv, iar $\\ell(\\theta) = -\\frac12\\sum[\\ln 2\\pi + \\ln\\sigma_t^2 + (r_t - \\mu)^2/\\sigma_t^2]$ se maximizează numeric.",
+                "incorrectExplanation": "Regresorul $\\sigma_{t-1}^2$ nu este observat, varianța de selecție identifică doar nivelul de lungă durată, iar ACF a lui $r_t$ este aproape zero: verosimilitatea maximă este metoda standard."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Robust standard errors",
+                "text": "Why do we report robust (Bollerslev–Wooldridge) standard errors after a Gaussian GARCH fit?",
+                "options": [
+                    "They are always smaller than the classic ones",
+                    "They make the estimates unbiased",
+                    "They stay valid when the innovations are not Normal, while the classic ones then overstate the precision",
+                    "They are needed only for ARCH(1)"
+                ],
+                "correctExplanation": "Maximising the Normal likelihood when $z_t$ is heavy-tailed is quasi-maximum likelihood: the estimates are still consistent, but only the \"sandwich\" standard errors are valid; on the S&P 500 they are about 1.4 times the classic ones.",
+                "incorrectExplanation": "Robust standard errors do not change the estimates and are usually larger, not smaller; they matter for every GARCH model fitted with a likelihood that may be misspecified."
+            },
+            "ro": {
+                "title": "Erori standard robuste",
+                "text": "De ce raportăm erori standard robuste (Bollerslev–Wooldridge) după o estimare GARCH Gaussiană?",
+                "options": [
+                    "Sînt întotdeauna mai mici decît cele clasice",
+                    "Fac estimările nedeplasate",
+                    "Rămîn valide cînd inovațiile nu sînt Normale, în timp ce cele clasice supraestimează atunci precizia",
+                    "Sînt necesare doar pentru ARCH(1)"
+                ],
+                "correctExplanation": "Maximizarea verosimilității Normale cînd $z_t$ are cozi groase este cvasi-verosimilitate maximă: estimările rămîn consistente, dar doar erorile standard de tip „sandwich” sînt valide; pe S&P 500 ele sînt de circa 1,4 ori mai mari decît cele clasice.",
+                "incorrectExplanation": "Erorile standard robuste nu schimbă estimările și sînt de obicei mai mari, nu mai mici; ele contează pentru orice model GARCH estimat cu o verosimilitate posibil greșit specificată."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Student-t innovations",
+                "text": "Why are Student-t innovations used in GARCH models of daily returns?",
+                "options": [
+                    "To make the variance constant",
+                    "To remove the autocorrelation of $r_t$",
+                    "Because the t distribution is symmetric and the Normal is not",
+                    "Because the standardised residuals of a Normal GARCH still have kurtosis well above 3"
+                ],
+                "correctExplanation": "GARCH explains part of the kurtosis of returns, but the standardised residuals of the S&P 500 Normal GARCH still have kurtosis about 4.7; the standardised t with $\\nu \\approx 6$ captures these remaining heavy tails, which matter for VaR.",
+                "incorrectExplanation": "Both distributions are symmetric; the innovation distribution does not change the variance dynamics or the mean autocorrelation. Its job is the tails of $z_t$."
+            },
+            "ro": {
+                "title": "Inovații Student-t",
+                "text": "De ce se folosesc inovații Student-t în modelele GARCH pentru randamente zilnice?",
+                "options": [
+                    "Pentru ca varianța să fie constantă",
+                    "Pentru a elimina autocorelația lui $r_t$",
+                    "Pentru că distribuția t este simetrică, iar cea Normală nu",
+                    "Pentru că reziduurile standardizate ale unui GARCH Normal au încă un coeficient de boltire mult peste 3"
+                ],
+                "correctExplanation": "GARCH explică o parte din boltirea randamentelor, dar reziduurile standardizate ale GARCH Normal pe S&P 500 au încă boltire de circa 4,7; distribuția t standardizată cu $\\nu \\approx 6$ surprinde aceste cozi groase rămase, importante pentru VaR.",
+                "incorrectExplanation": "Ambele distribuții sînt simetrice; distribuția inovațiilor nu schimbă dinamica varianței și nici autocorelația mediei. Rolul ei privește cozile lui $z_t$."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "ARMA-GARCH",
+                "text": "Why estimate an AR(1)-GARCH(1,1) jointly instead of reporting the OLS $t$ statistic of the AR(1) coefficient?",
+                "options": [
+                    "With GARCH errors the usual OLS standard errors are wrong, and the joint ML estimate weights calm and stormy days correctly",
+                    "Because OLS cannot estimate an AR(1)",
+                    "Because the AR coefficient is always zero for returns",
+                    "Because GARCH removes the need for a mean model"
+                ],
+                "correctExplanation": "OLS assumes a constant variance; under conditional heteroskedasticity its standard errors are invalid. In the joint model the AR coefficient of the S&P 500 shrinks from about $-0.10$ to $-0.05$ once the storms get less weight.",
+                "incorrectExplanation": "OLS can estimate an AR(1), but its classic $t$ tests assume homoskedastic errors; the AR coefficient is not always zero (BET: about 0.09), and GARCH models the variance, not the mean."
+            },
+            "ro": {
+                "title": "ARMA-GARCH",
+                "text": "De ce estimăm simultan un AR(1)-GARCH(1,1) în loc să raportăm statistica $t$ OLS a coeficientului AR(1)?",
+                "options": [
+                    "Cu erori GARCH, erorile standard OLS obișnuite sînt greșite, iar estimarea ML comună ponderează corect zilele liniștite și cele agitate",
+                    "Pentru că OLS nu poate estima un AR(1)",
+                    "Pentru că pentru randamente coeficientul AR este întotdeauna zero",
+                    "Pentru că GARCH face inutil un model pentru medie"
+                ],
+                "correctExplanation": "OLS presupune o varianță constantă; cu heteroscedasticitate condiționată, erorile lui standard nu sînt valide. În modelul comun, coeficientul AR pentru S&P 500 scade de la circa $-0,10$ la $-0,05$ cînd furtunile primesc o pondere mai mică.",
+                "incorrectExplanation": "OLS poate estima un AR(1), dar testele $t$ clasice presupun erori homoscedastice; coeficientul AR nu este întotdeauna zero (BET: circa 0,09), iar GARCH modelează varianța, nu media."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "GJR-GARCH",
+                "text": "In GJR-GARCH, $\\sigma_t^2 = \\omega + (\\alpha + \\gamma I_{t-1})\\varepsilon_{t-1}^2 + \\beta\\sigma_{t-1}^2$ with $I_{t-1} = 1$ if $\\varepsilon_{t-1} < 0$. What does $\\gamma > 0$ mean?",
+                "options": [
+                    "Positive shocks raise the variance more than negative ones",
+                    "Negative shocks raise the variance more than positive shocks of the same size",
+                    "The variance is not persistent",
+                    "The innovations are skewed to the right"
+                ],
+                "correctExplanation": "Bad news has the slope $\\alpha + \\gamma$, good news only $\\alpha$: the leverage effect. For the S&P 500, $\\hat\\alpha \\approx 0$ and $\\hat\\gamma \\approx 0.2$: only falls raise the variance.",
+                "incorrectExplanation": "$\\gamma$ is added only for negative shocks; it is about the news impact, not about the persistence ($\\alpha + \\beta + \\gamma/2$) or the shape of the innovation distribution."
+            },
+            "ro": {
+                "title": "GJR-GARCH",
+                "text": "În GJR-GARCH, $\\sigma_t^2 = \\omega + (\\alpha + \\gamma I_{t-1})\\varepsilon_{t-1}^2 + \\beta\\sigma_{t-1}^2$, cu $I_{t-1} = 1$ dacă $\\varepsilon_{t-1} < 0$. Ce înseamnă $\\gamma > 0$?",
+                "options": [
+                    "Șocurile pozitive cresc varianța mai mult decît cele negative",
+                    "Șocurile negative cresc varianța mai mult decît șocurile pozitive de aceeași mărime",
+                    "Varianța nu este persistentă",
+                    "Inovațiile sînt asimetrice la dreapta"
+                ],
+                "correctExplanation": "Știrile proaste au panta $\\alpha + \\gamma$, cele bune doar $\\alpha$: efectul de levier. Pentru S&P 500, $\\hat\\alpha \\approx 0$ și $\\hat\\gamma \\approx 0,2$: doar scăderile cresc varianța.",
+                "incorrectExplanation": "$\\gamma$ se adaugă doar pentru șocurile negative; privește impactul știrilor, nu persistența ($\\alpha + \\beta + \\gamma/2$) sau forma distribuției inovațiilor."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "EGARCH",
+                "text": "What is an advantage of EGARCH, $\\ln\\sigma_t^2 = \\omega + \\alpha(|z_{t-1}| - E|z_{t-1}|) + \\gamma z_{t-1} + \\beta\\ln\\sigma_{t-1}^2$?",
+                "options": [
+                    "It has fewer parameters than ARCH(1)",
+                    "It needs no innovation distribution",
+                    "The logarithm keeps the variance positive without sign restrictions, and $\\gamma$ captures asymmetry",
+                    "It always forecasts better than GARCH"
+                ],
+                "correctExplanation": "Since the model is written for $\\ln\\sigma_t^2$, any parameter values give a positive variance; a negative $\\gamma$ means that bad news raises volatility more. Its persistence is $\\beta$.",
+                "incorrectExplanation": "EGARCH has more parameters than ARCH(1), still needs a distribution for $z_t$, and is not always better out of sample; its advantages are positivity without constraints and a sign term."
+            },
+            "ro": {
+                "title": "EGARCH",
+                "text": "Care este un avantaj al EGARCH, $\\ln\\sigma_t^2 = \\omega + \\alpha(|z_{t-1}| - E|z_{t-1}|) + \\gamma z_{t-1} + \\beta\\ln\\sigma_{t-1}^2$?",
+                "options": [
+                    "Are mai puțini parametri decît ARCH(1)",
+                    "Nu are nevoie de o distribuție a inovațiilor",
+                    "Logaritmul păstrează varianța pozitivă fără restricții de semn, iar $\\gamma$ surprinde asimetria",
+                    "Prognozează întotdeauna mai bine decît GARCH"
+                ],
+                "correctExplanation": "Deoarece modelul este scris pentru $\\ln\\sigma_t^2$, orice valori ale parametrilor dau o varianță pozitivă; un $\\gamma$ negativ înseamnă că știrile proaste cresc volatilitatea mai mult. Persistența lui este $\\beta$.",
+                "incorrectExplanation": "EGARCH are mai mulți parametri decît ARCH(1), are nevoie tot de o distribuție pentru $z_t$ și nu este întotdeauna mai bun în afara eșantionului; avantajele lui sînt pozitivitatea fără restricții și termenul de semn."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "Diagnostics",
+                "text": "After fitting a GARCH model, what should the Ljung–Box test on the squared standardised residuals $\\hat z_t^2$ show?",
+                "options": [
+                    "A rejection, since squared returns are always autocorrelated",
+                    "A value equal to the test on $r_t^2$",
+                    "A negative statistic",
+                    "No rejection: the model has absorbed the ARCH effects"
+                ],
+                "correctExplanation": "If the model is right, $\\hat z_t = (r_t - \\hat\\mu_t)/\\hat\\sigma_t$ is close to i.i.d., so $\\hat z_t^2$ is not autocorrelated; on the S&P 500, $Q(10)$ falls from about 6100 for $r_t^2$ to about 14 for $\\hat z_t^2$. A pass does not prove the model right.",
+                "incorrectExplanation": "The test on $\\hat z_t^2$ checks what is left after the model; a rejection would mean remaining ARCH effects. A Ljung–Box statistic cannot be negative."
+            },
+            "ro": {
+                "title": "Diagnosticare",
+                "text": "După estimarea unui model GARCH, ce ar trebui să arate testul Ljung–Box pe pătratele reziduurilor standardizate $\\hat z_t^2$?",
+                "options": [
+                    "O respingere, deoarece pătratele randamentelor sînt întotdeauna autocorelate",
+                    "O valoare egală cu cea a testului pe $r_t^2$",
+                    "O statistică negativă",
+                    "Nicio respingere: modelul a absorbit efectele ARCH"
+                ],
+                "correctExplanation": "Dacă modelul este corect, $\\hat z_t = (r_t - \\hat\\mu_t)/\\hat\\sigma_t$ este aproape i.i.d., deci $\\hat z_t^2$ nu este autocorelat; pe S&P 500, $Q(10)$ scade de la circa 6100 pentru $r_t^2$ la circa 14 pentru $\\hat z_t^2$. Un test trecut nu dovedește că modelul este corect.",
+                "incorrectExplanation": "Testul pe $\\hat z_t^2$ verifică ce a rămas după model; o respingere ar însemna efecte ARCH rămase. O statistică Ljung–Box nu poate fi negativă."
+            }
+        },
+        {
+            "correct": 0,
+            "en": {
+                "title": "Volatility forecasts",
+                "text": "In a covariance-stationary GARCH(1,1), what happens to the forecast $E_t[\\sigma_{t+h}^2]$ as $h$ grows?",
+                "options": [
+                    "It converges to the long-run variance $\\omega/(1 - \\alpha - \\beta)$ at the speed $(\\alpha + \\beta)^{h-1}$",
+                    "It stays equal to $\\sigma_{t+1}^2$",
+                    "It grows without bound",
+                    "It converges to zero"
+                ],
+                "correctExplanation": "$E_t[\\sigma_{t+h}^2] = \\bar\\sigma^2 + (\\alpha + \\beta)^{h-1}(\\sigma_{t+1}^2 - \\bar\\sigma^2)$: like an AR(1) forecast converging to its mean (Chapter 2); the term structure slopes down in a storm and up in a calm period.",
+                "incorrectExplanation": "A flat forecast is the IGARCH or EWMA case; a stationary GARCH reverts to its long-run level, neither to zero nor to infinity."
+            },
+            "ro": {
+                "title": "Prognoza volatilității",
+                "text": "Într-un GARCH(1,1) staționar în covarianță, ce se întîmplă cu prognoza $E_t[\\sigma_{t+h}^2]$ cînd $h$ crește?",
+                "options": [
+                    "Converge spre varianța de lungă durată $\\omega/(1 - \\alpha - \\beta)$ cu viteza $(\\alpha + \\beta)^{h-1}$",
+                    "Rămîne egală cu $\\sigma_{t+1}^2$",
+                    "Crește nelimitat",
+                    "Converge spre zero"
+                ],
+                "correctExplanation": "$E_t[\\sigma_{t+h}^2] = \\bar\\sigma^2 + (\\alpha + \\beta)^{h-1}(\\sigma_{t+1}^2 - \\bar\\sigma^2)$: ca prognoza unui AR(1) care converge spre medie (Capitolul 2); structura la termen coboară într-o furtună și urcă într-o perioadă liniștită.",
+                "incorrectExplanation": "O prognoză constantă corespunde cazului IGARCH sau EWMA; un GARCH staționar revine la nivelul de lungă durată, nici la zero, nici la infinit."
+            }
+        },
+        {
+            "correct": 1,
+            "en": {
+                "title": "Multi-day risk",
+                "text": "How is the variance of the 10-day return computed from a GARCH(1,1)?",
+                "options": [
+                    "As $10\\,\\sigma_{t+1}^2$, the square-root-of-time rule",
+                    "As the sum of the ten daily variance forecasts $E_t[\\sigma_{t+1}^2] + \\dots + E_t[\\sigma_{t+10}^2]$",
+                    "As $\\sigma_{t+10}^2$ only",
+                    "As the sample variance times 10"
+                ],
+                "correctExplanation": "Daily returns are uncorrelated, so the variance of their sum is the sum of the daily variances; with GARCH these change with the horizon, so $10\\,\\sigma_{t+1}^2$ is too high in a crisis and too low in a calm period.",
+                "incorrectExplanation": "The square-root-of-time rule assumes a constant variance; the 10-day variance needs all ten daily forecasts, not only the last one or the sample average."
+            },
+            "ro": {
+                "title": "Riscul pe mai multe zile",
+                "text": "Cum se calculează varianța randamentului pe 10 zile dintr-un GARCH(1,1)?",
+                "options": [
+                    "Ca $10\\,\\sigma_{t+1}^2$, regula rădăcinii pătrate a timpului",
+                    "Ca suma celor zece prognoze zilnice ale varianței $E_t[\\sigma_{t+1}^2] + \\dots + E_t[\\sigma_{t+10}^2]$",
+                    "Doar ca $\\sigma_{t+10}^2$",
+                    "Ca varianța de selecție înmulțită cu 10"
+                ],
+                "correctExplanation": "Randamentele zilnice sînt necorelate, deci varianța sumei lor este suma varianțelor zilnice; cu GARCH acestea se schimbă cu orizontul, așa că $10\\,\\sigma_{t+1}^2$ este prea mare în criză și prea mic într-o perioadă liniștită.",
+                "incorrectExplanation": "Regula rădăcinii pătrate a timpului presupune o varianță constantă; varianța pe 10 zile are nevoie de toate cele zece prognoze zilnice, nu doar de ultima sau de media de selecție."
+            }
+        },
+        {
+            "correct": 2,
+            "en": {
+                "title": "Evaluating volatility forecasts",
+                "text": "Two variance forecasts are compared out of sample with the QLIKE loss $r_t^2/h_t + \\ln h_t$. Which statement is correct?",
+                "options": [
+                    "A forecast that is too high is penalised more than one that is too low",
+                    "QLIKE needs the true variance $\\sigma_t^2$, which is observed",
+                    "QLIKE ranks forecasts correctly with the noisy proxy $r_t^2$, and the Diebold–Mariano test checks whether the mean loss difference is zero",
+                    "The model with the higher QLIKE is better"
+                ],
+                "correctExplanation": "Patton (2011): QLIKE gives the right ranking even with a noisy proxy; it punishes forecasts that are too low. The DM test (with HAC standard errors) guards against conclusions driven by a few days, as for EUR/RON on 6 May 2025.",
+                "incorrectExplanation": "The true variance is never observed; lower QLIKE is better; and QLIKE penalises under-prediction more than over-prediction, since $r_t^2/h_t$ explodes when $h_t$ is small."
+            },
+            "ro": {
+                "title": "Evaluarea prognozelor de volatilitate",
+                "text": "Două prognoze ale varianței se compară în afara eșantionului cu pierderea QLIKE $r_t^2/h_t + \\ln h_t$. Care afirmație este corectă?",
+                "options": [
+                    "O prognoză prea mare este penalizată mai mult decît una prea mică",
+                    "QLIKE are nevoie de varianța adevărată $\\sigma_t^2$, care este observată",
+                    "QLIKE ordonează corect prognozele cu aproximarea zgomotoasă $r_t^2$, iar testul Diebold–Mariano verifică dacă diferența medie a pierderilor este zero",
+                    "Modelul cu QLIKE mai mare este mai bun"
+                ],
+                "correctExplanation": "Patton (2011): QLIKE dă ordinea corectă chiar și cu o aproximare zgomotoasă; penalizează prognozele prea mici. Testul DM (cu erori standard HAC) ne ferește de concluzii determinate de cîteva zile, ca la EUR/RON pe 6 mai 2025.",
+                "incorrectExplanation": "Varianța adevărată nu este observată niciodată; un QLIKE mai mic este mai bun; iar QLIKE penalizează subestimarea mai mult decît supraestimarea, deoarece $r_t^2/h_t$ explodează cînd $h_t$ este mic."
+            }
+        },
+        {
+            "correct": 3,
+            "en": {
+                "title": "VaR 1% from GARCH",
+                "text": "A GARCH(1,1)-t gives $\\mu = 0$, $\\sigma_{t+1} = 1\\%$ and $\\nu = 5$. Compared with Normal innovations, the one-day VaR 1% is:",
+                "options": [
+                    "Smaller, because the t distribution has more mass near zero",
+                    "The same, because the variance is the same",
+                    "Undefined, because VaR needs Normal innovations",
+                    "Larger: $-q_{0.01}(z) = 3.365\\sqrt{3/5} = 2.61\\%$ against $2.33\\%$"
+                ],
+                "correctExplanation": "$\\mathrm{VaR}_{t+1} = -(\\mu + \\sigma_{t+1}q_{0.01}(z))$; for the standardised t with 5 degrees of freedom the 1% quantile is $-2.61$, further from zero than the Normal $-2.326$: heavy tails raise the VaR 1% at the same variance.",
+                "incorrectExplanation": "With the same variance, a heavy-tailed distribution puts more probability in the far tail, so its 1% quantile is further from zero; VaR 1% is defined for any distribution of $z_t$."
+            },
+            "ro": {
+                "title": "VaR 1% dintr-un GARCH",
+                "text": "Un GARCH(1,1)-t dă $\\mu = 0$, $\\sigma_{t+1} = 1\\%$ și $\\nu = 5$. Față de inovații Normale, VaR 1% pe o zi este:",
+                "options": [
+                    "Mai mic, deoarece distribuția t are mai multă masă în jurul lui zero",
+                    "Același, deoarece varianța este aceeași",
+                    "Nedefinit, deoarece VaR cere inovații Normale",
+                    "Mai mare: $-q_{0,01}(z) = 3,365\\sqrt{3/5} = 2,61\\%$, față de $2,33\\%$"
+                ],
+                "correctExplanation": "$\\mathrm{VaR}_{t+1} = -(\\mu + \\sigma_{t+1}q_{0,01}(z))$; pentru t standardizată cu 5 grade de libertate cuantila de 1% este $-2,61$, mai departe de zero decît valoarea Normală $-2,326$: cozile groase cresc VaR 1% la aceeași varianță.",
+                "incorrectExplanation": "La aceeași varianță, o distribuție cu cozi groase pune mai multă probabilitate în coada îndepărtată, deci cuantila ei de 1% este mai departe de zero; VaR 1% este definit pentru orice distribuție a lui $z_t$."
             }
         }
     ]
