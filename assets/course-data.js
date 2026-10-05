@@ -462,20 +462,30 @@
                 id: 'lppl', num: 13, selfStudy: true,
                 title: { en: 'Speculative bubbles: LPPL models', ro: 'Bule speculative: modele LPPL' },
                 topics: {
-                    en: ['Speculative bubbles and super-exponential growth', 'The log-periodic power law singularity (LPPLS) model: parameters, estimation, filter conditions', 'The LPPLS confidence indicator on historical bubbles and crashes'],
-                    ro: ['Bule speculative și creștere superexponențială', 'Modelul LPPLS (log-periodic power law singularity): parametri, estimare, condiții de filtrare', 'Indicatorul de încredere LPPLS aplicat pe bule și crahuri istorice']
+                    en: ['Bubbles in history and their statistical signatures; rational bubbles and explosive roots: right-tailed ADF, SADF, GSADF and BSADF date-stamping (Nasdaq 100, Bitcoin, BET, Shanghai)', 'The LPPL model of Johansen, Ledoit and Sornette: super-exponential growth, log-periodic oscillations, the critical time; Filimonov–Sornette two-step estimation and the filter conditions', 'The LPPLS confidence indicator from many windows; an honest evaluation of crash prediction with false alarms and base rates (S&P 500, Bitcoin)'],
+                    ro: ['Bule în istorie și semnăturile lor statistice; bule raționale și rădăcini explozive: ADF la dreapta, SADF, GSADF și datarea BSADF (Nasdaq 100, Bitcoin, BET, Shanghai)', 'Modelul LPPL al lui Johansen, Ledoit și Sornette: creștere superexponențială, oscilații log-periodice, timpul critic; estimarea în doi pași Filimonov–Sornette și condițiile de filtrare', 'Indicatorul de încredere LPPLS din multe ferestre; o evaluare onestă a prognozei crahurilor, cu alarme false și frecvențe de bază (S&P 500, Bitcoin)']
                 },
-                links: old('chapter13_lppl_models', 'chapter13_seminar', 'chapter13', 'Quantlets/TSA_ch13'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter13_bubbles_lppl.pdf'),
+                         nb('notebooks/EN/chapter13_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_13')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol13_bule_lppl.pdf'),
+                         nb('notebooks/EN/chapter13_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_13')]
+                },
                 quantinar: q('sfm')
             },
             {
                 id: 'mgarch', num: 14, selfStudy: true,
                 title: { en: 'Multivariate GARCH models', ro: 'Modele GARCH multivariate' },
                 topics: {
-                    en: ['Time-varying covariances and correlations; the curse of dimensionality', 'The VEC, BEKK, CCC and DCC models; two-step estimation', 'Applications: dynamic correlations, portfolio variance and VaR 1%'],
-                    ro: ['Covarianțe și corelații variabile în timp; problema dimensionalității', 'Modelele VEC, BEKK, CCC și DCC; estimarea în doi pași', 'Aplicații: corelații dinamice, varianța portofoliului și VaR 1%']
+                    en: ['Why multivariate volatility: portfolio risk, hedging, contagion; rolling correlations of the S&P 500, DAX, BET and Bitcoin; asynchronous trading', 'The conditional covariance matrix; VEC, BEKK, CCC and DCC models and their number of parameters; two-step DCC estimation and the test against constant correlation', 'Applications: correlations in the crises of 2008 and 2020, a five-asset DCC with BET and EUR/RON, portfolio VaR 1% with backtesting, dynamic hedge ratios'],
+                    ro: ['Volatilitatea multivariată și utilitatea ei: riscul portofoliului, acoperirea riscului, contagiunea; corelațiile pe ferestre mobile ale S&P 500, DAX, BET și Bitcoin; tranzacționarea asincronă', 'Matricea de covarianță condiționată; modelele VEC, BEKK, CCC și DCC și numărul lor de parametri; estimarea DCC în doi pași și testul față de corelația constantă', 'Aplicații: corelațiile în crizele din 2008 și 2020, un DCC cu cinci active, inclusiv BET și EUR/RON, VaR 1% al unui portofoliu, cu backtesting, rapoarte dinamice de acoperire']
                 },
-                links: old('chapter5b_multivariate_garch', 'chapter5b_multivariate_garch_seminar', 'chapter5b_multivariate_garch', 'Quantlets/TSA_ch5b'),
+                links: {
+                    en: [pdf('slides', 'EN/Courses/chapter14_multivariate_garch_models.pdf'),
+                         nb('notebooks/EN/chapter14_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_14')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol14_modele_garch_multivariate.pdf'),
+                         nb('notebooks/EN/chapter14_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_14')]
+                },
                 quantinar: q('statRisk')
             },
             {

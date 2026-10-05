@@ -139,3 +139,12 @@ These portraits are used by the older decks of the 2025/2026 edition without a c
 |---|---|---|
 | ch12_joseph_fourier.jpg | https://commons.wikimedia.org/wiki/File:Joseph_Fourier.jpg | A. F. B. Geille after J.-L. Boilly (1839–1840), public domain |
 | ch12_arthur_schuster.jpg | https://commons.wikimedia.org/wiki/File:Arthur_Schuster.jpg | unknown author (1900s), public domain |
+
+## Chapter 13 — Speculative bubbles: LPPL models
+
+| File | Source | Credit and licence |
+|---|---|---|
+| ch13_tulip_mania_1637.jpg | https://commons.wikimedia.org/wiki/File:Flora%27s_Wagon_of_Fools_(Flora%27s_Mallewagen)_tulipomania,_Hendrik_Gerritsz_Pot_c1637.jpg | Hendrik Gerritsz Pot (c. 1637), public domain |
+| ch13_nyse_crowd_1929.jpg | https://commons.wikimedia.org/wiki/File:Crowd_outside_nyse.jpg | US government (1929), public domain |
+| ch13_amsterdam_crash_1987.jpg | https://commons.wikimedia.org/wiki/File:Effectenbeurs_Amsterdam_na_koersval,_Bestanddeelnr_934-1094.jpg | Bart Molendijk / Anefo, Nationaal Archief (1987), CC0 |
+| ch13_sornette_2012.jpg | https://commons.wikimedia.org/wiki/File:Didier_Sornette.jpg | Didier Sornette (2012), CC BY-SA 3.0 DE |
