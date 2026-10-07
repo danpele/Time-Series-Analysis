@@ -339,7 +339,8 @@ D.frame(T('The state space form', 'Forma în spațiul stărilor'), items(
         '$y_t$: observația (aici un scalar); $\\alpha_t$: \\textbf{vectorul de stare} ($m \\times 1$), neobservat; $Z_t$: un rînd $1 \\times m$ de numere cunoscute')]),
     (T('\\textbf{Transition equation}: $\\alpha_{t+1} = T\\alpha_t + R\\eta_t$, \\quad $\\eta_t \\sim N(0, Q)$', '\\textbf{Ecuația de tranziție}: $\\alpha_{t+1} = T\\alpha_t + R\\eta_t$, \\quad $\\eta_t \\sim N(0, Q)$'),
      [T('the state evolves as a first-order vector autoregression (VAR(1), Chapter 6); $T$ is $m \\times m$', 'starea evoluează ca o autoregresie vectorială de ordinul 1 (VAR(1), Capitolul 6); $T$ este $m \\times m$'),
-      T('initial state: $\\alpha_1 \\sim N(a_1, P_1)$; $\\varepsilon_t$, $\\eta_s$ and $\\alpha_1$ mutually independent', 'starea inițială: $\\alpha_1 \\sim N(a_1, P_1)$; $\\varepsilon_t$, $\\eta_s$ și $\\alpha_1$ sînt independente între ele')]),
+      T('$R$: maps the shocks $\\eta_t$ into the state; $H$, $Q$: the variances of the measurement and of the state shocks', '$R$: transmite șocurile $\\eta_t$ în stare; $H$, $Q$: varianțele șocurilor de măsurare și ale șocurilor stării'),
+      T('initial state: $\\alpha_1 \\sim N(a_1, P_1)$, $a_1$, $P_1$: its mean and variance; $\\varepsilon_t$, $\\eta_s$ and $\\alpha_1$ mutually independent', 'starea inițială: $\\alpha_1 \\sim N(a_1, P_1)$, $a_1$, $P_1$: media și varianța ei; $\\varepsilon_t$, $\\eta_s$ și $\\alpha_1$ sînt independente între ele')]),
     (T('The \\textbf{system matrices} $Z_t, H, T, R, Q$ contain the parameters $\\theta$; they are estimated by maximum likelihood', '\\textbf{Matricele sistemului} $Z_t, H, T, R, Q$ conțin parametrii $\\theta$; aceștia se estimează prin verosimilitate maximă'),
      [T('the same form covers ARMA, exponential smoothing, trend--cycle models, regressions with moving coefficients and factor models \\refDK', 'aceeași formă acoperă ARMA, netezirea exponențială, modelele trend--ciclu, regresiile cu coeficienți mobili și modelele factoriale \\refDK')])))
 
@@ -382,7 +383,7 @@ D.frame(T('ARMA models in state space form', 'Modele ARMA în forma în spațiul
       T('$T$ is the companion matrix of Chapter 2; its eigenvalues are the inverse AR roots', '$T$ este matricea companion din Capitolul 2; valorile ei proprii sînt inversele rădăcinilor AR')]),
     (T('\\textbf{ARMA(1,1)}: $y_t = \\phi y_{t-1} + u_t + \\theta u_{t-1}$ with $\\alpha_t = (y_t, \\theta u_t)\'$', '\\textbf{ARMA(1,1)}: $y_t = \\phi y_{t-1} + u_t + \\theta u_{t-1}$, cu $\\alpha_t = (y_t, \\theta u_t)\'$'),
      [T('$T = \\begin{pmatrix}\\phi & 1\\\\ 0 & 0\\end{pmatrix}$, $R = (1,\\ \\theta)\'$; any ARMA$(p,q)$ fits with $m = \\max(p, q+1)$', '$T = \\begin{pmatrix}\\phi & 1\\\\ 0 & 0\\end{pmatrix}$, $R = (1,\\ \\theta)\'$; orice ARMA$(p,q)$ se scrie cu $m = \\max(p, q+1)$')]),
-    (T('Why it matters: the Kalman filter gives the \\textbf{exact} Gaussian likelihood of an ARMA model, with missing values allowed', 'De ce contează: filtrul Kalman dă verosimilitatea gaussiană \\textbf{exactă} a unui model ARMA, chiar cu valori lipsă'),
+    (T('Why it matters: the Kalman filter gives the \\textbf{exact} Gaussian likelihood of an ARMA model, with missing values allowed', 'Importanța practică: filtrul Kalman dă verosimilitatea gaussiană \\textbf{exactă} a unui model ARMA, chiar cu valori lipsă'),
      [T('the stationary start: $P_1$ solves $P = TPT\' + RQR\'$, i.e.\\ $\\mathrm{vec}(P_1) = (I - T \\otimes T)^{-1}\\mathrm{vec}(RQR\')$', 'pornirea staționară: $P_1$ rezolvă $P = TPT\' + RQR\'$, adică $\\mathrm{vec}(P_1) = (I - T \\otimes T)^{-1}\\mathrm{vec}(RQR\')$'),
       T('this is how \\texttt{statsmodels} \\texttt{SARIMAX} estimates the ARIMA models of Chapters 2--4', 'așa estimează \\texttt{statsmodels} \\texttt{SARIMAX} modelele ARIMA din Capitolele 2--4')])))
 
@@ -519,7 +520,8 @@ D.frame(T('Smoothing: using the whole sample', 'Netezirea: folosim tot eșantion
     (T('\\textbf{Filtering} uses $Y_t$ (the past and the present): the real-time estimate', '\\textbf{Filtrarea} folosește $Y_t$ (trecutul și prezentul): estimarea în timp real'),
      [T('\\textbf{smoothing} uses $Y_n$ (the whole sample): $\\hat\\alpha_t = E(\\alpha_t \\mid Y_n)$, with variance $V_t \\le P_{t|t}$', '\\textbf{netezirea} folosește $Y_n$ (tot eșantionul): $\\hat\\alpha_t = E(\\alpha_t \\mid Y_n)$, cu varianța $V_t \\le P_{t|t}$')]),
     (T('\\textbf{Rauch--Tung--Striebel} smoother \\refRTS: one backward pass after the filter, from $t = n-1$ to 1', 'Netezitorul \\textbf{Rauch--Tung--Striebel} \\refRTS: o trecere înapoi după filtru, de la $t = n-1$ la 1'),
-     [T('$J_t = P_{t|t}T\'P_{t+1}^{-1}$, \\quad $\\hat\\alpha_t = a_{t|t} + J_t(\\hat\\alpha_{t+1} - a_{t+1})$', '$J_t = P_{t|t}T\'P_{t+1}^{-1}$, \\quad $\\hat\\alpha_t = a_{t|t} + J_t(\\hat\\alpha_{t+1} - a_{t+1})$'),
+     [T('$n$: the sample size; $J_t$: the smoother gain, the weight of the revision coming from the future', '$n$: volumul eșantionului; $J_t$: cîștigul netezitorului, ponderea revizuirii care vine din viitor'),
+      T('$J_t = P_{t|t}T\'P_{t+1}^{-1}$, \\quad $\\hat\\alpha_t = a_{t|t} + J_t(\\hat\\alpha_{t+1} - a_{t+1})$', '$J_t = P_{t|t}T\'P_{t+1}^{-1}$, \\quad $\\hat\\alpha_t = a_{t|t} + J_t(\\hat\\alpha_{t+1} - a_{t+1})$'),
       T('$V_t = P_{t|t} + J_t(V_{t+1} - P_{t+1})J_t\'$; at $t = n$ smoothed and filtered coincide', '$V_t = P_{t|t} + J_t(V_{t+1} - P_{t+1})J_t\'$; la $t = n$ estimarea netezită și cea filtrată coincid')]),
     T('Use: the filtered state for decisions in real time and forecasting; the smoothed state for history (dating breaks, the past output gap)', 'Utilizare: starea filtrată pentru decizii în timp real și prognoză; starea netezită pentru istorie (datarea rupturilor, deviația PIB din trecut)')))
 
@@ -529,7 +531,7 @@ chart(T('The Nile: filtered against smoothed level', 'Nilul: nivelul filtrat și
 
 interp(('the smoothed level', 'nivelului netezit'), [
     (T('The smoothed level reacts to the 1898--1899 drop \\textbf{before} it happens in the data: in 1897 it is already @{smo.s1897}, against @{smo.f1897} filtered', 'Nivelul netezit reacționează la scăderea din 1898--1899 \\textbf{înainte} ca ea să apară în date: în 1897 este deja @{smo.s1897}, față de @{smo.f1897} filtrat'),
-     [T('it knows the future: useful for history, impossible in real time', 'cunoaște viitorul: util pentru istorie, imposibil în timp real')]),
+     [T('it knows the future: useful for history, impossible in real time', 'folosește informație din viitor: util pentru istorie, imposibil în timp real')]),
     (T('In 1900: smoothed @{smo.s1900}, filtered @{smo.f1900}; the smoothed level adapts faster because it sees the low years after 1900', 'În 1900: netezit @{smo.s1900}, filtrat @{smo.f1900}; nivelul netezit se adaptează mai repede, pentru că vede anii slabi de după 1900'),
      [T('standard error in 1920: @{smo.sd_s_mid} smoothed against @{smo.sd_f_mid} filtered', 'eroarea standard în 1920: @{smo.sd_s_mid} netezit, față de @{smo.sd_f_mid} filtrat')]),
     T('The smoothed path shows a step near 1899 more clearly than any moving average of Chapter 0', 'Traiectoria netezită arată o treaptă în jurul anului 1899 mai clar decît orice medie mobilă din Capitolul 0')])
@@ -539,6 +541,7 @@ D.frame(T('The likelihood: prediction-error decomposition', 'Verosimilitatea: de
      [T('with Gaussian errors, $y_t \\mid Y_{t-1} \\sim N(Z_ta_t, F_t)$: the filter delivers the mean and the variance', 'cu erori gaussiene, $y_t \\mid Y_{t-1} \\sim N(Z_ta_t, F_t)$: filtrul dă media și varianța')]),
     (T('\\textbf{Prediction-error decomposition}', '\\textbf{Descompunerea erorilor de predicție}'),
      [T('$\\log L(\\theta) = -\\dfrac{n}{2}\\log 2\\pi - \\dfrac12\\sum_{t=1}^{n}\\left(\\log F_t + \\dfrac{v_t^2}{F_t}\\right)$', '$\\log L(\\theta) = -\\dfrac{n}{2}\\log 2\\pi - \\dfrac12\\sum_{t=1}^{n}\\left(\\log F_t + \\dfrac{v_t^2}{F_t}\\right)$'),
+      T('$\\theta$: the parameters (the variances of the model); $v_t$, $F_t$: the prediction errors and their variances, from the filter', '$\\theta$: parametrii (varianțele modelului); $v_t$, $F_t$: erorile de predicție și varianțele lor, date de filtru'),
       T('one run of the filter gives $\\log L$ for one value of $\\theta$; a numerical optimiser searches over $\\theta$', 'o rulare a filtrului dă $\\log L$ pentru o valoare a lui $\\theta$; un optimizator numeric caută după $\\theta$')]),
     T('Diffuse start: the first $d$ terms (here $d = 1$ for the level) are left out, since $F_t$ is huge there \\refDK', 'Pornirea difuză: primii $d$ termeni (aici $d = 1$ pentru nivel) sînt omiși, deoarece acolo $F_t$ este uriaș \\refDK'),
     T('The same idea as the exact ARMA likelihood of Chapter 2, now for any state space model', 'Aceeași idee ca verosimilitatea ARMA exactă din Capitolul 2, acum pentru orice model în spațiul stărilor')))
@@ -559,7 +562,7 @@ chart(T('Profile likelihood and the choice of $q$', 'Verosimilitatea profil și 
 interp(('the profile likelihood', 'verosimilității profil'), [
     (T('A clear maximum at $\\hat q = @{ni.q}$, with $\\hat\\sigma^2_\\varepsilon = @{li.s2}$ from the closed form', 'Un maxim clar la $\\hat q = @{ni.q}$, cu $\\hat\\sigma^2_\\varepsilon = @{li.s2}$ din forma închisă'),
      [T('likelihood-ratio statistic against $q = 0.001$ (an almost constant level): @{li.lr001}; against $q = 1$: @{li.lr1}', 'statistica raportului de verosimilitate față de $q = 0{,}001$ (un nivel aproape constant): @{li.lr001}; față de $q = 1$: @{li.lr1}')]),
-    (T('Small $q$: the level is almost flat and misses the drop after 1899; large $q$: the level chases every flood', '$q$ mic: nivelul este aproape plat și ratează scăderea de după 1899; $q$ mare: nivelul urmărește fiecare viitură'),
+    (T('Small $q$: the level is almost flat and misses the drop after 1899; large $q$: the level chases every flood', '$q$ mic: nivelul este aproape plat și nu surprinde scăderea de după 1899; $q$ mare: nivelul urmărește fiecare viitură'),
      [T('the likelihood picks the compromise that predicts best one step ahead', 'verosimilitatea alege compromisul care prezice cel mai bine la un pas')]),
     T('Choosing $q$ is the same as choosing the SES weight $\\alpha$ in Chapter 0, now with a statistical criterion', 'Alegerea lui $q$ este echivalentă cu alegerea ponderii SES $\\alpha$ din Capitolul 0, acum cu un criteriu statistic')])
 
@@ -589,7 +592,7 @@ D.frame(T('Missing values and forecasting', 'Valori lipsă și prognoză'), item
     (T('Forecasting $h$ steps ahead = treating $y_{n+1}, \\dots, y_{n+h}$ as missing', 'Prognoza la $h$ pași = tratarea lui $y_{n+1}, \\dots, y_{n+h}$ ca valori lipsă'),
      [T('local level: $\\hat y_{n+h} = a_{n+1}$ for every $h$, with variance $P_{n+1} + (h-1)\\sigma^2_\\eta + \\sigma^2_\\varepsilon$', 'local level: $\\hat y_{n+h} = a_{n+1}$ pentru orice $h$, cu varianța $P_{n+1} + (h-1)\\sigma^2_\\eta + \\sigma^2_\\varepsilon$')]),
     (T('Uses: irregular data (holidays), series that start at different dates, mixed frequencies, the ragged edge of a nowcast', 'Utilizări: date neregulate (sărbători), serii care încep la date diferite, frecvențe mixte, marginea neregulată a unui nowcast'),
-     [T('the smoother fills the gaps with $\\hat\\alpha_t$ and an honest standard error', 'netezitorul umple golurile cu $\\hat\\alpha_t$ și o eroare standard onestă')])))
+     [T('the smoother fills the gaps with $\\hat\\alpha_t$ and the corresponding standard error', 'netezitorul umple golurile cu $\\hat\\alpha_t$ și cu eroarea standard corespunzătoare')])))
 
 chart(T('Missing years and forecasts of the Nile', 'Ani lipsă și prognoze pentru Nil'), 'tsa_ch10_missing', 'TSA_ch10_missing_data', [
     T('Left: 1891--1910 and 1931--1950 removed (the experiment of \\refDK), smoothed level with 90\\% band; right: forecasts for 1971--2000 with 90\\% intervals for $y$',
@@ -619,25 +622,27 @@ D.frame(T('Unobserved components models', 'Modele cu componente neobservate'), i
      [T('trend $\\mu_t$ (local level or local linear trend), cycle $\\psi_t$, seasonal $\\gamma_t$, irregular $\\varepsilon_t$', 'trend $\\mu_t$ (local level sau local linear trend), ciclu $\\psi_t$, sezonalitate $\\gamma_t$, componenta neregulată $\\varepsilon_t$'),
       T('the decomposition of Chapter 0, but each component is a stochastic process with its own variance', 'descompunerea din Capitolul 0, dar fiecare componentă este un proces stochastic cu propria varianță')]),
     (T('The \\textbf{cycle}: a stationary AR(2) $\\psi_t = \\phi_1\\psi_{t-1} + \\phi_2\\psi_{t-2} + \\kappa_t$, or a damped stochastic cycle with period $2\\pi/\\lambda_c$', '\\textbf{Ciclul}: un AR(2) staționar $\\psi_t = \\phi_1\\psi_{t-1} + \\phi_2\\psi_{t-2} + \\kappa_t$ sau un ciclu stochastic amortizat cu perioada $2\\pi/\\lambda_c$'),
-     [T('for log GDP, $\\psi_t$ is the \\textbf{output gap}: the percentage deviation of output from its trend (potential)', 'pentru logaritmul PIB, $\\psi_t$ este \\textbf{deviația PIB} (output gap): abaterea procentuală a producției de la trend (potențial)')]),
+     [T('$\\phi_1$, $\\phi_2$: the AR coefficients of the cycle; $\\kappa_t$: the cycle shock; $\\lambda_c$: the frequency of the cycle, in radians', '$\\phi_1$, $\\phi_2$: coeficienții AR ai ciclului; $\\kappa_t$: șocul ciclului; $\\lambda_c$: frecvența ciclului, în radiani'),
+      T('for log GDP, $\\psi_t$ is the \\textbf{output gap}: the percentage deviation of output from its trend (potential)', 'pentru logaritmul PIB, $\\psi_t$ este \\textbf{deviația PIB} (output gap): abaterea procentuală a producției de la trend (potențial)')]),
     T('In Python: \\texttt{UnobservedComponents(y, level=\'smooth trend\', autoregressive=2)}; the whole state is estimated by the Kalman filter and smoother',
       'În Python: \\texttt{UnobservedComponents(y, level=\'smooth trend\', autoregressive=2)}; toată starea se estimează cu filtrul și netezitorul Kalman')))
 
 D.frame(T('The HP filter is a state space smoother', 'Filtrul HP este un netezitor în spațiul stărilor'), items(
     (T('\\refHPf: the trend $\\tau_t$ minimises $\\sum_t(y_t - \\tau_t)^2 + \\lambda\\sum_t(\\Delta^2\\tau_t)^2$; $\\lambda = 1600$ for quarterly data', '\\refHPf: trendul $\\tau_t$ minimizează $\\sum_t(y_t - \\tau_t)^2 + \\lambda\\sum_t(\\Delta^2\\tau_t)^2$; $\\lambda = 1600$ pentru date trimestriale'),
-     [T('large $\\lambda$: a straight-line trend; $\\lambda = 0$: the trend is the series itself', '$\\lambda$ mare: un trend liniar; $\\lambda = 0$: trendul este chiar seria')]),
+     [T('$\\Delta^2\\tau_t = \\tau_t - 2\\tau_{t-1} + \\tau_{t-2}$: the change in the slope of the trend; $\\lambda \\ge 0$: the smoothing parameter', '$\\Delta^2\\tau_t = \\tau_t - 2\\tau_{t-1} + \\tau_{t-2}$: variația pantei trendului; $\\lambda \\ge 0$: parametrul de netezire'),
+      T('large $\\lambda$: a straight-line trend; $\\lambda = 0$: the trend is the series itself', '$\\lambda$ mare: un trend liniar; $\\lambda = 0$: trendul este chiar seria')]),
     (T('This is exactly the \\textbf{smoothed} trend of a UC model: smooth trend ($\\Delta^2\\mu_{t+1} = \\zeta_t$) plus white noise, with $\\lambda = \\sigma^2_\\varepsilon/\\sigma^2_\\zeta$ \\refHJ', 'Este exact trendul \\textbf{netezit} al unui model UC: trend neted ($\\Delta^2\\mu_{t+1} = \\zeta_t$) plus zgomot alb, cu $\\lambda = \\sigma^2_\\varepsilon/\\sigma^2_\\zeta$ \\refHJ'),
      [T('the HP filter imposes the signal-to-noise ratio and a white-noise gap; the UC model estimates both', 'filtrul HP impune raportul semnal--zgomot și o deviație de tip zgomot alb; modelul UC le estimează pe amîndouă')]),
     T('Being a smoother, HP uses future data: its last values are revised as new quarters arrive', 'Fiind un netezitor, HP folosește date viitoare: ultimele lui valori se revizuiesc pe măsură ce sosesc trimestre noi')))
 
-D.frame(T('Hamilton (2018): why you should never use the HP filter', 'Hamilton (2018): de ce să nu folosiți niciodată filtrul HP'), items(
+D.frame(T('Hamilton (2018): why you should never use the HP filter', 'Hamilton (2018): argumentele împotriva filtrului HP'), items(
     (T('\\refHamHP\\ lists three problems', '\\refHamHP\\ enumeră trei probleme'),
      [T('the HP gap of a random walk has cycles that are not in the data: spurious dynamics', 'deviația HP a unui mers aleator are cicluri care nu există în date: dinamică aparentă'),
       T('the end of the sample is treated differently from the middle: large revisions, misleading real-time gaps', 'sfîrșitul eșantionului este tratat altfel decît mijlocul: revizuiri mari, deviații înșelătoare în timp real'),
       T('$\\lambda = 1600$ is a convention, far from the value a likelihood would choose', '$\\lambda = 1600$ este o convenție, departe de valoarea pe care ar alege-o o verosimilitate')]),
     (T('His alternative, the \\textbf{regression filter}: OLS of $y_{t+h}$ on $1, y_t, y_{t-1}, y_{t-2}, y_{t-3}$ with $h = 8$ quarters', 'Alternativa lui, \\textbf{filtrul de regresie}: OLS a lui $y_{t+h}$ pe $1, y_t, y_{t-1}, y_{t-2}, y_{t-3}$, cu $h = 8$ trimestre'),
      [T('the cycle is the residual: what could not be predicted two years earlier; one-sided by construction', 'ciclul este reziduul: ceea ce nu putea fi prezis cu doi ani înainte; unilateral prin construcție')]),
-    T('No method is the truth: we compare the UC model, HP and the Hamilton filter on Romanian GDP', 'Nicio metodă nu este adevărul: comparăm modelul UC, HP și filtrul Hamilton pe PIB-ul României')))
+    T('No method is the truth: we compare the UC model, HP and the Hamilton filter on Romanian GDP', 'Nicio metodă nu dă valoarea adevărată: comparăm modelul UC, HP și filtrul Hamilton pe PIB-ul României')))
 
 chart(T('Romanian GDP: trend', 'PIB-ul României: trendul'), 'tsa_ch10_ro_trend', 'TSA_ch10_trend_cycle', [
     T('$100 \\times \\log$ of real GDP, quarterly, seasonally and calendar adjusted, chain-linked volumes (Eurostat namq\\_10\\_gdp), @{tr.first}--@{tr.last} ($T = @{tr.n}$); UC model: smooth trend plus AR(2) cycle; HP with $\\lambda = 1600$',
@@ -646,17 +651,17 @@ chart(T('Romanian GDP: trend', 'PIB-ul României: trendul'), 'tsa_ch10_ro_trend'
 
 interp(('the trend', 'trendului'), [
     (T('Average growth @{tr.avg}\\% per year, with a slow start (the 1997--1999 recession), a boom until 2008, a stagnation and a recovery after 2013', 'Creștere medie de @{tr.avg}\\% pe an, cu un început lent (recesiunea din 1997--1999), un boom pînă în 2008, o stagnare și o revenire după 2013'),
-     [T('the two trends are almost identical: the difference between methods lies in the gap, not in the trend', 'cele două trenduri sînt aproape identice: diferența dintre metode stă în deviație, nu în trend')]),
+     [T('the two trends are almost identical: the difference between methods lies in the gap, not in the trend', 'cele două trenduri sînt aproape identice: diferența dintre metode se află în deviație, nu în trend')]),
     (T('UC estimates: $\\hat\\sigma^2_\\zeta = @{tr.st}$ (trend slope), cycle AR(2) with $\\hat\\phi_1 = @{tr.phi1}$, $\\hat\\phi_2 = @{tr.phi2}$, $\\hat\\sigma^2_\\kappa = @{tr.sar}$; the irregular variance is estimated at zero', 'Estimările UC: $\\hat\\sigma^2_\\zeta = @{tr.st}$ (panta trendului), ciclul AR(2) cu $\\hat\\phi_1 = @{tr.phi1}$, $\\hat\\phi_2 = @{tr.phi2}$, $\\hat\\sigma^2_\\kappa = @{tr.sar}$; varianța componentei neregulate este estimată la zero'),
      [T('the ratio cycle variance / trend variance is @{tr.lam}, far below the 1600 that HP imposes: a more flexible trend', 'raportul dintre varianța ciclului și varianța trendului este @{tr.lam}, mult sub valoarea 1600 impusă de HP: un trend mai flexibil')]),
     T('A flexible trend absorbs part of the boom: the UC gap will be smaller than the HP gap', 'Un trend flexibil absoarbe o parte din boom: deviația UC va fi mai mică decît deviația HP')])
 
 chart(T('The Romanian output gap: three methods', 'Deviația PIB a României: trei metode'), 'tsa_ch10_output_gap', 'TSA_ch10_trend_cycle', [
-    T('Gap in \\% of trend: UC cycle (smoothed), HP gap ($\\lambda = 1600$) and the Hamilton filter ($h = 8$, four lags), the first 11 quarters lost', 'Deviația în \\% din trend: ciclul UC (netezit), deviația HP ($\\lambda = 1600$) și filtrul Hamilton ($h = 8$, patru decalaje), primele 11 trimestre se pierd')],
+    T('Gap in \\% of trend: UC cycle (smoothed), HP gap ($\\lambda = 1600$) and the Hamilton filter ($h = 8$, four lags), the first 11 quarters lost', 'Deviația în \\% din trend: ciclul UC (netezit), deviația HP ($\\lambda = 1600$) și filtrul Hamilton ($h = 8$, patru laguri), primele 11 trimestre se pierd')],
     h='0.58\\textheight')
 
 interp(('the output gaps', 'deviațiilor PIB'), [
-    (T('All three see the overheating before 2008 (peaks: UC @{gp.peak_uc}\\% in @{gp.peakd}, HP @{gp.peak_hp}\\%, Hamilton @{gp.peak_ham}\\%) and the 2020 pandemic (UC @{gp.uc2020}\\%, HP @{gp.hp2020}\\%)', 'Toate trei văd supraîncălzirea dinainte de 2008 (maxime: UC @{gp.peak_uc}\\% în @{gp.peakd}, HP @{gp.peak_hp}\\%, Hamilton @{gp.peak_ham}\\%) și pandemia din 2020 (UC @{gp.uc2020}\\%, HP @{gp.hp2020}\\%)'),
+    (T('All three see the overheating before 2008 (peaks: UC @{gp.peak_uc}\\% in @{gp.peakd}, HP @{gp.peak_hp}\\%, Hamilton @{gp.peak_ham}\\%) and the 2020 pandemic (UC @{gp.uc2020}\\%, HP @{gp.hp2020}\\%)', 'Toate cele trei metode surprind supraîncălzirea dinainte de 2008 (maxime: UC @{gp.peak_uc}\\% în @{gp.peakd}, HP @{gp.peak_hp}\\%, Hamilton @{gp.peak_ham}\\%) și pandemia din 2020 (UC @{gp.uc2020}\\%, HP @{gp.hp2020}\\%)'),
      [T('correlations: UC--HP @{gp.c_uc_hp}, UC--Hamilton @{gp.c_uc_ham}, HP--Hamilton @{gp.c_hp_ham}', 'corelații: UC--HP @{gp.c_uc_hp}, UC--Hamilton @{gp.c_uc_ham}, HP--Hamilton @{gp.c_hp_ham}')]),
     (T('Standard deviations: UC @{gp.sd_uc}, HP @{gp.sd_hp}, Hamilton @{gp.sd_ham}: the Hamilton gap also contains every surprise of two years', 'Abaterile standard: UC @{gp.sd_uc}, HP @{gp.sd_hp}, Hamilton @{gp.sd_ham}: deviația Hamilton conține și toate surprizele din doi ani'),
      [T('the four regression coefficients sum to @{gp.ham_bsum}: GDP is close to a random walk with drift', 'cei patru coeficienți ai regresiei au suma @{gp.ham_bsum}: PIB-ul este aproape de un mers aleator cu derivă')]),
@@ -671,7 +676,7 @@ interp(('the revisions', 'revizuirilor'), [
     (T('In 2008Q3 the real-time HP gap was @{rt.hp_rt_2008}\\%; with hindsight it is @{rt.hp_fin_2008}\\%: the overheating was invisible in real time', 'În T3 2008 deviația HP în timp real era @{rt.hp_rt_2008}\\%; retrospectiv este @{rt.hp_fin_2008}\\%: supraîncălzirea era invizibilă în timp real'),
      [T('the UC model shows the same problem: filtered @{rt.uc_f_2008}\\%, smoothed @{rt.uc_s_2008}\\%', 'modelul UC arată aceeași problemă: filtrat @{rt.uc_f_2008}\\%, netezit @{rt.uc_s_2008}\\%')]),
     (T('Root mean square revision since 2004: HP @{rt.rev_hp} points, UC @{rt.rev_uc} points; correlation real time--final: HP @{rt.c_hp}, UC @{rt.c_uc}', 'Revizuirea medie pătratică din 2004: HP @{rt.rev_hp} puncte, UC @{rt.rev_uc} puncte; corelația timp real--final: HP @{rt.c_hp}, UC @{rt.c_uc}'),
-     [T('the end-point problem of \\refHamHP; the UC model at least reports its own uncertainty', 'problema capătului de eșantion din \\refHamHP; modelul UC măcar își raportează propria incertitudine')]),
+     [T('the end-point problem of \\refHamHP; the UC model at least reports its own uncertainty', 'problema capătului de eșantion din \\refHamHP; modelul UC își raportează cel puțin propria incertitudine')]),
     T('For policy in real time, use the filtered (one-sided) estimate and its standard error, never the last point of a two-sided filter', 'Pentru politica economică în timp real folosiți estimarea filtrată (unilaterală) și eroarea ei standard, niciodată ultimul punct al unui filtru bilateral')])
 
 chart(T('A time-varying beta: the BET and the euro area', 'Un beta variabil în timp: BET și zona euro'), 'tsa_ch10_tvp_beta', 'TSA_ch10_tvp_regression', [
@@ -684,11 +689,12 @@ interp(('the time-varying beta', 'coeficientului beta variabil'), [
      [T('in the 2008 crisis the Romanian market moved almost one for one with the euro area; later it decoupled', 'în criza din 2008 piața românească s-a mișcat aproape unu la unu cu zona euro; ulterior s-a decuplat')]),
     (T('Likelihood ratio against a constant beta: @{tv.lr} (one restriction, a variance on the boundary): strong evidence of variation', 'Raportul de verosimilitate față de un beta constant: @{tv.lr} (o restricție, o varianță la limită): dovezi puternice de variație'),
      [T('weekly standard deviation of the beta shocks @{tv.sdb}; latest beta @{tv.last} with standard error @{tv.sdlast}', 'abaterea standard săptămînală a șocurilor lui beta @{tv.sdb}; ultimul beta @{tv.last}, cu eroarea standard @{tv.sdlast}')]),
-    T('The rolling window jumps when a single extreme week enters or leaves it; the Kalman beta moves only as much as the likelihood allows', 'Fereastra mobilă sare cînd o singură săptămînă extremă intră sau iese din ea; beta Kalman se mișcă doar atît cît permite verosimilitatea')])
+    T('The rolling window jumps when a single extreme week enters or leaves it; the Kalman beta moves only as much as the likelihood allows', 'Estimarea pe fereastră mobilă se modifică brusc cînd o singură săptămînă extremă intră sau iese din fereastră; beta Kalman se mișcă doar atît cît permite verosimilitatea')])
 
 D.frame(T('Dynamic factor models and nowcasting', 'Modele cu factori dinamici și nowcasting'), items(
     (T('\\textbf{Dynamic factor model}: $y_{it} = \\lambda_if_t + u_{it}$, \\quad $f_t = \\phi_1f_{t-1} + \\phi_2f_{t-2} + \\eta_t$', '\\textbf{Model cu factori dinamici}: $y_{it} = \\lambda_if_t + u_{it}$, \\quad $f_t = \\phi_1f_{t-1} + \\phi_2f_{t-2} + \\eta_t$'),
      [T('many series $y_{1t}, \\dots, y_{Nt}$ driven by one unobserved common factor $f_t$ (the state) with loadings $\\lambda_i$', 'multe serii $y_{1t}, \\dots, y_{Nt}$ conduse de un factor comun neobservat $f_t$ (starea), cu încărcările $\\lambda_i$'),
+      T('$u_{it}$: the part of series $i$ not explained by the factor; $\\phi_1$, $\\phi_2$: the AR coefficients of the factor', '$u_{it}$: partea seriei $i$ neexplicată de factor; $\\phi_1$, $\\phi_2$: coeficienții AR ai factorului'),
       T('\\refSW: a coincident index of US activity from four monthly indicators', '\\refSW: un indice coincident al activității din SUA, din patru indicatori lunari')]),
     (T('\\textbf{Nowcasting} \\refGRS: estimate the current quarter before GDP is published', '\\textbf{Nowcasting} \\refGRS: estimăm trimestrul curent înainte ca PIB-ul să fie publicat'),
      [T('monthly data arrive at different dates: the latest months of some series are missing (the \\textbf{ragged edge})', 'datele lunare sosesc la date diferite: ultimele luni ale unor serii lipsesc (\\textbf{marginea neregulată})'),
@@ -746,7 +752,7 @@ D.frame(T('Transition matrix, durations and ergodic probabilities', 'Matricea de
 D.frame(T('The Hamilton filter', 'Filtrul Hamilton'), items(
     (T('Track $\\xi_{t|t} = \\Pr(S_t = j \\mid Y_t)$, the \\textbf{filtered probabilities}, for each regime $j$', 'Urmărim $\\xi_{t|t} = \\Pr(S_t = j \\mid Y_t)$, \\textbf{probabilitățile filtrate}, pentru fiecare regim $j$'),
      [T('\\textbf{prediction}: $\\Pr(S_t = j \\mid Y_{t-1}) = \\sum_i p_{ij}\\Pr(S_{t-1} = i \\mid Y_{t-1})$', '\\textbf{predicția}: $\\Pr(S_t = j \\mid Y_{t-1}) = \\sum_i p_{ij}\\Pr(S_{t-1} = i \\mid Y_{t-1})$'),
-      T('\\textbf{densities}: $f_j(y_t) = \\phi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, the likelihood of $y_t$ in each regime', '\\textbf{densitățile}: $f_j(y_t) = \\phi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, verosimilitatea lui $y_t$ în fiecare regim'),
+      T('\\textbf{densities}: $f_j(y_t) = \\phi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, the likelihood of $y_t$ in each regime; $\\phi$: the standard Normal density; $\\mu_j$, $\\sigma_j$: the mean and standard deviation of regime $j$', '\\textbf{densitățile}: $f_j(y_t) = \\phi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, verosimilitatea lui $y_t$ în fiecare regim; $\\phi$: densitatea distribuției Normale standard; $\\mu_j$, $\\sigma_j$: media și abaterea standard a regimului $j$'),
       T('\\textbf{update} (Bayes): $\\Pr(S_t = j \\mid Y_t) = \\dfrac{\\Pr(S_t = j \\mid Y_{t-1})\\,f_j(y_t)}{\\sum_i\\Pr(S_t = i \\mid Y_{t-1})\\,f_i(y_t)}$', '\\textbf{actualizarea} (Bayes): $\\Pr(S_t = j \\mid Y_t) = \\dfrac{\\Pr(S_t = j \\mid Y_{t-1})\\,f_j(y_t)}{\\sum_i\\Pr(S_t = i \\mid Y_{t-1})\\,f_i(y_t)}$')]),
     (T('The denominator is $p(y_t \\mid Y_{t-1})$: the log-likelihood is $\\sum_t\\log p(y_t \\mid Y_{t-1})$, as for the Kalman filter', 'Numitorul este $p(y_t \\mid Y_{t-1})$: log-verosimilitatea este $\\sum_t\\log p(y_t \\mid Y_{t-1})$, ca la filtrul Kalman'),
      [T('the same predict--update cycle, with probabilities instead of means and variances', 'același ciclu predicție--actualizare, cu probabilități în locul mediilor și varianțelor')]),
@@ -781,7 +787,7 @@ interp(('the recession probabilities', 'probabilităților de recesiune'), [
     (T('Regime means: @{ex.m1}\\% (recession) and @{ex.m2}\\% (expansion) per quarter, $\\hat\\sigma = @{ex.s}$; $\\hat p_{11} = @{ex.p11}$, $\\hat p_{22} = @{ex.p22}$', 'Mediile regimurilor: @{ex.m1}\\% (recesiune) și @{ex.m2}\\% (expansiune) pe trimestru, $\\hat\\sigma = @{ex.s}$; $\\hat p_{11} = @{ex.p11}$, $\\hat p_{22} = @{ex.p22}$'),
      [T('expected durations: @{ex.d1} quarters of recession, @{ex.d2} quarters of expansion; ergodic share of recession @{ex.erg}\\%', 'durate așteptate: @{ex.d1} trimestre de recesiune, @{ex.d2} trimestre de expansiune; ponderea ergodică a recesiunii @{ex.erg}\\%')]),
     (T('Agreement with the NBER: @{excon}\\% of quarters; @{exhit}\\% of NBER recession quarters detected, @{exfalse}\\% false alarms', 'Concordanța cu NBER: @{excon}\\% din trimestre; @{exhit}\\% din trimestrele de recesiune NBER detectate, @{exfalse}\\% alarme false'),
-     [T('the model misses the mild recessions (2001) and catches the deep ones', 'modelul ratează recesiunile ușoare (2001) și le prinde pe cele profunde')]),
+     [T('the model misses the mild recessions (2001) and catches the deep ones', 'modelul nu detectează recesiunile ușoare (2001), dar le detectează pe cele profunde')]),
     T('2020Q2 ($@{ms.g20}\\%$): probability @{ms.p20}, then back to expansion; after 2021 the probability never exceeds @{ms.post}', 'T2 2020 ($@{ms.g20}\\%$): probabilitatea @{ms.p20}, apoi revenire la expansiune; după 2021 probabilitatea nu depășește @{ms.post}')])
 
 chart(T('Filtered against smoothed probabilities: 2008', 'Probabilități filtrate și netezite: 2008'), 'tsa_ch10_ms_filtered', 'TSA_ch10_markov_gdp', [
@@ -800,7 +806,7 @@ D.frame(T('Checks: which regimes did the model find?', 'Verificări: regimurile 
      [T('standard deviations @{pi.s2} and @{pi.s1}; durations @{pi.d2} and @{pi.d1} quarters; the switch to the calm regime in @{pi.sw}', 'abateri standard @{pi.s2} și @{pi.s1}; durate de @{pi.d2} și @{pi.d1} de trimestre; trecerea la regimul calm în @{pi.sw}'),
       T('this is the ``Great Moderation\'\' of the mid-1980s; agreement with the NBER falls to @{pi.con}\\% (@{pi.false}\\% false alarms)', 'aceasta este „Marea Moderație” de la mijlocul anilor 1980; concordanța cu NBER scade la @{pi.con}\\% (@{pi.false}\\% alarme false)')]),
     (T('\\textbf{Including 2020} in the estimation: one regime is the single quarter 2020Q2 (mean @{pi.m1}\\%), the other lasts @{pi.d2all} quarters', '\\textbf{Includerea anului 2020} în estimare: un regim este doar trimestrul T2 2020 (media @{pi.m1}\\%), celălalt durează @{pi.d2all} de trimestre'),
-     [T('one extreme observation can capture a whole regime', 'o singură observație extremă poate captura un regim întreg')]),
+     [T('one extreme observation can capture a whole regime', 'o singură observație extremă poate forma singură un regim')]),
     T('Checklist: plot the probabilities against known events; compare several starting values and samples; prefer the specification with a clear economic meaning', 'Lista de verificări: reprezentați probabilitățile alături de evenimente cunoscute; comparați mai multe valori de pornire și eșantioane; preferați specificația cu un înțeles economic clar')))
 
 chart(T('Romanian GDP growth regimes', 'Regimuri ale creșterii PIB în România'), 'tsa_ch10_ms_ro', 'TSA_ch10_markov_gdp', [
@@ -824,7 +830,7 @@ interp(('the volatility regimes', 'regimurilor de volatilitate'), [
      [T('durations: @{vo.d2} weeks calm, @{vo.d1} weeks turbulent; turbulent in @{vo.share}\\% of the weeks (ergodic @{vo.erg}\\%)', 'durate: @{vo.d2} de săptămîni calme, @{vo.d1} săptămîni agitate; agitat în @{vo.share}\\% din săptămîni (ergodic @{vo.erg}\\%)')]),
     (T('Most turbulent years: @{vo.y0} (@{vo.ys0}\\% of the weeks), @{vo.y1} (@{vo.ys1}\\%), @{vo.y2} (@{vo.ys2}\\%)', 'Cei mai agitați ani: @{vo.y0} (@{vo.ys0}\\% din săptămîni), @{vo.y1} (@{vo.ys1}\\%), @{vo.y2} (@{vo.ys2}\\%)'),
      [T('correlation with the GARCH(1,1) volatility: @{vo.corr}; GARCH: $\\hat\\alpha = @{vo.ga}$, $\\hat\\beta = @{vo.gb}$', 'corelația cu volatilitatea GARCH(1,1): @{vo.corr}; GARCH: $\\hat\\alpha = @{vo.ga}$, $\\hat\\beta = @{vo.gb}$')]),
-    T('Two views of the same clustering: GARCH moves volatility continuously, the regime model jumps between two levels', 'Două perspective asupra aceleiași grupări: GARCH mișcă volatilitatea continuu, modelul cu regimuri sare între două niveluri')])
+    T('Two views of the same clustering: GARCH moves volatility continuously, the regime model jumps between two levels', 'Două perspective asupra aceleiași grupări: GARCH modifică volatilitatea continuu, modelul cu regimuri trece brusc de la un nivel la altul')])
 
 D.frame(T('Regimes, GARCH persistence and long memory', 'Regimuri, persistența GARCH și memoria lungă'), items(
     (T('\\refLL: shifts in the level of variance make a GARCH look almost integrated ($\\alpha + \\beta \\approx 1$)', '\\refLL: schimbările nivelului varianței fac un GARCH să pară aproape integrat ($\\alpha + \\beta \\approx 1$)'),
@@ -839,7 +845,7 @@ chart(T('Regimes imitate memory', 'Regimurile imită memoria'), 'tsa_ch10_regime
     h='0.56\\textheight')
 
 interp(('the simulated regimes', 'regimurilor simulate'), [
-    (T('Data: ACF of $|r_t|$ @{me.acf_data_1} at lag 1, @{me.acf_data_26} at 26 weeks; regime model: @{me.acf_sim_1} and @{me.acf_sim_26}; random order: none', 'Datele: ACF a lui $|r_t|$ @{me.acf_data_1} la decalajul 1, @{me.acf_data_26} la 26 de săptămîni; modelul cu regimuri: @{me.acf_sim_1} și @{me.acf_sim_26}; ordinea aleatoare: nimic'),
+    (T('Data: ACF of $|r_t|$ @{me.acf_data_1} at lag 1, @{me.acf_data_26} at 26 weeks; regime model: @{me.acf_sim_1} and @{me.acf_sim_26}; random order: none', 'Datele: ACF a lui $|r_t|$ @{me.acf_data_1} la lagul 1, @{me.acf_data_26} la 26 de săptămîni; modelul cu regimuri: @{me.acf_sim_1} și @{me.acf_sim_26}; ordinea aleatoare: nimic'),
      [T('the regimes explain most of the short-run clustering, less of the long tail', 'regimurile explică cea mai mare parte a grupării pe termen scurt, mai puțin din coada lungă')]),
     (T('Local Whittle $\\hat d$ of $|r_t|$: @{me.d_data} in the data, @{me.d_sim} (SD @{me.d_sim_sd}) in the simulated regime series, @{me.d_iid} in random order', 'Estimatorul Whittle local $\\hat d$ pentru $|r_t|$: @{me.d_data} în date, @{me.d_sim} (SD @{me.d_sim_sd}) în seriile simulate cu regimuri, @{me.d_iid} în ordine aleatoare'),
      [T('a GARCH(1,1) fitted to the simulated series gives $\\alpha + \\beta = @{me.garch_ab_sim}$ on average (@{me.repsg} series), although there is no GARCH in them', 'un GARCH(1,1) estimat pe seriile simulate dă în medie $\\alpha + \\beta = @{me.garch_ab_sim}$ (@{me.repsg} serii), deși ele nu conțin GARCH')]),
@@ -866,10 +872,10 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
         '\\aiprompt{Write Python code that downloads Romanian quarterly real GDP from Eurostat (namq\\_10\\_gdp, Q.CLV10\\_MEUR.SCA.B1GQ.RO), fits UnobservedComponents with a smooth trend and an AR(2) cycle, compares the smoothed and the filtered cycle with the HP gap and with the Hamilton (2018) regression filter, and reports the revisions of the last eight quarters.}')])))
 
 D.frame(T('Checks you must run', 'Verificări necesare'), items(
-    T('Simulate from known parameters and check that the code recovers them (the Nile values of \\refDK\\ are a good test)', 'Simulați din parametri cunoscuți și verificați că acel cod îi regăsește (valorile pentru Nil din \\refDK\\ sînt un test bun)'),
+    T('Simulate from known parameters and check that the code recovers them (the Nile values of \\refDK\\ are a good test)', 'Simulați din parametri cunoscuți și verificați că acest cod îi regăsește (valorile pentru Nil din \\refDK\\ sînt un test bun)'),
     T('Filtered or smoothed? Real-time claims need filtered estimates; an AI answer that uses \\texttt{smoothed} for a ``forecast\'\' is wrong', 'Filtrat sau netezit? Afirmațiile despre timp real cer estimări filtrate; un răspuns AI care folosește \\texttt{smoothed} pentru o „prognoză” este greșit'),
     T('Durations: $1/(1 - p_{ii})$, not $p_{ii}/(1 - p_{ii})$; check the convention of the transition matrix (rows or columns) in the library', 'Duratele: $1/(1 - p_{ii})$, nu $p_{ii}/(1 - p_{ii})$; verificați convenția matricei de tranziție (rînduri sau coloane) în bibliotecă'),
-    T('Markov switching: several starting values, label switching, outliers that capture a regime', 'Markov switching: mai multe valori de pornire, schimbarea etichetelor, valori extreme care capturează un regim'),
+    T('Markov switching: several starting values, label switching, outliers that capture a regime', 'Markov switching: mai multe valori de pornire, schimbarea etichetelor, valori extreme care formează singure un regim'),
     T('The HP filter at the end of the sample: do not read the last gap as a real-time estimate', 'Filtrul HP la capătul eșantionului: nu interpretați ultima deviație ca o estimare în timp real'),
     T('Every cited reference: it must exist; check the DOI', 'Fiecare referință citată: trebuie să existe; verificați DOI-ul')))
 

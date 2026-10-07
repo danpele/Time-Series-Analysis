@@ -149,8 +149,8 @@ MSCA Digital Finance}
     \end{itemize}
     \item \textbf{Traseul} capitolului
     \begin{itemize}
-        \item prognoza ca învățare supervizată: decalaje, ferestre mobile, variabile de calendar; strategiile recursivă, directă și cu ieșiri multiple
-        \item validarea walk-forward și scurgerea de informație; ridge și lasso; arbori, random forest, gradient boosting; rețele neuronale mici și LSTM
+        \item prognoza ca învățare supervizată: laguri, ferestre mobile, variabile de calendar; strategiile recursivă, directă și cu ieșiri multiple
+        \item validarea walk-forward și leakage-ul; ridge și lasso; arbori, random forest, gradient boosting; rețele neuronale mici și LSTM
         \item intervale de prognoză; modele locale și globale; patru aplicații și competițiile M4, M5
     \end{itemize}
     \item Pornim de la \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0} (măsuri de acuratețe, metode de referință) și de la \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{Capitolul 4} (validare încrucișată pentru serii de timp, Diebold--Mariano); Seminarul 9 are loc înaintea acestui curs
@@ -162,7 +162,7 @@ MSCA Digital Finance}
 \begin{itemize}
     \item Transformați o serie de timp într-un tabel de învățare supervizată fără să folosiți informație din viitor
     \item Construiți prognoze pe mai mulți pași cu strategiile recursivă, directă și cu ieșiri multiple
-    \item Validați un model prin walk-forward și recunoașteți scurgerea de informație și look-ahead bias
+    \item Validați un model prin walk-forward și recunoașteți leakage-ul și look-ahead bias
     \item Explicați ridge, lasso, arborii de regresie, random forest, gradient boosting, MLP și LSTM, cu parametrii lor principali
     \item Construiți intervale de prognoză prin regresie cuantilică și predicție conformală
     \item Comparați prognozele ML cu metodele statistice de referință pe aceeași perioadă de test, cu MASE și testul Diebold--Mariano
@@ -211,22 +211,23 @@ MSCA Digital Finance}
 \begin{frame}{De la o serie la un tabel}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Decalaje} (lag features): $y_{t}, y_{t-1}, \dots, y_{t-p+1}$, cunoscute la originea prognozei $t$; ținta $y_{t+h}$
+    \item \textbf{Laguri ca variabile explicative} (lag features): $y_{t}, y_{t-1}, \dots, y_{t-p+1}$, cunoscute la originea prognozei $t$; ținta $y_{t+h}$
     \begin{itemize}
         \item un AR$(p)$ (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol2_modele_arma.pdf}{Capitolul 2}) este exact o regresie liniară pe acest tabel; ML înlocuiește funcția liniară cu una flexibilă
     \end{itemize}
     \item \textbf{Variabile pe ferestre mobile}: medii, abateri standard, minime pe ultimele $w$ valori, de exemplu $\bar y_t^{(7)} = \frac{1}{7}\sum_{j=0}^{6} y_{t-j}$
     \begin{itemize}
-        \item fereastra trebuie să se termine la $t$, originea: o fereastră care conține $y_{t+1}$ scurge ținta
+        \item fereastra trebuie să se termine la $t$, originea: o fereastră care conține $y_{t+1}$ introduce ținta în variabile (leakage)
     \end{itemize}
     \item \textbf{Variabile de calendar} ale zilei-țintă: ziua săptămînii, luna, termeni Fourier $\sin(2\pi k\,d/365{,}25)$, sărbători
     \begin{itemize}
+        \item $d$: ziua din an; $k = 1, 2, \dots$: armonica (un ciclu anual pentru $k = 1$)
         \item se cunosc dinainte, deci sînt permise (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{Capitolul 4}: termeni Fourier și Paștele ortodox); variabilele exogene (temperatura) doar dacă valorile lor sînt cunoscute sau prognozate la momentul $t$
     \end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Exemplu rezolvat: un tabel de decalaje pentru consumul de energie electrică}
+\begin{frame}{Exemplu rezolvat: un tabel de laguri pentru consumul de energie electrică}
 \itemsize{\footnotesize}
 \begin{columns}[T]
 \begin{column}{0.5\textwidth}
@@ -253,7 +254,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
     \begin{itemize}
         \item fiecare rînd: ce știam la $t$ și valoarea dorită pentru $t+1$
     \end{itemize}
-    \item Cu $p$ decalaje, primele $p - 1$ zile nu au un rînd complet
+    \item Cu $p$ laguri, primele $p - 1$ zile nu au un rînd complet
     \begin{itemize}
         \item o serie de lungime $n$ dă $n - p - h + 1$ rînduri pentru orizontul $h$
     \end{itemize}
@@ -284,8 +285,8 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
     \end{itemize}
     \item Corelația cu consumul de mîine: $y_t$ 0{,}77; aceeași zi a săptămînii trecute 0{,}82; media pe 7 zile 0{,}74
     \begin{itemize}
-        \item doar cu $y_t$, duminicile formează un nor separat: un singur decalaj liniar nu poate reprezenta tiparul săptămînal
-        \item tabelul folosit mai departe are 1\,614 de rînduri și 30 de variabile explicative (14 decalaje, două medii, aceeași zi a săptămînii, calendar)
+        \item doar cu $y_t$, duminicile formează un nor separat: un singur lag liniar nu poate reprezenta tiparul săptămînal
+        \item tabelul folosit mai departe are 1\,614 de rînduri și 30 de variabile explicative (14 laguri, două medii, aceeași zi a săptămînii, calendar)
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -333,22 +334,22 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
         \item dacă AR(1) ar fi modelul adevărat, coeficienții direcți ar estima aceleași valori, $2{,}16$ și $0{,}64$
         \item diferă: modelul pe un pas este greșit specificat la doi pași (de exemplu, un tipar săptămînal), iar modelul direct se adaptează orizontului
     \end{itemize}
-    \item Nicio strategie nu cîștigă întotdeauna: le încercăm pe amîndouă pe datele de validare
+    \item Nicio strategie nu este întotdeauna superioară: le încercăm pe amîndouă pe datele de validare
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Recapitulare: prognoza ca învățare supervizată}
 \itemsize{\small}
 \begin{itemize}
-    \item O prognoză este o predicție a lui $y_{t+h}$ din variabile cunoscute la $t$: decalaje, statistici pe ferestre mobile, calendar
-    \item Un AR$(p)$ este o regresie liniară pe decalaje; ML schimbă funcția, nu tabelul
+    \item O prognoză este o predicție a lui $y_{t+h}$ din variabile cunoscute la $t$: laguri, statistici pe ferestre mobile, calendar
+    \item Un AR$(p)$ este o regresie liniară pe laguri; ML schimbă funcția, nu tabelul
     \item Pe mai mulți pași: recursiv (un model, iterat), direct (un model pentru fiecare $h$), MIMO (un model, $H$ ieșiri)
 \end{itemize}
 \end{frame}
 
 
 %=============================================================================
-\section{Validare fără scurgere de informație}
+\section{Validare fără leakage}
 %=============================================================================
 
 \begin{frame}{Eșantioanele de antrenare, validare și test}
@@ -379,10 +380,10 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \quantlet{TSA\_ch9\_validation}{\qlurl{TSA_ch9_validation}}
 \end{frame}
 
-\begin{frame}{Look-ahead bias și scurgerea de informație}
+\begin{frame}{Look-ahead bias și leakage-ul}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Scurgerea de informație} (leakage): informație care nu ar fi disponibilă la originea prognozei intră în antrenare sau în variabile \refKaufman
+    \item \textbf{Leakage-ul} (scurgerea de informație): informație care nu ar fi disponibilă la originea prognozei intră în antrenare sau în variabile \refKaufman
     \begin{itemize}
         \item rezultat: scoruri excelente la validare, care dispar la utilizarea reală; în finanțe se numește \textbf{look-ahead bias}
     \end{itemize}
@@ -397,7 +398,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Scurgerea de informație în practică: grupuri aleatoare pe ținte suprapuse}
+\begin{frame}{Leakage-ul în practică: grupuri aleatoare pe ținte suprapuse}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.5\textheight,keepaspectratio]{tsa_ch9_leakage.pdf}
@@ -409,7 +410,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \quantlet{TSA\_ch9\_validation}{\qlurl{TSA_ch9_validation}}
 \end{frame}
 
-\begin{frame}{Interpretarea experimentului de scurgere de informație}
+\begin{frame}{Interpretarea experimentului de leakage}
 \itemsize{\small}
 \begin{itemize}
     \item 5-fold aleator raportează $R^2$ = 34{,}5\% pentru un mers aleator, unde nimic nu este previzibil, și 36{,}8\% pentru S\&P 500
@@ -420,7 +421,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
     \begin{itemize}
         \item $R^2$ negativ în afara eșantionului: random forest este mai slab decît media istorică, cum ne așteptăm pentru randamente (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf}{Capitolul 1})
     \end{itemize}
-    \item Un model este atît de bun cît este validarea lui; un scor spectaculos este un motiv să căutăm o scurgere de informație
+    \item Un model este atît de bun cît este validarea lui; un scor spectaculos este un motiv să căutăm un leakage
 \end{itemize}
 \end{frame}
 
@@ -430,6 +431,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
     \item Modelul $y = f(x) + \varepsilon$, $\Var(\varepsilon) = \sigma^2$; $\hat f$ estimat pe un eșantion de antrenare aleator. Eroarea de test așteptată în $x_0$:
     \begin{itemize}
         \item $E[(y_0 - \hat f(x_0))^2] = \underbrace{(E[\hat f(x_0)] - f(x_0))^2}_{\text{deplasare}^2} + \underbrace{\Var(\hat f(x_0))}_{\text{varianță}} + \sigma^2$
+        \item $f$: funcția adevărată; $y_0$: o observație nouă în $x_0$; media se ia după eșantioanele de antrenare și zgomot; $\sigma^2$: zgomotul pe care niciun model nu îl poate elimina
     \end{itemize}
     \item \textbf{Overfitting}: un model flexibil învață zgomotul; eroare de antrenare mică, eroare de test mare
     \begin{itemize}
@@ -463,11 +465,11 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Recapitulare: validare fără scurgere de informație}
+\begin{frame}{Recapitulare: validare fără leakage}
 \itemsize{\small}
 \begin{itemize}
     \item Walk-forward: antrenăm pe trecut, testăm pe blocul următor, mergem mai departe; grupuri aleatoare doar pentru autoregresii pure
-    \item Scurgerea de informație: valori viitoare în variabile, preprocesare pe tot eșantionul, ținte suprapuse, date revizuite
+    \item Leakage-ul: valori viitoare în variabile, preprocesare pe tot eșantionul, ținte suprapuse, date revizuite
     \item Eroarea de test = deplasare$^2$ + varianță + zgomot; validarea fixează complexitatea
 \end{itemize}
 \end{frame}
@@ -477,12 +479,12 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \section{Modele liniare regularizate: ridge și lasso}
 %=============================================================================
 
-\begin{frame}{Multe decalaje, metoda celor mai mici pătrate instabilă}
+\begin{frame}{Multe laguri, metoda celor mai mici pătrate instabilă}
 \itemsize{\small}
 \begin{itemize}
     \item Model liniar pe $p$ variabile standardizate: $\hat y = \beta_0 + \sum_j \beta_j x_j$; OLS (ordinary least squares, metoda celor mai mici pătrate) minimizează $\sum_t (y_t - \hat y_t)^2$
     \begin{itemize}
-        \item decalajele vecine sînt puternic corelate: coeficienții OLS devin mari, de semne opuse și instabili de la o fereastră la alta
+        \item lagurile vecine sînt puternic corelate: coeficienții OLS devin mari, de semne opuse și instabili de la o fereastră la alta
     \end{itemize}
     \item \textbf{Standardizăm} întîi: $x_j \to (x_j - \bar x_j)/s_j$, cu $\bar x_j$, $s_j$ doar din fereastra de antrenare
     \begin{itemize}
@@ -497,11 +499,12 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \begin{itemize}
     \item \textbf{Ridge} \refHoerlK: $\min_{\beta} \sum_t (y_t - \beta_0 - \mathbf{x}_t'\beta)^2 + \lambda\sum_j \beta_j^2$
     \begin{itemize}
+        \item $\lambda \ge 0$: penalizarea ($\lambda = 0$: OLS); $\mathbf{X}$: matricea variabilelor standardizate; $\mathbf{y}$: țintele; $\mathbf{I}$: matricea identitate
         \item formă închisă $\hat\beta = (\mathbf{X}'\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}'\mathbf{y}$; toți coeficienții se contractă spre 0, niciunul nu devine exact 0
     \end{itemize}
     \item \textbf{Lasso} \refTib\ (least absolute shrinkage and selection operator): penalizarea $\lambda\sum_j |\beta_j|$
     \begin{itemize}
-        \item face unii coeficienți exact 0: selectează decalajele
+        \item face unii coeficienți exact 0: selectează lagurile
     \end{itemize}
     \item \textbf{Exemplu rezolvat}, o singură variabilă standardizată, $S_{xy} = \sum x_ty_t = 90$, $S_{xx} = \sum x_t^2 = 100$
     \begin{itemize}
@@ -531,7 +534,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
     \begin{itemize}
         \item urmează variabilele binare ale zilelor și sărbătorile: calendarul poartă cea mai mare parte din semnalul rămas
     \end{itemize}
-    \item La penalizarea aleasă, lasso păstrează 22 din 30 variabile: multe decalaje sînt redundante cînd $y_t$, ziua săptămînii și sărbătorile sînt incluse
+    \item La penalizarea aleasă, lasso păstrează 22 din 30 de variabile: multe laguri sînt redundante cînd $y_t$, ziua săptămînii și sărbătorile sînt incluse
     \item Ridge păstrează totul, dar contractă lin; pe originile de test din secțiunea 6, ridge este cel mai bun model ML
 \end{itemize}
 \end{frame}
@@ -603,7 +606,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
     \begin{itemize}
         \item astfel arborii se decorelează ($\rho$ scade), iar media are o varianță mai mică
     \end{itemize}
-    \item Hiperparametri: numărul de arbori (mai mulți nu strică niciodată, doar încetinesc), \texttt{max\_features}, dimensiunea minimă a frunzei
+    \item Hiperparametri: numărul de arbori (un număr mai mare nu înrăutățește rezultatul, doar mărește timpul de calcul), \texttt{max\_features}, dimensiunea minimă a frunzei
     \begin{itemize}
         \item bootstrap-ul ignoră ordinea în timp în fereastra de antrenare; nu este o problemă, deoarece validarea este walk-forward
     \end{itemize}
@@ -615,7 +618,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \begin{itemize}
     \item \textbf{Boosting} \refFriedman: adăugăm cîte un arbore mic, fiecare estimat pe reziduurile (gradientul negativ al funcției de pierdere) modelului curent
     \begin{itemize}
-        \item $F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \nu\,g_m(\mathbf{x})$; $\nu$: \textbf{rata de învățare} (0,01--0,3)
+        \item $F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \nu\,g_m(\mathbf{x})$; $F_m$: modelul după $m$ arbori; $g_m$: al $m$-lea arbore mic; $\nu$: \textbf{rata de învățare} (0,01--0,3)
     \end{itemize}
     \item \textbf{Exemplu rezolvat}: țintele $5, 6, 8$; pornim de la medie, $F_0 = 6{,}33$; reziduurile -1{,}33; -0{,}33; +1{,}67
     \begin{itemize}
@@ -662,7 +665,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \end{center}
 \vspace{-0.25cm}
 \begin{itemize}
-    \item IAPC (indicele armonizat al prețurilor de consum) al României, Eurostat, 2015 = 100; prognoze cu o lună înainte din random forest antrenate pînă în decembrie 2020, pe niveluri întîrziate sau pe variațiile lunare logaritmice
+    \item IAPC (indicele armonizat al prețurilor de consum) al României, Eurostat, 2015 = 100; prognoze cu o lună înainte din random forest antrenate pînă în decembrie 2020, pe laguri ale nivelurilor sau pe variațiile lunare logaritmice
 \end{itemize}
 \quantlet{TSA\_ch9\_regularisation\_trees}{\qlurl{TSA_ch9_regularisation_trees}}
 \end{frame}
@@ -746,6 +749,7 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
     \item \textbf{MLP} (multilayer perceptron, perceptron multistrat), un strat ascuns cu $q$ neuroni:
     \begin{itemize}
         \item $h_j = g(b_j + \mathbf{w}_j'\mathbf{x})$, $j = 1, \dots, q$; \quad $\hat y = c + \sum_j v_jh_j$
+        \item $\mathbf{x}$: intrările; $\mathbf{w}_j$, $b_j$: ponderile și termenul liber ale neuronului $j$; $h_j$: ieșirea lui; $v_j$, $c$: ponderile și termenul liber ale ieșirii
         \item $g$: funcția de activare (ReLU $\max(0, z)$, tanh, logistică); cu $g(z) = z$ rețeaua redevine liniară
     \end{itemize}
     \item Aproximarea universală \refHornik: suficienți neuroni ascunși aproximează orice funcție continuă
@@ -793,14 +797,16 @@ sî & 5{,}78 & 6{,}59 & 6{,}61 & 5{,}09 \\
 \begin{itemize}
     \item \textbf{RNN} (recurrent neural network, rețea neuronală recurentă): o stare ascunsă $h_t = \tanh(Wh_{t-1} + Ux_t + b)$ duce trecutul mai departe; aceleași ponderi la fiecare pas
     \begin{itemize}
+        \item $x_t$: intrarea la momentul $t$; $W$, $U$, $b$: ponderile și termenul liber, comune tuturor pașilor
         \item antrenarea prin mulți pași înmulțește multe derivate: gradienții dispar sau explodează
     \end{itemize}
     \item \textbf{LSTM} (long short-term memory) \refLSTM: o stare a celulei $c_t$ actualizată aditiv, controlată de porțile de uitare, de intrare și de ieșire
     \begin{itemize}
-        \item $c_t = f_t \odot c_{t-1} + i_t \odot \tilde c_t$: informația poate supraviețui mulți pași
+        \item $c_t = f_t \odot c_{t-1} + i_t \odot \tilde c_t$: informația se poate păstra pe mulți pași
+        \item $f_t$, $i_t \in (0, 1)$: poarta de uitare și poarta de intrare; $\tilde c_t$: conținutul nou propus; $\odot$: produsul element cu element
         \item fiecare poartă este un mic strat logistic: un LSTM cu 32 de unități și 8 intrări are circa 5\,400 de ponderi
     \end{itemize}
-    \item Rezumat onest \refHBB: pe serii unice și scurte, rețelele recurente bat rar ETS sau ARIMA; strălucesc cu multe serii înrudite și suficiente date (modele globale, \refDeepAR)
+    \item Concluzia sintezei \refHBB: pe serii unice și scurte, rețelele recurente sînt rareori mai precise decît ETS sau ARIMA; sînt utile mai ales cu multe serii înrudite și suficiente date (modele globale, \refDeepAR)
 \end{itemize}
 \end{frame}
 
@@ -948,7 +954,7 @@ LSTM & 0{,}357 & 0{,}447 & 1{,}16 & 0{,}016 \\
     \begin{itemize}
         \item DHR estimează un singur coeficient pentru Paște din aceleași patru episoade și folosește informația mai eficient
     \end{itemize}
-    \item LSTM nu vede indicatorul de sărbătoare: repetă tiparul săptămînal și ratează complet sărbătoarea
+    \item LSTM nu vede indicatorul de sărbătoare: repetă tiparul săptămînal și nu surprinde deloc sărbătoarea
     \item Evenimentele rare cer fie structură (un coeficient de regresie), fie multe serii care au în comun evenimentul (un model global)
 \end{itemize}
 \end{frame}
@@ -957,7 +963,7 @@ LSTM & 0{,}357 & 0{,}447 & 1{,}16 & 0{,}016 \\
 \itemsize{\small}
 \begin{itemize}
     \item Aceleași origini, același orizont, aceleași erori: modelele ML intră în comparația din \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{Capitolul 4}
-    \item Ridge egalează DHR; GB, random forest și MLP depășesc SARIMA și ETS; LSTM nu
+    \item Ridge are aceeași precizie ca DHR; GB, random forest și MLP depășesc SARIMA și ETS; LSTM nu
     \item Variabilele de calendar și sărbătorile decid clasamentul
 \end{itemize}
 \end{frame}
@@ -991,6 +997,7 @@ LSTM & 0{,}357 & 0{,}447 & 1{,}16 & 0{,}016 \\
         \item 1. estimăm modelul pe datele de antrenare fără ultimele $n$ puncte (setul de calibrare)
         \item 2. calculăm erorile absolute $|e_i|$ pe setul de calibrare și le ordonăm
         \item 3. $\hat q$ = a $\lceil (n+1)(1 - \alpha) \rceil$-a cea mai mică valoare; intervalul $\hat y \pm \hat q$
+        \item $\alpha$: proporția admisă de valori în afara intervalului ($\alpha = 0{,}1$ pentru un interval de 90\%); $\lceil\cdot\rceil$: rotunjirea în sus
     \end{itemize}
     \item Garanția: acoperire de cel puțin $1 - \alpha$ dacă erorile sînt interschimbabile (ordinea lor nu contează)
     \begin{itemize}
@@ -1047,7 +1054,7 @@ LSTM & 0{,}357 & 0{,}447 & 1{,}16 & 0{,}016 \\
     \end{itemize}
     \item Model \textbf{global}: un singur model estimat pe rîndurile combinate ale mai multor serii înrudite \refMMH, \refJanus
     \begin{itemize}
-        \item aceleași variabile pentru fiecare serie (decalaje scalate, calendar); opțional, un identificator al seriei
+        \item aceleași variabile pentru fiecare serie (laguri scalate, calendar); opțional, un identificator al seriei
         \item mai multe date pentru fiecare parametru: algoritmii complecși (GB, rețele) devin utilizabili; cîștigătorii M4 și M5 au fost globali
     \end{itemize}
     \item Riscul: seriile trebuie să aibă dinamici comune; un model global poate face să dispară prin mediere ceea ce este specific unei serii
@@ -1057,7 +1064,7 @@ LSTM & 0{,}357 & 0{,}447 & 1{,}16 & 0{,}016 \\
 \begin{frame}{Exercițiul pentru inflație}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item Ținta: inflația anuală IAPC a României (Eurostat), $\pi_t = 100(P_t/P_{t-12} - 1)$, la orizonturile $h = 1, 3, 6, 12$ luni
+    \item Ținta: inflația anuală IAPC a României (Eurostat), $\pi_t = 100(P_t/P_{t-12} - 1)$, $P_t$: indicele IAPC, la orizonturile $h = 1, 3, 6, 12$ luni
     \begin{itemize}
         \item strategie directă; modelele prognozează variația $\pi_{t+h} - \pi_t$, deci arborii nu extrapolează niciodată nivelul
     \end{itemize}
@@ -1110,7 +1117,7 @@ GB global & 0{,}64 (1{,}01) & 1{,}37 (0{,}97) & 2{,}37 (1{,}05) & 4{,}54 (1{,}17
 \begin{itemize}
     \item AR liniar este cel mai bun model pînă la 6 luni (cu circa 10\% sub mersul aleator); niciun model ML nu depășește semnificativ mersul aleator
     \begin{itemize}
-        \item la 12 luni nimic nu depășește mersul aleator: vîrful din 2022 (14{,}6\% în noiembrie 2022) a venit din prețurile energiei, nu din trecutul inflației
+        \item la 12 luni niciun model nu depășește mersul aleator: vîrful din 2022 (14{,}6\% în noiembrie 2022) a venit din prețurile energiei, nu din trecutul inflației
     \end{itemize}
     \item GB global este mai bun decît cel local la orizonturi scurte (RMSE 1{,}37 față de 1{,}64 la $h = 3$), dar nesemnificativ (p 0{,}113)
     \begin{itemize}
@@ -1124,8 +1131,8 @@ GB global & 0{,}64 (1{,}01) & 1{,}37 (0{,}97) & 2{,}37 (1{,}05) & 4{,}54 (1{,}17
 \itemsize{\small}
 \begin{itemize}
     \item Un model global combină multe serii înrudite și permite algoritmilor flexibili să folosească mai multe date
-    \item Inflația din România: AR este cel mai bun; GB global depășește GB local; nimic nu depășește mersul aleator la 12 luni
-    \item Eșantioane mici: raportăm valorile p DM, nu doar clasamentele RMSE
+    \item Inflația din România: AR este cel mai bun; GB global depășește GB local; niciun model nu depășește mersul aleator la 12 luni
+    \item Eșantioane mici: raportăm p-value-urile DM, nu doar clasamentele RMSE
 \end{itemize}
 \end{frame}
 
@@ -1143,9 +1150,9 @@ GB global & 0{,}64 (1{,}01) & 1{,}37 (0{,}97) & 2{,}37 (1{,}05) & 4{,}54 (1{,}17
     \end{itemize}
     \item Modelul \textbf{HAR} (heterogeneous autoregressive) \refCorsi: OLS pe logaritmul varianței din ultima zi, săptămînă și lună
     \begin{itemize}
-        \item modelele ML adaugă 8 variabile: decalaje ale varianței zilnice, media trimestrială, randamentul, partea lui negativă și valoarea lui absolută
+        \item modelele ML adaugă 8 variabile: laguri ale varianței zilnice, media trimestrială, randamentul, partea lui negativă și valoarea lui absolută
     \end{itemize}
-    \item Walk-forward anual din 2013, cu un spațiu de 5 zile; evaluare prin $R^2$ în afara eșantionului față de HAR și QLIKE (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf}{Capitolul 5}, \refPatton), DM pe diferențele QLIKE
+    \item Walk-forward anual din 2013, cu un spațiu de 5 zile; evaluare prin $R^2$ în afara eșantionului față de HAR și QLIKE (funcția de pierdere quasi-likelihood pentru varianță, \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf}{Capitolul 5}, \refPatton), DM pe diferențele QLIKE
 \end{itemize}
 \end{frame}
 
@@ -1167,12 +1174,12 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
 \end{center}
 \begin{itemize}
     \item 3\,444 și 3\,473 de zile de test; DM $t < -1{,}96$: modelul are un QLIKE semnificativ mai mic decît HAR
-    \item Lasso și MLP cîștigă 7--9\% din $R^2$ față de HAR și reduc semnificativ QLIKE pe S\&P 500; random forest și GB nu depășesc HAR
+    \item Lasso și MLP obțin un $R^2$ față de HAR de 7--9\% și reduc semnificativ QLIKE pe S\&P 500; random forest și GB nu depășesc HAR
     \item Cîștigul vine din variabilele suplimentare (randamentul negativ: efectul de levier din \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf}{Capitolul 5}), folosite lin; arborii taie o relație netedă în trepte
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Prognozele volatilității în două furtuni}
+\begin{frame}{Prognozele volatilității în două episoade de criză}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.52\textheight,keepaspectratio]{tsa_ch9_rv.pdf}
@@ -1187,7 +1194,7 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
 \begin{frame}{Semnul randamentului de mîine: reperul corect}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item Clasificare: ținta $1\{r_{t+1} > 0\}$; variabile: ultimele cinci randamente, sume pe 5, 21, 63 de zile, volatilitatea pe 21 și 63 de zile
+    \item Clasificare: ținta $1\{r_{t+1} > 0\}$ (1 dacă randamentul de mîine este pozitiv, altfel 0); variabile: ultimele cinci randamente, sume pe 5, 21, 63 de zile, volatilitatea pe 21 și 63 de zile
     \begin{itemize}
         \item modele: regresia logistică (logit), random forest, GB; walk-forward anual din 2008
     \end{itemize}
@@ -1215,9 +1222,9 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
 \begin{frame}{Interpretarea experimentului privind semnul}
 \itemsize{\small}
 \begin{itemize}
-    \item Un model cu „53\% acuratețe” pare priceput; față de 54{,}4\% pentru „întotdeauna în creștere”, este mai slab decît a nu face nimic
+    \item Un model cu „53\% acuratețe” pare performant; față de 54{,}4\% pentru „întotdeauna în creștere”, este mai slab decît a nu face nimic
     \begin{itemize}
-        \item GB pe S\&P 500 este semnificativ mai slab decît reperul (p 0{,}008): modelele flexibile se potrivesc pe zgomot
+        \item GB pe S\&P 500 este semnificativ mai slab decît reperul (p 0{,}008): modelele flexibile ajustează zgomotul
     \end{itemize}
     \item Eficiența în formă slabă (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf}{Capitolul 1}): randamentele trecute nu conțin aproape nicio informație despre semnul următorului randament
     \item Volatilitatea este previzibilă, direcția nu: ML confirmă ce au arătat modelele statistice din \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf}{Capitolele 1} și \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf}{5}
@@ -1227,7 +1234,7 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
 \begin{frame}{Recapitulare: volatilitatea și semnul randamentului}
 \itemsize{\small}
 \begin{itemize}
-    \item Volatilitatea realizată: lasso și MLP cu variabile suplimentare depășesc HAR; arborii nu
+    \item Volatilitatea realizată: lasso și MLP cu variabile suplimentare sînt mai precise decît HAR; arborii nu
     \item Semnul randamentului: comparăm cu clasa majoritară, nu cu 50\%; niciun model nu o depășește
 \end{itemize}
 \end{frame}
@@ -1246,7 +1253,7 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
     \end{itemize}
     \item \refMSAplos: pe 1\,045 de serii lunare din M3, metodele ML populare au fost mai puțin precise decît opt metode statistice la toate orizonturile și mult mai lente
     \begin{itemize}
-        \item M4 \refMfour\ (2018): 100\,000 de serii cu șase frecvențe, 61 de metode; acuratețea prin OWA (overall weighted average) a sMAPE și MASE relative, Naive2 = 1
+        \item M4 \refMfour\ (2018): 100\,000 de serii cu șase frecvențe, 61 de metode; acuratețea prin OWA (overall weighted average) a sMAPE (symmetric mean absolute percentage error, eroarea procentuală absolută medie simetrică) și MASE relative, Naive2 = 1
     \end{itemize}
     \item M5 \refMfive\ (2020): 42\,840 de serii zilnice ierarhice de vînzări Walmart, orizontul de 28 de zile
 \end{itemize}
@@ -1275,11 +1282,11 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
     \begin{itemize}
         \item 12 dintre cele mai bune 17 metode au fost combinații
     \end{itemize}
-    \item Lecția: pe serii scurte și eterogene, combinăm modele statistice sau lăsăm ML să învețe de la toate seriile; ML pur și local pierde
+    \item Lecția: pe serii scurte și eterogene, combinăm modele statistice sau lăsăm ML să învețe de la toate seriile; ML pur, aplicat local, este mai slab
 \end{itemize}
 \end{frame}
 
-\begin{frame}{M5: gradient boosting cîștigă pe datele din comerț}
+\begin{frame}{M5: gradient boosting, cel mai precis pe datele din comerț}
 \itemsize{\footnotesize}
 \begin{columns}[T]
 \begin{column}{0.36\textwidth}
@@ -1296,7 +1303,7 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
     \end{itemize}
     \item Cele mai multe metode de top au folosit LightGBM \refLGBM; cîștigătorul a făcut media unor modele LightGBM combinate pe magazin, categorie și departament, recursive și directe
     \begin{itemize}
-        \item modele globale, variabile bogate de calendar și preț, multe serii înrudite: condițiile în care ML cîștigă
+        \item modele globale, variabile bogate de calendar și preț, multe serii înrudite: condițiile în care ML este superior
     \end{itemize}
 \end{itemize}
 \end{column}
@@ -1340,8 +1347,8 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
 \begin{frame}{Recapitulare: studii de caz}
 \itemsize{\small}
 \begin{itemize}
-    \item M4: cîștigă combinațiile și un model hibrid global; ML pur local pierde în fața metodelor simple
-    \item M5: modelele globale LightGBM cu variabile de calendar și preț cîștigă clar
+    \item M4: cele mai precise sînt combinațiile și un model hibrid global; ML pur local este mai slab decît metodele simple
+    \item M5: modelele globale LightGBM cu variabile de calendar și preț sînt clar cele mai precise
     \item Gu, Kelly și Xiu: predictibilitate mică, dar reală, în secțiunea transversală a acțiunilor; modelele neliniare aduc valoare
 \end{itemize}
 \end{frame}
@@ -1378,11 +1385,11 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
 \begin{frame}{Verificări necesare}
 \itemsize{\small}
 \begin{itemize}
-    \item Fiecare variabilă folosește doar date pînă la origine: verificați deplasările decalajelor și ale ferestrelor mobile pe un tabel tipărit
+    \item Fiecare variabilă folosește doar date pînă la origine: verificați deplasarea lagurilor și a ferestrelor mobile pe un tabel tipărit
     \item Fără \texttt{KFold(shuffle=True)}, fără scalare sau selecție de variabile estimate pe tot eșantionul
     \item Metodele de referință sînt prezente: naivă sau naivă sezonieră, ETS sau ARIMA, pe aceleași origini
     \item Comparația are un test DM; clasificarea are reperul clasei majoritare
-    \item Semințele sînt fixate, iar rezultatul rezistă cu o altă sămînță
+    \item Semințele sînt fixate, iar rezultatul se menține cu o altă sămînță
     \item Fiecare referință citată există: verificați DOI-ul
 \end{itemize}
 \end{frame}
@@ -1395,12 +1402,12 @@ MLP & +8{,}3 & 0{,}398 & -3{,}96 & +8{,}6 & 1{,}015 & -1{,}69 \\
 \begin{frame}{Idei de reținut}
 \itemsize{\small}
 \begin{itemize}
-    \item Prognoza ML = învățare supervizată pe un tabel de decalaje, statistici pe ferestre mobile și variabile de calendar cunoscute la origine
-    \item Doar validare walk-forward; scurgerea de informație produce scoruri spectaculoase și false
+    \item Prognoza ML = învățare supervizată pe un tabel de laguri, statistici pe ferestre mobile și variabile de calendar cunoscute la origine
+    \item Doar validare walk-forward; leakage-ul produce scoruri spectaculoase și false
     \item Ridge și lasso, random forest, GB, MLP, LSTM: fiecare are un parametru de complexitate fixat prin validare
     \item Arborii nu pot extrapola: modelăm variații, nu niveluri
-    \item Datele noastre: modelele liniare cu variabile bune egalează sau depășesc ML pentru consum și inflație; ML ajută pentru volatilitate; nimic nu prognozează semnul randamentelor
-    \item ML cîștigă cu multe serii înrudite (modele globale, hibridul din M4, LightGBM în M5); comparăm întotdeauna cu metode de referință, MASE și DM
+    \item Datele noastre: modelele liniare cu variabile bune au cel puțin aceeași precizie ca ML pentru consum și inflație; ML ajută pentru volatilitate; niciun model nu prognozează semnul randamentelor
+    \item ML este superior cînd există multe serii înrudite (modele globale, hibridul din M4, LightGBM în M5); comparăm întotdeauna cu metode de referință, MASE și DM
 \end{itemize}
 \end{frame}
 

@@ -147,20 +147,23 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Prerequisites}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item Forecasting benchmarks and their evaluation (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter0_introduction.pdf}{Chapters 0} and \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter4_seasonality_forecasting.pdf}{4})
     \begin{itemize}
-        \item seasonal naive $\hat y_{T+h} = y_{T+h-m}$; ETS; time-series cross-validation with a rolling origin
-        \item MAE, RMSE, MASE; the Diebold--Mariano test
+        \item seasonal naive $\hat y_{T+h} = y_{T+h-m}$: the forecast repeats the value of the same season one cycle earlier
+        \item $T$: the last observed period; $h$: the horizon; $m$: the season length (12 for monthly data, 168 for hourly data with a weekly cycle); the hat marks a forecast
+        \item ETS; time-series cross-validation with a rolling origin; MAE, RMSE, MASE; the Diebold--Mariano test
     \end{itemize}
-    \item ARIMA and seasonal ARIMA (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter3_unit_roots_arima_models.pdf}{Chapters 3} and \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter4_seasonality_forecasting.pdf}{4})
-    \item Machine learning basics (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter9_machine_learning_time_series.pdf}{Chapter 9})
+    \item ARIMA and seasonal ARIMA (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter3_unit_roots_arima_models.pdf}{Chapters 3} and \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter4_seasonality_forecasting.pdf}{4}); machine learning basics (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter9_machine_learning_time_series.pdf}{Chapter 9})
     \begin{itemize}
         \item training, validation and test samples; a neural network as a flexible function with many parameters
         \item global models: one model trained on many series
     \end{itemize}
     \item Quantiles: $q_\tau$ is the value below which the variable falls with probability $\tau$
+    \begin{itemize}
+        \item $\tau \in (0, 1)$: the level; $q_{0.5}$ is the median, $q_{0.1}$ and $q_{0.9}$ bound a central 80\% interval
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -172,16 +175,19 @@ MSCA Digital Finance}
 \begin{frame}{Three ways to forecast many series}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Local} models: one model per series, estimated on that series only
+    \item \textbf{Local} models
     \begin{itemize}
+        \item one model per series, estimated on that series only
         \item ETS, ARIMA: few parameters, interpretable; 10\,000 series mean 10\,000 estimations
     \end{itemize}
-    \item \textbf{Global} models (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter9_machine_learning_time_series.pdf}{Chapter 9}): one model trained on all the series of a data set
+    \item \textbf{Global} models (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter9_machine_learning_time_series.pdf}{Chapter 9})
     \begin{itemize}
+        \item one model trained on all the series of a data set
         \item example: DeepAR (\refSalinas), a recurrent network trained on all products of a retailer
     \end{itemize}
-    \item \textbf{Foundation} models: one model pretrained once on a very broad corpus of series from many domains
+    \item \textbf{Foundation} models
     \begin{itemize}
+        \item one model pretrained once on a very broad corpus of series from many domains
         \item then used on new series and new data sets, without re-estimation
         \item the term comes from \refBommasani: models trained on broad data at scale, adaptable to many tasks
     \end{itemize}
@@ -191,13 +197,19 @@ MSCA Digital Finance}
 \begin{frame}{Zero-shot, fine-tuning, in-context}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Context}: the recent history $y_{T-C+1}, \dots, y_T$ passed to the model at forecast time ($C$ = context length)
-    \item \textbf{Zero-shot} forecasting: the pretrained weights stay fixed; only the context of the new series is used
+    \item \textbf{Context}
     \begin{itemize}
+        \item the recent history $y_{T-C+1}, \dots, y_T$ passed to the model at forecast time ($C$ = context length)
+    \end{itemize}
+    \item \textbf{Zero-shot} forecasting
+    \begin{itemize}
+        \item the pretrained weights stay fixed
+        \item only the context of the new series is used
         \item no parameter is estimated on the target series: forecasting takes a fraction of a second
     \end{itemize}
-    \item \textbf{Fine-tuning}: further training of the pretrained weights on the target data
+    \item \textbf{Fine-tuning}
     \begin{itemize}
+        \item further training of the pretrained weights on the target data
         \item can help on unusual series; needs a validation sample and more computation
     \end{itemize}
     \item The output is usually a set of \textbf{quantiles} $\hat q_{0.1}, \dots, \hat q_{0.9}$ for each future step, not a single number
@@ -260,8 +272,10 @@ MSCA Digital Finance}
         \item designed for translation; behind every large language model (LLM)
     \end{itemize}
     \item Input: a sequence of \textbf{tokens}, each turned into a vector (an embedding)
-    \item \textbf{Encoder}: reads the whole input; \textbf{decoder}: produces the output step by step
+    \item \textbf{Encoder}
     \begin{itemize}
+        \item reads the whole input
+        \item \textbf{decoder}: produces the output step by step
         \item \textbf{decoder-only} models (GPT, TimesFM, Lag-Llama) forecast the next token from all previous ones
     \end{itemize}
     \item Position information is added to each vector, since attention ignores order
@@ -270,20 +284,43 @@ MSCA Digital Finance}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Self-attention}
+\begin{frame}{Self-attention (1/2): the formula}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item Each input vector $x_i$ produces a query $q_i$, a key $k_i$ and a value $v_i$ (three linear maps)
-    \item Output at position $i$: a weighted average of all values
+    \item Each input vector $x_i$ produces three vectors, by three linear maps learnt in training
+    \begin{itemize}
+        \item a query $q_i$ (what position $i$ looks for), a key $k_i$ (what position $i$ offers), a value $v_i$ (what position $i$ passes on)
+    \end{itemize}
+    \item The output at position $i$ is a weighted average of the values of all positions
     \begin{itemize}
         \item $\displaystyle \text{out}_i = \sum_j w_{ij} v_j, \qquad w_{ij} = \frac{\exp(q_i^\top k_j/\sqrt{d})}{\sum_l \exp(q_i^\top k_l/\sqrt{d})}$
-        \item in matrix form: $\text{softmax}(QK^\top/\sqrt{d})\,V$; $d$ = length of the key vectors
+    \end{itemize}
+    \item Notation
+    \begin{itemize}
+        \item $j, l$: indices that run over all input positions; $w_{ij}$: the weight that position $i$ gives to position $j$
+        \item $q_i^\top k_j$: the scalar product of query and key, large when the two vectors point in the same direction (similarity score)
+        \item $d$: the length of the key vectors; dividing by $\sqrt{d}$ keeps the scores of moderate size
+        \item the exponential makes every weight positive and the denominator makes the weights of position $i$ sum to 1
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Self-attention (2/2): matrix form and intuition}
+\itemsize{\small}
+\begin{itemize}
+    \item Matrix form of the same computation: $\text{softmax}(QK^\top/\sqrt{d})\,V$
+    \begin{itemize}
+        \item $Q$, $K$, $V$: matrices whose rows are the vectors $q_i$, $k_i$, $v_i$; $QK^\top$ holds all the scores $q_i^\top k_j$
+        \item softmax: applied row by row, it turns the scores into the weights $w_{ij}$ of the previous slide
     \end{itemize}
     \item Intuition for series: today's step can look back at the same hour last week and give it a large weight
     \begin{itemize}
         \item the weights are learnt from data, not fixed in advance as the lags of an AR($p$)
     \end{itemize}
-    \item Cost: $n$ inputs need $n^2$ comparisons; a context of 2048 values gives about 4 million
+    \item Cost: $n$ inputs need $n^2$ comparisons
+    \begin{itemize}
+        \item a context of 2048 values gives about 4 million comparisons in each attention layer
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -332,20 +369,37 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Mean scaling and quantisation (Chronos)}
+\begin{frame}{Mean scaling and quantisation (Chronos) (1/2)}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Mean scaling}: $\tilde x_t = x_t / s$ with $s = \frac{1}{C}\sum_{t=1}^{C} |x_t|$
+    \item \textbf{Mean scaling}
     \begin{itemize}
+        \item each value of the context is divided by the mean absolute value of the context
+        \item $\tilde x_t = x_t / s, \qquad s = \frac{1}{C}\sum_{t=1}^{C} |x_t|$
+        \item $x_t$: the $t$-th value of the context, $t = 1, \dots, C$; $C$: the context length; $s$: the scale; $\tilde x_t$: the scaled value
         \item the scaled context has values of order one, whatever the units
     \end{itemize}
-    \item \textbf{Quantisation}: $[-15, 15]$ is divided into 4093 equal bins; the token of $\tilde x_t$ is the number of the nearest bin centre
+    \item \textbf{Quantisation}
     \begin{itemize}
-        \item bin width 0.0073; plus special tokens (padding, end of sequence)
+        \item each scaled value is replaced by the number of a bin
+        \item $[-15, 15]$ is divided into 4093 equal bins of width 0.0073; the token of $\tilde x_t$ is the number of the nearest bin centre
+        \item plus special tokens (padding, end of sequence)
     \end{itemize}
-    \item Training: a language model (T5) learns to predict the next token, with the cross-entropy loss
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mean scaling and quantisation (Chronos) (2/2)}
+\itemsize{\small}
+\begin{itemize}
+    \item Training: a language model (T5) learns to predict the next token
     \begin{itemize}
-        \item forecast: sample many token paths, map them back to values ($\times s$), read the quantiles
+        \item loss: the cross-entropy, minus the log of the probability given to the true next token; it is 0 when that probability is 1
+    \end{itemize}
+    \item Forecast in three steps
+    \begin{itemize}
+        \item sample many token paths from the model
+        \item map each token back to its bin centre and multiply by $s$
+        \item read the quantiles of the sampled values at each future step
     \end{itemize}
     \item Limit: scaled values outside $[-15, 15]$ cannot be produced
 \end{itemize}
@@ -394,8 +448,9 @@ MSCA Digital Finance}
 \begin{frame}{Patching}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Patch}: a block of $P$ consecutive values, mapped to one input vector by a small network
+    \item \textbf{Patch}
     \begin{itemize}
+        \item a block of $P$ consecutive values, mapped to one input vector by a small network
         \item PatchTST (\refNie): ``a time series is worth 64 words''
     \end{itemize}
     \item Two gains
@@ -456,12 +511,20 @@ MSCA Digital Finance}
 \end{column}
 \begin{column}{0.66\textwidth}
 \begin{itemize}
-    \item \textbf{Chronos} (\refAnsari): T5 encoder--decoder on scaled and quantised values; samples token paths
-    \item \textbf{Chronos-Bolt} (November 2024): patches of 16 values and a direct output of the quantiles 0.1, \dots, 0.9
+    \item \textbf{Chronos} (\refAnsari)
     \begin{itemize}
+        \item T5 encoder--decoder on scaled and quantised values
+        \item samples token paths
+    \end{itemize}
+    \item \textbf{Chronos-Bolt} (November 2024)
+    \begin{itemize}
+        \item patches of 16 values and a direct output of the quantiles 0.1, \dots, 0.9
         \item sizes used here: tiny 9 and small 48 million parameters; context up to 2048 values
     \end{itemize}
-    \item \textbf{Chronos-2} (\refAnsariB, October 2025): 119 million parameters, 21 quantile levels, covariates and groups of related series
+    \item \textbf{Chronos-2} (\refAnsariB, October 2025)
+    \begin{itemize}
+        \item 119 million parameters, 21 quantile levels, covariates and groups of related series
+    \end{itemize}
     \item Open weights (Apache-2.0 licence); Python package \texttt{chronos-forecasting}; all run on a CPU
 \end{itemize}
 \end{column}
@@ -471,13 +534,15 @@ MSCA Digital Finance}
 \begin{frame}{TimesFM (Google) and Lag-Llama}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{TimesFM} (\refDas): decoder-only Transformer, input patches of 32, output patches of 128 values
+    \item \textbf{TimesFM} (\refDas)
     \begin{itemize}
+        \item decoder-only Transformer, input patches of 32, output patches of 128 values
         \item pretrained on real series (Google Trends, Wikipedia page views) and synthetic ones; about 200 million parameters
         \item open weights (Apache-2.0); later versions add quantile outputs
     \end{itemize}
-    \item \textbf{Lag-Llama} (\refRasul): decoder-only, built on the Llama architecture of language models
+    \item \textbf{Lag-Llama} (\refRasul)
     \begin{itemize}
+        \item decoder-only, built on the Llama architecture of language models
         \item inputs: lagged values chosen by frequency (for example 7 days, 12 months, 24 hours) plus calendar features
         \item output: the parameters of a Student-$t$ distribution for the next step; sampling gives paths
         \item small and open (Apache-2.0); meant to be fine-tuned
@@ -496,14 +561,16 @@ MSCA Digital Finance}
 \end{column}
 \begin{column}{0.68\textwidth}
 \begin{itemize}
-    \item \textbf{Moirai} (\refWoo): ``universal'' forecaster
+    \item \textbf{Moirai} (\refWoo)
     \begin{itemize}
+        \item ``universal'' forecaster
         \item any number of variables in one sequence; patch size chosen by frequency
         \item output: a mixture of distributions; corpus LOTSA, about 27 billion observations
         \item open weights under a non-commercial licence (CC BY-NC 4.0)
     \end{itemize}
-    \item \textbf{TimeGPT} (\refGarza): closed model, available only through a paid API
+    \item \textbf{TimeGPT} (\refGarza)
     \begin{itemize}
+        \item closed model, available only through a paid API
         \item the weights and the training data cannot be inspected; the version can change; the data leave your computer
         \item not used in this course: the results could not be reproduced
     \end{itemize}
@@ -550,7 +617,7 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
 %=============================================================================
 
 \begin{frame}{Quantile forecasts}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item A \textbf{probabilistic forecast} gives the distribution of $y_{T+h}$ given the data up to $T$
     \begin{itemize}
@@ -563,26 +630,71 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
         \item \textbf{calibration}: the 80\% interval contains about 80\% of the outcomes
         \item \textbf{sharpness}: among calibrated forecasts, narrower is better (\refGR)
     \end{itemize}
-    \item For ETS and ARIMA we use Normal quantiles $\hat y_{T+h} + z_\tau \hat\sigma_h$
+    \item For ETS and ARIMA we use Normal quantiles $\hat q_\tau = \hat y_{T+h} + z_\tau \hat\sigma_h$
+    \begin{itemize}
+        \item $z_\tau$: the $\tau$ quantile of the standard Normal distribution ($z_{0.9} = 1.28$); $\hat\sigma_h$: the estimated standard deviation of the $h$-step forecast error
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{The pinball loss and the CRPS}
-\itemsize{\footnotesize}
+\begin{frame}{The pinball loss}
+\itemsize{\small}
 \begin{itemize}
-    \item \textbf{Pinball} (quantile) loss of $\hat q_\tau$ for the outcome $y$
+    \item The \textbf{pinball} (quantile) loss scores one forecast quantile $\hat q_\tau$ against the outcome $y$
     \begin{itemize}
         \item $L_\tau(y, \hat q_\tau) = \tau\,(y - \hat q_\tau)$ if $y \ge \hat q_\tau$, and $(1 - \tau)(\hat q_\tau - y)$ otherwise
-        \item its expected value is smallest at the true quantile: it rewards honest quantiles
     \end{itemize}
-    \item \textbf{CRPS} (continuous ranked probability score, \refMW) of a forecast CDF $F$
+    \item Notation
+    \begin{itemize}
+        \item $\tau$: the quantile level; $\hat q_\tau$: the forecast quantile; $y$: the value observed later
+    \end{itemize}
+    \item Reading
+    \begin{itemize}
+        \item the loss is 0 when $\hat q_\tau = y$ and grows linearly with the distance between them
+        \item an outcome above the quantile is weighted by $\tau$, one below by $1 - \tau$
+        \item its expected value is smallest at the true quantile: reporting the true quantile is the best strategy
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The CRPS}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item The \textbf{CRPS} (continuous ranked probability score, \refMW) scores a whole forecast distribution against the outcome $y$
     \begin{itemize}
         \item $\text{CRPS}(F, y) = \int (F(z) - \mathbf{1}\{z \ge y\})^2\,dz = 2\int_0^1 L_\tau(y, F^{-1}(\tau))\,d\tau$
-        \item in the units of $y$; for a point forecast it equals $|y - \hat y|$: the CRPS generalises the MAE
     \end{itemize}
-    \item \textbf{WQL} (weighted quantile loss): the CRPS approximated with the 9 levels and divided by $\sum |y|$
+    \item Notation
     \begin{itemize}
-        \item $\text{WQL} = \frac{1}{9}\sum_{\tau}\frac{2\sum_t L_\tau(y_t, \hat q_{\tau,t})}{\sum_t |y_t|}$: free of units, used by Chronos and GIFT-Eval
+        \item $F$: the forecast cumulative distribution function (CDF); $z$: the integration variable, running over all possible values
+        \item $\mathbf{1}\{z \ge y\}$: the indicator, 1 if $z \ge y$ and 0 otherwise (the CDF of a forecast that puts all mass on $y$)
+        \item $F^{-1}(\tau)$: the $\tau$ quantile of $F$; the second form is the pinball loss averaged over all levels
+    \end{itemize}
+    \item Reading
+    \begin{itemize}
+        \item $\text{CRPS} \ge 0$, in the units of $y$; 0 only for a forecast that puts all its mass on the outcome; smaller is better
+        \item for a point forecast it equals $|y - \hat y|$: the CRPS generalises the MAE
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The weighted quantile loss (WQL)}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{WQL} (weighted quantile loss)
+    \begin{itemize}
+        \item the CRPS approximated with the 9 levels 0.1, \dots, 0.9 and divided by the size of the series
+        \item $\text{WQL} = \frac{1}{9}\sum_{\tau}\frac{2\sum_t L_\tau(y_t, \hat q_{\tau,t})}{\sum_t |y_t|}$
+    \end{itemize}
+    \item Notation
+    \begin{itemize}
+        \item $\tau$: runs over the 9 levels; $t$: runs over all forecast steps of all origins
+        \item $\hat q_{\tau,t}$: the forecast $\tau$ quantile for step $t$; $y_t$: the outcome at step $t$
+    \end{itemize}
+    \item Reading
+    \begin{itemize}
+        \item the denominator $\sum_t |y_t|$ removes the units: series with different levels can be compared
+        \item 0 for a perfect forecast; smaller is better; used by Chronos and GIFT-Eval
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -623,20 +735,40 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Point accuracy and coverage}
+\begin{frame}{Point accuracy: the MASE}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{MASE} (\refHK): MAE of the forecast divided by the in-sample MAE of the seasonal naive
+    \item \textbf{MASE} (mean absolute scaled error, \refHK)
     \begin{itemize}
-        \item $\text{MASE} = \dfrac{\frac1h\sum_{j=1}^{h}|y_{T+j} - \hat y_{T+j}|}{\frac{1}{T-m}\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$; below 1: better than the in-sample seasonal naive
+        \item the MAE of the forecast divided by the in-sample MAE of the seasonal naive
+        \item $\text{MASE} = \dfrac{\frac1h\sum_{j=1}^{h}|y_{T+j} - \hat y_{T+j}|}{\frac{1}{T-m}\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$
+    \end{itemize}
+    \item Notation
+    \begin{itemize}
+        \item numerator: the mean absolute error of the forecasts $\hat y_{T+j}$ over the $h$ steps after the origin $T$
+        \item denominator: the mean absolute error of the seasonal naive forecast $y_{t-m}$ inside the sample $t = m+1, \dots, T$; $m$: the season length
+    \end{itemize}
+    \item Reading
+    \begin{itemize}
+        \item below 1: better than the in-sample seasonal naive; above 1: worse; free of units
         \item example: MAE 0.30, in-sample naive MAE 0.25, so MASE = 1.2
     \end{itemize}
-    \item \textbf{Coverage}: the share of outcomes inside $[\hat q_{0.1}, \hat q_{0.9}]$; target 80\%
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Coverage and relative scores}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Coverage}
     \begin{itemize}
-        \item 7 of 10 inside means 70\%: intervals somewhat too narrow
+        \item the share of outcomes inside the 80\% interval
+        \item $\text{Cov} = \frac1n\sum_{i=1}^{n} \mathbf{1}\{\hat q_{0.1,i} \le y_i \le \hat q_{0.9,i}\}$; $n$: the number of forecasts; $\mathbf{1}\{\cdot\}$: 1 if the outcome is inside, 0 otherwise
+        \item target 80\%; 7 of 10 inside means 70\%: intervals somewhat too narrow
     \end{itemize}
-    \item \textbf{Relative scores}: a model's MASE or WQL divided by that of the seasonal naive on the same origins
+    \item \textbf{Relative scores}
     \begin{itemize}
+        \item a model's MASE or WQL divided by that of the seasonal naive on the same origins
+        \item below 1: the model beats the seasonal naive
         \item averaged over series with the geometric mean, so that 2 and 0.5 cancel out
     \end{itemize}
 \end{itemize}
@@ -775,8 +907,9 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
 \begin{frame}{The test protocol}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Rolling origin} (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter4_seasonality_forecasting.pdf}{Chapter 4}): at each origin every model forecasts $h$ steps from the data up to the origin only
+    \item \textbf{Rolling origin} (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter4_seasonality_forecasting.pdf}{Chapter 4})
     \begin{itemize}
+        \item at each origin every model forecasts $h$ steps from the data up to the origin only
         \item load: $h$ = 48 hours, weekly origins July 2025 to June 2026; monthly series: $h$ = 12, monthly origins from 2016; GDP: $h$ = 4, from 2012; EUR/RON: $h$ = 20 days, every 20 days from 2016
         \item 708 origins in total; context: all the past, at most 2048 observations
     \end{itemize}
@@ -785,7 +918,10 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
         \item seasonal naive (the naive forecast for unemployment and EUR/RON)
         \item ETS with damped trend and additive seasonality; ARIMA with orders chosen once by AIC before the first origin (load: ARMA(2,0,2) on weekly differences)
     \end{itemize}
-    \item \textbf{Foundation models}, zero-shot: Chronos-Bolt tiny and small, Chronos-2
+    \item \textbf{Foundation models}, zero-shot
+    \begin{itemize}
+        \item Chronos-Bolt tiny and small, Chronos-2
+    \end{itemize}
     \item Same origins, same context, same horizon, same scores: MASE, WQL, coverage
 \end{itemize}
 \end{frame}
@@ -928,11 +1064,23 @@ US retail sales & 117 & 0.69 & 0.66 & 0.90 & 0.84 & 0.60 \\
 \begin{frame}{Landmark benchmarks}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{M3} (\refMH): 3003 series; sophisticated methods did not beat simple ones on average
-    \item \textbf{M4} (\refMSA): 100\,000 series; combinations and a hybrid of exponential smoothing and a neural network won
-    \item \textbf{Monash archive} (\refMonash): public data sets with fixed horizons and benchmark results
-    \item \textbf{GIFT-Eval} (\refAksu): many domains and frequencies, MASE and CRPS, a public leaderboard of foundation models
+    \item \textbf{M3} (\refMH)
     \begin{itemize}
+        \item 3003 series
+        \item sophisticated methods did not beat simple ones on average
+    \end{itemize}
+    \item \textbf{M4} (\refMSA)
+    \begin{itemize}
+        \item 100\,000 series
+        \item combinations and a hybrid of exponential smoothing and a neural network won
+    \end{itemize}
+    \item \textbf{Monash archive} (\refMonash)
+    \begin{itemize}
+        \item public data sets with fixed horizons and benchmark results
+    \end{itemize}
+    \item \textbf{GIFT-Eval} (\refAksu)
+    \begin{itemize}
+        \item many domains and frequencies, MASE and CRPS, a public leaderboard of foundation models
         \item separates the test data from a pretraining corpus, to limit contamination
     \end{itemize}
     \item Critical studies: simple linear models beat early Transformer forecasters (\refZeng); LLM parts add no accuracy (\refTan)
@@ -975,7 +1123,10 @@ US retail sales & 117 & 0.69 & 0.66 & 0.90 & 0.84 & 0.60 \\
 \begin{frame}{Leakage in your own pipeline}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Leakage}: information from the test period reaches the forecasts (\refHew)
+    \item \textbf{Leakage}
+    \begin{itemize}
+        \item information from the test period reaches the forecasts (\refHew)
+    \end{itemize}
     \item Typical mistakes
     \begin{itemize}
         \item scaling or standardising with the mean of the whole sample
@@ -993,8 +1144,9 @@ US retail sales & 117 & 0.69 & 0.66 & 0.90 & 0.84 & 0.60 \\
 \begin{frame}{Contamination of benchmarks}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Contamination}: the test series (or series highly correlated with it) were in the pretraining corpus
+    \item \textbf{Contamination}
     \begin{itemize}
+        \item the test series (or series highly correlated with it) were in the pretraining corpus
         \item the score then measures memory, not forecasting: an optimistic bias
     \end{itemize}
     \item Chronos reports two benchmarks: in-domain (data sets used in training) and zero-shot (data sets not used) (\refAnsari)
@@ -1050,9 +1202,18 @@ US retail sales & 117 & 0.69 & 0.66 & 0.90 & 0.84 & 0.60 \\
 \begin{frame}{Possible contribution of AI}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Code}: a first draft of a rolling-origin backtest, of the pinball loss and the WQL, of a fan chart
-    \item \textbf{Reading}: a summary of a model paper (architecture, corpus, licence, release date)
-    \item \textbf{Exploration}: run several open models on many Romanian series from Eurostat or INS
+    \item \textbf{Code}
+    \begin{itemize}
+        \item a first draft of a rolling-origin backtest, of the pinball loss and the WQL, of a fan chart
+    \end{itemize}
+    \item \textbf{Reading}
+    \begin{itemize}
+        \item a summary of a model paper (architecture, corpus, licence, release date)
+    \end{itemize}
+    \item \textbf{Exploration}
+    \begin{itemize}
+        \item run several open models on many Romanian series from Eurostat or INS
+    \end{itemize}
     \item Example prompt
     \begin{itemize}
         \item \aiprompt{Write Python code that downloads Romanian monthly industrial production (Eurostat sts\_inpr\_m, not seasonally adjusted), forecasts 12 months ahead from monthly origins since 2016 with amazon/chronos-bolt-small (package chronos-forecasting, CPU), ETS and the seasonal naive, and reports MASE, the weighted quantile loss and the coverage of the 80\% interval.}
@@ -1098,11 +1259,11 @@ US retail sales & 117 & 0.69 & 0.66 & 0.90 & 0.84 & 0.60 \\
 \midrule
 Attention & $\text{softmax}(QK^\top/\sqrt{d})\,V$ \\
 Mean scaling & $\tilde x_t = x_t/s$, \quad $s = \frac1C\sum_{t=1}^{C}|x_t|$ \\
-Pinball loss & $L_\tau(y, q) = \max\{\tau(y - q),\ (\tau - 1)(y - q)\}$ \\
+Pinball loss & $L_\tau(y, \hat q_\tau) = \max\{\tau(y - \hat q_\tau),\ (\tau - 1)(y - \hat q_\tau)\}$ \\
 CRPS & $\int (F(z) - \mathbf{1}\{z \ge y\})^2\,dz = 2\int_0^1 L_\tau(y, F^{-1}(\tau))\,d\tau$ \\
-WQL & $\frac{1}{K}\sum_{k=1}^{K} 2\sum_t L_{\tau_k}(y_t, \hat q_{\tau_k,t}) \big/ \sum_t |y_t|$ \\
+WQL & $\frac{1}{9}\sum_{\tau} 2\sum_t L_{\tau}(y_t, \hat q_{\tau,t}) \big/ \sum_t |y_t|$ \\
 MASE & $\frac1h\sum_j |y_{T+j} - \hat y_{T+j}| \Big/ \frac{1}{T-m}\sum_{t>m}|y_t - y_{t-m}|$ \\
-Coverage & $\frac1n\sum \mathbf{1}\{\hat q_{0.1} \le y \le \hat q_{0.9}\}$, target 0.8 \\
+Coverage & $\frac1n\sum_i \mathbf{1}\{\hat q_{0.1,i} \le y_i \le \hat q_{0.9,i}\}$, target 0.8 \\
 \bottomrule
 \end{tabular}
 \end{center}

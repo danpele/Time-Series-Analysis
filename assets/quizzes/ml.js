@@ -32,7 +32,7 @@ window.TSA_DATA.quizzes['ml'] = {
                     "Doar prima diferență a seriei"
                 ],
                 "correctExplanation": "Un random forest nu cunoaște ordinea temporală, deci seria trebuie transformată într-un tabel de învățare supervizată: variabile lag ($y_{t-1}, y_{t-2}, \\ldots$), medii și abateri standard pe ferestre mobile, precum și variabile calendaristice (ziua săptămînii, luna).",
-                "incorrectExplanation": "O variabilă dummy pentru fiecare observație ar face fiecare rînd unic, iar modelul nu ar putea generaliza; termenii Fourier sau prima diferență pot fi intrări suplimentare utile, dar singure nu descriu dinamica recentă. Intrările de bază sînt lag-urile și statisticile pe ferestre mobile."
+                "incorrectExplanation": "O variabilă dummy pentru fiecare observație ar face fiecare rînd unic, iar modelul nu ar putea generaliza; termenii Fourier sau prima diferență pot fi intrări suplimentare utile, dar singure nu descriu dinamica recentă. Intrările de bază sînt lagurile și statisticile pe ferestre mobile."
             }
         },
         {
@@ -56,9 +56,9 @@ window.TSA_DATA.quizzes['ml'] = {
                     "Este prea lentă pentru serii lungi",
                     "Funcționează doar pentru clasificare",
                     "Necesită prea multe date",
-                    "Încalcă ordinea temporală și produce scurgere de informație (data leakage)"
+                    "Încalcă ordinea temporală și produce leakage (scurgere de informație)"
                 ],
-                "correctExplanation": "K-fold standard repartizează aleator observațiile în subeșantioane, astfel încît modelul este antrenat pe observații ulterioare subeșantionului de validare. Se scurge astfel informație din viitor, iar performanța este supraestimată. Validarea walk-forward (de exemplu TimeSeriesSplit din scikit-learn) păstrează ordinea.",
+                "correctExplanation": "K-fold standard repartizează aleator observațiile în subeșantioane, astfel încît modelul este antrenat pe observații ulterioare subeșantionului de validare. Astfel apare leakage-ul: informația din viitor intră în antrenare, iar performanța este supraestimată. Validarea walk-forward (de exemplu TimeSeriesSplit din scikit-learn) păstrează ordinea.",
                 "incorrectExplanation": "Viteza, tipul problemei și volumul de date nu sînt cauza: k-fold funcționează și pentru regresie, și pentru orice volum de date. Problema este încălcarea ordinii temporale; validarea walk-forward antrenează modelul doar pe trecut."
             }
         },
@@ -131,8 +131,8 @@ window.TSA_DATA.quizzes['ml'] = {
                 "incorrectExplanation": "Lag and rolling-window features use only past values, so they are legitimate, and a chronological split is the correct practice. Leakage occurs when statistics from the test period enter the training step, as in full-sample scaling."
             },
             "ro": {
-                "title": "Scurgerea de informație",
-                "text": "Care dintre următoarele este un exemplu de scurgere de informație (data leakage) în machine learning pentru serii de timp?",
+                "title": "Leakage-ul",
+                "text": "Care dintre următoarele este un exemplu de leakage (scurgere de informație) în machine learning pentru serii de timp?",
                 "options": [
                     "Scalarea datelor cu statistici calculate pe întregul eșantion (antrenare și test)",
                     "Folosirea variabilelor lag",
@@ -140,7 +140,7 @@ window.TSA_DATA.quizzes['ml'] = {
                     "Împărțirea cronologică a datelor"
                 ],
                 "correctExplanation": "Dacă media, abaterea standard, minimul sau maximul folosite la scalare se calculează pe întregul eșantion, datele de antrenare conțin informație despre perioada de test. Scalarea trebuie estimată doar pe datele de antrenare și apoi aplicată ambelor seturi.",
-                "incorrectExplanation": "Variabilele lag și cele pe ferestre mobile folosesc doar valori trecute, deci sînt legitime, iar împărțirea cronologică este practica corectă. Scurgerea apare cînd statistici din perioada de test intră în etapa de antrenare, ca la scalarea pe întregul eșantion."
+                "incorrectExplanation": "Variabilele lag și cele pe ferestre mobile folosesc doar valori trecute, deci sînt legitime, iar împărțirea cronologică este practica corectă. Leakage-ul apare cînd statistici din perioada de test intră în etapa de antrenare, ca la scalarea pe întregul eșantion."
             }
         },
         {
@@ -266,8 +266,8 @@ window.TSA_DATA.quizzes['ml'] = {
                 "incorrectExplanation": "93 forgets the horizon, 97 forgets the lags and 100 ignores both. The count is $n - p - h + 1 = 91$."
             },
             "ro": {
-                "title": "Rîndurile unui tabel de decalaje",
-                "text": "O serie are $n = 100$ de observații. Cu $p = 7$ decalaje ($y_t, \\dots, y_{t-6}$) și orizontul $h = 3$, cîte rînduri complete are tabelul de învățare supervizată?",
+                "title": "Rîndurile unui tabel de laguri",
+                "text": "O serie are $n = 100$ de observații. Cu $p = 7$ laguri ($y_t, \\dots, y_{t-6}$) și orizontul $h = 3$, cîte rînduri complete are tabelul de învățare supervizată?",
                 "options": [
                     "93",
                     "97",
@@ -275,7 +275,7 @@ window.TSA_DATA.quizzes['ml'] = {
                     "91"
                 ],
                 "correctExplanation": "Prima origine completă este $t = 7$ (are nevoie de $y_1, \\dots, y_7$), iar ultima este $t = 97$ (ținta ei este $y_{100}$): $n - p - h + 1 = 100 - 7 - 3 + 1 = 91$ de rînduri.",
-                "incorrectExplanation": "93 ignoră orizontul, 97 ignoră decalajele, iar 100 le ignoră pe amîndouă. Numărul este $n - p - h + 1 = 91$."
+                "incorrectExplanation": "93 ignoră orizontul, 97 ignoră lagurile, iar 100 le ignoră pe amîndouă. Numărul este $n - p - h + 1 = 91$."
             }
         },
         {
@@ -302,7 +302,7 @@ window.TSA_DATA.quizzes['ml'] = {
                     "Nu există nicio problemă, deoarece media netezește zgomotul"
                 ],
                 "correctExplanation": "O fereastră centrată folosește trei valori de după $t$, inclusiv ținta. Scorurile la validare devin excelente și dispar la utilizarea reală. Variabila corectă este media valorilor $y_{t-6}, \\dots, y_t$.",
-                "incorrectExplanation": "Arborii pot folosi orice variabilă numerică, iar lungimea ferestrei este o alegere de reglaj; netezirea nu elimină scurgerea de informație. Fereastra centrată conține valori viitoare, inclusiv ținta."
+                "incorrectExplanation": "Arborii pot folosi orice variabilă numerică, iar lungimea ferestrei este o alegere de reglaj; netezirea nu elimină leakage-ul. Fereastra centrată conține valori viitoare, inclusiv ținta."
             }
         },
         {
@@ -348,14 +348,14 @@ window.TSA_DATA.quizzes['ml'] = {
             },
             "ro": {
                 "title": "Ridge și lasso",
-                "text": "Ce afirmație despre regresia ridge și lasso pe decalaje este corectă?",
+                "text": "Ce afirmație despre regresia ridge și lasso pe laguri este corectă?",
                 "options": [
                     "Lasso poate face unii coeficienți exact zero; ridge doar îi contractă",
                     "Ridge poate face unii coeficienți exact zero; lasso doar îi contractă",
                     "Ambele fac zero aceiași coeficienți, pentru orice penalizare",
                     "Niciuna nu are nevoie de variabile standardizate"
                 ],
-                "correctExplanation": "Penalizarea cu valoarea absolută, $\\lambda\\sum|\\beta_j|$, are un colț în zero, deci lasso selectează decalajele; penalizarea pătratică $\\lambda\\sum\\beta_j^2$ a regresiei ridge contractă lin toți coeficienții spre zero.",
+                "correctExplanation": "Penalizarea cu valoarea absolută, $\\lambda\\sum|\\beta_j|$, are un colț în zero, deci lasso selectează lagurile; penalizarea pătratică $\\lambda\\sum\\beta_j^2$ a regresiei ridge contractă lin toți coeficienții spre zero.",
                 "incorrectExplanation": "Ridge nu produce niciodată zerouri exacte, cele două penalizări selectează diferit, iar ambele depind de scala variabilelor, deci variabilele trebuie standardizate. Doar lasso face selecție."
             }
         },
@@ -482,7 +482,7 @@ window.TSA_DATA.quizzes['ml'] = {
                 "incorrectExplanation": "A large p-value supports neither direction, and equal accuracy on average does not mean identical forecasts. The test simply finds no evidence of a difference."
             },
             "ro": {
-                "title": "O valoare p a testului Diebold–Mariano",
+                "title": "Un p-value al testului Diebold–Mariano",
                 "text": "Ridge și DHR au aproape același MAE pe originile pentru consum; testul Diebold–Mariano de acuratețe egală dă p = 0,94. Ce concluzionăm?",
                 "options": [
                     "Ridge este semnificativ mai precis decît DHR",
@@ -490,8 +490,8 @@ window.TSA_DATA.quizzes['ml'] = {
                     "Cele două modele dau prognoze identice",
                     "Datele nu oferă dovezi că unul dintre modele este mai precis decît celălalt"
                 ],
-                "correctExplanation": "O valoare p mare înseamnă că diferența medie a pierderilor este mică față de variabilitatea ei de la o origine la alta: acuratețea egală nu este respinsă.",
-                "incorrectExplanation": "O valoare p mare nu susține niciun sens, iar acuratețea egală în medie nu înseamnă prognoze identice. Testul nu găsește dovezi ale unei diferențe."
+                "correctExplanation": "Un p-value mare înseamnă că diferența medie a pierderilor este mică față de variabilitatea ei de la o origine la alta: acuratețea egală nu este respinsă.",
+                "incorrectExplanation": "Un p-value mare nu susține niciun sens, iar acuratețea egală în medie nu înseamnă prognoze identice. Testul nu găsește dovezi ale unei diferențe."
             }
         },
         {
@@ -515,10 +515,10 @@ window.TSA_DATA.quizzes['ml'] = {
                     "Un model care prognozează agregate mondiale, de exemplu PIB-ul global",
                     "Un model cu cîte un set separat de parametri pentru fiecare serie",
                     "Un singur model estimat pe datele combinate ale mai multor serii înrudite și folosit pentru prognoza fiecăreia",
-                    "Un model care folosește toate decalajele disponibile ale unei singure serii"
+                    "Un model care folosește toate lagurile disponibile ale unei singure serii"
                 ],
                 "correctExplanation": "Un model global are parametri comuni pentru toate seriile, deci un algoritm flexibil precum gradient boosting primește mult mai multe rînduri. Cîștigătorii M4 și M5 au fost globali; pentru inflația României, GB global a combinat 27 de țări UE.",
-                "incorrectExplanation": "Termenul se referă la combinarea seriilor, nu la date mondiale; un set de parametri pentru fiecare serie înseamnă un model local, iar folosirea multor decalaje ale unei serii este tot locală. Un model global se estimează o singură dată, pe multe serii."
+                "incorrectExplanation": "Termenul se referă la combinarea seriilor, nu la date mondiale; un set de parametri pentru fiecare serie înseamnă un model local, iar folosirea multor laguri ale unei serii este tot locală. Un model global se estimează o singură dată, pe multe serii."
             }
         },
         {
@@ -653,7 +653,7 @@ window.TSA_DATA.quizzes['ml'] = {
                     "Prognoza naivă sezonieră"
                 ],
                 "correctExplanation": "Cele mai multe metode de top au folosit LightGBM; cîștigătorul a făcut media unor modele LightGBM combinate pe magazin, categorie și departament, recursive și directe, și a fost cu 22,4% mai precis decît cea mai bună metodă de referință.",
-                "incorrectExplanation": "ARIMA local și rețelele pe fiecare produs au pierdut în fața ansamblurilor de arbori combinate, iar metoda naivă sezonieră a fost doar un reper. M5 a fost cîștigată de modele globale LightGBM."
+                "incorrectExplanation": "ARIMA local și rețelele pe fiecare produs au fost mai puțin precise decît ansamblurile de arbori combinate, iar metoda naivă sezonieră a fost doar un reper. M5 a fost cîștigată de modele globale LightGBM."
             }
         }
     ]

@@ -364,7 +364,7 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Distinguish trend-stationary from difference-stationary series, and explain why the distinction matters', 'Deosebiți seriile staționare în jurul trendului de cele staționare în diferențe și explicați de ce contează deosebirea'),
     T('Recognise a spurious regression and explain why it happens', 'Recunoașteți o regresie falsă și explicați de ce apare'),
-    T('Run and interpret the ADF, Phillips--Perron and KPSS tests, with the right deterministic terms and lags', 'Aplicați și interpretați testele ADF, Phillips--Perron și KPSS, cu termenii determiniști și numărul de decalaje potrivite'),
+    T('Run and interpret the ADF, Phillips--Perron and KPSS tests, with the right deterministic terms and lags', 'Aplicați și interpretați testele ADF, Phillips--Perron și KPSS, cu termenii determiniști și numărul de laguri potrivite'),
     T('Explain how a structural break can mimic a unit root', 'Explicați cum poate o ruptură structurală să imite o rădăcină unitară'),
     T('Identify, estimate, check and forecast an ARIMA$(p,d,q)$ model, and explain why its intervals grow with the horizon', 'Identificați, estimați, verificați și folosiți pentru prognoză un model ARIMA$(p,d,q)$ și explicați de ce intervalele lui cresc cu orizontul'),
     T('Use automatic ARIMA selection critically', 'Folosiți critic selecția automată a modelelor ARIMA')))
@@ -404,7 +404,8 @@ interp(('the four series', 'celor patru serii'), [
 D.frame(T('Trend-stationary series', 'Serii staționare în jurul trendului'), items(
     (T('\\textbf{Definition}: $y_t = \\alpha + \\beta t + u_t$, with $u_t$ a stationary process (for example a stationary AR(1), Chapter 2)',
        '\\textbf{Definiție}: $y_t = \\alpha + \\beta t + u_t$, unde $u_t$ este un proces staționar (de exemplu un AR(1) staționar, Capitolul 2)'),
-     [T('$y_t$ is \\textbf{trend-stationary} (TS): stationary after subtracting the line $\\alpha + \\beta t$', '$y_t$ este \\textbf{staționar în jurul trendului}: staționar după ce scădem dreapta $\\alpha + \\beta t$')]),
+     [T('$\\alpha$: the intercept; $\\beta$: the slope, the average change per period; $t$: the time index', '$\\alpha$: termenul liber; $\\beta$: panta, adică variația medie pe perioadă; $t$: indicele de timp'),
+      T('$y_t$ is \\textbf{trend-stationary} (TS): stationary after subtracting the line $\\alpha + \\beta t$', '$y_t$ este \\textbf{staționar în jurul trendului}: staționar după ce scădem dreapta $\\alpha + \\beta t$')]),
     (T('Properties', 'Proprietăți'),
      [T('$E[y_t] = \\alpha + \\beta t$; $\\mathrm{Var}(y_t) = \\mathrm{Var}(u_t)$, constant', '$E[y_t] = \\alpha + \\beta t$; $\\mathrm{Var}(y_t) = \\mathrm{Var}(u_t)$, constantă'),
       T('a shock moves $y_t$ away from the line only temporarily: with $u_t = \\phi u_{t-1} + \\varepsilon_t$, its effect after $h$ periods is $\\phi^h$',
@@ -415,7 +416,8 @@ D.frame(T('Trend-stationary series', 'Serii staționare în jurul trendului'), i
 D.frame(T('Difference-stationary series', 'Serii staționare în diferențe'), items(
     (T('\\textbf{Definition}: $y_t = \\beta + y_{t-1} + u_t$, $u_t$ stationary; by substitution, $y_t = y_0 + \\beta t + \\sum_{i=1}^{t} u_i$',
        '\\textbf{Definiție}: $y_t = \\beta + y_{t-1} + u_t$, $u_t$ staționar; prin substituție, $y_t = y_0 + \\beta t + \\sum_{i=1}^{t} u_i$'),
-     [T('$y_t$ is \\textbf{difference-stationary} (DS): $\\Delta y_t = \\beta + u_t$ is stationary', '$y_t$ este \\textbf{staționar în diferențe}: $\\Delta y_t = \\beta + u_t$ este staționar'),
+     [T('$\\beta$: the drift, the average change per period; $y_0$: the starting value', '$\\beta$: deriva, adică variația medie pe perioadă; $y_0$: valoarea inițială'),
+      T('$y_t$ is \\textbf{difference-stationary} (DS): $\\Delta y_t = \\beta + u_t$ is stationary', '$y_t$ este \\textbf{staționar în diferențe}: $\\Delta y_t = \\beta + u_t$ este staționar'),
       T('$\\sum_{i \\le t} u_i$ is the \\textbf{stochastic trend}; $\\beta t$ is the drift', '$\\sum_{i \\le t} u_i$ este \\textbf{trendul stochastic}; $\\beta t$ provine din derivă')]),
     (T('Properties', 'Proprietăți'),
      [T('the same mean $y_0 + \\beta t$ as a TS series, but $\\mathrm{Var}(y_t)$ grows with $t$ (Chapter 1: $t\\sigma^2$ for a random walk)', 'aceeași medie $y_0 + \\beta t$ ca la o serie staționară în jurul trendului, dar $\\mathrm{Var}(y_t)$ crește cu $t$ (Capitolul 1: $t\\sigma^2$ pentru un mers aleator)'),
@@ -495,7 +497,7 @@ D.frame(T('1926: nonsense correlations', '1926: corelații fără sens'), items(
      [T('his example: in England and Wales, 1866--1911, the share of Church of England marriages and the mortality rate had a correlation of about 0.95',
         'exemplul lui: în Anglia și Țara Galilor, 1866--1911, ponderea căsătoriilor oficiate de Biserica Angliei și rata mortalității aveau o corelație de circa 0,95'),
       T('no causal link: both series simply declined over the period', 'nicio legătură cauzală: ambele serii au scăzut în perioada respectivă')]),
-    (T('His explanation: for series that wander like sums of random terms, the sample correlation does not settle near 0', 'Explicația lui: pentru seriile care rătăcesc precum sumele de termeni aleatori, corelația de selecție nu se stabilizează în jurul lui 0'),
+    (T('His explanation: for series that wander like sums of random terms, the sample correlation does not settle near 0', 'Explicația lui: pentru seriile care evoluează ca sumele de termeni aleatori, corelația de selecție nu se stabilizează în jurul lui 0'),
      [T('large values occur often by chance; the usual standard error does not apply', 'valorile mari apar des din întîmplare; eroarea standard obișnuită nu se aplică')]),
     T('Fifty years later, the same problem reappeared in econometric models estimated on levels', 'Cincizeci de ani mai tîrziu, aceeași problemă a reapărut în modelele econometrice estimate pe niveluri')))
 
@@ -557,7 +559,7 @@ D.frame(T('Testing $\\phi = 1$', 'Testarea ipotezei $\\phi = 1$'), items(
     (T('AR(1): $y_t = \\phi y_{t-1} + \\varepsilon_t$; subtract $y_{t-1}$: $\\Delta y_t = \\gamma y_{t-1} + \\varepsilon_t$, with $\\gamma = \\phi - 1$',
        'AR(1): $y_t = \\phi y_{t-1} + \\varepsilon_t$; scădem $y_{t-1}$: $\\Delta y_t = \\gamma y_{t-1} + \\varepsilon_t$, cu $\\gamma = \\phi - 1$'),
      [T('$H_0$: $\\gamma = 0$ (unit root, $I(1)$); $H_1$: $\\gamma < 0$ (stationary); a one-sided, left-tail test', '$H_0$: $\\gamma = 0$ (rădăcină unitară, $I(1)$); $H_1$: $\\gamma < 0$ (staționar); un test unilateral, la stînga'),
-      T('statistic: $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, the usual OLS $t$-ratio', 'statistica: $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, raportul $t$ obișnuit din OLS')]),
+      T('statistic: $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, the usual OLS $t$-ratio; $\\mathrm{SE}$: the standard error; a very negative $\\tau$ speaks against the unit root', 'statistica: $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, raportul $t$ obișnuit din OLS; $\\mathrm{SE}$: eroarea standard; un $\\tau$ foarte negativ este un argument împotriva rădăcinii unitare')]),
     (T('Under $H_0$, $\\tau$ is \\textbf{not} Student or Normal \\refDF', 'În ipoteza $H_0$, $\\tau$ \\textbf{nu} urmează legea Student sau distribuția Normală \\refDF'),
      [T('$y_{t-1}$ is a random walk, so the regressor is not stationary; $\\hat\\phi$ converges at rate $T$, not $\\sqrt{T}$ (\\textbf{superconsistency})',
         '$y_{t-1}$ este un mers aleator, deci regresorul nu este staționar; $\\hat\\phi$ converge cu viteza $T$, nu $\\sqrt{T}$ (\\textbf{superconsistență})'),
@@ -579,7 +581,8 @@ D.frame(T('Three Dickey--Fuller regressions', 'Trei regresii Dickey--Fuller'), i
      [T('$H_0$: random walk (with drift if $c \\ne 0$); $H_1$: stationary around a non-zero mean', '$H_0$: mers aleator (cu derivă dacă $c \\ne 0$); $H_1$: staționar în jurul unei medii nenule'),
       T('for series without a trend: interest rates, inflation, exchange rates, returns', 'pentru serii fără trend: rate ale dobînzii, inflație, cursuri de schimb, randamente')]),
     (T('\\textbf{Constant and trend}: $\\Delta y_t = c + bt + \\gamma y_{t-1} + \\varepsilon_t$', '\\textbf{Constantă și trend}: $\\Delta y_t = c + bt + \\gamma y_{t-1} + \\varepsilon_t$'),
-     [T('$H_0$: random walk with drift; $H_1$: trend-stationary: exactly the TS against DS question of Section 1', '$H_0$: mers aleator cu derivă; $H_1$: staționar în jurul trendului: exact întrebarea din secțiunea 1'),
+     [T('$c$: the constant; $bt$: a linear trend with slope $b$', '$c$: constanta; $bt$: un trend liniar cu panta $b$'),
+      T('$H_0$: random walk with drift; $H_1$: trend-stationary: exactly the TS against DS question of Section 1', '$H_0$: mers aleator cu derivă; $H_1$: staționar în jurul trendului: exact întrebarea din secțiunea 1'),
       T('for trending series: log GDP, log prices, log price indices', 'pentru serii cu trend: logaritmul PIB, logaritmii prețurilor, logaritmii indicilor de preț')]),
     T('Each case has its own distribution of $\\tau$ and its own critical values', 'Fiecare caz are propria distribuție a lui $\\tau$ și propriile valori critice')))
 
@@ -599,13 +602,13 @@ D.frame(T('Critical values of the Dickey--Fuller test', 'Valorile critice ale te
                       '& \\multicolumn{3}{c|}{\\textbf{fără constantă}} & \\multicolumn{3}{c|}{\\textbf{constantă}} & \\multicolumn{3}{c}{\\textbf{constantă și trend}} \\\\ $T$ & 1\\% & 5\\% & 10\\% & 1\\% & 5\\% & 10\\% & 1\\% & 5\\% & 10\\%'),
     [f'{lab} & ' + ' & '.join(f'$@{{cv.{tn}.{reg}.{lev}}}$' for reg in ['n', 'c', 'ct'] for lev in ['1', '5', '10'])
      for tn, lab in [('50', '50'), ('100', '100'), ('250', '250'), ('inf', '$\\infty$')]], size='scriptsize') + items(
-    T('Source: the response surfaces of \\refMacKinnonb, as used by \\texttt{statsmodels}; p-values from \\refMacKinnon', 'Sursa: suprafețele de răspuns din \\refMacKinnonb, folosite de \\texttt{statsmodels}; valorile p din \\refMacKinnon'),
+    T('Source: the response surfaces of \\refMacKinnonb, as used by \\texttt{statsmodels}; p-values from \\refMacKinnon', 'Sursa: suprafețele de răspuns din \\refMacKinnonb, folosite de \\texttt{statsmodels}; p-value-urile din \\refMacKinnon'),
     T('Decision: reject the unit root at 5\\% if $\\tau$ is \\textbf{below} (more negative than) the 5\\% value', 'Decizia: respingem rădăcina unitară la 5\\% dacă $\\tau$ este \\textbf{sub} (mai negativ decît) valoarea de 5\\%'),
     T('The values depend only weakly on $T$; they apply unchanged to the ADF test', 'Valorile depind puțin de $T$; se aplică neschimbate testului ADF')))
 
 D.frame(T('Worked example: Romanian real GDP', 'Exemplu rezolvat: PIB-ul real al României'), items(
     (T('$y_t = 100\\ln$ real GDP, @{gi.q0}--@{gi.q1}; regression with constant and trend, no lags ($T = @{h.n}$ differences)',
-       '$y_t = 100\\ln$ PIB real, @{gi.q0}--@{gi.q1}; regresia cu constantă și trend, fără decalaje ($T = @{h.n}$ diferențe)'),
+       '$y_t = 100\\ln$ PIB real, @{gi.q0}--@{gi.q1}; regresia cu constantă și trend, fără laguri ($T = @{h.n}$ diferențe)'),
      [T('OLS: $\\hat\\gamma = @{h.g}$, $\\mathrm{SE}(\\hat\\gamma) = @{h.se}$, so $\\hat\\phi = 1 + \\hat\\gamma = @{h.phi}$', 'OLS: $\\hat\\gamma = @{h.g}$, $\\mathrm{SE}(\\hat\\gamma) = @{h.se}$, deci $\\hat\\phi = 1 + \\hat\\gamma = @{h.phi}$')]),
     (T('$\\tau = @{h.g}/@{h.se} = @{h.tau}$; 5\\% critical value with constant and trend: $@{h.cv}$', '$\\tau = @{h.g}/@{h.se} = @{h.tau}$; valoarea critică de 5\\% cu constantă și trend: $@{h.cv}$'),
      [T('$@{h.tau} > @{h.cv}$: do not reject the unit root (p = @{h.p})', '$@{h.tau} > @{h.cv}$: nu respingem rădăcina unitară (p = @{h.p})'),
@@ -616,19 +619,20 @@ D.frame(T('Worked example: Romanian real GDP', 'Exemplu rezolvat: PIB-ul real al
 
 D.frame(T('The augmented Dickey--Fuller test', 'Testul Dickey--Fuller augmentat'), items(
     (T('If $\\Delta y_t$ is autocorrelated, $\\varepsilon_t$ in the DF regression is not white noise and the size of the test is wrong', 'Dacă $\\Delta y_t$ este autocorelat, $\\varepsilon_t$ din regresia DF nu este zgomot alb, iar mărimea testului este greșită'),
-     [T('the remedy: add lagged differences', 'remediul: adăugăm diferențe decalate')]),
+     [T('the remedy: add lagged differences', 'remediul: adăugăm diferențele trecute $\\Delta y_{t-j}$')]),
     (T('\\textbf{ADF} (augmented Dickey--Fuller) regression:', 'Regresia \\textbf{ADF} (augmented Dickey--Fuller, Dickey--Fuller augmentat):'),
      [T('$\\Delta y_t = c + bt + \\gamma y_{t-1} + \\sum_{j=1}^{k} \\delta_j \\Delta y_{t-j} + \\varepsilon_t$; same $\\tau$, same critical values', '$\\Delta y_t = c + bt + \\gamma y_{t-1} + \\sum_{j=1}^{k} \\delta_j \\Delta y_{t-j} + \\varepsilon_t$; același $\\tau$, aceleași valori critice'),
+      T('$\\delta_j$: the coefficients of the past differences; $k$: the number of lagged differences', '$\\delta_j$: coeficienții diferențelor trecute; $k$: numărul de diferențe trecute incluse (lagurile)'),
       T('an AR($p$) in levels becomes exactly this regression with $k = p - 1$ and $\\gamma = -\\phi(1)$', 'un AR($p$) în niveluri devine exact această regresie, cu $k = p - 1$ și $\\gamma = -\\phi(1)$')]),
     (T('\\refSD: with ARMA errors the test stays valid if $k$ grows slowly with $T$', '\\refSD: cu erori ARMA, testul rămîne valid dacă $k$ crește încet odată cu $T$'),
-     [T('the lags approximate the MA part by a long AR', 'decalajele aproximează partea MA printr-un AR lung')]),
+     [T('the lags approximate the MA part by a long AR', 'lagurile aproximează partea MA printr-un AR lung')]),
     T('The ADF test is the default unit-root test in software: \\texttt{adfuller} in \\texttt{statsmodels}', 'Testul ADF este testul implicit de rădăcină unitară în programe: \\texttt{adfuller} în \\texttt{statsmodels}')))
 
-D.frame(T('Choosing the number of lags $k$', 'Alegerea numărului de decalaje $k$'), items(
+D.frame(T('Choosing the number of lags $k$', 'Alegerea numărului de laguri $k$'), items(
     (T('Maximum: $k_{\\max} = 12\\,(T/100)^{1/4}$ \\refSchwert; for $T = @{h.n}$, $k_{\\max} = @{h.maxlag}$', 'Maximul: $k_{\\max} = 12\\,(T/100)^{1/4}$ \\refSchwert; pentru $T = @{h.n}$, $k_{\\max} = @{h.maxlag}$'),
      [T('then choose $k \\le k_{\\max}$ by an information criterion, AIC or BIC (Chapter 2), on the same sample for every $k$', 'apoi alegem $k \\le k_{\\max}$ după un criteriu informațional, AIC sau BIC (Capitolul 2), pe același eșantion pentru fiecare $k$')]),
-    (T('Too few lags: autocorrelated errors, wrong size (with a negative MA part, far too many rejections)', 'Prea puține decalaje: erori autocorelate, mărime greșită (cu o componentă MA negativă, mult prea multe respingeri)'),
-     [T('too many lags: lower power', 'prea multe decalaje: putere mai mică')]),
+    (T('Too few lags: autocorrelated errors, wrong size (with a negative MA part, far too many rejections)', 'Prea puține laguri: erori autocorelate, mărime greșită (cu o componentă MA negativă, mult prea multe respingeri)'),
+     [T('too many lags: lower power', 'prea multe laguri: putere mai mică')]),
     (T('\\refNgP: a modified AIC (MAIC) gives a better size; GLS detrending \\refERS\\ gives more power', '\\refNgP: un AIC modificat (MAIC) dă o mărime mai bună; eliminarea trendului prin GLS \\refERS\\ dă mai multă putere'),
      [T('MAIC: modified Akaike information criterion; GLS: generalised least squares; both appear in the DF-GLS test', 'MAIC: modified Akaike information criterion (criteriul Akaike modificat); GLS: generalised least squares (metoda generalizată a celor mai mici pătrate); ambele apar în testul DF-GLS')]),
     T('Check the result: Ljung--Box on the ADF residuals \\refLB; report $k$ together with $\\tau$', 'Verificăm rezultatul: testul Ljung--Box pe reziduurile ADF \\refLB; raportăm $k$ împreună cu $\\tau$')))
@@ -657,7 +661,7 @@ D.frame(T('How many differences: $I(1)$ or $I(2)$?', 'Cîte diferențieri: $I(1)
     (T('\\refDP: test from the highest plausible order downwards', '\\refDP: testăm de la cel mai mare ordin plauzibil în jos'),
      [T('step 1: ADF on $\\Delta y_t$; if it does not reject, $y_t$ may be $I(2)$', 'pasul 1: ADF pe $\\Delta y_t$; dacă nu respinge, $y_t$ poate fi $I(2)$'),
       T('step 2: if it rejects, ADF on $y_t$; reject: $I(0)$; do not reject: $I(1)$', 'pasul 2: dacă respinge, ADF pe $y_t$; respingere: $I(0)$; nerespingere: $I(1)$')]),
-    (T('Why downwards: if $y_t \\sim I(2)$, the test on $y_t$ assumes at most one unit root and is not valid', 'De ce în jos: dacă $y_t \\sim I(2)$, testul pe $y_t$ presupune cel mult o rădăcină unitară și nu este valid'),
+    (T('Why downwards: if $y_t \\sim I(2)$, the test on $y_t$ assumes at most one unit root and is not valid', 'Motivul ordinii descendente: dacă $y_t \\sim I(2)$, testul pe $y_t$ presupune cel mult o rădăcină unitară și nu este valid'),
      []),
     (T('Example: Romanian consumer prices since 2005 (the table in Section 4)', 'Exemplu: prețurile de consum din România după 2005 (tabelul din secțiunea 4)'),
      [T('$\\ln P$: unit root; inflation $\\pi$: ADF p = @{ui.adfp}, KPSS @{ui.kpss}; change of inflation: clearly stationary', '$\\ln P$: rădăcină unitară; inflația $\\pi$: ADF p = @{ui.adfp}, KPSS @{ui.kpss}; variația inflației: clar staționară'),
@@ -665,7 +669,7 @@ D.frame(T('How many differences: $I(1)$ or $I(2)$?', 'Cîte diferențieri: $I(1)
 
 D.recap(('The Dickey--Fuller test', 'testul Dickey--Fuller'), [
     T('$\\Delta y_t = c + bt + \\gamma y_{t-1} + \\sum_j\\delta_j\\Delta y_{t-j} + \\varepsilon_t$; $H_0$: $\\gamma = 0$; $\\tau$ against Dickey--Fuller critical values', '$\\Delta y_t = c + bt + \\gamma y_{t-1} + \\sum_j\\delta_j\\Delta y_{t-j} + \\varepsilon_t$; $H_0$: $\\gamma = 0$; $\\tau$ comparat cu valorile critice Dickey--Fuller'),
-    T('Deterministic terms follow the plot; lags by AIC or BIC up to $12(T/100)^{1/4}$', 'Termenii determiniști urmează graficul; decalajele se aleg după AIC sau BIC, pînă la $12(T/100)^{1/4}$'),
+    T('Deterministic terms follow the plot; lags by AIC or BIC up to $12(T/100)^{1/4}$', 'Termenii determiniști urmează graficul; lagurile se aleg după AIC sau BIC, pînă la $12(T/100)^{1/4}$'),
     T('Low power near $\\phi = 1$: not rejecting is weak evidence for a unit root', 'Putere mică în apropierea lui $\\phi = 1$: nerespingerea este o dovadă slabă în favoarea rădăcinii unitare'),
     T('Order of integration: test from the top ($\\Delta y_t$ first)', 'Ordinul de integrare: testăm de sus în jos (întîi $\\Delta y_t$)')])
 
@@ -675,18 +679,20 @@ D.recap(('The Dickey--Fuller test', 'testul Dickey--Fuller'), [
 D.section('Phillips--Perron, KPSS and their joint use', 'Phillips--Perron, KPSS și folosirea lor împreună')
 
 D.frame(T('The Phillips--Perron test', 'Testul Phillips--Perron'), items(
-    (T('\\refPP: keep the simple DF regression (no lagged differences) and correct $\\tau$ instead', '\\refPP: păstrăm regresia DF simplă (fără diferențe decalate) și corectăm în schimb statistica $\\tau$'),
+    (T('\\refPP: keep the simple DF regression (no lagged differences) and correct $\\tau$ instead', '\\refPP: păstrăm regresia DF simplă (fără diferențele trecute) și corectăm în schimb statistica $\\tau$'),
      [T('$Z_\\tau = \\sqrt{\\hat\\gamma_0/\\hat\\lambda^2}\\;\\tau - \\dfrac{(\\hat\\lambda^2 - \\hat\\gamma_0)\\,T\\,\\mathrm{SE}(\\hat\\gamma)}{2\\hat\\lambda\\,s}$', '$Z_\\tau = \\sqrt{\\hat\\gamma_0/\\hat\\lambda^2}\\;\\tau - \\dfrac{(\\hat\\lambda^2 - \\hat\\gamma_0)\\,T\\,\\mathrm{SE}(\\hat\\gamma)}{2\\hat\\lambda\\,s}$'),
       T('$\\hat\\gamma_0$: variance of the residuals; $s^2$: their OLS variance; $\\hat\\lambda^2$: their \\textbf{long-run variance}', '$\\hat\\gamma_0$: varianța reziduurilor; $s^2$: varianța lor OLS; $\\hat\\lambda^2$: \\textbf{varianța lor pe termen lung}')]),
     (T('Long-run variance (Newey--West, Bartlett weights): $\\hat\\lambda^2 = \\hat\\gamma_0 + 2\\sum_{j=1}^{L}(1 - \\frac{j}{L+1})\\hat\\gamma_j$', 'Varianța pe termen lung (Newey--West, ponderi Bartlett): $\\hat\\lambda^2 = \\hat\\gamma_0 + 2\\sum_{j=1}^{L}(1 - \\frac{j}{L+1})\\hat\\gamma_j$'),
-     [T('$\\hat\\gamma_j$: autocovariances of the residuals; if they are white noise, $\\hat\\lambda^2 = \\hat\\gamma_0$ and $Z_\\tau = \\tau$', '$\\hat\\gamma_j$: autocovarianțele reziduurilor; dacă acestea sînt zgomot alb, $\\hat\\lambda^2 = \\hat\\gamma_0$ și $Z_\\tau = \\tau$')]),
-    (T('Same $H_0$ and the same critical values as ADF; robust to heteroskedasticity; no lag choice, but a bandwidth $L$', 'Aceeași $H_0$ și aceleași valori critice ca ADF; robust la heteroscedasticitate; nu alegem decalaje, ci o lățime de bandă $L$'),
+     [T('$\\hat\\gamma_j$: autocovariances of the residuals; $L$: the number of autocovariances included (the bandwidth)', '$\\hat\\gamma_j$: autocovarianțele reziduurilor; $L$: numărul de autocovarianțe incluse (lățimea de bandă)'),
+      T('if the residuals are white noise, $\\hat\\lambda^2 = \\hat\\gamma_0$ and $Z_\\tau = \\tau$: the correction only matters when they are autocorrelated', 'dacă reziduurile sînt zgomot alb, $\\hat\\lambda^2 = \\hat\\gamma_0$ și $Z_\\tau = \\tau$: corecția contează doar cînd ele sînt autocorelate')]),
+    (T('Same $H_0$ and the same critical values as ADF; robust to heteroskedasticity; no lag choice, but a bandwidth $L$', 'Aceeași $H_0$ și aceleași valori critice ca ADF; robust la heteroscedasticitate; nu alegem laguri, ci o lățime de bandă $L$'),
      [T('weak point: large size distortions with a negative MA component \\refSchwert', 'punctul slab: distorsiuni mari ale mărimii cînd există o componentă MA negativă \\refSchwert')])))
 
 D.frame(T('The KPSS test: stationarity as the null', 'Testul KPSS: staționaritatea ca ipoteză nulă'), items(
     (T('\\refKPSS\\ (KPSS: Kwiatkowski--Phillips--Schmidt--Shin): $y_t = \\xi t + r_t + \\varepsilon_t$, $r_t = r_{t-1} + u_t$, $u_t \\sim \\mathrm{WN}(0, \\sigma_u^2)$',
        '\\refKPSS\\ (KPSS: Kwiatkowski--Phillips--Schmidt--Shin): $y_t = \\xi t + r_t + \\varepsilon_t$, $r_t = r_{t-1} + u_t$, $u_t \\sim \\mathrm{WN}(0, \\sigma_u^2)$'),
-     [T('$H_0$: $\\sigma_u^2 = 0$ (the random walk is a constant: $y_t$ stationary around a level or a trend); $H_1$: $\\sigma_u^2 > 0$, a unit root',
+     [T('$\\xi t$: a deterministic trend; $r_t$: a random walk, the moving level; $\\varepsilon_t$: stationary noise', '$\\xi t$: un trend determinist; $r_t$: un mers aleator, adică nivelul care se deplasează; $\\varepsilon_t$: zgomot staționar'),
+      T('$H_0$: $\\sigma_u^2 = 0$ (the random walk is a constant: $y_t$ stationary around a level or a trend); $H_1$: $\\sigma_u^2 > 0$, a unit root',
         '$H_0$: $\\sigma_u^2 = 0$ (mersul aleator este o constantă: $y_t$ staționar în jurul unui nivel sau al unui trend); $H_1$: $\\sigma_u^2 > 0$, o rădăcină unitară')]),
     (T('Statistic: regress $y_t$ on a constant (and a trend); residuals $e_t$; partial sums $S_t = e_1 + \\dots + e_t$', 'Statistica: regresia lui $y_t$ pe o constantă (și un trend); reziduurile $e_t$; sumele parțiale $S_t = e_1 + \\dots + e_t$'),
      [T('$\\eta = \\dfrac{1}{T^2\\hat\\lambda^2}\\sum_{t=1}^{T} S_t^2$, with $\\hat\\lambda^2$ the long-run variance of $e_t$', '$\\eta = \\dfrac{1}{T^2\\hat\\lambda^2}\\sum_{t=1}^{T} S_t^2$, unde $\\hat\\lambda^2$ este varianța pe termen lung a lui $e_t$'),
@@ -701,7 +707,7 @@ chart(T('KPSS: why partial sums', 'KPSS: rolul sumelor parțiale'), 'tsa_ch3_kps
 interp(('the partial sums', 'sumelor parțiale'), [
     (T('Stationary series: deviations cancel out, $S_t$ stays close to 0', 'Seria staționară: abaterile se compensează, $S_t$ rămîne aproape de 0'),
      [T('$\\sum S_t^2$ grows like $T^2$, so $\\eta$ stays bounded', '$\\sum S_t^2$ crește ca $T^2$, deci $\\eta$ rămîne mărginit')]),
-    (T('Random walk: long runs on one side of the mean, $S_t$ makes large excursions', 'Mersul aleator: perioade lungi de o parte a mediei, $S_t$ face excursii mari'),
+    (T('Random walk: long runs on one side of the mean, $S_t$ makes large excursions', 'Mersul aleator: perioade lungi de o parte a mediei, $S_t$ se abate mult de la 0'),
      [T('$\\sum S_t^2$ grows like $T^4$: $\\eta$ grows with $T$ and the test rejects', '$\\sum S_t^2$ crește ca $T^4$: $\\eta$ crește cu $T$, iar testul respinge')]),
     T('The same idea as the CUSUM charts of quality control: cumulated deviations reveal a drifting level', 'Aceeași idee ca în graficele CUSUM din controlul calității: abaterile cumulate dezvăluie un nivel care se deplasează')])
 
@@ -721,7 +727,7 @@ D.frame(T('Unit-root tests on real series', 'Teste de rădăcină unitară pe se
                   '\\textbf{Seria} & \\textbf{det.} & $T$ & \\textbf{ADF} (p) & $k$ & \\textbf{PP} & \\textbf{KPSS} & \\textbf{ADF+KPSS}'),
     UROWS, size='scriptsize') + items(
     T('det.: deterministic terms (c: constant; t: trend); $k$: ADF lags (AIC); 5\\% critical values: ADF and PP about $-2.86$ (c), $-3.41$ (c, t); KPSS 0.463 (c), 0.146 (c, t)',
-      'det.: termenii determiniști (c: constantă; t: trend); $k$: decalajele ADF (AIC); valori critice de 5\\%: ADF și PP circa $-2{,}86$ (c), $-3{,}41$ (c, t); KPSS 0,463 (c), 0,146 (c, t)')) + ql('TSA_ch3_unit_root_tests'), size='scriptsize')
+      'det.: termenii determiniști (c: constantă; t: trend); $k$: lagurile ADF (AIC); valori critice de 5\\%: ADF și PP circa $-2{,}86$ (c), $-3{,}41$ (c, t); KPSS 0,463 (c), 0,146 (c, t)')) + ql('TSA_ch3_unit_root_tests'), size='scriptsize')
 
 interp(('the unit-root table', 'tabelului testelor'), [
     (T('Log prices, the exchange rate, log GDP and log HICP: $I(1)$; their differences: $I(0)$', 'Logaritmii prețurilor, cursul de schimb, logaritmul PIB și al IAPC: $I(1)$; diferențele lor: $I(0)$'),
@@ -764,6 +770,7 @@ D.frame(T('Zivot and Andrews (1992): an unknown break date', 'Zivot și Andrews 
     (T('\\refZA: let the data choose the break date $T_B$', '\\refZA: lăsăm datele să aleagă data rupturii $T_B$'),
      [T('for each $T_B$ in the central 70\\% of the sample, run the ADF regression with a break dummy:', 'pentru fiecare $T_B$ din cele 70\\% centrale ale eșantionului, estimăm regresia ADF cu o variabilă dummy pentru ruptură:'),
       T('$\\Delta y_t = c + \\theta DU_t + bt + \\gamma y_{t-1} + \\sum_j\\delta_j\\Delta y_{t-j} + \\varepsilon_t$, $DU_t = 1$ for $t > T_B$', '$\\Delta y_t = c + \\theta DU_t + bt + \\gamma y_{t-1} + \\sum_j\\delta_j\\Delta y_{t-j} + \\varepsilon_t$, $DU_t = 1$ pentru $t > T_B$'),
+      T('$DU_t$: a dummy variable, 0 before and 1 after the break; $\\theta$: the size of the level shift', '$DU_t$: o variabilă dummy, 0 înainte și 1 după ruptură; $\\theta$: mărimea saltului de nivel'),
       T('the statistic is the \\textbf{minimum} $t$-ratio of $\\gamma$ over all dates', 'statistica este raportul $t$ \\textbf{minim} al lui $\\gamma$ pe toate datele')]),
     (T('Three versions: break in the level, in the slope, in both', 'Trei variante: ruptură în nivel, în pantă sau în ambele'),
      [T('critical values more negative than ADF: about $-4.81$ (level) and $-5.07$ (both) at 5\\%', 'valori critice mai negative decît la ADF: circa $-4{,}81$ (nivel) și $-5{,}07$ (ambele) la 5\\%')]),
@@ -778,7 +785,7 @@ interp(('the two breaks', 'celor două rupturi'), [
     (T('Nile: ZA = $@{bn.za}$, break in @{bn.y}, the mean falls from @{bn.m0} to @{bn.m1}', 'Nilul: ZA = $@{bn.za}$, ruptură în @{bn.y}, media scade de la @{bn.m0} la @{bn.m1}'),
      [T('the date matches the history: the first Aswan dam (built 1898--1902) and a drier climate; the ADF--KPSS conflict is explained', 'data corespunde istoriei: primul baraj de la Aswan (construit în 1898--1902) și un climat mai secetos; conflictul ADF--KPSS este explicat')]),
     (T('EUR/RON: ADF p = @{bf.adfp}, but ZA = $@{bf.za}$, break in @{bf.d}: the 2008 depreciation (mean @{bf.m0} lei before, @{bf.m1} after)', 'EUR/RON: ADF p = @{bf.adfp}, dar ZA = $@{bf.za}$, ruptură în @{bf.d}: deprecierea din 2008 (media @{bf.m0} lei înainte, @{bf.m1} după)'),
-     [T('a managed exchange rate: long calm periods and rare adjustments, not a pure random walk', 'un curs administrat: perioade lungi de stabilitate și ajustări rare, nu un mers aleator pur'),
+     [T('a managed exchange rate: long calm periods and rare adjustments, not a pure random walk', 'un curs în regim de managed float: perioade lungi de stabilitate și ajustări rare, nu un mers aleator pur'),
       T('but after 2008 the rate still drifts up: ``stationary around one break\'\' is also a simplification', 'dar după 2008 cursul continuă să urce: „staționar în jurul unei rupturi” este și el o simplificare')])])
 
 D.recap(('Structural breaks', 'rupturi structurale'), [
@@ -843,10 +850,10 @@ D.frame(T('Model choice by AICc', 'Alegerea modelului după AICc'), table(
 
 chart(T('Romanian GDP: residual checks', 'PIB-ul României: verificarea reziduurilor'), 'tsa_ch3_gdp_diag', 'TSA_ch3_arima_gdp', [
     T('Residuals of @{gd.order} with drift: time plot, ACF, Ljung--Box p-values for $m = 2, \\dots, 16$, histogram with a Normal density',
-      'Reziduurile modelului @{gd.order} cu derivă: graficul în timp, ACF, valorile p Ljung--Box pentru $m = 2, \\dots, 16$, histograma cu densitatea Normală')], h='0.66\\textheight')
+      'Reziduurile modelului @{gd.order} cu derivă: graficul în timp, ACF, p-value-urile Ljung--Box pentru $m = 2, \\dots, 16$, histograma cu densitatea Normală')], h='0.66\\textheight')
 
 interp(('the residual checks', 'verificării reziduurilor'), [
-    (T('No autocorrelation left: $Q^*(8) = @{gd.q8}$ (p = @{gd.q8p}), $Q^*(12)$ p = @{gd.q12p}; all p-values above 5\\%', 'Nu a rămas autocorelație: $Q^*(8) = @{gd.q8}$ (p = @{gd.q8p}), $Q^*(12)$ p = @{gd.q12p}; toate valorile p sînt peste 5\\%'),
+    (T('No autocorrelation left: $Q^*(8) = @{gd.q8}$ (p = @{gd.q8p}), $Q^*(12)$ p = @{gd.q12p}; all p-values above 5\\%', 'Nu a rămas autocorelație: $Q^*(8) = @{gd.q8}$ (p = @{gd.q8p}), $Q^*(12)$ p = @{gd.q12p}; toate p-value-urile sînt peste 5\\%'),
      []),
     (T('Not Normal: kurtosis @{gd.k}, Jarque--Bera @{gd.jb}; the largest residual is $@{gd.min}$ in @{gd.mind}', 'Nu sînt normale: coeficientul de boltire @{gd.k}, Jarque--Bera @{gd.jb}; cel mai mare reziduu este $@{gd.min}$ în @{gd.mind}'),
      [T('two crises dominate the tails; the Normal intervals of the next slides are too narrow in a crisis and slightly too wide in calm times', 'două crize domină cozile; intervalele normale din slide-urile următoare sînt prea înguste într-o criză și ușor prea largi în perioadele calme'),
@@ -892,7 +899,7 @@ interp(('the GDP forecasts', 'prognozelor PIB'), [
        'Mersul aleator cu derivă crește cu @{gd.drift}\\% pe trimestru de la ultima valoare (@{gf2.last} mld. EUR în @{gf2.lq}): @{gf2.ds.l12} mld. după 12 trimestre'),
      [T('95\\% half-width (in \\% of GDP): @{gf2.ds.w1} after 1 quarter, @{gf2.ds.w4} after 4, @{gf2.ds.w12} after 12, i.e.\\ $\\times$@{gf2.ratio} $= \\sqrt{12}$', 'semilățimea de 95\\% (în \\% din PIB): @{gf2.ds.w1} după 1 trimestru, @{gf2.ds.w4} după 4, @{gf2.ds.w12} după 12, adică $\\times$@{gf2.ratio} $= \\sqrt{12}$')]),
     (T('The TS model pulls GDP back towards its old line ($\\hat\\phi = @{gf2.ts.phi}$): @{gf2.ts.l12} bn after 12 quarters, half-width @{gf2.ts.w12}\\%', 'Modelul staționar în jurul trendului readuce PIB-ul spre vechea dreaptă ($\\hat\\phi = @{gf2.ts.phi}$): @{gf2.ts.l12} mld. după 12 trimestre, semilățimea @{gf2.ts.w12}\\%'),
-     [T('more optimistic and more confident, because it assumes the recent slowdown is temporary', 'mai optimist și mai sigur pe el, pentru că presupune că încetinirea recentă este temporară')]),
+     [T('more optimistic and more confident, because it assumes the recent slowdown is temporary', 'mai optimist și cu intervale mai înguste, pentru că presupune că încetinirea recentă este temporară')]),
     T('The tests could not settle TS against DS for this sample: the choice of $d$ is a forecasting decision with consequences', 'Testele nu au putut decide între cele două modele pe acest eșantion: alegerea lui $d$ este o decizie de prognoză cu consecințe')])
 
 D.frame(T('Over-differencing', 'Supradiferențierea'), items(
@@ -939,7 +946,7 @@ D.frame(T('Automatic ARIMA: checks', 'Selecția automată ARIMA: verificări'), 
     (T('\\textbf{Near-cancelling roots}: Romanian GDP from @{gf.q0}: the lowest AICc, @{gf.aicc} (ARIMA(0,1,0): @{gf.aicc0}), belongs to @{gf.best}, whose fit did not converge',
        '\\textbf{Rădăcini care aproape se anulează}: PIB-ul României din @{gf.q0}: cel mai mic AICc, @{gf.aicc} (ARIMA(0,1,0): @{gf.aicc0}), aparține modelului @{gf.best}, a cărui estimare nu a convers'),
      [T('MA roots of modulus @{gf.ma}, AR roots @{gf.ar}: AR and MA almost cancel; $\\hat\\theta_2 = @{gf.ma2}$ with SE @{gf.ma2se}', 'rădăcini MA de modul @{gf.ma}, rădăcini AR @{gf.ar}: AR și MA aproape se anulează; $\\hat\\theta_2 = @{gf.ma2}$ cu SE @{gf.ma2se}'),
-      T('a model fitted to the noise of the 1990s data, not a description of the economy', 'un model potrivit pe zgomotul datelor din anii 1990, nu o descriere a economiei')]),
+      T('a model fitted to the noise of the 1990s data, not a description of the economy', 'un model ajustat pe zgomotul datelor din anii 1990, nu o descriere a economiei')]),
     T('\\textbf{Always}: plot the data, check the convergence and the roots, run the residual tests, compare with a simple benchmark (random walk, Chapter 0)', '\\textbf{Întotdeauna}: reprezentăm grafic datele, verificăm convergența și rădăcinile, aplicăm testele pe reziduuri, comparăm cu o metodă simplă de referință (mersul aleator, Capitolul 0)')))
 
 chart(T('Romanian inflation: $d = 0$ or $d = 1$?', 'Inflația din România: $d = 0$ sau $d = 1$?'), 'tsa_ch3_inflation_d', 'TSA_ch3_arima_in_practice', [
@@ -964,7 +971,7 @@ D.frame(T('Case study: Meese and Rogoff (1983)', 'Studiu de caz: Meese și Rogof
 
 chart(T('EUR/RON: ARIMA against the random walk', 'EUR/RON: ARIMA față de mersul aleator'), 'tsa_ch3_eurron_forecast', 'TSA_ch3_arima_in_practice', [
     T('Parameters estimated on @{fx.ntr} daily changes until December 2023; @{fx.nte} one-day-ahead forecasts from January 2024; right: the cumulated difference of squared errors (below 0: the model beats the random walk)',
-      'Parametrii estimați pe @{fx.ntr} variații zilnice pînă în decembrie 2023; @{fx.nte} prognoze cu o zi înainte din ianuarie 2024; dreapta: diferența cumulată a erorilor pătratice (sub 0: modelul bate mersul aleator)')], h='0.52\\textheight')
+      'Parametrii estimați pe @{fx.ntr} variații zilnice pînă în decembrie 2023; @{fx.nte} prognoze cu o zi înainte din ianuarie 2024; dreapta: diferența cumulată a erorilor pătratice (sub 0: modelul este mai precis decît mersul aleator)')], h='0.52\\textheight')
 
 interp(('the EUR/RON comparison', 'comparației EUR/RON'), [
     (T('RMSE of the daily change ($100\\ln$): random walk @{fx.r1.rw}, with drift @{fx.r1.drift}, ARIMA(1,1,0) @{fx.r1.ar} ($\\hat\\phi = @{fx.phi}$)', 'RMSE al variației zilnice ($100\\ln$): mers aleator @{fx.r1.rw}, cu derivă @{fx.r1.drift}, ARIMA(1,1,0) @{fx.r1.ar} ($\\hat\\phi = @{fx.phi}$)'),
@@ -979,7 +986,7 @@ chart(T('A classic series: US real GDP after 2007', 'O serie clasică: PIB-ul re
 
 interp(('the US GDP forecasts', 'prognozelor PIB-ului SUA'), [
     (T('The TS model expected a return to the pre-2008 line; the gap kept widening: $@{us.ts}$ log points at the end (half-width of its interval: @{us.tsh})',
-       'Modelul staționar în jurul trendului aștepta o revenire la dreapta de dinainte de 2008; decalajul s-a mărit continuu: $@{us.ts}$ puncte logaritmice la final (semilățimea intervalului: @{us.tsh})'),
+       'Modelul staționar în jurul trendului aștepta o revenire la dreapta de dinainte de 2008; abaterea s-a mărit continuu: $@{us.ts}$ puncte logaritmice la final (semilățimea intervalului: @{us.tsh})'),
      [T('the 2008--2009 loss was never recovered: evidence for a permanent shock, as the DS view of \\refNP\\ implies', 'pierderea din 2008--2009 nu a fost recuperată niciodată: o dovadă a unui șoc permanent, cum implică viziunea \\refNP')]),
     (T('The DS model also misses ($@{us.ds}$), but its interval (half-width @{us.dsh}) at least warns of large uncertainty', 'Și modelul staționar în diferențe greșește ($@{us.ds}$), dar intervalul lui (semilățimea @{us.dsh}) avertizează măcar asupra incertitudinii mari'),
      [T('both assume the same drift as before 2008; growth after 2008 was slower: a break in the drift (Section 5)', 'ambele presupun aceeași derivă ca înainte de 2008; creșterea de după 2008 a fost mai lentă: o ruptură în derivă (secțiunea 5)')]),
@@ -1006,7 +1013,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
 
 D.frame(T('Checks you must run', 'Verificări necesare'), items(
     T('The direction of each test: ADF and PP have the unit root as $H_0$, KPSS has stationarity as $H_0$', 'Sensul fiecărui test: ADF și PP au rădăcina unitară ca $H_0$, KPSS are staționaritatea ca $H_0$'),
-    T('The deterministic terms, the number of lags and the critical values actually used (Dickey--Fuller, not Normal)', 'Termenii determiniști, numărul de decalaje și valorile critice folosite efectiv (Dickey--Fuller, nu ale distribuției Normale)'),
+    T('The deterministic terms, the number of lags and the critical values actually used (Dickey--Fuller, not Normal)', 'Termenii determiniști, numărul de laguri și valorile critice folosite efectiv (Dickey--Fuller, nu ale distribuției Normale)'),
     T('That ``not rejected\'\' is not reported as ``proved\'\'', 'Că „nerespins” nu este raportat ca „demonstrat”'),
     T('That regressions between trending series are not presented as causal evidence', 'Că regresiile între serii cu trend nu sînt prezentate drept dovezi de cauzalitate'),
     T('Convergence warnings, roots near the unit circle, residual tests, and AICc compared only for the same $d$', 'Avertismentele de convergență, rădăcinile apropiate de cercul unitate, testele pe reziduuri și compararea AICc doar pentru același $d$'),
@@ -1029,7 +1036,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
     'll', T('\\textbf{Quantity}', '\\textbf{Mărimea}') + ' & ' + T('\\textbf{Formula}', '\\textbf{Formula}'),
     [T('TS and DS', 'Cele două tipuri de trend') + ' & $y_t = \\alpha + \\beta t + u_t$, \\quad $\\Delta y_t = \\beta + u_t$, \\quad $u_t \\sim I(0)$',
      'ADF & $\\Delta y_t = c + bt + \\gamma y_{t-1} + \\sum_{j=1}^{k}\\delta_j\\Delta y_{t-j} + \\varepsilon_t$, \\quad $H_0$: $\\gamma = 0$, \\quad $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$',
-     T('Lags', 'Decalaje') + ' & $k_{\\max} = 12\\,(T/100)^{1/4}$, ' + T('then AIC or BIC', 'apoi AIC sau BIC'),
+     T('Lags', 'Laguri') + ' & $k_{\\max} = 12\\,(T/100)^{1/4}$, ' + T('then AIC or BIC', 'apoi AIC sau BIC'),
      'KPSS & $\\eta = \\sum_{t=1}^{T} S_t^2/(T^2\\hat\\lambda^2)$, \\quad $S_t = \\sum_{s \\le t} e_s$, \\quad 5\\%: ' + T('0.463 (c), 0.146 (c, t)', '0,463 (c); 0,146 (c, t)'),
      'ARIMA$(p,d,q)$ & $\\phi(L)(1 - L)^d y_t = c + \\theta(L)\\varepsilon_t$',
      T('Forecast variance', 'Varianța prognozei') + ' & $\\sigma^2\\sum_{j=0}^{h-1}\\psi_j^2$, \\quad $\\psi(z) = \\theta(z)/[\\phi(z)(1 - z)^d]$; ' + T('random walk', 'mers aleator') + ': $h\\sigma^2$',

@@ -239,7 +239,8 @@ creșterea PIB, randamentele & recesiune sau expansiune; calm sau agitat & Marko
     \item \textbf{Ecuația de tranziție}: $\alpha_{t+1} = T\alpha_t + R\eta_t$, \quad $\eta_t \sim N(0, Q)$
     \begin{itemize}
         \item starea evoluează ca o autoregresie vectorială de ordinul 1 (VAR(1), \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf}{Capitolul 6}); $T$ este $m \times m$
-        \item starea inițială: $\alpha_1 \sim N(a_1, P_1)$; $\varepsilon_t$, $\eta_s$ și $\alpha_1$ sînt independente între ele
+        \item $R$: transmite șocurile $\eta_t$ în stare; $H$, $Q$: varianțele șocurilor de măsurare și ale șocurilor stării
+        \item starea inițială: $\alpha_1 \sim N(a_1, P_1)$, $a_1$, $P_1$: media și varianța ei; $\varepsilon_t$, $\eta_s$ și $\alpha_1$ sînt independente între ele
     \end{itemize}
     \item \textbf{Matricele sistemului} $Z_t, H, T, R, Q$ conțin parametrii $\theta$; aceștia se estimează prin verosimilitate maximă
     \begin{itemize}
@@ -325,7 +326,7 @@ creșterea PIB, randamentele & recesiune sau expansiune; calm sau agitat & Marko
     \begin{itemize}
         \item $T = \begin{pmatrix}\phi & 1\\ 0 & 0\end{pmatrix}$, $R = (1,\ \theta)'$; orice ARMA$(p,q)$ se scrie cu $m = \max(p, q+1)$
     \end{itemize}
-    \item De ce contează: filtrul Kalman dă verosimilitatea gaussiană \textbf{exactă} a unui model ARMA, chiar cu valori lipsă
+    \item Importanța practică: filtrul Kalman dă verosimilitatea gaussiană \textbf{exactă} a unui model ARMA, chiar cu valori lipsă
     \begin{itemize}
         \item pornirea staționară: $P_1$ rezolvă $P = TPT' + RQR'$, adică $\mathrm{vec}(P_1) = (I - T \otimes T)^{-1}\mathrm{vec}(RQR')$
         \item așa estimează \texttt{statsmodels} \texttt{SARIMAX} modelele ARIMA din \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol2_modele_arma.pdf}{Capitolele 2}--\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{4}
@@ -593,6 +594,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \end{itemize}
     \item Netezitorul \textbf{Rauch--Tung--Striebel} \refRTS: o trecere înapoi după filtru, de la $t = n-1$ la 1
     \begin{itemize}
+        \item $n$: volumul eșantionului; $J_t$: cîștigul netezitorului, ponderea revizuirii care vine din viitor
         \item $J_t = P_{t|t}T'P_{t+1}^{-1}$, \quad $\hat\alpha_t = a_{t|t} + J_t(\hat\alpha_{t+1} - a_{t+1})$
         \item $V_t = P_{t|t} + J_t(V_{t+1} - P_{t+1})J_t'$; la $t = n$ estimarea netezită și cea filtrată coincid
     \end{itemize}
@@ -617,7 +619,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
 \begin{itemize}
     \item Nivelul netezit reacționează la scăderea din 1898--1899 \textbf{înainte} ca ea să apară în date: în 1897 este deja 1038, față de 1145 filtrat
     \begin{itemize}
-        \item cunoaște viitorul: util pentru istorie, imposibil în timp real
+        \item folosește informație din viitor: util pentru istorie, imposibil în timp real
     \end{itemize}
     \item În 1900: netezit 920, filtrat 985; nivelul netezit se adaptează mai repede, pentru că vede anii slabi de după 1900
     \begin{itemize}
@@ -637,6 +639,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \item \textbf{Descompunerea erorilor de predicție}
     \begin{itemize}
         \item $\log L(\theta) = -\dfrac{n}{2}\log 2\pi - \dfrac12\sum_{t=1}^{n}\left(\log F_t + \dfrac{v_t^2}{F_t}\right)$
+        \item $\theta$: parametrii (varianțele modelului); $v_t$, $F_t$: erorile de predicție și varianțele lor, date de filtru
         \item o rulare a filtrului dă $\log L$ pentru o valoare a lui $\theta$; un optimizator numeric caută după $\theta$
     \end{itemize}
     \item Pornirea difuză: primii $d$ termeni (aici $d = 1$ pentru nivel) sînt omiși, deoarece acolo $F_t$ este uriaș \refDK
@@ -681,7 +684,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \begin{itemize}
         \item statistica raportului de verosimilitate față de $q = 0{,}001$ (un nivel aproape constant): 23{,}1; față de $q = 1$: 7{,}2
     \end{itemize}
-    \item $q$ mic: nivelul este aproape plat și ratează scăderea de după 1899; $q$ mare: nivelul urmărește fiecare viitură
+    \item $q$ mic: nivelul este aproape plat și nu surprinde scăderea de după 1899; $q$ mare: nivelul urmărește fiecare viitură
     \begin{itemize}
         \item verosimilitatea alege compromisul care prezice cel mai bine la un pas
     \end{itemize}
@@ -745,7 +748,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \end{itemize}
     \item Utilizări: date neregulate (sărbători), serii care încep la date diferite, frecvențe mixte, marginea neregulată a unui nowcast
     \begin{itemize}
-        \item netezitorul umple golurile cu $\hat\alpha_t$ și o eroare standard onestă
+        \item netezitorul umple golurile cu $\hat\alpha_t$ și cu eroarea standard corespunzătoare
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -802,6 +805,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \end{itemize}
     \item \textbf{Ciclul}: un AR(2) staționar $\psi_t = \phi_1\psi_{t-1} + \phi_2\psi_{t-2} + \kappa_t$ sau un ciclu stochastic amortizat cu perioada $2\pi/\lambda_c$
     \begin{itemize}
+        \item $\phi_1$, $\phi_2$: coeficienții AR ai ciclului; $\kappa_t$: șocul ciclului; $\lambda_c$: frecvența ciclului, în radiani
         \item pentru logaritmul PIB, $\psi_t$ este \textbf{deviația PIB} (output gap): abaterea procentuală a producției de la trend (potențial)
     \end{itemize}
     \item În Python: \texttt{UnobservedComponents(y, level='smooth trend', autoregressive=2)}; toată starea se estimează cu filtrul și netezitorul Kalman
@@ -813,6 +817,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
 \begin{itemize}
     \item \refHPf: trendul $\tau_t$ minimizează $\sum_t(y_t - \tau_t)^2 + \lambda\sum_t(\Delta^2\tau_t)^2$; $\lambda = 1600$ pentru date trimestriale
     \begin{itemize}
+        \item $\Delta^2\tau_t = \tau_t - 2\tau_{t-1} + \tau_{t-2}$: variația pantei trendului; $\lambda \ge 0$: parametrul de netezire
         \item $\lambda$ mare: un trend liniar; $\lambda = 0$: trendul este chiar seria
     \end{itemize}
     \item Este exact trendul \textbf{netezit} al unui model UC: trend neted ($\Delta^2\mu_{t+1} = \zeta_t$) plus zgomot alb, cu $\lambda = \sigma^2_\varepsilon/\sigma^2_\zeta$ \refHJ
@@ -823,7 +828,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Hamilton (2018): de ce să nu folosiți niciodată filtrul HP}
+\begin{frame}{Hamilton (2018): argumentele împotriva filtrului HP}
 \itemsize{\small}
 \begin{itemize}
     \item \refHamHP\ enumeră trei probleme
@@ -836,7 +841,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \begin{itemize}
         \item ciclul este reziduul: ceea ce nu putea fi prezis cu doi ani înainte; unilateral prin construcție
     \end{itemize}
-    \item Nicio metodă nu este adevărul: comparăm modelul UC, HP și filtrul Hamilton pe PIB-ul României
+    \item Nicio metodă nu dă valoarea adevărată: comparăm modelul UC, HP și filtrul Hamilton pe PIB-ul României
 \end{itemize}
 \end{frame}
 
@@ -857,7 +862,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
 \begin{itemize}
     \item Creștere medie de 2{,}5\% pe an, cu un început lent (recesiunea din 1997--1999), un boom pînă în 2008, o stagnare și o revenire după 2013
     \begin{itemize}
-        \item cele două trenduri sînt aproape identice: diferența dintre metode stă în deviație, nu în trend
+        \item cele două trenduri sînt aproape identice: diferența dintre metode se află în deviație, nu în trend
     \end{itemize}
     \item Estimările UC: $\hat\sigma^2_\zeta = 0{,}078$ (panta trendului), ciclul AR(2) cu $\hat\phi_1 = 0{,}61$, $\hat\phi_2 = \ensuremath{-}0{,}13$, $\hat\sigma^2_\kappa = 5{,}27$; varianța componentei neregulate este estimată la zero
     \begin{itemize}
@@ -874,7 +879,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
 \end{center}
 \vspace{-0.25cm}
 \begin{itemize}
-    \item Deviația în \% din trend: ciclul UC (netezit), deviația HP ($\lambda = 1600$) și filtrul Hamilton ($h = 8$, patru decalaje), primele 11 trimestre se pierd
+    \item Deviația în \% din trend: ciclul UC (netezit), deviația HP ($\lambda = 1600$) și filtrul Hamilton ($h = 8$, patru laguri), primele 11 trimestre se pierd
 \end{itemize}
 \quantlet{TSA\_ch10\_trend\_cycle}{\qlurl{TSA_ch10_trend_cycle}}
 \end{frame}
@@ -882,7 +887,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
 \begin{frame}{Interpretarea deviațiilor PIB}
 \itemsize{\small}
 \begin{itemize}
-    \item Toate trei văd supraîncălzirea dinainte de 2008 (maxime: UC 7{,}0\% în T3 2008, HP 9{,}5\%, Hamilton 10{,}7\%) și pandemia din 2020 (UC \ensuremath{-}8{,}3\%, HP \ensuremath{-}8{,}5\%)
+    \item Toate cele trei metode surprind supraîncălzirea dinainte de 2008 (maxime: UC 7{,}0\% în T3 2008, HP 9{,}5\%, Hamilton 10{,}7\%) și pandemia din 2020 (UC \ensuremath{-}8{,}3\%, HP \ensuremath{-}8{,}5\%)
     \begin{itemize}
         \item corelații: UC--HP 0{,}94, UC--Hamilton 0{,}57, HP--Hamilton 0{,}69
     \end{itemize}
@@ -915,7 +920,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \end{itemize}
     \item Revizuirea medie pătratică din 2004: HP 2{,}8 puncte, UC 1{,}8 puncte; corelația timp real--final: HP 0{,}57, UC 0{,}65
     \begin{itemize}
-        \item problema capătului de eșantion din \refHamHP; modelul UC măcar își raportează propria incertitudine
+        \item problema capătului de eșantion din \refHamHP; modelul UC își raportează cel puțin propria incertitudine
     \end{itemize}
     \item Pentru politica economică în timp real folosiți estimarea filtrată (unilaterală) și eroarea ei standard, niciodată ultimul punct al unui filtru bilateral
 \end{itemize}
@@ -944,7 +949,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \begin{itemize}
         \item abaterea standard săptămînală a șocurilor lui beta 0{,}059; ultimul beta 0{,}43, cu eroarea standard 0{,}29
     \end{itemize}
-    \item Fereastra mobilă sare cînd o singură săptămînă extremă intră sau iese din ea; beta Kalman se mișcă doar atît cît permite verosimilitatea
+    \item Estimarea pe fereastră mobilă se modifică brusc cînd o singură săptămînă extremă intră sau iese din fereastră; beta Kalman se mișcă doar atît cît permite verosimilitatea
 \end{itemize}
 \end{frame}
 
@@ -954,6 +959,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \item \textbf{Model cu factori dinamici}: $y_{it} = \lambda_if_t + u_{it}$, \quad $f_t = \phi_1f_{t-1} + \phi_2f_{t-2} + \eta_t$
     \begin{itemize}
         \item multe serii $y_{1t}, \dots, y_{Nt}$ conduse de un factor comun neobservat $f_t$ (starea), cu încărcările $\lambda_i$
+        \item $u_{it}$: partea seriei $i$ neexplicată de factor; $\phi_1$, $\phi_2$: coeficienții AR ai factorului
         \item \refSW: un indice coincident al activității din SUA, din patru indicatori lunari
     \end{itemize}
     \item \textbf{Nowcasting} \refGRS: estimăm trimestrul curent înainte ca PIB-ul să fie publicat
@@ -1075,7 +1081,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \item Urmărim $\xi_{t|t} = \Pr(S_t = j \mid Y_t)$, \textbf{probabilitățile filtrate}, pentru fiecare regim $j$
     \begin{itemize}
         \item \textbf{predicția}: $\Pr(S_t = j \mid Y_{t-1}) = \sum_i p_{ij}\Pr(S_{t-1} = i \mid Y_{t-1})$
-        \item \textbf{densitățile}: $f_j(y_t) = \phi\bigl((y_t - \mu_j)/\sigma_j\bigr)/\sigma_j$, verosimilitatea lui $y_t$ în fiecare regim
+        \item \textbf{densitățile}: $f_j(y_t) = \phi\bigl((y_t - \mu_j)/\sigma_j\bigr)/\sigma_j$, verosimilitatea lui $y_t$ în fiecare regim; $\phi$: densitatea distribuției Normale standard; $\mu_j$, $\sigma_j$: media și abaterea standard a regimului $j$
         \item \textbf{actualizarea} (Bayes): $\Pr(S_t = j \mid Y_t) = \dfrac{\Pr(S_t = j \mid Y_{t-1})\,f_j(y_t)}{\sum_i\Pr(S_t = i \mid Y_{t-1})\,f_i(y_t)}$
     \end{itemize}
     \item Numitorul este $p(y_t \mid Y_{t-1})$: log-verosimilitatea este $\sum_t\log p(y_t \mid Y_{t-1})$, ca la filtrul Kalman
@@ -1148,7 +1154,7 @@ trimestre de recesiune NBER găsite (prob. netezită $> 0{,}5$) & 94\% & 10\% \\
     \end{itemize}
     \item Concordanța cu NBER: 94\% din trimestre; 62\% din trimestrele de recesiune NBER detectate, 0\% alarme false
     \begin{itemize}
-        \item modelul ratează recesiunile ușoare (2001) și le prinde pe cele profunde
+        \item modelul nu detectează recesiunile ușoare (2001), dar le detectează pe cele profunde
     \end{itemize}
     \item T2 2020 ($\ensuremath{-}8{,}2\%$): probabilitatea 1{,}00, apoi revenire la expansiune; după 2021 probabilitatea nu depășește 0{,}12
 \end{itemize}
@@ -1191,7 +1197,7 @@ trimestre de recesiune NBER găsite (prob. netezită $> 0{,}5$) & 94\% & 10\% \\
     \end{itemize}
     \item \textbf{Includerea anului 2020} în estimare: un regim este doar trimestrul T2 2020 (media \ensuremath{-}8{,}2\%), celălalt durează 315 de trimestre
     \begin{itemize}
-        \item o singură observație extremă poate captura un regim întreg
+        \item o singură observație extremă poate forma singură un regim
     \end{itemize}
     \item Lista de verificări: reprezentați probabilitățile alături de evenimente cunoscute; comparați mai multe valori de pornire și eșantioane; preferați specificația cu un înțeles economic clar
 \end{itemize}
@@ -1247,7 +1253,7 @@ trimestre de recesiune NBER găsite (prob. netezită $> 0{,}5$) & 94\% & 10\% \\
     \begin{itemize}
         \item corelația cu volatilitatea GARCH(1,1): 0{,}68; GARCH: $\hat\alpha = 0{,}26$, $\hat\beta = 0{,}70$
     \end{itemize}
-    \item Două perspective asupra aceleiași grupări: GARCH mișcă volatilitatea continuu, modelul cu regimuri sare între două niveluri
+    \item Două perspective asupra aceleiași grupări: GARCH modifică volatilitatea continuu, modelul cu regimuri trece brusc de la un nivel la altul
 \end{itemize}
 \end{frame}
 
@@ -1281,7 +1287,7 @@ trimestre de recesiune NBER găsite (prob. netezită $> 0{,}5$) & 94\% & 10\% \\
 \begin{frame}{Interpretarea regimurilor simulate}
 \itemsize{\small}
 \begin{itemize}
-    \item Datele: ACF a lui $|r_t|$ 0{,}31 la decalajul 1, 0{,}06 la 26 de săptămîni; modelul cu regimuri: 0{,}21 și 0{,}01; ordinea aleatoare: nimic
+    \item Datele: ACF a lui $|r_t|$ 0{,}31 la lagul 1, 0{,}06 la 26 de săptămîni; modelul cu regimuri: 0{,}21 și 0{,}01; ordinea aleatoare: nimic
     \begin{itemize}
         \item regimurile explică cea mai mare parte a grupării pe termen scurt, mai puțin din coada lungă
     \end{itemize}
@@ -1325,10 +1331,10 @@ trimestre de recesiune NBER găsite (prob. netezită $> 0{,}5$) & 94\% & 10\% \\
 \begin{frame}{Verificări necesare}
 \itemsize{\small}
 \begin{itemize}
-    \item Simulați din parametri cunoscuți și verificați că acel cod îi regăsește (valorile pentru Nil din \refDK\ sînt un test bun)
+    \item Simulați din parametri cunoscuți și verificați că acest cod îi regăsește (valorile pentru Nil din \refDK\ sînt un test bun)
     \item Filtrat sau netezit? Afirmațiile despre timp real cer estimări filtrate; un răspuns AI care folosește \texttt{smoothed} pentru o „prognoză” este greșit
     \item Duratele: $1/(1 - p_{ii})$, nu $p_{ii}/(1 - p_{ii})$; verificați convenția matricei de tranziție (rînduri sau coloane) în bibliotecă
-    \item Markov switching: mai multe valori de pornire, schimbarea etichetelor, valori extreme care capturează un regim
+    \item Markov switching: mai multe valori de pornire, schimbarea etichetelor, valori extreme care formează singure un regim
     \item Filtrul HP la capătul eșantionului: nu interpretați ultima deviație ca o estimare în timp real
     \item Fiecare referință citată: trebuie să existe; verificați DOI-ul
 \end{itemize}

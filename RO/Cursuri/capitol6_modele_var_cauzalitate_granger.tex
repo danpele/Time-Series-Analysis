@@ -106,6 +106,7 @@ MSCA Digital Finance}
 \begin{itemize}\setlength{\itemsep}{0pt}
     \item \textbf{RMSE}: Root Mean Squared Error (rădăcina erorii pătratice medii)
     \item \textbf{ROBOR}: Romanian Interbank Offer Rate (rata dobînzii la care băncile din România oferă depozite interbancare)
+    \item \textbf{RSS}: Residual Sum of Squares (suma pătratelor reziduurilor)
     \item \textbf{SE}: Standard Error (eroare standard)
     \item \textbf{SUA}: Statele Unite ale Americii
     \item \textbf{SVAR}: Structural Vector AutoRegression (model vector autoregresiv structural)
@@ -131,7 +132,7 @@ MSCA Digital Finance}
     \item \textbf{Traseul} capitolului
     \begin{itemize}
         \item de la o serie la mai multe: procese vectoriale și corelații încrucișate; modelul VAR$(p)$ și stabilitatea lui
-        \item estimare, alegerea numărului de decalaje și diagnosticare; cauzalitatea Granger și capcanele ei
+        \item estimare, alegerea numărului de laguri și diagnosticare; cauzalitatea Granger și capcanele ei
         \item funcții de răspuns la impuls, descompunerea varianței, prognoze; ideea VAR-ului structural, Sims (1980)
     \end{itemize}
     \item Pornim de la \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol2_modele_arma.pdf}{Capitolul 2} (modele AR) și de la \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf}{Capitolul 3} (teste de staționaritate); Seminarul 6 are loc înaintea acestui curs
@@ -209,10 +210,11 @@ MSCA Digital Finance}
     \item \textbf{Definiție}: $\bY_t = (Y_{1t}, \dots, Y_{Kt})'$ grupează $K$ serii observate la aceleași date
     \begin{itemize}
         \item exemplu: $\bY_t = (g_t, \pi_t, i_t)'$, creșterea PIB-ului, inflația și ROBOR 3M din trimestrul $t$; $K = 3$
+        \item $Y_{jt}$: valoarea seriei $j$ la data $t$; apostroful $'$ notează transpusa (un vector coloană)
     \end{itemize}
     \item \textbf{Vectorul mediilor}: $\boldsymbol{\mu} = E[\bY_t]$, de dimensiune $K \times 1$
     \begin{itemize}
-        \item \textbf{matricea de autocovarianță} la decalajul $h$: $\bGamma(h) = \Cov(\bY_t, \bY_{t-h}) = E[(\bY_t - \boldsymbol{\mu})(\bY_{t-h} - \boldsymbol{\mu})']$, $K \times K$
+        \item \textbf{matricea de autocovarianță} la lagul $h$: $\bGamma(h) = \Cov(\bY_t, \bY_{t-h}) = E[(\bY_t - \boldsymbol{\mu})(\bY_{t-h} - \boldsymbol{\mu})']$, $K \times K$
         \item diagonala: autocovarianțele fiecărei serii (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf}{Capitolul 1}); în afara diagonalei: \textbf{covarianțele încrucișate} $\gamma_{jk}(h) = \Cov(Y_{jt}, Y_{k,t-h})$
     \end{itemize}
     \item \textbf{Staționaritate slabă}: $\boldsymbol{\mu}$ și $\bGamma(h)$ nu depind de $t$
@@ -228,13 +230,14 @@ MSCA Digital Finance}
     \item \textbf{Definiție}: $\rho_{yx}(k) = \Corr(y_t, x_{t-k}) = \gamma_{yx}(k)/(\sigma_y\sigma_x)$, pentru $k = 0, \pm 1, \pm 2, \dots$
     \begin{itemize}
         \item funcția de corelație încrucișată (CCF): $k > 0$: $x$ din trecut cu $y$ de azi ($x$ precedă); $k < 0$: $y$ precedă
+        \item $\gamma_{yx}(k) = \Cov(y_t, x_{t-k})$: covarianța încrucișată; $\sigma_y$, $\sigma_x$: abaterile standard ale celor două serii
     \end{itemize}
     \item Versiunea de eșantion: $\hat\rho_{yx}(k)$, corelația perechilor $(y_t, x_{t-k})$
     \begin{itemize}
-        \item dacă cele două serii sînt zgomote albe independente, $\hat\rho_{yx}(k) \approx N(0, 1/T)$: benzile $\pm 1{,}96/\sqrt{T}$
+        \item dacă cele două serii sînt zgomote albe independente, $\hat\rho_{yx}(k) \approx N(0, 1/T)$, unde $T$ este numărul de observații: benzile $\pm 1{,}96/\sqrt{T}$
         \item pentru serii autocorelate benzile sînt prea înguste: apar relații false de precedență (comparați cu \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf}{Capitolul 3}, regresia falsă)
     \end{itemize}
-    \item CCF privește o pereche și un decalaj pe rînd; un VAR privește împreună toate variabilele și toate decalajele
+    \item CCF privește o pereche și un lag pe rînd; un VAR privește împreună toate variabilele și toate lagurile
 \end{itemize}
 \end{frame}
 
@@ -245,7 +248,7 @@ MSCA Digital Finance}
 \end{center}
 \vspace{-0.25cm}
 \begin{itemize}
-    \item Stînga: randamente logaritmice zilnice (EODHD), 6\,433 de zile comune de tranzacționare, 2000--2026; bare: $\Corr(\text{DAX}_t, \text{S\&P}_{t-k})$ și $\Corr(\text{BET}_t, \text{S\&P}_{t-k})$. Dreapta: ROBOR 3M trimestrial față de decalajele inflației
+    \item Stînga: randamente logaritmice zilnice (EODHD), 6\,433 de zile comune de tranzacționare, 2000--2026; bare: $\Corr(\text{DAX}_t, \text{S\&P}_{t-k})$ și $\Corr(\text{BET}_t, \text{S\&P}_{t-k})$. Dreapta: ROBOR 3M trimestrial față de lagurile inflației
 \end{itemize}
 \quantlet{TSA\_ch6\_multivariate\_data}{\qlurl{TSA_ch6_multivariate_data}}
 \end{frame}
@@ -380,19 +383,19 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Cîți parametri?}
+\begin{frame}{Numărul de parametri}
 \itemsize{\small}
 \begin{itemize}
     \item Un VAR$(p)$ cu $K$ variabile și termen liber: $K + pK^2$ coeficienți, plus $K(K+1)/2$ în $\bSigma$
     \begin{itemize}
         \item fiecare ecuație are $1 + pK$ regresori
-        \item VAR-ul românesc: $K = 3$, $p = 2$: $3 + 2 \cdot 9 = 21$ coeficienți estimați pe 84 trimestre
+        \item VAR-ul românesc: $K = 3$, $p = 2$: $3 + 2 \cdot 9 = 21$ de coeficienți estimați pe 84 de trimestre
     \end{itemize}
     \item \textbf{Blestemul dimensionalității}: $K = 5$, $p = 4$: $5 + 4 \cdot 25 = 105$ de coeficienți
     \begin{itemize}
         \item cu 25 de ani de date trimestriale (100 de observații) fiecare ecuație are 21 de regresori și 79 de grade de libertate reziduale
     \end{itemize}
-    \item De aici VAR-uri mici (3--6 variabile), puține decalaje și estimări cu erori standard mari; coeficienții individuali se interpretează rar
+    \item De aici VAR-uri mici (3--6 variabile), puține laguri și estimări cu erori standard mari; coeficienții individuali se interpretează rar
 \end{itemize}
 \end{frame}
 
@@ -407,9 +410,9 @@ MSCA Digital Finance}
 \end{column}
 \begin{column}{0.6\textwidth}
 \begin{itemize}
-    \item \refSims: marile modele macroeconomice din anii 1970 impuneau restricții „incredibile” (ce variabile sînt exogene, ce decalaje sînt nule)
+    \item \refSims: marile modele macroeconomice din anii 1970 impuneau restricții „incredibile” (ce variabile sînt exogene, ce laguri sînt nule)
     \begin{itemize}
-        \item propunerea lui: lăsăm datele să vorbească printr-un VAR nerestricționat, apoi adăugăm doar puținele ipoteze necesare pentru interpretarea șocurilor
+        \item propunerea lui: un VAR nerestricționat, care descrie datele fără restricții impuse a priori, completat apoi doar cu ipotezele minime necesare pentru interpretarea șocurilor
     \end{itemize}
     \item VAR-ul a devenit instrumentul standard al băncilor centrale pentru prognoză și pentru măsurarea efectelor politicii monetare
     \item Premiul Nobel 2011, împreună cu Thomas Sargent, „pentru cercetarea empirică a cauzei și efectului în macroeconomie”
@@ -422,7 +425,7 @@ MSCA Digital Finance}
 \itemsize{\small}
 \begin{itemize}
     \item $\bY_t = \bc + \sum_{j=1}^{p}\bA_j\bY_{t-j} + \bepsilon_t$, $\bepsilon_t$ zgomot alb cu covarianța $\bSigma$
-    \item $a_{jk}$: efectul decalajului variabilei $k$ în ecuația variabilei $j$
+    \item $a_{jk}$: efectul lagului variabilei $k$ în ecuația variabilei $j$
     \item $K + pK^2$ coeficienți: păstrăm $K$ și $p$ mici
     \item \refSims: VAR-ul ca alternativă la restricțiile „incredibile”
 \end{itemize}
@@ -443,6 +446,7 @@ MSCA Digital Finance}
     \item \textbf{Condiția de stabilitate}: toate valorile proprii $\lambda$ ale lui $\bA$ au $|\lambda| < 1$
     \begin{itemize}
         \item valorile proprii: rădăcinile ecuației $\det(\bA - \lambda\mathbf{I}) = 0$; pentru $K = 2$: $\lambda^2 - \mathrm{tr}(\bA)\lambda + \det(\bA) = 0$
+        \item $\mathbf{I}$: matricea identitate; $\mathrm{tr}(\bA) = a_{11} + a_{22}$: urma; $\det(\bA) = a_{11}a_{22} - a_{12}a_{21}$: determinantul; $|\lambda|$: modulul (valorile proprii pot fi complexe)
         \item un VAR stabil este slab staționar (dacă a pornit demult); aceasta este versiunea multivariată a condiției $|\phi| < 1$ (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol2_modele_arma.pdf}{Capitolul 2})
     \end{itemize}
     \item \textbf{Exemplu}: $\mathrm{tr}(\bA) = 0{,}9$, $\det(\bA) = 0{,}5 \cdot 0{,}4 - 0{,}2 \cdot 0{,}3 = 0{,}14$: $\lambda^2 - 0{,}9\lambda + 0{,}14 = 0$
@@ -455,7 +459,7 @@ MSCA Digital Finance}
 \begin{frame}{Media și varianța unui VAR(1) stabil}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Media}: aplicăm media, $\boldsymbol{\mu} = \bc + \bA\boldsymbol{\mu}$, deci $\boldsymbol{\mu} = (\mathbf{I} - \bA)^{-1}\bc$
+    \item \textbf{Media}: luăm speranța matematică în ambii membri, $\boldsymbol{\mu} = \bc + \bA\boldsymbol{\mu}$, deci $\boldsymbol{\mu} = (\mathbf{I} - \bA)^{-1}\bc$
     \begin{itemize}
         \item exemplu: $\mathbf{I} - \bA = \begin{pmatrix} 0{,}5 & -0{,}2 \\ -0{,}3 & 0{,}6 \end{pmatrix}$, determinantul 0{,}24; $\boldsymbol{\mu} = \frac{1}{0{,}24}\begin{pmatrix} 0{,}6 & 0{,}2 \\ 0{,}3 & 0{,}5 \end{pmatrix}\begin{pmatrix} 1{,}2 \\ 0{,}6 \end{pmatrix} = \begin{pmatrix} 3{,}50 \\ 2{,}75 \end{pmatrix}$
     \end{itemize}
@@ -474,6 +478,7 @@ MSCA Digital Finance}
     \item Grupăm $p$ vectori consecutivi: $\boldsymbol{\xi}_t = (\bY_t', \bY_{t-1}', \dots, \bY_{t-p+1}')'$, de dimensiune $Kp$
     \begin{itemize}
         \item atunci $\boldsymbol{\xi}_t = \boldsymbol{\nu} + \mathbf{F}\boldsymbol{\xi}_{t-1} + \mathbf{v}_t$: orice VAR$(p)$ este un VAR(1) în $\boldsymbol{\xi}_t$
+        \item $\boldsymbol{\nu}$: $\bc$ urmat de zerouri; $\mathbf{v}_t$: $\bepsilon_t$ urmat de zerouri; $\mathbf{F}$: matricea companion, $Kp \times Kp$
     \end{itemize}
     \item Pentru $p = 2$: $\begin{pmatrix} \bY_t \\ \bY_{t-1} \end{pmatrix} = \begin{pmatrix} \bc \\ \mathbf{0} \end{pmatrix} + \underbrace{\begin{pmatrix} \bA_1 & \bA_2 \\ \mathbf{I}_K & \mathbf{0} \end{pmatrix}}_{\mathbf{F}}\begin{pmatrix} \bY_{t-1} \\ \bY_{t-2} \end{pmatrix} + \begin{pmatrix} \bepsilon_t \\ \mathbf{0} \end{pmatrix}$
     \begin{itemize}
@@ -481,7 +486,7 @@ MSCA Digital Finance}
     \end{itemize}
     \item \textbf{Stabilitatea unui VAR$(p)$}: toate cele $Kp$ valori proprii ale matricei companion $\mathbf{F}$ au modulul sub 1
     \begin{itemize}
-        \item echivalent: toate rădăcinile ecuației $\det(\mathbf{I}_K - \bA_1z - \dots - \bA_pz^p) = 0$ sînt în afara cercului unitate
+        \item echivalent: toate rădăcinile $z$ (numere complexe) ale ecuației $\det(\mathbf{I}_K - \bA_1z - \dots - \bA_pz^p) = 0$ sînt în afara cercului unitate
         \item valorile proprii ale lui $\bA_1$ singure nu spun nimic despre stabilitatea unui VAR(2)
     \end{itemize}
 \end{itemize}
@@ -520,6 +525,7 @@ MSCA Digital Finance}
     \item Un VAR stabil se poate scrie ca o medie mobilă infinită a șocurilor (Wold, \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf}{Capitolul 1}):
     \begin{itemize}
         \item $\bY_t = \boldsymbol{\mu} + \bepsilon_t + \bPhi_1\bepsilon_{t-1} + \bPhi_2\bepsilon_{t-2} + \dots = \boldsymbol{\mu} + \sum_{h=0}^{\infty}\bPhi_h\bepsilon_{t-h}$, $\bPhi_0 = \mathbf{I}$
+        \item $\bPhi_h$: matricea $K \times K$ care ponderează șocul de acum $h$ perioade
     \end{itemize}
     \item VAR(1): $\bPhi_h = \bA^h$; VAR$(p)$: $\bPhi_h = \sum_{j=1}^{\min(h,p)}\bA_j\bPhi_{h-j}$
     \begin{itemize}
@@ -544,7 +550,7 @@ MSCA Digital Finance}
 
 
 %=============================================================================
-\section{Estimare și alegerea numărului de decalaje}
+\section{Estimare și alegerea numărului de laguri}
 %=============================================================================
 
 \begin{frame}{Estimarea prin OLS, ecuație cu ecuație}
@@ -554,12 +560,13 @@ MSCA Digital Finance}
     \begin{itemize}
         \item aceiași $1 + Kp$ regresori în fiecare ecuație; OLS (ordinary least squares, metoda celor mai mici pătrate) pe fiecare ecuație separat
     \end{itemize}
-    \item \textbf{De ce ajunge OLS}: cu regresori identici, estimarea sistemului (GLS pe toate ecuațiile) dă exact estimările OLS
+    \item \textbf{Suficiența OLS}: cu regresori identici, estimarea sistemului (GLS, generalized least squares, metoda celor mai mici pătrate generalizate, pe toate ecuațiile) dă exact estimările OLS
     \begin{itemize}
         \item corelația șocurilor nu îmbunătățește estimările; cu erori Normale, OLS este și estimatorul de verosimilitate maximă
     \end{itemize}
     \item \textbf{Covarianța șocurilor}: $\hat\bSigma = \frac{1}{T - Kp - 1}\sum_t\hat\bepsilon_t\hat\bepsilon_t'$, din reziduurile tuturor ecuațiilor
     \begin{itemize}
+        \item $\hat\bepsilon_t$: vectorul reziduurilor la data $t$; $T - Kp - 1$: gradele de libertate reziduale ale fiecărei ecuații
         \item staționaritatea contează: pentru serii staționare testele $t$ și $F$ obișnuite sînt valide în eșantioane mari
     \end{itemize}
 \end{itemize}
@@ -573,6 +580,7 @@ MSCA Digital Finance}
         \item AIC (Akaike) $= \ln\det\tilde\bSigma(p) + \frac{2}{T}pK^2$ \refAkaike
         \item BIC (Schwarz) $= \ln\det\tilde\bSigma(p) + \frac{\ln T}{T}pK^2$ \refSchwarz
         \item HQ (Hannan--Quinn) $= \ln\det\tilde\bSigma(p) + \frac{2\ln\ln T}{T}pK^2$ \refHQ
+        \item $\det\tilde\bSigma(p)$: o varianță generalizată a reziduurilor; $pK^2$: numărul coeficienților lagurilor; $p_{\max}$: ordinul maxim încercat
     \end{itemize}
     \item Primul termen: calitatea ajustării („volumul” reziduurilor mai mic); al doilea: o penalizare pe coeficient; alegem $p$ cu cea mai mică valoare
     \begin{itemize}
@@ -582,7 +590,7 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{VAR-ul românesc: ce $p$?}
+\begin{frame}{VAR-ul românesc: alegerea lui $p$}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.56\textheight,keepaspectratio]{tsa_ch6_ic.pdf}
@@ -594,7 +602,7 @@ MSCA Digital Finance}
 \quantlet{TSA\_ch6\_estimation\_diagnostics}{\qlurl{TSA_ch6_estimation_diagnostics}}
 \end{frame}
 
-\begin{frame}{Interpretarea alegerii numărului de decalaje}
+\begin{frame}{Interpretarea alegerii numărului de laguri}
 \itemsize{\small}
 \begin{itemize}
     \item BIC alege $p = 1$, HQ $p = 2$, AIC $p = 5$: cele trei criterii nu coincid, cum se întîmplă adesea în eșantioane scurte
@@ -603,7 +611,7 @@ MSCA Digital Finance}
     \end{itemize}
     \item $p = 5$ ar însemna $3 + 5 \cdot 9 = 48$ de coeficienți pentru circa 80 de trimestre
     \begin{itemize}
-        \item alegem $p = 2$ (HQ), apoi verificăm dacă reziduurile sînt zgomot alb; dacă nu, adăugăm decalaje
+        \item alegem $p = 2$ (HQ), apoi verificăm dacă reziduurile sînt zgomot alb; dacă nu, adăugăm laguri
     \end{itemize}
     \item O regulă practică: pornim de la criterii, dar nu ne oprim la ele
 \end{itemize}
@@ -645,11 +653,11 @@ $R^2$ & 0{,}16 & 0{,}90 & 0{,}93 \\
     \begin{itemize}
         \item Creșterea PIB-ului este greu de prognozat: $R^2 = 0{,}16$
     \end{itemize}
-    \item Coeficienții individuali ai unor decalaje corelate sînt instabili (de exemplu $i_{t-1}$ și $i_{t-2}$ cu semne opuse în ecuația lui $g$): interpretăm sistemul prin teste, răspunsuri și prognoze, nu coeficient cu coeficient
+    \item Coeficienții individuali ai unor laguri corelate sînt instabili (de exemplu $i_{t-1}$ și $i_{t-2}$ cu semne opuse în ecuația lui $g$): interpretăm sistemul prin teste, răspunsuri și prognoze, nu coeficient cu coeficient
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Recapitulare: estimare și alegerea numărului de decalaje}
+\begin{frame}{Recapitulare: estimare și alegerea numărului de laguri}
 \itemsize{\small}
 \begin{itemize}
     \item OLS ecuație cu ecuație este eficient: toate ecuațiile au aceiași regresori
@@ -664,19 +672,19 @@ $R^2$ & 0{,}16 & 0{,}90 & 0{,}93 \\
 \section{Diagnosticarea reziduurilor}
 %=============================================================================
 
-\begin{frame}{Sînt reziduurile zgomot alb?}
+\begin{frame}{Verificarea reziduurilor: zgomot alb}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Testul portmanteau multivariat} \refHosking: $H_0$: nicio autocorelație și nicio corelație încrucișată a reziduurilor pînă la decalajul $h$
+    \item \textbf{Testul portmanteau multivariat} \refHosking: $H_0$: nicio autocorelație și nicio corelație încrucișată a reziduurilor pînă la lagul $h$
     \begin{itemize}
-        \item $Q_h = T^2\sum_{j=1}^{h}\frac{1}{T - j}\mathrm{tr}(\hat{\mathbf{C}}_j'\hat{\mathbf{C}}_0^{-1}\hat{\mathbf{C}}_j\hat{\mathbf{C}}_0^{-1})$, $\hat{\mathbf{C}}_j$: matricele de autocovarianță ale reziduurilor
-        \item în ipoteza $H_0$: $\chi^2$ cu $K^2(h - p)$ grade de libertate; testul Ljung--Box multivariat (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol2_modele_arma.pdf}{Capitolul 2})
+        \item $Q_h = T^2\sum_{j=1}^{h}\frac{1}{T - j}\mathrm{tr}(\hat{\mathbf{C}}_j'\hat{\mathbf{C}}_0^{-1}\hat{\mathbf{C}}_j\hat{\mathbf{C}}_0^{-1})$, $\hat{\mathbf{C}}_j = \frac{1}{T}\sum_t\hat\bepsilon_t\hat\bepsilon_{t-j}'$: matricea de autocovarianță a reziduurilor la lagul $j$; $\mathrm{tr}$: urma
+        \item în ipoteza $H_0$: $\chi^2$ cu $K^2(h - p)$ grade de libertate; testul Ljung--Box multivariat (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol2_modele_arma.pdf}{Capitolul 2}); un p-value mic: reziduurile sînt încă autocorelate
     \end{itemize}
     \item \textbf{Normalitatea}: un test Jarque--Bera multivariat \refJB\ pe reziduurile standardizate (asimetrie și boltire)
     \begin{itemize}
         \item normalitatea nu este necesară pentru OLS; contează pentru intervale exacte și pentru eșantioane mici
     \end{itemize}
-    \item Dacă testul portmanteau respinge: adăugăm decalaje, adăugăm o variabilă sau modelăm rupturile și valorile extreme (variabile dummy)
+    \item Dacă testul portmanteau respinge: adăugăm laguri, adăugăm o variabilă sau modelăm rupturile și valorile extreme (variabile dummy)
     \begin{itemize}
         \item verificăm și stabilitatea (valorile proprii) și, pentru eșantioane lungi, stabilitatea parametrilor în timp
     \end{itemize}
@@ -702,9 +710,9 @@ $R^2$ & 0{,}16 & 0{,}90 & 0{,}93 \\
     \begin{itemize}
         \item boltire 6{,}5 ($g$) și 7{,}9 ($i$), față de 3 pentru distribuția Normală: Jarque--Bera 191 (p $<$\,0{,}001)
     \end{itemize}
-    \item Portmanteau: $Q_8 = 76{,}7$ ($54$ grade de libertate, p 0{,}023); $Q_{12} = 105{,}3$ ($90$ grade de libertate, p 0{,}130)
+    \item Portmanteau: $Q_8 = 76{,}7$ ($54$ de grade de libertate, p 0{,}023); $Q_{12} = 105{,}3$ ($90$ de grade de libertate, p 0{,}130)
     \begin{itemize}
-        \item la limită pentru 8 decalaje, acceptabil pentru 12: rămîne o corelație pe termen scurt, în parte din cauza ratelor anuale ale inflației care se suprapun
+        \item la limită pentru 8 laguri, acceptabil pentru 12: rămîne o corelație pe termen scurt, în parte din cauza ratelor anuale ale inflației care se suprapun
     \end{itemize}
     \item Consecință: estimările punctuale pot fi folosite, dar intervalele din secțiunile următoare se bazează pe aproximări pentru eșantioane mari; pentru răspunsuri folosim benzi bootstrap
 \end{itemize}
@@ -715,7 +723,7 @@ $R^2$ & 0{,}16 & 0{,}90 & 0{,}93 \\
 \begin{itemize}
     \item Testul portmanteau: $H_0$ reziduuri zgomot alb, $\chi^2$ cu $K^2(h - p)$ grade de libertate
     \item Normalitatea nu se verifică în datele macroeconomice: crizele produc valori extreme
-    \item Remedii: mai multe decalaje, mai multe variabile, dummy pentru trimestrele de criză
+    \item Remedii: mai multe laguri, mai multe variabile, dummy pentru trimestrele de criză
 \end{itemize}
 \end{frame}
 
@@ -755,19 +763,21 @@ $R^2$ & 0{,}16 & 0{,}90 & 0{,}93 \\
     \item Într-un VAR$(p)$, $x$ nu cauzează în sens Granger pe $y$ dacă toți coeficienții lui $x_{t-1}, \dots, x_{t-p}$ din ecuația lui $y$ sînt zero
     \begin{itemize}
         \item VAR(2) cu două variabile: $H_0$: $a_{12}^{(1)} = a_{12}^{(2)} = 0$ în $y_t = c + a_{11}^{(1)}y_{t-1} + a_{12}^{(1)}x_{t-1} + a_{11}^{(2)}y_{t-2} + a_{12}^{(2)}x_{t-2} + \varepsilon_t$
+        \item $a_{12}^{(j)}$: coeficientul lui $x_{t-j}$ în ecuația lui $y$ (indicele de sus este lagul)
     \end{itemize}
     \item \textbf{Testul $F$}: $F = \dfrac{(RSS_R - RSS_U)/p}{RSS_U/(T - Kp - 1)} \sim F(p, T - Kp - 1)$ în ipoteza $H_0$
     \begin{itemize}
-        \item $RSS_U$: suma pătratelor reziduurilor din ecuația lui $y$; $RSS_R$: aceeași sumă fără decalajele lui $x$
+        \item $RSS_U$: suma pătratelor reziduurilor din ecuația lui $y$; $RSS_R$: aceeași sumă fără lagurile lui $x$
+        \item un $F$ mare (un p-value mic): eliminarea lagurilor lui $x$ crește prea mult RSS, deci respingem $H_0$
     \end{itemize}
     \item \textbf{Testul Wald}: $W = (\mathbf{R}\hat{\boldsymbol{\beta}})'[\mathbf{R}\hat{\mathbf{V}}\mathbf{R}']^{-1}(\mathbf{R}\hat{\boldsymbol{\beta}}) \sim \chi^2(p)$; aici $W = pF$
     \begin{itemize}
-        \item $\mathbf{R}$ selectează coeficienții testați, $\hat{\mathbf{V}}$ este covarianța lor estimată; ambele versiuni cer variabile staționare
+        \item $\hat{\boldsymbol{\beta}}$: coeficienții estimați ai ecuației lui $y$; $\mathbf{R}$ îi selectează pe cei testați; $\hat{\mathbf{V}}$: covarianța estimată a lui $\hat{\boldsymbol{\beta}}$; ambele versiuni cer variabile staționare
     \end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Exemplu rezolvat: cauzează creșterea PIB-ului ROBOR în sens Granger?}
+\begin{frame}{Exemplu rezolvat: este creșterea PIB-ului o cauză Granger pentru ROBOR?}
 \itemsize{\small}
 \begin{itemize}
     \item Ecuația lui $i_t$ din VAR(2) românesc, $T = 84$, $K = 3$, $p = 2$
@@ -776,7 +786,7 @@ $R^2$ & 0{,}16 & 0{,}90 & 0{,}93 \\
     \end{itemize}
     \item $F = \dfrac{(69{,}27 - 58{,}27)/2}{58{,}27/77} = \dfrac{5{,}498}{0{,}7568} = 7{,}26$
     \begin{itemize}
-        \item grade de libertate $(2, 84 - 6 - 1) = (2, 77)$; valoarea critică de 5\%: 3{,}12; valoarea p: 0{,}001
+        \item grade de libertate $(2, 84 - 6 - 1) = (2, 77)$; valoarea critică de 5\%: 3{,}12; p-value-ul: 0{,}001
     \end{itemize}
     \item \textbf{Decizia}: respingem $H_0$: creșterea PIB-ului din trecut ajută la prognoza ROBOR 3M, dat fiind trecutul inflației și al ROBOR
     \begin{itemize}
@@ -819,11 +829,11 @@ ROBOR 3M & inflația & 0{,}89 & 0{,}417 \\
     \begin{itemize}
         \item aceasta nu înseamnă că politica monetară este ineficientă: efectul poate fi lent, mic față de zgomot sau deja anticipat
     \end{itemize}
-    \item ROBOR $\to$ creșterea PIB (p 0{,}022): dobînzile mai mari preced o creștere mai slabă; în VAR-ul cu două variabile (PIB, ROBOR) valoarea p este 0{,}063
+    \item ROBOR $\to$ creșterea PIB (p 0{,}022): dobînzile mai mari preced o creștere mai slabă; în VAR-ul cu două variabile (PIB, ROBOR) p-value-ul este 0{,}063
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Piețe: precedă New York-ul Frankfurtul și Bucureștiul?}
+\begin{frame}{Piețe: New York-ul precedă Frankfurtul și Bucureștiul}
 \itemsize{\footnotesize}
 \begin{columns}[T]
 \begin{column}{0.36\textwidth}
@@ -864,12 +874,12 @@ BET & DAX & 2{,}6 & 0{,}032 \\
     \begin{itemize}
         \item BET nu cauzează S\&P 500 în sens Granger (p 0{,}416)
     \end{itemize}
-    \item Cauza: orele de închidere (tranzacționare nesincronă), nu o piață lentă
+    \item Cauza: orele de închidere (tranzacționare nesincronă), nu o reacție lentă a pieței
     \begin{itemize}
         \item New York tranzacționează și după închiderea Europei; randamentul S\&P „de ieri” s-a produs parțial cînd Europa era închisă
         \item pe date săptămînale efectul este mult mai slab (Seminarul 6, B2)
     \end{itemize}
-    \item Se poate cîștiga din asta? Ați cumpăra la deschiderea Bursei de la București, după ce prețurile s-au ajustat deja: cauzalitatea Granger în prețurile de închidere nu este un profit gratuit
+    \item Regularitatea nu aduce un profit sigur: ați cumpăra la deschiderea Bursei de la București, după ce prețurile s-au ajustat deja; cauzalitatea Granger în prețurile de închidere nu este o sursă de profit fără risc
 \end{itemize}
 \end{frame}
 
@@ -918,7 +928,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
 \begin{frame}{Capcana 2: cauzalitatea instantanee}
 \itemsize{\small}
 \begin{itemize}
-    \item Testele Granger folosesc doar decalaje; efectele din aceeași perioadă sînt ascunse în corelația șocurilor $\bSigma$
+    \item Testele Granger folosesc doar laguri; efectele din aceeași perioadă sînt ascunse în corelația șocurilor $\bSigma$
     \begin{itemize}
         \item \textbf{cauzalitate instantanee} între $x$ și $y$: $\Cov(\varepsilon_{xt}, \varepsilon_{yt}) \ne 0$; testată printr-un test Wald pe elementele din afara diagonalei lui $\bSigma$
     \end{itemize}
@@ -935,7 +945,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
 \begin{itemize}
     \item \textbf{Variabile nestaționare}: pentru serii $I(1)$, testele $F$ și Wald nu au distribuțiile obișnuite \refSSW
     \begin{itemize}
-        \item remedii: testăm pe diferențe (dacă nu există cointegrare) sau abordarea Toda--Yamamoto \refTY: estimăm un VAR$(p + d_{\max})$ în niveluri și testăm doar primele $p$ decalaje
+        \item remedii: testăm pe diferențe (dacă nu există cointegrare) sau abordarea Toda--Yamamoto \refTY: estimăm un VAR$(p + d_{\max})$ în niveluri și testăm doar primele $p$ laguri
         \item seriile cointegrate cer un VECM: \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol7_cointegrare_vecm.pdf}{Capitolul 7}
     \end{itemize}
     \item \textbf{Așteptările}: prețurile orientate spre viitor se mișcă înaintea evenimentelor pe care le anticipează
@@ -949,7 +959,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
 \begin{frame}{Recapitulare: cauzalitatea Granger}
 \itemsize{\small}
 \begin{itemize}
-    \item $x \to y$ (Granger): decalajele lui $x$ îmbunătățesc prognoza lui $y$; test $F$ sau Wald al restricțiilor nule
+    \item $x \to y$ (Granger): lagurile lui $x$ îmbunătățesc prognoza lui $y$; test $F$ sau Wald al restricțiilor nule
     \item România: creșterea PIB și inflația $\to$ ROBOR; piețe: S\&P 500 $\to$ DAX, BET (fusurile orare)
     \item Capcane: variabile omise, efecte instantanee, nestaționaritate, așteptări
     \item Cauzalitatea Granger înseamnă predictibilitate, nu cauzalitate
@@ -961,7 +971,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
 \section{Funcții de răspuns la impuls}
 %=============================================================================
 
-\begin{frame}{Răspunsurile la impuls și de ce le ortogonalizăm}
+\begin{frame}{Răspunsurile la impuls și necesitatea ortogonalizării}
 \itemsize{\small}
 \begin{itemize}
     \item \textbf{Funcția de răspuns la impuls} (IRF): traiectoria lui $Y_{j,t+h}$, $h = 0, 1, 2, \dots$, după un șoc unic în variabila $k$ la momentul $t$
@@ -975,6 +985,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
     \item \textbf{Soluția}: rescriem șocurile ca $\bepsilon_t = \mathbf{P}\mathbf{u}_t$, cu $\mathbf{u}_t$ necorelate, de varianță unitară: $\bSigma = \mathbf{P}\mathbf{P}'$
     \begin{itemize}
         \item \textbf{IRF ortogonalizată}: $\boldsymbol{\Theta}_h = \bPhi_h\mathbf{P}$; elementul $(j, k)$: răspunsul lui $Y_j$ la un șoc $u_k$ de o abatere standard
+        \item $\mathbf{P}$: o matrice $K \times K$ care transformă șocurile necorelate $\mathbf{u}_t$ în șocurile observate $\bepsilon_t$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -1041,7 +1052,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Schimbă ordinea răspunsul?}
+\begin{frame}{Efectul ordinii asupra răspunsurilor}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.52\textheight,keepaspectratio]{tsa_ch6_irf_order.pdf}
@@ -1073,7 +1084,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
 \begin{itemize}
     \item \textbf{IRF generalizată} \refPS\ (după \refKPP): aplicăm variabilei $k$ un șoc de o abatere standard și lăsăm celelalte șocuri să se miște așa cum se mișcă de obicei odată cu ea
     \begin{itemize}
-        \item $\boldsymbol{\psi}_k(h) = \bPhi_h\bSigma\mathbf{e}_k/\sqrt{\sigma_{kk}}$; $\mathbf{e}_k$: coloana $k$ a matricei identitate
+        \item $\boldsymbol{\psi}_k(h) = \bPhi_h\bSigma\mathbf{e}_k/\sqrt{\sigma_{kk}}$; $\mathbf{e}_k$: coloana $k$ a matricei identitate; $\sigma_{kk}$: varianța șocului $k$
     \end{itemize}
     \item Proprietăți
     \begin{itemize}
@@ -1101,13 +1112,13 @@ BET & DAX & 2{,}6 & 0{,}032 \\
 \begin{itemize}
     \item Generalizate: DAX 0{,}85\% în aceeași zi și 0{,}24\% în ziua următoare; BET 0{,}32\% și 0{,}24\%
     \begin{itemize}
-        \item identice cu răspunsurile Cholesky cu S\&P 500 primul, cum spune teoria
+        \item identice cu răspunsurile Cholesky cu S\&P 500 primul, conform teoriei
     \end{itemize}
     \item Cu S\&P 500 ultimul (se închide ultimul), răspunsul din aceeași zi este zero prin ipoteză, iar cele din ziua următoare sînt 0{,}32\% (DAX) și 0{,}20\% (BET)
     \begin{itemize}
         \item corelația din aceeași zi (0{,}63 cu DAX) este atribuită Europei în această ordine
     \end{itemize}
-    \item Oricum, efectul dispare după două zile: piețele absorb rapid știrile
+    \item În ambele variante, efectul dispare după două zile: piețele încorporează rapid informația
 \end{itemize}
 \end{frame}
 
@@ -1135,6 +1146,7 @@ BET & DAX & 2{,}6 & 0{,}032 \\
     \end{itemize}
     \item \textbf{FEVD}: $\omega_{jk}(h) = \dfrac{\sum_{s=0}^{h-1}\theta_{jk,s}^2}{\sum_{s=0}^{h-1}\sum_{m=1}^{K}\theta_{jm,s}^2}$, ponderea șocului $k$ în varianța erorii de prognoză la $h$ pași a lui $Y_j$
     \begin{itemize}
+        \item $\theta_{jk,s}$: elementul $(j, k)$ al lui $\boldsymbol{\Theta}_s$; $\hat\bY_{t+h|t}$: prognoza lui $\bY_{t+h}$ făcută la momentul $t$
         \item fiecare rînd însumează 100\%; depinde de ordinea Cholesky; la $h = 1$ prima variabilă este explicată 100\% de propriul șoc
     \end{itemize}
     \item Exemplu (VAR(1) din secțiunea 2), $h = 2$: varianța erorii pentru $y_2$ este 1{,}37; șocul $u_1$ explică 36{,}5\%
@@ -1242,7 +1254,7 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
 \begin{itemize}
     \item FEVD: ponderea fiecărui șoc ortogonal în varianța erorii de prognoză la $h$ pași; rîndurile însumează 100\%
     \item România: ROBOR este determinat de inflație pe orizonturi lungi; inflația mai ales de propriile șocuri
-    \item Indicele de spillover Diebold--Yilmaz: masa din afara diagonalei a FEVD generalizate
+    \item Indicele de spillover Diebold--Yilmaz: ponderea totală din afara diagonalei a FEVD generalizate
     \item Spillover-ul dintre S\&P 500, DAX și BET atinge maximele în crize (2008, 2020)
 \end{itemize}
 \end{frame}
@@ -1261,7 +1273,7 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
     \end{itemize}
     \item \textbf{Covarianța erorii}: $\bSigma(h) = \sum_{s=0}^{h-1}\bPhi_s\bSigma\bPhi_s'$; crește cu $h$ spre $\bGamma(0)$
     \begin{itemize}
-        \item intervalul de 95\% pentru $Y_j$: $\hat Y_{j,T+h|T} \pm 1{,}96\sqrt{\sigma_{jj}(h)}$ (șocuri Normale; incertitudinea parametrilor este ignorată)
+        \item intervalul de 95\% pentru $Y_j$: $\hat Y_{j,T+h|T} \pm 1{,}96\sqrt{\sigma_{jj}(h)}$, $\sigma_{jj}(h)$: elementul $(j, j)$ al lui $\bSigma(h)$ (șocuri Normale; incertitudinea parametrilor este ignorată)
         \item exemplu (secțiunea 2): $\bSigma(2) = \bSigma + \bA\bSigma\bA'$, cu varianțele 1{,}39 și 1{,}37
     \end{itemize}
     \item Aceeași logică precum prognozele ARMA din \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol2_modele_arma.pdf}{Capitolul 2}, cu matrice în locul numerelor
@@ -1298,7 +1310,7 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
 \begin{frame}{Evaluarea corectă a prognozelor VAR}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Pseudo în afara eșantionului}: reestimăm doar pe datele pînă la $t$, prognozăm $t + h$, avansăm $t$ (fereastră care crește)
+    \item \textbf{Evaluarea pseudo în afara eșantionului} (pseudo out-of-sample): reestimăm doar pe datele pînă la $t$, prognozăm $t + h$, avansăm $t$ (fereastră care crește)
     \begin{itemize}
         \item nu evaluăm niciodată pe datele folosite la estimare (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0})
     \end{itemize}
@@ -1328,13 +1340,13 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
 \begin{frame}{Interpretarea comparației prognozelor}
 \itemsize{\small}
 \begin{itemize}
-    \item România, un trimestru înainte: VAR-ul pierde în fața AR pentru creșterea PIB-ului (0{,}85 față de 0{,}75; DM = 2{,}59, p 0{,}010) și nu este mai bun pentru inflație sau ROBOR
+    \item România, orizontul de un trimestru: VAR-ul este mai puțin precis decît AR pentru creșterea PIB-ului (0{,}85 față de 0{,}75; DM = 2{,}59, p 0{,}010) și nu este mai bun pentru inflație sau ROBOR
     \begin{itemize}
-        \item 21 de coeficienți pe 38--84 de trimestre: zgomotul estimării consumă informația celorlalte variabile
+        \item 21 de coeficienți pe 38--84 de trimestre: erorile de estimare anulează informația adusă de celelalte variabile
     \end{itemize}
-    \item Statele Unite, 8 trimestre înainte: VAR-ul bate AR pentru șomaj (0{,}70 față de 0{,}85) și pentru dobînda federală (0{,}79 față de 0{,}90)
+    \item Statele Unite, orizontul de 8 trimestre: VAR-ul este mai precis decît AR pentru șomaj (0{,}70 față de 0{,}85) și pentru dobînda federală (0{,}79 față de 0{,}90)
     \begin{itemize}
-        \item pentru inflație, nimic nu bate mersul aleator (1{,}22) la acest orizont, în această perioadă
+        \item pentru inflație, niciun model nu este mai precis decît mersul aleator (1{,}22) la acest orizont, în această perioadă
     \end{itemize}
     \item VAR-urile ajută cînd eșantionul este lung și legăturile sînt puternice; în eșantioane scurte și zgomotoase, un AR simplu este greu de depășit
 \end{itemize}
@@ -1359,7 +1371,7 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
 \begin{itemize}
     \item \textbf{VAR structural} (SVAR): $\mathbf{B}_0\bY_t = \mathbf{d} + \mathbf{B}_1\bY_{t-1} + \dots + \mathbf{B}_p\bY_{t-p} + \mathbf{u}_t$, $\mathbf{u}_t$ \textbf{șocuri structurale} necorelate
     \begin{itemize}
-        \item $\mathbf{B}_0$: efectele contemporane (de exemplu, dobînda de politică monetară reacționează la inflația din acest trimestru)
+        \item $\mathbf{d}$: termenii liberi; $\mathbf{B}_1, \dots, \mathbf{B}_p$: coeficienții structurali ai lagurilor; $\mathbf{B}_0$: efectele contemporane (de exemplu, dobînda de politică monetară reacționează la inflația din acest trimestru)
         \item înmulțind cu $\mathbf{B}_0^{-1}$ obținem forma redusă, cu $\bepsilon_t = \mathbf{B}_0^{-1}\mathbf{u}_t$
     \end{itemize}
     \item \textbf{Identificarea}: $\bSigma$ are $K(K+1)/2$ elemente distincte, $\mathbf{B}_0^{-1}$ are $K^2$; avem nevoie de $K(K-1)/2$ restricții
@@ -1384,7 +1396,7 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
 \begin{itemize}
     \item \refSW: „Vector autoregressions”, o sinteză a metodei, folosită pe scară largă
     \begin{itemize}
-        \item trei variabile: inflația (indicele de preț al PIB, $\pi_t = 400\ln(P_t/P_{t-1})$), șomajul, dobînda federală
+        \item trei variabile: inflația ($\pi_t = 400\ln(P_t/P_{t-1})$, $P_t$: indicele de preț al PIB; factorul 400 anualizează, în \%), șomajul, dobînda federală
         \item trimestrial, T1 1960--T4 2000, VAR(4), ordinea Cholesky $\pi, u, R$
     \end{itemize}
     \item Patru sarcini: descrierea datelor, prognoza, inferența structurală, analiza politicilor
@@ -1486,7 +1498,7 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
 \begin{frame}{Verificări necesare}
 \itemsize{\small}
 \begin{itemize}
-    \item Datele calendaristice: serii aliniate pe aceleași trimestre, fără valori completate înainte sau suprapuse care creează precedențe false
+    \item Datele calendaristice: serii aliniate pe aceleași trimestre, fără valori propagate înainte (forward fill) sau suprapuse, care creează precedențe false
     \item Staționaritatea fiecărei variabile (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf}{Capitolul 3}) înaintea testelor Granger; pentru variabile $I(1)$: diferențe, Toda--Yamamoto sau un VECM
     \item Stabilitatea din matricea companion, nu doar din $\bA_1$
     \item Ordinea Cholesky folosită și justificarea ei; aceleași rezultate cu altă ordine sau cu răspunsuri generalizate
@@ -1503,12 +1515,12 @@ BET & 7{,}2 & 7{,}5 & 85{,}3 & 14{,}7 \\
 \begin{frame}{Idei de reținut}
 \itemsize{\small}
 \begin{itemize}
-    \item Un VAR$(p)$ regresează fiecare variabilă pe trecutul tuturor; OLS ecuație cu ecuație; puține variabile și decalaje
+    \item Un VAR$(p)$ regresează fiecare variabilă pe trecutul tuturor; OLS ecuație cu ecuație; puține variabile și laguri
     \item Stabilitatea: toate valorile proprii ale matricei companion în interiorul cercului unitate; atunci există o medie și o formă de medie mobilă
     \item Alegem $p$ cu AIC, BIC, HQ, apoi verificăm reziduurile cu testul portmanteau
     \item Cauzalitatea Granger = predictibilitate suplimentară, relativă la variabilele alese
     \item IRF și FEVD cer șocuri ortogonale: ordinea Cholesky este o ipoteză de identificare
-    \item Prognozele VAR trebuie să bată în afara eșantionului metodele AR și mersul aleator; adesea nu reușesc
+    \item Prognozele VAR trebuie să fie mai precise, în afara eșantionului, decît modelele AR și mersul aleator; adesea nu sînt
 \end{itemize}
 \end{frame}
 
@@ -1543,7 +1555,7 @@ Eroarea de prognoză & $\bSigma(h) = \sum_{s=0}^{h-1}\bPhi_s\bSigma\bPhi_s'$ \\
     \end{itemize}
     \item \textbf{Întrebare}: un test Granger dă p = 0,30 pentru $x \to y$. Nu are $x$ niciun efect asupra lui $y$?
     \begin{itemize}
-        \item \textbf{Răspuns}: nu putem concluziona asta: decalajele lui $x$ nu îmbunătățesc prognoza; rămîn posibile efecte în aceeași perioadă, efecte lente sau o putere mică a testului
+        \item \textbf{Răspuns}: nu putem concluziona asta: lagurile lui $x$ nu îmbunătățesc prognoza; rămîn posibile efecte în aceeași perioadă, efecte lente sau o putere mică a testului
     \end{itemize}
     \item \textbf{Întrebare}: într-o FEVD Cholesky, ce pondere din varianța erorii la un pas a primei variabile provine din propriul șoc?
     \begin{itemize}

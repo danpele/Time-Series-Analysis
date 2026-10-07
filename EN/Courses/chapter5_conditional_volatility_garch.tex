@@ -283,11 +283,13 @@ Bitcoin & 4\,384 & $3.49$ & $-0.70$ & $15.0$ & $-0.02$ & $0.14$ & 20 & 213 & 115
     \item \textbf{ARCH effects}: the conditional variance depends on the past (the name comes from the ARCH model, Section 3)
     \item \textbf{Ljung--Box on squares} (the McLeod--Li test \refML): $Q(m) = T(T+2)\sum_{k=1}^{m}\hat\rho_k^2(\hat\varepsilon^2)/(T-k)$
     \begin{itemize}
+        \item $\hat\rho_k(\hat\varepsilon^2)$: the sample autocorrelation of the squared residuals at lag $k$; $m$: the number of lags
         \item $\hat\varepsilon_t$: residuals of the mean model (for returns, $r_t - \bar r$); under $H_0$ (no ARCH effects), $Q(m) \sim \chi^2(m)$
     \end{itemize}
     \item \textbf{ARCH-LM test} \refEngle: LM (Lagrange multiplier) test from the auxiliary regression
     \begin{itemize}
         \item $\hat\varepsilon_t^2 = b_0 + b_1\hat\varepsilon_{t-1}^2 + \dots + b_q\hat\varepsilon_{t-q}^2 + u_t$, estimated by OLS (ordinary least squares)
+        \item $b_0, \dots, b_q$: the coefficients; $q$: the number of lagged squares; $R^2$: the coefficient of determination of this regression
         \item $H_0$: $b_1 = \dots = b_q = 0$; $\mathrm{LM} = n R^2 \sim \chi^2(q)$, $n$ = number of observations in the regression
     \end{itemize}
     \item Both tests are run on the residuals of the mean model, before and after fitting a volatility model
@@ -453,6 +455,7 @@ Bitcoin & 4\,384 & $3.49$ & $-0.70$ & $15.0$ & $-0.02$ & $0.14$ & 20 & 213 & 115
 \begin{itemize}
     \item $\varepsilon_t = \sigma_t z_t$, \quad $\sigma_t^2 = \omega + \alpha\,\varepsilon_{t-1}^2$, \quad $\omega > 0$, $\alpha \ge 0$
     \begin{itemize}
+        \item $\omega$: the minimum level of the variance; $\alpha$: how strongly the variance reacts to yesterday's squared shock
         \item $\omega > 0$ and $\alpha \ge 0$ keep the variance positive
         \item a large shock yesterday, of either sign, raises today's variance
     \end{itemize}
@@ -520,7 +523,7 @@ GARCH(1,1) & 4 & $-9218.0$ & \textbf{18444.0} & \textbf{18471.2} & $0.980$ \\
 \end{tabular}
 \end{center}
 \begin{itemize}
-    \item AIC (Akaike) and BIC (Bayesian information criterion): $-2\ell + $ penalty for parameters (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter2_arma_models.pdf}{Chapter 2}); smaller is better
+    \item AIC (Akaike) and BIC (Bayesian information criterion): $-2\ell + $ penalty for parameters (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter2_arma_models.pdf}{Chapter 2}), $\ell$: the maximised log-likelihood; smaller is better
     \item Interpretation: ARCH needs ten lags and still loses to GARCH(1,1), which has four parameters: the motivation for GARCH
 \end{itemize}\quantlet{TSA\_ch5\_garch\_estimation}{\qlurl{TSA_ch5_garch_estimation}}
 \end{frame}
@@ -606,6 +609,7 @@ GARCH(1,1) & 4 & $-9218.0$ & \textbf{18444.0} & \textbf{18471.2} & $0.980$ \\
     \end{itemize}
     \item A deviation from $\bar\sigma^2$ shrinks by the factor $\alpha + \beta$ each day (Section 9): $E_t[\sigma_{t+h}^2] - \bar\sigma^2 = (\alpha + \beta)^{h-1}(\sigma_{t+1}^2 - \bar\sigma^2)$
     \begin{itemize}
+        \item $E_t[\cdot]$: the expectation given the information of day $t$; $\sigma_{t+1}^2$: tomorrow's variance, already known at $t$
         \item \textbf{half-life}: the number of days after which half of a variance shock is gone, $h_{1/2} = \ln 0.5/\ln(\alpha + \beta)$
         \item $\alpha + \beta = 0.90$: 6.6 days; $0.98$: 34.3 days; $0.99$: 69.0 days: small changes near 1 matter a lot
     \end{itemize}
@@ -638,6 +642,7 @@ GARCH(1,1) & 4 & $-9218.0$ & \textbf{18444.0} & \textbf{18471.2} & $0.980$ \\
     \end{itemize}
     \item \textbf{EWMA} (exponentially weighted moving average) of \refRM: $\sigma_t^2 = \lambda\sigma_{t-1}^2 + (1 - \lambda)r_{t-1}^2$
     \begin{itemize}
+        \item $\lambda \in (0, 1)$: the weight of yesterday's variance; $1 - \lambda$: the weight of yesterday's squared return
         \item simple exponential smoothing (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter0_introduction.pdf}{Chapter 0}) applied to $r_t^2$, with smoothing constant $1 - \lambda$
         \item an IGARCH with $\omega = 0$, $\alpha = 1 - \lambda$, $\beta = \lambda$; RiskMetrics uses $\lambda = 0.94$ for daily data (half-life of the weights 11.2 days)
     \end{itemize}
@@ -809,7 +814,7 @@ skewed t & $0.0153$ & $0.120$ & $0.872$ & $6.92$ & $-0.114$ & $-9038.4$ & $0.993
 \end{tabular}
 \end{center}
 \begin{itemize}
-    \item LR statistic $2(\ell_1 - \ell_0)$: t against Normal $311.0$ (1 restriction, $\chi^2_{0.95}(1) = 3.84$); skewed t against t $48.1$: both reject the smaller model
+    \item LR statistic $2(\ell_1 - \ell_0)$, $\ell_1$ and $\ell_0$: the log-likelihoods of the larger and of the smaller model: t against Normal $311.0$ (1 restriction, $\chi^2_{0.95}(1) = 3.84$); skewed t against t $48.1$: both reject the smaller model
     \item $\hat\nu = 6.26$: tails far heavier than Normal; $\hat\lambda = -0.114$: large falls more frequent than large rises
     \item Interpretation: $\alpha$ and $\beta$ hardly change; the innovation distribution matters for tail quantiles (VaR), less for $\sigma_t$
 \end{itemize}\quantlet{TSA\_ch5\_garch\_estimation}{\qlurl{TSA_ch5_garch_estimation}}
@@ -1029,6 +1034,7 @@ Bitcoin & 0 & $-0.022$ ($0.015$) & $-0.043$ ($0.014$) & $29.9$ ($<$\,0.001) & $4
     \end{itemize}
     \item \textbf{EGARCH} (exponential GARCH) \refNelson: $\ln\sigma_t^2 = \omega + \alpha\big(|z_{t-1}| - E|z_{t-1}|\big) + \gamma z_{t-1} + \beta\ln\sigma_{t-1}^2$
     \begin{itemize}
+        \item $z_{t-1}$: yesterday's standardised shock; $E|z_{t-1}|$: its mean absolute value ($\sqrt{2/\pi}$ for the Normal distribution); $\alpha$: size effect; $\gamma$: sign effect
         \item the logarithm keeps $\sigma_t^2 > 0$ without sign restrictions; leverage effect: $\gamma < 0$; persistence: $\beta$
     \end{itemize}
     \item Both have one parameter more than GARCH(1,1); test $\gamma = 0$ with its $t$ statistic or with an LR test, $\chi^2(1)$
@@ -1338,7 +1344,8 @@ Bitcoin & 4\,279 & $3.383$ & $3.401$ & $3.390$ & ${-0.20}$ (0.845) \\
     \end{itemize}
     \item With $r_{t+1} = \mu + \sigma_{t+1}z_{t+1}$: $\mathrm{VaR}_{t+1} = -(\mu + \sigma_{t+1}\,q_\alpha(z))$
     \begin{itemize}
-        \item Normal: $q_{0.01} = -2.326$; standardised t: $q_{0.01} = t_\nu^{-1}(0.01)\sqrt{(\nu - 2)/\nu}$
+        \item $q_\alpha(z)$: the $\alpha$-quantile of the innovation $z$; Normal: $q_{0.01} = -2.326$
+        \item standardised t: $q_{0.01} = t_\nu^{-1}(0.01)\sqrt{(\nu - 2)/\nu}$, $t_\nu^{-1}$: the quantile function of the Student distribution with $\nu$ degrees of freedom
         \item the VaR moves every day with $\sigma_{t+1}$: high in storms, low in calm periods
     \end{itemize}
     \item \textbf{Worked example}: S\&P 500 on 18 September 2026, GARCH(1,1)-t: $\hat\mu = 0.079$, $\sigma_{t+1} = 0.714$, $\hat\nu = 6.26$

@@ -50,7 +50,7 @@ window.TSA_DATA.quizzes['mgarch'] = {
                 "incorrectExplanation": "The values 1.5, $-1$ and 0 all satisfy $h_{12}^2 < 4$, i.e. a correlation between $-1$ and 1. Only $h_{12} = 2.5$ violates the condition."
             },
             "ro": {
-                "title": "Pozitiv definirea",
+                "title": "Caracterul pozitiv definit",
                 "text": "O matrice de covarianță condiționată $2 \\times 2$ are $h_{11} = 4$ și $h_{22} = 1$. Pentru ce valoare a lui $h_{12}$ NU este pozitiv definită?",
                 "options": [
                     "$h_{12} = 1{,}5$",
@@ -58,7 +58,7 @@ window.TSA_DATA.quizzes['mgarch'] = {
                     "$h_{12} = 0$",
                     "$h_{12} = 2{,}5$"
                 ],
-                "correctExplanation": "Pozitiv definirea cere $h_{11}h_{22} - h_{12}^2 > 0$, adică $|h_{12}| < 2$. Cu $h_{12} = 2{,}5$ corelația implicită ar fi $2{,}5/2 = 1{,}25$, ceea ce este imposibil.",
+                "correctExplanation": "Caracterul pozitiv definit cere $h_{11}h_{22} - h_{12}^2 > 0$, adică $|h_{12}| < 2$. Cu $h_{12} = 2{,}5$ corelația implicită ar fi $2{,}5/2 = 1{,}25$, ceea ce este imposibil.",
                 "incorrectExplanation": "Valorile 1,5, $-1$ și 0 respectă toate $h_{12}^2 < 4$, adică o corelație între $-1$ și 1. Doar $h_{12} = 2{,}5$ încalcă condiția."
             }
         },
@@ -140,7 +140,7 @@ window.TSA_DATA.quizzes['mgarch'] = {
                     "Nu are nevoie de șocurile trecute"
                 ],
                 "correctExplanation": "Fiecare termen din $\\mathbf{H}_t = \\mathbf{C}\\mathbf{C}^\\top + \\mathbf{A}^\\top\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top\\mathbf{A} + \\mathbf{B}^\\top\\mathbf{H}_{t-1}\\mathbf{B}$ este o formă pătratică, deci $\\mathbf{H}_t$ este pozitiv definită fără restricții suplimentare.",
-                "incorrectExplanation": "BEKK are tot mulți parametri, corelațiile lui se mișcă în timp și folosește șocurile trecute prin $\\mathbf{A}$. Avantajul lui este pozitiv definirea prin construcție."
+                "incorrectExplanation": "BEKK are tot mulți parametri, corelațiile lui se mișcă în timp și folosește șocurile trecute prin $\\mathbf{A}$. Avantajul lui este caracterul pozitiv definit prin construcție."
             }
         },
         {
@@ -188,7 +188,7 @@ window.TSA_DATA.quizzes['mgarch'] = {
                 "title": "BEKK diagonal",
                 "text": "Ce pierde un model BEKK diagonal față de un BEKK complet?",
                 "options": [
-                    "Pozitiv definirea lui $\\mathbf{H}_t$",
+                    "Caracterul pozitiv definit al lui $\\mathbf{H}_t$",
                     "Covarianțele variabile în timp",
                     "Dinamica GARCH a fiecărei varianțe",
                     "Transmiterea volatilității între active"
@@ -437,7 +437,7 @@ window.TSA_DATA.quizzes['mgarch'] = {
                     "Face corelația negativă prin construcție"
                 ],
                 "correctExplanation": "Știrile care apar după închiderea de la București intră în BET abia a doua zi, deci aceeași știre cade în zile diferite: corelația din aceeași zi este subestimată; randamentele săptămînale reduc problema.",
-                "incorrectExplanation": "Decalajul împarte știrile comune pe două zile, ceea ce slăbește mișcarea comună din aceeași zi; nu o mărește și nu o face negativă prin construcție."
+                "incorrectExplanation": "Diferența dintre orele de închidere împarte știrile comune pe două zile, ceea ce slăbește mișcarea comună din aceeași zi; nu o mărește și nu o face negativă prin construcție."
             }
         },
         {

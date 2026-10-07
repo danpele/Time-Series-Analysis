@@ -199,7 +199,7 @@ MSCA Digital Finance}
 \end{center}
 \vspace{-0.25cm}
 \begin{itemize}
-    \item Simulated series, $T = 120$: $x_t = 2\cos(2\pi t/12) + \cos(2\pi t/4 + 1) + \varepsilon_t$, $\varepsilon_t \sim N(0, 0.49)$; right: its periodogram (defined in Section 3)
+    \item Simulated series, $T = 120$: $x_t = 2\cos(2\pi t/12) + \cos(2\pi t/4 + 1) + \varepsilon_t$, $\varepsilon_t \sim N(0, 0.49)$ (Normal white noise with variance 0.49); right: its periodogram (defined in Section 3)
 \end{itemize}
 \quantlet{TSA\_ch12\_fourier}{\qlurl{TSA_ch12_fourier}}
 \end{frame}
@@ -219,21 +219,39 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Fourier frequencies and the discrete Fourier transform}
+\begin{frame}{Fourier frequencies and the discrete Fourier transform (1/2)}
 \itemsize{\small}
 \begin{itemize}
     \item For a sample $x_1, \ldots, x_T$, the \textbf{Fourier frequencies} are $\nu_j = j/T$, $j = 0, 1, \ldots, \lfloor T/2 \rfloor$
     \begin{itemize}
-        \item cycles that fit an integer number of times ($j$ times) in the sample
+        \item cycles that fit an integer number of times ($j$ times) in the sample; $\lfloor T/2 \rfloor$: the integer part of $T/2$
     \end{itemize}
-    \item \textbf{Discrete Fourier transform} (DFT): $d(\nu_j) = T^{-1/2}\sum_{t=1}^{T} x_t\, e^{-2\pi i \nu_j t}$
+    \item The \textbf{discrete Fourier transform} (DFT) measures how strongly the series moves with a cycle of frequency $\nu_j$
     \begin{itemize}
-        \item $e^{-i\theta} = \cos\theta - i\sin\theta$: the DFT correlates the series with a cosine and a sine of frequency $\nu_j$
-        \item the $T$ values $d(\nu_j)$ contain exactly the same information as the $T$ data points
+        \item $d(\nu_j) = T^{-1/2}\sum_{t=1}^{T} x_t\, e^{-2\pi i \nu_j t}$
+        \item $i$: the imaginary unit, $i^2 = -1$; $e^{-i\theta} = \cos\theta - i\sin\theta$ (Euler's formula)
+        \item so the DFT correlates the series with a cosine (real part) and a sine (imaginary part) of frequency $\nu_j$
     \end{itemize}
-    \item \textbf{Parseval}: $\sum_{t=1}^{T}(x_t - \bar x)^2 = \sum_{j=1}^{T-1}|d(\nu_j)|^2$: the variance is split over frequencies
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fourier frequencies and the discrete Fourier transform (2/2)}
+\itemsize{\small}
+\begin{itemize}
+    \item The $T$ values $d(\nu_j)$ contain exactly the same information as the $T$ data points
     \begin{itemize}
-        \item the \textbf{fast Fourier transform} (FFT) of \refCT\ computes all $d(\nu_j)$ in $O(T\log T)$ operations instead of $O(T^2)$
+        \item the data can be recovered from them by the inverse transform
+    \end{itemize}
+    \item \textbf{Parseval}
+    \begin{itemize}
+        \item the sum of squared deviations equals the sum of the squared moduli of the DFT
+        \item $\sum_{t=1}^{T}(x_t - \bar x)^2 = \sum_{j=1}^{T-1}|d(\nu_j)|^2$
+        \item $\bar x$: the sample mean; $|d|^2 = (\mathrm{Re}\,d)^2 + (\mathrm{Im}\,d)^2$: the squared modulus of a complex number
+        \item reading: the variance of the series is split over the frequencies
+    \end{itemize}
+    \item The \textbf{fast Fourier transform} (FFT) of \refCT\ computes all $d(\nu_j)$ quickly
+    \begin{itemize}
+        \item $O(T\log T)$ operations instead of $O(T^2)$: the number of operations grows like $T\log T$ instead of $T^2$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -300,15 +318,17 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{From autocovariances to the spectrum}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item For a stationary series with autocovariances $\gamma(h)$, $\sum_h|\gamma(h)| < \infty$, the \textbf{spectral density} is
     \begin{itemize}
         \item $f(\nu) = \sum_{h=-\infty}^{\infty}\gamma(h)e^{-2\pi i\nu h} = \gamma(0) + 2\sum_{h=1}^{\infty}\gamma(h)\cos(2\pi\nu h)$, $-1/2 \le \nu \le 1/2$
+        \item $\gamma(h) = \mathrm{Cov}(x_t, x_{t+h})$: the autocovariance at lag $h$; $\sum_h|\gamma(h)| < \infty$: the autocovariances die out fast enough (short memory)
+        \item in words: $f(\nu)$ is a weighted sum of the autocovariances, with weights $\cos(2\pi\nu h)$ that oscillate at frequency $\nu$
     \end{itemize}
     \item The inverse relation: $\gamma(h) = \int_{-1/2}^{1/2} f(\nu)e^{2\pi i\nu h}\,d\nu$
     \begin{itemize}
-        \item the pair $\gamma \leftrightarrow f$ is the \textbf{Wiener--Khinchin} theorem: the ACF and the spectrum carry the same information
+        \item the pair $\gamma \leftrightarrow f$ is the \textbf{Wiener--Khinchin} theorem: the autocovariances and the spectrum carry the same information
         \item for $h = 0$: $\mathrm{Var}(x_t) = \gamma(0) = \int_{-1/2}^{1/2} f(\nu)\,d\nu$: the area under $f$ is the variance
     \end{itemize}
     \item Properties: $f(\nu) \ge 0$, $f(-\nu) = f(\nu)$; it is enough to draw $f$ on $[0, 1/2]$
@@ -321,22 +341,41 @@ MSCA Digital Finance}
 \begin{frame}{White noise, AR(1) and MA(1)}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{White noise}, variance $\sigma^2$: $\gamma(h) = 0$ for $h \ne 0$, so $f(\nu) = \sigma^2$ for every $\nu$
+    \item \textbf{White noise} $w_t$, variance $\sigma^2$
     \begin{itemize}
+        \item $\gamma(h) = 0$ for $h \ne 0$, so $f(\nu) = \sigma^2$ for every $\nu$
         \item a flat spectrum: all frequencies contribute equally, like white light
     \end{itemize}
-    \item \textbf{AR(1)} $x_t = \phi x_{t-1} + w_t$: $f(\nu) = \dfrac{\sigma^2}{1 - 2\phi\cos(2\pi\nu) + \phi^2}$
+    \item \textbf{AR(1)} $x_t = \phi x_{t-1} + w_t$, $|\phi| < 1$
     \begin{itemize}
+        \item $f(\nu) = \dfrac{\sigma^2}{1 - 2\phi\cos(2\pi\nu) + \phi^2}$
+        \item $\phi$: the autoregressive coefficient; $w_t$: white noise with variance $\sigma^2$
         \item $\phi > 0$: power at low frequencies (smooth, persistent series); $\phi < 0$: power at high frequencies (a zig-zag series)
     \end{itemize}
-    \item \textbf{MA(1)} $x_t = w_t + \theta w_{t-1}$: $f(\nu) = \sigma^2\,[1 + 2\theta\cos(2\pi\nu) + \theta^2]$
+    \item \textbf{MA(1)} $x_t = w_t + \theta w_{t-1}$
     \begin{itemize}
+        \item $f(\nu) = \sigma^2\,[1 + 2\theta\cos(2\pi\nu) + \theta^2]$
+        \item $\theta$: the moving-average coefficient; $\theta > 0$ puts power at low frequencies, $\theta < 0$ at high frequencies
         \item directly from the definition: $\gamma(0) = \sigma^2(1 + \theta^2)$, $\gamma(1) = \sigma^2\theta$, so $f = \gamma(0) + 2\gamma(1)\cos(2\pi\nu)$
     \end{itemize}
-    \item \textbf{ARMA}$(p,q)$, $\phi(L)x_t = \theta(L)w_t$: $f(\nu) = \sigma^2\dfrac{|\theta(e^{-2\pi i\nu})|^2}{|\phi(e^{-2\pi i\nu})|^2}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The spectrum of an ARMA model}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{ARMA}$(p,q)$
     \begin{itemize}
-        \item a ratio of two polynomials in $\cos(2\pi\nu)$: smooth and easy to compute (\refBDtm, Sec.~4.4)
+        \item $\phi(L)x_t = \theta(L)w_t$
+        \item $L$: the lag operator, $Lx_t = x_{t-1}$
+        \item $\phi(z) = 1 - \phi_1 z - \cdots - \phi_p z^p$ and $\theta(z) = 1 + \theta_1 z + \cdots + \theta_q z^q$: the AR and MA polynomials
     \end{itemize}
+    \item Spectral density: the two polynomials evaluated at $z = e^{-2\pi i\nu}$
+    \begin{itemize}
+        \item $f(\nu) = \sigma^2\dfrac{|\theta(e^{-2\pi i\nu})|^2}{|\phi(e^{-2\pi i\nu})|^2}$
+        \item the MA part (numerator) adds power where $|\theta|$ is large; the AR part (denominator) adds power where $|\phi|$ is small
+    \end{itemize}
+    \item A ratio of two polynomials in $\cos(2\pi\nu)$: smooth and easy to compute (\refBDtm, Sec.~4.4)
 \end{itemize}
 \end{frame}
 
@@ -363,13 +402,15 @@ MSCA Digital Finance}
 \begin{frame}{AR(2) and pseudo-cycles}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{AR(2)} $x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t$: $f(\nu) = \dfrac{\sigma^2}{|1 - \phi_1 e^{-2\pi i\nu} - \phi_2 e^{-4\pi i\nu}|^2}$
+    \item \textbf{AR(2)} $x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t$
     \begin{itemize}
+        \item $f(\nu) = \dfrac{\sigma^2}{|1 - \phi_1 e^{-2\pi i\nu} - \phi_2 e^{-4\pi i\nu}|^2}$
         \item with complex roots ($\phi_1^2 + 4\phi_2 < 0$) the ACF is a damped wave and the spectrum has a peak inside $(0, 1/2)$
-        \item the peak is at $\cos(2\pi\nu^*) = \phi_1(\phi_2 - 1)/(4\phi_2)$, when the right-hand side lies in $[-1, 1]$
+        \item the peak is at the frequency $\nu^*$ given by $\cos(2\pi\nu^*) = \phi_1(\phi_2 - 1)/(4\phi_2)$, when the right-hand side lies in $[-1, 1]$
     \end{itemize}
-    \item A \textbf{pseudo-cycle}: an irregular cycle whose length and amplitude vary from one round to the next
+    \item A \textbf{pseudo-cycle}
     \begin{itemize}
+        \item an irregular cycle whose length and amplitude vary from one round to the next
         \item \refYule\ fitted an AR(2) to Wolfer's sunspot numbers: the first autoregressive model, an alternative to fixed sine waves
     \end{itemize}
     \item Business cycles are pseudo-cycles of this kind: recurrent, but never with the same length (Section 5)
@@ -462,8 +503,9 @@ MSCA Digital Finance}
 \begin{frame}{The periodogram}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Periodogram}: $I(\nu_j) = |d(\nu_j)|^2$ at the Fourier frequencies $\nu_j = j/T$ (after removing the mean)
+    \item \textbf{Periodogram}
     \begin{itemize}
+        \item $I(\nu_j) = |d(\nu_j)|^2$ at the Fourier frequencies $\nu_j = j/T$ (after removing the mean)
         \item equivalently $I(\nu_j) = \sum_{|h| < T}\hat\gamma(h)e^{-2\pi i\nu_j h}$: the spectral formula with the sample autocovariances $\hat\gamma(h)$
     \end{itemize}
     \item Regression view: regress $x_t$ on $\cos(2\pi\nu_j t)$ and $\sin(2\pi\nu_j t)$ by OLS, with coefficients $a_j, b_j$
@@ -506,15 +548,17 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Statistical properties of the periodogram}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item For large $T$, at a Fourier frequency $0 < \nu_j < 1/2$ (\refBDtm, Sec.~10.3; \refSS, Sec.~4.3):
     \begin{itemize}
         \item $\dfrac{2I(\nu_j)}{f(\nu_j)} \approx \chi^2_2$: so $E[I(\nu_j)] \approx f(\nu_j)$ (unbiased) and $\mathrm{Var}[I(\nu_j)] \approx f(\nu_j)^2$
+        \item $\chi^2_2$: the chi-square distribution with 2 degrees of freedom (mean 2, variance 4); $f(\nu_j)$: the true spectral density
         \item ordinates at different Fourier frequencies are approximately independent
     \end{itemize}
-    \item The variance does \textbf{not} shrink when $T$ grows: the periodogram is \textbf{not a consistent} estimator of $f$
+    \item The variance does \textbf{not} shrink when $T$ grows
     \begin{itemize}
+        \item the periodogram is \textbf{not a consistent} estimator of $f$
         \item a larger $T$ gives more ordinates (a finer grid), not more precise ones
     \end{itemize}
     \item $\chi^2_2/2$ is an exponential distribution with mean 1: a single ordinate can easily be 3 times the true value
@@ -551,20 +595,44 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Fisher's test of a hidden periodicity}
+\begin{frame}{Fisher's test of a hidden periodicity (1/2)}
 \itemsize{\small}
 \begin{itemize}
-    \item $H_0$: Gaussian white noise; $H_1$: white noise plus one cycle at an unknown Fourier frequency
+    \item Hypotheses
     \begin{itemize}
-        \item statistic of \refFisher: $g = \max_j I(\nu_j)\,/\,\sum_{j=1}^{m} I(\nu_j)$, with $m$ ordinates in $(0, 1/2)$
-        \item under $H_0$ each ordinate is about $1/m$ of the total; $g$ much larger than $1/m$ signals a cycle
-        \item exact p-value: $P(g > x) = \sum_{k \ge 1,\ kx < 1}(-1)^{k-1}\binom{m}{k}(1 - kx)^{m-1}$
+        \item $H_0$: Gaussian white noise; $H_1$: white noise plus one cycle at an unknown Fourier frequency
+    \end{itemize}
+    \item Statistic of \refFisher: the share of the largest ordinate in the sum of all ordinates
+    \begin{itemize}
+        \item $g = \max_j I(\nu_j)\,/\,\sum_{j=1}^{m} I(\nu_j)$
+        \item $m$: the number of ordinates in $(0, 1/2)$; $\max_j$: the largest of them; $1/m \le g \le 1$
+    \end{itemize}
+    \item Reading
+    \begin{itemize}
+        \item under $H_0$ each ordinate is about $1/m$ of the total
+        \item a $g$ much larger than $1/m$ signals a cycle: one frequency takes a large share of the variance
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fisher's test of a hidden periodicity (2/2)}
+\itemsize{\small}
+\begin{itemize}
+    \item Exact p-value: the probability, under $H_0$, of a $g$ above the observed value $x$
+    \begin{itemize}
+        \item $P(g > x) = \sum_{k \ge 1,\ kx < 1}(-1)^{k-1}\binom{m}{k}(1 - kx)^{m-1}$
+        \item $k$: the summation index, from 1 while $kx < 1$; $\binom{m}{k}$: the binomial coefficient
+        \item a small p-value (below 0.05): reject white noise in favour of a cycle
     \end{itemize}
     \item Sunspots: $m = 154$, $g = 0.268$, against $1/m = 0.0065$; p-value $<$\,0.001
     \begin{itemize}
         \item the 11-year peak is far too large to be chance
     \end{itemize}
-    \item Caution: $H_0$ is white noise; against a red (AR(1)-like) background, low-frequency peaks are more likely by chance, so compare with a smooth background spectrum
+    \item Caution: $H_0$ is white noise
+    \begin{itemize}
+        \item against a red (AR(1)-like) background, low-frequency peaks are more likely by chance
+        \item so compare with a smooth background spectrum
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -583,16 +651,18 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{Leakage and tapering}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item A cycle whose frequency is not a Fourier frequency does not fit a whole number of times in the sample
     \begin{itemize}
         \item cutting the series at $t = 1$ and $t = T$ creates a jump; its power \textbf{leaks} into all other frequencies
         \item leakage from a strong peak can hide a weak cycle elsewhere
     \end{itemize}
-    \item \textbf{Tapering}: multiply the data by a window $h_t$ that goes smoothly to 0 at both ends before the DFT
+    \item \textbf{Tapering}
     \begin{itemize}
+        \item multiply the data by a window $h_t$ that goes smoothly to 0 at both ends before the DFT
         \item Hann (cosine bell) window: $h_t = \frac12[1 - \cos(2\pi(t - 0.5)/T)]$, rescaled to keep the total power
+        \item $h_t$ is close to 0 at $t = 1$ and $t = T$ and equals 1 in the middle of the sample
         \item the price: a slightly wider main peak (less resolution) for much smaller leakage
     \end{itemize}
     \item Default in practice: always taper a little; always remove the mean (and a trend, if there is one) first
@@ -626,24 +696,39 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Smoothing the periodogram}
+\begin{frame}{Smoothing the periodogram (1/2): the Daniell estimator}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item Idea: $f$ is smooth, the ordinates are nearly independent: average $L = 2m + 1$ neighbouring ordinates
+    \item Idea: $f$ is smooth and the ordinates are nearly independent, so average $L = 2m + 1$ neighbouring ordinates
     \begin{itemize}
-        \item \textbf{Daniell} estimator: $\hat f(\nu_j) = \frac{1}{L}\sum_{k=-m}^{m} I(\nu_{j+k})$; variance about $f^2/L$
-        \item \textbf{bandwidth} $B = L/T$: the width of the frequency band that is averaged
+        \item \textbf{Daniell} estimator: $\hat f(\nu_j) = \frac{1}{L}\sum_{k=-m}^{m} I(\nu_{j+k})$
+        \item $m$: the number of neighbours on each side; $k$: runs from $-m$ to $m$; $\hat f$: the estimated spectrum
+        \item variance about $f^2/L$: $L$ times smaller than that of one ordinate
+    \end{itemize}
+    \item \textbf{Bandwidth} $B = L/T$
+    \begin{itemize}
+        \item the width of the frequency band that is averaged
     \end{itemize}
     \item Bias--variance trade-off: a larger $L$ lowers the variance but flattens narrow peaks (bias)
     \begin{itemize}
         \item consistency needs $L \to \infty$ and $L/T \to 0$, e.g.\ $L \approx \sqrt T$
     \end{itemize}
-    \item Equivalent views: smoothing in frequency $=$ down-weighting distant autocovariances (lag windows)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Smoothing the periodogram (2/2): lag windows and Welch}
+\itemsize{\small}
+\begin{itemize}
+    \item Equivalent view: smoothing in frequency $=$ down-weighting distant autocovariances (lag windows)
     \begin{itemize}
         \item Bartlett window: $\hat f(\nu) = \sum_{|h| \le M}(1 - |h|/M)\hat\gamma(h)e^{-2\pi i\nu h}$ (\refBartlett; \refBT)
+        \item $M$: the truncation lag; autocovariances beyond lag $M$ are dropped, the others get weights $1 - |h|/M$ that fall linearly
+        \item a smaller $M$ means more smoothing
     \end{itemize}
-    \item \textbf{Welch} \refWelch: split the series into $K$ overlapping segments, taper each, average their periodograms
+    \item The \textbf{Welch} method (\refWelch)
     \begin{itemize}
+        \item an average of the periodograms of $K$ segments
+        \item split the series into $K$ overlapping segments, taper each, average their periodograms
         \item \texttt{scipy.signal.welch}; the segment length sets the resolution
     \end{itemize}
 \end{itemize}
@@ -677,11 +762,12 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Confidence bands for the spectrum}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item Daniell estimate with $L$ terms: $\dfrac{2L\,\hat f(\nu)}{f(\nu)} \approx \chi^2_{2L}$ (degrees of freedom $df = 2L$)
     \begin{itemize}
         \item 95\% interval: $\left[\dfrac{df\,\hat f(\nu)}{\chi^2_{df}(0.975)},\ \dfrac{df\,\hat f(\nu)}{\chi^2_{df}(0.025)}\right]$
+        \item $\chi^2_{df}(p)$: the quantile of level $p$ of the chi-square distribution with $df$ degrees of freedom
     \end{itemize}
     \item The interval is a fixed multiple of $\hat f$: on a log scale its width is the same at every frequency
     \begin{itemize}
@@ -755,8 +841,9 @@ MSCA Digital Finance}
         \item trends and near unit roots put almost all the variance at the lowest frequencies and hide the cycles
         \item so we first make the series stationary: growth rates (differences) or a detrended cycle
     \end{itemize}
-    \item \textbf{Business-cycle band}: fluctuations lasting 1.5 to 8 years, i.e.\ 6 to 32 quarters (\refBK)
+    \item \textbf{Business-cycle band}
     \begin{itemize}
+        \item fluctuations lasting 1.5 to 8 years, i.e.\ 6 to 32 quarters (\refBK)
         \item in frequency: $1/32 \le \nu \le 1/6$ cycles per quarter
     \end{itemize}
     \item Data: US real GDP (FRED GDPC1, 291 quarterly growth rates) and Romanian real GDP (Eurostat, seasonally adjusted, 99 growth rates)
@@ -862,19 +949,39 @@ MSCA Digital Finance}
 \section{Long memory: the pole at zero}
 %=============================================================================
 
-\begin{frame}{Long memory in the frequency domain}
-\itemsize{\small}
+\begin{frame}{Long memory in the frequency domain (1/2)}
+\itemsize{\footnotesize}
 \begin{itemize}
-    \item \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter8_long_memory_arfima.pdf}{Chapter 8}: a long-memory series has $\rho(h) \sim Ch^{2d-1}$; then $\sum_h\gamma(h) = \infty$ and $f(0) = \infty$
+    \item \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter8_long_memory_arfima.pdf}{Chapter 8}: a long-memory series has autocorrelations that decay like a power of the lag
     \begin{itemize}
-        \item ARFIMA$(0,d,0)$: $f(\nu) = \sigma^2\,|2\sin(\pi\nu)|^{-2d} \approx \sigma^2(2\pi\nu)^{-2d}$ near $\nu = 0$: a \textbf{pole} at zero
+        \item $\rho(h) \sim Ch^{2d-1}$: $\rho(h)$ is the autocorrelation at lag $h$, $C > 0$ a constant, $\sim$ means ``proportional for large $h$''
+        \item $d$: the memory parameter; $0 < d < 1/2$ gives stationary long memory; then $\sum_h\gamma(h) = \infty$ and $f(0) = \infty$
     \end{itemize}
-    \item On a log--log plot the low-frequency spectrum is a straight line with slope $-2d$
+    \item ARFIMA$(0,d,0)$: the spectrum explodes at zero
     \begin{itemize}
-        \item \refGPH\ regress $\log I(\nu_j)$ on $-\log(4\sin^2(\pi\nu_j))$ for $j = 1, \ldots, m$: the slope is $\hat d$, standard error $\pi/\sqrt{24m}$
-        \item only the lowest $m = \lfloor T^{0.65}\rfloor$ frequencies are used, where the pole dominates
+        \item $f(\nu) = \sigma^2\,|2\sin(\pi\nu)|^{-2d} \approx \sigma^2(2\pi\nu)^{-2d}$ near $\nu = 0$: a \textbf{pole} at zero
+        \item taking logs: $\log f(\nu) \approx \log\sigma^2 - 2d\log(2\pi\nu)$, a straight line in $\log\nu$ with slope $-2d$
     \end{itemize}
     \item Short memory (ARMA) has a finite $f(0)$: the log--log plot flattens at low frequencies
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Long memory in the frequency domain (2/2): the GPH estimator}
+\itemsize{\small}
+\begin{itemize}
+    \item \refGPH: a regression of the log-periodogram on a log-frequency term
+    \begin{itemize}
+        \item regress $\log I(\nu_j)$ on $-\log(4\sin^2(\pi\nu_j))$ for $j = 1, \ldots, m$; the slope is $\hat d$
+        \item standard error $\pi/\sqrt{24m}$: it shrinks as more frequencies are used
+    \end{itemize}
+    \item Only the lowest $m = \lfloor T^{0.65}\rfloor$ frequencies are used, where the pole dominates
+    \begin{itemize}
+        \item a larger $m$ lowers the standard error but brings in short-memory effects (bias)
+    \end{itemize}
+    \item Reading
+    \begin{itemize}
+        \item $\hat d$ close to 0: short memory; $0 < \hat d < 0.5$: stationary long memory; $\hat d \ge 0.5$: nonstationary
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -910,21 +1017,36 @@ MSCA Digital Finance}
 \section{Linear filters}
 %=============================================================================
 
-\begin{frame}{Linear filters and their gain}
-\itemsize{\footnotesize}
+\begin{frame}{Linear filters and their gain (1/2)}
+\itemsize{\small}
 \begin{itemize}
-    \item A \textbf{linear filter}: $y_t = \sum_j a_j x_{t-j}$; its \textbf{frequency response} is $A(\nu) = \sum_j a_j e^{-2\pi i\nu j}$
+    \item A \textbf{linear filter} turns an input series $x_t$ into an output $y_t$ by a weighted sum of current and past values
     \begin{itemize}
-        \item key result: $f_y(\nu) = |A(\nu)|^2 f_x(\nu)$; $|A(\nu)|^2$ is the \textbf{squared gain}
-        \item the filter multiplies the power at each frequency: it amplifies some cycles and removes others
+        \item $y_t = \sum_j a_j x_{t-j}$; $a_j$: the filter weights; $j$: the lag
     \end{itemize}
+    \item Its \textbf{frequency response} is $A(\nu) = \sum_j a_j e^{-2\pi i\nu j}$
+    \begin{itemize}
+        \item key result: $f_y(\nu) = |A(\nu)|^2 f_x(\nu)$; $f_x$, $f_y$: the spectra of input and output
+        \item $|A(\nu)|^2$ is the \textbf{squared gain}: above 1 the filter amplifies cycles of frequency $\nu$, below 1 it damps them, 0 removes them
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Linear filters and their gain (2/2)}
+\itemsize{\small}
+\begin{itemize}
     \item First difference $y_t = x_t - x_{t-1}$: $|A(\nu)|^2 = |1 - e^{-2\pi i\nu}|^2 = 4\sin^2(\pi\nu)$
     \begin{itemize}
         \item zero at $\nu = 0$ (removes the trend), 4 at $\nu = 1/2$ (amplifies noise); at a period of 40 quarters: 0.025; at 4 quarters: 2
     \end{itemize}
-    \item Seasonal difference $1 - L^4$: $4\sin^2(4\pi\nu)$, zero at $\nu = 0, 1/4, 1/2$ (the trend and the seasonal cycles)
+    \item Seasonal difference $(1 - L^4)x_t = x_t - x_{t-4}$ (quarterly data): squared gain $4\sin^2(4\pi\nu)$
     \begin{itemize}
-        \item HP cycle filter: squared gain $\dfrac{4\lambda(1 - \cos 2\pi\nu)^2}{1 + 4\lambda(1 - \cos 2\pi\nu)^2}$, a high-pass filter
+        \item zero at $\nu = 0, 1/4, 1/2$: it removes the trend and the seasonal cycles
+    \end{itemize}
+    \item HP cycle filter: squared gain $\dfrac{4\lambda(1 - \cos 2\pi\nu)^2}{1 + 4\lambda(1 - \cos 2\pi\nu)^2}$
+    \begin{itemize}
+        \item $\lambda$: the smoothing parameter (1600 for quarterly data); a larger $\lambda$ moves the cut-off to slower cycles
+        \item close to 0 at low frequencies, close to 1 at high ones: a \textbf{high-pass} filter
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -967,13 +1089,17 @@ MSCA Digital Finance}
     \item For two stationary series with cross-covariances $\gamma_{xy}(h) = \mathrm{Cov}(x_{t+h}, y_t)$:
     \begin{itemize}
         \item \textbf{cross-spectrum} $f_{xy}(\nu) = \sum_h\gamma_{xy}(h)e^{-2\pi i\nu h}$, a complex number at each frequency
+        \item $f_x$, $f_y$: the spectra of $x$ and $y$ separately
     \end{itemize}
-    \item \textbf{Squared coherence}: $\rho^2_{xy}(\nu) = \dfrac{|f_{xy}(\nu)|^2}{f_x(\nu)f_y(\nu)} \in [0, 1]$
+    \item \textbf{Squared coherence}
     \begin{itemize}
+        \item $\rho^2_{xy}(\nu) = \dfrac{|f_{xy}(\nu)|^2}{f_x(\nu)f_y(\nu)} \in [0, 1]$
         \item a squared correlation frequency by frequency: how well the cycles of $x$ and $y$ at $\nu$ move together
     \end{itemize}
-    \item \textbf{Phase} $\varphi(\nu) = \arg f_{xy}(\nu)$: the shift between the two cycles, in radians
+    \item \textbf{Phase} $\varphi(\nu) = \arg f_{xy}(\nu)$
     \begin{itemize}
+        \item the shift between the two cycles, in radians
+        \item $\arg$: the angle of a complex number in the plane (its argument)
         \item a time lag of $k$ periods gives a phase that is linear in frequency: $\varphi(\nu) = \pm 2\pi\nu k$; so the lag is $|\varphi|/(2\pi\nu)$
     \end{itemize}
     \item Estimation: smooth the cross-periodogram like the periodogram; the raw coherence is always 1, so smoothing is compulsory
@@ -1071,9 +1197,18 @@ MSCA Digital Finance}
 \begin{frame}{Possible contribution of AI}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Code}: a first draft of a periodogram, a Daniell smoother, a Welch estimate or a coherence plot
-    \item \textbf{Explanation}: a second explanation of leakage, aliasing or the bias--variance trade-off of the bandwidth
-    \item \textbf{Exploration}: spectra of many series at once (load of several countries, GDP of all EU members) and a first reading of the peaks
+    \item \textbf{Code}
+    \begin{itemize}
+        \item a first draft of a periodogram, a Daniell smoother, a Welch estimate or a coherence plot
+    \end{itemize}
+    \item \textbf{Explanation}
+    \begin{itemize}
+        \item a second explanation of leakage, aliasing or the bias--variance trade-off of the bandwidth
+    \end{itemize}
+    \item \textbf{Exploration}
+    \begin{itemize}
+        \item spectra of many series at once (load of several countries, GDP of all EU members) and a first reading of the peaks
+    \end{itemize}
     \item Example prompt
     \begin{itemize}
         \item \aiprompt{Write Python code that reads hourly electricity load, removes the mean, computes the periodogram with a Hann taper and a Welch estimate with 8-week segments, plots both on a log-log scale against the period in hours, and marks 24, 12 and 168 hours.}

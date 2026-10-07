@@ -31,8 +31,8 @@ window.TSA_DATA.quizzes['var'] = {
                     "$K \\times p$",
                     "$Kp \\times Kp$"
                 ],
-                "correctExplanation": "Fiecare matrice $\\mathbf{A}_i$ transformă vectorul $\\mathbf{Y}_{t-i}$, de dimensiune $K$, într-o contribuție la vectorul $\\mathbf{Y}_t$, tot de dimensiune $K$; prin urmare, are dimensiunea $K \\times K$. Un VAR(p) are $p$ astfel de matrice, cîte una pentru fiecare decalaj, indiferent de $K$.",
-                "incorrectExplanation": "$K \\times 1$ este dimensiunea vectorului de constante, iar $Kp \\times Kp$ este dimensiunea matricei companion; $K \\times p$ amestecă variabilele cu decalajele. Fiecare matrice $\\mathbf{A}_i$ are dimensiunea $K \\times K$."
+                "correctExplanation": "Fiecare matrice $\\mathbf{A}_i$ transformă vectorul $\\mathbf{Y}_{t-i}$, de dimensiune $K$, într-o contribuție la vectorul $\\mathbf{Y}_t$, tot de dimensiune $K$; prin urmare, are dimensiunea $K \\times K$. Un VAR(p) are $p$ astfel de matrice, cîte una pentru fiecare lag, indiferent de $K$.",
+                "incorrectExplanation": "$K \\times 1$ este dimensiunea vectorului de constante, iar $Kp \\times Kp$ este dimensiunea matricei companion; $K \\times p$ amestecă variabilele cu lagurile. Fiecare matrice $\\mathbf{A}_i$ are dimensiunea $K \\times K$."
             }
         },
         {
@@ -51,15 +51,15 @@ window.TSA_DATA.quizzes['var'] = {
             },
             "ro": {
                 "title": "Numărul de coeficienți: formula generală",
-                "text": "Un VAR(p) cu $K$ variabile are o constantă în fiecare ecuație. Cîți coeficienți (constante și coeficienți ai decalajelor, fără matricea de covarianță a erorilor) are în total?",
+                "text": "Un VAR(p) cu $K$ variabile are o constantă în fiecare ecuație. Cîți coeficienți (constante și coeficienți ai lagurilor, fără matricea de covarianță a erorilor) are în total?",
                 "options": [
                     "$K^2 p$",
                     "$K(1 + Kp)$",
                     "$1 + Kp$",
                     "$K + p + K^2$"
                 ],
-                "correctExplanation": "Fiecare dintre cele $K$ ecuații are o constantă și $Kp$ coeficienți ai decalajelor ($K$ variabile înmulțite cu $p$ decalaje), deci totalul este $K(1 + Kp) = K + pK^2$.",
-                "incorrectExplanation": "$K^2 p$ omite cele $K$ constante, $1 + Kp$ numără o singură ecuație, iar $K + p + K^2$ adună numărul de decalaje în loc să înmulțească cu el. Totalul este $K(1 + Kp)$ și crește cu $K^2$."
+                "correctExplanation": "Fiecare dintre cele $K$ ecuații are o constantă și $Kp$ coeficienți ai lagurilor ($K$ variabile înmulțite cu $p$ laguri), deci totalul este $K(1 + Kp) = K + pK^2$.",
+                "incorrectExplanation": "$K^2 p$ omite cele $K$ constante, $1 + Kp$ numără o singură ecuație, iar $K + p + K^2$ adună numărul de laguri în loc să înmulțească cu el. Totalul este $K(1 + Kp)$ și crește cu $K^2$."
             }
         },
         {
@@ -112,8 +112,8 @@ window.TSA_DATA.quizzes['var'] = {
                     "În origine",
                     "În afara cercului unitate"
                 ],
-                "correctExplanation": "În forma cu polinom de decalaje, rădăcinile trebuie să fie în afara cercului unitate, $|z| > 1$. Condiția este echivalentă cu aceea ca toate valorile proprii ale matricei companion să fie în interiorul cercului unitate, deoarece rădăcinile sînt inversele acestor valori proprii.",
-                "incorrectExplanation": "„În interiorul cercului unitate” este condiția pentru valorile proprii ale matricei companion, nu pentru rădăcinile polinomului de decalaje; rădăcini pe cercul unitate înseamnă rădăcini unitare (nestaționaritate). Pentru polinomul $\\det(\\mathbf{I}_K - \\mathbf{A}_1 z - \\cdots - \\mathbf{A}_p z^p)$, toate rădăcinile trebuie să verifice $|z| > 1$."
+                "correctExplanation": "În forma cu polinomul lag, rădăcinile trebuie să fie în afara cercului unitate, $|z| > 1$. Condiția este echivalentă cu aceea ca toate valorile proprii ale matricei companion să fie în interiorul cercului unitate, deoarece rădăcinile sînt inversele acestor valori proprii.",
+                "incorrectExplanation": "„În interiorul cercului unitate” este condiția pentru valorile proprii ale matricei companion, nu pentru rădăcinile polinomului lag; rădăcini pe cercul unitate înseamnă rădăcini unitare (nestaționaritate). Pentru polinomul $\\det(\\mathbf{I}_K - \\mathbf{A}_1 z - \\cdots - \\mathbf{A}_p z^p)$, toate rădăcinile trebuie să verifice $|z| > 1$."
             }
         },
         {
@@ -301,8 +301,8 @@ window.TSA_DATA.quizzes['var'] = {
                     "Valorile trecute ale lui $X$ ajută la prognoza lui $Y$, dincolo de informația din trecutul lui $Y$",
                     "$X$ și $Y$ au aceeași tendință pe termen lung"
                 ],
-                "correctExplanation": "Cauzalitatea Granger privește conținutul predictiv suplimentar: valorile întîrziate ale lui $X$ reduc eroarea de prognoză a lui $Y$ după ce sînt folosite deja valorile întîrziate ale lui $Y$. Ea poate fi falsă (variabile omise, efecte de anticipare), deci nu dovedește o cauzalitate economică.",
-                "incorrectExplanation": "Predictibilitatea nu înseamnă cauzalitate structurală; corelația contemporană ține de cauzalitatea instantanee, care nu implică decalaje; o tendință comună pe termen lung înseamnă cointegrare. Cauzalitatea Granger privește decalajele lui $X$ din ecuația lui $Y$."
+                "correctExplanation": "Cauzalitatea Granger privește conținutul predictiv suplimentar: lagurile lui $X$ reduc eroarea de prognoză a lui $Y$ după ce sînt folosite deja lagurile lui $Y$. Ea poate fi falsă (variabile omise, efecte de anticipare), deci nu dovedește o cauzalitate economică.",
+                "incorrectExplanation": "Predictibilitatea nu înseamnă cauzalitate structurală; corelația contemporană ține de cauzalitatea instantanee, care nu implică laguri; o tendință comună pe termen lung înseamnă cointegrare. Cauzalitatea Granger privește lagurile lui $X$ din ecuația lui $Y$."
             }
         },
         {
@@ -329,7 +329,7 @@ window.TSA_DATA.quizzes['var'] = {
                     "$a_{12}^{(1)} = a_{12}^{(2)} = \\cdots = a_{12}^{(p)} = 0$"
                 ],
                 "correctExplanation": "$a_{12}^{(i)}$ este coeficientul lui $Y_{2,t-i}$ din ecuația lui $Y_1$. Lipsa cauzalității este ipoteza nulă comună $H_0\\colon a_{12}^{(1)} = \\cdots = a_{12}^{(p)} = 0$, testată cu un test Wald sau $F$.",
-                "incorrectExplanation": "În ecuația lui $Y_2$ se testează dacă $Y_1$ cauzează Granger pe $Y_2$; $\\sigma_{12} = 0$ privește cauzalitatea instantanee; valorile proprii privesc stabilitatea. Aici contează doar decalajele lui $Y_2$ din ecuația lui $Y_1$."
+                "incorrectExplanation": "În ecuația lui $Y_2$ se testează dacă $Y_1$ cauzează Granger pe $Y_2$; $\\sigma_{12} = 0$ privește cauzalitatea instantanee; valorile proprii privesc stabilitatea. Aici contează doar lagurile lui $Y_2$ din ecuația lui $Y_1$."
             }
         },
         {
@@ -348,7 +348,7 @@ window.TSA_DATA.quizzes['var'] = {
             },
             "ro": {
                 "title": "Testul de cauzalitate Granger: exemplu numeric",
-                "text": "Un VAR(2) bivariat este estimat pe $T = 100$ de observații. În ecuația lui $Y_1$, suma pătratelor reziduurilor modelului nerestricționat este $RSS_U = 45{,}2$, iar a celui restricționat (fără decalajele lui $Y_2$) este $RSS_R = 52{,}8$. Statistica $F$ a testului de cauzalitate Granger este aproximativ:",
+                "text": "Un VAR(2) bivariat este estimat pe $T = 100$ de observații. În ecuația lui $Y_1$, suma pătratelor reziduurilor modelului nerestricționat este $RSS_U = 45{,}2$, iar a celui restricționat (fără lagurile lui $Y_2$) este $RSS_R = 52{,}8$. Statistica $F$ a testului de cauzalitate Granger este aproximativ:",
                 "options": [
                     "7,98",
                     "5,42",
@@ -382,7 +382,7 @@ window.TSA_DATA.quizzes['var'] = {
                     "Estimarea VAR prin OLS, ecuație cu ecuație",
                     "Testarea restricțiilor cu un test $F$ în loc de un test Wald"
                 ],
-                "correctExplanation": "Dacă $Z$ îl influențează pe $X$ înaintea lui $Y$ și nu este inclusă în sistem, valorile întîrziate ale lui $X$ țin locul lui $Z$ și par să prognozeze $Y$, deși $X$ nu are niciun efect asupra lui $Y$.",
+                "correctExplanation": "Dacă $Z$ îl influențează pe $X$ înaintea lui $Y$ și nu este inclusă în sistem, lagurile lui $X$ țin locul lui $Z$ și par să prognozeze $Y$, deși $X$ nu are niciun efect asupra lui $Y$.",
                 "incorrectExplanation": "Adăugarea unor variabile relevante reduce, nu creează, problema variabilelor omise; estimarea OLS ecuație cu ecuație este estimatorul standard al unui VAR; testele $F$ și Wald sînt asimptotic echivalente și testează aceleași restricții."
             }
         },
@@ -404,13 +404,13 @@ window.TSA_DATA.quizzes['var'] = {
                 "title": "Cauzalitate instantanee",
                 "text": "Cauzalitatea instantanee dintre două variabile ale unui VAR se testează verificînd dacă:",
                 "options": [
-                    "Valorile întîrziate ale lui $X$ ajută la prognoza lui $Y$",
+                    "Lagurile lui $X$ ajută la prognoza lui $Y$",
                     "$X$ și $Y$ au o tendință stochastică comună",
                     "Erorile din forma redusă sînt corelate în aceeași perioadă, $\\sigma_{12} \\neq 0$",
                     "VAR-ul este stabil"
                 ],
                 "correctExplanation": "Cauzalitatea instantanee privește corelația erorilor din aceeași perioadă, $H_0\\colon \\sigma_{12} = \\operatorname{Cov}(\\varepsilon_{1t}, \\varepsilon_{2t}) = 0$. Ea este simetrică și nu are o direcție.",
-                "incorrectExplanation": "Conținutul predictiv al decalajelor ține de cauzalitatea Granger; o tendință stochastică comună înseamnă cointegrare; stabilitatea este o condiție asupra valorilor proprii. Cauzalitatea instantanee nu implică decalaje."
+                "incorrectExplanation": "Conținutul predictiv al lagurilor ține de cauzalitatea Granger; o tendință stochastică comună înseamnă cointegrare; stabilitatea este o condiție asupra valorilor proprii. Cauzalitatea instantanee nu implică laguri."
             }
         },
         {
@@ -436,8 +436,8 @@ window.TSA_DATA.quizzes['var'] = {
                     "Reducerea numărului de parametri estimați",
                     "Testarea validă a cauzalității Granger atunci cînd datele sînt nestaționare sau cointegrate"
                 ],
-                "correctExplanation": "Cînd variabilele sînt integrate sau cointegrate, testul Wald obișnuit într-un VAR în niveluri are o distribuție nestandard. Toda și Yamamoto (1995) estimează un VAR($p + d_{max}$) în niveluri, unde $d_{max}$ este ordinul maxim de integrare, și testează doar primele $p$ decalaje, ceea ce restabilește distribuția asimptotică $\\chi^2$.",
-                "incorrectExplanation": "Procedura estimează în continuare un VAR, adaugă parametri (cele $d_{max}$ decalaje suplimentare) în loc să îi elimine și reduce ușor puterea testului. Scopul ei este validitatea testului Wald indiferent de rădăcinile unitare sau de cointegrare."
+                "correctExplanation": "Cînd variabilele sînt integrate sau cointegrate, testul Wald obișnuit într-un VAR în niveluri are o distribuție nestandard. Toda și Yamamoto (1995) estimează un VAR($p + d_{max}$) în niveluri, unde $d_{max}$ este ordinul maxim de integrare, și testează doar primele $p$ laguri, ceea ce restabilește distribuția asimptotică $\\chi^2$.",
+                "incorrectExplanation": "Procedura estimează în continuare un VAR, adaugă parametri (cele $d_{max}$ laguri suplimentare) în loc să îi elimine și reduce ușor puterea testului. Scopul ei este validitatea testului Wald indiferent de rădăcinile unitare sau de cointegrare."
             }
         },
         {
@@ -455,16 +455,16 @@ window.TSA_DATA.quizzes['var'] = {
                 "incorrectExplanation": "The ordering of the penalties is the other way round, the two criteria often disagree, and BIC is routinely reported for VAR lag selection together with AIC, HQ and FPE."
             },
             "ro": {
-                "title": "Criterii informaționale pentru numărul de decalaje",
-                "text": "Comparînd AIC și BIC pentru alegerea ordinului decalajului unui VAR, care afirmație este corectă?",
+                "title": "Criterii informaționale pentru numărul de laguri",
+                "text": "Comparînd AIC și BIC pentru alegerea numărului de laguri al unui VAR, care afirmație este corectă?",
                 "options": [
                     "BIC penalizează complexitatea mai sever decît AIC și tinde să aleagă modele mai mici",
                     "AIC penalizează complexitatea mai sever decît BIC și alege modele mai mici",
                     "AIC și BIC aleg întotdeauna același model",
                     "BIC nu se poate folosi pentru modele VAR"
                 ],
-                "correctExplanation": "Penalizarea pentru fiecare parametru este $2$ pentru AIC și $\\ln T$ pentru BIC; deoarece $\\ln T > 2$ pentru $T \\ge 8$, BIC favorizează modele mai parcimonioase (și este consistent), în timp ce AIC tinde să aleagă mai multe decalaje.",
-                "incorrectExplanation": "Ordinea penalizărilor este inversă, cele două criterii dau adesea rezultate diferite, iar BIC se raportează în mod obișnuit la alegerea numărului de decalaje unui VAR, alături de AIC, HQ și FPE."
+                "correctExplanation": "Penalizarea pentru fiecare parametru este $2$ pentru AIC și $\\ln T$ pentru BIC; deoarece $\\ln T > 2$ pentru $T \\ge 8$, BIC favorizează modele mai parcimonioase (și este consistent), în timp ce AIC tinde să aleagă mai multe laguri.",
+                "incorrectExplanation": "Ordinea penalizărilor este inversă, cele două criterii dau adesea rezultate diferite, iar BIC se raportează în mod obișnuit la alegerea numărului de laguri unui VAR, alături de AIC, HQ și FPE."
             }
         },
         {
@@ -490,7 +490,7 @@ window.TSA_DATA.quizzes['var'] = {
                     "Deoarece matricea de covarianță a erorilor unui VAR este întotdeauna diagonală",
                     "Deoarece numărul de observații este întotdeauna mare"
                 ],
-                "correctExplanation": "Cînd fiecare ecuație conține aceiași regresori (termenul liber și aceleași decalaje ale tuturor variabilelor), GLS pe sistem (SUR) se reduce la OLS ecuație cu ecuație (Zellner). Dacă erorile au distribuția Normală, OLS coincide și cu estimatorul de verosimilitate maximă.",
+                "correctExplanation": "Cînd fiecare ecuație conține aceiași regresori (termenul liber și aceleași laguri ale tuturor variabilelor), GLS pe sistem (SUR) se reduce la OLS ecuație cu ecuație (Zellner). Dacă erorile au distribuția Normală, OLS coincide și cu estimatorul de verosimilitate maximă.",
                 "incorrectExplanation": "Rezultatul nu cere normalitate, erorile unui VAR sînt de regulă corelate între ecuații (Σ nu este diagonală), iar argumentul este valabil pentru orice volum al eșantionului. Esențial este că regresorii sînt aceiași în toate ecuațiile."
             }
         },
@@ -517,7 +517,7 @@ window.TSA_DATA.quizzes['var'] = {
                     "Absența corelației seriale a reziduurilor",
                     "Staționaritatea datelor inițiale"
                 ],
-                "correctExplanation": "Statistica portmanteau multivariată însumează matricele de autocorelație ale reziduurilor pînă la decalajul $h$; în ipoteza $H_0$ (fără autocorelație reziduală) are aproximativ distribuția $\\chi^2$. Testul verifică dacă VAR-ul a captat dependența serială. Reziduurile pot rămîne corelate între ecuații în aceeași perioadă; această corelație este descrisă de $\\boldsymbol{\\Sigma}$.",
+                "correctExplanation": "Statistica portmanteau multivariată însumează matricele de autocorelație ale reziduurilor pînă la lagul $h$; în ipoteza $H_0$ (fără autocorelație reziduală) are aproximativ distribuția $\\chi^2$. Testul verifică dacă VAR-ul a captat dependența serială. Reziduurile pot rămîne corelate între ecuații în aceeași perioadă; această corelație este descrisă de $\\boldsymbol{\\Sigma}$.",
                 "incorrectExplanation": "Normalitatea se verifică printr-un test Jarque-Bera (multivariat), heteroscedasticitatea condiționată printr-un test ARCH-LM, iar staționaritatea prin teste de rădăcină unitară înainte de estimare. Testul portmanteau privește autocorelația reziduurilor."
             }
         },
@@ -539,13 +539,13 @@ window.TSA_DATA.quizzes['var'] = {
                 "title": "VAR structural",
                 "text": "Principala diferență dintre un VAR structural (SVAR) și un VAR în formă redusă este că:",
                 "options": [
-                    "SVAR folosește mai multe decalaje",
+                    "SVAR folosește mai multe laguri",
                     "SVAR nu poate fi folosit pentru prognoză",
                     "SVAR necesită mai multe date",
                     "SVAR identifică șocuri structurale care au o interpretare economică"
                 ],
                 "correctExplanation": "Un SVAR impune restricții de identificare pentru a obține, din erorile corelate ale formei reduse, șocuri structurale ortogonale cu semnificație economică (de exemplu, un șoc de politică monetară).",
-                "incorrectExplanation": "Numărul de decalaje, necesarul de date și prognozele sînt aceleași ca pentru forma redusă de la bază. Ceea ce adaugă SVAR este identificarea: o legătură între erorile formei reduse și șocuri cu semnificație economică."
+                "incorrectExplanation": "Numărul de laguri, necesarul de date și prognozele sînt aceleași ca pentru forma redusă de la bază. Ceea ce adaugă SVAR este identificarea: o legătură între erorile formei reduse și șocuri cu semnificație economică."
             }
         },
         {
@@ -599,7 +599,7 @@ window.TSA_DATA.quizzes['var'] = {
                     "O creștere cu o unitate a lui $Y_2$ la $t-1$ crește $Y_2$ la $t$ cu 0,1"
                 ],
                 "correctExplanation": "Elementul $(i, j)$ al matricei $\\mathbf{A}$ este efectul lui $Y_{j,t-1}$ asupra lui $Y_{i,t}$. Așadar, $a_{21} = -0{,}1$ este efectul lui $Y_{1,t-1}$ asupra lui $Y_{2,t}$: o creștere cu o unitate a lui $Y_1$ scade $Y_2$ în perioada următoare cu 0,1.",
-                "incorrectExplanation": "Indicele de linie desemnează ecuația (variabila explicată), iar indicele de coloană regresorul întîrziat; inversarea lor dă efectul lui $Y_2$ asupra lui $Y_1$, adică $a_{12} = 0{,}2$. Semnul este negativ, deci efectul este o scădere."
+                "incorrectExplanation": "Indicele de linie desemnează ecuația (variabila explicată), iar indicele de coloană regresorul cu lag; inversarea lor dă efectul lui $Y_2$ asupra lui $Y_1$, adică $a_{12} = 0{,}2$. Semnul este negativ, deci efectul este o scădere."
             }
         },
         {
@@ -644,10 +644,10 @@ window.TSA_DATA.quizzes['var'] = {
                 "incorrectExplanation": "The effect lasts one day, not weeks; Granger causality is predictability, not structural causation; and OLS is the standard, consistent estimator of a VAR. The lead comes from the different closing times of the markets."
             },
             "ro": {
-                "title": "De ce precedă S&P 500 piețele europene",
+                "title": "Precedența S&P 500 față de piețele europene",
                 "text": "În datele zilnice, randamentul S&P 500 de ieri cauzează în sens Granger randamentele BET și DAX de azi, dar nu invers. Explicația cea mai plauzibilă este:",
                 "options": [
-                    "VAR-ul a fost estimat prin OLS, care creează decalaje false",
+                    "VAR-ul a fost estimat prin OLS, care creează precedențe false",
                     "Investitorii europeni reacționează la știri cu o întîrziere de cîteva săptămîni",
                     "S&P 500 este cauza structurală a oricărei mișcări a prețurilor europene",
                     "Wall Street se închide după piețele europene, deci o parte din randamentul lui zilnic este o știre pe care Europa o poate include în prețuri abia a doua zi"

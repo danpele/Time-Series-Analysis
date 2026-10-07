@@ -84,14 +84,54 @@ def chap(n, ro_case='Capitolul'):
 
 
 FORM = T('\\textbf{Key formulas}', '\\textbf{Formule-cheie}')
+NOTA = T('\\textbf{Notation}', '\\textbf{Notațiile}')
 FACT = T('\\textbf{Empirical facts}', '\\textbf{Fapte empirice}')
 MIST = T('\\textbf{Common mistakes}', '\\textbf{Greșeli frecvente}')
 
+# the symbols of the key formulas of each chapter, explained again on the review slides
+NOTE = {
+    0: [T('$T_t$, $S_t$, $R_t$: the trend, the seasonal component and the remainder (the irregular part)', '$T_t$, $S_t$, $R_t$: trendul, componenta sezonieră și restul (componenta neregulată)'),
+        T('$\\ell_t$: the smoothed level at time $t$; $\\alpha \\in (0, 1)$: the weight of the newest observation; a large $\\alpha$ follows the data closely', '$\\ell_t$: nivelul netezit la momentul $t$; $\\alpha \\in (0, 1)$: ponderea celei mai noi observații; un $\\alpha$ mare urmărește îndeaproape datele'),
+        T('MAE: the mean absolute error; MASE below 1: better than the seasonal naive method', 'MAE: eroarea absolută medie; MASE sub 1: mai bun decît metoda naivă sezonieră')],
+    1: [T('$\\mu$: the constant mean; $\\gamma(h)$: the autocovariance at lag $h$, which depends only on $h$; $\\hat\\rho(h)$: the sample autocorrelation; $T$: the number of observations', '$\\mu$: media constantă; $\\gamma(h)$: autocovarianța la lagul $h$, care depinde doar de $h$; $\\hat\\rho(h)$: autocorelația de selecție; $T$: numărul de observații'),
+        T('$Q^*(m)$: the Ljung--Box statistic on the first $m$ lags; a large value (a small p-value) rejects white noise', '$Q^*(m)$: statistica Ljung--Box pe primele $m$ laguri; o valoare mare (un p-value mic) respinge zgomotul alb'),
+        T('$\\sigma^2$: the variance of the random-walk shocks; $\\mathrm{Var}(X_t) = t\\sigma^2$ grows with $t$, so a random walk is not stationary', '$\\sigma^2$: varianța șocurilor mersului aleator; $\\mathrm{Var}(X_t) = t\\sigma^2$ crește cu $t$, deci mersul aleator nu este staționar')],
+    2: [T('$L$: the lag operator, $LX_t = X_{t-1}$; $\\phi(L)$, $\\theta(L)$: the AR and MA polynomials of orders $p$ and $q$; $\\varepsilon_t$: white noise', '$L$: operatorul lag, $LX_t = X_{t-1}$; $\\phi(L)$, $\\theta(L)$: polinoamele AR și MA, de ordinele $p$ și $q$; $\\varepsilon_t$: zgomot alb'),
+        T('$\\ln L$: the maximised log-likelihood; $k$: the number of estimated parameters; a smaller AIC or BIC is better', '$\\ln L$: logaritmul verosimilității maxime; $k$: numărul de parametri estimați; un AIC sau un BIC mai mic este mai bun'),
+        T('BIC penalises parameters more than AIC, since $\\ln T > 2$ for $T \\ge 8$', 'BIC penalizează parametrii mai mult decît AIC, deoarece $\\ln T > 2$ pentru $T \\ge 8$')],
+    3: [T('$\\Delta y_t = y_t - y_{t-1}$; $c$: the constant; $bt$: the deterministic trend; $\\gamma = 0$ means a unit root', '$\\Delta y_t = y_t - y_{t-1}$; $c$: constanta; $bt$: trendul determinist; $\\gamma = 0$ înseamnă rădăcină unitară'),
+        T('$\\delta_j$: the coefficients of the lagged differences, which remove the autocorrelation of the errors', '$\\delta_j$: coeficienții diferențelor cu lag, care elimină autocorelația erorilor'),
+        T('$d$: the number of differences needed for stationarity; $(1 - L)^d$: the difference of order $d$; $h$: the forecast horizon', '$d$: numărul de diferențieri necesare pentru staționaritate; $(1 - L)^d$: diferența de ordinul $d$; $h$: orizontul de prognoză')],
+    4: [T('$s$: the season length (12 for monthly data); $\\Phi(L^s)$, $\\Theta(L^s)$: the seasonal AR and MA polynomials; $D$: the number of seasonal differences $(1 - L^s)$', '$s$: lungimea sezonului (12 pentru date lunare); $\\Phi(L^s)$, $\\Theta(L^s)$: polinoamele AR și MA sezoniere; $D$: numărul de diferențe sezoniere $(1 - L^s)$'),
+        T('$e_{1t}$, $e_{2t}$: the errors of the two forecasts; $L(\\cdot)$: the loss, e.g.\\ the square; $d_t$: the loss differential; $\\bar d$: its mean; $\\hat V$: its estimated long-run variance; $n$: the number of forecasts', '$e_{1t}$, $e_{2t}$: erorile celor două prognoze; $L(\\cdot)$: funcția de pierdere, de exemplu pătratul; $d_t$: diferența pierderilor; $\\bar d$: media ei; $\\hat V$: varianța ei pe termen lung, estimată; $n$: numărul de prognoze'),
+        T('under equal accuracy DM is approximately $N(0, 1)$: $|\\mathrm{DM}| > 1.96$ rejects at 5\\%', 'sub ipoteza acurateței egale, DM are aproximativ distribuția $N(0, 1)$: $|\\mathrm{DM}| > 1{,}96$ respinge la 5\\%')],
+    5: [T('$\\sigma_t^2$: the conditional variance; $\\varepsilon_{t-1}$: yesterday\'s shock; $\\omega > 0$; $\\alpha \\ge 0$: the reaction to shocks; $\\beta \\ge 0$: the persistence', '$\\sigma_t^2$: varianța condiționată; $\\varepsilon_{t-1}$: șocul de ieri; $\\omega > 0$; $\\alpha \\ge 0$: reacția la șocuri; $\\beta \\ge 0$: persistența'),
+        T('$\\bar\\sigma^2$: the long-run variance, defined only if $\\alpha + \\beta < 1$; $h_{1/2}$: the half-life of a volatility shock', '$\\bar\\sigma^2$: varianța pe termen lung, definită doar dacă $\\alpha + \\beta < 1$; $h_{1/2}$: timpul de înjumătățire al unui șoc de volatilitate'),
+        T('ARCH-LM: $R^2$ of the regression of $\\varepsilon_t^2$ on $q$ of its lags, $n$ observations; $q_{0.01}(z)$: the 1\\% quantile of the standardised innovations $z_t$', 'ARCH-LM: $R^2$ al regresiei lui $\\varepsilon_t^2$ pe $q$ laguri ale sale, $n$ observații; $q_{0,01}(z)$: cuantila de 1\\% a inovațiilor standardizate $z_t$')],
+    6: [T('$\\bY_t$: the vector of the $K$ variables; $\\bc$: the constants; $\\bA_i$: the $K \\times K$ coefficient matrices of lag $i$; $\\bepsilon_t$: the vector of shocks', '$\\bY_t$: vectorul celor $K$ variabile; $\\bc$: constantele; $\\bA_i$: matricele $K \\times K$ ale coeficienților lagului $i$; $\\bepsilon_t$: vectorul șocurilor'),
+        T('the companion matrix writes the VAR($p$) as a VAR(1) of dimension $Kp$', 'matricea companion scrie VAR($p$) ca un VAR(1) de dimensiune $Kp$'),
+        T('$RSS_R$, $RSS_U$: the residual sums of squares without and with the lags of the tested variable; $p$: the number of restrictions', '$RSS_R$, $RSS_U$: sumele pătratelor reziduurilor fără și cu lagurile variabilei testate; $p$: numărul de restricții')],
+    7: [T('ECM: $\\gamma < 0$ is the speed of adjustment towards equilibrium', 'ECM: $\\gamma < 0$ este viteza de ajustare spre echilibru'),
+        T('$\\beta$: the cointegrating vectors (the equilibrium relations); $\\alpha$: the adjustment coefficients; $\\Gamma_i$: the short-run dynamics; $\\mathbf u_t$: the shocks', '$\\beta$: vectorii de cointegrare (relațiile de echilibru); $\\alpha$: coeficienții de ajustare; $\\Gamma_i$: dinamica pe termen scurt; $\\mathbf u_t$: șocurile'),
+        T('$\\hat\\lambda_i$: the estimated eigenvalues, in decreasing order; $r$: the tested cointegration rank; a trace above its critical value rejects rank $r$', '$\\hat\\lambda_i$: valorile proprii estimate, în ordine descrescătoare; $r$: rangul de cointegrare testat; o statistică a urmei peste valoarea critică respinge rangul $r$')],
+    8: [T('$d$: the order of fractional integration; $\\pi_k$: the weight of lag $k$ in the expansion of $(1 - L)^d$', '$d$: ordinul de integrare fracționară; $\\pi_k$: ponderea lagului $k$ în dezvoltarea lui $(1 - L)^d$'),
+        T('$C > 0$: a constant; $\\rho(k) \\sim Ck^{2d-1}$: the ACF decays hyperbolically, not exponentially', '$C > 0$: o constantă; $\\rho(k) \\sim Ck^{2d-1}$: ACF scade hiperbolic, nu exponențial'),
+        T('$H$: the Hurst exponent, above 0.5 for long memory; $m$: the number of low frequencies used by GPH and local Whittle', '$H$: exponentul Hurst, peste 0,5 pentru memorie lungă; $m$: numărul de frecvențe joase folosite de GPH și Whittle local')],
+    9: [T('$\\hat f_h$: the estimated function for horizon $h$; $p$: the number of lags used; $\\mathbf z_{T+h}$: known regressors, e.g.\\ the calendar', '$\\hat f_h$: funcția estimată pentru orizontul $h$; $p$: numărul de laguri folosite; $\\mathbf z_{T+h}$: regresori cunoscuți, de exemplu calendarul'),
+        T('$\\lambda \\ge 0$: the strength of the penalty; $\\beta_j$: the coefficients; ridge shrinks them, lasso sets some exactly to 0', '$\\lambda \\ge 0$: intensitatea penalizării; $\\beta_j$: coeficienții; ridge îi micșorează, lasso îi anulează pe unii'),
+        T('$y_0$: a new observation; $\\sigma^2$: the noise variance, which no model can remove', '$y_0$: o observație nouă; $\\sigma^2$: varianța zgomotului, pe care niciun model nu o poate elimina')],
+    10: [T('$\\alpha_t$: the hidden state (e.g.\\ the level); $Z$, $T$, $R$: known system matrices; $\\varepsilon_t$, $\\eta_t$: the measurement and state noise', '$\\alpha_t$: starea ascunsă (de exemplu nivelul); $Z$, $T$, $R$: matricele cunoscute ale sistemului; $\\varepsilon_t$, $\\eta_t$: zgomotul de măsurare și cel al stării'),
+         T('$a_t$, $P_t$: the predicted state and its variance; $v_t = y_t - Za_t$: the prediction error, with variance $F_t$; $K_t$: the Kalman gain, the weight of the surprise', '$a_t$, $P_t$: starea prezisă și varianța ei; $v_t = y_t - Za_t$: eroarea de predicție, cu varianța $F_t$; $K_t$: cîștigul Kalman, ponderea surprizei'),
+         T('$p_{ii}$: the probability of staying in regime $i$; $\\pi_1$: the long-run share of regime 1', '$p_{ii}$: probabilitatea de a rămîne în regimul $i$; $\\pi_1$: ponderea pe termen lung a regimului 1')],
+}
+
 
 def review(k, title, formulas, fct, mistakes, size='footnotesize'):
-    """One recap slide per chapter: key formulas, empirical facts, common mistakes."""
-    D.frame(T(f'Chapter {k}: {title[0]}', f'Capitolul {k}: {title[1]}'),
-            items((FORM, formulas), (FACT, fct), (MIST, mistakes)), size)
+    """Two recap slides per chapter: key formulas with their notation; empirical facts and common mistakes."""
+    D.frame(T(f'Chapter {k}: {title[0]} (1/2)', f'Capitolul {k}: {title[1]} (1/2)'),
+            items((FORM, formulas), (NOTA, NOTE[k])), size)
+    D.frame(T(f'Chapter {k}: {title[0]} (2/2)', f'Capitolul {k}: {title[1]} (2/2)'),
+            items((FACT, fct), (MIST, mistakes)), size)
 
 
 # =============================================================================
@@ -399,7 +439,7 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), two(i
        '\\textbf{Întrebarea}: ce spune întregul curs despre o serie de timp și cum se evaluează aceste cunoștințe la examen?'),
      [T('one chapter that ties Chapters 0--14 together', 'un capitol care leagă Capitolele 0--14')]),
     (T('\\textbf{Route}', '\\textbf{Traseul}'),
-     [T('Part I: the course map, one recap slide per chapter, the toolbox of tests and models', 'Partea I: harta cursului, cîte un slide de recapitulare pentru fiecare capitol, trusa de teste și modele'),
+     [T('Part I: the course map, two recap slides per chapter, the toolbox of tests and models', 'Partea I: harta cursului, cîte două slide-uri de recapitulare pentru fiecare capitol, trusa de teste și modele'),
       T('Part II: the Box--Jenkins method from start to finish on Romanian inflation', 'Partea a II-a: metoda Box--Jenkins de la un capăt la altul, pe inflația din România'),
       T('Part III: the exam (format, grading, eight solved problems), the team project and attendance', 'Partea a III-a: examenul (format, criterii, opt probleme rezolvate), proiectul de echipă și prezența')]),
     T('Chapters 11--14 are for self-study', 'Capitolele 11--14 sînt pentru studiu individual')),
@@ -548,7 +588,7 @@ review(6, ('VAR models and Granger causality', 'modele VAR și cauzalitate Grang
        [T('Romanian VAR(2) of growth, inflation and ROBOR 3M: growth Granger-causes ROBOR, $F = @{f6.F}$, $p =$ @{f6.p}', 'VAR(2) pentru România (creștere, inflație, ROBOR 3M): creșterea cauzează Granger ROBOR, $F = @{f6.F}$, $p =$ @{f6.p}'),
         T('spillovers among the S\\&P 500, DAX and BET: @{f6.spt}\\% on average, @{f6.spm}\\% on @{f6.spd}', 'spillover între S\\&P 500, DAX și BET: în medie @{f6.spt}\\%, @{f6.spm}\\% la @{f6.spd}')],
        [T('reading Granger causality as causality (it is extra predictability)', 'interpretarea cauzalității Granger drept cauzalitate (este doar predictibilitate suplimentară)'),
-        T('IRFs reported without the ordering behind them; too many lags for a short sample', 'IRF raportate fără ordinea care stă la baza lor; prea multe decalaje pentru un eșantion scurt')])
+        T('IRFs reported without the ordering behind them; too many lags for a short sample', 'IRF raportate fără ordinea care stă la baza lor; prea multe laguri pentru un eșantion scurt')])
 
 review(7, ('Cointegration and VECM', 'cointegrare și VECM'),
        [T('Engle--Granger: OLS in levels, then ADF on residuals with MacKinnon critical values \\refEG; ECM half-life $\\ln 0.5/\\ln(1 + \\gamma)$', 'Engle--Granger: OLS în niveluri, apoi ADF pe reziduuri cu valorile critice MacKinnon \\refEG; timpul de înjumătățire al ECM $\\ln 0.5/\\ln(1 + \\gamma)$'),
@@ -579,7 +619,7 @@ review(8, ('Long memory and ARFIMA', 'memorie lungă și ARFIMA'),
 review(9, ('Machine learning for time series', 'învățare automată pentru serii de timp'),
        [T('direct forecast $\\hat y_{T+h} = \\hat f_h(y_T, \\dots, y_{T-p+1}, \\mathbf z_{T+h})$; ridge $+\\lambda\\sum\\beta_j^2$, lasso $+\\lambda\\sum|\\beta_j|$', 'prognoza directă $\\hat y_{T+h} = \\hat f_h(y_T, \\dots, y_{T-p+1}, \\mathbf z_{T+h})$; ridge $+\\lambda\\sum\\beta_j^2$, lasso $+\\lambda\\sum|\\beta_j|$'),
         T('bias--variance $E(y_0 - \\hat f)^2 = \\text{bias}^2 + \\mathrm{Var}(\\hat f) + \\sigma^2$; walk-forward validation only', 'deplasare--varianță $E(y_0 - \\hat f)^2 = \\text{deplasare}^2 + \\mathrm{Var}(\\hat f) + \\sigma^2$; doar validare walk-forward')],
-       [T('S\\&P 500, the same model: $R^2 = @{f9.kf}$ with random $k$-fold, $@{f9.wf}$ walk-forward: leakage', 'S\\&P 500, același model: $R^2 = @{f9.kf}$ cu $k$-fold aleator, $@{f9.wf}$ walk-forward: scurgere de informație'),
+       [T('S\\&P 500, the same model: $R^2 = @{f9.kf}$ with random $k$-fold, $@{f9.wf}$ walk-forward: leakage', 'S\\&P 500, același model: $R^2 = @{f9.kf}$ cu $k$-fold aleator, $@{f9.wf}$ walk-forward: leakage'),
         T('sign of returns: majority class @{f9.base}\\%, boosting @{f9.gb}\\%; daily load: ridge MASE @{f9.ridge}, LSTM @{f9.lstm} \\refMfour', 'semnul randamentelor: clasa majoritară @{f9.base}\\%, boosting @{f9.gb}\\%; consumul zilnic: ridge MASE @{f9.ridge}, LSTM @{f9.lstm} \\refMfour')],
        [T('random cross-validation and scaling on the whole sample (look-ahead)', 'validarea încrucișată aleatoare și scalarea pe tot eșantionul (look-ahead)'),
         T('trees on trending levels (they cannot extrapolate); no simple benchmark in the comparison', 'arbori pe niveluri cu trend (nu pot extrapola); comparații fără un reper simplu')])
@@ -667,13 +707,19 @@ D.frame(T('Toolbox (2/2): variance, several series, extensions', 'Trusa de instr
     size='footnotesize'))
 
 D.frame(T('Conventions used throughout the course', 'Convențiile folosite în tot cursul'), items(
-    (T('\\textbf{Transformations}: $100\\ln y_t$; growth $100\\Delta\\ln y_t$; annual rates $100\\Delta_{12}\\ln y_t$ (monthly), $100\\Delta_4\\ln y_t$ (quarterly)', '\\textbf{Transformările}: $100\\ln y_t$; creșterea $100\\Delta\\ln y_t$; ratele anuale $100\\Delta_{12}\\ln y_t$ (lunar), $100\\Delta_4\\ln y_t$ (trimestrial)'),
-     [T('``DLOG(IPC,1,12)\'\' in EViews output is $\\Delta\\Delta_{12}\\ln$ IPC', '„DLOG(IPC,1,12)” în rezultatele EViews înseamnă $\\Delta\\Delta_{12}\\ln$ IPC')]),
-    (T('\\textbf{Tests}: state $H_0$, the statistic, its distribution, the critical value or $p$-value, the decision at 5\\%', '\\textbf{Testele}: precizăm $H_0$, statistica, distribuția ei, valoarea critică sau $p$-valoarea, decizia la 5\\%'),
-     [T('then one sentence on what the decision means for the series', 'apoi o frază despre semnificația deciziei pentru serie')]),
-    (T('\\textbf{Model choice}: AIC, AICc and BIC only on the same sample and the same $d$, $D$', '\\textbf{Alegerea modelului}: AIC, AICc și BIC doar pe același eșantion și cu aceleași $d$, $D$'),
-     [T('forecasts are judged out of sample, against the naive and seasonal naive methods', 'prognozele se judecă în afara eșantionului, față de metodele naivă și naivă sezonieră')]),
-    T('\\textbf{Risk}: the level is the tail probability: VaR 1\\%, a positive loss, $\\mathrm{VaR}_\\alpha = -q_\\alpha$', '\\textbf{Riscul}: nivelul este probabilitatea cozii: VaR 1\\%, o pierdere pozitivă, $\\mathrm{VaR}_\\alpha = -q_\\alpha$')))
+    (T('\\textbf{Transformations}', '\\textbf{Transformările}'),
+         [T('$100\\ln y_t$', '$100\\ln y_t$'),
+          T('growth $100\\Delta\\ln y_t$', 'creșterea $100\\Delta\\ln y_t$'),
+          T('annual rates $100\\Delta_{12}\\ln y_t$ (monthly), $100\\Delta_4\\ln y_t$ (quarterly)', 'ratele anuale $100\\Delta_{12}\\ln y_t$ (lunar), $100\\Delta_4\\ln y_t$ (trimestrial)'),
+          T('``DLOG(IPC,1,12)\'\' in EViews output is $\\Delta\\Delta_{12}\\ln$ IPC', '„DLOG(IPC,1,12)” în rezultatele EViews înseamnă $\\Delta\\Delta_{12}\\ln$ IPC')]),
+    (T('\\textbf{Tests}', '\\textbf{Testele}'),
+         [T('state $H_0$, the statistic, its distribution, the critical value or $p$-value, the decision at 5\\%', 'precizăm $H_0$, statistica, distribuția ei, valoarea critică sau p-value-ul, decizia la 5\\%'),
+          T('then one sentence on what the decision means for the series', 'apoi o frază despre semnificația deciziei pentru serie')]),
+    (T('\\textbf{Model choice}', '\\textbf{Alegerea modelului}'),
+         [T('AIC, AICc and BIC only on the same sample and the same $d$, $D$', 'AIC, AICc și BIC doar pe același eșantion și cu aceleași $d$, $D$'),
+          T('forecasts are judged out of sample, against the naive and seasonal naive methods', 'prognozele se judecă în afara eșantionului, față de metodele naivă și naivă sezonieră')]),
+    (T('\\textbf{Risk}', '\\textbf{Riscul}'),
+         [T('the level is the tail probability: VaR 1\\%, a positive loss, $\\mathrm{VaR}_\\alpha = -q_\\alpha$', 'nivelul este probabilitatea cozii: VaR 1\\%, o pierdere pozitivă, $\\mathrm{VaR}_\\alpha = -q_\\alpha$')])))
 
 # =============================================================================
 # 7. BOX-JENKINS PE INFLAȚIA DIN ROMÂNIA
@@ -695,12 +741,16 @@ chart(T('Step 1: the data', 'Pasul 1: datele'), 'tsa_ch15_bj_data', 'TSA_ch15_bo
     h='0.6\\textheight')
 
 interp(('the data', 'datelor'), [
-    (T('\\textbf{Trend}: the index rises almost every month; the logarithm is the natural scale', '\\textbf{Trend}: indicele crește aproape în fiecare lună; logaritmul este scala firească'),
-     [T('monthly inflation averages @{bj.meanm}\\%; annual inflation ranges from $@{bj.mina}\\%$ (@{bj.minad}) to @{bj.maxa}\\% (@{bj.maxad})', 'inflația lunară are media @{bj.meanm}\\%; inflația anuală variază între $@{bj.mina}\\%$ (@{bj.minad}) și @{bj.maxa}\\% (@{bj.maxad})')]),
-    (T('\\textbf{Seasonality}: January averages @{bj.mjan}\\%, June $@{bj.mjun}\\%$ (fresh food)', '\\textbf{Sezonalitatea}: ianuarie are în medie @{bj.mjan}\\%, iunie $@{bj.mjun}\\%$ (alimentele proaspete)'),
-     [T('a seasonal pattern in $\\Delta\\ln P_t$: we will need $\\Delta_{12}$ or seasonal terms', 'un tipar sezonier în $\\Delta\\ln P_t$: vom avea nevoie de $\\Delta_{12}$ sau de termeni sezonieri')]),
-    (T('\\textbf{Shocks}: tax changes move prices in one month', '\\textbf{Șocurile}: modificările de taxe mută prețurile într-o singură lună'),
-     [T('July--August 2025: end of the electricity price caps and a higher VAT; annual inflation from @{bj.a2507}\\% to @{bj.a2508}\\%', 'iulie--august 2025: încetarea plafonării prețului la electricitate și creșterea TVA; inflația anuală de la @{bj.a2507}\\% la @{bj.a2508}\\%')])])
+    (T('\\textbf{Trend}', '\\textbf{Trend}'),
+         [T('the index rises almost every month', 'indicele crește aproape în fiecare lună'),
+          T('the logarithm is the natural scale', 'logaritmul este scala firească'),
+          T('monthly inflation averages @{bj.meanm}\\%; annual inflation ranges from $@{bj.mina}\\%$ (@{bj.minad}) to @{bj.maxa}\\% (@{bj.maxad})', 'inflația lunară are media @{bj.meanm}\\%; inflația anuală variază între $@{bj.mina}\\%$ (@{bj.minad}) și @{bj.maxa}\\% (@{bj.maxad})')]),
+    (T('\\textbf{Seasonality}', '\\textbf{Sezonalitatea}'),
+         [T('January averages @{bj.mjan}\\%, June $@{bj.mjun}\\%$ (fresh food)', 'ianuarie are în medie @{bj.mjan}\\%, iunie $@{bj.mjun}\\%$ (alimentele proaspete)'),
+          T('a seasonal pattern in $\\Delta\\ln P_t$: we will need $\\Delta_{12}$ or seasonal terms', 'un tipar sezonier în $\\Delta\\ln P_t$: vom avea nevoie de $\\Delta_{12}$ sau de termeni sezonieri')]),
+    (T('\\textbf{Shocks}', '\\textbf{Șocurile}'),
+         [T('tax changes move prices in one month', 'modificările de taxe mută prețurile într-o singură lună'),
+          T('July--August 2025: end of the electricity price caps and a higher VAT; annual inflation from @{bj.a2507}\\% to @{bj.a2508}\\%', 'iulie--august 2025: încetarea plafonării prețului la electricitate și creșterea TVA; inflația anuală de la @{bj.a2507}\\% la @{bj.a2508}\\%')])])
 
 D.frame(T('Step 2: unit-root and stationarity tests', 'Pasul 2: teste de rădăcină unitară și de staționaritate'), table(
     'lccccc', T('\\textbf{Series}', '\\textbf{Seria}') + ' & ' + T('\\textbf{Terms}', '\\textbf{Termeni}') + ' & ADF $\\tau$ & $p$ & ' + T('KPSS $\\eta$ (5\\%: crit.)', 'KPSS $\\eta$ (5\\%: val. critică)') + ' & ' + T('\\textbf{Verdict}', '\\textbf{Verdict}'),
@@ -709,20 +759,24 @@ D.frame(T('Step 2: unit-root and stationarity tests', 'Pasul 2: teste de rădăc
      '$\\Delta_{12}\\ln P_t$ & ' + T('const.', 'const.') + ' & $@{ts.a.adf}$ & @{ts.a.p} & @{ts.a.kpss} (@{ts.a.kcv}) & ' + T('inconclusive', 'neconcludent'),
      '$z_t = \\Delta\\Delta_{12}\\ln P_t$ & ' + T('const.', 'const.') + ' & $@{ts.z.adf}$ & @{ts.z.p} & @{ts.z.kpss} (@{ts.z.kcv}) & ' + T('stationary', 'staționară')],
     size='footnotesize') + items(
-    T('ADF: $H_0$ unit root, lags by AIC \\refDF; KPSS: $H_0$ stationarity \\refKPSS; 5\\% ADF critical values $@{ts.y.cv}$ (with trend), $@{ts.z.cv}$ (constant)', 'ADF: $H_0$ rădăcină unitară, decalaje după AIC \\refDF; KPSS: $H_0$ staționaritate \\refKPSS; valorile critice ADF la 5\\%: $@{ts.y.cv}$ (cu trend), $@{ts.z.cv}$ (cu constantă)'),
+    T('ADF: $H_0$ unit root, lags by AIC \\refDF; KPSS: $H_0$ stationarity \\refKPSS; 5\\% ADF critical values $@{ts.y.cv}$ (with trend), $@{ts.z.cv}$ (constant)', 'ADF: $H_0$ rădăcină unitară, laguri după AIC \\refDF; KPSS: $H_0$ staționaritate \\refKPSS; valorile critice ADF la 5\\%: $@{ts.y.cv}$ (cu trend), $@{ts.z.cv}$ (cu constantă)'),
     T('Annual inflation: neither ADF nor KPSS rejects: an inconclusive result, as in Chapter 3', 'Inflația anuală: nici ADF, nici KPSS nu respinge: un rezultat neconcludent, ca în Capitolul 3'),
     T('Decision: $d = 1$, $D = 1$: we model $z_t$, both tests agree that it is stationary', 'Decizia: $d = 1$, $D = 1$: modelăm $z_t$, iar ambele teste arată că este staționară')) + ql('TSA_ch15_box_jenkins'), 'footnotesize')
 
 chart(T('Step 3: identification from the correlogram of $z_t$', 'Pasul 3: identificarea din corelograma lui $z_t$'), 'tsa_ch15_bj_acf', 'TSA_ch15_box_jenkins', [
-    T('ACF and PACF of $z_t = \\Delta\\Delta_{12}\\ln P_t$, lags 1--36, $T = @{ac.n}$; seasonal lags in red; band $\\pm @{ac.band}$', 'ACF și PACF pentru $z_t = \\Delta\\Delta_{12}\\ln P_t$, decalajele 1--36, $T = @{ac.n}$; decalajele sezoniere în roșu; banda $\\pm @{ac.band}$')],
+    T('ACF and PACF of $z_t = \\Delta\\Delta_{12}\\ln P_t$, lags 1--36, $T = @{ac.n}$; seasonal lags in red; band $\\pm @{ac.band}$', 'ACF și PACF pentru $z_t = \\Delta\\Delta_{12}\\ln P_t$, lagurile 1--36, $T = @{ac.n}$; lagurile sezoniere în roșu; banda $\\pm @{ac.band}$')],
     h='0.55\\textheight')
 
 interp(('the correlogram', 'corelogramei'), [
-    (T('\\textbf{Regular part}: $\\hat\\rho_1 = @{ac.r1}$, $\\hat\\rho_2 = @{ac.r2}$; PACF $\\hat\\phi_{11} = @{ac.p1}$, then small: an AR(1)', '\\textbf{Partea obișnuită}: $\\hat\\rho_1 = @{ac.r1}$, $\\hat\\rho_2 = @{ac.r2}$; PACF $\\hat\\phi_{11} = @{ac.p1}$, apoi mici: un AR(1)'),
-     [T('an MA(1) is also possible: ACF and PACF both shrink after lag 1', 'este posibil și un MA(1): ACF și PACF scad amîndouă după decalajul 1')]),
-    (T('\\textbf{Seasonal part}: ACF $@{ac.r12}$ at lag 12, then $@{ac.r24}$ at 24; PACF $@{ac.p12}$, $@{ac.p24}$, $@{ac.p36}$ at 12, 24, 36', '\\textbf{Partea sezonieră}: ACF $@{ac.r12}$ la decalajul 12, apoi $@{ac.r24}$ la 24; PACF $@{ac.p12}$, $@{ac.p24}$, $@{ac.p36}$ la 12, 24, 36'),
-     [T('one seasonal ACF spike and a decaying seasonal PACF: a seasonal MA(1)', 'o singură valoare sezonieră mare în ACF și o PACF sezonieră care descrește: un MA(1) sezonier')]),
-    T('First candidate: SARIMA$(1,1,0)(0,1,1)_{12}$ for $\\ln P_t$; the satellites at lags 11 and 13 are the product $\\rho_1\\rho_{12}$', 'Primul candidat: SARIMA$(1,1,0)(0,1,1)_{12}$ pentru $\\ln P_t$; sateliții de la decalajele 11 și 13 sînt produsul $\\rho_1\\rho_{12}$')])
+    (T('\\textbf{Regular part}', '\\textbf{Partea obișnuită}'),
+         [T('$\\hat\\rho_1 = @{ac.r1}$, $\\hat\\rho_2 = @{ac.r2}$', '$\\hat\\rho_1 = @{ac.r1}$, $\\hat\\rho_2 = @{ac.r2}$'),
+          T('PACF $\\hat\\phi_{11} = @{ac.p1}$, then small: an AR(1)', 'PACF $\\hat\\phi_{11} = @{ac.p1}$, apoi mici: un AR(1)'),
+          T('an MA(1) is also possible: ACF and PACF both shrink after lag 1', 'este posibil și un MA(1): ACF și PACF scad amîndouă după lagul 1')]),
+    (T('\\textbf{Seasonal part}', '\\textbf{Partea sezonieră}'),
+         [T('ACF $@{ac.r12}$ at lag 12, then $@{ac.r24}$ at 24', 'ACF $@{ac.r12}$ la lagul 12, apoi $@{ac.r24}$ la 24'),
+          T('PACF $@{ac.p12}$, $@{ac.p24}$, $@{ac.p36}$ at 12, 24, 36', 'PACF $@{ac.p12}$, $@{ac.p24}$, $@{ac.p36}$ la 12, 24, 36'),
+          T('one seasonal ACF spike and a decaying seasonal PACF: a seasonal MA(1)', 'o singură valoare sezonieră mare în ACF și o PACF sezonieră care descrește: un MA(1) sezonier')]),
+    T('First candidate: SARIMA$(1,1,0)(0,1,1)_{12}$ for $\\ln P_t$; the satellites at lags 11 and 13 are the product $\\rho_1\\rho_{12}$', 'Primul candidat: SARIMA$(1,1,0)(0,1,1)_{12}$ pentru $\\ln P_t$; sateliții de la lagurile 11 și 13 sînt produsul $\\rho_1\\rho_{12}$')])
 
 GH = (T('\\textbf{Model}', '\\textbf{Modelul}') + ' & ' + T('param.', 'param.') + ' & AICc & BIC & ' + T('LB(12) $p$', 'LB(12) $p$') + ' & ' + T('LB(24) $p$', 'LB(24) $p$'))
 D.frame(T('Step 4: estimating the candidates', 'Pasul 4: estimarea candidaților'), table(
@@ -732,7 +786,7 @@ D.frame(T('Step 4: estimating the candidates', 'Pasul 4: estimarea candidaților
     size='footnotesize') + items(
     T('All @{gr.n} SARIMA$(p,1,q)(P,1,Q)_{12}$ with $p, q \\le 2$, $P, Q \\le 1$, on the training sample to @{gr.trlast} ($T = @{gr.ntr}$); sorted by BIC', 'Toate cele @{gr.n} de modele SARIMA$(p,1,q)(P,1,Q)_{12}$ cu $p, q \\le 2$, $P, Q \\le 1$, pe eșantionul de antrenare pînă în @{gr.trlast} ($T = @{gr.ntr}$); ordonate după BIC'),
     T('param.: all estimated parameters, the variance included; Ljung--Box on the residuals with $m - k$ degrees of freedom, $k$ = the ARMA parameters', 'param.: toți parametrii estimați, inclusiv varianța; Ljung--Box pe reziduuri cu $m - k$ grade de libertate, $k$ = parametrii ARMA'),
-    T('The identified model fails the residual check; the lowest BIC, $@{gr.best}$, fails at lag 12; the chosen model is $@{gr.chosen}_{12}$, the lowest BIC among the models that pass', 'Modelul identificat nu trece verificarea reziduurilor; cel mai mic BIC, $@{gr.best}$, eșuează la decalajul 12; modelul ales este $@{gr.chosen}_{12}$, cel mai mic BIC dintre modelele care trec')) + ql('TSA_ch15_box_jenkins'), 'footnotesize')
+    T('The identified model fails the residual check; the lowest BIC, $@{gr.best}$, fails at lag 12; the chosen model is $@{gr.chosen}_{12}$, the lowest BIC among the models that pass', 'Modelul identificat nu trece verificarea reziduurilor; cel mai mic BIC, $@{gr.best}$, eșuează la lagul 12; modelul ales este $@{gr.chosen}_{12}$, cel mai mic BIC dintre modelele care trec')) + ql('TSA_ch15_box_jenkins'), 'footnotesize')
 
 D.frame(T('Step 4: the chosen model', 'Pasul 4: modelul ales'), table(
     'lcccc', T('\\textbf{Parameter}', '\\textbf{Parametrul}') + ' & ' + T('\\textbf{Estimate}', '\\textbf{Estimarea}') + ' & SE & $z$ & $p$',
@@ -751,10 +805,12 @@ chart(T('Step 5: checking the residuals', 'Pasul 5: verificarea reziduurilor'), 
     h='0.55\\textheight')
 
 interp(('the residual checks', 'verificării reziduurilor'), [
-    (T('\\textbf{No autocorrelation left}: Ljung--Box $Q(12) = @{dg.lb12}$ ($@{dg.lb12df}$ df, $p = @{dg.lb12p}$), $Q(24) = @{dg.lb24}$ ($p = @{dg.lb24p}$)', '\\textbf{Nu mai rămîne autocorelație}: Ljung--Box $Q(12) = @{dg.lb12}$ ($@{dg.lb12df}$ grade de libertate, $p = @{dg.lb12p}$), $Q(24) = @{dg.lb24}$ ($p = @{dg.lb24p}$)'),
-     [T('the identified model had $p = @{di.lb12p}$ and @{di.lb24p}: the extra AR and MA terms reduce the autocorrelation at lags 6--7', 'modelul identificat avea $p = @{di.lb12p}$ și @{di.lb24p}: termenii AR și MA în plus reduc autocorelația de la decalajele 6--7')]),
-    (T('\\textbf{Not Normal}: Jarque--Bera @{dg.jb}, kurtosis @{dg.kurt}', '\\textbf{Nu este Normal}: Jarque--Bera @{dg.jb}, coeficientul de boltire @{dg.kurt}'),
-     [T('the two largest residuals: @{dg.big1} ($@{dg.big1v}\\sigma$, the VAT cut on food) and @{dg.big2} ($@{dg.big2v}\\sigma$, the VAT increase)', 'cele mai mari două reziduuri: @{dg.big1} ($@{dg.big1v}\\sigma$, reducerea TVA la alimente) și @{dg.big2} ($@{dg.big2v}\\sigma$, creșterea TVA)')]),
+    (T('\\textbf{No autocorrelation left}', '\\textbf{Nu mai rămîne autocorelație}'),
+         [T('Ljung--Box $Q(12) = @{dg.lb12}$ ($@{dg.lb12df}$ df, $p = @{dg.lb12p}$), $Q(24) = @{dg.lb24}$ ($p = @{dg.lb24p}$)', 'Ljung--Box $Q(12) = @{dg.lb12}$ ($@{dg.lb12df}$ grade de libertate, $p = @{dg.lb12p}$), $Q(24) = @{dg.lb24}$ ($p = @{dg.lb24p}$)'),
+          T('the identified model had $p = @{di.lb12p}$ and @{di.lb24p}: the extra AR and MA terms reduce the autocorrelation at lags 6--7', 'modelul identificat avea $p = @{di.lb12p}$ și @{di.lb24p}: termenii AR și MA în plus reduc autocorelația de la lagurile 6--7')]),
+    (T('\\textbf{Not Normal}', '\\textbf{Nu este Normal}'),
+         [T('Jarque--Bera @{dg.jb}, kurtosis @{dg.kurt}', 'Jarque--Bera @{dg.jb}, coeficientul de boltire @{dg.kurt}'),
+          T('the two largest residuals: @{dg.big1} ($@{dg.big1v}\\sigma$, the VAT cut on food) and @{dg.big2} ($@{dg.big2v}\\sigma$, the VAT increase)', 'cele mai mari două reziduuri: @{dg.big1} ($@{dg.big1v}\\sigma$, reducerea TVA la alimente) și @{dg.big2} ($@{dg.big2v}\\sigma$, creșterea TVA)')]),
     T('Consequence: point forecasts are fine, Normal intervals are too narrow when taxes change; dummies for known tax changes would help', 'Consecința: prognozele punctuale sînt bune, dar intervalele Normale sînt prea înguste cînd se schimbă taxele; variabile dummy pentru modificările de taxe cunoscute ar ajuta')])
 
 chart(T('Step 6: forecasts', 'Pasul 6: prognoze'), 'tsa_ch15_bj_forecast', 'TSA_ch15_box_jenkins', [
@@ -793,23 +849,29 @@ D.frame(T('The written exam: format', 'Examenul scris: formatul'), two(items(
     ph('ins', T('The National Institute of Statistics, Bucharest: the source of many exam series', 'Institutul Național de Statistică, București: sursa multor serii de examen'), h='0.40\\textheight')))
 
 D.frame(T('Content assessed', 'Conținutul evaluat'), items(
-    (T('\\textbf{Chapters 0--10}: lectures and seminars', '\\textbf{Capitolele 0--10}: cursuri și seminarii'),
-     [T('the definitions and formulas of the ``What you need today\'\' slides of every seminar', 'definițiile și formulele de pe slide-urile „Noțiuni necesare azi” ale fiecărui seminar'),
-      T('the computations of Part A of the seminars, on paper', 'calculele din Partea A a seminariilor, pe hîrtie')]),
-    (T('\\textbf{Reading output}: tables like those of Part B and of this chapter', '\\textbf{Citirea rezultatelor}: tabele ca în Partea B și ca în acest capitol'),
-     [T('EViews or Python output: the same numbers under different names (AR(1), ar.L1; SAR(12), ar.S.L12)', 'rezultate EViews sau Python: aceleași cifre sub alte nume (AR(1), ar.L1; SAR(12), ar.S.L12)'),
-      T('no code is written at the exam', 'la examen nu se scrie cod')]),
-    (T('\\textbf{Core weight}: ARIMA and SARIMA, unit roots, VAR and Granger causality, cointegration and VECM, GARCH', '\\textbf{Ponderea principală}: ARIMA și SARIMA, rădăcini unitare, VAR și cauzalitate Granger, cointegrare și VECM, GARCH'),
-     [SELF])))
+    (T('\\textbf{Chapters 0--10}', '\\textbf{Capitolele 0--10}'),
+         [T('lectures and seminars', 'cursuri și seminarii'),
+          T('the definitions and formulas of the ``Prerequisites for Today\'\' slides of every seminar', 'definițiile și formulele de pe slide-urile „Noțiuni necesare azi” ale fiecărui seminar'),
+          T('the computations of Part A of the seminars, on paper', 'calculele din Partea A a seminariilor, pe hîrtie')]),
+    (T('\\textbf{Reading output}', '\\textbf{Citirea rezultatelor}'),
+         [T('tables like those of Part B and of this chapter', 'tabele ca în Partea B și ca în acest capitol'),
+          T('EViews or Python output: the same numbers under different names (AR(1), ar.L1; SAR(12), ar.S.L12)', 'rezultate EViews sau Python: aceleași cifre sub alte nume (AR(1), ar.L1; SAR(12), ar.S.L12)'),
+          T('no code is written at the exam', 'la examen nu se scrie cod')]),
+    (T('\\textbf{Core weight}', '\\textbf{Ponderea principală}'),
+         [T('ARIMA and SARIMA, unit roots, VAR and Granger causality, cointegration and VECM, GARCH', 'ARIMA și SARIMA, rădăcini unitare, VAR și cauzalitate Granger, cointegrare și VECM, GARCH'),
+          SELF])))
 
 D.frame(T('Grading criteria', 'Criterii de notare'), items(
-    (T('\\textbf{The method}: the formula or the equation, with the numbers substituted', '\\textbf{Metoda}: formula sau ecuația, cu cifrele înlocuite'),
-     [T('a correct method with an arithmetic slip receives most of the points', 'o metodă corectă cu o greșeală de calcul primește cea mai mare parte a punctajului')]),
-    (T('\\textbf{The result}: the number with its unit (\\%, percentage points, months) and its sign', '\\textbf{Rezultatul}: cifra, cu unitatea de măsură (\\%, puncte procentuale, luni) și semnul ei'),
-     [T('for a test: $H_0$, the statistic, the critical value or the $p$-value, the decision', 'pentru un test: $H_0$, statistica, valoarea critică sau $p$-valoarea, decizia')]),
-    (T('\\textbf{The interpretation}: three to five sentences, statistical and economic', '\\textbf{Interpretarea}: trei pînă la cinci fraze, statistice și economice'),
-     [T('a correct number with a wrong interpretation does not receive all the points', 'o cifră corectă cu o interpretare greșită nu primește tot punctajul'),
-      T('say what the model cannot show (causality, structural breaks, the future of policy)', 'precizați ce nu poate arăta modelul (cauzalitatea, rupturile structurale, viitorul politicilor)')])))
+    (T('\\textbf{The method}', '\\textbf{Metoda}'),
+         [T('the formula or the equation, with the numbers substituted', 'formula sau ecuația, cu cifrele înlocuite'),
+          T('a correct method with an arithmetic slip receives most of the points', 'o metodă corectă cu o greșeală de calcul primește cea mai mare parte a punctajului')]),
+    (T('\\textbf{The result}', '\\textbf{Rezultatul}'),
+         [T('the number with its unit (\\%, percentage points, months) and its sign', 'cifra, cu unitatea de măsură (\\%, puncte procentuale, luni) și semnul ei'),
+          T('for a test: $H_0$, the statistic, the critical value or the $p$-value, the decision', 'pentru un test: $H_0$, statistica, valoarea critică sau p-value-ul, decizia')]),
+    (T('\\textbf{The interpretation}', '\\textbf{Interpretarea}'),
+         [T('three to five sentences, statistical and economic', 'trei pînă la cinci fraze, statistice și economice'),
+          T('a correct number with a wrong interpretation does not receive all the points', 'o cifră corectă cu o interpretare greșită nu primește tot punctajul'),
+          T('say what the model cannot show (causality, structural breaks, the future of policy)', 'precizați ce nu poate arăta modelul (cauzalitatea, rupturile structurale, viitorul politicilor)')])))
 
 D.frame(T('Typical problem types', 'Tipuri de probleme'), table(
     TB + 'p{4.6cm}' + TB + 'p{1.4cm}' + TB + 'p{5.2cm}',
@@ -861,7 +923,7 @@ P2OUT = table('lcccccc',
               size='scriptsize')
 problem(2, ('identifying Romanian GDP', 'identificarea PIB-ului României'),
         [T('Romanian real GDP, seasonally adjusted (Eurostat), @{e2.first} -- @{e2.last}', 'PIB-ul real al României, ajustat sezonier (Eurostat), @{e2.first} -- @{e2.last}'),
-         T('Growth $g_t = 100\\Delta\\ln Y_t$: ACF $@{e2.r1}$, $@{e2.r2}$; PACF $@{e2.p1}$, $@{e2.p2}$ (lags 1, 2; band $\\pm @{e2.band}$); Ljung--Box $Q(8) = @{e2.lb8}$, $p = @{e2.lb8p}$; $\\chi^2_{0.95}(8) = @{e2.chi8}$', 'Creșterea $g_t = 100\\Delta\\ln Y_t$: ACF $@{e2.r1}$; $@{e2.r2}$; PACF $@{e2.p1}$; $@{e2.p2}$ (decalajele 1, 2; banda $\\pm @{e2.band}$); Ljung--Box $Q(8) = @{e2.lb8}$, $p = @{e2.lb8p}$; $\\chi^2_{0,95}(8) = @{e2.chi8}$')],
+         T('Growth $g_t = 100\\Delta\\ln Y_t$: ACF $@{e2.r1}$, $@{e2.r2}$; PACF $@{e2.p1}$, $@{e2.p2}$ (lags 1, 2; band $\\pm @{e2.band}$); Ljung--Box $Q(8) = @{e2.lb8}$, $p = @{e2.lb8p}$; $\\chi^2_{0.95}(8) = @{e2.chi8}$', 'Creșterea $g_t = 100\\Delta\\ln Y_t$: ACF $@{e2.r1}$; $@{e2.r2}$; PACF $@{e2.p1}$; $@{e2.p2}$ (lagurile 1, 2; banda $\\pm @{e2.band}$); Ljung--Box $Q(8) = @{e2.lb8}$, $p = @{e2.lb8p}$; $\\chi^2_{0,95}(8) = @{e2.chi8}$')],
         [T('Describe the ADF test and decide whether $\\ln Y_t$ and $g_t$ are stationary.', 'Descrieți testul ADF și decideți dacă $\\ln Y_t$ și $g_t$ sînt staționare.'),
          T('Say whether KPSS agrees.', 'Precizați dacă testul KPSS confirmă rezultatul.'),
          T('Identify the process with the Box--Jenkins method.', 'Identificați procesul cu metoda Box--Jenkins.'),
@@ -916,7 +978,7 @@ problem(4, ('VAR output and Granger causality', 'rezultate VAR și cauzalitate G
          T('Recompute the first $F$ from $RSS_R = @{e4.rssr}$ and $RSS_U = @{e4.rssu}$.', 'Recalculați primul $F$ din $RSS_R = @{e4.rssr}$ și $RSS_U = @{e4.rssu}$.')],
         size='scriptsize', extra=P4OUT)
 solution(4, [
-    T('$x$ Granger-causes $y$ if the lags of $x$ improve the forecast of $y$ given the lags of $y$ (joint $F$ test) \\refGranger; growth and inflation help to forecast ROBOR ($p =$ @{e4.p.gi} and @{e4.p.pii}); ROBOR does not help to forecast inflation ($p = @{e4.p.ipi}$)', '$x$ cauzează Granger $y$ dacă decalajele lui $x$ îmbunătățesc prognoza lui $y$, dată fiind istoria lui $y$ (test $F$ comun) \\refGranger; creșterea și inflația ajută la prognoza ROBOR ($p =$ @{e4.p.gi} și @{e4.p.pii}); ROBOR nu ajută la prognoza inflației ($p = @{e4.p.ipi}$)'),
+    T('$x$ Granger-causes $y$ if the lags of $x$ improve the forecast of $y$ given the lags of $y$ (joint $F$ test) \\refGranger; growth and inflation help to forecast ROBOR ($p =$ @{e4.p.gi} and @{e4.p.pii}); ROBOR does not help to forecast inflation ($p = @{e4.p.ipi}$)', '$x$ cauzează Granger $y$ dacă lagurile lui $x$ îmbunătățesc prognoza lui $y$, dată fiind istoria lui $y$ (test $F$ comun) \\refGranger; creșterea și inflația ajută la prognoza ROBOR ($p =$ @{e4.p.gi} și @{e4.p.pii}); ROBOR nu ajută la prognoza inflației ($p = @{e4.p.ipi}$)'),
     T('$i_t = @{e4.b.const} + @{e4.b.L1.g}g_{t-1} + @{e4.b.L2.g}g_{t-2} + @{e4.b.L1.pi}\\pi_{t-1} + (@{e4.b.L2.pi})\\pi_{t-2} + @{e4.b.L1.i}i_{t-1} + (@{e4.b.L2.i})i_{t-2} + u_t$', '$i_t = @{e4.b.const} + @{e4.b.L1.g}g_{t-1} + @{e4.b.L2.g}g_{t-2} + @{e4.b.L1.pi}\\pi_{t-1} + (@{e4.b.L2.pi})\\pi_{t-2} + @{e4.b.L1.i}i_{t-1} + (@{e4.b.L2.i})i_{t-2} + u_t$'),
     T('Long run ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b.L1.pi} + (@{e4.b.L2.pi}))/(1 - @{e4.b.L1.i} - (@{e4.b.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp', 'Pe termen lung ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b.L1.pi} + (@{e4.b.L2.pi}))/(1 - @{e4.b.L1.i} - (@{e4.b.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp'),
     T('$F = \\frac{(@{e4.rssr} - @{e4.rssu})/2}{@{e4.rssu}/@{e4.df2}} = @{e4.F} > F_{0.95}(2, @{e4.df2}) = @{e4.crit}$: $H_0$ rejected', '$F = \\frac{(@{e4.rssr} - @{e4.rssu})/2}{@{e4.rssu}/@{e4.df2}} = @{e4.F} > F_{0,95}(2, @{e4.df2}) = @{e4.crit}$: $H_0$ se respinge')],
@@ -930,7 +992,7 @@ P5OUT = (table('lcccc', T('\\textbf{Johansen trace test}', '\\textbf{Testul urme
                  ['EC1 & $@{e5.a11}$ [$@{e5.t11}$] & $@{e5.a51}$ [$@{e5.t51}$] & $@{e5.a101}$ [$@{e5.t101}$]',
                   'EC2 & $@{e5.a12}$ [$@{e5.t12}$] & $@{e5.a52}$ [$@{e5.t52}$] & $@{e5.a102}$ [$@{e5.t102}$]'], size='scriptsize'))
 problem(5, ('cointegration and VECM output', 'rezultate de cointegrare și VECM'),
-        [T('US Treasury yields at 1, 5 and 10 years (monthly, FRED), @{e5.first} -- @{e5.last}, VECM with two lagged differences', 'Randamentele titlurilor de stat ale SUA la 1, 5 și 10 ani (lunar, FRED), @{e5.first} -- @{e5.last}, VECM cu două diferențe decalate'),
+        [T('US Treasury yields at 1, 5 and 10 years (monthly, FRED), @{e5.first} -- @{e5.last}, VECM with two lagged differences', 'Randamentele titlurilor de stat ale SUA la 1, 5 și 10 ani (lunar, FRED), @{e5.first} -- @{e5.last}, VECM cu două laguri ale diferențelor'),
          T('Cointegrating equations: EC1 $= y^{(1)}_{t-1} - @{e5.b13}\\,y^{(10)}_{t-1} + @{e5.c1}$; EC2 $= y^{(5)}_{t-1} - @{e5.b23}\\,y^{(10)}_{t-1} + @{e5.c2}$', 'Ecuațiile de cointegrare: EC1 $= y^{(1)}_{t-1} - @{e5.b13}\\,y^{(10)}_{t-1} + @{e5.c1}$; EC2 $= y^{(5)}_{t-1} - @{e5.b23}\\,y^{(10)}_{t-1} + @{e5.c2}$')],
         [T('Define cointegration and decide the rank.', 'Definiți cointegrarea și decideți rangul.'),
          T('Write the error-correction part of the equation for $\\Delta y^{(10)}_t$ and say which yields adjust.', 'Scrieți partea de corecție a erorii din ecuația pentru $\\Delta y^{(10)}_t$ și precizați care randamente se ajustează.'),
@@ -976,7 +1038,7 @@ problem(7, ('evaluating forecasts', 'evaluarea prognozelor'),
 solution(7, [
     T('SARIMA: RMSE @{e7.rA}, MAE @{e7.mA}, MASE @{e7.qA}; seasonal naive: RMSE @{e7.rB}, MAE @{e7.mB}, MASE @{e7.qB}', 'SARIMA: RMSE @{e7.rA}, MAE @{e7.mA}, MASE @{e7.qA}; naiv sezonier: RMSE @{e7.rB}, MAE @{e7.mB}, MASE @{e7.qB}'),
     T('$d_t = e_{A,t}^2 - e_{B,t}^2$: $@{e7.d1}$, $@{e7.d2}$, $@{e7.d3}$, $@{e7.d4}$, $@{e7.d5}$, $@{e7.d6}$; $\\bar d = @{e7.db}$, $s_d = @{e7.sd}$; DM $= @{e7.dm}$, $|@{e7.dm}| < @{e7.crit}$: equal accuracy is not rejected', '$d_t = e_{A,t}^2 - e_{B,t}^2$: $@{e7.d1}$; $@{e7.d2}$; $@{e7.d3}$; $@{e7.d4}$; $@{e7.d5}$; $@{e7.d6}$; $\\bar d = @{e7.db}$, $s_d = @{e7.sd}$; DM $= @{e7.dm}$, $|@{e7.dm}| < @{e7.crit}$: acuratețea egală nu se respinge'),
-    T('Random folds put future days in the training set: leakage; walk-forward validation gives $R^2 = @{e7.wf}$ for the same model (Chapter 9)', 'Grupurile aleatoare pun zile din viitor în setul de antrenare: scurgere de informație; validarea walk-forward dă $R^2 = @{e7.wf}$ pentru același model (Capitolul 9)')],
+    T('Random folds put future days in the training set: leakage; walk-forward validation gives $R^2 = @{e7.wf}$ for the same model (Chapter 9)', 'Grupurile aleatoare pun zile din viitor în setul de antrenare: leakage; validarea walk-forward dă $R^2 = @{e7.wf}$ pentru același model (Capitolul 9)')],
     [T('MASE below 1: SARIMA beats the seasonal naive method on average, but six months cannot show that the gain is real', 'MASE sub 1: SARIMA bate în medie metoda naivă sezonieră, dar șase luni nu pot arăta că acest cîștig este real'),
      T('Only out-of-sample, time-ordered evaluation counts as evidence of forecasting skill', 'Doar evaluarea în afara eșantionului, în ordinea timpului, este o dovadă a capacității de prognoză')])
 
@@ -1009,24 +1071,27 @@ D.recap(('The exam', 'examenul'), [
 D.section('The team project and attendance', 'Proiectul de echipă și prezența')
 
 D.frame(T('The team project: content and deliverables', 'Proiectul de echipă: conținut și livrabile'), items(
-    (T('\\textbf{20\\% of the final grade}: a team of 2--4 students analyses real series with the methods of the course', '\\textbf{20\\% din nota finală}: o echipă de 2--4 studenți analizează serii reale cu metodele cursului'),
-     [T('one concrete question: forecasting EUR/RON, modelling Romanian inflation, monetary policy and bank rates', 'o întrebare concretă: prognoza cursului EUR/RON, modelarea inflației din România, politica monetară și dobînzile bancare'),
-      T('one series: trend and stationarity, smoothing, ARIMA or SARIMA, a training set, a test set and a horizon, point and interval forecasts, two methods compared', 'o serie: trend și staționaritate, netezire, ARIMA sau SARIMA, set de antrenare, set de test și orizont, prognoze punctuale și pe interval, comparația a două metode'),
-      T('several series: unit roots, cointegration, VAR or VECM, Granger causality, IRF and FEVD', 'mai multe serii: rădăcini unitare, cointegrare, VAR sau VECM, cauzalitate Granger, IRF și FEVD')]),
+    (T('\\textbf{20\\% of the final grade}', '\\textbf{20\\% din nota finală}'),
+         [T('a team of 2--4 students analyses real series with the methods of the course', 'o echipă de 2--4 studenți analizează serii reale cu metodele cursului'),
+          T('one concrete question: forecasting EUR/RON, modelling Romanian inflation, monetary policy and bank rates', 'o întrebare concretă: prognoza cursului EUR/RON, modelarea inflației din România, politica monetară și dobînzile bancare'),
+          T('one series: trend and stationarity, smoothing, ARIMA or SARIMA, a training set, a test set and a horizon, point and interval forecasts, two methods compared', 'o serie: trend și staționaritate, netezire, ARIMA sau SARIMA, set de antrenare, set de test și orizont, prognoze punctuale și pe interval, comparația a două metode'),
+          T('several series: unit roots, cointegration, VAR or VECM, Granger causality, IRF and FEVD', 'mai multe serii: rădăcini unitare, cointegrare, VAR sau VECM, cauzalitate Granger, IRF și FEVD')]),
     (T('\\textbf{Deliverables}', '\\textbf{Livrabile}'),
      [T('a repository whose code reproduces every number and every chart from the data', 'un repository al cărui cod reproduce, din date, fiecare rezultat numeric și fiecare grafic'),
       T('a short report: the question and the literature, data sources, models, conclusions, references', 'un raport scurt: întrebarea și literatura, sursele de date, modelele, concluziile, bibliografia'),
       T('a presentation; the file \\texttt{AI\\_USE.md}', 'o prezentare; fișierul \\texttt{AI\\_USE.md}')])))
 
 D.frame(T('Project grading criteria and the oral defence', 'Criterii de evaluare a proiectului și susținerea orală'), items(
-    (T('\\textbf{The question}: clear, answerable with the data, useful to someone', '\\textbf{Întrebarea}: clară, cu răspuns posibil pe baza datelor, utilă cuiva'),
-     [T('``Can a SARIMA forecast Romanian inflation better than the seasonal naive method?\'\' is a question; ``an analysis of inflation\'\' is not', '„Poate un SARIMA să prognozeze inflația din România mai bine decît metoda naivă sezonieră?” este o întrebare; „o analiză a inflației” nu este')]),
+    (T('\\textbf{The question}', '\\textbf{Întrebarea}'),
+     [T('clear, answerable with the data, useful to someone', 'clară, cu răspuns posibil pe baza datelor, utilă cuiva'),
+      T('``Can a SARIMA forecast Romanian inflation better than the seasonal naive method?\'\' is a question; ``an analysis of inflation\'\' is not', '„Poate un SARIMA să prognozeze inflația din România mai bine decît metoda naivă sezonieră?” este o întrebare; „o analiză a inflației” nu este')]),
     (T('\\textbf{Methods, checks, interpretation, reproducibility}', '\\textbf{Metode, verificări, interpretare, reproductibilitate}'),
      [T('the right test for the question (the toolbox); residual diagnostics; out-of-sample evaluation against a benchmark', 'testul potrivit pentru întrebare (trusa de instrumente); diagnosticarea reziduurilor; evaluare în afara eșantionului, față de un reper'),
       T('what the numbers mean and what the data cannot show; the repository runs from the data to every chart', 'ce înseamnă cifrele și ce nu pot arăta datele; repository-ul rulează de la date pînă la fiecare grafic')]),
-    (T('\\textbf{The oral defence}: the project is graded only after its presentation', '\\textbf{Susținerea orală}: proiectul se notează numai după prezentarea lui'),
-     [T('each member explains the code and the results: what does this line compute? why this test and not another?', 'fiecare membru explică codul și rezultatele: ce calculează această linie? de ce acest test și nu altul?'),
-      T('a line of code that cannot be explained does not count as your own work, with or without AI', 'o linie de cod pe care nu o puteți explica nu este considerată muncă proprie, cu sau fără AI')])))
+    (T('\\textbf{The oral defence}', '\\textbf{Susținerea orală}'),
+         [T('the project is graded only after its presentation', 'proiectul se notează numai după prezentarea lui'),
+          T('each member explains the code and the results: what does this line compute? why this test and not another?', 'fiecare membru explică codul și rezultatele: ce calculează această linie? de ce acest test și nu altul?'),
+          T('a line of code that cannot be explained does not count as your own work, with or without AI', 'o linie de cod pe care nu o puteți explica nu este considerată muncă proprie, cu sau fără AI')])))
 
 D.frame(T('The file AI\\_USE.md', 'Fișierul AI\\_USE.md'), items(
     (T('\\textbf{AI tools are allowed and must be declared}', '\\textbf{Instrumentele AI sînt permise și trebuie declarate}'),
@@ -1054,9 +1119,12 @@ D.frame(T('The final grade', 'Nota finală'), table(
 D.section('Possible contribution of AI', 'Contribuția posibilă a AI')
 
 D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
-    T('\\textbf{Practice}: new exercises in the style of the exam, with output generated from real data by your own code', '\\textbf{Exercițiu}: probleme noi în stilul examenului, cu rezultate generate din date reale de propriul cod'),
-    T('\\textbf{Explanation}: a second explanation of an output table, a derivation or a test you did not understand', '\\textbf{Explicații}: o a doua explicație pentru un tabel de rezultate, o derivare sau un test pe care nu l-ați înțeles'),
-    T('\\textbf{Project}: a first draft of the code of the Box--Jenkins steps, of a rolling evaluation, of a VECM', '\\textbf{Proiect}: o primă versiune a codului pentru pașii Box--Jenkins, pentru o evaluare cu origini mobile, pentru un VECM'),
+    (T('\\textbf{Practice}', '\\textbf{Exercițiu}'),
+         [T('new exercises in the style of the exam, with output generated from real data by your own code', 'probleme noi în stilul examenului, cu rezultate generate din date reale de propriul cod')]),
+    (T('\\textbf{Explanation}', '\\textbf{Explicații}'),
+         [T('a second explanation of an output table, a derivation or a test you did not understand', 'o a doua explicație pentru un tabel de rezultate, o derivare sau un test pe care nu l-ați înțeles')]),
+    (T('\\textbf{Project}', '\\textbf{Proiect}'),
+         [T('a first draft of the code of the Box--Jenkins steps, of a rolling evaluation, of a VECM', 'o primă versiune a codului pentru pașii Box--Jenkins, pentru o evaluare cu origini mobile, pentru un VECM')]),
     (T('Example prompt', 'Exemplu de prompt'),
      [T('\\aiprompt{Write Python code that downloads the Romanian HICP from Eurostat (prc\\_hicp\\_minr, M.I15.TOTAL.RO), fits every SARIMA(p,1,q)(P,1,Q)12 with p, q <= 2 and P, Q <= 1 to 100 log HICP up to August 2024, reports AICc, BIC and Ljung-Box p-values with m - k degrees of freedom, and compares one-step forecasts with the seasonal naive method by MASE and the Diebold-Mariano test.}',
         '\\aiprompt{Write Python code that downloads the Romanian HICP from Eurostat (prc\\_hicp\\_minr, M.I15.TOTAL.RO), fits every SARIMA(p,1,q)(P,1,Q)12 with p, q <= 2 and P, Q <= 1 to 100 log HICP up to August 2024, reports AICc, BIC and Ljung-Box p-values with m - k degrees of freedom, and compares one-step forecasts with the seasonal naive method by MASE and the Diebold-Mariano test.}')])))

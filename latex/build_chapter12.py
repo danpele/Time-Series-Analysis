@@ -269,8 +269,8 @@ D.frame(T('A cycle: amplitude, frequency, phase', 'Un ciclu: amplitudine, frecve
     T('The highest frequency visible in discrete data is $\\nu = 1/2$ (one cycle every two observations): the \\textbf{Nyquist frequency}', 'Cea mai mare frecvență vizibilă în date discrete este $\\nu = 1/2$ (un ciclu la două observații): \\textbf{frecvența Nyquist}')))
 
 chart(T('Two cycles plus noise', 'Două cicluri plus zgomot'), 'tsa_ch12_fourier', 'TSA_ch12_fourier', [
-    T('Simulated series, $T = 120$: $x_t = 2\\cos(2\\pi t/12) + \\cos(2\\pi t/4 + 1) + \\varepsilon_t$, $\\varepsilon_t \\sim N(0, 0.49)$; right: its periodogram (defined in Section 3)',
-      'Serie simulată, $T = 120$: $x_t = 2\\cos(2\\pi t/12) + \\cos(2\\pi t/4 + 1) + \\varepsilon_t$, $\\varepsilon_t \\sim N(0;\\ 0.49)$; dreapta: periodograma ei (definită în secțiunea 3)')],
+    T('Simulated series, $T = 120$: $x_t = 2\\cos(2\\pi t/12) + \\cos(2\\pi t/4 + 1) + \\varepsilon_t$, $\\varepsilon_t \\sim N(0, 0.49)$ (Normal white noise with variance 0.49); right: its periodogram (defined in Section 3)',
+      'Serie simulată, $T = 120$: $x_t = 2\\cos(2\\pi t/12) + \\cos(2\\pi t/4 + 1) + \\varepsilon_t$, $\\varepsilon_t \\sim N(0;\\ 0.49)$ (zgomot alb Normal cu varianța 0,49); dreapta: periodograma ei (definită în secțiunea 3)')],
     h='0.62\\textheight')
 
 interp(('two cycles plus noise', 'celor două cicluri plus zgomot'), [
@@ -280,14 +280,24 @@ interp(('two cycles plus noise', 'celor două cicluri plus zgomot'), [
      [T('the spike grows with the squared amplitude: the larger cycle dominates', 'vîrful crește cu pătratul amplitudinii: ciclul mai mare domină')]),
     T('The two spikes hold @{fo.share}\\% of the total power; the noise spreads the rest evenly over all frequencies', 'Cele două vîrfuri concentrează @{fo.share}\\% din puterea totală; zgomotul împrăștie restul uniform pe toate frecvențele')])
 
-D.frame(T('Fourier frequencies and the discrete Fourier transform', 'Frecvențele Fourier și transformata Fourier discretă'), items(
+D.frame(T('Fourier frequencies and the discrete Fourier transform (1/2)', 'Frecvențele Fourier și transformata Fourier discretă (1/2)'), items(
     (T('For a sample $x_1, \\ldots, x_T$, the \\textbf{Fourier frequencies} are $\\nu_j = j/T$, $j = 0, 1, \\ldots, \\lfloor T/2 \\rfloor$', 'Pentru un eșantion $x_1, \\ldots, x_T$, \\textbf{frecvențele Fourier} sînt $\\nu_j = j/T$, $j = 0, 1, \\ldots, \\lfloor T/2 \\rfloor$'),
-     [T('cycles that fit an integer number of times ($j$ times) in the sample', 'ciclurile care încap de un număr întreg de ori ($j$ ori) în eșantion')]),
-    (T('\\textbf{Discrete Fourier transform} (DFT): $d(\\nu_j) = T^{-1/2}\\sum_{t=1}^{T} x_t\\, e^{-2\\pi i \\nu_j t}$', '\\textbf{Transformata Fourier discretă} (DFT): $d(\\nu_j) = T^{-1/2}\\sum_{t=1}^{T} x_t\\, e^{-2\\pi i \\nu_j t}$'),
-     [T('$e^{-i\\theta} = \\cos\\theta - i\\sin\\theta$: the DFT correlates the series with a cosine and a sine of frequency $\\nu_j$', '$e^{-i\\theta} = \\cos\\theta - i\\sin\\theta$: DFT corelează seria cu un cosinus și un sinus de frecvență $\\nu_j$'),
-      T('the $T$ values $d(\\nu_j)$ contain exactly the same information as the $T$ data points', 'cele $T$ valori $d(\\nu_j)$ conțin exact aceeași informație ca cele $T$ observații')]),
-    (T('\\textbf{Parseval}: $\\sum_{t=1}^{T}(x_t - \\bar x)^2 = \\sum_{j=1}^{T-1}|d(\\nu_j)|^2$: the variance is split over frequencies', '\\textbf{Parseval}: $\\sum_{t=1}^{T}(x_t - \\bar x)^2 = \\sum_{j=1}^{T-1}|d(\\nu_j)|^2$: varianța se împarte pe frecvențe'),
-     [T('the \\textbf{fast Fourier transform} (FFT) of \\refCT\\ computes all $d(\\nu_j)$ in $O(T\\log T)$ operations instead of $O(T^2)$', '\\textbf{transformata Fourier rapidă} (FFT) a lui \\refCT\\ calculează toate valorile $d(\\nu_j)$ în $O(T\\log T)$ operații în loc de $O(T^2)$')])))
+     [T('cycles that fit an integer number of times ($j$ times) in the sample; $\\lfloor T/2 \\rfloor$: the integer part of $T/2$', 'ciclurile care încap de un număr întreg de ori ($j$ ori) în eșantion; $\\lfloor T/2 \\rfloor$: partea întreagă a lui $T/2$')]),
+    (T('The \\textbf{discrete Fourier transform} (DFT) measures how strongly the series moves with a cycle of frequency $\\nu_j$', '\\textbf{Transformata Fourier discretă} (DFT) măsoară cît de puternic se mișcă seria împreună cu un ciclu de frecvență $\\nu_j$'),
+     [T('$d(\\nu_j) = T^{-1/2}\\sum_{t=1}^{T} x_t\\, e^{-2\\pi i \\nu_j t}$', '$d(\\nu_j) = T^{-1/2}\\sum_{t=1}^{T} x_t\\, e^{-2\\pi i \\nu_j t}$'),
+      T('$i$: the imaginary unit, $i^2 = -1$; $e^{-i\\theta} = \\cos\\theta - i\\sin\\theta$ (Euler\'s formula)', '$i$: unitatea imaginară, $i^2 = -1$; $e^{-i\\theta} = \\cos\\theta - i\\sin\\theta$ (formula lui Euler)'),
+      T('so the DFT correlates the series with a cosine (real part) and a sine (imaginary part) of frequency $\\nu_j$', 'deci DFT corelează seria cu un cosinus (partea reală) și cu un sinus (partea imaginară) de frecvență $\\nu_j$')])))
+
+D.frame(T('Fourier frequencies and the discrete Fourier transform (2/2)', 'Frecvențele Fourier și transformata Fourier discretă (2/2)'), items(
+    (T('The $T$ values $d(\\nu_j)$ contain exactly the same information as the $T$ data points', 'Cele $T$ valori $d(\\nu_j)$ conțin exact aceeași informație ca cele $T$ observații'),
+     [T('the data can be recovered from them by the inverse transform', 'datele se pot reconstitui din ele prin transformata inversă')]),
+    (T('\\textbf{Parseval}', '\\textbf{Parseval}'),
+         [T('the sum of squared deviations equals the sum of the squared moduli of the DFT', 'suma pătratelor abaterilor este egală cu suma pătratelor modulelor DFT'),
+          T('$\\sum_{t=1}^{T}(x_t - \\bar x)^2 = \\sum_{j=1}^{T-1}|d(\\nu_j)|^2$', '$\\sum_{t=1}^{T}(x_t - \\bar x)^2 = \\sum_{j=1}^{T-1}|d(\\nu_j)|^2$'),
+          T('$\\bar x$: the sample mean; $|d|^2 = (\\mathrm{Re}\\,d)^2 + (\\mathrm{Im}\\,d)^2$: the squared modulus of a complex number', '$\\bar x$: media de selecție; $|d|^2 = (\\mathrm{Re}\\,d)^2 + (\\mathrm{Im}\\,d)^2$: pătratul modulului unui număr complex'),
+          T('reading: the variance of the series is split over the frequencies', 'interpretarea: varianța seriei se împarte pe frecvențe')]),
+    (T('The \\textbf{fast Fourier transform} (FFT) of \\refCT\\ computes all $d(\\nu_j)$ quickly', '\\textbf{Transformata Fourier rapidă} (FFT) a lui \\refCT\\ calculează rapid toate valorile $d(\\nu_j)$'),
+     [T('$O(T\\log T)$ operations instead of $O(T^2)$: the number of operations grows like $T\\log T$ instead of $T^2$', '$O(T\\log T)$ operații în loc de $O(T^2)$: numărul de operații crește ca $T\\log T$, nu ca $T^2$')])))
 
 solved(('the DFT of four numbers', 'DFT pentru patru numere'), [
     (T('Data: $x = (4, 2, 0, 2)$, $T = 4$; mean $\\bar x = 2$, deviations $y = (2, 0, -2, 0)$', 'Datele: $x = (4, 2, 0, 2)$, $T = 4$; media $\\bar x = 2$, abaterile $y = (2, 0, -2, 0)$'),
@@ -323,22 +333,37 @@ D.section('The spectral density', 'Densitatea spectrală')
 D.frame(T('From autocovariances to the spectrum', 'De la autocovarianțe la spectru'), items(
     (T('For a stationary series with autocovariances $\\gamma(h)$, $\\sum_h|\\gamma(h)| < \\infty$, the \\textbf{spectral density} is', 'Pentru o serie staționară cu autocovarianțele $\\gamma(h)$, $\\sum_h|\\gamma(h)| < \\infty$, \\textbf{densitatea spectrală} este'),
      [T('$f(\\nu) = \\sum_{h=-\\infty}^{\\infty}\\gamma(h)e^{-2\\pi i\\nu h} = \\gamma(0) + 2\\sum_{h=1}^{\\infty}\\gamma(h)\\cos(2\\pi\\nu h)$, $-1/2 \\le \\nu \\le 1/2$',
-        '$f(\\nu) = \\sum_{h=-\\infty}^{\\infty}\\gamma(h)e^{-2\\pi i\\nu h} = \\gamma(0) + 2\\sum_{h=1}^{\\infty}\\gamma(h)\\cos(2\\pi\\nu h)$, $-1/2 \\le \\nu \\le 1/2$')]),
+        '$f(\\nu) = \\sum_{h=-\\infty}^{\\infty}\\gamma(h)e^{-2\\pi i\\nu h} = \\gamma(0) + 2\\sum_{h=1}^{\\infty}\\gamma(h)\\cos(2\\pi\\nu h)$, $-1/2 \\le \\nu \\le 1/2$'),
+      T('$\\gamma(h) = \\mathrm{Cov}(x_t, x_{t+h})$: the autocovariance at lag $h$; $\\sum_h|\\gamma(h)| < \\infty$: the autocovariances die out fast enough (short memory)', '$\\gamma(h) = \\mathrm{Cov}(x_t, x_{t+h})$: autocovarianța la lagul $h$; $\\sum_h|\\gamma(h)| < \\infty$: autocovarianțele se sting suficient de repede (memorie scurtă)'),
+      T('in words: $f(\\nu)$ is a weighted sum of the autocovariances, with weights $\\cos(2\\pi\\nu h)$ that oscillate at frequency $\\nu$', 'în cuvinte: $f(\\nu)$ este o sumă ponderată a autocovarianțelor, cu ponderile $\\cos(2\\pi\\nu h)$, care oscilează cu frecvența $\\nu$')]),
     (T('The inverse relation: $\\gamma(h) = \\int_{-1/2}^{1/2} f(\\nu)e^{2\\pi i\\nu h}\\,d\\nu$', 'Relația inversă: $\\gamma(h) = \\int_{-1/2}^{1/2} f(\\nu)e^{2\\pi i\\nu h}\\,d\\nu$'),
-     [T('the pair $\\gamma \\leftrightarrow f$ is the \\textbf{Wiener--Khinchin} theorem: the ACF and the spectrum carry the same information', 'perechea $\\gamma \\leftrightarrow f$ este teorema \\textbf{Wiener--Khinchin}: ACF și spectrul conțin aceeași informație'),
+     [T('the pair $\\gamma \\leftrightarrow f$ is the \\textbf{Wiener--Khinchin} theorem: the autocovariances and the spectrum carry the same information', 'perechea $\\gamma \\leftrightarrow f$ este teorema \\textbf{Wiener--Khinchin}: autocovarianțele și spectrul conțin aceeași informație'),
       T('for $h = 0$: $\\mathrm{Var}(x_t) = \\gamma(0) = \\int_{-1/2}^{1/2} f(\\nu)\\,d\\nu$: the area under $f$ is the variance', 'pentru $h = 0$: $\\mathrm{Var}(x_t) = \\gamma(0) = \\int_{-1/2}^{1/2} f(\\nu)\\,d\\nu$: aria de sub $f$ este varianța')]),
     (T('Properties: $f(\\nu) \\ge 0$, $f(-\\nu) = f(\\nu)$; it is enough to draw $f$ on $[0, 1/2]$', 'Proprietăți: $f(\\nu) \\ge 0$, $f(-\\nu) = f(\\nu)$; este suficient să desenăm $f$ pe $[0, 1/2]$'),
-     [T('$f(\\nu)\\,d\\nu$ is the share of the variance due to cycles with frequencies in $[\\nu, \\nu + d\\nu]$', '$f(\\nu)\\,d\\nu$ este partea din varianță datorată ciclurilor cu frecvențe în $[\\nu, \\nu + d\\nu]$')])))
+     [T('$f(\\nu)\\,d\\nu$ is the share of the variance due to cycles with frequencies in $[\\nu, \\nu + d\\nu]$', '$f(\\nu)\\,d\\nu$ este partea din varianță datorată ciclurilor cu frecvențe în $[\\nu, \\nu + d\\nu]$')])), size='footnotesize')
 
 D.frame(T('White noise, AR(1) and MA(1)', 'Zgomot alb, AR(1) și MA(1)'), items(
-    (T('\\textbf{White noise}, variance $\\sigma^2$: $\\gamma(h) = 0$ for $h \\ne 0$, so $f(\\nu) = \\sigma^2$ for every $\\nu$', '\\textbf{Zgomot alb}, varianța $\\sigma^2$: $\\gamma(h) = 0$ pentru $h \\ne 0$, deci $f(\\nu) = \\sigma^2$ pentru orice $\\nu$'),
-     [T('a flat spectrum: all frequencies contribute equally, like white light', 'un spectru plat: toate frecvențele contribuie în mod egal, ca lumina albă')]),
-    (T('\\textbf{AR(1)} $x_t = \\phi x_{t-1} + w_t$: $f(\\nu) = \\dfrac{\\sigma^2}{1 - 2\\phi\\cos(2\\pi\\nu) + \\phi^2}$', '\\textbf{AR(1)} $x_t = \\phi x_{t-1} + w_t$: $f(\\nu) = \\dfrac{\\sigma^2}{1 - 2\\phi\\cos(2\\pi\\nu) + \\phi^2}$'),
-     [T('$\\phi > 0$: power at low frequencies (smooth, persistent series); $\\phi < 0$: power at high frequencies (a zig-zag series)', '$\\phi > 0$: putere la frecvențele joase (serie netedă, persistentă); $\\phi < 0$: putere la frecvențele înalte (serie în zigzag)')]),
-    (T('\\textbf{MA(1)} $x_t = w_t + \\theta w_{t-1}$: $f(\\nu) = \\sigma^2\\,[1 + 2\\theta\\cos(2\\pi\\nu) + \\theta^2]$', '\\textbf{MA(1)} $x_t = w_t + \\theta w_{t-1}$: $f(\\nu) = \\sigma^2\\,[1 + 2\\theta\\cos(2\\pi\\nu) + \\theta^2]$'),
-     [T('directly from the definition: $\\gamma(0) = \\sigma^2(1 + \\theta^2)$, $\\gamma(1) = \\sigma^2\\theta$, so $f = \\gamma(0) + 2\\gamma(1)\\cos(2\\pi\\nu)$', 'direct din definiție: $\\gamma(0) = \\sigma^2(1 + \\theta^2)$, $\\gamma(1) = \\sigma^2\\theta$, deci $f = \\gamma(0) + 2\\gamma(1)\\cos(2\\pi\\nu)$')]),
-    (T('\\textbf{ARMA}$(p,q)$, $\\phi(L)x_t = \\theta(L)w_t$: $f(\\nu) = \\sigma^2\\dfrac{|\\theta(e^{-2\\pi i\\nu})|^2}{|\\phi(e^{-2\\pi i\\nu})|^2}$', '\\textbf{ARMA}$(p,q)$, $\\phi(L)x_t = \\theta(L)w_t$: $f(\\nu) = \\sigma^2\\dfrac{|\\theta(e^{-2\\pi i\\nu})|^2}{|\\phi(e^{-2\\pi i\\nu})|^2}$'),
-     [T('a ratio of two polynomials in $\\cos(2\\pi\\nu)$: smooth and easy to compute (\\refBDtm, Sec.~4.4)', 'un raport de două polinoame în $\\cos(2\\pi\\nu)$: neted și ușor de calculat (\\refBDtm, secț.~4.4)')])), size='footnotesize')
+    (T('\\textbf{White noise} $w_t$, variance $\\sigma^2$', '\\textbf{Zgomot alb} $w_t$, cu varianța $\\sigma^2$'),
+         [T('$\\gamma(h) = 0$ for $h \\ne 0$, so $f(\\nu) = \\sigma^2$ for every $\\nu$', '$\\gamma(h) = 0$ pentru $h \\ne 0$, deci $f(\\nu) = \\sigma^2$ pentru orice $\\nu$'),
+          T('a flat spectrum: all frequencies contribute equally, like white light', 'un spectru plat: toate frecvențele contribuie în mod egal, ca lumina albă')]),
+    (T('\\textbf{AR(1)} $x_t = \\phi x_{t-1} + w_t$, $|\\phi| < 1$', '\\textbf{AR(1)} $x_t = \\phi x_{t-1} + w_t$, $|\\phi| < 1$'),
+         [T('$f(\\nu) = \\dfrac{\\sigma^2}{1 - 2\\phi\\cos(2\\pi\\nu) + \\phi^2}$', '$f(\\nu) = \\dfrac{\\sigma^2}{1 - 2\\phi\\cos(2\\pi\\nu) + \\phi^2}$'),
+          T('$\\phi$: the autoregressive coefficient; $w_t$: white noise with variance $\\sigma^2$', '$\\phi$: coeficientul autoregresiv; $w_t$: zgomot alb cu varianța $\\sigma^2$'),
+          T('$\\phi > 0$: power at low frequencies (smooth, persistent series); $\\phi < 0$: power at high frequencies (a zig-zag series)', '$\\phi > 0$: putere la frecvențele joase (serie netedă, persistentă); $\\phi < 0$: putere la frecvențele înalte (serie în zigzag)')]),
+    (T('\\textbf{MA(1)} $x_t = w_t + \\theta w_{t-1}$', '\\textbf{MA(1)} $x_t = w_t + \\theta w_{t-1}$'),
+         [T('$f(\\nu) = \\sigma^2\\,[1 + 2\\theta\\cos(2\\pi\\nu) + \\theta^2]$', '$f(\\nu) = \\sigma^2\\,[1 + 2\\theta\\cos(2\\pi\\nu) + \\theta^2]$'),
+          T('$\\theta$: the moving-average coefficient; $\\theta > 0$ puts power at low frequencies, $\\theta < 0$ at high frequencies', '$\\theta$: coeficientul de medie mobilă; $\\theta > 0$ pune puterea la frecvențele joase, $\\theta < 0$ la cele înalte'),
+          T('directly from the definition: $\\gamma(0) = \\sigma^2(1 + \\theta^2)$, $\\gamma(1) = \\sigma^2\\theta$, so $f = \\gamma(0) + 2\\gamma(1)\\cos(2\\pi\\nu)$', 'direct din definiție: $\\gamma(0) = \\sigma^2(1 + \\theta^2)$, $\\gamma(1) = \\sigma^2\\theta$, deci $f = \\gamma(0) + 2\\gamma(1)\\cos(2\\pi\\nu)$')])), size='footnotesize')
+
+D.frame(T('The spectrum of an ARMA model', 'Spectrul unui model ARMA'), items(
+    (T('\\textbf{ARMA}$(p,q)$', '\\textbf{ARMA}$(p,q)$'),
+         [T('$\\phi(L)x_t = \\theta(L)w_t$', '$\\phi(L)x_t = \\theta(L)w_t$'),
+          T('$L$: the lag operator, $Lx_t = x_{t-1}$', '$L$: operatorul lag, $Lx_t = x_{t-1}$'),
+          T('$\\phi(z) = 1 - \\phi_1 z - \\cdots - \\phi_p z^p$ and $\\theta(z) = 1 + \\theta_1 z + \\cdots + \\theta_q z^q$: the AR and MA polynomials', '$\\phi(z) = 1 - \\phi_1 z - \\cdots - \\phi_p z^p$ și $\\theta(z) = 1 + \\theta_1 z + \\cdots + \\theta_q z^q$: polinoamele AR și MA')]),
+    (T('Spectral density: the two polynomials evaluated at $z = e^{-2\\pi i\\nu}$', 'Densitatea spectrală: cele două polinoame evaluate în $z = e^{-2\\pi i\\nu}$'),
+     [T('$f(\\nu) = \\sigma^2\\dfrac{|\\theta(e^{-2\\pi i\\nu})|^2}{|\\phi(e^{-2\\pi i\\nu})|^2}$', '$f(\\nu) = \\sigma^2\\dfrac{|\\theta(e^{-2\\pi i\\nu})|^2}{|\\phi(e^{-2\\pi i\\nu})|^2}$'),
+      T('the MA part (numerator) adds power where $|\\theta|$ is large; the AR part (denominator) adds power where $|\\phi|$ is small', 'partea MA (numărătorul) adaugă putere acolo unde $|\\theta|$ este mare; partea AR (numitorul) adaugă putere acolo unde $|\\phi|$ este mic')]),
+    T('A ratio of two polynomials in $\\cos(2\\pi\\nu)$: smooth and easy to compute (\\refBDtm, Sec.~4.4)', 'Un raport de două polinoame în $\\cos(2\\pi\\nu)$: neted și ușor de calculat (\\refBDtm, secț.~4.4)')))
 
 solved(('AR(1) and MA(1) spectra', 'spectrele AR(1) și MA(1)'), [
     (T('AR(1) with $\\phi = 0.6$, $\\sigma^2 = 1$', 'AR(1) cu $\\phi = 0.6$, $\\sigma^2 = 1$'),
@@ -351,11 +376,13 @@ solved(('AR(1) and MA(1) spectra', 'spectrele AR(1) și MA(1)'), [
      [T('the numerical integral of the formula gives the same value', 'integrala numerică a formulei dă aceeași valoare')])])
 
 D.frame(T('AR(2) and pseudo-cycles', 'AR(2) și pseudo-ciclurile'), items(
-    (T('\\textbf{AR(2)} $x_t = \\phi_1 x_{t-1} + \\phi_2 x_{t-2} + w_t$: $f(\\nu) = \\dfrac{\\sigma^2}{|1 - \\phi_1 e^{-2\\pi i\\nu} - \\phi_2 e^{-4\\pi i\\nu}|^2}$', '\\textbf{AR(2)} $x_t = \\phi_1 x_{t-1} + \\phi_2 x_{t-2} + w_t$: $f(\\nu) = \\dfrac{\\sigma^2}{|1 - \\phi_1 e^{-2\\pi i\\nu} - \\phi_2 e^{-4\\pi i\\nu}|^2}$'),
-     [T('with complex roots ($\\phi_1^2 + 4\\phi_2 < 0$) the ACF is a damped wave and the spectrum has a peak inside $(0, 1/2)$', 'pentru rădăcini complexe ($\\phi_1^2 + 4\\phi_2 < 0$) ACF este o undă amortizată, iar spectrul are un vîrf în interiorul intervalului $(0, 1/2)$'),
-      T('the peak is at $\\cos(2\\pi\\nu^*) = \\phi_1(\\phi_2 - 1)/(4\\phi_2)$, when the right-hand side lies in $[-1, 1]$', 'vîrful se află la $\\cos(2\\pi\\nu^*) = \\phi_1(\\phi_2 - 1)/(4\\phi_2)$, cînd membrul drept este în $[-1, 1]$')]),
-    (T('A \\textbf{pseudo-cycle}: an irregular cycle whose length and amplitude vary from one round to the next', 'Un \\textbf{pseudo-ciclu}: un ciclu neregulat, a cărui lungime și amplitudine variază de la o rundă la alta'),
-     [T('\\refYule\\ fitted an AR(2) to Wolfer\'s sunspot numbers: the first autoregressive model, an alternative to fixed sine waves', '\\refYule\\ a estimat un AR(2) pentru numerele de pete solare ale lui Wolfer: primul model autoregresiv, o alternativă la undele sinusoidale fixe')]),
+    (T('\\textbf{AR(2)} $x_t = \\phi_1 x_{t-1} + \\phi_2 x_{t-2} + w_t$', '\\textbf{AR(2)} $x_t = \\phi_1 x_{t-1} + \\phi_2 x_{t-2} + w_t$'),
+         [T('$f(\\nu) = \\dfrac{\\sigma^2}{|1 - \\phi_1 e^{-2\\pi i\\nu} - \\phi_2 e^{-4\\pi i\\nu}|^2}$', '$f(\\nu) = \\dfrac{\\sigma^2}{|1 - \\phi_1 e^{-2\\pi i\\nu} - \\phi_2 e^{-4\\pi i\\nu}|^2}$'),
+          T('with complex roots ($\\phi_1^2 + 4\\phi_2 < 0$) the ACF is a damped wave and the spectrum has a peak inside $(0, 1/2)$', 'pentru rădăcini complexe ($\\phi_1^2 + 4\\phi_2 < 0$) ACF este o undă amortizată, iar spectrul are un vîrf în interiorul intervalului $(0, 1/2)$'),
+          T('the peak is at the frequency $\\nu^*$ given by $\\cos(2\\pi\\nu^*) = \\phi_1(\\phi_2 - 1)/(4\\phi_2)$, when the right-hand side lies in $[-1, 1]$', 'vîrful se află la frecvența $\\nu^*$ dată de $\\cos(2\\pi\\nu^*) = \\phi_1(\\phi_2 - 1)/(4\\phi_2)$, cînd membrul drept este în $[-1, 1]$')]),
+    (T('A \\textbf{pseudo-cycle}', 'Un \\textbf{pseudo-ciclu}'),
+         [T('an irregular cycle whose length and amplitude vary from one round to the next', 'un ciclu neregulat, a cărui lungime și amplitudine variază de la o rundă la alta'),
+          T('\\refYule\\ fitted an AR(2) to Wolfer\'s sunspot numbers: the first autoregressive model, an alternative to fixed sine waves', '\\refYule\\ a estimat un AR(2) pentru numerele de pete solare ale lui Wolfer: primul model autoregresiv, o alternativă la undele sinusoidale fixe')]),
     T('Business cycles are pseudo-cycles of this kind: recurrent, but never with the same length (Section 5)', 'Ciclurile economice sînt pseudo-cicluri de acest fel: recurente, dar niciodată de aceeași lungime (secțiunea 5)')))
 
 solved(('the peak of an AR(2) spectrum', 'vîrful spectrului unui AR(2)'), [
@@ -397,8 +424,9 @@ D.frame(T('Arthur Schuster and hidden periodicities', 'Arthur Schuster și perio
           T('The question of the section: how do we estimate $f(\\nu)$ from one sample, and how reliable is the estimate?', 'Întrebarea secțiunii: cum estimăm $f(\\nu)$ dintr-un singur eșantion și cît de sigură este estimarea?'))))
 
 D.frame(T('The periodogram', 'Periodograma'), items(
-    (T('\\textbf{Periodogram}: $I(\\nu_j) = |d(\\nu_j)|^2$ at the Fourier frequencies $\\nu_j = j/T$ (after removing the mean)', '\\textbf{Periodograma}: $I(\\nu_j) = |d(\\nu_j)|^2$ la frecvențele Fourier $\\nu_j = j/T$ (după eliminarea mediei)'),
-     [T('equivalently $I(\\nu_j) = \\sum_{|h| < T}\\hat\\gamma(h)e^{-2\\pi i\\nu_j h}$: the spectral formula with the sample autocovariances $\\hat\\gamma(h)$', 'echivalent $I(\\nu_j) = \\sum_{|h| < T}\\hat\\gamma(h)e^{-2\\pi i\\nu_j h}$: formula spectrului cu autocovarianțele de selecție $\\hat\\gamma(h)$')]),
+    (T('\\textbf{Periodogram}', '\\textbf{Periodograma}'),
+         [T('$I(\\nu_j) = |d(\\nu_j)|^2$ at the Fourier frequencies $\\nu_j = j/T$ (after removing the mean)', '$I(\\nu_j) = |d(\\nu_j)|^2$ la frecvențele Fourier $\\nu_j = j/T$ (după eliminarea mediei)'),
+          T('equivalently $I(\\nu_j) = \\sum_{|h| < T}\\hat\\gamma(h)e^{-2\\pi i\\nu_j h}$: the spectral formula with the sample autocovariances $\\hat\\gamma(h)$', 'echivalent $I(\\nu_j) = \\sum_{|h| < T}\\hat\\gamma(h)e^{-2\\pi i\\nu_j h}$: formula spectrului cu autocovarianțele de selecție $\\hat\\gamma(h)$')]),
     (T('Regression view: regress $x_t$ on $\\cos(2\\pi\\nu_j t)$ and $\\sin(2\\pi\\nu_j t)$ by OLS, with coefficients $a_j, b_j$', 'Interpretarea prin regresie: regresați $x_t$ pe $\\cos(2\\pi\\nu_j t)$ și $\\sin(2\\pi\\nu_j t)$ prin OLS, cu coeficienții $a_j, b_j$'),
      [T('$I(\\nu_j) = \\frac{T}{4}(a_j^2 + b_j^2)$: the squared amplitude of the best-fitting cycle at $\\nu_j$, scaled by $T/4$', '$I(\\nu_j) = \\frac{T}{4}(a_j^2 + b_j^2)$: pătratul amplitudinii celui mai bun ciclu la $\\nu_j$, înmulțit cu $T/4$')]),
     (T('Variance decomposition: $\\hat\\gamma(0) = \\frac{1}{T}\\sum_{j=1}^{T-1} I(\\nu_j)$', 'Descompunerea varianței: $\\hat\\gamma(0) = \\frac{1}{T}\\sum_{j=1}^{T-1} I(\\nu_j)$'),
@@ -419,11 +447,13 @@ interp(('the sunspot periodogram', 'periodogramei petelor solare'), [
 D.frame(T('Statistical properties of the periodogram', 'Proprietățile statistice ale periodogramei'), items(
     (T('For large $T$, at a Fourier frequency $0 < \\nu_j < 1/2$ (\\refBDtm, Sec.~10.3; \\refSS, Sec.~4.3):', 'Pentru $T$ mare, la o frecvență Fourier $0 < \\nu_j < 1/2$ (\\refBDtm, secț.~10.3; \\refSS, secț.~4.3):'),
      [T('$\\dfrac{2I(\\nu_j)}{f(\\nu_j)} \\approx \\chi^2_2$: so $E[I(\\nu_j)] \\approx f(\\nu_j)$ (unbiased) and $\\mathrm{Var}[I(\\nu_j)] \\approx f(\\nu_j)^2$', '$\\dfrac{2I(\\nu_j)}{f(\\nu_j)} \\approx \\chi^2_2$: deci $E[I(\\nu_j)] \\approx f(\\nu_j)$ (nedeplasată) și $\\mathrm{Var}[I(\\nu_j)] \\approx f(\\nu_j)^2$'),
+      T('$\\chi^2_2$: the chi-square distribution with 2 degrees of freedom (mean 2, variance 4); $f(\\nu_j)$: the true spectral density', '$\\chi^2_2$: distribuția chi-pătrat cu 2 grade de libertate (media 2, varianța 4); $f(\\nu_j)$: densitatea spectrală adevărată'),
       T('ordinates at different Fourier frequencies are approximately independent', 'ordonatele de la frecvențe Fourier diferite sînt aproximativ independente')]),
-    (T('The variance does \\textbf{not} shrink when $T$ grows: the periodogram is \\textbf{not a consistent} estimator of $f$', 'Varianța \\textbf{nu} scade cînd $T$ crește: periodograma \\textbf{nu este un estimator consistent} al lui $f$'),
-     [T('a larger $T$ gives more ordinates (a finer grid), not more precise ones', 'un $T$ mai mare dă mai multe ordonate (o grilă mai fină), nu ordonate mai precise')]),
+    (T('The variance does \\textbf{not} shrink when $T$ grows', 'Varianța \\textbf{nu} scade cînd $T$ crește'),
+         [T('the periodogram is \\textbf{not a consistent} estimator of $f$', 'periodograma \\textbf{nu este un estimator consistent} al lui $f$'),
+          T('a larger $T$ gives more ordinates (a finer grid), not more precise ones', 'un $T$ mai mare dă mai multe ordonate (o grilă mai fină), nu ordonate mai precise')]),
     (T('$\\chi^2_2/2$ is an exponential distribution with mean 1: a single ordinate can easily be 3 times the true value', '$\\chi^2_2/2$ este o distribuție exponențială cu media 1: o singură ordonată poate depăși ușor de 3 ori valoarea adevărată'),
-     [T('its 95\\% quantile is @{ic.q95}: about 1 ordinate in 20 exceeds $@{ic.q95}\\,f(\\nu)$ by chance', 'cuantila ei de 95\\% este @{ic.q95}: aproximativ 1 ordonată din 20 depășește întîmplător $@{ic.q95}\\,f(\\nu)$')])))
+     [T('its 95\\% quantile is @{ic.q95}: about 1 ordinate in 20 exceeds $@{ic.q95}\\,f(\\nu)$ by chance', 'cuantila ei de 95\\% este @{ic.q95}: aproximativ 1 ordonată din 20 depășește întîmplător $@{ic.q95}\\,f(\\nu)$')])), size='footnotesize')
 
 chart(T('The periodogram of white noise', 'Periodograma zgomotului alb'), 'tsa_ch12_inconsistency', 'TSA_ch12_inconsistency', [
     T('Gaussian white noise with $\\sigma^2 = 1$, so the true spectrum is flat at 1; samples of $T = 128$ and $T = 2048$', 'Zgomot alb gaussian cu $\\sigma^2 = 1$, deci spectrul adevărat este constant, egal cu 1; eșantioane de $T = 128$ și $T = 2048$')],
@@ -436,14 +466,26 @@ interp(('the white-noise periodogram', 'periodogramei zgomotului alb'), [
      [T('a tall spike is not yet a cycle: it needs a test (next slide) or a smoothed estimate (Section 4)', 'un vîrf înalt nu este încă un ciclu: are nevoie de un test (slide-ul următor) sau de o estimare netezită (secțiunea 4)')]),
     T('The mean is right (about 1): the periodogram is unbiased but noisy; averaging neighbouring ordinates will reduce the noise', 'Media este corectă (aproximativ 1): periodograma este nedeplasată, dar zgomotoasă; media ordonatelor vecine va reduce zgomotul')])
 
-D.frame(T("Fisher's test of a hidden periodicity", 'Testul lui Fisher pentru o periodicitate ascunsă'), items(
-    (T('$H_0$: Gaussian white noise; $H_1$: white noise plus one cycle at an unknown Fourier frequency', '$H_0$: zgomot alb gaussian; $H_1$: zgomot alb plus un ciclu la o frecvență Fourier necunoscută'),
-     [T('statistic of \\refFisher: $g = \\max_j I(\\nu_j)\\,/\\,\\sum_{j=1}^{m} I(\\nu_j)$, with $m$ ordinates in $(0, 1/2)$', 'statistica lui \\refFisher: $g = \\max_j I(\\nu_j)\\,/\\,\\sum_{j=1}^{m} I(\\nu_j)$, cu $m$ ordonate în $(0, 1/2)$'),
-      T('under $H_0$ each ordinate is about $1/m$ of the total; $g$ much larger than $1/m$ signals a cycle', 'sub $H_0$ fiecare ordonată reprezintă aproximativ $1/m$ din total; un $g$ mult mai mare decît $1/m$ semnalează un ciclu'),
-      T('exact p-value: $P(g > x) = \\sum_{k \\ge 1,\\ kx < 1}(-1)^{k-1}\\binom{m}{k}(1 - kx)^{m-1}$', 'p-value exactă: $P(g > x) = \\sum_{k \\ge 1,\\ kx < 1}(-1)^{k-1}\\binom{m}{k}(1 - kx)^{m-1}$')]),
+D.frame(T("Fisher's test of a hidden periodicity (1/2)", 'Testul lui Fisher pentru o periodicitate ascunsă (1/2)'), items(
+    (T('Hypotheses', 'Ipotezele'),
+     [T('$H_0$: Gaussian white noise; $H_1$: white noise plus one cycle at an unknown Fourier frequency', '$H_0$: zgomot alb gaussian; $H_1$: zgomot alb plus un ciclu la o frecvență Fourier necunoscută')]),
+    (T('Statistic of \\refFisher: the share of the largest ordinate in the sum of all ordinates', 'Statistica lui \\refFisher: ponderea celei mai mari ordonate în suma tuturor ordonatelor'),
+     [T('$g = \\max_j I(\\nu_j)\\,/\\,\\sum_{j=1}^{m} I(\\nu_j)$', '$g = \\max_j I(\\nu_j)\\,/\\,\\sum_{j=1}^{m} I(\\nu_j)$'),
+      T('$m$: the number of ordinates in $(0, 1/2)$; $\\max_j$: the largest of them; $1/m \\le g \\le 1$', '$m$: numărul de ordonate din $(0, 1/2)$; $\\max_j$: cea mai mare dintre ele; $1/m \\le g \\le 1$')]),
+    (T('Reading', 'Interpretarea'),
+     [T('under $H_0$ each ordinate is about $1/m$ of the total', 'sub $H_0$ fiecare ordonată reprezintă aproximativ $1/m$ din total'),
+      T('a $g$ much larger than $1/m$ signals a cycle: one frequency takes a large share of the variance', 'un $g$ mult mai mare decît $1/m$ semnalează un ciclu: o singură frecvență preia o parte mare din varianță')])))
+
+D.frame(T("Fisher's test of a hidden periodicity (2/2)", 'Testul lui Fisher pentru o periodicitate ascunsă (2/2)'), items(
+    (T('Exact p-value: the probability, under $H_0$, of a $g$ above the observed value $x$', 'P-value-ul exact: probabilitatea, sub $H_0$, ca $g$ să depășească valoarea observată $x$'),
+     [T('$P(g > x) = \\sum_{k \\ge 1,\\ kx < 1}(-1)^{k-1}\\binom{m}{k}(1 - kx)^{m-1}$', '$P(g > x) = \\sum_{k \\ge 1,\\ kx < 1}(-1)^{k-1}\\binom{m}{k}(1 - kx)^{m-1}$'),
+      T('$k$: the summation index, from 1 while $kx < 1$; $\\binom{m}{k}$: the binomial coefficient', '$k$: indicele de însumare, de la 1 cît timp $kx < 1$; $\\binom{m}{k}$: coeficientul binomial'),
+      T('a small p-value (below 0.05): reject white noise in favour of a cycle', 'un p-value mic (sub 0,05): se respinge zgomotul alb în favoarea unui ciclu')]),
     (T('Sunspots: $m = @{su.m}$, $g = @{su.g}$, against $1/m = @{su.gcrit}$; p-value @{su.pv}', 'Petele solare: $m = @{su.m}$, $g = @{su.g}$, față de $1/m = @{su.gcrit}$; p-value @{su.pv}'),
      [T('the 11-year peak is far too large to be chance', 'vîrful de 11 ani este mult prea mare pentru a fi întîmplător')]),
-    T('Caution: $H_0$ is white noise; against a red (AR(1)-like) background, low-frequency peaks are more likely by chance, so compare with a smooth background spectrum', 'Atenție: $H_0$ este zgomotul alb; pe un fond „roșu” (de tip AR(1)), vîrfurile de joasă frecvență apar mai ușor din întîmplare, deci comparați cu un spectru de fond neted')))
+    (T('Caution: $H_0$ is white noise', 'Atenție: $H_0$ este zgomotul alb'),
+     [T('against a red (AR(1)-like) background, low-frequency peaks are more likely by chance', 'pe un fond „roșu” (de tip AR(1)), vîrfurile de joasă frecvență apar mai ușor din întîmplare'),
+      T('so compare with a smooth background spectrum', 'de aceea comparați cu un spectru de fond neted')])))
 
 D.recap(('The periodogram', 'periodograma'), [
     T('$I(\\nu_j) = |d(\\nu_j)|^2$: the squared amplitude of the cycle at each Fourier frequency; it sums to the variance', '$I(\\nu_j) = |d(\\nu_j)|^2$: pătratul amplitudinii ciclului la fiecare frecvență Fourier; suma dă varianța'),
@@ -455,14 +497,16 @@ D.recap(('The periodogram', 'periodograma'), [
 # =============================================================================
 D.section('Estimating the spectrum', 'Estimarea spectrului')
 
-D.frame(T('Leakage and tapering', 'Scurgerea spectrală și ferestrele de atenuare'), items(
+D.frame(T('Leakage and tapering', 'Scurgerea spectrală (leakage) și ferestrele de atenuare'), items(
     (T('A cycle whose frequency is not a Fourier frequency does not fit a whole number of times in the sample', 'Un ciclu a cărui frecvență nu este o frecvență Fourier nu încape de un număr întreg de ori în eșantion'),
      [T('cutting the series at $t = 1$ and $t = T$ creates a jump; its power \\textbf{leaks} into all other frequencies', 'tăierea seriei la $t = 1$ și $t = T$ creează un salt; puterea lui se \\textbf{scurge} la toate celelalte frecvențe'),
       T('leakage from a strong peak can hide a weak cycle elsewhere', 'scurgerea dintr-un vîrf puternic poate ascunde un ciclu slab în altă parte')]),
-    (T('\\textbf{Tapering}: multiply the data by a window $h_t$ that goes smoothly to 0 at both ends before the DFT', '\\textbf{Atenuarea} (tapering): înmulțiți datele cu o fereastră $h_t$ care scade lin spre 0 la ambele capete, înainte de DFT'),
-     [T('Hann (cosine bell) window: $h_t = \\frac12[1 - \\cos(2\\pi(t - 0.5)/T)]$, rescaled to keep the total power', 'fereastra Hann (clopot cosinus): $h_t = \\frac12[1 - \\cos(2\\pi(t - 0.5)/T)]$, rescalată pentru a păstra puterea totală'),
-      T('the price: a slightly wider main peak (less resolution) for much smaller leakage', 'prețul: un vîrf principal puțin mai lat (rezoluție mai mică) pentru o scurgere mult mai mică')]),
-    T('Default in practice: always taper a little; always remove the mean (and a trend, if there is one) first', 'În practică: aplicați întotdeauna o atenuare ușoară; eliminați întîi media (și trendul, dacă există)')))
+    (T('\\textbf{Tapering}', '\\textbf{Atenuarea} (tapering)'),
+         [T('multiply the data by a window $h_t$ that goes smoothly to 0 at both ends before the DFT', 'înmulțiți datele cu o fereastră $h_t$ care scade lin spre 0 la ambele capete, înainte de DFT'),
+          T('Hann (cosine bell) window: $h_t = \\frac12[1 - \\cos(2\\pi(t - 0.5)/T)]$, rescaled to keep the total power', 'fereastra Hann (clopot cosinus): $h_t = \\frac12[1 - \\cos(2\\pi(t - 0.5)/T)]$, rescalată pentru a păstra puterea totală'),
+          T('$h_t$ is close to 0 at $t = 1$ and $t = T$ and equals 1 in the middle of the sample', '$h_t$ este aproape de 0 la $t = 1$ și $t = T$ și egal cu 1 la mijlocul eșantionului'),
+          T('the price: a slightly wider main peak (less resolution) for much smaller leakage', 'prețul: un vîrf principal puțin mai lat (rezoluție mai mică) pentru o scurgere mult mai mică')]),
+    T('Default in practice: always taper a little; always remove the mean (and a trend, if there is one) first', 'În practică: aplicați întotdeauna o atenuare ușoară; eliminați întîi media (și trendul, dacă există)')), size='footnotesize')
 
 chart(T('Leakage: raw and tapered periodograms', 'Scurgerea: periodograma brută și cea cu atenuare'), 'tsa_ch12_leakage', 'TSA_ch12_leakage', [
     T('$T = 256$: $\\cos(2\\pi\\cdot @{lk.nu1}\\,t)$ (between two Fourier frequencies) plus $0.02\\cos(2\\pi\\cdot 0.3\\,t)$ and tiny noise; log scale', '$T = 256$: $\\cos(2\\pi\\cdot @{lk.nu1}\\,t)$ (între două frecvențe Fourier) plus $0.02\\cos(2\\pi\\cdot 0.3\\,t)$ și un zgomot foarte mic; scară logaritmică')],
@@ -475,16 +519,25 @@ interp(('leakage', 'scurgerii spectrale'), [
      [T('the main peak is a little wider: tapering trades resolution for less leakage', 'vîrful principal este puțin mai lat: atenuarea schimbă rezoluție pentru o scurgere mai mică')]),
     T('Log scale is essential: on a linear scale both curves look like a single spike', 'Scara logaritmică este esențială: pe o scară liniară ambele curbe arată ca un singur vîrf')])
 
-D.frame(T('Smoothing the periodogram', 'Netezirea periodogramei'), items(
-    (T('Idea: $f$ is smooth, the ordinates are nearly independent: average $L = 2m + 1$ neighbouring ordinates', 'Ideea: $f$ este netedă, iar ordonatele sînt aproape independente: faceți media a $L = 2m + 1$ ordonate vecine'),
-     [T('\\textbf{Daniell} estimator: $\\hat f(\\nu_j) = \\frac{1}{L}\\sum_{k=-m}^{m} I(\\nu_{j+k})$; variance about $f^2/L$', 'estimatorul \\textbf{Daniell}: $\\hat f(\\nu_j) = \\frac{1}{L}\\sum_{k=-m}^{m} I(\\nu_{j+k})$; varianța aproximativ $f^2/L$'),
-      T('\\textbf{bandwidth} $B = L/T$: the width of the frequency band that is averaged', '\\textbf{lățimea de bandă} $B = L/T$: lățimea benzii de frecvențe peste care se face media')]),
+D.frame(T('Smoothing the periodogram (1/2): the Daniell estimator', 'Netezirea periodogramei (1/2): estimatorul Daniell'), items(
+    (T('Idea: $f$ is smooth and the ordinates are nearly independent, so average $L = 2m + 1$ neighbouring ordinates', 'Ideea: $f$ este netedă, iar ordonatele sînt aproape independente, deci se face media a $L = 2m + 1$ ordonate vecine'),
+     [T('\\textbf{Daniell} estimator: $\\hat f(\\nu_j) = \\frac{1}{L}\\sum_{k=-m}^{m} I(\\nu_{j+k})$', 'estimatorul \\textbf{Daniell}: $\\hat f(\\nu_j) = \\frac{1}{L}\\sum_{k=-m}^{m} I(\\nu_{j+k})$'),
+      T('$m$: the number of neighbours on each side; $k$: runs from $-m$ to $m$; $\\hat f$: the estimated spectrum', '$m$: numărul de vecini de fiecare parte; $k$: parcurge valorile de la $-m$ la $m$; $\\hat f$: spectrul estimat'),
+      T('variance about $f^2/L$: $L$ times smaller than that of one ordinate', 'varianța este aproximativ $f^2/L$: de $L$ ori mai mică decît cea a unei singure ordonate')]),
+    (T('\\textbf{Bandwidth} $B = L/T$', '\\textbf{Lățimea de bandă} $B = L/T$'),
+         [T('the width of the frequency band that is averaged', 'lățimea benzii de frecvențe peste care se face media')]),
     (T('Bias--variance trade-off: a larger $L$ lowers the variance but flattens narrow peaks (bias)', 'Compromisul deplasare--varianță: un $L$ mai mare reduce varianța, dar aplatizează vîrfurile înguste (deplasare)'),
-     [T('consistency needs $L \\to \\infty$ and $L/T \\to 0$, e.g.\\ $L \\approx \\sqrt T$', 'consistența cere $L \\to \\infty$ și $L/T \\to 0$, de exemplu $L \\approx \\sqrt T$')]),
-    (T('Equivalent views: smoothing in frequency $=$ down-weighting distant autocovariances (lag windows)', 'Perspective echivalente: netezirea în frecvență $=$ ponderi mai mici pentru autocovarianțele îndepărtate (ferestre de decalaj)'),
-     [T('Bartlett window: $\\hat f(\\nu) = \\sum_{|h| \\le M}(1 - |h|/M)\\hat\\gamma(h)e^{-2\\pi i\\nu h}$ (\\refBartlett; \\refBT)', 'fereastra Bartlett: $\\hat f(\\nu) = \\sum_{|h| \\le M}(1 - |h|/M)\\hat\\gamma(h)e^{-2\\pi i\\nu h}$ (\\refBartlett; \\refBT)')]),
-    (T('\\textbf{Welch} \\refWelch: split the series into $K$ overlapping segments, taper each, average their periodograms', '\\textbf{Welch} \\refWelch: împărțiți seria în $K$ segmente care se suprapun, aplicați fereastra pe fiecare, faceți media periodogramelor'),
-     [T('\\texttt{scipy.signal.welch}; the segment length sets the resolution', '\\texttt{scipy.signal.welch}; lungimea segmentului fixează rezoluția')])), size='footnotesize')
+     [T('consistency needs $L \\to \\infty$ and $L/T \\to 0$, e.g.\\ $L \\approx \\sqrt T$', 'consistența cere $L \\to \\infty$ și $L/T \\to 0$, de exemplu $L \\approx \\sqrt T$')])), size='footnotesize')
+
+D.frame(T('Smoothing the periodogram (2/2): lag windows and Welch', 'Netezirea periodogramei (2/2): ferestrele de lag și metoda Welch'), items(
+    (T('Equivalent view: smoothing in frequency $=$ down-weighting distant autocovariances (lag windows)', 'Perspectiva echivalentă: netezirea în frecvență $=$ ponderi mai mici pentru autocovarianțele îndepărtate (ferestre de lag)'),
+     [T('Bartlett window: $\\hat f(\\nu) = \\sum_{|h| \\le M}(1 - |h|/M)\\hat\\gamma(h)e^{-2\\pi i\\nu h}$ (\\refBartlett; \\refBT)', 'fereastra Bartlett: $\\hat f(\\nu) = \\sum_{|h| \\le M}(1 - |h|/M)\\hat\\gamma(h)e^{-2\\pi i\\nu h}$ (\\refBartlett; \\refBT)'),
+      T('$M$: the truncation lag; autocovariances beyond lag $M$ are dropped, the others get weights $1 - |h|/M$ that fall linearly', '$M$: lagul de trunchiere; autocovarianțele de dincolo de lagul $M$ se elimină, celelalte primesc ponderile $1 - |h|/M$, care scad liniar'),
+      T('a smaller $M$ means more smoothing', 'un $M$ mai mic înseamnă o netezire mai puternică')]),
+    (T('The \\textbf{Welch} method (\\refWelch)', 'Metoda \\textbf{Welch} (\\refWelch)'),
+         [T('an average of the periodograms of $K$ segments', 'o medie a periodogramelor a $K$ segmente'),
+          T('split the series into $K$ overlapping segments, taper each, average their periodograms', 'seria se împarte în $K$ segmente care se suprapun, se aplică fereastra pe fiecare și se face media periodogramelor'),
+          T('\\texttt{scipy.signal.welch}; the segment length sets the resolution', '\\texttt{scipy.signal.welch}; lungimea segmentului fixează rezoluția')])))
 
 chart(T('Smoothed estimates of an AR(2) spectrum', 'Estimări netezite ale spectrului unui AR(2)'), 'tsa_ch12_smoothing', 'TSA_ch12_smoothing', [
     T('Simulated AR(2), $\\phi = (1.5, -0.75)$, $T = 512$; true spectrum (dashed) with the raw periodogram (left) and three smoothed estimates (right)', 'AR(2) simulat, $\\phi = (1.5;\\ -0.75)$, $T = 512$; spectrul adevărat (linie întreruptă), periodograma brută (stînga) și trei estimări netezite (dreapta)')],
@@ -499,10 +552,11 @@ interp(('the smoothed estimates', 'estimărilor netezite'), [
 
 D.frame(T('Confidence bands for the spectrum', 'Benzi de încredere pentru spectru'), items(
     (T('Daniell estimate with $L$ terms: $\\dfrac{2L\\,\\hat f(\\nu)}{f(\\nu)} \\approx \\chi^2_{2L}$ (degrees of freedom $df = 2L$)', 'Estimarea Daniell cu $L$ termeni: $\\dfrac{2L\\,\\hat f(\\nu)}{f(\\nu)} \\approx \\chi^2_{2L}$ (grade de libertate $df = 2L$)'),
-     [T('95\\% interval: $\\left[\\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.975)},\\ \\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.025)}\\right]$', 'intervalul de 95\\%: $\\left[\\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.975)};\\ \\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.025)}\\right]$')]),
+     [T('95\\% interval: $\\left[\\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.975)},\\ \\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.025)}\\right]$', 'intervalul de 95\\%: $\\left[\\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.975)};\\ \\dfrac{df\\,\\hat f(\\nu)}{\\chi^2_{df}(0.025)}\\right]$'),
+      T('$\\chi^2_{df}(p)$: the quantile of level $p$ of the chi-square distribution with $df$ degrees of freedom', '$\\chi^2_{df}(p)$: cuantila de nivel $p$ a distribuției chi-pătrat cu $df$ grade de libertate')]),
     (T('The interval is a fixed multiple of $\\hat f$: on a log scale its width is the same at every frequency', 'Intervalul este un multiplu fix al lui $\\hat f$: pe scară logaritmică lățimea lui este aceeași la toate frecvențele'),
      [T('a peak is significant if the band at the peak lies above the band of the background around it', 'un vîrf este semnificativ dacă banda de la vîrf se află deasupra benzii fondului din jur')]),
-    T('Welch with $K$ non-overlapping segments: $df \\approx 2K$; overlap and tapering change $df$ a little', 'Welch cu $K$ segmente care nu se suprapun: $df \\approx 2K$; suprapunerea și atenuarea modifică puțin $df$')))
+    T('Welch with $K$ non-overlapping segments: $df \\approx 2K$; overlap and tapering change $df$ a little', 'Welch cu $K$ segmente care nu se suprapun: $df \\approx 2K$; suprapunerea și atenuarea modifică puțin $df$')), size='footnotesize')
 
 solved(('a 95\\% band with $L = 5$', 'o bandă de 95\\% pentru $L = 5$'), [
     (T('$L = 5$ ($m = 2$), so $df = 10$; from the $\\chi^2_{10}$ table: $\\chi^2_{10}(0.025) = @{ex.ci.qlo}$ and $\\chi^2_{10}(0.975) = @{ex.ci.qhi}$', '$L = 5$ ($m = 2$), deci $df = 10$; din tabelul $\\chi^2_{10}$: $\\chi^2_{10}(0.025) = @{ex.ci.qlo}$ și $\\chi^2_{10}(0.975) = @{ex.ci.qhi}$'),
@@ -536,8 +590,9 @@ D.frame(T('The typical spectral shape and the business cycle', 'Forma spectrală
     (T('\\refGranger: the spectrum of most economic levels (GDP, prices) falls steeply from $\\nu = 0$: the \\textbf{typical spectral shape}', '\\refGranger: spectrul majorității nivelurilor economice (PIB, prețuri) scade abrupt de la $\\nu = 0$: \\textbf{forma spectrală tipică}'),
      [T('trends and near unit roots put almost all the variance at the lowest frequencies and hide the cycles', 'trendurile și rădăcinile aproape unitare pun aproape toată varianța la frecvențele cele mai joase și ascund ciclurile'),
       T('so we first make the series stationary: growth rates (differences) or a detrended cycle', 'de aceea transformăm întîi seria într-una staționară: rate de creștere (diferențe) sau un ciclu fără trend')]),
-    (T('\\textbf{Business-cycle band}: fluctuations lasting 1.5 to 8 years, i.e.\\ 6 to 32 quarters (\\refBK)', '\\textbf{Banda ciclului economic}: fluctuații care durează între 1,5 și 8 ani, adică între 6 și 32 de trimestre (\\refBK)'),
-     [T('in frequency: $1/32 \\le \\nu \\le 1/6$ cycles per quarter', 'în frecvență: $1/32 \\le \\nu \\le 1/6$ cicluri pe trimestru')]),
+    (T('\\textbf{Business-cycle band}', '\\textbf{Banda ciclului economic}'),
+         [T('fluctuations lasting 1.5 to 8 years, i.e.\\ 6 to 32 quarters (\\refBK)', 'fluctuații care durează între 1,5 și 8 ani, adică între 6 și 32 de trimestre (\\refBK)'),
+          T('in frequency: $1/32 \\le \\nu \\le 1/6$ cycles per quarter', 'în frecvență: $1/32 \\le \\nu \\le 1/6$ cicluri pe trimestru')]),
     (T('Data: US real GDP (FRED GDPC1, @{g.US.T} quarterly growth rates) and Romanian real GDP (Eurostat, seasonally adjusted, @{g.RO.T} growth rates)', 'Datele: PIB-ul real al SUA (FRED GDPC1, @{g.US.T} de rate de creștere trimestriale) și PIB-ul real al României (Eurostat, ajustat sezonier, @{g.RO.T} de rate de creștere)'),
      [T('both up to 2019 Q4: the 2020 collapse and rebound would dominate every periodogram', 'ambele pînă în T4 2019: prăbușirea și revenirea din 2020 ar domina orice periodogramă'),
       T('the cycle is also extracted with the HP filter, $\\lambda = 1600$ (\\refHPf; Chapter 10)', 'ciclul este extras și cu filtrul HP, $\\lambda = 1600$ (\\refHPf; Capitolul 10)')])))
@@ -585,13 +640,23 @@ D.recap(('Cycles in data', 'ciclurile din date'), [
 # =============================================================================
 D.section('Long memory: the pole at zero', 'Memoria lungă: polul de la zero')
 
-D.frame(T('Long memory in the frequency domain', 'Memoria lungă în domeniul frecvenței'), items(
-    (T('Chapter 8: a long-memory series has $\\rho(h) \\sim Ch^{2d-1}$; then $\\sum_h\\gamma(h) = \\infty$ and $f(0) = \\infty$', 'Capitolul 8: o serie cu memorie lungă are $\\rho(h) \\sim Ch^{2d-1}$; atunci $\\sum_h\\gamma(h) = \\infty$ și $f(0) = \\infty$'),
-     [T('ARFIMA$(0,d,0)$: $f(\\nu) = \\sigma^2\\,|2\\sin(\\pi\\nu)|^{-2d} \\approx \\sigma^2(2\\pi\\nu)^{-2d}$ near $\\nu = 0$: a \\textbf{pole} at zero', 'ARFIMA$(0,d,0)$: $f(\\nu) = \\sigma^2\\,|2\\sin(\\pi\\nu)|^{-2d} \\approx \\sigma^2(2\\pi\\nu)^{-2d}$ în apropierea lui $\\nu = 0$: un \\textbf{pol} la zero')]),
-    (T('On a log--log plot the low-frequency spectrum is a straight line with slope $-2d$', 'Pe un grafic log--log spectrul de joasă frecvență este o dreaptă cu panta $-2d$'),
-     [T('\\refGPH\\ regress $\\log I(\\nu_j)$ on $-\\log(4\\sin^2(\\pi\\nu_j))$ for $j = 1, \\ldots, m$: the slope is $\\hat d$, standard error $\\pi/\\sqrt{24m}$', '\\refGPH\\ regresează $\\log I(\\nu_j)$ pe $-\\log(4\\sin^2(\\pi\\nu_j))$ pentru $j = 1, \\ldots, m$: panta este $\\hat d$, cu eroarea standard $\\pi/\\sqrt{24m}$'),
-      T('only the lowest $m = \\lfloor T^{0.65}\\rfloor$ frequencies are used, where the pole dominates', 'se folosesc doar cele mai joase $m = \\lfloor T^{0.65}\\rfloor$ frecvențe, unde polul domină')]),
-    T('Short memory (ARMA) has a finite $f(0)$: the log--log plot flattens at low frequencies', 'Memoria scurtă (ARMA) are $f(0)$ finit: graficul log--log devine orizontal la frecvențele joase')))
+D.frame(T('Long memory in the frequency domain (1/2)', 'Memoria lungă în domeniul frecvenței (1/2)'), items(
+    (T('Chapter 8: a long-memory series has autocorrelations that decay like a power of the lag', 'Capitolul 8: o serie cu memorie lungă are autocorelații care scad ca o putere a lagului'),
+     [T('$\\rho(h) \\sim Ch^{2d-1}$: $\\rho(h)$ is the autocorrelation at lag $h$, $C > 0$ a constant, $\\sim$ means ``proportional for large $h$\'\'', '$\\rho(h) \\sim Ch^{2d-1}$: $\\rho(h)$ este autocorelația la lagul $h$, $C > 0$ o constantă, iar $\\sim$ înseamnă „proporțional pentru $h$ mare”'),
+      T('$d$: the memory parameter; $0 < d < 1/2$ gives stationary long memory; then $\\sum_h\\gamma(h) = \\infty$ and $f(0) = \\infty$', '$d$: parametrul de memorie; $0 < d < 1/2$ dă memorie lungă staționară; atunci $\\sum_h\\gamma(h) = \\infty$ și $f(0) = \\infty$')]),
+    (T('ARFIMA$(0,d,0)$: the spectrum explodes at zero', 'ARFIMA$(0,d,0)$: spectrul tinde la infinit în zero'),
+     [T('$f(\\nu) = \\sigma^2\\,|2\\sin(\\pi\\nu)|^{-2d} \\approx \\sigma^2(2\\pi\\nu)^{-2d}$ near $\\nu = 0$: a \\textbf{pole} at zero', '$f(\\nu) = \\sigma^2\\,|2\\sin(\\pi\\nu)|^{-2d} \\approx \\sigma^2(2\\pi\\nu)^{-2d}$ în apropierea lui $\\nu = 0$: un \\textbf{pol} la zero'),
+      T('taking logs: $\\log f(\\nu) \\approx \\log\\sigma^2 - 2d\\log(2\\pi\\nu)$, a straight line in $\\log\\nu$ with slope $-2d$', 'prin logaritmare: $\\log f(\\nu) \\approx \\log\\sigma^2 - 2d\\log(2\\pi\\nu)$, o dreaptă în $\\log\\nu$, cu panta $-2d$')]),
+    T('Short memory (ARMA) has a finite $f(0)$: the log--log plot flattens at low frequencies', 'Memoria scurtă (ARMA) are $f(0)$ finit: graficul log--log devine orizontal la frecvențele joase')), size='footnotesize')
+
+D.frame(T('Long memory in the frequency domain (2/2): the GPH estimator', 'Memoria lungă în domeniul frecvenței (2/2): estimatorul GPH'), items(
+    (T('\\refGPH: a regression of the log-periodogram on a log-frequency term', '\\refGPH: o regresie a logaritmului periodogramei pe un termen logaritmic al frecvenței'),
+     [T('regress $\\log I(\\nu_j)$ on $-\\log(4\\sin^2(\\pi\\nu_j))$ for $j = 1, \\ldots, m$; the slope is $\\hat d$', 'se regresează $\\log I(\\nu_j)$ pe $-\\log(4\\sin^2(\\pi\\nu_j))$ pentru $j = 1, \\ldots, m$; panta este $\\hat d$'),
+      T('standard error $\\pi/\\sqrt{24m}$: it shrinks as more frequencies are used', 'eroarea standard $\\pi/\\sqrt{24m}$: scade pe măsură ce se folosesc mai multe frecvențe')]),
+    (T('Only the lowest $m = \\lfloor T^{0.65}\\rfloor$ frequencies are used, where the pole dominates', 'Se folosesc doar cele mai joase $m = \\lfloor T^{0.65}\\rfloor$ frecvențe, unde polul domină'),
+     [T('a larger $m$ lowers the standard error but brings in short-memory effects (bias)', 'un $m$ mai mare reduce eroarea standard, dar aduce efecte de memorie scurtă (deplasare)')]),
+    (T('Reading', 'Interpretarea'),
+     [T('$\\hat d$ close to 0: short memory; $0 < \\hat d < 0.5$: stationary long memory; $\\hat d \\ge 0.5$: nonstationary', '$\\hat d$ apropiat de 0: memorie scurtă; $0 < \\hat d < 0{,}5$: memorie lungă staționară; $\\hat d \\ge 0{,}5$: nestaționaritate')])))
 
 chart(T('The pole at zero in stock-market data', 'Polul de la zero în datele bursiere'), 'tsa_ch12_long_memory', 'TSA_ch12_long_memory', [
     T('Daily S\\&P 500 log returns, 2000--2026, $T = @{lm.T}$ (EODHD); periodogram averaged in 40 log-frequency bins; GPH lines on the lowest $m = @{lm.m}$ frequencies (periods above @{lm.per} days)', 'Randamentele logaritmice zilnice S\\&P 500, 2000--2026, $T = @{lm.T}$ (EODHD); periodograma mediată în 40 de intervale logaritmice de frecvență; dreptele GPH pe cele mai joase $m = @{lm.m}$ frecvențe (perioade de peste @{lm.per} de zile)')],
@@ -609,14 +674,21 @@ interp(('the log--log periodogram', 'periodogramei log--log'), [
 # =============================================================================
 D.section('Linear filters', 'Filtre liniare')
 
-D.frame(T('Linear filters and their gain', 'Filtrele liniare și cîștigul lor'), items(
-    (T('A \\textbf{linear filter}: $y_t = \\sum_j a_j x_{t-j}$; its \\textbf{frequency response} is $A(\\nu) = \\sum_j a_j e^{-2\\pi i\\nu j}$', 'Un \\textbf{filtru liniar}: $y_t = \\sum_j a_j x_{t-j}$; \\textbf{răspunsul lui în frecvență} este $A(\\nu) = \\sum_j a_j e^{-2\\pi i\\nu j}$'),
-     [T('key result: $f_y(\\nu) = |A(\\nu)|^2 f_x(\\nu)$; $|A(\\nu)|^2$ is the \\textbf{squared gain}', 'rezultatul de bază: $f_y(\\nu) = |A(\\nu)|^2 f_x(\\nu)$; $|A(\\nu)|^2$ este \\textbf{cîștigul pătratic}'),
-      T('the filter multiplies the power at each frequency: it amplifies some cycles and removes others', 'filtrul înmulțește puterea de la fiecare frecvență: amplifică unele cicluri și le elimină pe altele')]),
+D.frame(T('Linear filters and their gain (1/2)', 'Filtrele liniare și cîștigul lor (1/2)'), items(
+    (T('A \\textbf{linear filter} turns an input series $x_t$ into an output $y_t$ by a weighted sum of current and past values', 'Un \\textbf{filtru liniar} transformă o serie de intrare $x_t$ într-o serie de ieșire $y_t$ printr-o sumă ponderată a valorilor curente și trecute'),
+     [T('$y_t = \\sum_j a_j x_{t-j}$; $a_j$: the filter weights; $j$: the lag', '$y_t = \\sum_j a_j x_{t-j}$; $a_j$: ponderile filtrului; $j$: lagul')]),
+    (T('Its \\textbf{frequency response} is $A(\\nu) = \\sum_j a_j e^{-2\\pi i\\nu j}$', '\\textbf{Răspunsul lui în frecvență} este $A(\\nu) = \\sum_j a_j e^{-2\\pi i\\nu j}$'),
+     [T('key result: $f_y(\\nu) = |A(\\nu)|^2 f_x(\\nu)$; $f_x$, $f_y$: the spectra of input and output', 'rezultatul de bază: $f_y(\\nu) = |A(\\nu)|^2 f_x(\\nu)$; $f_x$, $f_y$: spectrele intrării și ieșirii'),
+      T('$|A(\\nu)|^2$ is the \\textbf{squared gain}: above 1 the filter amplifies cycles of frequency $\\nu$, below 1 it damps them, 0 removes them', '$|A(\\nu)|^2$ este \\textbf{cîștigul pătratic}: peste 1 filtrul amplifică ciclurile de frecvență $\\nu$, sub 1 le atenuează, 0 le elimină')])))
+
+D.frame(T('Linear filters and their gain (2/2)', 'Filtrele liniare și cîștigul lor (2/2)'), items(
     (T('First difference $y_t = x_t - x_{t-1}$: $|A(\\nu)|^2 = |1 - e^{-2\\pi i\\nu}|^2 = 4\\sin^2(\\pi\\nu)$', 'Prima diferență $y_t = x_t - x_{t-1}$: $|A(\\nu)|^2 = |1 - e^{-2\\pi i\\nu}|^2 = 4\\sin^2(\\pi\\nu)$'),
      [T('zero at $\\nu = 0$ (removes the trend), 4 at $\\nu = 1/2$ (amplifies noise); at a period of 40 quarters: @{fi.d40}; at 4 quarters: @{fi.d4}', 'zero la $\\nu = 0$ (elimină trendul), 4 la $\\nu = 1/2$ (amplifică zgomotul); la o perioadă de 40 de trimestre: @{fi.d40}; la 4 trimestre: @{fi.d4}')]),
-    (T('Seasonal difference $1 - L^4$: $4\\sin^2(4\\pi\\nu)$, zero at $\\nu = 0, 1/4, 1/2$ (the trend and the seasonal cycles)', 'Diferența sezonieră $1 - L^4$: $4\\sin^2(4\\pi\\nu)$, zero la $\\nu = 0, 1/4, 1/2$ (trendul și ciclurile sezoniere)'),
-     [T('HP cycle filter: squared gain $\\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$, a high-pass filter', 'filtrul HP pentru ciclu: cîștigul pătratic $\\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$, un filtru trece-sus')])), size='footnotesize')
+    (T('Seasonal difference $(1 - L^4)x_t = x_t - x_{t-4}$ (quarterly data): squared gain $4\\sin^2(4\\pi\\nu)$', 'Diferența sezonieră $(1 - L^4)x_t = x_t - x_{t-4}$ (date trimestriale): cîștigul pătratic $4\\sin^2(4\\pi\\nu)$'),
+     [T('zero at $\\nu = 0, 1/4, 1/2$: it removes the trend and the seasonal cycles', 'zero la $\\nu = 0, 1/4, 1/2$: elimină trendul și ciclurile sezoniere')]),
+    (T('HP cycle filter: squared gain $\\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$', 'Filtrul HP pentru ciclu: cîștigul pătratic $\\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$'),
+     [T('$\\lambda$: the smoothing parameter (1600 for quarterly data); a larger $\\lambda$ moves the cut-off to slower cycles', '$\\lambda$: parametrul de netezire (1600 pentru date trimestriale); un $\\lambda$ mai mare mută pragul spre ciclurile mai lente'),
+      T('close to 0 at low frequencies, close to 1 at high ones: a \\textbf{high-pass} filter', 'aproape de 0 la frecvențele joase și aproape de 1 la cele înalte: un filtru \\textbf{trece-sus}')])))
 
 chart(T('Squared gains of common filters', 'Cîștigurile pătratice ale filtrelor uzuale'), 'tsa_ch12_filters', 'TSA_ch12_filters', [
     T('Left: first difference and seasonal difference ($s = 4$); right: HP cycle and trend filters, $\\lambda = 1600$ (quarterly data); shaded: 6--32 quarters', 'Stînga: prima diferență și diferența sezonieră ($s = 4$); dreapta: filtrele HP pentru ciclu și pentru trend, $\\lambda = 1600$ (date trimestriale); hașurat: 6--32 de trimestre')],
@@ -636,11 +708,15 @@ D.section('Two series: coherence and phase', 'Două serii: coerență și fază'
 
 D.frame(T('Cross-spectrum, coherence and phase', 'Spectrul încrucișat, coerența și faza'), items(
     (T('For two stationary series with cross-covariances $\\gamma_{xy}(h) = \\mathrm{Cov}(x_{t+h}, y_t)$:', 'Pentru două serii staționare cu covarianțele încrucișate $\\gamma_{xy}(h) = \\mathrm{Cov}(x_{t+h}, y_t)$:'),
-     [T('\\textbf{cross-spectrum} $f_{xy}(\\nu) = \\sum_h\\gamma_{xy}(h)e^{-2\\pi i\\nu h}$, a complex number at each frequency', '\\textbf{spectrul încrucișat} $f_{xy}(\\nu) = \\sum_h\\gamma_{xy}(h)e^{-2\\pi i\\nu h}$, un număr complex la fiecare frecvență')]),
-    (T('\\textbf{Squared coherence}: $\\rho^2_{xy}(\\nu) = \\dfrac{|f_{xy}(\\nu)|^2}{f_x(\\nu)f_y(\\nu)} \\in [0, 1]$', '\\textbf{Coerența pătratică}: $\\rho^2_{xy}(\\nu) = \\dfrac{|f_{xy}(\\nu)|^2}{f_x(\\nu)f_y(\\nu)} \\in [0, 1]$'),
-     [T('a squared correlation frequency by frequency: how well the cycles of $x$ and $y$ at $\\nu$ move together', 'un pătrat al corelației, frecvență cu frecvență: cît de bine se mișcă împreună ciclurile lui $x$ și $y$ la frecvența $\\nu$')]),
-    (T('\\textbf{Phase} $\\varphi(\\nu) = \\arg f_{xy}(\\nu)$: the shift between the two cycles, in radians', '\\textbf{Faza} $\\varphi(\\nu) = \\arg f_{xy}(\\nu)$: decalajul dintre cele două cicluri, în radiani'),
-     [T('a time lag of $k$ periods gives a phase that is linear in frequency: $\\varphi(\\nu) = \\pm 2\\pi\\nu k$; so the lag is $|\\varphi|/(2\\pi\\nu)$', 'un decalaj de $k$ perioade dă o fază liniară în frecvență: $\\varphi(\\nu) = \\pm 2\\pi\\nu k$; deci decalajul este $|\\varphi|/(2\\pi\\nu)$')]),
+     [T('\\textbf{cross-spectrum} $f_{xy}(\\nu) = \\sum_h\\gamma_{xy}(h)e^{-2\\pi i\\nu h}$, a complex number at each frequency', '\\textbf{spectrul încrucișat} $f_{xy}(\\nu) = \\sum_h\\gamma_{xy}(h)e^{-2\\pi i\\nu h}$, un număr complex la fiecare frecvență'),
+      T('$f_x$, $f_y$: the spectra of $x$ and $y$ separately', '$f_x$, $f_y$: spectrele lui $x$ și $y$, luate separat')]),
+    (T('\\textbf{Squared coherence}', '\\textbf{Coerența pătratică}'),
+         [T('$\\rho^2_{xy}(\\nu) = \\dfrac{|f_{xy}(\\nu)|^2}{f_x(\\nu)f_y(\\nu)} \\in [0, 1]$', '$\\rho^2_{xy}(\\nu) = \\dfrac{|f_{xy}(\\nu)|^2}{f_x(\\nu)f_y(\\nu)} \\in [0, 1]$'),
+          T('a squared correlation frequency by frequency: how well the cycles of $x$ and $y$ at $\\nu$ move together', 'un pătrat al corelației, frecvență cu frecvență: cît de bine se mișcă împreună ciclurile lui $x$ și $y$ la frecvența $\\nu$')]),
+    (T('\\textbf{Phase} $\\varphi(\\nu) = \\arg f_{xy}(\\nu)$', '\\textbf{Faza} $\\varphi(\\nu) = \\arg f_{xy}(\\nu)$'),
+         [T('the shift between the two cycles, in radians', 'defazajul dintre cele două cicluri, în radiani'),
+          T('$\\arg$: the angle of a complex number in the plane (its argument)', '$\\arg$: unghiul unui număr complex în plan (argumentul lui)'),
+          T('a time lag of $k$ periods gives a phase that is linear in frequency: $\\varphi(\\nu) = \\pm 2\\pi\\nu k$; so the lag is $|\\varphi|/(2\\pi\\nu)$', 'un lag de $k$ perioade dă o fază liniară în frecvență: $\\varphi(\\nu) = \\pm 2\\pi\\nu k$; deci lagul este $|\\varphi|/(2\\pi\\nu)$')]),
     T('Estimation: smooth the cross-periodogram like the periodogram; the raw coherence is always 1, so smoothing is compulsory', 'Estimarea: netezim periodograma încrucișată la fel ca periodograma; coerența brută este întotdeauna 1, deci netezirea este obligatorie')), size='footnotesize')
 
 chart(T('Industrial production and unemployment', 'Producția industrială și șomajul'), 'tsa_ch12_coherence', 'TSA_ch12_coherence', [
@@ -651,8 +727,8 @@ interp(('coherence and phase', 'coerenței și fazei'), [
     (T('In the business-cycle band (18--96 months) the squared coherence averages @{co.bc} (maximum @{co.bcmax}), far above the 5\\% threshold @{co.thr}', 'În banda ciclului economic (18--96 de luni) coerența pătratică are media @{co.bc} (maximum @{co.bcmax}), mult peste pragul de 5\\%, @{co.thr}'),
      [T('at frequencies faster than 6 months it averages only @{co.hi}: the monthly noise of the two series is unrelated', 'la frecvențele mai rapide de 6 luni media este doar @{co.hi}: zgomotul lunar al celor două serii nu este legat'),
       T('the ordinary correlation, @{co.r0}, mixes the strong link of the cycles with the weak link of the noise', 'corelația obișnuită, @{co.r0}, amestecă legătura puternică a ciclurilor cu legătura slabă a zgomotului')]),
-    (T('Phase at the 48-month cycle: @{co.ph} radians, a lag of about @{co.lag} months', 'Faza la ciclul de 48 de luni: @{co.ph} radiani, un decalaj de aproximativ @{co.lag} luni'),
-     [T('the fall in unemployment follows the recovery of production with a short delay (Okun\'s law, with a lag)', 'scăderea șomajului urmează revenirea producției cu o mică întîrziere (legea lui Okun, cu decalaj)')]),
+    (T('Phase at the 48-month cycle: @{co.ph} radians, a lag of about @{co.lag} months', 'Faza la ciclul de 48 de luni: @{co.ph} radiani, un lag de aproximativ @{co.lag} luni'),
+     [T('the fall in unemployment follows the recovery of production with a short delay (Okun\'s law, with a lag)', 'scăderea șomajului urmează revenirea producției cu o mică întîrziere (legea lui Okun, cu un lag)')]),
     T('Where the coherence is low, the phase is meaningless: read the phase only in bands with significant coherence', 'Acolo unde coerența este mică, faza nu are sens: citiți faza doar în benzile cu coerență semnificativă')])
 
 # =============================================================================
@@ -681,7 +757,7 @@ interp(('the scalogram', 'scalogramei'), [
 D.recap(('Long memory, filters, two series, wavelets', 'memoria lungă, filtre, două serii, wavelets'), [
     T('Long memory is a pole at $\\nu = 0$: slope $-2d$ on a log--log plot (GPH)', 'Memoria lungă este un pol la $\\nu = 0$: panta $-2d$ pe un grafic log--log (GPH)'),
     T('A filter multiplies the spectrum by its squared gain: differencing and the HP filter reshape cycles', 'Un filtru înmulțește spectrul cu cîștigul lui pătratic: diferențierea și filtrul HP remodelează ciclurile'),
-    T('Coherence is a correlation by frequency; the phase gives the lead or the lag', 'Coerența este o corelație pe frecvențe; faza arată avansul sau întîrzierea'),
+    T('Coherence is a correlation by frequency; the phase gives the lead or the lag', 'Coerența este o corelație pe frecvențe; faza arată avansul sau lagul unei serii față de cealaltă'),
     T('Wavelets show how cycles change over time', 'Wavelets arată cum se schimbă ciclurile în timp')])
 
 # =============================================================================
@@ -690,9 +766,12 @@ D.recap(('Long memory, filters, two series, wavelets', 'memoria lungă, filtre, 
 D.section('Possible contribution of AI', 'Contribuția posibilă a AI')
 
 D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
-    T('\\textbf{Code}: a first draft of a periodogram, a Daniell smoother, a Welch estimate or a coherence plot', '\\textbf{Cod}: o primă versiune a unei periodograme, a unei neteziri Daniell, a unei estimări Welch sau a unui grafic al coerenței'),
-    T('\\textbf{Explanation}: a second explanation of leakage, aliasing or the bias--variance trade-off of the bandwidth', '\\textbf{Explicații}: o a doua explicație a scurgerii spectrale, a fenomenului de aliasing sau a compromisului deplasare--varianță al lățimii de bandă'),
-    T('\\textbf{Exploration}: spectra of many series at once (load of several countries, GDP of all EU members) and a first reading of the peaks', '\\textbf{Explorare}: spectrele multor serii deodată (consumul mai multor țări, PIB-ul tuturor statelor UE) și o primă interpretare a vîrfurilor'),
+    (T('\\textbf{Code}', '\\textbf{Cod}'),
+         [T('a first draft of a periodogram, a Daniell smoother, a Welch estimate or a coherence plot', 'o primă versiune a unei periodograme, a unei neteziri Daniell, a unei estimări Welch sau a unui grafic al coerenței')]),
+    (T('\\textbf{Explanation}', '\\textbf{Explicații}'),
+         [T('a second explanation of leakage, aliasing or the bias--variance trade-off of the bandwidth', 'o a doua explicație a scurgerii spectrale, a fenomenului de aliasing sau a compromisului deplasare--varianță al lățimii de bandă')]),
+    (T('\\textbf{Exploration}', '\\textbf{Explorare}'),
+         [T('spectra of many series at once (load of several countries, GDP of all EU members) and a first reading of the peaks', 'spectrele multor serii deodată (consumul mai multor țări, PIB-ul tuturor statelor UE) și o primă interpretare a vîrfurilor')]),
     (T('Example prompt', 'Exemplu de prompt'),
      [T('\\aiprompt{Write Python code that reads hourly electricity load, removes the mean, computes the periodogram with a Hann taper and a Welch estimate with 8-week segments, plots both on a log-log scale against the period in hours, and marks 24, 12 and 168 hours.}',
         '\\aiprompt{Write Python code that reads hourly electricity load, removes the mean, computes the periodogram with a Hann taper and a Welch estimate with 8-week segments, plots both on a log-log scale against the period in hours, and marks 24, 12 and 168 hours.}')])))
@@ -726,7 +805,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      'Daniell & $\\hat f(\\nu_j) = \\frac1L\\sum_{|k| \\le m} I(\\nu_{j+k})$, \\quad $L = 2m + 1$, \\quad $B = L/T$',
      T('95\\% band', 'Banda de 95\\%') + ' & $[2L\\hat f/\\chi^2_{2L}(0.975),\\ 2L\\hat f/\\chi^2_{2L}(0.025)]$',
      T('Linear filter', 'Filtru liniar') + ' & $f_y(\\nu) = |A(\\nu)|^2 f_x(\\nu)$, \\quad $|1 - e^{-2\\pi i\\nu}|^2 = 4\\sin^2(\\pi\\nu)$',
-     T('Coherence, phase', 'Coerența, faza') + ' & $\\rho^2_{xy} = |f_{xy}|^2/(f_x f_y)$, \\quad $\\varphi = \\arg f_{xy}$, \\quad ' + T('lag', 'decalaj') + ' $= |\\varphi|/(2\\pi\\nu)$'],
+     T('Coherence, phase', 'Coerența, faza') + ' & $\\rho^2_{xy} = |f_{xy}|^2/(f_x f_y)$, \\quad $\\varphi = \\arg f_{xy}$, \\quad ' + T('lag', 'lagul') + ' $= |\\varphi|/(2\\pi\\nu)$'],
     size='scriptsize') + '}')
 
 D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(

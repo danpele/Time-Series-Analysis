@@ -162,12 +162,12 @@ window.TSA_DATA.quizzes['arma'] = {
                 "text": "Procesul AR(2) $X_t = 1{,}0X_{t-1} - 0{,}6X_{t-2} + \\varepsilon_t$ are rădăcini complexe. Cum arată ACF?",
                 "options": [
                     "O undă amortizată (pseudo-cicluri)",
-                    "Se anulează după decalajul 2",
+                    "Se anulează după lagul 2",
                     "O descreștere geometrică fără schimbări de semn",
                     "Nu descrește (rădăcină unitară)"
                 ],
-                "correctExplanation": "Deoarece $\\phi_1^2 + 4\\phi_2 = 1 - 2{,}4 < 0$, rădăcinile sînt complexe, iar ACF este un cosinus amortizat; factorul de amortizare pe decalaj este $\\sqrt{0{,}6} \\approx 0{,}77$.",
-                "incorrectExplanation": "Anularea după decalajul 2 caracterizează ACF a unui MA(2), nu a unui AR(2). O descreștere geometrică fără schimbări de semn corespunde unor rădăcini reale pozitive, iar procesul este staționar, deci ACF descrește."
+                "correctExplanation": "Deoarece $\\phi_1^2 + 4\\phi_2 = 1 - 2{,}4 < 0$, rădăcinile sînt complexe, iar ACF este un cosinus amortizat; factorul de amortizare pe lag este $\\sqrt{0{,}6} \\approx 0{,}77$.",
+                "incorrectExplanation": "Anularea după lagul 2 caracterizează ACF a unui MA(2), nu a unui AR(2). O descreștere geometrică fără schimbări de semn corespunde unor rădăcini reale pozitive, iar procesul este staționar, deci ACF descrește."
             }
         },
         {
@@ -186,15 +186,15 @@ window.TSA_DATA.quizzes['arma'] = {
             },
             "ro": {
                 "title": "Identificarea unui model AR",
-                "text": "PACF are valori semnificative la decalajele 1 și 2 și niciuna după aceea; ACF descrește treptat. Ce model este sugerat?",
+                "text": "PACF are valori semnificative la lagurile 1 și 2 și niciuna după aceea; ACF descrește treptat. Ce model este sugerat?",
                 "options": [
                     "MA(2)",
                     "ARMA(1,1)",
                     "AR(2)",
                     "Zgomot alb"
                 ],
-                "correctExplanation": "O PACF care se anulează după decalajul $p$, împreună cu o ACF care descrește, este semnătura unui AR($p$), aici AR(2).",
-                "incorrectExplanation": "Pentru un MA(2) rolurile sînt inversate (ACF se anulează); pentru un ARMA(1,1) ambele funcții descresc; zgomotul alb nu are decalaje semnificative."
+                "correctExplanation": "O PACF care se anulează după lagul $p$, împreună cu o ACF care descrește, este semnătura unui AR($p$), aici AR(2).",
+                "incorrectExplanation": "Pentru un MA(2) rolurile sînt inversate (ACF se anulează); pentru un ARMA(1,1) ambele funcții descresc; zgomotul alb nu are laguri semnificative."
             }
         },
         {
@@ -213,15 +213,15 @@ window.TSA_DATA.quizzes['arma'] = {
             },
             "ro": {
                 "title": "Identificarea unui model MA",
-                "text": "ACF are o singură valoare semnificativă, la decalajul 1, și apoi se anulează, iar PACF descrește treptat. Ce model este sugerat?",
+                "text": "ACF are o singură valoare semnificativă, la lagul 1, și apoi se anulează, iar PACF descrește treptat. Ce model este sugerat?",
                 "options": [
                     "MA(1)",
                     "AR(1)",
                     "ARMA(1,1)",
                     "Zgomot alb"
                 ],
-                "correctExplanation": "O ACF care se anulează după decalajul 1 indică un MA(1); PACF care descrește treptat confirmă acest lucru.",
-                "incorrectExplanation": "Pentru un AR(1) tiparul este inversat (ACF descrește, PACF se anulează după decalajul 1); pentru un ARMA(1,1) ambele descresc; zgomotul alb nu are nicio valoare semnificativă."
+                "correctExplanation": "O ACF care se anulează după lagul 1 indică un MA(1); PACF care descrește treptat confirmă acest lucru.",
+                "incorrectExplanation": "Pentru un AR(1) tiparul este inversat (ACF descrește, PACF se anulează după lagul 1); pentru un ARMA(1,1) ambele descresc; zgomotul alb nu are nicio valoare semnificativă."
             }
         },
         {
@@ -382,7 +382,7 @@ window.TSA_DATA.quizzes['arma'] = {
                     "0,2",
                     "−0,2"
                 ],
-                "correctExplanation": "$\\hat\\phi_2 = (\\hat\\rho_2 - \\hat\\rho_1^2)/(1 - \\hat\\rho_1^2) = (0{,}4 - 0{,}25)/0{,}75 = 0{,}2$; este egală cu PACF de selecție la decalajul 2.",
+                "correctExplanation": "$\\hat\\phi_2 = (\\hat\\rho_2 - \\hat\\rho_1^2)/(1 - \\hat\\rho_1^2) = (0{,}4 - 0{,}25)/0{,}75 = 0{,}2$; este egală cu PACF de selecție la lagul 2.",
                 "incorrectExplanation": "0,4 este chiar $\\hat\\rho(2)$, 0,15 este doar numărătorul, iar semnul este pozitiv deoarece $\\hat\\rho_2 > \\hat\\rho_1^2$."
             }
         },
@@ -407,9 +407,9 @@ window.TSA_DATA.quizzes['arma'] = {
                     "MA(3): ratele anuale consecutive au trei trimestre comune",
                     "AR(1): creșterea este persistentă",
                     "Zgomot alb: o sumă de zgomote albe este zgomot alb",
-                    "AR(4): cîte un decalaj pentru fiecare trimestru"
+                    "AR(4): cîte un lag pentru fiecare trimestru"
                 ],
-                "correctExplanation": "$y_t$ și $y_{t-h}$ au $4 - h$ șocuri trimestriale comune pentru $h \\le 3$ și niciunul pentru $h \\ge 4$, deci ACF se anulează după decalajul 3: un MA(3). Pentru România, BIC alege exact acest model.",
+                "correctExplanation": "$y_t$ și $y_{t-h}$ au $4 - h$ șocuri trimestriale comune pentru $h \\le 3$ și niciunul pentru $h \\ge 4$, deci ACF se anulează după lagul 3: un MA(3). Pentru România, BIC alege exact acest model.",
                 "incorrectExplanation": "Persistența este creată de suprapunere, nu de o autoregresie; o sumă mobilă de zgomote albe este corelată, nu este zgomot alb; ACF se anulează, ceea ce exclude un AR."
             }
         },
@@ -491,7 +491,7 @@ window.TSA_DATA.quizzes['arma'] = {
                     "13"
                 ],
                 "correctExplanation": "Estimarea a $p + q = 3$ coeficienți consumă 3 grade de libertate: $m - p - q = 10 - 3 = 7$ (Box și Pierce, 1970).",
-                "incorrectExplanation": "10 ignoră coeficienții estimați și face testul prea indulgent; 9 scade doar un coeficient; 13 adună în loc să scadă."
+                "incorrectExplanation": "10 ignoră coeficienții estimați și face ca testul să respingă prea rar; 9 scade doar un coeficient; 13 adună în loc să scadă."
             }
         },
         {
@@ -510,15 +510,15 @@ window.TSA_DATA.quizzes['arma'] = {
             },
             "ro": {
                 "title": "Interpretarea testului Ljung–Box",
-                "text": "După estimarea unui model ARMA, testul Ljung–Box pentru reziduuri dă o valoare p de 0,03. Ce înseamnă aceasta la pragul de 5%?",
+                "text": "După estimarea unui model ARMA, testul Ljung–Box pentru reziduuri dă un p-value de 0,03. Ce înseamnă aceasta la pragul de 5%?",
                 "options": [
                     "Reziduurile sînt zgomot alb",
                     "Testul este neconcludent, deci sînt necesare mai multe date",
                     "Reziduurile urmează distribuția Normală",
                     "În reziduuri rămîne autocorelație: modelul este inadecvat"
                 ],
-                "correctExplanation": "$p < 0{,}05$ respinge $H_0$ (absența autocorelației pînă la decalajul $m$): modelul nu a surprins toată dependența și trebuie respecificat.",
-                "incorrectExplanation": "Reziduurile de tip zgomot alb ar da o valoare p mare; o valoare p mică este o respingere clară, nu un rezultat neconcludent; normalitatea se testează cu Jarque–Bera, nu cu Ljung–Box."
+                "correctExplanation": "$p < 0{,}05$ respinge $H_0$ (absența autocorelației pînă la lagul $m$): modelul nu a surprins toată dependența și trebuie respecificat.",
+                "incorrectExplanation": "Reziduurile de tip zgomot alb ar da un p-value mare; un p-value mic este o respingere clară, nu un rezultat neconcludent; normalitatea se testează cu Jarque–Bera, nu cu Ljung–Box."
             }
         },
         {

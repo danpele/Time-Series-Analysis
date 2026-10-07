@@ -218,9 +218,9 @@ window.TSA_DATA.quizzes['cointegration'] = {
                     "Are staționaritatea ca ipoteză nulă",
                     "Nu are nevoie de o regresie în primul pas",
                     "Estimează mai mulți vectori de cointegrare",
-                    "Nu folosește diferențe decalate și corectează statistica $t$ cu varianța pe termen lung a reziduurilor"
+                    "Nu folosește laguri ale diferențelor și corectează statistica $t$ cu varianța pe termen lung a reziduurilor"
                 ],
-                "correctExplanation": "Phillips și Ouliaris (1990) păstrează același pas 1 și aceeași ipoteză nulă (fără cointegrare), dar înlocuiesc diferențele decalate printr-o corecție neparametrică cu varianța pe termen lung, așa cum face testul Phillips-Perron pentru o singură serie.",
+                "correctExplanation": "Phillips și Ouliaris (1990) păstrează același pas 1 și aceeași ipoteză nulă (fără cointegrare), dar înlocuiesc lagurile diferențelor printr-o corecție neparametrică cu varianța pe termen lung, așa cum face testul Phillips-Perron pentru o singură serie.",
                 "incorrectExplanation": "Ipoteza nulă rămîne absența cointegrării; reziduurile provin tot dintr-o regresie în primul pas; doar metoda Johansen estimează mai mulți vectori de cointegrare."
             }
         },
@@ -302,7 +302,7 @@ window.TSA_DATA.quizzes['cointegration'] = {
                     "$I - A_1$"
                 ],
                 "correctExplanation": "Scădem $\\mathbf y_{t-1}$, apoi adunăm și scădem $A_2 \\mathbf y_{t-1}$: $\\Delta \\mathbf y_t = (A_1 + A_2 - I)\\mathbf y_{t-1} - A_2 \\Delta \\mathbf y_{t-1} + \\mathbf u_t$, deci $\\Pi = A_1 + A_2 - I$ și $\\Gamma_1 = -A_2$.",
-                "incorrectExplanation": "$-A_2$ este coeficientul $\\Gamma_1$ al diferenței decalate; celelalte expresii nu rezultă din rescriere."
+                "incorrectExplanation": "$-A_2$ este coeficientul $\\Gamma_1$ al lagului diferenței; celelalte expresii nu rezultă din rescriere."
             }
         },
         {
@@ -379,7 +379,7 @@ window.TSA_DATA.quizzes['cointegration'] = {
                 "options": [
                     "Vectorii de cointegrare",
                     "Coeficienții de ajustare: cît de puternic reacționează fiecare variabilă la erorile de echilibru",
-                    "Coeficienții decalajelor pe termen scurt",
+                    "Coeficienții lagurilor pe termen scurt",
                     "Varianța erorilor"
                 ],
                 "correctExplanation": "$\\beta^\\top \\mathbf y_{t-1}$ sînt erorile de echilibru, iar $\\alpha$ (loadings) măsoară cum răspunde fiecare variabilă la ele, adică viteza de ajustare.",
@@ -407,10 +407,10 @@ window.TSA_DATA.quizzes['cointegration'] = {
                     "Coeficientul ei în vectorul de cointegrare este nul ($\\beta_i = 0$)",
                     "Este staționară",
                     "Coeficienții ei de ajustare sînt nuli ($\\alpha_i = 0$)",
-                    "Nu are decalaje în model"
+                    "Nu are laguri în model"
                 ],
                 "correctExplanation": "Cu $\\alpha_i = 0$ variabila nu reacționează la erorile de echilibru: celelalte variabile fac toată ajustarea, iar ea antrenează trendul comun; randamentul la 1 an din SUA se comportă astfel în curs.",
-                "incorrectExplanation": "$\\beta_i = 0$ ar scoate variabila din relația pe termen lung; staționaritatea și structura decalajelor sînt alte întrebări."
+                "incorrectExplanation": "$\\beta_i = 0$ ar scoate variabila din relația pe termen lung; staționaritatea și structura lagurilor sînt alte întrebări."
             }
         },
         {
@@ -541,11 +541,11 @@ window.TSA_DATA.quizzes['cointegration'] = {
                 "options": [
                     "1",
                     "3",
-                    "Cîte decalaje are VAR-ul",
+                    "Cîte laguri are VAR-ul",
                     "2"
                 ],
                 "correctExplanation": "Cu $n$ variabile $I(1)$ există cel mult $n - 1$ vectori de cointegrare independenți; un rang egal cu $n$ ar însemna că toate seriile sînt staționare.",
-                "incorrectExplanation": "Rangul 3 este rangul maxim (serii staționare); numărul de decalaje nu are legătură cu rangul."
+                "incorrectExplanation": "Rangul 3 este rangul maxim (serii staționare); numărul de laguri nu are legătură cu rangul."
             }
         },
         {
@@ -652,7 +652,7 @@ window.TSA_DATA.quizzes['cointegration'] = {
                     "Pentru că întregul eșantion are mai puține observații",
                     "Raportul de acoperire, media și abaterea standard a spread-ului și alegerea perechii folosesc date din viitor"
                 ],
-                "correctExplanation": "Parametrii și alegerea perechilor trebuie să folosească doar perioada de formare; în curs, regula TLV/BRD în eșantion părea atractivă, iar regula pe ferestre mobile pe 28 de perechi de la BVB a cîștigat aproape zero după costuri.",
+                "correctExplanation": "Parametrii și alegerea perechilor trebuie să folosească doar perioada de formare; în curs, regula TLV/BRD în eșantion părea atractivă, iar regula pe ferestre mobile pe 28 de perechi de la BVB a avut un randament aproape nul după costuri.",
                 "incorrectExplanation": "Costurile sînt pozitive și reduc și mai mult profiturile; spread-urile cointegrate revin, dar lent; problema nu este mărimea eșantionului, ci privirea în viitor."
             }
         }

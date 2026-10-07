@@ -28,7 +28,7 @@ window.TSA_DATA.quizzes['long-memory'] = {
                 "options": [
                     "Incrementele sînt necorelate, ca în cazul unui mers aleator pur",
                     "Incrementele au memorie lungă și sînt persistente (trend-following)",
-                    "Incrementele sînt anti-persistente (mean-reverting)",
+                    "Incrementele sînt antipersistente (mean-reverting)",
                     "Incrementele formează un proces I(0) cu memorie scurtă"
                 ],
                 "correctExplanation": "$H > 0{,}5$ înseamnă persistență și memorie lungă: incrementele pozitive tind să fie urmate de incremente pozitive, iar autocorelațiile scad hiperbolic. Pentru $H = 0{,}8$ persistența este puternică.",
@@ -302,7 +302,7 @@ window.TSA_DATA.quizzes['long-memory'] = {
                     "Randamentele însele au memorie lungă"
                 ],
                 "correctExplanation": "O permutare păstrează fiecare valoare (deci distribuția și cozile groase) și distruge doar ordinea în timp; memoria dispare, deci provine din gruparea zilelor calme și agitate.",
-                "incorrectExplanation": "Permutarea nu schimbă cozile, estimatorul funcționează corect pe seria permutată, iar randamentele au $d \\approx 0$. Memoria stă în ordinea zilelor."
+                "incorrectExplanation": "Permutarea nu schimbă cozile, estimatorul funcționează corect pe seria permutată, iar randamentele au $d \\approx 0$. Memoria se află în ordinea zilelor."
             }
         },
         {
@@ -599,7 +599,7 @@ window.TSA_DATA.quizzes['long-memory'] = {
                     "$\\hat d$ mult peste zero, deoarece $d$ absoarbe dependența pe termen scurt"
                 ],
                 "correctExplanation": "Fără un termen AR în model, singura cale de a reproduce autocorelațiile pozitive este un $d$ pozitiv: în simulări estimarea Whittle este aproximativ 0,5. Includeți întotdeauna termeni ARMA ca alternative.",
-                "incorrectExplanation": "Un model corect specificat ar da $\\hat d \\approx 0$, o valoare negativă ar contrazice autocorelațiile pozitive, iar verosimilitatea se poate calcula. Specificarea greșită umflă $\\hat d$."
+                "incorrectExplanation": "Un model corect specificat ar da $\\hat d \\approx 0$, o valoare negativă ar contrazice autocorelațiile pozitive, iar verosimilitatea se poate calcula. Specificarea greșită supraestimează $\\hat d$."
             }
         },
         {

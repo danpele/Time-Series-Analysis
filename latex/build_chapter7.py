@@ -366,7 +366,7 @@ D.frame(T('A drunk and her dog', 'O femeie beată și cîinele ei'), cols(
            [T('her dog also wanders: $y_t$ is a random walk too', 'cîinele ei rătăcește și el: $y_t$ este tot un mers aleator'),
             T('the distance between two \\textbf{independent} walkers grows without limit, like $\\sqrt{t}$', 'distanța dintre doi trecători \\textbf{independenți} crește fără limită, ca $\\sqrt{t}$')]),
           (T('But the dog hears her call and runs back; she hears the dog and turns towards it', 'Dar cîinele îi aude strigătul și aleargă înapoi; ea aude cîinele și se întoarce spre el'),
-           [T('each corrects part of the gap: $\\Delta x_t = c\\,(y_{t-1} - x_{t-1}) + u_t$, $\\Delta y_t = d\\,(x_{t-1} - y_{t-1}) + w_t$', 'fiecare corectează o parte din distanță: $\\Delta x_t = c\\,(y_{t-1} - x_{t-1}) + u_t$, $\\Delta y_t = d\\,(x_{t-1} - y_{t-1}) + w_t$'),
+           [T('each corrects part of the gap: $\\Delta x_t = c\\,(y_{t-1} - x_{t-1}) + u_t$, $\\Delta y_t = d\\,(x_{t-1} - y_{t-1}) + w_t$; $c, d > 0$: the shares of the gap closed per step; $u_t$, $w_t$: independent shocks', 'fiecare corectează o parte din distanță: $\\Delta x_t = c\\,(y_{t-1} - x_{t-1}) + u_t$, $\\Delta y_t = d\\,(x_{t-1} - y_{t-1}) + w_t$; $c, d > 0$: fracțiunile din distanță închise la fiecare pas; $u_t$, $w_t$: șocuri independente'),
             T('both paths remain unpredictable, but the distance $y_t - x_t$ stays bounded: \\textbf{cointegration} with \\textbf{error correction}', 'ambele traiectorii rămîn imprevizibile, dar distanța $y_t - x_t$ rămîne mărginită: \\textbf{cointegrare} cu \\textbf{corecția erorii}')])),
     wl='0.38', wr='0.58'))
 
@@ -386,7 +386,7 @@ D.frame(T('Definition of cointegration', 'Definiția cointegrării'), items(
        '\\textbf{Definiție} \\refEG: componentele lui $\\mathbf y_t = (y_{1t}, \\dots, y_{nt})^\\top$ sînt \\textbf{cointegrate de ordinul (1,1)}, $\\mathbf y_t \\sim CI(1,1)$, dacă'),
      [T('every component is $I(1)$ (Chapter 3: stationary after one difference), and', 'fiecare componentă este $I(1)$ (Capitolul 3: staționară după o diferențiere) și'),
       T('some linear combination $\\beta^\\top \\mathbf y_t$, with $\\beta \\neq 0$, is $I(0)$: stationary', 'o anumită combinație liniară $\\beta^\\top \\mathbf y_t$, cu $\\beta \\neq 0$, este $I(0)$: staționară')]),
-    (T('$\\beta$ is the \\textbf{cointegrating vector}; $u_t = \\beta^\\top \\mathbf y_t - \\mu$ is the \\textbf{equilibrium error}', '$\\beta$ este \\textbf{vectorul de cointegrare}; $u_t = \\beta^\\top \\mathbf y_t - \\mu$ este \\textbf{eroarea de echilibru}'),
+    (T('$\\beta$ is the \\textbf{cointegrating vector}; $u_t = \\beta^\\top \\mathbf y_t - \\mu$ is the \\textbf{equilibrium error} ($\\mu$: its mean; $\\top$: transpose)', '$\\beta$ este \\textbf{vectorul de cointegrare}; $u_t = \\beta^\\top \\mathbf y_t - \\mu$ este \\textbf{eroarea de echilibru} ($\\mu$: media ei; $\\top$: transpusa)'),
      [T('$\\beta$ is unique only up to scale: $2\\beta$ works as well; we \\textbf{normalise} one coefficient to 1, e.g.\\ $\\beta = (1, -b)^\\top$', '$\\beta$ este unic doar pînă la o constantă multiplicativă: și $2\\beta$ este bun; \\textbf{normalizăm} un coeficient la 1, de exemplu $\\beta = (1, -b)^\\top$'),
       T('with $n$ variables there can be up to $r = n - 1$ independent cointegrating vectors; $r$ is the \\textbf{cointegration rank}', 'cu $n$ variabile pot exista cel mult $r = n - 1$ vectori de cointegrare independenți; $r$ este \\textbf{rangul de cointegrare}')]),
     T('Cointegration is a property of the \\textbf{levels}: differencing the data destroys the information in $\\beta^\\top \\mathbf y_t$', 'Cointegrarea este o proprietate a \\textbf{nivelurilor}: diferențierea datelor distruge informația din $\\beta^\\top \\mathbf y_t$')))
@@ -433,7 +433,7 @@ D.frame(T('Question for the room', 'Întrebare pentru sală'), items(
 D.recap(('The idea of cointegration', 'ideea de cointegrare'), [
     T('$I(1)$ series are cointegrated if a combination $\\beta^\\top \\mathbf y_t$ is stationary: a long-run equilibrium', 'Seriile $I(1)$ sînt cointegrate dacă o combinație $\\beta^\\top \\mathbf y_t$ este staționară: un echilibru pe termen lung'),
     T('Equivalently, they share common stochastic trends: $n$ variables, $r$ vectors, $n - r$ trends', 'Echivalent, au trenduri stochastice comune: $n$ variabile, $r$ vectori, $n - r$ trenduri'),
-    T('Theory suggests cointegration (parity conditions, spreads, great ratios), but the data must confirm it', 'Teoria sugerează cointegrarea (condiții de paritate, spread-uri, rapoarte mari), dar datele trebuie să o confirme')])
+    T('Theory suggests cointegration (parity conditions, spreads, great ratios), but the data must confirm it', 'Teoria sugerează cointegrarea (condiții de paritate, spread-uri, „marile rapoarte”), dar datele trebuie să o confirme')])
 
 # =============================================================================
 # 2. ENGLE-GRANGER
@@ -447,7 +447,8 @@ D.frame(T('Two steps', 'Doi pași'), items(
     (T('\\textbf{Step 2}: an ADF test (Chapter 3) on the residuals, without a constant: $\\Delta\\hat u_t = \\gamma\\,\\hat u_{t-1} + \\sum_{j=1}^{k}\\delta_j\\Delta\\hat u_{t-j} + e_t$',
        '\\textbf{Pasul 2}: un test ADF (Capitolul 3) pe reziduuri, fără constantă: $\\Delta\\hat u_t = \\gamma\\,\\hat u_{t-1} + \\sum_{j=1}^{k}\\delta_j\\Delta\\hat u_{t-j} + e_t$'),
      [T('$H_0$: $\\gamma = 0$, the residuals have a unit root: \\textbf{no cointegration}; $H_1$: $\\gamma < 0$: cointegration', '$H_0$: $\\gamma = 0$, reziduurile au o rădăcină unitară: \\textbf{fără cointegrare}; $H_1$: $\\gamma < 0$: cointegrare'),
-      T('statistic $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$; reject $H_0$ when $\\tau$ is below the critical value', 'statistica $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$; respingem $H_0$ cînd $\\tau$ este sub valoarea critică')]),
+      T('$\\delta_j$: coefficients of the $k$ lagged differences, which absorb the autocorrelation of $\\hat u_t$; $e_t$: white noise', '$\\delta_j$: coeficienții celor $k$ laguri ale diferențelor, care preiau autocorelația lui $\\hat u_t$; $e_t$: zgomot alb'),
+      T('statistic $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, SE: standard error; reject $H_0$ when $\\tau$ is below the critical value', 'statistica $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, SE: eroarea standard; respingem $H_0$ cînd $\\tau$ este sub valoarea critică')]),
     T('Pretest: each series must be $I(1)$; cointegration between an $I(0)$ and an $I(1)$ series is impossible', 'Testare prealabilă: fiecare serie trebuie să fie $I(1)$; o serie $I(0)$ și una $I(1)$ nu pot fi cointegrate')))
 
 D.frame(T('Why the Dickey--Fuller table is wrong here', 'Motivul pentru care tabelul Dickey--Fuller este greșit aici'), items(
@@ -460,7 +461,7 @@ D.frame(T('Why the Dickey--Fuller table is wrong here', 'Motivul pentru care tab
       'Cu $\\beta$ \\textbf{cunoscut} din teorie (de exemplu un spread, $\\beta = (1, -1)^\\top$), nu se estimează nimic: se aplică testul ADF obișnuit, cu tabelul lui')))
 
 chart(T('The null distribution by simulation', 'Distribuția în ipoteza nulă prin simulare'), 'tsa_ch7_eg_dist', 'TSA_ch7_engle_granger', [
-    T('@{ed.R} samples of $T = @{ed.T}$ independent Gaussian random walks; step 1 with a constant, step 2 without lags', '@{ed.R} de eșantioane de $T = @{ed.T}$ mersuri aleatoare gaussiene independente; pasul 1 cu constantă, pasul 2 fără decalaje')], h='0.55\\textheight')
+    T('@{ed.R} samples of $T = @{ed.T}$ independent Gaussian random walks; step 1 with a constant, step 2 without lags', '@{ed.R} de eșantioane de $T = @{ed.T}$ mersuri aleatoare gaussiene independente; pasul 1 cu constantă, pasul 2 fără laguri')], h='0.55\\textheight')
 
 interp(('the simulation', 'simulării'), [
     (T('5\\% quantiles: $@{ed.1.q05}$ (one series, Dickey--Fuller), $@{ed.2.q05}$ (2 variables), $@{ed.3.q05}$ (3 variables)', 'Cuantilele de 5\\%: $@{ed.1.q05}$ (o serie, Dickey--Fuller), $@{ed.2.q05}$ (2 variabile), $@{ed.3.q05}$ (3 variabile)'),
@@ -480,10 +481,10 @@ D.frame(T('Critical values of the Engle--Granger test', 'Valorile critice ale te
 D.frame(T('The Phillips--Ouliaris test', 'Testul Phillips--Ouliaris'), items(
     (T('\\refPO: the same step 1 and the same $H_0$ (no cointegration)', '\\refPO: același pas 1 și aceeași ipoteză $H_0$ (fără cointegrare)'),
      [T('step 2: a Dickey--Fuller regression \\textbf{without} lagged differences; the $t$-statistic is corrected with the long-run variance of the residuals (as in the Phillips--Perron test of Chapter 3)',
-        'pasul 2: o regresie Dickey--Fuller \\textbf{fără} diferențe decalate; statistica $t$ este corectată cu varianța pe termen lung a reziduurilor (ca în testul Phillips--Perron din Capitolul 3)'),
+        'pasul 2: o regresie Dickey--Fuller \\textbf{fără} laguri ale diferențelor; statistica $t$ este corectată cu varianța pe termen lung a reziduurilor (ca în testul Phillips--Perron din Capitolul 3)'),
       T('two versions: $Z_t$ (corrected $t$-ratio) and $Z_\\alpha$ (corrected $T\\hat\\gamma$); the critical values of $Z_t$ are those of Engle--Granger', 'două versiuni: $Z_t$ (raportul $t$ corectat) și $Z_\\alpha$ ($T\\hat\\gamma$ corectat); valorile critice ale lui $Z_t$ sînt cele Engle--Granger')]),
-    (T('Why two tests?', 'De ce două teste?'),
-     [T('Engle--Granger depends on the number of lags $k$ chosen by AIC; Phillips--Ouliaris depends on the bandwidth of the long-run variance', 'Engle--Granger depinde de numărul de decalaje $k$ ales după AIC; Phillips--Ouliaris depinde de lățimea de bandă a varianței pe termen lung'),
+    (T('Reasons for two tests', 'Motivul folosirii a două teste'),
+     [T('Engle--Granger depends on the number of lags $k$ chosen by AIC; Phillips--Ouliaris depends on the bandwidth of the long-run variance', 'Engle--Granger depinde de numărul de laguri $k$ ales după AIC; Phillips--Ouliaris depinde de lățimea de bandă a varianței pe termen lung'),
       T('when they agree, the verdict is robust; when they disagree, look at the residual plot and at the sample', 'cînd concordă, verdictul este robust; cînd nu concordă, examinăm graficul reziduurilor și eșantionul')]),
     T('In Python: \\texttt{coint(y, x)} from \\texttt{statsmodels}; \\texttt{phillips\\_ouliaris(y, x, test\\_type="Zt")} from \\texttt{arch}', 'În Python: \\texttt{coint(y, x)} din \\texttt{statsmodels}; \\texttt{phillips\\_ouliaris(y, x, test\\_type="Zt")} din \\texttt{arch}')))
 
@@ -492,7 +493,7 @@ D.frame(T('Worked example: US consumption and income', 'Exemplu rezolvat: consum
      [T('pretest: ADF with trend, p = @{ex.cc.p} for $c_t$ and @{ex.cy.p} for $y_t$: both $I(1)$', 'testare prealabilă: ADF cu trend, p = @{ex.cc.p} pentru $c_t$ și @{ex.cy.p} pentru $y_t$: ambele $I(1)$')]),
     (T('Step 1: $\\hat c_t = @{eg.cons.a} + @{eg.cons.b}\\,y_t$, $R^2 = @{eg.cons.r2}$, DW $= @{eg.cons.dw}$', 'Pasul 1: $\\hat c_t = @{eg.cons.a} + @{eg.cons.b}\\,y_t$, $R^2 = @{eg.cons.r2}$, DW $= @{eg.cons.dw}$'),
      [T('the slope is close to 1: a stable consumption share; but $R^2$ and DW alone prove nothing', 'panta este apropiată de 1: o pondere stabilă a consumului; dar $R^2$ și DW singure nu dovedesc nimic')]),
-    (T('Step 2: $\\tau = @{eg0.tau}$ with @{eg0.k} lags; 5\\% critical value for $n = 2$, $T = @{eg0.n}$: $@{eg.cons.cv}$', 'Pasul 2: $\\tau = @{eg0.tau}$ cu @{eg0.k} decalaje; valoarea critică de 5\\% pentru $n = 2$, $T = @{eg0.n}$: $@{eg.cons.cv}$'),
+    (T('Step 2: $\\tau = @{eg0.tau}$ with @{eg0.k} lags; 5\\% critical value for $n = 2$, $T = @{eg0.n}$: $@{eg.cons.cv}$', 'Pasul 2: $\\tau = @{eg0.tau}$ cu @{eg0.k} laguri; valoarea critică de 5\\% pentru $n = 2$, $T = @{eg0.n}$: $@{eg.cons.cv}$'),
      [T('$@{eg0.tau} < @{eg.cons.cv}$: reject ``no cointegration\'\' at 5\\% (p = @{eg0.p}); Phillips--Ouliaris: $Z_t = @{eg0.po}$, p = @{eg0.pop}', '$@{eg0.tau} < @{eg.cons.cv}$: respingem „fără cointegrare” la 5\\% (p = @{eg0.p}); Phillips--Ouliaris: $Z_t = @{eg0.po}$, p = @{eg0.pop}'),
       T('with the Dickey--Fuller value ($@{eg.cons.adfcv}$) the decision would be the same here, but for the wrong reason', 'cu valoarea Dickey--Fuller ($@{eg.cons.adfcv}$) decizia ar fi aceeași aici, dar din motive greșite')])))
 
@@ -510,7 +511,7 @@ interp(('the residuals', 'reziduurilor'), [
 D.frame(T('Engle--Granger and Phillips--Ouliaris on real data', 'Engle--Granger și Phillips--Ouliaris pe date reale'), table(
     'llrrrrrr', T('\\textbf{Regression}', '\\textbf{Regresia}') + ' & ' + T('\\textbf{Freq.}', '\\textbf{Frecv.}') + ' & $T$ & $\\hat b$ & $\\tau$ (k) & p & $Z_t$ & p',
     EGR, size='scriptsize') + items(
-    T('$\\tau$: Engle--Granger statistic ($k$ lags by AIC); p-values of \\refMacKinnonb\\ for 2 variables; $Z_t$: Phillips--Ouliaris', '$\\tau$: statistica Engle--Granger ($k$ decalaje după AIC); valori p din \\refMacKinnonb\\ pentru 2 variabile; $Z_t$: Phillips--Ouliaris'),
+    T('$\\tau$: Engle--Granger statistic ($k$ lags by AIC); p-values of \\refMacKinnonb\\ for 2 variables; $Z_t$: Phillips--Ouliaris', '$\\tau$: statistica Engle--Granger ($k$ laguri după AIC); p-value-uri din \\refMacKinnonb\\ pentru 2 variabile; $Z_t$: Phillips--Ouliaris'),
     T('Banks: adjusted prices from data/market; Romania: household consumption and GDP, Eurostat, chain-linked volumes, seasonally adjusted, since 1995',
       'Băncile: prețuri ajustate din data/market; România: consumul gospodăriilor și PIB-ul, Eurostat, volume înlănțuite, ajustate sezonier, din 1995')), 'small')
 
@@ -519,14 +520,14 @@ interp(('the table', 'tabelului'), [
      [T('Engle--Granger depends on which variable is on the left; here the verdict is the same', 'Engle--Granger depinde de variabila aleasă în stînga; aici verdictul este același')]),
     (T('\\textbf{The sample}: since 2010 the same banks are not cointegrated (p = @{eg4.p}); since 2014 they are (p = @{eg2.p})', '\\textbf{Eșantionul}: din 2010 aceleași bănci nu sînt cointegrate (p = @{eg4.p}); din 2014 sînt (p = @{eg2.p})'),
      [T('choosing the start date after looking at the data is a form of data snooping', 'alegerea datei de început după examinarea datelor este o formă de data snooping (căutare în date pînă la găsirea unui rezultat)')]),
-    (T('\\textbf{The two tests disagree} for Romania: Engle--Granger p = @{eg6.p} with @{eg.ro.k} lags, Phillips--Ouliaris p @{eg6.pop}', '\\textbf{Cele două teste nu concordă} pentru România: Engle--Granger p = @{eg6.p} cu @{eg.ro.k} decalaje, Phillips--Ouliaris p @{eg6.pop}'),
+    (T('\\textbf{The two tests disagree} for Romania: Engle--Granger p = @{eg6.p} with @{eg.ro.k} lags, Phillips--Ouliaris p @{eg6.pop}', '\\textbf{Cele două teste nu concordă} pentru România: Engle--Granger p = @{eg6.p} cu @{eg.ro.k} laguri, Phillips--Ouliaris p @{eg6.pop}'),
      [T('the slope @{eg6.b} is far from 1: the consumption share rose strongly; Seminar 7 (B2) discusses this case', 'panta @{eg6.b} este departe de 1: ponderea consumului a crescut puternic; Seminarul 7 (B2) discută acest caz')])])
 
 D.frame(T('Limits of the Engle--Granger method', 'Limitele metodei Engle--Granger'), items(
     (T('\\textbf{At most one} cointegrating vector: with $n \\ge 3$ variables there may be several (Sections 4--5)', '\\textbf{Cel mult un} vector de cointegrare: cu $n \\ge 3$ variabile pot exista mai mulți (secțiunile 4--5)'), []),
     (T('\\textbf{Normalisation}: the results depend on the variable put on the left', '\\textbf{Normalizarea}: rezultatele depind de variabila pusă în stînga'), []),
     (T('\\textbf{Inference on $\\hat b$}: super-consistent, but biased in small samples, and its OLS $t$-statistics are \\textbf{not} valid', '\\textbf{Inferența asupra lui $\\hat b$}: superconsistent, dar deplasat în eșantioane mici, iar statisticile $t$ din OLS \\textbf{nu} sînt valide'),
-     [T('remedy: dynamic OLS (DOLS) \\refSWd, adding leads and lags of $\\Delta x_t$, gives valid standard errors', 'remediu: OLS dinamic (DOLS) \\refSWd, cu valori anticipate și decalate ale lui $\\Delta x_t$, dă erori standard valide')]),
+     [T('remedy: dynamic OLS (DOLS) \\refSWd, adding leads and lags of $\\Delta x_t$, gives valid standard errors', 'remediu: OLS dinamic (DOLS) \\refSWd, cu valori viitoare (leads) și laguri ale lui $\\Delta x_t$, dă erori standard valide')]),
     (T('\\textbf{Two-step errors}: mistakes in step 1 carry over to step 2; the power is low against slow adjustment', '\\textbf{Erori în doi pași}: greșelile din pasul 1 se transmit în pasul 2; puterea este mică împotriva unei ajustări lente'),
      [T('the Johansen method (Section 5) estimates everything at once, by maximum likelihood', 'metoda Johansen (secțiunea 5) estimează totul deodată, prin verosimilitate maximă')])))
 
@@ -557,7 +558,8 @@ D.frame(T('The error correction model', 'Modelul cu corecția erorii'), items(
      [T('$\\Delta y_t = c + \\gamma\\,u_{t-1} + \\delta_0\\,\\Delta x_t + \\sum_{j \\ge 1}(\\phi_j\\Delta y_{t-j} + \\delta_j\\Delta x_{t-j}) + \\varepsilon_t$', '$\\Delta y_t = c + \\gamma\\,u_{t-1} + \\delta_0\\,\\Delta x_t + \\sum_{j \\ge 1}(\\phi_j\\Delta y_{t-j} + \\delta_j\\Delta x_{t-j}) + \\varepsilon_t$')]),
     (T('Every term is stationary: OLS and the usual $t$-tests are valid (with $\\hat u_{t-1}$ from step 1)', 'Toți termenii sînt staționari: OLS și testele $t$ obișnuite sînt valide (cu $\\hat u_{t-1}$ din pasul 1)'),
      [T('$b$: the \\textbf{long-run} effect of $x$ on $y$; $\\delta_0$: the \\textbf{short-run} (same-period) effect', '$b$: efectul \\textbf{pe termen lung} al lui $x$ asupra lui $y$; $\\delta_0$: efectul \\textbf{pe termen scurt} (în aceeași perioadă)'),
-      T('$\\gamma$: the \\textbf{speed of adjustment}; error correction requires $-2 < \\gamma < 0$', '$\\gamma$: \\textbf{viteza de ajustare}; corecția erorii cere $-2 < \\gamma < 0$')]),
+      T('$\\gamma$: the \\textbf{speed of adjustment}; error correction requires $-2 < \\gamma < 0$', '$\\gamma$: \\textbf{viteza de ajustare}; corecția erorii cere $-2 < \\gamma < 0$'),
+      T('$c$: constant; $\\phi_j$, $\\delta_j$: short-run coefficients of the lagged differences; $\\varepsilon_t$: white noise', '$c$: termenul liber; $\\phi_j$, $\\delta_j$: coeficienții pe termen scurt ai lagurilor diferențelor; $\\varepsilon_t$: zgomot alb')]),
     T('Reading: if $y_{t-1}$ was above equilibrium ($u_{t-1} > 0$) and $\\gamma < 0$, then $y_t$ tends to fall: a share $|\\gamma|$ of the gap is closed each period',
       'Interpretare: dacă $y_{t-1}$ a fost peste echilibru ($u_{t-1} > 0$) și $\\gamma < 0$, atunci $y_t$ tinde să scadă: o fracțiune $|\\gamma|$ din distanță se închide în fiecare perioadă')))
 
@@ -579,7 +581,7 @@ interp(('the estimated ECMs', 'modelelor ECM estimate'), [
      [T('half of a rise in income reaches consumption in the same quarter; the rest comes slowly, and the adjustment term is only marginally significant', 'jumătate dintr-o creștere a venitului ajunge în consum în același trimestru; restul vine lent, iar termenul de ajustare este doar marginal semnificativ')]),
     (T('10-year yield: $\\hat\\gamma = @{ec.long.g}$ ($t = @{ec.long.t}$), half-life @{ec.long.h} months; $\\hat\\delta_0 = @{ec.long.d0}$', 'Randamentul la 10 ani: $\\hat\\gamma = @{ec.long.g}$ ($t = @{ec.long.t}$), timp de înjumătățire @{ec.long.h} luni; $\\hat\\delta_0 = @{ec.long.d0}$'),
      [T('the 3-month rate also reacts to the same gap: $\\hat\\gamma = @{ec.short.g}$ ($t = @{ec.short.t}$), with the opposite sign: both rates move towards each other', 'și rata la 3 luni reacționează la aceeași distanță: $\\hat\\gamma = @{ec.short.g}$ ($t = @{ec.short.t}$), cu semn opus: ambele rate se apropie una de alta')]),
-    T('When both variables adjust, a single-equation ECM tells only half of the story: hence the VECM (Section 4)', 'Cînd ambele variabile se ajustează, un ECM cu o singură ecuație spune doar jumătate din poveste: de aici VECM (secțiunea 4)')])
+    T('When both variables adjust, a single-equation ECM tells only half of the story: hence the VECM (Section 4)', 'Cînd ambele variabile se ajustează, un ECM cu o singură ecuație descrie doar o parte a ajustării: de aici VECM (secțiunea 4)')])
 
 D.frame(T('Worked example: one quarter of consumption', 'Exemplu rezolvat: un trimestru de consum'), items(
     (T('Estimated ECM (main terms): $\\Delta c_t = @{ec.cons.c} + @{ec.cons.d0}\\,\\Delta y_t @{ec.cons.g}\\,\\hat u_{t-1} + \\dots$, with $\\hat u_{t-1} = c_{t-1} - @{ec.cons.b}\\,y_{t-1} - \\hat a$',
@@ -587,20 +589,20 @@ D.frame(T('Worked example: one quarter of consumption', 'Exemplu rezolvat: un tr
      []),
     (T('Scenario: consumption is $@{wx.gap}\\%$ above its equilibrium ($\\hat u_{t-1} = @{wx.gap}$) and income grows by $@{wx.dy}\\%$ this quarter', 'Scenariu: consumul este cu $@{wx.gap}\\%$ peste echilibru ($\\hat u_{t-1} = @{wx.gap}$), iar venitul crește cu $@{wx.dy}\\%$ în acest trimestru'),
      [T('short-run effect: $@{ec.cons.d0} \\times @{wx.dy} = @{wx.short}$; error correction: $@{ec.cons.g} \\times @{wx.gap} = @{wx.corr}$', 'efectul pe termen scurt: $@{ec.cons.d0} \\times @{wx.dy} = @{wx.short}$; corecția erorii: $@{ec.cons.g} \\times @{wx.gap} = @{wx.corr}$'),
-      T('predicted growth of consumption: about $@{wx.dc}\\%$ (the lagged differences are set to 0)', 'creșterea prognozată a consumului: circa $@{wx.dc}\\%$ (diferențele decalate sînt egale cu 0)')]),
+      T('predicted growth of consumption: about $@{wx.dc}\\%$ (the lagged differences are set to 0)', 'creșterea prognozată a consumului: circa $@{wx.dc}\\%$ (lagurile diferențelor sînt egale cu 0)')]),
     T('Without the error correction term, the model would ignore that consumption is already too high', 'Fără termenul de corecție a erorii, modelul ar ignora faptul că deja consumul este prea mare')))
 
 D.frame(T('Case study: the consumption function of DHSY (1978)', 'Studiu de caz: funcția de consum DHSY (1978)'), items(
     (T('\\textbf{Question}: why did the consumption functions of the 1970s, estimated in levels or in differences, forecast UK consumers\' expenditure so badly?',
        '\\textbf{Întrebarea}: de ce prognozau atît de prost cheltuielile de consum din Marea Britanie funcțiile de consum din anii 1970, estimate în niveluri sau în diferențe?'),
      [T('\\refDHSY\\ (Davidson, Hendry, Srba and Yeo, ``DHSY\'\'): quarterly UK data on expenditure and income', '\\refDHSY\\ (Davidson, Hendry, Srba și Yeo, „DHSY”): date trimestriale pentru Marea Britanie, cheltuieli și venit')]),
-    (T('\\textbf{Method}: a model in differences plus the lagged log ratio of expenditure to income, the error correction term', '\\textbf{Metoda}: un model în diferențe plus raportul logaritmic decalat dintre cheltuieli și venit, termenul de corecție a erorii'),
+    (T('\\textbf{Method}: a model in differences plus the lagged log ratio of expenditure to income, the error correction term', '\\textbf{Metoda}: un model în diferențe plus lagul raportului logaritmic dintre cheltuieli și venit, termenul de corecție a erorii'),
      [T('a general-to-specific search, starting from a large dynamic model', 'o căutare de la general la particular, pornind de la un model dinamic amplu')]),
     (T('\\textbf{Legacy}: the ECM form came first; \\refGranger\\ and \\refEG\\ then showed why it works: the two series are cointegrated', '\\textbf{Moștenirea}: forma ECM a apărut prima; \\refGranger\\ și \\refEG\\ au arătat apoi de ce funcționează: cele două serii sînt cointegrate'),
      [T('a test of cointegration can also use the $t$-statistic of $\\gamma$ in the ECM, with its own critical values \\refBDM', 'un test de cointegrare poate folosi și statistica $t$ a lui $\\gamma$ din ECM, cu valori critice proprii \\refBDM')])))
 
 D.recap(('Error correction models', 'modele cu corecția erorii'), [
-    T('ECM: $\\Delta y_t$ on $\\Delta x_t$, lagged differences and $\\hat u_{t-1}$; all terms stationary', 'ECM: $\\Delta y_t$ pe $\\Delta x_t$, diferențe decalate și $\\hat u_{t-1}$; toți termenii sînt staționari'),
+    T('ECM: $\\Delta y_t$ on $\\Delta x_t$, lagged differences and $\\hat u_{t-1}$; all terms stationary', 'ECM: $\\Delta y_t$ pe $\\Delta x_t$, laguri ale diferențelor și $\\hat u_{t-1}$; toți termenii sînt staționari'),
     T('$\\gamma < 0$: speed of adjustment; half-life $\\ln 0.5/\\ln(1 + \\gamma)$, in the units of the data', '$\\gamma < 0$: viteza de ajustare; timpul de înjumătățire $\\ln 0{,}5/\\ln(1 + \\gamma)$, în unitățile datelor'),
     T('Short run ($\\delta_0$) and long run ($b$) in one equation; if several variables adjust, we need a system', 'Termenul scurt ($\\delta_0$) și termenul lung ($b$) într-o singură ecuație; dacă se ajustează mai multe variabile, avem nevoie de un sistem')])
 
@@ -611,9 +613,10 @@ D.section('The VECM and the Granger representation theorem', 'Modelul VECM și t
 
 D.frame(T('From a VAR to a VECM', 'De la VAR la VECM'), items(
     (T('Chapter 6: a VAR($p$) in levels, $\\mathbf y_t = \\mathbf c + A_1\\mathbf y_{t-1} + \\dots + A_p\\mathbf y_{t-p} + \\mathbf u_t$', 'Capitolul 6: un VAR($p$) în niveluri, $\\mathbf y_t = \\mathbf c + A_1\\mathbf y_{t-1} + \\dots + A_p\\mathbf y_{t-p} + \\mathbf u_t$'),
-     [T('subtract $\\mathbf y_{t-1}$ and regroup the lags: the same model in \\textbf{vector error correction} form (VECM)', 'scădem $\\mathbf y_{t-1}$ și regrupăm decalajele: același model sub forma \\textbf{vectorială cu corecția erorii} (VECM)')]),
-    T('$\\Delta\\mathbf y_t = \\mathbf c + \\Pi\\,\\mathbf y_{t-1} + \\sum_{i=1}^{p-1}\\Gamma_i\\,\\Delta\\mathbf y_{t-i} + \\mathbf u_t$, \\quad $\\Pi = A_1 + \\dots + A_p - I$, \\quad $\\Gamma_i = -(A_{i+1} + \\dots + A_p)$',
+     [T('subtract $\\mathbf y_{t-1}$ and regroup the lags: the same model in \\textbf{vector error correction} form (VECM)', 'scădem $\\mathbf y_{t-1}$ și regrupăm lagurile: același model sub forma \\textbf{vectorială cu corecția erorii} (VECM)')]),
+    (T('$\\Delta\\mathbf y_t = \\mathbf c + \\Pi\\,\\mathbf y_{t-1} + \\sum_{i=1}^{p-1}\\Gamma_i\\,\\Delta\\mathbf y_{t-i} + \\mathbf u_t$, \\quad $\\Pi = A_1 + \\dots + A_p - I$, \\quad $\\Gamma_i = -(A_{i+1} + \\dots + A_p)$',
       '$\\Delta\\mathbf y_t = \\mathbf c + \\Pi\\,\\mathbf y_{t-1} + \\sum_{i=1}^{p-1}\\Gamma_i\\,\\Delta\\mathbf y_{t-i} + \\mathbf u_t$, \\quad $\\Pi = A_1 + \\dots + A_p - I$, \\quad $\\Gamma_i = -(A_{i+1} + \\dots + A_p)$'),
+     [T('$\\Pi$: the long-run matrix (it multiplies the levels); $\\Gamma_i$: the short-run matrices; $I$: the identity matrix', '$\\Pi$: matricea pe termen lung (înmulțește nivelurile); $\\Gamma_i$: matricele pe termen scurt; $I$: matricea identitate')]),
     (T('\\textbf{Derivation} for $p = 2$: $\\mathbf y_t - \\mathbf y_{t-1} = (A_1 - I)\\mathbf y_{t-1} + A_2\\mathbf y_{t-2} + \\mathbf u_t$; add and subtract $A_2\\mathbf y_{t-1}$:',
        '\\textbf{Deducere} pentru $p = 2$: $\\mathbf y_t - \\mathbf y_{t-1} = (A_1 - I)\\mathbf y_{t-1} + A_2\\mathbf y_{t-2} + \\mathbf u_t$; adunăm și scădem $A_2\\mathbf y_{t-1}$:'),
      [T('$\\Delta\\mathbf y_t = (A_1 + A_2 - I)\\,\\mathbf y_{t-1} - A_2\\,\\Delta\\mathbf y_{t-1} + \\mathbf u_t$: $\\Pi = A_1 + A_2 - I$, $\\Gamma_1 = -A_2$', '$\\Delta\\mathbf y_t = (A_1 + A_2 - I)\\,\\mathbf y_{t-1} - A_2\\,\\Delta\\mathbf y_{t-1} + \\mathbf u_t$: $\\Pi = A_1 + A_2 - I$, $\\Gamma_1 = -A_2$')]),
@@ -691,7 +694,7 @@ D.section('The Johansen tests', 'Testele Johansen')
 D.frame(T('The idea: reduced-rank regression', 'Ideea: regresia cu rang redus'), cols(
     ph('copenhagen', T('University of Copenhagen, where Søren Johansen and Katarina Juselius developed the method', 'Universitatea din Copenhaga, unde Søren Johansen și Katarina Juselius au dezvoltat metoda'), h='0.36\\textheight'),
     items((T('\\refJohA, \\refJohB: maximum likelihood for the VECM with Gaussian errors', '\\refJohA, \\refJohB: verosimilitate maximă pentru VECM, cu erori gaussiene'),
-           [T('regress $\\Delta\\mathbf y_t$ and $\\mathbf y_{t-1}$ on the lagged differences; keep the residuals $R_{0t}$ and $R_{1t}$', 'regresăm $\\Delta\\mathbf y_t$ și $\\mathbf y_{t-1}$ pe diferențele decalate; păstrăm reziduurile $R_{0t}$ și $R_{1t}$'),
+           [T('regress $\\Delta\\mathbf y_t$ and $\\mathbf y_{t-1}$ on the lagged differences; keep the residuals $R_{0t}$ and $R_{1t}$', 'regresăm $\\Delta\\mathbf y_t$ și $\\mathbf y_{t-1}$ pe lagurile diferențelor; păstrăm reziduurile $R_{0t}$ și $R_{1t}$'),
             T('find the combinations of $R_{1t}$ most correlated with $R_{0t}$: the \\textbf{canonical correlations}', 'căutăm combinațiile lui $R_{1t}$ cel mai puternic corelate cu $R_{0t}$: \\textbf{corelațiile canonice}')]),
           (T('Their squares are the eigenvalues $1 > \\hat\\lambda_1 \\ge \\dots \\ge \\hat\\lambda_n \\ge 0$', 'Pătratele lor sînt valorile proprii $1 > \\hat\\lambda_1 \\ge \\dots \\ge \\hat\\lambda_n \\ge 0$'),
            [T('a large $\\hat\\lambda_i$: a stationary combination that predicts the changes; $\\hat\\lambda_i \\approx 0$: a combination that is still $I(1)$', 'un $\\hat\\lambda_i$ mare: o combinație staționară care prezice variațiile; $\\hat\\lambda_i \\approx 0$: o combinație care rămîne $I(1)$'),
@@ -700,9 +703,11 @@ D.frame(T('The idea: reduced-rank regression', 'Ideea: regresia cu rang redus'),
 
 D.frame(T('Trace and maximum-eigenvalue statistics', 'Statisticile urmei și a valorii proprii maxime'), items(
     (T('\\textbf{Trace test}: $H_0$: rank $\\le r$, against rank $= n$; \\quad $\\lambda_{\\mathrm{trace}}(r) = -T\\sum_{i=r+1}^{n}\\ln(1 - \\hat\\lambda_i)$',
-       '\\textbf{Testul urmei}: $H_0$: rang $\\le r$, față de rang $= n$; \\quad $\\lambda_{\\mathrm{trace}}(r) = -T\\sum_{i=r+1}^{n}\\ln(1 - \\hat\\lambda_i)$'), []),
+       '\\textbf{Testul urmei}: $H_0$: rang $\\le r$, față de rang $= n$; \\quad $\\lambda_{\\mathrm{trace}}(r) = -T\\sum_{i=r+1}^{n}\\ln(1 - \\hat\\lambda_i)$'),
+     [T('it sums the information in the $n - r$ smallest eigenvalues: if they are all close to 0, the statistic is small and $H_0$ is kept', 'însumează informația din cele mai mici $n - r$ valori proprii: dacă sînt toate apropiate de 0, statistica este mică și $H_0$ nu este respinsă')]),
     (T('\\textbf{Maximum-eigenvalue test}: $H_0$: rank $= r$, against rank $= r + 1$; \\quad $\\lambda_{\\max}(r) = -T\\ln(1 - \\hat\\lambda_{r+1})$',
-       '\\textbf{Testul valorii proprii maxime}: $H_0$: rang $= r$, față de rang $= r + 1$; \\quad $\\lambda_{\\max}(r) = -T\\ln(1 - \\hat\\lambda_{r+1})$'), []),
+       '\\textbf{Testul valorii proprii maxime}: $H_0$: rang $= r$, față de rang $= r + 1$; \\quad $\\lambda_{\\max}(r) = -T\\ln(1 - \\hat\\lambda_{r+1})$'),
+     [T('it uses only the next eigenvalue, $\\hat\\lambda_{r+1}$; $T$: the number of observations', 'folosește doar următoarea valoare proprie, $\\hat\\lambda_{r+1}$; $T$: numărul de observații')]),
     (T('\\textbf{Sequential procedure}: test $r = 0$, then $r \\le 1$, \\dots; the rank is the first $r$ whose $H_0$ is \\textbf{not} rejected', '\\textbf{Procedura secvențială}: testăm $r = 0$, apoi $r \\le 1$ etc.; rangul este primul $r$ pentru care $H_0$ \\textbf{nu} este respinsă'),
      [T('the statistics are likelihood ratios, but their distributions are non-standard (functions of Brownian motions)', 'statisticile sînt rapoarte de verosimilitate, dar distribuțiile lor sînt nestandard (funcții de mișcări browniene)'),
       T('critical values depend on $n - r$ and on the deterministic case: \\refOL, \\refMHM', 'valorile critice depind de $n - r$ și de cazul termenilor determiniști: \\refOL, \\refMHM')]),
@@ -723,7 +728,7 @@ D.frame(T('Johansen tests on three systems', 'Testele Johansen pe trei sisteme')
     + [T('5\\% critical value', 'Valoarea critică de 5\\%') + ' & & & @{jcv.t0} & @{jcv.t1} & @{jcv.t2} & @{jcv.m0} & @{jcv.m1} &'],
     size='scriptsize') + items(
     T('Case 3 (unrestricted constant); $k$: lagged differences chosen by BIC on the VAR in levels; ranks by the trace test (the maximum-eigenvalue test gives the same ranks here)',
-      'Cazul 3 (constantă nerestricționată); $k$: numărul de diferențe decalate, ales după BIC pentru VAR-ul în niveluri; rangurile după testul urmei (testul valorii proprii maxime dă aici aceleași ranguri)'),
+      'Cazul 3 (constantă nerestricționată); $k$: numărul de laguri ale diferențelor, ales după BIC pentru VAR-ul în niveluri; rangurile după testul urmei (testul valorii proprii maxime dă aici aceleași ranguri)'),
     T('Yields: FRED, 1960--2026; output, consumption and investment: 100 ln, US 1959--2009; currencies: BNR, month-end, 2005--2026',
       'Randamentele: FRED, 1960--2026; PIB, consum și investiții: 100 ln, SUA 1959--2009; monedele: BNR, sfîrșitul lunii, 2005--2026')), 'small')
 
@@ -732,7 +737,7 @@ interp(('the three systems', 'celor trei sisteme'), [
      [T('the expectations hypothesis of the term structure \\refCS\\ in its weak form', 'ipoteza așteptărilor pentru structura la termen \\refCS, în forma ei slabă')]),
     (T('Output, consumption and investment: trace @{j1.t0} against @{jcv.t0}: rank @{j1.rt} at 5\\%, a near miss', 'PIB, consum și investiții: urma @{j1.t0} față de @{jcv.t0}: rangul @{j1.rt} la 5\\%, foarte aproape de respingere'),
      [T('balanced growth predicts rank 2 (stable shares of consumption and investment); with Engle--Granger, consumption and income were cointegrated (p = @{eg0.p}): low power, not proof of absence',
-        'creșterea echilibrată prezice rangul 2 (ponderi stabile ale consumului și investițiilor); cu Engle--Granger, consumul și venitul erau cointegrate (p = @{eg0.p}): putere mică, nu dovada absenței')]),
+        'creșterea echilibrată implică rangul 2 (ponderi stabile ale consumului și investițiilor); cu Engle--Granger, consumul și venitul erau cointegrate (p = @{eg0.p}): putere mică, nu dovada absenței')]),
     (T('Currencies: trace @{j2.t0}: rank @{j2.rt}; three separate stochastic trends (Section 8)', 'Monedele: urma @{j2.t0}: rangul @{j2.rt}; trei trenduri stochastice separate (secțiunea 8)'), [])])
 
 D.frame(T('The deterministic case changes the answer', 'Cazul termenilor determiniști schimbă răspunsul'), table(
@@ -744,7 +749,7 @@ D.frame(T('The deterministic case changes the answer', 'Cazul termenilor determi
     T('US yields at 1, 5 and 10 years: ranks @{yd.-1.r}, @{yd.0.r} and @{yd.1.r}', 'Randamentele din SUA la 1, 5 și 10 ani: rangurile @{yd.-1.r}, @{yd.0.r} și @{yd.1.r}'),
     (T('With a linear trend, the test says that every yield is stationary around a trend: not plausible for interest rates over 66 years', 'Cu trend liniar, testul spune că fiecare randament este staționar în jurul unui trend: neplauzibil pentru ratele dobînzii pe 66 de ani'),
      [T('choose the deterministic terms from theory and from the plot, not from the result you like', 'alegem termenii determiniști după teorie și după grafic, nu după rezultatul care ne convine')]),
-    T('Other practical issues: the lag length $k$; size distortions in small samples (correction factor $(T - nk)/T$, \\refRA); structural breaks', 'Alte probleme practice: numărul de decalaje $k$; distorsiunile nivelului de semnificație în eșantioane mici (factorul de corecție $(T - nk)/T$, \\refRA); rupturile structurale')), 'small')
+    T('Other practical issues: the lag length $k$; size distortions in small samples (correction factor $(T - nk)/T$, \\refRA); structural breaks', 'Alte probleme practice: numărul de laguri $k$; distorsiunile nivelului de semnificație în eșantioane mici (factorul de corecție $(T - nk)/T$, \\refRA); rupturile structurale')), 'small')
 
 D.frame(T('Case study: Johansen and Juselius (1990)', 'Studiu de caz: Johansen și Juselius (1990)'), items(
     (T('\\textbf{Question}: is there a stable demand for money in Denmark and Finland?', '\\textbf{Întrebarea}: există o cerere de bani stabilă în Danemarca și Finlanda?'),
@@ -767,7 +772,7 @@ D.section('Estimating and interpreting $\\beta$ and $\\alpha$', 'Estimarea și i
 
 chart(T('The term-structure VECM', 'Modelul VECM al structurii la termen'), 'tsa_ch7_rates', 'TSA_ch7_johansen_vecm', [
     T('US Treasury yields at 1, 5 and 10 years (FRED GS1, GS5, GS10), @{ve.first}--@{ve.last}; VECM with rank 2, @{ve.k} lagged differences, constant restricted to the relations (case 2)',
-      'Randamentele titlurilor de stat americane la 1, 5 și 10 ani (FRED GS1, GS5, GS10), @{ve.first}--@{ve.last}; VECM cu rangul 2, @{ve.k} diferențe decalate, constantă restricționată la relații (cazul 2)')], h='0.55\\textheight')
+      'Randamentele titlurilor de stat americane la 1, 5 și 10 ani (FRED GS1, GS5, GS10), @{ve.first}--@{ve.last}; VECM cu rangul 2, @{ve.k} laguri ale diferențelor, constantă restricționată la relații (cazul 2)')], h='0.55\\textheight')
 
 interp(('the cointegrating vectors', 'vectorilor de cointegrare'), [
     (T('Normalisation on the 1-year and 5-year yields: $\\hat\\beta_1^\\top\\mathbf y_t = i^{(1)}_t - @{ve.b1}\\,i^{(10)}_t + @{ve.c1}$, $\\hat\\beta_2^\\top\\mathbf y_t = i^{(5)}_t - @{ve.b2}\\,i^{(10)}_t + @{ve.c2}$',
@@ -808,7 +813,7 @@ D.section('Forecasting: VECM or VAR in differences?', 'Prognoza: VECM sau VAR î
 
 D.frame(T('What theory says', 'Argumentele teoretice'), items(
     (T('VECM forecasts keep the equilibria: as the horizon grows, $\\hat\\beta^\\top\\hat{\\mathbf y}_{T+h}$ returns to its mean', 'Prognozele VECM păstrează echilibrele: pe măsură ce orizontul crește, $\\hat\\beta^\\top\\hat{\\mathbf y}_{T+h}$ revine la media sa'),
-     [T('a VAR in differences forgets the levels: its forecasts of the spreads stay where they are', 'un VAR în diferențe uită nivelurile: prognozele lui pentru spread-uri rămîn unde se află')]),
+     [T('a VAR in differences forgets the levels: its forecasts of the spreads stay where they are', 'un VAR în diferențe nu folosește informația din niveluri: prognozele lui pentru spread-uri rămîn la valoarea curentă')]),
     (T('\\refEY: imposing cointegration improves long-horizon forecasts in simulated systems', '\\refEY: impunerea cointegrării îmbunătățește prognozele pe orizonturi lungi în sisteme simulate'), []),
     (T('\\refCD: the gains are concentrated in the \\textbf{cointegrating combinations}', '\\refCD: cîștigurile sînt concentrate în \\textbf{combinațiile de cointegrare}'),
      [T('for the individual levels, the forecast error is dominated by the common trend, which no model can predict', 'pentru nivelurile individuale, eroarea de prognoză este dominată de trendul comun, pe care niciun model nu îl poate prezice'),
@@ -818,7 +823,7 @@ D.frame(T('What theory says', 'Argumentele teoretice'), items(
 D.frame(T('The forecasting experiment', 'Experimentul de prognoză'), items(
     (T('Data: US yields at 1, 5 and 10 years, monthly, since 1960', 'Datele: randamentele din SUA la 1, 5 și 10 ani, lunar, din 1960'), []),
     (T('@{fc.n} forecast origins, every three months from @{fc.o0} to @{fc.o1}; models re-estimated on the data up to each origin', '@{fc.n} de origini ale prognozei, la fiecare trei luni, din @{fc.o0} pînă în @{fc.o1}; modelele sînt reestimate pe datele de pînă la fiecare origine'),
-     [T('VECM with rank 2 and a restricted constant; VAR in differences without constant, with the same lags; random walk (no change)', 'VECM cu rangul 2 și constantă restricționată; VAR în diferențe fără constantă, cu aceleași decalaje; mersul aleator (fără schimbare)')]),
+     [T('VECM with rank 2 and a restricted constant; VAR in differences without constant, with the same lags; random walk (no change)', 'VECM cu rangul 2 și constantă restricționată; VAR în diferențe fără constantă, cu aceleași laguri; mersul aleator (fără schimbare)')]),
     (T('Horizons of 1 to 36 months; RMSE (root mean squared error) of each model divided by that of the random walk', 'Orizonturi de la 1 la 36 de luni; RMSE (root mean squared error, rădăcina erorii pătratice medii) a fiecărui model împărțită la cea a mersului aleator'),
      [T('ratio below 1: better than the random walk; also for the 10-year minus 1-year spread', 'raport sub 1: mai bun decît mersul aleator; și pentru spread-ul dintre randamentul la 10 ani și cel la 1 an')])))
 
@@ -826,9 +831,9 @@ chart(T('VECM against a VAR in differences, out of sample', 'VECM față de un V
     T('RMSE relative to the random walk by horizon; first three panels: the yields; last panel: the 10-year minus 1-year spread', 'RMSE relativ la mersul aleator, pe orizonturi; primele trei panouri: randamentele; ultimul panou: spread-ul 10 ani minus 1 an')], h='0.52\\textheight')
 
 interp(('the forecast comparison', 'comparației prognozelor'), [
-    (T('Levels: neither model beats the random walk clearly; the VECM is worse at short horizons (1 year at 6 months: @{fc.v6.0}; 5 years: @{fc.v6.1})', 'Nivelurile: niciun model nu bate clar mersul aleator; VECM este mai slab pe orizonturi scurte (1 an la 6 luni: @{fc.v6.0}; 5 ani: @{fc.v6.1})'),
+    (T('Levels: neither model beats the random walk clearly; the VECM is worse at short horizons (1 year at 6 months: @{fc.v6.0}; 5 years: @{fc.v6.1})', 'Nivelurile: niciun model nu este clar mai precis decît mersul aleator; VECM este mai slab pe orizonturi scurte (1 an la 6 luni: @{fc.v6.0}; 5 ani: @{fc.v6.1})'),
      [T('the VAR in differences stays close to 1 at every horizon (1 year at 12 months: @{fc.d12.0})', 'VAR-ul în diferențe rămîne aproape de 1 la orice orizont (1 an la 12 luni: @{fc.d12.0})')]),
-    (T('Spread: the VECM gains at long horizons: @{fc.sv24} at 24 months and @{fc.sv36} at 36 months; the VAR in differences: @{fc.sd36}', 'Spread-ul: VECM cîștigă pe orizonturi lungi: @{fc.sv24} la 24 de luni și @{fc.sv36} la 36 de luni; VAR-ul în diferențe: @{fc.sd36}'),
+    (T('Spread: the VECM gains at long horizons: @{fc.sv24} at 24 months and @{fc.sv36} at 36 months; the VAR in differences: @{fc.sd36}', 'Spread-ul: VECM este mai precis pe orizonturi lungi: @{fc.sv24} la 24 de luni și @{fc.sv36} la 36 de luni; VAR-ul în diferențe: @{fc.sd36}'),
      [T('exactly the pattern of \\refCD: cointegration helps forecast the equilibrium errors, not the trend', 'exact tiparul din \\refCD: cointegrarea ajută la prognoza erorilor de echilibru, nu a trendului')]),
     T('Lesson: use a VECM when the object of interest is the relation (a spread, a ratio, a pair); for the levels alone, a random walk is hard to beat', 'Lecția: folosim un VECM cînd ne interesează relația (un spread, un raport, o pereche); pentru nivelurile singure, mersul aleator este greu de depășit')])
 
@@ -847,7 +852,7 @@ D.frame(T('Purchasing power parity', 'Paritatea puterii de cumpărare'), cols(
     items((T('\\textbf{Relative PPP} (purchasing power parity): the exchange rate offsets inflation differences', '\\textbf{Paritatea relativă a puterii de cumpărare} (PPP, purchasing power parity): cursul compensează diferențele de inflație'),
            [T('$s_t = 100\\ln(\\mathrm{EUR/RON})$; $p_t$, $p^*_t$: $100\\ln$ of the HICP (Harmonised Index of Consumer Prices) of Romania and of the euro area', '$s_t = 100\\ln(\\mathrm{EUR/RON})$; $p_t$, $p^*_t$: $100\\ln$ din IAPC (indicele armonizat al prețurilor de consum) al României și al zonei euro'),
             T('PPP holds in the long run if the real exchange rate $q_t = s_t - p_t + p^*_t$ is stationary: cointegration with $\\beta = (1, -1, 1)$', 'PPP este valabilă pe termen lung dacă cursul real $q_t = s_t - p_t + p^*_t$ este staționar: cointegrare cu $\\beta = (1, -1, 1)$')]),
-          (T('Why it may fail', 'De ce poate să nu fie valabilă'),
+          (T('Reasons why it may fail', 'Motivele pentru care PPP poate să nu fie valabilă'),
            [T('\\refBalassa: fast productivity growth in tradables raises prices of non-tradables in a catching-up economy: a trend real appreciation', '\\refBalassa: creșterea rapidă a productivității în sectorul bunurilor comercializabile ridică prețurile serviciilor necomercializabile într-o economie în convergență: o apreciere reală în trend'),
             T('even where PPP holds, deviations decay slowly; the survey \\refTT\\ reports half-lives of several years', 'chiar acolo unde PPP este valabilă, abaterile se sting lent; sinteza \\refTT\\ raportează timpi de înjumătățire de mai mulți ani')])),
     wl='0.34', wr='0.62'))
@@ -902,7 +907,8 @@ D.frame(T('The idea of pairs trading', 'Ideea de pairs trading'), items(
 
 D.frame(T('A rule without look-ahead', 'O regulă fără informații din viitor'), items(
     (T('\\textbf{Formation} (the previous 252 trading days): test every pair with Engle--Granger; keep the pairs with p $<$ 0.05', '\\textbf{Formarea} (cele 252 de zile de tranzacționare anterioare): testăm fiecare pereche cu Engle--Granger; păstrăm perechile cu p $<$ 0,05'),
-     [T('hedge ratio $\\hat b$ by OLS of $\\ln P_A$ on $\\ln P_B$; mean $\\bar s$ and standard deviation $\\hat\\sigma_s$ of the spread $s_t = \\ln P_{A,t} - \\hat a - \\hat b\\ln P_{B,t}$',
+     [T('$P_{A,t}$, $P_{B,t}$: the prices of shares A and B; $r_A$, $r_B$: their daily log returns', '$P_{A,t}$, $P_{B,t}$: prețurile acțiunilor A și B; $r_A$, $r_B$: randamentele lor logaritmice zilnice'),
+      T('hedge ratio $\\hat b$ by OLS of $\\ln P_A$ on $\\ln P_B$; mean $\\bar s$ and standard deviation $\\hat\\sigma_s$ of the spread $s_t = \\ln P_{A,t} - \\hat a - \\hat b\\ln P_{B,t}$',
         'raportul de acoperire $\\hat b$ prin OLS pentru $\\ln P_A$ pe $\\ln P_B$; media $\\bar s$ și abaterea standard $\\hat\\sigma_s$ ale spread-ului $s_t = \\ln P_{A,t} - \\hat a - \\hat b\\ln P_{B,t}$')]),
     (T('\\textbf{Trading} (the next 126 days), with the formation parameters fixed: $z_t = (s_t - \\bar s)/\\hat\\sigma_s$', '\\textbf{Tranzacționarea} (următoarele 126 de zile), cu parametrii din formare ficși: $z_t = (s_t - \\bar s)/\\hat\\sigma_s$'),
      [T('$z_t > 2$: short A, long $\\hat b$ of B; $z_t < -2$: the opposite; close at $z_t = 0$ or at the end of the window', '$z_t > 2$: vindem A în lipsă, cumpărăm $\\hat b$ din B; $z_t < -2$: invers; închidem la $z_t = 0$ sau la sfîrșitul ferestrei'),
@@ -927,7 +933,7 @@ interp(('the backtest', 'testului istoric'), [
     (T('Bucharest: @{pb.bvb.w} windows, pairs found in @{pb.bvb.wp}, @{pb.bvb.tr} trades, @{pb.bvb.win}\\% of trades profitable, but the mean return per trade is $@{pb.bvb.mt}$\\%', 'București: @{pb.bvb.w} ferestre, perechi găsite în @{pb.bvb.wp}, @{pb.bvb.tr} de tranzacții, @{pb.bvb.win}\\% dintre ele profitabile, dar randamentul mediu pe tranzacție este $@{pb.bvb.mt}$\\%'),
      [T('gross @{pb.bvb.gross.m}\\% per year (Sharpe @{pb.bvb.gross.s}); net @{pb.bvb.net.m}\\% (Sharpe @{pb.bvb.net.s}); break-even cost @{pb.bvb.be}\\%', 'brut @{pb.bvb.gross.m}\\% pe an (Sharpe @{pb.bvb.gross.s}); net @{pb.bvb.net.m}\\% (Sharpe @{pb.bvb.net.s}); costul la care profitul net devine zero: @{pb.bvb.be}\\%')]),
     (T('US banks: gross @{pb.us.gross.m}\\% (Sharpe @{pb.us.gross.s}), net @{pb.us.net.m}\\% (Sharpe @{pb.us.net.s}), @{pb.us.tr} trades', 'Băncile americane: brut @{pb.us.gross.m}\\% (Sharpe @{pb.us.gross.s}), net @{pb.us.net.m}\\% (Sharpe @{pb.us.net.s}), @{pb.us.tr} de tranzacții'),
-     [T('with a deep loss in the autumn of 2008: cointegration can break exactly when it matters', 'cu o pierdere mare în toamna lui 2008: cointegrarea se poate rupe exact cînd contează')]),
+     [T('with a deep loss in the autumn of 2008: cointegration can break exactly when it matters', 'cu o pierdere mare în toamna lui 2008: relația de cointegrare poate dispărea exact atunci cînd este cea mai importantă')]),
     T('Many small wins and a few large losses: the typical profile of a mean-reversion strategy', 'Multe cîștiguri mici și cîteva pierderi mari: profilul tipic al unei strategii de revenire la medie')])
 
 D.frame(T('Pitfalls of pairs trading', 'Capcanele pairs trading'), items(
@@ -938,7 +944,7 @@ D.frame(T('Pitfalls of pairs trading', 'Capcanele pairs trading'), items(
     (T('\\textbf{Slow error correction}: half-lives of months mean capital tied up for months, and a long wait in a losing position', '\\textbf{Corecția lentă a erorii}: timpi de înjumătățire de luni înseamnă capital blocat luni de zile și o așteptare lungă într-o poziție pierzătoare'), [])))
 
 D.recap(('Pairs trading', 'pairs trading'), [
-    T('Pairs trading bets on error correction in the spread of two cointegrated shares', 'Pairs trading pariază pe corecția erorii în spread-ul a două acțiuni cointegrate'),
+    T('Pairs trading bets on error correction in the spread of two cointegrated shares', 'Pairs trading mizează pe corecția erorii în spread-ul a două acțiuni cointegrate'),
     T('In sample it looks attractive; out of sample, after costs, the profits on the BVB are close to zero', 'În eșantion pare atractiv; în afara eșantionului, după costuri, profiturile la BVB sînt aproape nule'),
     T('Report the selection, the costs, the number of trades and the worst episode, not only the Sharpe ratio', 'Raportăm selecția, costurile, numărul de tranzacții și cel mai rău episod, nu doar raportul Sharpe')])
 
@@ -972,7 +978,7 @@ D.section('Summary', 'Rezumat')
 D.frame(T('Key takeaways', 'Idei de reținut'), items(
     T('Cointegrated $I(1)$ series share common stochastic trends; a combination $\\beta^\\top\\mathbf y_t$ is stationary', 'Seriile $I(1)$ cointegrate au trenduri stochastice comune; o combinație $\\beta^\\top\\mathbf y_t$ este staționară'),
     T('Engle--Granger: OLS in levels, then ADF on the residuals with MacKinnon critical values; check with Phillips--Ouliaris', 'Engle--Granger: OLS în niveluri, apoi ADF pe reziduuri, cu valorile critice MacKinnon; verificăm cu Phillips--Ouliaris'),
-    T('ECM: changes respond to the lagged equilibrium error; $\\gamma$ gives the speed and the half-life', 'ECM: variațiile răspund la eroarea de echilibru decalată; $\\gamma$ dă viteza și timpul de înjumătățire'),
+    T('ECM: changes respond to the lagged equilibrium error; $\\gamma$ gives the speed and the half-life', 'ECM: variațiile răspund la lagul erorii de echilibru; $\\gamma$ dă viteza și timpul de înjumătățire'),
     T('VECM: $\\Pi = \\alpha\\beta^\\top$; Granger representation: cointegration $\\Leftrightarrow$ error correction; Johansen tests choose $r$', 'VECM: $\\Pi = \\alpha\\beta^\\top$; reprezentarea Granger: cointegrare $\\Leftrightarrow$ corecția erorii; testele Johansen aleg $r$'),
     T('Cointegration helps forecast relations (spreads), not levels; applications must be judged out of sample and after costs', 'Cointegrarea ajută la prognoza relațiilor (spread-uri), nu a nivelurilor; aplicațiile se evaluează în afara eșantionului și după costuri')))
 

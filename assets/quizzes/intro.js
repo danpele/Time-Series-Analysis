@@ -23,7 +23,7 @@ window.TSA_DATA.quizzes['intro'] = {
                 "incorrectExplanation": "The number of observations and the choice of method do not define a time series; the key is the order in time and the dependence between consecutive observations, which also rules out the independence assumption."
             },
             "ro": {
-                "title": "Ce este o serie de timp",
+                "title": "Definiția seriei de timp",
                 "text": "Ce deosebește o serie de timp de un set de date transversale?",
                 "options": [
                     "Observațiile ei sînt ordonate în timp și depind, de obicei, unele de altele",
@@ -267,7 +267,7 @@ window.TSA_DATA.quizzes['intro'] = {
             },
             "ro": {
                 "title": "ACF-ul unei serii cu trend",
-                "text": "ACF de selecție a unei serii lunare descrește foarte lent și este încă aproximativ 0,8 la decalajul 36. Ce sugerează acest lucru?",
+                "text": "ACF de selecție a unei serii lunare descrește foarte lent și este încă aproximativ 0,8 la lagul 36. Ce sugerează acest lucru?",
                 "options": [
                     "Seria este un zgomot independent",
                     "Seria are un trend: nivelul ei rămîne apropiat de valorile trecute ani de zile",
@@ -275,7 +275,7 @@ window.TSA_DATA.quizzes['intro'] = {
                     "Seria nu are memorie dincolo de o lună"
                 ],
                 "correctExplanation": "O descreștere lentă, aproape liniară, a ACF este semnătura unui trend (sau a unui trend stochastic): valori îndepărtate în timp se află încă de aceeași parte a mediei.",
-                "incorrectExplanation": "Un zgomot independent are autocorelațiile în interiorul benzii $\\pm 1,96/\\sqrt T$, o sezonalitate produce vîrfuri la multiplii perioadei, iar o serie fără memorie are $r_k$ aproape de 0 după primul decalaj."
+                "incorrectExplanation": "Un zgomot independent are autocorelațiile în interiorul benzii $\\pm 1,96/\\sqrt T$, o sezonalitate produce vîrfuri la multiplii perioadei, iar o serie fără memorie are $r_k$ aproape de 0 după primul lag."
             }
         },
         {
@@ -488,7 +488,7 @@ window.TSA_DATA.quizzes['intro'] = {
                     "Medie, medie, medie",
                     "Eroare aditivă, trend aditiv, sezonalitate aditivă",
                     "Trei parametri alfa",
-                    "Autocorelațiile la decalajele 1, 2 și 3"
+                    "Autocorelațiile la lagurile 1, 2 și 3"
                 ],
                 "correctExplanation": "ETS înseamnă Error, Trend, Seasonal (eroare, trend, sezonalitate); fiecare literă indică forma unei componente: N (absentă), A (aditivă), A$_d$ (amortizată) sau M (multiplicativă).",
                 "incorrectExplanation": "Literele nu sînt medii, parametri de netezire sau autocorelații; ele descriu forma erorii, a trendului și a componentei sezoniere."

@@ -403,7 +403,7 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
       T('multiple seasonality in electricity load: MSTL, dynamic harmonic regression, TBATS, Prophet', 'sezonalitatea multiplă a consumului de electricitate: MSTL, regresia armonică dinamică, TBATS, Prophet'),
       T('forecast evaluation (time-series cross-validation, Diebold--Mariano test) and forecast combination', 'evaluarea prognozelor (validare încrucișată pentru serii de timp, testul Diebold--Mariano) și combinarea prognozelor')]),
     T('It builds on Chapter 0 (components, Holt--Winters, MASE) and Chapters 2--3 (ARMA, unit roots, ARIMA): the same ideas, at the seasonal lag $s$',
-      'Capitolul se sprijină pe Capitolul 0 (componente, Holt--Winters, MASE) și pe Capitolele 2--3 (ARMA, rădăcini unitare, ARIMA): aceleași idei, la decalajul sezonier $s$'),
+      'Capitolul se sprijină pe Capitolul 0 (componente, Holt--Winters, MASE) și pe Capitolele 2--3 (ARMA, rădăcini unitare, ARIMA): aceleași idei, la lagul sezonier $s$'),
     T('Seminar 4 comes before this lecture: it gives the formulas; here we derive them and use them on data',
       'Seminarul 4 are loc înaintea acestui curs: dă formulele; aici le deducem și le aplicăm pe date')), 'footnotesize')
 
@@ -448,7 +448,7 @@ chart(T('Seasonality in six Romanian series', 'Sezonalitatea în șase serii din
 interp(('the six series', 'celor șase serii'), [
     (T('GDP: the mean of Q4 is @{gdp.q4q1}\\% above the mean of Q1 (2000--2026); the swing grows with the level: multiplicative, take logs', 'PIB: media trimestrului 4 este cu @{gdp.q4q1}\\% peste media trimestrului 1 (2000--2026); amplitudinea crește cu nivelul: multiplicativă, folosim logaritmi'),
      [T('quarter means (bn EUR, 2010 prices): @{gdp.m1}, @{gdp.m2}, @{gdp.m3}, @{gdp.m4}: construction and agriculture in Q2--Q3', 'mediile trimestriale (mld. EUR, prețuri 2010): @{gdp.m1}; @{gdp.m2}; @{gdp.m3}; @{gdp.m4}: construcțiile și agricultura în T2--T3')]),
-    T('Tourism: August has @{tour.ratio} times the nights of January (2015--2019); the 2020 lockdown breaks the pattern', 'Turismul: august are de @{tour.ratio} ori mai multe înnoptări decît ianuarie (2015--2019); izolarea din 2020 rupe tiparul'),
+    T('Tourism: August has @{tour.ratio} times the nights of January (2015--2019); the 2020 lockdown breaks the pattern', 'Turismul: august are de @{tour.ratio} ori mai multe înnoptări decît ianuarie (2015--2019); restricțiile din 2020 (lockdown) întrerup tiparul'),
     T('HICP: monthly inflation is lower in June (@{infl.jun}\\% on average, 2010--2019, fresh food) and higher in October (@{infl.oct}\\%)', 'IAPC: inflația lunară este mai mică în iunie (în medie @{infl.jun}\\%, 2010--2019, alimentele proaspete) și mai mare în octombrie (@{infl.oct}\\%)'),
     T('Electricity: two patterns at once, the week (dense oscillation) and the year (winter peaks): \\textbf{multiple seasonality}, Section 8', 'Electricitatea: două tipare simultan, săptămîna (oscilația deasă) și anul (vîrfurile de iarnă): \\textbf{sezonalitate multiplă}, secțiunea 8')], size='footnotesize')
 
@@ -481,7 +481,8 @@ D.frame(T('The seasonal difference', 'Diferența sezonieră'), items(
     (T('\\textbf{Seasonal difference}: $\\Delta_s y_t = (1 - L^s)y_t = y_t - y_{t-s}$', '\\textbf{Diferența sezonieră}: $\\Delta_s y_t = (1 - L^s)y_t = y_t - y_{t-s}$'),
      [T('with logs: $100\\,\\Delta_4\\ln Y_t$ = growth over the same quarter of the previous year, in \\%', 'cu logaritmi: $100\\,\\Delta_4\\ln Y_t$ = creșterea față de același trimestru al anului anterior, în \\%')]),
     (T('A \\textbf{fixed} seasonal pattern $S_t = S_{t-s}$ plus a linear trend: $y_t = a + bt + S_t + \\varepsilon_t$', 'Un tipar sezonier \\textbf{fix} $S_t = S_{t-s}$ plus un trend liniar: $y_t = a + bt + S_t + \\varepsilon_t$'),
-     [T('$\\Delta_s y_t = bs + \\varepsilon_t - \\varepsilon_{t-s}$: $\\Delta_s$ removes the pattern and turns the trend into a constant', '$\\Delta_s y_t = bs + \\varepsilon_t - \\varepsilon_{t-s}$: $\\Delta_s$ elimină tiparul și transformă trendul într-o constantă'),
+     [T('$a$: the intercept; $b$: the slope of the trend; $S_t$: the seasonal effect of period $t$', '$a$: termenul liber; $b$: panta trendului; $S_t$: efectul sezonier al perioadei $t$'),
+      T('$\\Delta_s y_t = bs + \\varepsilon_t - \\varepsilon_{t-s}$: $\\Delta_s$ removes the pattern and turns the trend into a constant', '$\\Delta_s y_t = bs + \\varepsilon_t - \\varepsilon_{t-s}$: $\\Delta_s$ elimină tiparul și transformă trendul într-o constantă'),
       T('but it creates the non-invertible MA term $\\varepsilon_t - \\varepsilon_{t-s}$: \\textbf{seasonal over-differencing} (as in Chapter 3)', 'dar creează termenul MA neinvertibil $\\varepsilon_t - \\varepsilon_{t-s}$: \\textbf{supradiferențiere sezonieră} (ca în Capitolul 3)')]),
     (T('$\\Delta\\Delta_s = (1 - L)(1 - L^s) = 1 - L - L^s + L^{s+1}$: needed when the trend is stochastic as well', '$\\Delta\\Delta_s = (1 - L)(1 - L^s) = 1 - L - L^s + L^{s+1}$: necesar cînd și trendul este stochastic'),
      [T('the order of the two differences does not matter: the operators commute', 'ordinea celor două diferențe nu contează: operatorii comută')])))
@@ -512,18 +513,19 @@ chart(T('Romanian GDP: regular and seasonal differences', 'PIB-ul României: dif
     h='0.66\\textheight')
 
 interp(('the three transformations', 'celor trei transformări'), [
-    (T('$\\Delta\\ln Y$: dominated by the season: ACF $@{gd.d1.r4}$ at lag 4 and $@{gd.d1.r8}$ at lag 8, decaying very slowly; sd @{gd.d1.sd}\\%', '$\\Delta\\ln Y$: dominată de sezon: ACF $@{gd.d1.r4}$ la decalajul 4 și $@{gd.d1.r8}$ la decalajul 8, cu o descreștere foarte lentă; abaterea standard @{gd.d1.sd}\\%'),
+    (T('$\\Delta\\ln Y$: dominated by the season: ACF $@{gd.d1.r4}$ at lag 4 and $@{gd.d1.r8}$ at lag 8, decaying very slowly; sd @{gd.d1.sd}\\%', '$\\Delta\\ln Y$: dominată de sezon: ACF $@{gd.d1.r4}$ la lagul 4 și $@{gd.d1.r8}$ la lagul 8, cu o descreștere foarte lentă; abaterea standard @{gd.d1.sd}\\%'),
      [T('the seasonal analogue of the slow ACF decay of a random walk (Chapter 3)', 'analogul sezonier al descreșterii lente a ACF pentru un mers aleator (Capitolul 3)')]),
-    T('$\\Delta_4\\ln Y$ (year-on-year growth): sd @{gd.d4.sd}\\%; ACF $@{gd.d4.r1}$ at lag 1, $@{gd.d4.r4}$ at lag 4: an AR-type pattern', '$\\Delta_4\\ln Y$ (creșterea anuală): abaterea standard @{gd.d4.sd}\\%; ACF $@{gd.d4.r1}$ la decalajul 1, $@{gd.d4.r4}$ la decalajul 4: un tipar de tip AR'),
-    (T('$\\Delta\\Delta_4\\ln Y$: ACF $@{gd.dd.r1}$ at lag 1 and $@{gd.dd.r4}$ at lag 4 (band $\\pm @{gd.band}$)', '$\\Delta\\Delta_4\\ln Y$: ACF $@{gd.dd.r1}$ la decalajul 1 și $@{gd.dd.r4}$ la decalajul 4 (banda $\\pm @{gd.band}$)'),
-     [T('one negative spike at the seasonal lag: a seasonal MA(1), the signature of the airline model (Section 3)', 'o singură valoare negativă semnificativă la decalajul sezonier: un MA(1) sezonier, semnătura modelului airline (secțiunea 3)')])], size='footnotesize')
+    T('$\\Delta_4\\ln Y$ (year-on-year growth): sd @{gd.d4.sd}\\%; ACF $@{gd.d4.r1}$ at lag 1, $@{gd.d4.r4}$ at lag 4: an AR-type pattern', '$\\Delta_4\\ln Y$ (creșterea anuală): abaterea standard @{gd.d4.sd}\\%; ACF $@{gd.d4.r1}$ la lagul 1, $@{gd.d4.r4}$ la lagul 4: un tipar de tip AR'),
+    (T('$\\Delta\\Delta_4\\ln Y$: ACF $@{gd.dd.r1}$ at lag 1 and $@{gd.dd.r4}$ at lag 4 (band $\\pm @{gd.band}$)', '$\\Delta\\Delta_4\\ln Y$: ACF $@{gd.dd.r1}$ la lagul 1 și $@{gd.dd.r4}$ la lagul 4 (banda $\\pm @{gd.band}$)'),
+     [T('one negative spike at the seasonal lag: a seasonal MA(1), the signature of the airline model (Section 3)', 'o singură valoare negativă semnificativă la lagul sezonier: un MA(1) sezonier, semnătura modelului airline (secțiunea 3)')])], size='footnotesize')
 
 D.frame(T('The HEGY test', 'Testul HEGY'), cols(items(
     (T('\\refHEGY: one regression tests every seasonal root of a quarterly series', '\\refHEGY: o singură regresie testează fiecare rădăcină sezonieră a unei serii trimestriale'),
      [T('filters: $y_{1t} = (1 + L + L^2 + L^3)y_t$, $y_{2t} = -(1 - L + L^2 - L^3)y_t$, $y_{3t} = -(1 - L^2)y_t$', 'filtre: $y_{1t} = (1 + L + L^2 + L^3)y_t$, $y_{2t} = -(1 - L + L^2 - L^3)y_t$, $y_{3t} = -(1 - L^2)y_t$')]),
     (T('$\\Delta_4y_t = \\pi_1y_{1,t-1} + \\pi_2y_{2,t-1} + \\pi_3y_{3,t-2} + \\pi_4y_{3,t-1} + \\text{deterministic terms} + \\text{lags of } \\Delta_4y_t + \\varepsilon_t$',
-       '$\\Delta_4y_t = \\pi_1y_{1,t-1} + \\pi_2y_{2,t-1} + \\pi_3y_{3,t-2} + \\pi_4y_{3,t-1} + \\text{termeni determiniști} + \\text{decalaje ale lui } \\Delta_4y_t + \\varepsilon_t$'),
-     [T('$H_0$: $\\pi_1 = 0$ (root $1$), $t$-test; $\\pi_2 = 0$ (root $-1$), $t$-test; $\\pi_3 = \\pi_4 = 0$ (roots $\\pm i$), $F$-test', '$H_0$: $\\pi_1 = 0$ (rădăcina $1$), test $t$; $\\pi_2 = 0$ (rădăcina $-1$), test $t$; $\\pi_3 = \\pi_4 = 0$ (rădăcinile $\\pm i$), test $F$'),
+       '$\\Delta_4y_t = \\pi_1y_{1,t-1} + \\pi_2y_{2,t-1} + \\pi_3y_{3,t-2} + \\pi_4y_{3,t-1} + \\text{termeni determiniști} + \\text{laguri ale lui } \\Delta_4y_t + \\varepsilon_t$'),
+     [T('$y_{1t}, y_{2t}, y_{3t}$: the series filtered so that each keeps one seasonal frequency; $\\pi_k$: the coefficient of each frequency', '$y_{1t}, y_{2t}, y_{3t}$: seria filtrată astfel încît fiecare să păstreze o singură frecvență sezonieră; $\\pi_k$: coeficientul fiecărei frecvențe'),
+      T('$H_0$: $\\pi_1 = 0$ (root $1$), $t$-test; $\\pi_2 = 0$ (root $-1$), $t$-test; $\\pi_3 = \\pi_4 = 0$ (roots $\\pm i$), $F$-test', '$H_0$: $\\pi_1 = 0$ (rădăcina $1$), test $t$; $\\pi_2 = 0$ (rădăcina $-1$), test $t$; $\\pi_3 = \\pi_4 = 0$ (rădăcinile $\\pm i$), test $F$'),
       T('non-standard distributions, as for Dickey--Fuller: critical values from tables or by simulation', 'distribuții nestandard, ca la Dickey--Fuller: valori critice din tabele sau prin simulare')]),
     T('Rejecting all three: no seasonal differencing needed; rejecting none: $\\Delta_4$ is justified', 'Respingerea tuturor celor trei: nu este nevoie de diferențiere sezonieră; nicio respingere: $\\Delta_4$ este justificată')),
     ph('engle', T('Robert Engle, a co-author of HEGY, 2017', 'Robert Engle, coautor al testului HEGY, 2017'), h='0.40\\textheight'),
@@ -535,7 +537,7 @@ D.frame(T('Canova--Hansen and OCSB', 'Testele Canova--Hansen și OCSB'), items(
     (T('\\textbf{OCSB} (\\refOCSB): the null is a seasonal unit root; a regression of $\\Delta\\Delta_s y_t$ on $\\Delta_s y_{t-1}$ and $\\Delta y_{t-s}$', '\\textbf{OCSB} (\\refOCSB): ipoteza nulă este o rădăcină unitară sezonieră; o regresie a lui $\\Delta\\Delta_s y_t$ pe $\\Delta_s y_{t-1}$ și $\\Delta y_{t-s}$'),
      [T('the default seasonal test of \\texttt{auto\\_arima} in the Python package \\texttt{pmdarima} (\\texttt{nsdiffs})', 'testul sezonier implicit al funcției \\texttt{auto\\_arima} din pachetul Python \\texttt{pmdarima} (\\texttt{nsdiffs})')]),
     (T('As in Chapter 3: tests with opposite nulls answer different questions; use them together', 'Ca în Capitolul 3: testele cu ipoteze nule opuse răspund la întrebări diferite; folosiți-le împreună'),
-     [T('and look at the data: seasonal plots, the ACF at lags $s, 2s, 3s$, and the size of $\\hat\\Theta$ after $\\Delta_s$ ($\\hat\\Theta \\approx -1$ signals over-differencing)', 'și priviți datele: graficele sezoniere, ACF la decalajele $s, 2s, 3s$ și mărimea lui $\\hat\\Theta$ după $\\Delta_s$ ($\\hat\\Theta \\approx -1$ semnalează supradiferențierea)')])))
+     [T('and look at the data: seasonal plots, the ACF at lags $s, 2s, 3s$, and the size of $\\hat\\Theta$ after $\\Delta_s$ ($\\hat\\Theta \\approx -1$ signals over-differencing)', 'și priviți datele: graficele sezoniere, ACF la lagurile $s, 2s, 3s$ și mărimea lui $\\hat\\Theta$ după $\\Delta_s$ ($\\hat\\Theta \\approx -1$ semnalează supradiferențierea)')])))
 
 TR = TE['table']
 NAMES = {'GDP': T('GDP (quarterly)', 'PIB (trimestrial)'), 'Retail trade': T('Retail trade', 'Comerțul cu amănuntul'),
@@ -548,7 +550,7 @@ D.frame(T('Seasonal unit-root tests on Romanian data', 'Teste de rădăcină uni
      T('$F(\\pi_3, \\pi_4)$, roots $\\pm i$', '$F(\\pi_3, \\pi_4)$, rădăcinile $\\pm i$') + ' & $@{hegy.F}$ & $@{hegy.cF}$ & ' + T('not rejected', 'nu se respinge')], size='scriptsize')
     + table('lccc', T('\\textbf{Series} (logs, 2005--2019)', '\\textbf{Seria} (logaritmi, 2005--2019)') + ' & ' + T('$D$ by OCSB', '$D$ după OCSB') + ' & ' + T('$D$ by Canova--Hansen', '$D$ după Canova--Hansen') + ' & ' + T('$d$ by KPSS', '$d$ după KPSS'),
             [NAMES[r['series']] + f" & {r['ocsb']} & {r['ch']} & {r['d_kpss']}" for r in TR], size='scriptsize')
-    + items(T('HEGY: constant, seasonal dummies and trend, @{hegy.k} lag of $\\Delta_4y$ (AIC), $n = @{hegy.n}$; critical values from @{hegy.nrep} simulations of $\\Delta_4y_t = \\varepsilon_t$', 'HEGY: constantă, variabile dummy sezoniere și trend, @{hegy.k} decalaj al lui $\\Delta_4y$ (AIC), $n = @{hegy.n}$; valori critice din @{hegy.nrep} de simulări ale lui $\\Delta_4y_t = \\varepsilon_t$'),
+    + items(T('HEGY: constant, seasonal dummies and trend, @{hegy.k} lag of $\\Delta_4y$ (AIC), $n = @{hegy.n}$; critical values from @{hegy.nrep} simulations of $\\Delta_4y_t = \\varepsilon_t$', 'HEGY: constantă, variabile dummy sezoniere și trend, @{hegy.k} lag al lui $\\Delta_4y$ (AIC), $n = @{hegy.n}$; valori critice din @{hegy.nrep} de simulări ale lui $\\Delta_4y_t = \\varepsilon_t$'),
             T('Interpretation: for GDP, HEGY and OCSB support $\\Delta_4$ while Canova--Hansen does not reject a stable pattern; with 20 years of quarters both views fit, so we use $\\Delta_4$ and let $\\hat\\Theta$ say how stable the pattern is (Section 5)', 'Interpretare: pentru PIB, HEGY și OCSB susțin $\\Delta_4$, în timp ce Canova--Hansen nu respinge un tipar stabil; cu 20 de ani de date trimestriale ambele perspective se potrivesc, deci folosim $\\Delta_4$ și lăsăm $\\hat\\Theta$ să arate cît de stabil este tiparul (secțiunea 5)'),
             T('Monthly series: both tests choose $D = 0$, a stable pattern; HICP needs $d = 2$ in logs: inflation itself is close to a unit root (Chapter 3)', 'Seriile lunare: ambele teste aleg $D = 0$, un tipar stabil; IAPC are nevoie de $d = 2$ în logaritmi: inflația însăși este aproape de o rădăcină unitară (Capitolul 3)')), 'scriptsize')
 
@@ -556,7 +558,7 @@ D.recap(('Seasonal differencing and seasonal unit roots', 'diferențierea sezoni
     T('$\\Delta_s = 1 - L^s$ has $s$ unit roots on the circle, one per seasonal frequency', '$\\Delta_s = 1 - L^s$ are $s$ rădăcini unitare pe cerc, cîte una pentru fiecare frecvență sezonieră'),
     T('Deterministic seasonality: dummies or Fourier terms; stochastic seasonality: $\\Delta_s$', 'Sezonalitatea deterministă: variabile dummy sau termeni Fourier; sezonalitatea stochastică: $\\Delta_s$'),
     T('HEGY and OCSB test for seasonal unit roots; Canova--Hansen tests for a stable pattern', 'HEGY și OCSB testează rădăcinile unitare sezoniere; Canova--Hansen testează un tipar stabil'),
-    T('Romanian GDP: $\\Delta\\Delta_4\\ln Y$ leaves one spike at lag 4, a seasonal MA', 'PIB-ul României: $\\Delta\\Delta_4\\ln Y$ lasă o singură valoare semnificativă la decalajul 4, un MA sezonier')])
+    T('Romanian GDP: $\\Delta\\Delta_4\\ln Y$ leaves one spike at lag 4, a seasonal MA', 'PIB-ul României: $\\Delta\\Delta_4\\ln Y$ lasă o singură valoare semnificativă la lagul 4, un MA sezonier')])
 
 # =============================================================================
 # 3. SARIMA
@@ -566,9 +568,9 @@ D.section('SARIMA models', 'Modele SARIMA')
 D.frame(T('The SARIMA$(p,d,q)(P,D,Q)_s$ model', 'Modelul SARIMA$(p,d,q)(P,D,Q)_s$'), items(
     (T('$\\phi(L)\\,\\Phi(L^s)\\,(1 - L)^d(1 - L^s)^D\\,y_t = c + \\theta(L)\\,\\Theta(L^s)\\,\\varepsilon_t$, $\\varepsilon_t \\sim \\mathrm{WN}(0, \\sigma^2)$', '$\\phi(L)\\,\\Phi(L^s)\\,(1 - L)^d(1 - L^s)^D\\,y_t = c + \\theta(L)\\,\\Theta(L^s)\\,\\varepsilon_t$, $\\varepsilon_t \\sim \\mathrm{WN}(0, \\sigma^2)$'),
      [T('regular polynomials $\\phi(L)$ (order $p$), $\\theta(L)$ (order $q$), as in Chapter 2', 'polinoamele obișnuite $\\phi(L)$ (ordinul $p$), $\\theta(L)$ (ordinul $q$), ca în Capitolul 2'),
-      T('seasonal polynomials in $L^s$: $\\Phi(L^s) = 1 - \\Phi_1L^s - \\dots - \\Phi_PL^{Ps}$, $\\Theta(L^s) = 1 + \\Theta_1L^s + \\dots + \\Theta_QL^{Qs}$', 'polinoamele sezoniere în $L^s$: $\\Phi(L^s) = 1 - \\Phi_1L^s - \\dots - \\Phi_PL^{Ps}$, $\\Theta(L^s) = 1 + \\Theta_1L^s + \\dots + \\Theta_QL^{Qs}$'),
+      T('seasonal polynomials in $L^s$ (orders $P$, $Q$): $\\Phi(L^s) = 1 - \\Phi_1L^s - \\dots - \\Phi_PL^{Ps}$, $\\Theta(L^s) = 1 + \\Theta_1L^s + \\dots + \\Theta_QL^{Qs}$', 'polinoamele sezoniere în $L^s$ (ordinele $P$, $Q$): $\\Phi(L^s) = 1 - \\Phi_1L^s - \\dots - \\Phi_PL^{Ps}$, $\\Theta(L^s) = 1 + \\Theta_1L^s + \\dots + \\Theta_QL^{Qs}$'),
       T('$d$, $D$: numbers of regular and seasonal differences, usually 0 or 1', '$d$, $D$: numerele de diferențe obișnuite și sezoniere, de obicei 0 sau 1')]),
-    (T('Why multiply? \\refBJ: in a monthly series, January depends on December (the regular part) and on last January (the seasonal part)', 'De ce înmulțim? \\refBJ: într-o serie lunară, ianuarie depinde de decembrie (partea obișnuită) și de ianuarie anul trecut (partea sezonieră)'),
+    (T('Why multiply? \\refBJ: in a monthly series, January depends on December (the regular part) and on last January (the seasonal part)', 'Motivul produsului (\\refBJ): într-o serie lunară, ianuarie depinde de decembrie (partea obișnuită) și de ianuarie anul trecut (partea sezonieră)'),
      [T('a two-way table: months in the columns, years in the rows; one model along each direction', 'un tabel cu două intrări: lunile pe coloane, anii pe rînduri; cîte un model pe fiecare direcție')]),
     T('Stationarity: the roots of $\\phi(z)\\Phi(z^s)$ outside the unit circle; invertibility: the roots of $\\theta(z)\\Theta(z^s)$ outside; for a seasonal AR(1) this means $|\\Phi| < 1$',
       'Staționaritatea: rădăcinile lui $\\phi(z)\\Phi(z^s)$ în afara cercului unitate; invertibilitatea: rădăcinile lui $\\theta(z)\\Theta(z^s)$ în afara lui; pentru un AR(1) sezonier aceasta înseamnă $|\\Phi| < 1$')))
@@ -587,30 +589,31 @@ chart(T('Theoretical ACF and PACF of three seasonal models', 'ACF și PACF teore
     h='0.66\\textheight')
 
 interp(('the seasonal patterns', 'tiparelor sezoniere'), [
-    (T('Seasonal AR(1): the ACF decays geometrically at lags 12, 24, 36 ($0.8$, $@{th.sar24}$, $@{th.sar36}$); the PACF has one spike at lag 12', 'AR(1) sezonier: ACF descrește geometric la decalajele 12, 24, 36 ($0{,}8$; $@{th.sar24}$; $@{th.sar36}$); PACF are o singură valoare nenulă la decalajul 12'),
+    (T('Seasonal AR(1): the ACF decays geometrically at lags 12, 24, 36 ($0.8$, $@{th.sar24}$, $@{th.sar36}$); the PACF has one spike at lag 12', 'AR(1) sezonier: ACF descrește geometric la lagurile 12, 24, 36 ($0{,}8$; $@{th.sar24}$; $@{th.sar36}$); PACF are o singură valoare nenulă la lagul 12'),
      [T('the AR rule of Chapter 2, read only at multiples of $s$', 'regula AR din Capitolul 2, citită doar la multiplii lui $s$')]),
-    T('Seasonal MA(1): the ACF cuts off after lag 12; the PACF decays at 12, 24, 36 (@{th.sma24} at lag 24)', 'MA(1) sezonier: ACF se anulează după decalajul 12; PACF descrește la 12, 24, 36 (@{th.sma24} la decalajul 24)'),
+    T('Seasonal MA(1): the ACF cuts off after lag 12; the PACF decays at 12, 24, 36 (@{th.sma24} at lag 24)', 'MA(1) sezonier: ACF se anulează după lagul 12; PACF descrește la 12, 24, 36 (@{th.sma24} la lagul 24)'),
     (T('Airline: spikes at 1 (@{th.r1}) and 12 (@{th.r12}), with ``satellites\'\' at 11 and 13 (@{th.r11})', 'Airline: valori nenule la 1 (@{th.r1}) și 12 (@{th.r12}), cu „sateliți” la 11 și 13 (@{th.r11})'),
      [T('the satellites are the product $\\rho_1\\rho_{12}$: the fingerprint of the multiplicative structure', 'sateliții sînt produsul $\\rho_1\\rho_{12}$: amprenta structurii multiplicative')])])
 
 D.frame(T('Identification of SARIMA models', 'Identificarea modelelor SARIMA'), table(
     'lll', T('\\textbf{After differencing}', '\\textbf{După diferențiere}') + ' & \\textbf{ACF} & \\textbf{PACF}',
-    [T('seasonal AR($P$)', 'AR($P$) sezonier') + ' & ' + T('decays at $s, 2s, \\dots$', 'descrește la $s, 2s, \\dots$') + ' & ' + T('cuts off after lag $Ps$', 'se anulează după decalajul $Ps$'),
-     T('seasonal MA($Q$)', 'MA($Q$) sezonier') + ' & ' + T('cuts off after lag $Qs$', 'se anulează după decalajul $Qs$') + ' & ' + T('decays at $s, 2s, \\dots$', 'descrește la $s, 2s, \\dots$'),
-     T('regular part', 'partea obișnuită') + ' & ' + T('lags $1, 2, \\dots$ as in Chapter 2', 'decalajele $1, 2, \\dots$ ca în Capitolul 2') + ' & ' + T('lags $1, 2, \\dots$ as in Chapter 2', 'decalajele $1, 2, \\dots$ ca în Capitolul 2'),
+    [T('seasonal AR($P$)', 'AR($P$) sezonier') + ' & ' + T('decays at $s, 2s, \\dots$', 'descrește la $s, 2s, \\dots$') + ' & ' + T('cuts off after lag $Ps$', 'se anulează după lagul $Ps$'),
+     T('seasonal MA($Q$)', 'MA($Q$) sezonier') + ' & ' + T('cuts off after lag $Qs$', 'se anulează după lagul $Qs$') + ' & ' + T('decays at $s, 2s, \\dots$', 'descrește la $s, 2s, \\dots$'),
+     T('regular part', 'partea obișnuită') + ' & ' + T('lags $1, 2, \\dots$ as in Chapter 2', 'lagurile $1, 2, \\dots$ ca în Capitolul 2') + ' & ' + T('lags $1, 2, \\dots$ as in Chapter 2', 'lagurile $1, 2, \\dots$ ca în Capitolul 2'),
      T('product of both', 'produsul celor două') + ' & ' + T('satellites at $ks \\pm j$', 'sateliți la $ks \\pm j$') + ' & ' + T('satellites at $ks \\pm j$', 'sateliți la $ks \\pm j$')], size='footnotesize') + items(
     (T('\\textbf{Steps}', '\\textbf{Pașii}'),
      [T('1. Stabilise the variance (logs or Box--Cox, \\refBoxCox); 2. choose $D$ (seasonal plot, HEGY, OCSB), then $d$ (Chapter 3)', '1. Stabilizați varianța (logaritmi sau Box--Cox, \\refBoxCox); 2. alegeți $D$ (graficul sezonier, HEGY, OCSB), apoi $d$ (Capitolul 3)'),
-      T('3. Read $P, Q$ at the seasonal lags and $p, q$ at the first lags; 4. keep the orders small: $P, Q \\le 1$ almost always suffice', '3. Citiți $P, Q$ la decalajele sezoniere și $p, q$ la primele decalaje; 4. păstrați ordinele mici: $P, Q \\le 1$ sînt aproape întotdeauna suficiente')])), 'footnotesize')
+      T('3. Read $P, Q$ at the seasonal lags and $p, q$ at the first lags; 4. keep the orders small: $P, Q \\le 1$ almost always suffice', '3. Citiți $P, Q$ la lagurile sezoniere și $p, q$ la primele laguri; 4. păstrați ordinele mici: $P, Q \\le 1$ sînt aproape întotdeauna suficiente')])), 'footnotesize')
 
 D.frame(T('Estimation and model choice', 'Estimarea și alegerea modelului'), items(
     (T('\\textbf{Maximum likelihood} of the differenced series (state-space form, \\texttt{statsmodels} \\texttt{SARIMAX})', '\\textbf{Verosimilitatea maximă} pentru seria diferențiată (forma în spațiul stărilor, \\texttt{SARIMAX} din \\texttt{statsmodels})'),
      [T('$s + 1$ observations are lost to $\\Delta\\Delta_s$; the constant is dropped when $d + D \\ge 2$ (it would mean a quadratic trend)', 'se pierd $s + 1$ observații prin $\\Delta\\Delta_s$; constanta lipsește cînd $d + D \\ge 2$ (ar însemna un trend pătratic)')]),
     (T('\\textbf{Information criteria}: AICc $=$ AIC $+ \\frac{2k(k + 1)}{n - k - 1}$ and BIC, compared \\textbf{only} across models with the same $d$ and $D$', '\\textbf{Criteriile informaționale}: AICc $=$ AIC $+ \\frac{2k(k + 1)}{n - k - 1}$ și BIC, comparate \\textbf{doar} între modele cu aceleași $d$ și $D$'),
-     [T('differencing changes the data on which the likelihood is computed', 'diferențierea schimbă datele pe care se calculează verosimilitatea')]),
+     [T('$k$: the number of estimated parameters; $n$: the number of observations after differencing', '$k$: numărul parametrilor estimați; $n$: numărul de observații după diferențiere'),
+      T('differencing changes the data on which the likelihood is computed', 'diferențierea schimbă datele pe care se calculează verosimilitatea')]),
     (T('\\textbf{Automatic SARIMA}: a stepwise search over $(p, q, P, Q)$ by AICc after choosing $d$ and $D$ by tests (\\refHK)', '\\textbf{SARIMA automat}: o căutare pas cu pas după $(p, q, P, Q)$ cu AICc, după alegerea lui $d$ și $D$ prin teste (\\refHK)'),
      [T('in Python: \\texttt{pmdarima.auto\\_arima(y, m=12)}; always check the residuals and compare with a benchmark', 'în Python: \\texttt{pmdarima.auto\\_arima(y, m=12)}; verificați întotdeauna reziduurile și comparați cu un reper')]),
-    T('\\textbf{Diagnostics}: Ljung--Box with lags beyond $s$ (e.g. $m = 2s$) and $m - p - q - P - Q$ degrees of freedom (\\refLB)', '\\textbf{Diagnosticarea}: Ljung--Box cu decalaje dincolo de $s$ (de exemplu $m = 2s$) și $m - p - q - P - Q$ grade de libertate (\\refLB)')))
+    T('\\textbf{Diagnostics}: Ljung--Box with lags beyond $s$ (e.g. $m = 2s$) and $m - p - q - P - Q$ degrees of freedom (\\refLB)', '\\textbf{Diagnosticarea}: Ljung--Box cu laguri dincolo de $s$ (de exemplu $m = 2s$) și $m - p - q - P - Q$ grade de libertate (\\refLB)')))
 
 D.frame(T('Forecasting with SARIMA', 'Prognoza cu modele SARIMA'), items(
     (T('As for ARIMA (Chapter 3): write the model as an equation for $y_t$; replace future shocks by 0, future values by their forecasts, past shocks by residuals',
@@ -620,7 +623,7 @@ D.frame(T('Forecasting with SARIMA', 'Prognoza cu modele SARIMA'), items(
      [T('the pattern is an exponentially weighted average of past patterns, with weight $1 + \\Theta$ on the most recent year', 'tiparul este o medie ponderată exponențial a tiparelor trecute, cu ponderea $1 + \\Theta$ pentru anul cel mai recent'),
       T('$\\Theta \\to -1$: a fixed (deterministic) pattern; $\\Theta = 0$: last year\'s pattern repeated (seasonal naive)', '$\\Theta \\to -1$: un tipar fix (determinist); $\\Theta = 0$: tiparul de anul trecut repetat (sezonier naiv)')]),
     (T('Intervals widen with $h$ (two unit roots); for $\\ln y$, $\\exp(\\hat y_{T+h})$ is the forecast \\textbf{median}', 'Intervalele se lărgesc cu $h$ (două rădăcini unitare); pentru $\\ln y$, $\\exp(\\hat y_{T+h})$ este \\textbf{mediana} prognozei'),
-     [T('the mean is $\\exp(\\hat y_{T+h} + \\sigma_h^2/2)$, slightly higher', 'media este $\\exp(\\hat y_{T+h} + \\sigma_h^2/2)$, puțin mai mare')])))
+     [T('the mean is $\\exp(\\hat y_{T+h} + \\sigma_h^2/2)$, slightly higher; $\\sigma_h^2$: the forecast error variance at horizon $h$', 'media este $\\exp(\\hat y_{T+h} + \\sigma_h^2/2)$, puțin mai mare; $\\sigma_h^2$: varianța erorii de prognoză la orizontul $h$')])))
 
 D.frame(T('Worked example: forecasting a seasonal MA', 'Exemplu rezolvat: prognoza unui MA sezonier'), items(
     (T('Quarterly SARIMA$(0,0,0)(0,1,1)_4$: $y_t = y_{t-4} + \\varepsilon_t + \\Theta\\varepsilon_{t-4}$, $\\Theta = -0.6$', 'SARIMA$(0,0,0)(0,1,1)_4$ trimestrial: $y_t = y_{t-4} + \\varepsilon_t + \\Theta\\varepsilon_{t-4}$, $\\Theta = -0{,}6$'),
@@ -632,8 +635,8 @@ D.frame(T('Worked example: forecasting a seasonal MA', 'Exemplu rezolvat: progno
 
 D.recap(('SARIMA models', 'modele SARIMA'), [
     T('SARIMA multiplies regular and seasonal polynomials: $\\phi(L)\\Phi(L^s)\\Delta^d\\Delta_s^Dy_t = \\theta(L)\\Theta(L^s)\\varepsilon_t$', 'SARIMA înmulțește polinoame obișnuite și sezoniere: $\\phi(L)\\Phi(L^s)\\Delta^d\\Delta_s^Dy_t = \\theta(L)\\Theta(L^s)\\varepsilon_t$'),
-    T('Identification: the Chapter 2 rules at lags $s, 2s, \\dots$, plus satellites at $ks \\pm j$', 'Identificarea: regulile din Capitolul 2 la decalajele $s, 2s, \\dots$, plus sateliții de la $ks \\pm j$'),
-    T('Compare AICc only for the same $d$ and $D$; check Ljung--Box beyond lag $s$', 'Comparați AICc doar pentru aceleași $d$ și $D$; verificați Ljung--Box dincolo de decalajul $s$'),
+    T('Identification: the Chapter 2 rules at lags $s, 2s, \\dots$, plus satellites at $ks \\pm j$', 'Identificarea: regulile din Capitolul 2 la lagurile $s, 2s, \\dots$, plus sateliții de la $ks \\pm j$'),
+    T('Compare AICc only for the same $d$ and $D$; check Ljung--Box beyond lag $s$', 'Comparați AICc doar pentru aceleași $d$ și $D$; verificați Ljung--Box dincolo de lagul $s$'),
     T('The airline forecast: a seasonal pattern on a line, updated with weight $1 + \\Theta$', 'Prognoza airline: un tipar sezonier pe o dreaptă, actualizat cu ponderea $1 + \\Theta$')])
 
 # =============================================================================
@@ -657,9 +660,9 @@ chart(T('Identification of the airline model', 'Identificarea modelului airline'
 
 interp(('the airline correlograms', 'corelogramelor airline'), [
     T('The log makes the summer swing constant: the multiplicative pattern becomes additive', 'Logaritmul face constantă amplitudinea verii: tiparul multiplicativ devine aditiv'),
-    (T('ACF of $w_t$: $@{air.r1}$ at lag 1 and $@{air.r12}$ at lag 12, outside the band $\\pm @{air.band}$', 'ACF pentru $w_t$: $@{air.r1}$ la decalajul 1 și $@{air.r12}$ la decalajul 12, în afara benzii $\\pm @{air.band}$'),
-     [T('a regular MA(1) and a seasonal MA(1); lag 3 ($@{air.r3}$) is borderline', 'un MA(1) obișnuit și un MA(1) sezonier; decalajul 3 ($@{air.r3}$) este la limită')]),
-    T('The PACF decays at lags 1, 2, 3 and 12, 24: consistent with MA terms, not AR terms', 'PACF descrește la decalajele 1, 2, 3 și 12, 24: în acord cu termeni MA, nu cu termeni AR'),
+    (T('ACF of $w_t$: $@{air.r1}$ at lag 1 and $@{air.r12}$ at lag 12, outside the band $\\pm @{air.band}$', 'ACF pentru $w_t$: $@{air.r1}$ la lagul 1 și $@{air.r12}$ la lagul 12, în afara benzii $\\pm @{air.band}$'),
+     [T('a regular MA(1) and a seasonal MA(1); lag 3 ($@{air.r3}$) is borderline', 'un MA(1) obișnuit și un MA(1) sezonier; lagul 3 ($@{air.r3}$) este la limită')]),
+    T('The PACF decays at lags 1, 2, 3 and 12, 24: consistent with MA terms, not AR terms', 'PACF descrește la lagurile 1, 2, 3 și 12, 24: în acord cu termeni MA, nu cu termeni AR'),
     T('Conclusion: SARIMA$(0,1,1)(0,1,1)_{12}$, exactly the model of Box and Jenkins', 'Concluzia: SARIMA$(0,1,1)(0,1,1)_{12}$, exact modelul lui Box și Jenkins')])
 
 chart(T('Airline model: forecasts out of sample', 'Modelul airline: prognoze în afara eșantionului'), 'tsa_ch4_airline_fc', 'TSA_ch4_airline', [
@@ -683,7 +686,7 @@ D.frame(T('SARIMA models for Romanian GDP', 'Modele SARIMA pentru PIB-ul Români
     [f'$({m[1]},1,{m[5]})({m[8]},1,{m[12]})_4$' + f' & @{{gm{i}.aicc}} & @{{gm{i}.bic}} & @{{gm{i}.p}} & @{{gm{i}.sig}}' for i, m in enumerate(ROWS)],
     size='scriptsize').replace('@{gm1.bic}', '\\textbf{@{gm1.bic}}').replace('@{gm3.aicc}', '\\textbf{@{gm3.aicc}}') + items(
     T('$y_t = 100\\ln Y_t$, real GDP not adjusted, @{gm.q0}--@{gm.q1}, $T = @{gm.T}$; maximum likelihood; all with $d = D = 1$, so the criteria are comparable', '$y_t = 100\\ln Y_t$, PIB real neajustat, @{gm.q0}--@{gm.q1}, $T = @{gm.T}$; verosimilitate maximă; toate cu $d = D = 1$, deci criteriile sînt comparabile'),
-    T('Ljung--Box on 8 lags with $8 - p - q - P - Q$ degrees of freedom', 'Ljung--Box pe 8 decalaje, cu $8 - p - q - P - Q$ grade de libertate')), 'footnotesize')
+    T('Ljung--Box on 8 lags with $8 - p - q - P - Q$ degrees of freedom', 'Ljung--Box pe 8 laguri, cu $8 - p - q - P - Q$ grade de libertate')), 'footnotesize')
 
 interp(('the model table', 'tabelului de modele'), [
     (T('BIC chooses $(0,1,0)(0,1,1)_4$: only the seasonal MA term; AICc chooses $(1,1,1)(0,1,1)_4$', 'BIC alege $(0,1,0)(0,1,1)_4$: doar termenul MA sezonier; AICc alege $(1,1,1)(0,1,1)_4$'),
@@ -698,8 +701,8 @@ chart(T('Diagnostics of the GDP model', 'Diagnosticarea modelului pentru PIB'), 
 
 interp(('the GDP diagnostics', 'diagnosticării PIB'), [
     (T('No autocorrelation left: $Q^*(8) = @{gdg.q8}$ on @{gdg.df} degrees of freedom, p = @{gdg.p8}; $Q^*(12)$: p = @{gdg.p12}', 'Nu rămîne autocorelație: $Q^*(8) = @{gdg.q8}$ cu @{gdg.df} grade de libertate, p = @{gdg.p8}; $Q^*(12)$: p = @{gdg.p12}'),
-     [T('no spike at the seasonal lags 4, 8, 12, 16: the seasonal structure is captured', 'nicio valoare semnificativă la decalajele sezoniere 4, 8, 12, 16: structura sezonieră este surprinsă')]),
-    (T('Not Normal: Jarque--Bera @{gdg.jb} (p @{gdg.jbp}); the largest residual is @{gdg.outv}\\% in @{gdg.outd} ($@{gdg.outz}$ standard deviations): the lockdown', 'Nu este distribuția Normală: Jarque--Bera @{gdg.jb} (p @{gdg.jbp}); cel mai mare reziduu este @{gdg.outv}\\% în @{gdg.outd} ($@{gdg.outz}$ abateri standard): izolarea'),
+     [T('no spike at the seasonal lags 4, 8, 12, 16: the seasonal structure is captured', 'nicio valoare semnificativă la lagurile sezoniere 4, 8, 12, 16: structura sezonieră este surprinsă')]),
+    (T('Not Normal: Jarque--Bera @{gdg.jb} (p @{gdg.jbp}); the largest residual is @{gdg.outv}\\% in @{gdg.outd} ($@{gdg.outz}$ standard deviations): the lockdown', 'Nu este distribuția Normală: Jarque--Bera @{gdg.jb} (p @{gdg.jbp}); cel mai mare reziduu este @{gdg.outv}\\% în @{gdg.outd} ($@{gdg.outz}$ abateri standard): perioada de lockdown'),
      [T('without 2020, Jarque--Bera falls to @{gdg.jbx}: an additive-outlier dummy would be the next step', 'fără 2020, Jarque--Bera scade la @{gdg.jbx}: o variabilă dummy pentru valoarea aberantă ar fi pasul următor')])])
 
 chart(T('Forecasts of Romanian GDP', 'Prognozele PIB-ului României'), 'tsa_ch4_gdp_fc', 'TSA_ch4_gdp_case', [
@@ -710,11 +713,11 @@ interp(('the GDP forecasts', 'prognozelor PIB'), [
     (T('Last value: @{gf.last} bn EUR in @{gf.lastd}; forecasts @{gf.f1}, @{gf.f2}, @{gf.f3}, @{gf.f4} bn EUR for the next four quarters', 'Ultima valoare: @{gf.last} mld. EUR în @{gf.lastd}; prognozele @{gf.f1}; @{gf.f2}; @{gf.f3}; @{gf.f4} mld. EUR pentru următoarele patru trimestre'),
      [T('95\\% interval for the first quarter [@{gf.lo1}, @{gf.hi1}], for the eighth [@{gf.lo8}, @{gf.hi8}]', 'intervalul de 95\\% pentru primul trimestru [@{gf.lo1}; @{gf.hi1}], pentru al optulea [@{gf.lo8}; @{gf.hi8}]')]),
     (T('Implied year-on-year growth: @{gf.g1}\\%, @{gf.g2}\\%, @{gf.g3}\\%, @{gf.g4}\\%, then a constant @{gf.g8}\\%', 'Creșterea anuală implicată: @{gf.g1}\\%; @{gf.g2}\\%; @{gf.g3}\\%; @{gf.g4}\\%, apoi constant @{gf.g8}\\%'),
-     [T('the model extrapolates the recent weak growth; it knows nothing about fiscal policy or EU funds', 'modelul extrapolează creșterea slabă recentă; nu știe nimic despre politica fiscală sau fondurile europene')]),
+     [T('the model extrapolates the recent weak growth; it knows nothing about fiscal policy or EU funds', 'modelul extrapolează creșterea slabă recentă; nu conține informații despre politica fiscală sau fondurile europene')]),
     T('The seasonal pattern of the forecast is a weighted average of past years, with weight $1 + \\hat\\Theta = @{gf.al}$ on the newest year', 'Tiparul sezonier al prognozei este o medie ponderată a anilor trecuți, cu ponderea $1 + \\hat\\Theta = @{gf.al}$ pentru anul cel mai recent')])
 
 D.recap(('Airline passengers and Romanian GDP', 'pasagerii aerieni și PIB-ul României'), [
-    T('Logs, then $\\Delta\\Delta_s$, then MA terms at lags 1 and $s$: the airline recipe works for both series', 'Logaritmi, apoi $\\Delta\\Delta_s$, apoi termeni MA la decalajele 1 și $s$: rețeta airline funcționează pentru ambele serii'),
+    T('Logs, then $\\Delta\\Delta_s$, then MA terms at lags 1 and $s$: the airline recipe works for both series', 'Logaritmi, apoi $\\Delta\\Delta_s$, apoi termeni MA la lagurile 1 și $s$: rețeta airline funcționează pentru ambele serii'),
     T('For GDP, BIC drops the regular MA term; AICc picks a near-redundant ARMA(1,1)', 'Pentru PIB, BIC renunță la termenul MA obișnuit; AICc alege un ARMA(1,1) aproape redundant'),
     T('Residuals are clean except for the 2020 outlier', 'Reziduurile sînt curate, cu excepția valorii aberante din 2020'),
     T('Forecasts repeat a smoothed seasonal pattern on a trend line, with widening intervals', 'Prognozele repetă un tipar sezonier netezit pe o linie de trend, cu intervale tot mai largi')])
@@ -779,9 +782,11 @@ D.section('Fourier terms and calendar effects', 'Termeni Fourier și efecte de c
 
 D.frame(T('Seasonal dummies and Fourier terms', 'Variabile dummy sezoniere și termeni Fourier'), items(
     (T('\\textbf{Dummies}: $y_t = \\beta_0 + \\sum_{j=2}^{s}\\gamma_jD_{jt} + u_t$: $s - 1$ coefficients, any shape', '\\textbf{Variabile dummy}: $y_t = \\beta_0 + \\sum_{j=2}^{s}\\gamma_jD_{jt} + u_t$: $s - 1$ coeficienți, orice formă'),
-     [T('too many for $s = 52$ weeks, $s = 168$ hours or $s = 365$ days; impossible for $s = 365.25$', 'prea mulți pentru $s = 52$ de săptămîni, $s = 168$ ore sau $s = 365$ de zile; imposibil pentru $s = 365{,}25$')]),
+     [T('$\\beta_0$: the level of season 1; $\\gamma_j$: the difference between season $j$ and season 1', '$\\beta_0$: nivelul sezonului 1; $\\gamma_j$: diferența dintre sezonul $j$ și sezonul 1'),
+      T('too many for $s = 52$ weeks, $s = 168$ hours or $s = 365$ days; impossible for $s = 365.25$', 'prea mulți pentru $s = 52$ de săptămîni, $s = 168$ ore sau $s = 365$ de zile; imposibil pentru $s = 365{,}25$')]),
     (T('\\textbf{Fourier terms} for a period $m$: $\\sum_{k=1}^{K}\\left[\\alpha_k\\sin\\frac{2\\pi kt}{m} + \\beta_k\\cos\\frac{2\\pi kt}{m}\\right]$', '\\textbf{Termeni Fourier} pentru o perioadă $m$: $\\sum_{k=1}^{K}\\left[\\alpha_k\\sin\\frac{2\\pi kt}{m} + \\beta_k\\cos\\frac{2\\pi kt}{m}\\right]$'),
-     [T('$2K$ coefficients; $K = m/2$ reproduces the dummies exactly (for even $m$); a small $K$ gives a smooth pattern', '$2K$ coeficienți; $K = m/2$ reproduce exact variabilele dummy (pentru $m$ par); un $K$ mic dă un tipar neted'),
+     [T('$\\alpha_k, \\beta_k$: the coefficients of the $k$-th harmonic, a wave with $k$ cycles per period; $K$: the number of sine--cosine pairs', '$\\alpha_k, \\beta_k$: coeficienții armonicei $k$, o undă cu $k$ cicluri pe perioadă; $K$: numărul de perechi sinus--cosinus'),
+      T('$2K$ coefficients; $K = m/2$ reproduces the dummies exactly (for even $m$); a small $K$ gives a smooth pattern', '$2K$ coeficienți; $K = m/2$ reproduce exact variabilele dummy (pentru $m$ par); un $K$ mic dă un tipar neted'),
       T('$m$ may be non-integer, and several periods can be combined: e.g. $K = 5$ for $m = 24$ and $K = 4$ for $m = 168$ give @{fourier.k} regressors instead of $23 + 167$', '$m$ poate fi neîntreg și se pot combina mai multe perioade: de exemplu $K = 5$ pentru $m = 24$ și $K = 4$ pentru $m = 168$ dau @{fourier.k} regresori în locul a $23 + 167$')]),
     T('$K$ is chosen by AICc or by cross-validation; the same terms are inside TBATS and Prophet (Section 9)', '$K$ se alege cu AICc sau prin validare încrucișată; aceiași termeni se află în TBATS și Prophet (secțiunea 9)')))
 
@@ -808,10 +813,11 @@ D.frame(T('Calendar effects and Orthodox Easter', 'Efecte de calendar și Paște
 
 D.frame(T('Regression with SARIMA errors', 'Regresia cu erori SARIMA'), items(
     (T('$100\\ln y_t = \\beta_EE_t + \\beta_W\\,\\mathrm{WD}_t + \\text{outlier dummies} + u_t$, with $u_t \\sim$ SARIMA$(0,1,1)(0,1,1)_{12}$', '$100\\ln y_t = \\beta_EE_t + \\beta_W\\,\\mathrm{WD}_t + \\text{variabile dummy pentru valori aberante} + u_t$, cu $u_t \\sim$ SARIMA$(0,1,1)(0,1,1)_{12}$'),
-     [T('the ``regARIMA\'\' model of X-13; estimated in one step by maximum likelihood (\\texttt{SARIMAX} with \\texttt{exog})', 'modelul „regARIMA” din X-13; estimat într-un singur pas prin verosimilitate maximă (\\texttt{SARIMAX} cu \\texttt{exog})'),
+     [T('$E_t$: the Easter regressor; $\\mathrm{WD}_t$: the number of working days in month $t$; $\\beta_E$, $\\beta_W$: their effects, in \\%', '$E_t$: regresorul Paște; $\\mathrm{WD}_t$: numărul de zile lucrătoare din luna $t$; $\\beta_E$, $\\beta_W$: efectele lor, în \\%'),
+      T('the ``regARIMA\'\' model of X-13; estimated in one step by maximum likelihood (\\texttt{SARIMAX} with \\texttt{exog})', 'modelul „regARIMA” din X-13; estimat într-un singur pas prin verosimilitate maximă (\\texttt{SARIMAX} cu \\texttt{exog})'),
       T('ordinary least squares with SARIMA errors ignored would give wrong standard errors (Chapter 3, spurious regression)', 'metoda celor mai mici pătrate care ignoră erorile SARIMA ar da erori standard greșite (Capitolul 3, regresia falsă)')]),
     (T('Data: Eurostat retail trade volume, Romania, not adjusted, @{ea.f0}--@{ea.f1}: food (G47\\_FOOD) and all retail (G47)', 'Datele: volumul comerțului cu amănuntul, Eurostat, România, neajustat, @{ea.f0}--@{ea.f1}: alimente (G47\\_FOOD) și total (G47)'),
-     [T('dummies for April and May 2020 (lockdown)', 'variabile dummy pentru aprilie și mai 2020 (izolarea)')])))
+     [T('dummies for April and May 2020 (lockdown)', 'variabile dummy pentru aprilie și mai 2020 (lockdown)')])))
 
 chart(T('Easter and Romanian retail trade', 'Paștele și comerțul cu amănuntul din România'), 'tsa_ch4_easter', 'TSA_ch4_calendar_fourier', [
     T('Left: Orthodox Easter Sunday as a day of April (above 30: May); right: year-on-year growth of food retail in March--May against the change in the Easter share (2020--2021 left out)', 'Stînga: Duminica Paștelui ortodox ca zi din aprilie (peste 30: mai); dreapta: creșterea anuală a vînzărilor de alimente în martie--mai față de modificarea ponderii Paștelui (fără 2020--2021)')],
@@ -846,13 +852,13 @@ D.frame(T('Electricity load in Romania', 'Consumul de electricitate din România
     wl='0.60', wr='0.36'), 'footnotesize')
 
 chart(T('Hourly load: the day and the week', 'Consumul orar: ziua și săptămîna'), 'tsa_ch4_load_hourly', 'TSA_ch4_multiple_seasonality', [
-    T('Left: three weeks of January 2025; right: sample ACF of all hours of 2025 up to lag 400', 'Stînga: trei săptămîni din ianuarie 2025; dreapta: ACF de selecție pentru toate orele din 2025, pînă la decalajul 400')],
+    T('Left: three weeks of January 2025; right: sample ACF of all hours of 2025 up to lag 400', 'Stînga: trei săptămîni din ianuarie 2025; dreapta: ACF de selecție pentru toate orele din 2025, pînă la lagul 400')],
     h='0.56\\textheight')
 
 interp(('the hourly load', 'consumului orar'), [
     (T('Daily cycle: lowest around @{ho.trough}:00 (@{ho.tv} GW on average in 2025), highest around @{ho.peak}:00 (@{ho.pv} GW)', 'Ciclul zilnic: minimul în jurul orei @{ho.trough}:00 (în medie @{ho.tv} GW în 2025), maximul în jurul orei @{ho.peak}:00 (@{ho.pv} GW)'),
-     [T('ACF $@{ho.r24}$ at lag 24, $@{ho.r12}$ at lag 12', 'ACF $@{ho.r24}$ la decalajul 24, $@{ho.r12}$ la decalajul 12')]),
-    (T('Weekly cycle: weekends are lower; ACF $@{ho.r168}$ at lag 168 (one week), above the lag-24 value', 'Ciclul săptămînal: weekendurile sînt mai joase; ACF $@{ho.r168}$ la decalajul 168 (o săptămînă), peste valoarea de la decalajul 24'),
+     [T('ACF $@{ho.r24}$ at lag 24, $@{ho.r12}$ at lag 12', 'ACF $@{ho.r24}$ la lagul 24, $@{ho.r12}$ la lagul 12')]),
+    (T('Weekly cycle: weekends are lower; ACF $@{ho.r168}$ at lag 168 (one week), above the lag-24 value', 'Ciclul săptămînal: weekendurile sînt mai joase; ACF $@{ho.r168}$ la lagul 168 (o săptămînă), peste valoarea de la lagul 24'),
      [T('the same hour one week ago is the best single predictor: Monday is like last Monday, not like Sunday', 'aceeași oră de acum o săptămînă este cel mai bun predictor individual: lunea seamănă cu lunea trecută, nu cu duminica')]),
     T('And an annual cycle on top (heating and air conditioning): three periods, 24, 168 and about 8766 hours', 'Și un ciclu anual peste acestea (încălzire și aer condiționat): trei perioade, 24, 168 și aproximativ 8766 de ore'),
     (T('SARIMA is not enough: it has one integer period $s$, while here $s = 24$, $168$ and $8766$ act at once', 'SARIMA nu este suficient: are o singură perioadă întreagă $s$, în timp ce aici acționează simultan $s = 24$, $168$ și $8766$'),
@@ -878,11 +884,12 @@ interp(('the daily load', 'consumului zilnic'), [
      [T('Year: January @{dy.jan}\\% above May; a smaller summer peak (air conditioning)', 'Anul: ianuarie cu @{dy.jan}\\% peste mai; un vîrf mai mic vara (aerul condiționat)')]),
     (T('Holidays: the lowest day of the sample is Easter Sunday, @{dy.lowd} (@{dy.low} GW, mean @{dy.mean} GW)', 'Sărbătorile: cea mai joasă zi din eșantion este Duminica Paștelui, @{dy.lowd} (@{dy.low} GW, media @{dy.mean} GW)'),
      [T('the four Easter days (Friday to Monday) average @{dy.eas} GW; Christmas to New Year is also low', 'cele patru zile de Paște (vineri--luni) au în medie @{dy.eas} GW; perioada Crăciun--Anul Nou este și ea joasă')]),
-    T('The level falls over 2022--2026; possible causes: the price shock of 2022 and rooftop solar panels that cover part of the demand behind the meter', 'Nivelul scade în 2022--2026; cauze posibile: șocul de preț din 2022 și panourile solare de pe acoperișuri, care acoperă o parte din cerere înaintea contorului')])
+    T('The level falls over 2022--2026; possible causes: the price shock of 2022 and rooftop solar panels that cover part of the demand behind the meter', 'Nivelul scade în 2022--2026; cauze posibile: șocul de preț din 2022 și panourile solare de pe acoperișuri, care acoperă o parte din cerere fără a trece prin rețea')])
 
 D.frame(T('A dynamic harmonic regression for daily load', 'O regresie armonică dinamică pentru consumul zilnic'), items(
     (T('$y_t = \\sum_{k=1}^{4}\\left[\\alpha_k\\sin\\frac{2\\pi kt}{365.25} + \\beta_k\\cos\\frac{2\\pi kt}{365.25}\\right] + \\sum_{j}\\delta_jD^{\\mathrm{day}}_{jt} + \\lambda_1H_t + \\lambda_2E_t + \\lambda_3X_t + u_t$', '$y_t = \\sum_{k=1}^{4}\\left[\\alpha_k\\sin\\frac{2\\pi kt}{365.25} + \\beta_k\\cos\\frac{2\\pi kt}{365.25}\\right] + \\sum_{j}\\delta_jD^{\\mathrm{zi}}_{jt} + \\lambda_1H_t + \\lambda_2E_t + \\lambda_3X_t + u_t$'),
-     [T('annual Fourier terms; weekday dummies (Sunday is the base); $H$ public holiday, $E$ Easter (Friday to Monday), $X$ 24 December -- 2 January', 'termeni Fourier anuali; variabile dummy pentru zilele săptămînii (duminica este baza); $H$ sărbătoare legală, $E$ Paște (vineri--luni), $X$ 24 decembrie -- 2 ianuarie'),
+     [T('$\\alpha_k, \\beta_k$: annual Fourier coefficients; $\\delta_j$: effect of weekday $j$ against Sunday; $\\lambda_1, \\lambda_2, \\lambda_3$: effects of the special days, in GW', '$\\alpha_k, \\beta_k$: coeficienții Fourier anuali; $\\delta_j$: efectul zilei $j$ față de duminică; $\\lambda_1, \\lambda_2, \\lambda_3$: efectele zilelor speciale, în GW'),
+      T('annual Fourier terms; weekday dummies (Sunday is the base); $H$ public holiday, $E$ Easter (Friday to Monday), $X$ 24 December -- 2 January', 'termeni Fourier anuali; variabile dummy pentru zilele săptămînii (duminica este baza); $H$ sărbătoare legală, $E$ Paște (vineri--luni), $X$ 24 decembrie -- 2 ianuarie'),
       T('$u_t \\sim$ ARIMA@{dh.order}, chosen by AIC: \\textbf{dynamic harmonic regression} (DHR, \\refFPPdhr)', '$u_t \\sim$ ARIMA@{dh.order}, ales cu AIC: \\textbf{regresia armonică dinamică} (DHR, \\refFPPdhr)')]),
     (T('Estimates, data to the first forecast origin (30 June 2025), in GW:', 'Estimările, cu datele pînă la prima origine de prognoză (30 iunie 2025), în GW:'),
      [T('Wednesday $+@{dh.wed}$, Monday $+@{dh.mon}$, Saturday $+@{dh.sat}$ relative to Sunday', 'miercuri $+@{dh.wed}$, luni $+@{dh.mon}$, sîmbătă $+@{dh.sat}$ față de duminică'),
@@ -904,7 +911,8 @@ D.frame(T('TBATS', 'TBATS'), items(
     (T('\\refTBATS: exponential smoothing (ETS, Chapter 0) for complex seasonality; the name lists its parts', '\\refTBATS: netezire exponențială (ETS, Capitolul 0) pentru sezonalitate complexă; numele enumeră părțile modelului'),
      [T('trigonometric seasonality (T), Box--Cox transformation (B), ARMA errors (A), trend (T), seasonal components (S)', 'sezonalitate trigonometrică (T), transformare Box--Cox (B), erori ARMA (A), trend (T), componente sezoniere (S)')]),
     (T('$y_t^{(\\omega)} = \\ell_{t-1} + \\phi b_{t-1} + \\sum_{i}s^{(i)}_{t-1} + d_t$, $d_t$ ARMA($p,q$); level and trend updated as in Holt\'s method', '$y_t^{(\\omega)} = \\ell_{t-1} + \\phi b_{t-1} + \\sum_{i}s^{(i)}_{t-1} + d_t$, $d_t$ ARMA($p,q$); nivelul și trendul se actualizează ca în metoda Holt'),
-     [T('each period $m_i$ has $K_i$ harmonics $s^{(i)}_{j,t}$, each a rotating pair (cosine, sine) updated by the errors: a Fourier pattern that can evolve', 'fiecare perioadă $m_i$ are $K_i$ armonici $s^{(i)}_{j,t}$, fiecare o pereche rotitoare (cosinus, sinus) actualizată de erori: un tipar Fourier care poate evolua')]),
+     [T('$y_t^{(\\omega)}$: the series after a Box--Cox transformation with parameter $\\omega$; $\\ell_t$: level; $b_t$: slope; $\\phi$: damping factor; $s^{(i)}_t$: seasonal component $i$', '$y_t^{(\\omega)}$: seria după o transformare Box--Cox cu parametrul $\\omega$; $\\ell_t$: nivelul; $b_t$: panta; $\\phi$: factorul de amortizare; $s^{(i)}_t$: componenta sezonieră $i$'),
+      T('each period $m_i$ has $K_i$ harmonics $s^{(i)}_{j,t}$, each a rotating pair (cosine, sine) updated by the errors: a Fourier pattern that can evolve', 'fiecare perioadă $m_i$ are $K_i$ armonici $s^{(i)}_{j,t}$, fiecare o pereche rotitoare (cosinus, sinus) actualizată de erori: un tipar Fourier care poate evolua')]),
     (T('Automatic choices by AIC: Box--Cox or not, trend or damped trend or none, the $K_i$, the ARMA orders', 'Alegeri automate cu AIC: Box--Cox sau nu, trend, trend amortizat sau fără trend, valorile $K_i$, ordinele ARMA'),
      [T('daily load to June 2025, periods 7 and 365.25 (no Box--Cox, no trend): $K = @{tb.k7}$ weekly and $K = @{tb.k365}$ annual harmonics, ARMA(@{tb.p},@{tb.q}), @{tb.states} states', 'consumul zilnic pînă în iunie 2025, perioadele 7 și 365,25 (fără Box--Cox, fără trend): $K = @{tb.k7}$ armonici săptămînale și $K = @{tb.k365}$ anuale, ARMA(@{tb.p},@{tb.q}), @{tb.states} de stări')]),
     T('Limits: no regressors, hence no holidays or Easter; slow on long series; Python package \\texttt{tbats}', 'Limite: fără regresori, deci fără sărbători sau Paște; lent pe serii lungi; pachetul Python \\texttt{tbats}')), 'footnotesize')
@@ -915,7 +923,7 @@ D.frame(T('Prophet', 'Prophet'), items(
       T('$s(t)$: Fourier terms, by default $K = 10$ for the year and $K = 3$ for the week', '$s(t)$: termeni Fourier, implicit $K = 10$ pentru an și $K = 3$ pentru săptămînă'),
       T('$h(t)$: one effect per holiday (with optional windows around it), from a list of dates', '$h(t)$: un efect pentru fiecare sărbătoare (cu ferestre opționale în jurul ei), dintr-o listă de date')]),
     (T('Estimated by Stan (maximum a posteriori); intervals simulate future changepoints and the noise', 'Estimat cu Stan (maximul a posteriori); intervalele simulează punctele de schimbare viitoare și zgomotul'),
-     [T('no autoregressive part: today\'s surprise does not move tomorrow\'s forecast', 'fără parte autoregresivă: surpriza de azi nu mută prognoza de mîine')]),
+     [T('no autoregressive part: today\'s surprise does not move tomorrow\'s forecast', 'fără parte autoregresivă: eroarea de azi nu modifică prognoza de mîine')]),
     T('Built for many business series with strong calendar effects and missing data; Python package \\texttt{prophet}', 'Construit pentru multe serii economice cu efecte puternice de calendar și date lipsă; pachetul Python \\texttt{prophet}')), 'footnotesize')
 
 chart(T('Prophet components for daily load', 'Componentele Prophet pentru consumul zilnic'), 'tsa_ch4_prophet', 'TSA_ch4_tbats_prophet', [
@@ -962,10 +970,12 @@ D.frame(T('Interpreting the design of our experiment', 'Interpretarea schemei de
     T('Cross-validation that ignores time order (random folds) is valid only for pure autoregressions with white-noise errors (\\refBHK)', 'Validarea încrucișată care ignoră ordinea în timp (grupuri aleatoare) este validă doar pentru autoregresii pure cu erori de tip zgomot alb (\\refBHK)')), 'footnotesize')
 
 D.frame(T('The Diebold--Mariano test', 'Testul Diebold--Mariano'), items(
-    (T('\\refDM: is the difference in accuracy between two forecasts larger than chance?', '\\refDM: este diferența de acuratețe dintre două prognoze mai mare decît hazardul?'),
-     [T('loss differential $d_t = L(e_{1t}) - L(e_{2t})$, $L(e) = e^2$ or $|e|$; $H_0$: $E[d_t] = 0$', 'diferența de pierdere $d_t = L(e_{1t}) - L(e_{2t})$, $L(e) = e^2$ sau $|e|$; $H_0$: $E[d_t] = 0$')]),
+    (T('\\refDM: is the difference in accuracy between two forecasts larger than chance?', '\\refDM: este diferența de acuratețe dintre două prognoze mai mare decît ar rezulta din întîmplare?'),
+     [T('$e_{1t}$, $e_{2t}$: the errors of the two forecasts; $L$: the loss function', '$e_{1t}$, $e_{2t}$: erorile celor două prognoze; $L$: funcția de pierdere'),
+      T('loss differential $d_t = L(e_{1t}) - L(e_{2t})$, $L(e) = e^2$ or $|e|$; $H_0$: $E[d_t] = 0$', 'diferența de pierdere $d_t = L(e_{1t}) - L(e_{2t})$, $L(e) = e^2$ sau $|e|$; $H_0$: $E[d_t] = 0$')]),
     (T('$\\mathrm{DM} = \\dfrac{\\bar d}{\\sqrt{\\hat V/n}}$, $\\hat V = \\hat\\gamma_d(0) + 2\\sum_{k=1}^{h-1}\\hat\\gamma_d(k)$', '$\\mathrm{DM} = \\dfrac{\\bar d}{\\sqrt{\\hat V/n}}$, $\\hat V = \\hat\\gamma_d(0) + 2\\sum_{k=1}^{h-1}\\hat\\gamma_d(k)$'),
-     [T('$h$-step errors overlap, so $d_t$ is autocorrelated up to lag $h - 1$', 'erorile la $h$ pași se suprapun, deci $d_t$ este autocorelat pînă la decalajul $h - 1$'),
+     [T('$\\bar d$: the mean of the $n$ differentials; $\\hat\\gamma_d(k)$: their autocovariance at lag $k$; a negative DM favours forecast 1', '$\\bar d$: media celor $n$ diferențe; $\\hat\\gamma_d(k)$: autocovarianța lor la lagul $k$; un DM negativ favorizează prognoza 1'),
+      T('$h$-step errors overlap, so $d_t$ is autocorrelated up to lag $h - 1$', 'erorile la $h$ pași se suprapun, deci $d_t$ este autocorelat pînă la lagul $h - 1$'),
       T('asymptotically $N(0, 1)$; small samples: $\\mathrm{HLN} = \\sqrt{\\frac{n + 1 - 2h + h(h - 1)/n}{n}}\\;\\mathrm{DM}$, compared with $t(n - 1)$ (\\refHLN)', 'asimptotic $N(0, 1)$; eșantioane mici: $\\mathrm{HLN} = \\sqrt{\\frac{n + 1 - 2h + h(h - 1)/n}{n}}\\;\\mathrm{DM}$, comparat cu $t(n - 1)$ (\\refHLN)')]),
     (T('Our design: one value per origin, $d_j$ = average loss difference over the 14-day window; the windows do not overlap, so $h = 1$ in the formula', 'Schema noastră: o valoare pe origine, $d_j$ = diferența medie de pierdere în fereastra de 14 zile; ferestrele nu se suprapun, deci $h = 1$ în formulă'),
      [T('the test compares forecasts, not models: re-estimation noise is part of what is tested', 'testul compară prognoze, nu modele: zgomotul reestimării face parte din ceea ce se testează')])), 'footnotesize')
@@ -986,8 +996,8 @@ interp(('one forecast window', 'unei ferestre de prognoză'), [
     (T('MAE in this window (MW): ETS @{lf.ets}, TBATS @{lf.tb}, DHR @{lf.dhr}, Combination @{lf.comb}, SARIMA @{lf.sar}, Prophet @{lf.pro}, seasonal naive @{lf.sn}', 'MAE în această fereastră (MW): ETS @{lf.ets}, TBATS @{lf.tb}, DHR @{lf.dhr}, Combinarea @{lf.comb}, SARIMA @{lf.sar}, Prophet @{lf.pro}, sezonieră naivă @{lf.sn}'),
      [T('the seasonal naive method copies the previous normal week into Easter week', 'metoda sezonieră naivă copiază săptămîna normală anterioară în săptămîna Paștelui')]),
     T('Every model sees the Sunday dip; DHR and Prophet also lower Good Friday and Easter Monday, which the weekly models treat as working days', 'Toate modelele văd scăderea de duminică; DHR și Prophet coboară și Vinerea Mare și a doua zi de Paște, pe care modelele săptămînale le tratează ca zile lucrătoare'),
-    T('After Easter the load stays below every forecast for the rest of the week; ETS and TBATS, whose level follows the latest days, lose least here', 'După Paște, consumul rămîne sub toate prognozele pînă la sfîrșitul săptămînii; ETS și TBATS, al căror nivel urmează ultimele zile, pierd cel mai puțin aici'),
-    T('One window is anecdote; the next slides average over all @{cv.n} windows', 'O singură fereastră este o anecdotă; slide-urile următoare fac media pe toate cele @{cv.n} de ferestre')])
+    T('After Easter the load stays below every forecast for the rest of the week; ETS and TBATS, whose level follows the latest days, lose least here', 'După Paște, consumul rămîne sub toate prognozele pînă la sfîrșitul săptămînii; ETS și TBATS, al căror nivel urmează ultimele zile, au aici erorile cele mai mici'),
+    T('One window is anecdote; the next slides average over all @{cv.n} windows', 'O singură fereastră este un caz izolat; slide-urile următoare fac media pe toate cele @{cv.n} de ferestre')])
 
 chart(T('Cross-validation results for daily load', 'Rezultatele validării încrucișate pentru consumul zilnic'), 'tsa_ch4_cv_results', 'TSA_ch4_evaluation', [
     T('@{cv.n} origins $\\times$ 14 horizons for each method; left: overall MAE; right: MAE by horizon', '@{cv.n} de origini $\\times$ 14 orizonturi pentru fiecare metodă; stînga: MAE totală; dreapta: MAE pe orizonturi')],
@@ -1003,8 +1013,8 @@ D.frame(T('Interpreting the cross-validation results', 'Interpretarea rezultatel
      'Prophet & @{cv.pro.mae} & @{cv.pro.rmse} & @{cv.pro.mase} & $@{dm.pro.sn}$ (@{dm.pro.snp}) & $@{dm.pro.dh}$ (@{dm.pro.dhp})',
      T('Combination', 'Combinarea') + ' & @{cv.comb.mae} & @{cv.comb.rmse} & @{cv.comb.mase} & $@{dm.comb.sn}$ (@{dm.comb.snp}) & $@{dm.comb.dh}$ (@{dm.comb.dhp})'],
     size='scriptsize') + items(
-    T('MAE and RMSE in MW; MASE (\\refHKo) = MAE / @{cv.scale} MW, the in-sample MAE of the weekly seasonal naive method; DM: HLN statistic (p-value) on window-average squared errors, row method minus column method', 'MAE și RMSE în MW; MASE (\\refHKo) = MAE / @{cv.scale} MW, MAE în eșantion a metodei sezoniere naive săptămînale; DM: statistica HLN (valoarea p) pe media erorilor pătratice din fiecare fereastră, metoda de pe rînd minus metoda de pe coloană'),
-    T('DHR wins; with the combination, it is the only method with MASE below 1; Prophet is the second single model: the two that know the holidays', 'DHR cîștigă; împreună cu combinarea, este singura metodă cu MASE sub 1; Prophet este al doilea model individual: cele două care cunosc sărbătorile'),
+    T('MAE and RMSE in MW; MASE (\\refHKo) = MAE / @{cv.scale} MW, the in-sample MAE of the weekly seasonal naive method; DM: HLN statistic (p-value) on window-average squared errors, row method minus column method', 'MAE și RMSE în MW; MASE (\\refHKo) = MAE / @{cv.scale} MW, MAE în eșantion a metodei sezoniere naive săptămînale; DM: statistica HLN (p-value-ul) pe media erorilor pătratice din fiecare fereastră, metoda de pe rînd minus metoda de pe coloană'),
+    T('DHR wins; with the combination, it is the only method with MASE below 1; Prophet is the second single model: the two that know the holidays', 'DHR cîștigă; împreună cu combinarea, este singura metodă cu MASE sub 1; Prophet este al doilea model individual: singurele două care includ sărbătorile'),
     T('ETS, SARIMA and TBATS are not significantly better than the seasonal naive method', 'ETS, SARIMA și TBATS nu sînt semnificativ mai bune decît metoda sezonieră naivă')), 'footnotesize')
 
 D.frame(T('A second test: Romanian GDP', 'Un al doilea test: PIB-ul României'), table(
@@ -1021,8 +1031,8 @@ D.frame(T('A second test: Romanian GDP', 'Un al doilea test: PIB-ul României'),
 D.recap(('Forecast evaluation', 'evaluarea prognozelor'), [
     T('Evaluate out of sample with rolling origins; choose model orders before the test period', 'Evaluați în afara eșantionului, cu origini mobile; alegeți ordinele modelelor înaintea perioadei de test'),
     T('MASE compares with the seasonal naive method and across series', 'MASE compară cu metoda sezonieră naivă și între serii'),
-    T('The DM test (with the HLN correction) says whether a gain is more than chance', 'Testul DM (cu corecția HLN) arată dacă un cîștig este mai mult decît hazard'),
-    T('Daily load: the models that know the calendar (DHR, Prophet) win; for GDP, SARIMA and ETS are close', 'Consumul zilnic: modelele care cunosc calendarul (DHR, Prophet) cîștigă; pentru PIB, SARIMA și ETS sînt apropiate')])
+    T('The DM test (with the HLN correction) says whether a gain is more than chance', 'Testul DM (cu corecția HLN) arată dacă un cîștig este mai mult decît un efect al întîmplării'),
+    T('Daily load: the models that know the calendar (DHR, Prophet) win; for GDP, SARIMA and ETS are close', 'Consumul zilnic: modelele care includ calendarul (DHR, Prophet) cîștigă; pentru PIB, SARIMA și ETS sînt apropiate')])
 
 # =============================================================================
 # 11. COMBINAREA PROGNOZELOR
@@ -1031,11 +1041,12 @@ D.section('Forecast combination', 'Combinarea prognozelor')
 
 D.frame(T('Why combining forecasts works', 'Avantajul combinării prognozelor'), items(
     (T('\\refBG: a weighted average of two unbiased forecasts, $f_c = wf_1 + (1 - w)f_2$', '\\refBG: o medie ponderată a două prognoze nedeplasate, $f_c = wf_1 + (1 - w)f_2$'),
-     [T('$\\mathrm{MSE}(w) = w^2\\sigma_1^2 + (1 - w)^2\\sigma_2^2 + 2w(1 - w)\\rho\\sigma_1\\sigma_2$', '$\\mathrm{MSE}(w) = w^2\\sigma_1^2 + (1 - w)^2\\sigma_2^2 + 2w(1 - w)\\rho\\sigma_1\\sigma_2$'),
+     [T('$w$: the weight of forecast 1; $\\sigma_1$, $\\sigma_2$: the standard deviations of the two errors; $\\rho$: their correlation', '$w$: ponderea prognozei 1; $\\sigma_1$, $\\sigma_2$: abaterile standard ale celor două erori; $\\rho$: corelația lor'),
+      T('$\\mathrm{MSE}(w) = w^2\\sigma_1^2 + (1 - w)^2\\sigma_2^2 + 2w(1 - w)\\rho\\sigma_1\\sigma_2$', '$\\mathrm{MSE}(w) = w^2\\sigma_1^2 + (1 - w)^2\\sigma_2^2 + 2w(1 - w)\\rho\\sigma_1\\sigma_2$'),
       T('best weight $w^* = \\dfrac{\\sigma_2^2 - \\rho\\sigma_1\\sigma_2}{\\sigma_1^2 + \\sigma_2^2 - 2\\rho\\sigma_1\\sigma_2}$; the gain is large when $\\rho$ is small', 'ponderea optimă $w^* = \\dfrac{\\sigma_2^2 - \\rho\\sigma_1\\sigma_2}{\\sigma_1^2 + \\sigma_2^2 - 2\\rho\\sigma_1\\sigma_2}$; cîștigul este mare cînd $\\rho$ este mic')]),
     (T('Example: $\\sigma_1 = 1$, $\\sigma_2 = 1.2$, $\\rho = 0.75$: $\\mathrm{MSE}(0.5) = @{we5.half}$; $w^* = @{we5.w}$, $\\mathrm{MSE}(w^*) = @{we5.opt}$', 'Exemplu: $\\sigma_1 = 1$, $\\sigma_2 = 1{,}2$, $\\rho = 0{,}75$: $\\mathrm{MSE}(0{,}5) = @{we5.half}$; $w^* = @{we5.w}$, $\\mathrm{MSE}(w^*) = @{we5.opt}$'),
      [T('highly correlated errors: the equal-weight average is worse than the better forecast ($\\sigma_1^2 = 1$), and even the best weight gains little', 'erori puternic corelate: media cu ponderi egale este mai slabă decît prognoza mai bună ($\\sigma_1^2 = 1$), iar chiar ponderea optimă cîștigă puțin')]),
-    (T('The \\textbf{forecast combination puzzle} (\\refSW; \\refSmithWallis): estimated weights rarely beat equal weights', '\\textbf{Paradoxul combinării prognozelor} (\\refSW; \\refSmithWallis): ponderile estimate rareori bat ponderile egale'),
+    (T('The \\textbf{forecast combination puzzle} (\\refSW; \\refSmithWallis): estimated weights rarely beat equal weights', '\\textbf{Paradoxul combinării prognozelor} (\\refSW; \\refSmithWallis): ponderile estimate sînt rareori mai bune decît ponderile egale'),
      [T('the weights must be estimated, and their sampling error eats the theoretical gain', 'ponderile trebuie estimate, iar eroarea lor de estimare consumă cîștigul teoretic')])), 'footnotesize')
 
 chart(T('Combining DHR and Prophet', 'Combinarea DHR și Prophet'), 'tsa_ch4_combination', 'TSA_ch4_evaluation', [
@@ -1096,8 +1107,8 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
     size='scriptsize') + '}')
 
 D.frame(T('Self-assessment', 'Autoevaluare'), items(
-    (T('\\textbf{Question}: how many parameters does SARIMA$(1,1,1)(0,1,1)_{12}$ have, and at which lags does $\\varepsilon$ appear?', '\\textbf{Întrebare}: cîți parametri are SARIMA$(1,1,1)(0,1,1)_{12}$ și la ce decalaje apare $\\varepsilon$?'),
-     [T('\\textbf{Answer}: $\\phi, \\theta, \\Theta, \\sigma^2$, four; $\\varepsilon$ at lags 0, 1, 12, 13 (the last with coefficient $\\theta\\Theta$)', '\\textbf{Răspuns}: $\\phi, \\theta, \\Theta, \\sigma^2$, patru; $\\varepsilon$ la decalajele 0, 1, 12, 13 (ultimul cu coeficientul $\\theta\\Theta$)')]),
+    (T('\\textbf{Question}: how many parameters does SARIMA$(1,1,1)(0,1,1)_{12}$ have, and at which lags does $\\varepsilon$ appear?', '\\textbf{Întrebare}: cîți parametri are SARIMA$(1,1,1)(0,1,1)_{12}$ și la ce laguri apare $\\varepsilon$?'),
+     [T('\\textbf{Answer}: $\\phi, \\theta, \\Theta, \\sigma^2$, four; $\\varepsilon$ at lags 0, 1, 12, 13 (the last with coefficient $\\theta\\Theta$)', '\\textbf{Răspuns}: $\\phi, \\theta, \\Theta, \\sigma^2$, patru; $\\varepsilon$ la lagurile 0, 1, 12, 13 (ultimul cu coeficientul $\\theta\\Theta$)')]),
     (T('\\textbf{Question}: unadjusted GDP falls by 40\\% from Q4 to Q1. Is this a recession?', '\\textbf{Întrebare}: PIB-ul neajustat scade cu 40\\% din T4 în T1. Este o recesiune?'),
      [T('\\textbf{Answer}: no; it is the seasonal pattern; look at the SCA series or at year-on-year growth', '\\textbf{Răspuns}: nu; este tiparul sezonier; priviți seria SCA sau creșterea față de anul anterior')]),
     (T('\\textbf{Question}: a DM test with 26 windows gives HLN $= -1.93$. Is the first forecast significantly better at 5\\%?', '\\textbf{Întrebare}: un test DM cu 26 de ferestre dă HLN $= -1{,}93$. Este prima prognoză semnificativ mai bună la 5\\%?'),

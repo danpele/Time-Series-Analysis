@@ -276,12 +276,14 @@ D.frame(T('The question of the chapter', 'Întrebarea capitolului'), items(
      [T('bubbles in history and the statistical signatures of a bubble', 'bulele din istorie și semnăturile statistice ale unei bule'),
       T('rational bubbles and explosive roots: the right-tailed unit-root tests of Phillips, Shi and Yu (link with Chapter 3)', 'bulele raționale și rădăcinile explozive: testele de rădăcină unitară la dreapta ale lui Phillips, Shi și Yu (legătura cu Capitolul 3)'),
       T('the LPPL model of Johansen, Ledoit and Sornette: super-exponential growth, log-periodic oscillations, the critical time', 'modelul LPPL al lui Johansen, Ledoit și Sornette: creștere superexponențială, oscilații log-periodice, timpul critic'),
-      T('estimation, confidence from many windows and an honest evaluation of crash prediction', 'estimarea, încrederea obținută din multe ferestre și o evaluare onestă a prognozei crahurilor')])))
+      T('estimation, confidence from many windows and an honest evaluation of crash prediction', 'estimarea, încrederea obținută din multe ferestre și o evaluare riguroasă a prognozei crahurilor')])))
 
 D.frame(T('Self-study guide', 'Ghid de studiu individual'), items(
-    (T('This chapter is for \\textbf{self-study}: there is no seminar; each section ends with a recap', 'Acest capitol este pentru \\textbf{studiu individual}: nu are seminar; fiecare secțiune se încheie cu o recapitulare'),
-     [T('read a section, then redo its worked example on paper before you look at the solution', 'citiți o secțiune, apoi refaceți pe hîrtie exemplul rezolvat, înainte să vă uitați la soluție'),
-      T('after each chart, read the interpretation slide and compare it with your own reading of the chart', 'după fiecare grafic, citiți slide-ul de interpretare și comparați-l cu propria lectură a graficului')]),
+    (T('This chapter is for \\textbf{self-study}', 'Acest capitol este pentru \\textbf{studiu individual}'),
+         [T('there is no seminar', 'nu are seminar'),
+          T('each section ends with a recap', 'fiecare secțiune se încheie cu o recapitulare'),
+          T('read a section, then redo its worked example on paper before you look at the solution', 'citiți o secțiune, apoi refaceți pe hîrtie exemplul rezolvat, înainte să vă uitați la soluție'),
+          T('after each chart, read the interpretation slide and compare it with your own reading of the chart', 'după fiecare grafic, citiți slide-ul de interpretare și comparați-l cu propria lectură a graficului')]),
     (T('Run the lecture notebook: every chart and number of the slides is produced there', 'Rulați notebook-ul cursului: fiecare grafic și fiecare cifră din slide-uri sînt produse acolo'),
      [T('change one setting (the window, the filter, the threshold) and see how the conclusion changes', 'modificați o setare (fereastra, filtrul, pragul) și urmăriți cum se schimbă concluzia')]),
     T('Check yourself with the self-assessment at the end and with the quiz of Chapter 13 on the course site', 'Verificați-vă cu autoevaluarea de la final și cu quiz-ul Capitolului 13 de pe site-ul cursului'),
@@ -292,7 +294,7 @@ D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Explain why a rational bubble must grow at an explosive rate and test for explosive roots with SADF and GSADF', 'Explicați de ce o bulă rațională trebuie să crească exploziv și testați rădăcinile explozive cu SADF și GSADF'),
     T('Write the LPPL equation and interpret each of its seven parameters', 'Scrieți ecuația LPPL și interpretați fiecare dintre cei șapte parametri'),
     T('Estimate LPPL with the two-step method of Filimonov and Sornette and check the filter conditions', 'Estimați LPPL cu metoda în doi pași a lui Filimonov și Sornette și verificați condițiile de filtrare'),
-    T('Build a confidence indicator from many windows and evaluate its alarms honestly, with false alarms and base rates', 'Construiți un indicator de încredere din multe ferestre și evaluați onest alarmele lui, cu alarme false și frecvențe de bază')))
+    T('Build a confidence indicator from many windows and evaluate its alarms honestly, with false alarms and base rates', 'Construiți un indicator de încredere din multe ferestre și evaluați riguros alarmele lui, cu alarme false și frecvențe de bază')))
 
 D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
     (T('Textbook background: \\refHP\\ (unit roots and nonlinear least squares, the tools of this chapter)', 'Manual: \\refHP\\ (rădăcini unitare și cele mai mici pătrate neliniare, instrumentele acestui capitol)'),
@@ -312,31 +314,36 @@ D.section('Bubbles in history', 'Bule în istorie')
 
 D.frame(T('Four centuries of manias', 'Patru secole de manii'), two(
     ph('tulip', T('Flora\'s wagon of fools, c.~1637', 'Carul nebunilor al Florei, c.~1637'), h='0.36\\textheight'),
-    items((T('\\textbf{Tulip mania}, Netherlands, 1636--1637: contracts on rare bulbs traded at extreme prices, then collapsed in February 1637', '\\textbf{Mania lalelelor}, Olanda, 1636--1637: contracte pe bulbi rari tranzacționate la prețuri extreme, apoi prăbușite în februarie 1637'),
-           [T('\\refGarber: part of the story is a myth; rare bulbs were expensive for good reasons, common bulbs show the mania', '\\refGarber: o parte din poveste este mit; bulbii rari erau scumpi din motive întemeiate, bulbii obișnuiți arată mania')]),
+    items((T('\\textbf{Tulip mania}, Netherlands, 1636--1637', '\\textbf{Mania lalelelor}, Olanda, 1636--1637'),
+               [T('contracts on rare bulbs traded at extreme prices, then collapsed in February 1637', 'contracte pe bulbi rari tranzacționate la prețuri extreme, apoi prăbușite în februarie 1637'),
+                T('\\refGarber: part of the story is a myth; rare bulbs were expensive for good reasons, common bulbs show the mania', '\\refGarber: o parte din poveste este mit; bulbii rari erau scumpi din motive întemeiate, bulbii obișnuiți arată mania')]),
           T('\\textbf{South Sea} (1720), \\textbf{Wall Street} (1929), \\textbf{Japan} (1989), \\textbf{dot-com} (2000), \\textbf{housing} (2007), \\textbf{crypto} (2017, 2021)', '\\textbf{South Sea} (1720), \\textbf{Wall Street} (1929), \\textbf{Japonia} (1989), \\textbf{dot-com} (2000), \\textbf{imobiliare} (2007), \\textbf{cripto} (2017, 2021)'),
           T('The common pattern \\refKA: a new story, easy credit, rising prices that attract new buyers, then panic', 'Tiparul comun \\refKA: o poveste nouă, credit ieftin, prețuri în creștere care atrag noi cumpărători, apoi panică'))),
     size='footnotesize')
 
 D.frame(T('1929 and 1987', '1929 și 1987'), two(
     ph('nyse', T('Crowd outside the New York Stock Exchange, 29 October 1929', 'Mulțime în fața Bursei din New York, 29 octombrie 1929'), h='0.42\\textheight'),
-    items((T('\\textbf{October 1929}: the end of the boom of the 1920s and the start of the Great Depression', '\\textbf{Octombrie 1929}: sfîrșitul boom-ului anilor 1920 și începutul Marii Crize'),
-           []),
-          (T('\\textbf{19 October 1987} (Black Monday): the largest one-day fall of the Dow Jones index, without any major news that day', '\\textbf{19 octombrie 1987} (Black Monday): cea mai mare scădere într-o singură zi a indicelui Dow Jones, fără vreo știre majoră în acea zi'),
-           [T('\\refSJB\\ found accelerating, log-periodic oscillations in the years before 1987; this observation started the LPPL literature', '\\refSJB\\ au găsit oscilații log-periodice, tot mai rapide, în anii dinaintea lui 1987; această observație a pornit literatura LPPL'),
-            T('the daily data of this course start in 1990: we study 1987 through the literature and later bubbles with our own data', 'datele zilnice ale cursului încep în 1990: studiem 1987 prin literatură, iar bulele de mai tîrziu cu datele noastre')]),
+    items((T('\\textbf{October 1929}', '\\textbf{Octombrie 1929}'),
+               [T('the end of the boom of the 1920s and the start of the Great Depression', 'sfîrșitul boom-ului anilor 1920 și începutul Marii Crize')]),
+          (T('\\textbf{19 October 1987} (Black Monday)', '\\textbf{19 octombrie 1987} (Black Monday)'),
+               [T('the largest one-day fall of the Dow Jones index, without any major news that day', 'cea mai mare scădere într-o singură zi a indicelui Dow Jones, fără vreo știre majoră în acea zi'),
+                T('\\refSJB\\ found accelerating, log-periodic oscillations in the years before 1987; this observation started the LPPL literature', '\\refSJB\\ au găsit oscilații log-periodice, tot mai rapide, în anii dinaintea lui 1987; această observație a pornit literatura LPPL'),
+                T('the daily data of this course start in 1990: we study 1987 through the literature and later bubbles with our own data', 'datele zilnice ale cursului încep în 1990: studiem 1987 prin literatură, iar bulele de mai tîrziu cu datele noastre')]),
           T('A crash without news suggests an \\textbf{endogenous} cause: the market itself became fragile', 'Un crah fără știri sugerează o cauză \\textbf{endogenă}: piața însăși devenise fragilă'))
-    + ph('amsterdam', T('Amsterdam Stock Exchange, 21 October 1987', 'Bursa din Amsterdam, 21 octombrie 1987'), h='0.17\\textheight')),
+    + ph('amsterdam', T('Amsterdam Stock Exchange, 21 October 1987', 'Bursa din Amsterdam, 21 octombrie 1987'), h='0.14\\textheight')),
     size='footnotesize')
 
 D.frame(T('Fundamental value and bubble', 'Valoarea fundamentală și bula'), items(
-    (T('\\textbf{Fundamental value} $F_t$: the present value of the expected future cash flows (dividends $D$), discounted at the rate $r$', '\\textbf{Valoarea fundamentală} $F_t$: valoarea actualizată a fluxurilor de numerar viitoare așteptate (dividendele $D$), actualizate cu rata $r$'),
-     [T('$F_t = \\sum_{k=1}^{\\infty} \\dfrac{E_t[D_{t+k}]}{(1+r)^k}$', '$F_t = \\sum_{k=1}^{\\infty} \\dfrac{E_t[D_{t+k}]}{(1+r)^k}$')]),
-    (T('\\textbf{Bubble component}: $B_t = P_t - F_t$, the part of the price not explained by fundamentals', '\\textbf{Componenta de bulă}: $B_t = P_t - F_t$, partea din preț neexplicată de fundamente'),
-     [T('$F_t$ is not observed: we can only test the \\textbf{implications} of a bubble in the price path', '$F_t$ nu este observată: putem testa doar \\textbf{implicațiile} unei bule asupra traiectoriei prețului')]),
+    (T('\\textbf{Fundamental value} $F_t$', '\\textbf{Valoarea fundamentală} $F_t$'),
+         [T('the present value of the expected future cash flows (dividends $D$), discounted at the rate $r$', 'valoarea actualizată a fluxurilor de numerar viitoare așteptate (dividendele $D$), actualizate cu rata $r$'),
+          T('$F_t = \\sum_{k=1}^{\\infty} \\dfrac{E_t[D_{t+k}]}{(1+r)^k}$', '$F_t = \\sum_{k=1}^{\\infty} \\dfrac{E_t[D_{t+k}]}{(1+r)^k}$'),
+          T('$D_{t+k}$: the dividend paid $k$ periods from now; $E_t[\\cdot]$: the expectation given the information available at $t$; $r$: the discount rate per period', '$D_{t+k}$: dividendul plătit peste $k$ perioade; $E_t[\\cdot]$: media condiționată de informația disponibilă la momentul $t$; $r$: rata de actualizare pe perioadă')]),
+    (T('\\textbf{Bubble component}', '\\textbf{Componenta de bulă}'),
+         [T('$B_t = P_t - F_t$, the part of the price $P_t$ not explained by fundamentals', '$B_t = P_t - F_t$, partea din prețul $P_t$ neexplicată de fundamente'),
+          T('$F_t$ is not observed: we can only test the \\textbf{implications} of a bubble in the price path', '$F_t$ nu este observată: putem testa doar \\textbf{implicațiile} unei bule asupra traiectoriei prețului')]),
     (T('Two views', 'Două puncte de vedere'),
      [T('efficient markets: prices reflect information; ``bubbles\'\' are visible only with hindsight \\refFama', 'piețe eficiente: prețurile reflectă informația; „bulele” se văd doar retrospectiv \\refFama'),
-      T('behavioural finance: herding and extrapolation push prices away from value \\refShiller; large run-ups do raise the probability of a crash \\refGSY', 'finanțe comportamentale: comportamentul de turmă și extrapolarea îndepărtează prețurile de valoare \\refShiller; creșterile mari ridică probabilitatea unui crah \\refGSY')])))
+      T('behavioural finance: herding and extrapolation push prices away from value \\refShiller; large run-ups do raise the probability of a crash \\refGSY', 'finanțe comportamentale: comportamentul de turmă și extrapolarea îndepărtează prețurile de valoare \\refShiller; creșterile mari ridică probabilitatea unui crah \\refGSY')])), size='footnotesize')
 
 chart(T('Six run-ups and crashes in the course data', 'Șase creșteri și crahuri în datele cursului'), 'tsa_ch13_episodes', 'TSA_ch13_episodes', [
     T('Daily closes, log scale, from six months before the low of the run-up to eighteen months after the peak; shaded: the run-up from the low to the peak',
@@ -367,11 +374,12 @@ D.section('Rational bubbles and explosive roots', 'Bule raționale și rădăcin
 
 D.frame(T('Why a rational bubble must explode', 'Bula rațională și explozia ei inevitabilă'), items(
     (T('No-arbitrage pricing: $P_t = \\dfrac{E_t[P_{t+1} + D_{t+1}]}{1+r}$; the fundamental value $F_t$ is one solution', 'Evaluarea fără arbitraj: $P_t = \\dfrac{E_t[P_{t+1} + D_{t+1}]}{1+r}$; valoarea fundamentală $F_t$ este o soluție'),
-     [T('every $P_t = F_t + B_t$ with $E_t[B_{t+1}] = (1+r)\\,B_t$ is also a solution', 'orice $P_t = F_t + B_t$ cu $E_t[B_{t+1}] = (1+r)\\,B_t$ este tot o soluție')]),
+     [T('in words: today\'s price is the discounted expected value of tomorrow\'s price plus tomorrow\'s dividend', 'în cuvinte: prețul de azi este valoarea actualizată a sumei așteptate dintre prețul și dividendul de mîine'),
+      T('every $P_t = F_t + B_t$ with $E_t[B_{t+1}] = (1+r)\\,B_t$ is also a solution', 'orice $P_t = F_t + B_t$ cu $E_t[B_{t+1}] = (1+r)\\,B_t$ este tot o soluție')]),
     (T('The bubble must grow, in expectation, at the rate $r$: $E_t[B_{t+k}] = (1+r)^k B_t$', 'Bula trebuie să crească, în medie, cu rata $r$: $E_t[B_{t+k}] = (1+r)^k B_t$'),
      [T('an investor holds an asset above its value only if the overvaluation is expected to grow', 'un investitor deține un activ peste valoarea lui doar dacă se așteaptă ca supraevaluarea să crească'),
       T('$1+r > 1$: the bubble component is an \\textbf{explosive} process', '$1+r > 1$: componenta de bulă este un proces \\textbf{exploziv}')]),
-    T('Consequence: if dividends are $I(1)$ (Chapter 3), the price is $I(1)$ without a bubble and explosive with one', 'Consecință: dacă dividendele sînt $I(1)$ (Capitolul 3), prețul este $I(1)$ fără bulă și exploziv cu bulă')))
+    T('Consequence: if dividends are $I(1)$ (Chapter 3), the price is $I(1)$ without a bubble and explosive with one', 'Consecință: dacă dividendele sînt $I(1)$ (Capitolul 3), prețul este $I(1)$ fără bulă și exploziv cu bulă')), size='footnotesize')
 
 D.frame(T('Worked example: a bubble that can burst', 'Exemplu rezolvat: o bulă care se poate sparge'), items(
     (T('\\refBW: each period the bubble survives with probability $\\pi$ and then grows to $\\frac{1+r}{\\pi}B_t$; otherwise it bursts ($B_{t+1} \\approx 0$)', '\\refBW: în fiecare perioadă bula supraviețuiește cu probabilitatea $\\pi$ și crește atunci la $\\frac{1+r}{\\pi}B_t$; altfel se sparge ($B_{t+1} \\approx 0$)'),
@@ -399,17 +407,31 @@ D.frame(T('Right-tailed unit-root tests', 'Teste de rădăcină unitară la drea
       T('bubbles: $H_0$: $\\delta = 0$ (unit root) against $H_1$: $\\delta > 0$ (explosive), the \\textbf{right} tail: reject for large $t$-statistics', 'bule: $H_0$: $\\delta = 0$ (rădăcină unitară) față de $H_1$: $\\delta > 0$ (exploziv), coada din \\textbf{dreapta}: respingem pentru statistici $t$ mari')]),
     (T('Problem: a bubble occupies only a part of the sample, and the crash after it looks like mean reversion', 'Problema: o bulă ocupă doar o parte din eșantion, iar crahul de după ea seamănă cu revenirea la medie'),
      [T('one ADF on the whole sample has almost no power: we must compute the test on many \\textbf{windows}', 'un singur test ADF pe tot eșantionul nu are aproape nicio putere: trebuie să calculăm testul pe multe \\textbf{ferestre}')]),
-    T('Notation: $r_1, r_2 \\in [0,1]$ are fractions of the sample; $\\mathrm{ADF}_{r_1}^{r_2}$ is the $t$-statistic of $\\hat\\delta$ on the window from $r_1T$ to $r_2T$; $r_0$ is the smallest window',
-      'Notații: $r_1, r_2 \\in [0,1]$ sînt fracțiuni din eșantion; $\\mathrm{ADF}_{r_1}^{r_2}$ este statistica $t$ a lui $\\hat\\delta$ pe fereastra de la $r_1T$ la $r_2T$; $r_0$ este cea mai mică fereastră')))
+    (T('Notation', 'Notațiile'),
+     [T('$\\Delta y_t = y_t - y_{t-1}$; $a$: the intercept; $\\varepsilon_t$: the error; $\\rho$: the AR(1) coefficient of $y_t$', '$\\Delta y_t = y_t - y_{t-1}$; $a$: termenul liber; $\\varepsilon_t$: eroarea; $\\rho$: coeficientul AR(1) al lui $y_t$'),
+      T('$r_1, r_2 \\in [0,1]$: fractions of the sample; $\\mathrm{ADF}_{r_1}^{r_2}$: the $t$-statistic of $\\hat\\delta$ on the window from $r_1T$ to $r_2T$; $r_0$: the smallest window', '$r_1, r_2 \\in [0,1]$: fracțiuni din eșantion; $\\mathrm{ADF}_{r_1}^{r_2}$: statistica $t$ a lui $\\hat\\delta$ pe fereastra de la $r_1T$ la $r_2T$; $r_0$: cea mai mică fereastră')])), size='footnotesize')
 
-D.frame(T('SADF, GSADF and BSADF', 'SADF, GSADF și BSADF'), items(
-    (T('\\textbf{SADF} \\refPWY: start fixed at 0, the end moves forward: $\\mathrm{SADF} = \\sup_{r_2 \\in [r_0, 1]} \\mathrm{ADF}_{0}^{r_2}$', '\\textbf{SADF} \\refPWY: început fixat la 0, sfîrșitul înaintează: $\\mathrm{SADF} = \\sup_{r_2 \\in [r_0, 1]} \\mathrm{ADF}_{0}^{r_2}$'),
-     [T('good for one bubble; after a first crash it loses power', 'bun pentru o singură bulă; după un prim crah își pierde puterea')]),
-    (T('\\textbf{GSADF} \\refPSYa: both start and end move: $\\mathrm{GSADF} = \\sup_{r_2 \\in [r_0,1]}\\ \\sup_{r_1 \\in [0, r_2 - r_0]} \\mathrm{ADF}_{r_1}^{r_2}$', '\\textbf{GSADF} \\refPSYa: se mișcă și începutul, și sfîrșitul: $\\mathrm{GSADF} = \\sup_{r_2 \\in [r_0,1]}\\ \\sup_{r_1 \\in [0, r_2 - r_0]} \\mathrm{ADF}_{r_1}^{r_2}$'),
-     [T('detects several bubbles in one sample; smallest window $r_0 = 0.01 + 1.8/\\sqrt{T}$', 'detectează mai multe bule într-un eșantion; fereastra minimă $r_0 = 0{,}01 + 1{,}8/\\sqrt{T}$')]),
-    (T('\\textbf{BSADF} (date-stamping): for each date $r_2$, $\\mathrm{BSADF}(r_2) = \\sup_{r_1} \\mathrm{ADF}_{r_1}^{r_2}$, using only data up to $r_2$', '\\textbf{BSADF} (datarea): pentru fiecare dată $r_2$, $\\mathrm{BSADF}(r_2) = \\sup_{r_1} \\mathrm{ADF}_{r_1}^{r_2}$, folosind doar datele pînă la $r_2$'),
-     [T('an episode starts when BSADF crosses its critical value and lasts at least $\\log T$ observations \\refPSYb', 'un episod începe cînd BSADF depășește valoarea critică și durează cel puțin $\\log T$ observații \\refPSYb')]),
-    T('The distributions are not standard: critical values by Monte Carlo under a random walk with a weak drift, $y_t = T^{-1} + y_{t-1} + \\varepsilon_t$', 'Distribuțiile nu sînt standard: valorile critice se obțin prin Monte Carlo, sub un mers aleator cu drift slab, $y_t = T^{-1} + y_{t-1} + \\varepsilon_t$')))
+D.frame(T('SADF, GSADF and BSADF (1/2)', 'SADF, GSADF și BSADF (1/2)'), items(
+    (T('$\\sup$: the largest value of the ADF statistic over all the windows considered', '$\\sup$: cea mai mare valoare a statisticii ADF pe toate ferestrele considerate'),
+     [T('a single large value, in any window, is enough to signal an explosive episode', 'o singură valoare mare, în oricare fereastră, este suficientă pentru a semnala un episod exploziv')]),
+    (T('\\textbf{SADF} \\refPWY', '\\textbf{SADF} \\refPWY'),
+         [T('start fixed at 0, the end $r_2$ moves forward', 'începutul fixat la 0, sfîrșitul $r_2$ înaintează'),
+          T('$\\mathrm{SADF} = \\sup_{r_2 \\in [r_0, 1]} \\mathrm{ADF}_{0}^{r_2}$', '$\\mathrm{SADF} = \\sup_{r_2 \\in [r_0, 1]} \\mathrm{ADF}_{0}^{r_2}$'),
+          T('good for one bubble; after a first crash it loses power', 'bun pentru o singură bulă; după un prim crah își pierde puterea')]),
+    (T('\\textbf{GSADF} \\refPSYa', '\\textbf{GSADF} \\refPSYa'),
+         [T('both the start $r_1$ and the end $r_2$ move', 'se mișcă și începutul $r_1$, și sfîrșitul $r_2$'),
+          T('$\\mathrm{GSADF} = \\sup_{r_2 \\in [r_0,1]}\\ \\sup_{r_1 \\in [0, r_2 - r_0]} \\mathrm{ADF}_{r_1}^{r_2}$', '$\\mathrm{GSADF} = \\sup_{r_2 \\in [r_0,1]}\\ \\sup_{r_1 \\in [0, r_2 - r_0]} \\mathrm{ADF}_{r_1}^{r_2}$'),
+          T('detects several bubbles in one sample; smallest window $r_0 = 0.01 + 1.8/\\sqrt{T}$', 'detectează mai multe bule într-un eșantion; fereastra minimă $r_0 = 0{,}01 + 1{,}8/\\sqrt{T}$')])))
+
+D.frame(T('SADF, GSADF and BSADF (2/2)', 'SADF, GSADF și BSADF (2/2)'), items(
+    (T('\\textbf{BSADF} (date-stamping)', '\\textbf{BSADF} (datarea)'),
+         [T('one statistic for each date $r_2$, using only data up to $r_2$', 'o statistică pentru fiecare dată $r_2$, folosind doar datele pînă la $r_2$'),
+          T('$\\mathrm{BSADF}(r_2) = \\sup_{r_1} \\mathrm{ADF}_{r_1}^{r_2}$: the largest statistic over all starts $r_1$ of windows ending at $r_2$', '$\\mathrm{BSADF}(r_2) = \\sup_{r_1} \\mathrm{ADF}_{r_1}^{r_2}$: cea mai mare statistică pe toate începuturile $r_1$ ale ferestrelor care se încheie la $r_2$'),
+          T('an episode starts when BSADF crosses its critical value and lasts at least $\\log T$ observations \\refPSYb ($\\log$: the natural logarithm)', 'un episod începe cînd BSADF depășește valoarea critică și durează cel puțin $\\log T$ observații \\refPSYb ($\\log$: logaritmul natural)')]),
+    (T('The distributions are not standard: critical values by Monte Carlo', 'Distribuțiile nu sînt standard: valorile critice se obțin prin Monte Carlo'),
+     [T('simulated under a random walk with a weak drift, $y_t = T^{-1} + y_{t-1} + \\varepsilon_t$', 'simulate sub un mers aleator cu drift slab, $y_t = T^{-1} + y_{t-1} + \\varepsilon_t$'),
+      T('the drift $T^{-1}$ is very small: a unit root, not an explosive root, under $H_0$', 'driftul $T^{-1}$ este foarte mic: sub $H_0$ există o rădăcină unitară, nu una explozivă')]),
+    T('Reading: an ADF, SADF or GSADF statistic above its 95\\% critical value rejects the unit root in favour of an explosive root', 'Interpretarea: o statistică ADF, SADF sau GSADF peste valoarea critică de 95\\% respinge rădăcina unitară în favoarea unei rădăcini explozive')))
 
 D.frame(T('Worked example: one window of the Nasdaq 100', 'Exemplu rezolvat: o fereastră din Nasdaq 100'), items(
     (T('Weekly log closes of the Nasdaq 100, $T = @{pn.T}$ weeks; $r_0 = @{pn.r0}$, i.e.\\ a smallest window of @{pn.w0} weeks', 'Închideri săptămînale logaritmice ale Nasdaq 100, $T = @{pn.T}$@{pn.T.de} săptămîni; $r_0 = @{pn.r0}$, adică o fereastră minimă de @{pn.w0}@{pn.w0.de} săptămîni'),
@@ -417,7 +439,7 @@ D.frame(T('Worked example: one window of the Nasdaq 100', 'Exemplu rezolvat: o f
     (T('OLS on this window ($n = @{xe.n}$ weekly changes): $\\widehat{\\Delta y_t} = @{xe.a} + @{xe.delta}\\, y_{t-1}$', 'OLS pe această fereastră ($n = @{xe.n}$@{xe.n.de} variații săptămînale): $\\widehat{\\Delta y_t} = @{xe.a} + @{xe.delta}\\, y_{t-1}$'),
      [T('$t = \\hat\\delta / \\mathrm{SE}(\\hat\\delta) = @{xe.delta} / @{xe.se} = @{xe.t}$', '$t = \\hat\\delta / \\mathrm{SE}(\\hat\\delta) = @{xe.delta} / @{xe.se} = @{xe.t}$'),
       T('so BSADF at the peak is @{xe.t}, above its 95\\% critical value of @{xe.cv}', 'deci BSADF la maximum este @{xe.t}, peste valoarea critică de 95\\%, egală cu @{xe.cv}')]),
-    T('Reading: $\\hat\\delta > 0$ means $\\hat\\rho = 1 + \\hat\\delta > 1$: the higher the price, the larger the next weekly rise, the mark of an explosive phase', 'Lectura: $\\hat\\delta > 0$ înseamnă $\\hat\\rho = 1 + \\hat\\delta > 1$: cu cît prețul este mai mare, cu atît creșterea săptămînală următoare este mai mare, semnul unei faze explozive')))
+    T('Reading: $\\hat\\delta > 0$ means $\\hat\\rho = 1 + \\hat\\delta > 1$: the higher the price, the larger the next weekly rise, the mark of an explosive phase', 'Interpretarea: $\\hat\\delta > 0$ înseamnă $\\hat\\rho = 1 + \\hat\\delta > 1$: cu cît prețul este mai mare, cu atît creșterea săptămînală următoare este mai mare, semnul unei faze explozive')))
 
 chart(T('Explosive episodes of the Nasdaq 100, 1990--2004', 'Episoadele explozive ale Nasdaq 100, 1990--2004'), 'tsa_ch13_psy_ndx', 'TSA_ch13_explosive_roots', [
     T('Top: weekly close, log scale; bottom: BSADF and its 95\\% critical values (Monte Carlo, 1000 random walks); shaded: dated episodes (at least @{pn.minlen} weeks above the critical value)',
@@ -444,12 +466,16 @@ interp(('the three markets', 'celor trei piețe'), [
     T('The Bitcoin 2017 episode lasts until @{ps.btc.e0.b}, again well after the peak', 'Episodul Bitcoin din 2017 ține pînă în @{ps.btc.e0.b}, din nou mult după maximum')])
 
 D.frame(T('Limits of the explosive-root tests', 'Limitele testelor de rădăcini explozive'), items(
-    (T('\\textbf{Fundamentals}: an explosive price is a bubble only if the fundamentals are not explosive', '\\textbf{Fundamentele}: un preț exploziv este bulă doar dacă fundamentele nu sînt explozive'),
-     [T('better: test the price--dividend ratio (\\refPSYa\\ for the S\\&P 500); for Bitcoin there are no dividends at all', 'mai bine: testați raportul preț--dividend (\\refPSYa\\ pentru S\\&P 500); pentru Bitcoin nu există deloc dividende')]),
-    (T('\\textbf{Volatility}: changing volatility distorts the size of the test; a wild bootstrap gives robust critical values \\refPS', '\\textbf{Volatilitatea}: volatilitatea variabilă distorsionează nivelul testului; un wild bootstrap dă valori critice robuste \\refPS'),
-     []),
-    (T('\\textbf{Timing}: BSADF uses only past data, so it can run in real time; but it signals a bubble that is already under way and says nothing about when it ends', '\\textbf{Momentul}: BSADF folosește doar date trecute, deci poate rula în timp real; dar semnalează o bulă deja în desfășurare și nu spune nimic despre momentul în care se termină'),
-     [T('the LPPL model of the next section tries to answer exactly this: when?', 'modelul LPPL din secțiunea următoare încearcă să răspundă exact la această întrebare: cînd?')])))
+    (T('\\textbf{Fundamentals}', '\\textbf{Fundamentele}'),
+         [T('an explosive price is a bubble only if the fundamentals are not explosive', 'un preț exploziv este bulă doar dacă fundamentele nu sînt explozive'),
+          T('better: test the price--dividend ratio (\\refPSYa\\ for the S\\&P 500); for Bitcoin there are no dividends at all', 'mai bine: testați raportul preț--dividend (\\refPSYa\\ pentru S\\&P 500); pentru Bitcoin nu există deloc dividende')]),
+    (T('\\textbf{Volatility}', '\\textbf{Volatilitatea}'),
+         [T('changing volatility distorts the size of the test', 'volatilitatea variabilă distorsionează nivelul testului'),
+          T('a wild bootstrap gives robust critical values \\refPS', 'un wild bootstrap dă valori critice robuste \\refPS')]),
+    (T('\\textbf{Timing}', '\\textbf{Momentul}'),
+         [T('BSADF uses only past data, so it can run in real time', 'BSADF folosește doar date trecute, deci poate rula în timp real'),
+          T('but it signals a bubble that is already under way and says nothing about when it ends', 'dar semnalează o bulă deja în desfășurare și nu spune nimic despre momentul în care se termină'),
+          T('the LPPL model of the next section tries to answer exactly this: when?', 'modelul LPPL din secțiunea următoare încearcă să răspundă exact la această întrebare: cînd?')])))
 
 D.recap(('Rational bubbles and explosive roots', 'bule raționale și rădăcini explozive'), [
     T('A rational bubble grows in expectation at the rate $r$: $E_t[B_{t+1}] = (1+r)B_t$, an explosive process', 'O bulă rațională crește în medie cu rata $r$: $E_t[B_{t+1}] = (1+r)B_t$, un proces exploziv'),
@@ -468,17 +494,24 @@ D.frame(T('Crashes as critical points', 'Crahurile ca puncte critice'), two(
           (T('Idea: traders imitate their neighbours; imitation creates positive feedback', 'Ideea: investitorii își imită vecinii; imitația creează o reacție pozitivă (positive feedback)'),
            [T('rising prices attract buyers, who push prices higher: growth accelerates', 'prețurile în creștere atrag cumpărători, care urcă prețurile și mai mult: creșterea se accelerează'),
             T('the market becomes more and more fragile, like a physical system near a \\textbf{critical point} (water near boiling)', 'piața devine tot mai fragilă, ca un sistem fizic aproape de un \\textbf{punct critic} (apa aproape de fierbere)')]),
-          (T('The \\textbf{critical time} $t_c$: the most probable moment of the end of the bubble', '\\textbf{Timpul critic} $t_c$: momentul cel mai probabil al sfîrșitului bulei'),
-           [T('a crash is likely near $t_c$ but not certain: the bubble may also end with a slow decline', 'un crah este probabil aproape de $t_c$, dar nu sigur: bula se poate încheia și cu o scădere lentă')]))),
+          (T('The \\textbf{critical time} $t_c$', '\\textbf{Timpul critic} $t_c$'),
+               [T('the most probable moment of the end of the bubble', 'momentul cel mai probabil al sfîrșitului bulei'),
+                T('a crash is likely near $t_c$ but not certain: the bubble may also end with a slow decline', 'un crah este probabil aproape de $t_c$, dar nu sigur: bula se poate încheia și cu o scădere lentă')]))),
     size='footnotesize')
 
 D.frame(T('Super-exponential growth', 'Creșterea superexponențială'), items(
-    (T('\\textbf{Exponential} growth: constant growth rate, $\\ln P(t) = a + g\\,t$; $d \\ln P/dt = g$', 'Creșterea \\textbf{exponențială}: ritm de creștere constant, $\\ln P(t) = a + g\\,t$; $d \\ln P/dt = g$'),
-     [T('a straight line on a log scale', 'o dreaptă pe scară logaritmică')]),
-    (T('\\textbf{Super-exponential} growth: the growth rate increases with time; on a log scale the curve bends upward', 'Creșterea \\textbf{superexponențială}: ritmul de creștere crește în timp; pe scară logaritmică curba se îndoaie în sus'),
-     [T('power-law singularity: $\\ln P(t) = A + B\\,(t_c - t)^m$, with $B < 0$ and $0 < m < 1$', 'singularitate de tip lege de putere: $\\ln P(t) = A + B\\,(t_c - t)^m$, cu $B < 0$ și $0 < m < 1$'),
-      T('growth rate $d \\ln P/dt = -Bm\\,(t_c - t)^{m-1} \\to \\infty$ as $t \\to t_c$, while $\\ln P(t_c) = A$ stays finite', 'ritmul de creștere $d \\ln P/dt = -Bm\\,(t_c - t)^{m-1} \\to \\infty$ cînd $t \\to t_c$, în timp ce $\\ln P(t_c) = A$ rămîne finit')]),
-    T('Such growth cannot last: it must end at or before $t_c$, a \\textbf{finite-time singularity}', 'O astfel de creștere nu poate dura: trebuie să se încheie la $t_c$ sau înainte, o \\textbf{singularitate în timp finit}')))
+    (T('\\textbf{Exponential} growth', 'Creșterea \\textbf{exponențială}'),
+         [T('constant growth rate, $\\ln P(t) = a + g\\,t$', 'ritm de creștere constant, $\\ln P(t) = a + g\\,t$'),
+          T('$d \\ln P/dt = g$', '$d \\ln P/dt = g$'),
+          T('$a$: the initial log price; $g$: the constant growth rate; $d\\ln P/dt$: the growth rate of the price at time $t$', '$a$: prețul logaritmic inițial; $g$: ritmul constant de creștere; $d\\ln P/dt$: ritmul de creștere al prețului la momentul $t$'),
+          T('a straight line on a log scale', 'o dreaptă pe scară logaritmică')]),
+    (T('\\textbf{Super-exponential} growth', 'Creșterea \\textbf{superexponențială}'),
+         [T('the growth rate increases with time', 'ritmul de creștere crește în timp'),
+          T('on a log scale the curve bends upward', 'pe scară logaritmică curba se îndoaie în sus'),
+          T('power-law singularity: $\\ln P(t) = A + B\\,(t_c - t)^m$, with $B < 0$ and $0 < m < 1$', 'singularitate de tip lege de putere: $\\ln P(t) = A + B\\,(t_c - t)^m$, cu $B < 0$ și $0 < m < 1$'),
+          T('$t_c$: the critical time; $t_c - t$: the time left until it; $A$: the log price reached at $t_c$; $B$: the size of the growth; $m$: the exponent', '$t_c$: timpul critic; $t_c - t$: timpul rămas pînă la el; $A$: prețul logaritmic atins la $t_c$; $B$: mărimea creșterii; $m$: exponentul'),
+          T('growth rate $d \\ln P/dt = -Bm\\,(t_c - t)^{m-1} \\to \\infty$ as $t \\to t_c$, while $\\ln P(t_c) = A$ stays finite', 'ritmul de creștere $d \\ln P/dt = -Bm\\,(t_c - t)^{m-1} \\to \\infty$ cînd $t \\to t_c$, în timp ce $\\ln P(t_c) = A$ rămîne finit')]),
+    T('Such growth cannot last: it must end at or before $t_c$, a \\textbf{finite-time singularity}', 'O astfel de creștere nu poate dura: trebuie să se încheie la $t_c$ sau înainte, o \\textbf{singularitate în timp finit}')), size='footnotesize')
 
 chart(T('Exponential and super-exponential growth', 'Creștere exponențială și creștere superexponențială'), 'tsa_ch13_growth', 'TSA_ch13_lppl_model', [
     T('Left: log price; right: its growth rate $d \\ln p/dt$; exponential ($r = 0.8$), power-law singularity ($A = 1$, $B = -1$, $m = 0.5$, $t_c = 1$) and the same with log-periodic oscillations',
@@ -490,17 +523,28 @@ interp(('the growth paths', 'traiectoriilor de creștere'), [
     T('The exponential rate stays at 0.8; the singular rate rises from @{gr.start} to @{gr.mid} halfway and to @{gr.end} just before $t_c$', 'Ritmul exponențial rămîne 0,8; ritmul singular crește de la @{gr.start} la @{gr.mid} la jumătatea drumului și la @{gr.end} chiar înainte de $t_c$'),
     T('The oscillations ride on the accelerating trend and become faster near $t_c$: the next slides explain why', 'Oscilațiile se suprapun peste trendul accelerat și devin mai rapide aproape de $t_c$: slide-urile următoare explică de ce')])
 
-D.frame(T('From a crash hazard to the LPPL equation', 'De la riscul de crah la ecuația LPPL'), items(
-    (T('JLS: before the crash, $dP/P = \\mu(t)\\,dt + \\sigma\\,dW - \\kappa\\, dj$; $j$ jumps from 0 to 1 at the crash, which removes a fraction $\\kappa$ of the price', 'JLS: înainte de crah, $dP/P = \\mu(t)\\,dt + \\sigma\\,dW - \\kappa\\, dj$; $j$ sare de la 0 la 1 la crah, care elimină o fracțiune $\\kappa$ din preț'),
-     [T('\\textbf{hazard rate} $h(t)$: the probability per unit of time that the crash happens now, given that it has not happened yet', '\\textbf{rata de hazard} $h(t)$: probabilitatea pe unitatea de timp ca crahul să aibă loc acum, știind că nu a avut loc pînă acum')]),
-    (T('No arbitrage: $E[dP] = 0$ $\\Rightarrow$ $\\mu(t) = \\kappa\\, h(t)$: the price must rise to pay investors for the crash risk', 'Fără arbitraj: $E[dP] = 0$ $\\Rightarrow$ $\\mu(t) = \\kappa\\, h(t)$: prețul trebuie să crească pentru a-i plăti pe investitori pentru riscul de crah'),
-     [T('the higher the hazard, the faster the price must grow: risk and growth increase together', 'cu cît hazardul este mai mare, cu atît prețul trebuie să crească mai repede: riscul și creșterea cresc împreună')]),
-    (T('Imitation near a critical point gives $h(t) \\approx \\alpha (t_c - t)^{m-1}[1 + \\beta\\cos(\\omega \\ln(t_c - t) - \\phi\')]$', 'Imitația aproape de un punct critic dă $h(t) \\approx \\alpha (t_c - t)^{m-1}[1 + \\beta\\cos(\\omega \\ln(t_c - t) - \\phi\')]$'),
-     [T('integrating $\\mu(t) = \\kappa h(t)$ over time gives the log price on the next slide', 'integrînd $\\mu(t) = \\kappa h(t)$ în timp obținem prețul logaritmic de pe slide-ul următor')])), size='footnotesize')
+D.frame(T('From a crash hazard to the LPPL equation (1/2)', 'De la riscul de crah la ecuația LPPL (1/2)'), items(
+    (T('JLS: the relative price change before the crash has three parts', 'JLS: variația relativă a prețului înainte de crah are trei componente'),
+     [T('$dP/P = \\mu(t)\\,dt + \\sigma\\,dW - \\kappa\\, dj$', '$dP/P = \\mu(t)\\,dt + \\sigma\\,dW - \\kappa\\, dj$'),
+      T('$\\mu(t)\\,dt$: the expected growth over a short interval $dt$; $\\mu(t)$: the drift, which may change in time', '$\\mu(t)\\,dt$: creșterea așteptată pe un interval scurt $dt$; $\\mu(t)$: driftul, care se poate schimba în timp'),
+      T('$\\sigma\\,dW$: the ordinary noise; $W$: a Brownian motion (a continuous random walk); $\\sigma$: the volatility', '$\\sigma\\,dW$: zgomotul obișnuit; $W$: o mișcare browniană (un mers aleator în timp continuu); $\\sigma$: volatilitatea'),
+      T('$\\kappa\\, dj$: the crash; $j$ jumps from 0 to 1 at the crash, which removes a fraction $\\kappa$ of the price', '$\\kappa\\, dj$: crahul; $j$ sare de la 0 la 1 la crah, care elimină o fracțiune $\\kappa$ din preț')]),
+    (T('\\textbf{Hazard rate} $h(t)$', '\\textbf{Rata de hazard} $h(t)$'),
+         [T('the probability per unit of time that the crash happens now, given that it has not happened yet', 'probabilitatea pe unitatea de timp ca crahul să aibă loc acum, știind că nu a avut loc pînă acum')])), size='footnotesize')
+
+D.frame(T('From a crash hazard to the LPPL equation (2/2)', 'De la riscul de crah la ecuația LPPL (2/2)'), items(
+    (T('No arbitrage: $E[dP] = 0$ $\\Rightarrow$ $\\mu(t) = \\kappa\\, h(t)$', 'Fără arbitraj: $E[dP] = 0$ $\\Rightarrow$ $\\mu(t) = \\kappa\\, h(t)$'),
+     [T('$E[dj] = h(t)\\,dt$, so the expected change is zero only if the drift pays for the expected crash loss', '$E[dj] = h(t)\\,dt$, deci variația așteptată este zero doar dacă driftul compensează pierderea așteptată din crah'),
+      T('the higher the hazard, the faster the price must grow: risk and growth increase together', 'cu cît hazardul este mai mare, cu atît prețul trebuie să crească mai repede: riscul și creșterea cresc împreună')]),
+    (T('Imitation near a critical point gives a hazard that rises towards $t_c$ with oscillations', 'Imitația aproape de un punct critic dă un hazard care crește spre $t_c$, cu oscilații'),
+     [T('$h(t) \\approx \\alpha (t_c - t)^{m-1}[1 + \\beta\\cos(\\omega \\ln(t_c - t) - \\phi\')]$', '$h(t) \\approx \\alpha (t_c - t)^{m-1}[1 + \\beta\\cos(\\omega \\ln(t_c - t) - \\phi\')]$'),
+      T('$\\alpha > 0$: the level of the hazard; $(t_c - t)^{m-1}$ grows without bound as $t \\to t_c$, since $m < 1$', '$\\alpha > 0$: nivelul hazardului; $(t_c - t)^{m-1}$ crește nelimitat cînd $t \\to t_c$, deoarece $m < 1$'),
+      T('$\\beta$: the relative size of the oscillations; $\\omega$: their log-frequency; $\\phi\'$: their phase', '$\\beta$: mărimea relativă a oscilațiilor; $\\omega$: frecvența lor logaritmică; $\\phi\'$: faza lor')]),
+    T('Integrating $\\mu(t) = \\kappa h(t)$ over time gives the log price on the next slide', 'Integrînd $\\mu(t) = \\kappa h(t)$ în timp obținem prețul logaritmic de pe slide-ul următor')), size='footnotesize')
 
 D.frame(T('The LPPL equation', 'Ecuația LPPL'), items(
-    T('\\textbf{Log-periodic power law} (LPPL), for $t < t_c$: $\\quad \\ln P(t) = A + B\\,(t_c - t)^m + C\\,(t_c - t)^m \\cos\\bigl(\\omega \\ln(t_c - t) - \\phi\\bigr)$',
-      '\\textbf{Legea de putere log-periodică} (LPPL), pentru $t < t_c$: $\\quad \\ln P(t) = A + B\\,(t_c - t)^m + C\\,(t_c - t)^m \\cos\\bigl(\\omega \\ln(t_c - t) - \\phi\\bigr)$')) + table(
+    (T('\\textbf{Log-periodic power law} (LPPL), for $t < t_c$', '\\textbf{Legea de putere log-periodică} (LPPL), pentru $t < t_c$'),
+         [T('$\\quad \\ln P(t) = A + B\\,(t_c - t)^m + C\\,(t_c - t)^m \\cos\\bigl(\\omega \\ln(t_c - t) - \\phi\\bigr)$', '$\\quad \\ln P(t) = A + B\\,(t_c - t)^m + C\\,(t_c - t)^m \\cos\\bigl(\\omega \\ln(t_c - t) - \\phi\\bigr)$')])) + table(
     'lll', T('\\textbf{Parameter}', '\\textbf{Parametrul}') + ' & ' + T('\\textbf{Meaning}', '\\textbf{Semnificația}') + ' & ' + T('\\textbf{Usual range}', '\\textbf{Interval uzual}'),
     ['$t_c$ & ' + T('critical time: most probable end of the bubble', 'timpul critic: sfîrșitul cel mai probabil al bulei') + ' & ' + T('after the last observation', 'după ultima observație'),
      '$A$ & ' + T('log price at $t_c$ (if the bubble reached $t_c$)', 'prețul logaritmic la $t_c$ (dacă bula ar atinge $t_c$)') + ' & $A > 0$',
@@ -516,8 +560,8 @@ D.frame(T('The LPPL equation', 'Ecuația LPPL'), items(
 D.frame(T('Log-periodic oscillations', 'Oscilațiile log-periodice'), items(
     (T('$\\cos(\\omega \\ln(t_c - t) - \\phi)$ is periodic in $\\ln(t_c - t)$, not in $t$: one full cycle each time $\\ln(t_c - t)$ changes by $2\\pi/\\omega$', '$\\cos(\\omega \\ln(t_c - t) - \\phi)$ este periodic în $\\ln(t_c - t)$, nu în $t$: un ciclu complet de fiecare dată cînd $\\ln(t_c - t)$ se schimbă cu $2\\pi/\\omega$'),
      [T('successive peaks $t_n$ satisfy $\\dfrac{t_c - t_n}{t_c - t_{n+1}} = \\lambda = e^{2\\pi/\\omega}$: the time left to $t_c$ shrinks by the same factor at each cycle', 'maximele succesive $t_n$ verifică $\\dfrac{t_c - t_n}{t_c - t_{n+1}} = \\lambda = e^{2\\pi/\\omega}$: timpul rămas pînă la $t_c$ se micșorează cu același factor la fiecare ciclu')]),
-    (T('\\textbf{Discrete scale invariance}: the pattern looks the same when time to $t_c$ is rescaled by $\\lambda$ (as in a hierarchy of traders, groups, institutions)', '\\textbf{Invarianța discretă la scală}: tiparul arată la fel cînd timpul pînă la $t_c$ se rescalează cu $\\lambda$ (ca într-o ierarhie de investitori, grupuri, instituții)'),
-     []),
+    (T('\\textbf{Discrete scale invariance}', '\\textbf{Invarianța discretă la scală}'),
+         [T('the pattern looks the same when time to $t_c$ is rescaled by $\\lambda$ (as in a hierarchy of traders, groups, institutions)', 'tiparul arată la fel cînd timpul pînă la $t_c$ se rescalează cu $\\lambda$ (ca într-o ierarhie de investitori, grupuri, instituții)')]),
     (T('Worked example: with $\\omega = 8$, $\\lambda = e^{2\\pi/8} = @{lam.8}$', 'Exemplu rezolvat: pentru $\\omega = 8$, $\\lambda = e^{2\\pi/8} = @{lam.8}$'),
      [T('if a correction happens 200 days before $t_c$, the next one comes about $200/@{lam.8} \\approx @{lam.d1}$ days before $t_c$, then about @{lam.d2}, then @{lam.d3}', 'dacă o corecție are loc cu 200 de zile înainte de $t_c$, următoarea vine cu aproximativ $200/@{lam.8} \\approx @{lam.d1}$@{lam.d1.de} zile înainte de $t_c$, apoi cu aproximativ @{lam.d2}, apoi @{lam.d3}'),
       T('$\\omega = 6.28$ gives $\\lambda = @{lam.6.28}$; $\\omega = 10$ gives $\\lambda = @{lam.10}$; the empirical literature reports $\\lambda$ near 2 \\refSornette', '$\\omega = 6{,}28$ dă $\\lambda = @{lam.6.28}$; $\\omega = 10$ dă $\\lambda = @{lam.10}$; literatura empirică raportează $\\lambda$ în jur de 2 \\refSornette')])))
@@ -563,16 +607,27 @@ D.recap(('The LPPL model', 'modelul LPPL'), [
 # =============================================================================
 D.section('Estimation', 'Estimarea')
 
-D.frame(T('The two-step method of Filimonov and Sornette', 'Metoda în doi pași a lui Filimonov și Sornette'), items(
-    T('Least squares over seven parameters, $\\min \\mathrm{SSR} = \\sum_{t=t_1}^{t_2} [\\ln P_t - \\mathrm{LPPL}(t)]^2$, has many local minima; \\refFS\\ reduce the search to three parameters',
-      'Cele mai mici pătrate după șapte parametri, $\\min \\mathrm{SSR} = \\sum_{t=t_1}^{t_2} [\\ln P_t - \\mathrm{LPPL}(t)]^2$, au multe minime locale; \\refFS\\ reduc căutarea la trei parametri'),
-    (T('Expand the cosine: $C\\cos(\\omega\\ln\\tau - \\phi) = C_1\\cos(\\omega\\ln\\tau) + C_2\\sin(\\omega\\ln\\tau)$, with $\\tau = t_c - t$, $C_1 = C\\cos\\phi$, $C_2 = C\\sin\\phi$', 'Desfacem cosinusul: $C\\cos(\\omega\\ln\\tau - \\phi) = C_1\\cos(\\omega\\ln\\tau) + C_2\\sin(\\omega\\ln\\tau)$, cu $\\tau = t_c - t$, $C_1 = C\\cos\\phi$, $C_2 = C\\sin\\phi$'),
-     [T('$\\ln P(t) = A + B\\,f_t + C_1\\,g_t + C_2\\,h_t$ with $f_t = \\tau^m$, $g_t = \\tau^m\\cos(\\omega\\ln\\tau)$, $h_t = \\tau^m\\sin(\\omega\\ln\\tau)$', '$\\ln P(t) = A + B\\,f_t + C_1\\,g_t + C_2\\,h_t$ cu $f_t = \\tau^m$, $g_t = \\tau^m\\cos(\\omega\\ln\\tau)$, $h_t = \\tau^m\\sin(\\omega\\ln\\tau)$')]),
-    (T('\\textbf{Step 1} (linear): for given $(t_c, m, \\omega)$, regress $\\ln P_t$ on $(1, f_t, g_t, h_t)$ by OLS: $(\\hat A, \\hat B, \\hat C_1, \\hat C_2) = (X\'X)^{-1}X\'y$', '\\textbf{Pasul 1} (liniar): pentru $(t_c, m, \\omega)$ dați, regresăm $\\ln P_t$ pe $(1, f_t, g_t, h_t)$ prin OLS: $(\\hat A, \\hat B, \\hat C_1, \\hat C_2) = (X\'X)^{-1}X\'y$'),
-     [T('this gives the concentrated cost $\\mathrm{SSR}(t_c, m, \\omega)$', 'obținem astfel costul concentrat $\\mathrm{SSR}(t_c, m, \\omega)$')]),
-    (T('\\textbf{Step 2} (nonlinear): minimise $\\mathrm{SSR}(t_c, m, \\omega)$ over the search space $t_c \\in [t_2, t_2 + (t_2 - t_1)/3]$, $m \\in [0, 1]$, $\\omega \\in [1, 50]$', '\\textbf{Pasul 2} (neliniar): minimizăm $\\mathrm{SSR}(t_c, m, \\omega)$ în spațiul de căutare $t_c \\in [t_2, t_2 + (t_2 - t_1)/3]$, $m \\in [0, 1]$, $\\omega \\in [1, 50]$'),
-     [T('in the code: a grid of $8 \\times 8 \\times 16$ points, then the Nelder--Mead simplex from the best grid point', 'în cod: o grilă de $8 \\times 8 \\times 16$ puncte, apoi simplexul Nelder--Mead pornind din cel mai bun punct al grilei'),
-      T('at the end: $C = \\sqrt{C_1^2 + C_2^2}$ and $\\phi = \\operatorname{atan2}(C_2, C_1)$', 'la final: $C = \\sqrt{C_1^2 + C_2^2}$ și $\\phi = \\operatorname{atan2}(C_2, C_1)$')])), size='footnotesize')
+D.frame(T('The two-step method of Filimonov and Sornette (1/2)', 'Metoda în doi pași a lui Filimonov și Sornette (1/2)'), items(
+    (T('Least squares over seven parameters has many local minima; \\refFS\\ reduce the search to three parameters', 'Cele mai mici pătrate după șapte parametri au multe minime locale; \\refFS\\ reduc căutarea la trei parametri'),
+     [T('$\\min \\mathrm{SSR} = \\sum_{t=t_1}^{t_2} [\\ln P_t - \\mathrm{LPPL}(t)]^2$; SSR: the sum of squared residuals over the window $[t_1, t_2]$', '$\\min \\mathrm{SSR} = \\sum_{t=t_1}^{t_2} [\\ln P_t - \\mathrm{LPPL}(t)]^2$; SSR: suma pătratelor reziduurilor pe fereastra $[t_1, t_2]$'),
+      T('$\\mathrm{LPPL}(t)$: the right-hand side of the LPPL equation', '$\\mathrm{LPPL}(t)$: membrul drept al ecuației LPPL')]),
+    (T('Expand the cosine, with $\\tau = t_c - t$', 'Desfacem cosinusul, cu $\\tau = t_c - t$'),
+     [T('$C\\cos(\\omega\\ln\\tau - \\phi) = C_1\\cos(\\omega\\ln\\tau) + C_2\\sin(\\omega\\ln\\tau)$, where $C_1 = C\\cos\\phi$, $C_2 = C\\sin\\phi$', '$C\\cos(\\omega\\ln\\tau - \\phi) = C_1\\cos(\\omega\\ln\\tau) + C_2\\sin(\\omega\\ln\\tau)$, unde $C_1 = C\\cos\\phi$, $C_2 = C\\sin\\phi$')]),
+    (T('The LPPL equation becomes linear in $A$, $B$, $C_1$, $C_2$', 'Ecuația LPPL devine liniară în $A$, $B$, $C_1$, $C_2$'),
+     [T('$\\ln P(t) = A + B\\,f_t + C_1\\,g_t + C_2\\,h_t$', '$\\ln P(t) = A + B\\,f_t + C_1\\,g_t + C_2\\,h_t$'),
+      T('$f_t = \\tau^m$, $g_t = \\tau^m\\cos(\\omega\\ln\\tau)$, $h_t = \\tau^m\\sin(\\omega\\ln\\tau)$: known numbers once $t_c$, $m$, $\\omega$ are fixed', '$f_t = \\tau^m$, $g_t = \\tau^m\\cos(\\omega\\ln\\tau)$, $h_t = \\tau^m\\sin(\\omega\\ln\\tau)$: numere cunoscute odată ce $t_c$, $m$, $\\omega$ sînt fixați')])), size='footnotesize')
+
+D.frame(T('The two-step method of Filimonov and Sornette (2/2)', 'Metoda în doi pași a lui Filimonov și Sornette (2/2)'), items(
+    (T('\\textbf{Step 1} (linear)', '\\textbf{Pasul 1} (liniar)'),
+         [T('for given $(t_c, m, \\omega)$, regress $\\ln P_t$ on $(1, f_t, g_t, h_t)$ by OLS', 'pentru $(t_c, m, \\omega)$ dați, regresăm $\\ln P_t$ pe $(1, f_t, g_t, h_t)$ prin OLS'),
+          T('$(\\hat A, \\hat B, \\hat C_1, \\hat C_2) = (X\'X)^{-1}X\'y$; $X$: the matrix with columns $1, f_t, g_t, h_t$; $y$: the vector of $\\ln P_t$', '$(\\hat A, \\hat B, \\hat C_1, \\hat C_2) = (X\'X)^{-1}X\'y$; $X$: matricea cu coloanele $1, f_t, g_t, h_t$; $y$: vectorul valorilor $\\ln P_t$'),
+          T('this gives the concentrated cost $\\mathrm{SSR}(t_c, m, \\omega)$, a function of three parameters only', 'obținem astfel costul concentrat $\\mathrm{SSR}(t_c, m, \\omega)$, o funcție de doar trei parametri')]),
+    (T('\\textbf{Step 2} (nonlinear)', '\\textbf{Pasul 2} (neliniar)'),
+         [T('minimise $\\mathrm{SSR}(t_c, m, \\omega)$ over the search space', 'minimizăm $\\mathrm{SSR}(t_c, m, \\omega)$ în spațiul de căutare'),
+          T('$t_c \\in [t_2, t_2 + (t_2 - t_1)/3]$, $m \\in [0, 1]$, $\\omega \\in [1, 50]$', '$t_c \\in [t_2, t_2 + (t_2 - t_1)/3]$, $m \\in [0, 1]$, $\\omega \\in [1, 50]$'),
+          T('in the code: a grid of $8 \\times 8 \\times 16$ points, then the Nelder--Mead simplex from the best grid point', 'în cod: o grilă de $8 \\times 8 \\times 16$ puncte, apoi simplexul Nelder--Mead pornind din cel mai bun punct al grilei')]),
+    (T('At the end: $C = \\sqrt{C_1^2 + C_2^2}$ and $\\phi = \\operatorname{atan2}(C_2, C_1)$', 'La final: $C = \\sqrt{C_1^2 + C_2^2}$ și $\\phi = \\operatorname{atan2}(C_2, C_1)$'),
+     [T('$\\operatorname{atan2}(C_2, C_1)$: the angle of the point $(C_1, C_2)$, in $(-\\pi, \\pi]$', '$\\operatorname{atan2}(C_2, C_1)$: unghiul punctului $(C_1, C_2)$, în $(-\\pi, \\pi]$')])), size='footnotesize')
 
 chart(T('The cost landscape', 'Peisajul funcției de cost'), 'tsa_ch13_cost', 'TSA_ch13_estimation', [
     T('Nasdaq 100, window from the low of October 1998 to 30 days before the peak; left: $\\log \\mathrm{SSR}$ over $(t_c, m)$, minimised over $\\omega \\in [2, 25]$ (@{cost.n} grid points, with the linear step solved at each point); right: the minimum over $m$ and $\\omega$ as a function of $t_c$',
@@ -674,15 +729,18 @@ D.recap(('Confidence from many windows', 'încrederea obținută din multe feres
 # =============================================================================
 # 6. EVALUARE ONESTĂ
 # =============================================================================
-D.section('An honest evaluation of crash prediction', 'O evaluare onestă a prognozei crahurilor')
+D.section('An honest evaluation of crash prediction', 'O evaluare riguroasă a prognozei crahurilor')
 
 D.frame(T('Traps in evaluating crash predictions', 'Capcane în evaluarea prognozelor de crah'), items(
-    (T('\\textbf{Look-ahead bias}: using information from after $t_2$', '\\textbf{Look-ahead bias}: folosirea informației de după $t_2$'),
-     [T('choosing $t_1$ at the low of the run-up, the episodes after the crash, or the filter after seeing the results', 'alegerea lui $t_1$ la minimul creșterii, a episoadelor după crah sau a filtrului după ce am văzut rezultatele')]),
-    (T('\\textbf{Selection}: studying only the bubbles that burst; the run-ups that did not end in a crash are forgotten', '\\textbf{Selecția}: studierea doar a bulelor care s-au spart; creșterile care nu s-au încheiat cu un crah sînt uitate'),
-     []),
-    (T('\\textbf{False alarms and base rates}: an alarm is useful only if a crash is \\textbf{more likely after an alarm} than on an ordinary day', '\\textbf{Alarmele false și frecvențele de bază}: o alarmă este utilă doar dacă un crah este \\textbf{mai probabil după o alarmă} decît într-o zi obișnuită'),
-     [T('the comparison: $P(\\text{crash} \\mid \\text{alarm})$ against $P(\\text{crash})$, the unconditional frequency', 'comparația: $P(\\text{crah} \\mid \\text{alarmă})$ față de $P(\\text{crah})$, frecvența necondiționată')]),
+    (T('\\textbf{Look-ahead bias}', '\\textbf{Look-ahead bias}'),
+         [T('using information from after $t_2$', 'folosirea informației de după $t_2$'),
+          T('choosing $t_1$ at the low of the run-up, the episodes after the crash, or the filter after seeing the results', 'alegerea lui $t_1$ la minimul creșterii, a episoadelor după crah sau a filtrului după ce am văzut rezultatele')]),
+    (T('\\textbf{Selection}', '\\textbf{Selecția}'),
+         [T('studying only the bubbles that burst', 'studierea doar a bulelor care s-au spart'),
+          T('the run-ups that did not end in a crash are forgotten', 'creșterile care nu s-au încheiat cu un crah sînt uitate')]),
+    (T('\\textbf{False alarms and base rates}', '\\textbf{Alarmele false și frecvențele de bază}'),
+         [T('an alarm is useful only if a crash is \\textbf{more likely after an alarm} than on an ordinary day', 'o alarmă este utilă doar dacă un crah este \\textbf{mai probabil după o alarmă} decît într-o zi obișnuită'),
+          T('the comparison: $P(\\text{crash} \\mid \\text{alarm})$ against $P(\\text{crash})$, the unconditional frequency', 'comparația: $P(\\text{crah} \\mid \\text{alarmă})$ față de $P(\\text{crah})$, frecvența necondiționată')]),
     T('A fair test fixes everything in advance (windows, filter, threshold, the definition of a crash) and runs over the whole sample', 'Un test corect fixează totul dinainte (ferestre, filtru, prag, definiția crahului) și rulează pe tot eșantionul')))
 
 chart(T('Alarms over the whole sample', 'Alarmele pe tot eșantionul'), 'tsa_ch13_eval', 'TSA_ch13_evaluation', [
@@ -708,13 +766,16 @@ D.frame(T('The literature on crash prediction', 'Literatura despre prognoza crah
     T('Our own numbers point the same way: the indicator reacts to strong run-ups, but its timing is loose and its alarms are often false', 'Propriile noastre cifre arată același lucru: indicatorul reacționează la creșterile puternice, dar momentul lui este imprecis și alarmele lui sînt adesea false')))
 
 D.frame(T('Strengths and limits of LPPL', 'Posibilitățile și limitele modelului LPPL'), items(
-    (T('\\textbf{Can}: describe a run-up with accelerating growth and shrinking corrections in a few interpretable parameters', '\\textbf{Poate}: descrie o creștere cu ritm accelerat și corecții tot mai scurte prin cîțiva parametri interpretabili'),
-     [T('measure ``how bubble-like\'\' a market is today, across many windows (the indicator)', 'măsura cît de mult seamănă azi o piață cu o bulă, pe multe ferestre (indicatorul)')]),
-    (T('\\textbf{Cannot}: give the date of a crash; $t_c$ is the end of the regime, and the regime may end with a slow decline', '\\textbf{Nu poate}: da data unui crah; $t_c$ este sfîrșitul regimului, iar regimul se poate încheia cu o scădere lentă'),
-     [T('nor tell us whether the price is above the fundamental value: that needs fundamentals', 'nici să ne spună dacă prețul este peste valoarea fundamentală: pentru asta sînt necesare fundamentele')]),
+    (T('\\textbf{Can}', '\\textbf{Poate}'),
+         [T('describe a run-up with accelerating growth and shrinking corrections in a few interpretable parameters', 'descrie o creștere cu ritm accelerat și corecții tot mai scurte prin cîțiva parametri interpretabili'),
+          T('measure ``how bubble-like\'\' a market is today, across many windows (the indicator)', 'măsura cît de mult seamănă azi o piață cu o bulă, pe multe ferestre (indicatorul)')]),
+    (T('\\textbf{Cannot}', '\\textbf{Nu poate}'),
+         [T('give the date of a crash', 'da data unui crah'),
+          T('$t_c$ is the end of the regime, and the regime may end with a slow decline', '$t_c$ este sfîrșitul regimului, iar regimul se poate încheia cu o scădere lentă'),
+          T('nor tell us whether the price is above the fundamental value: that needs fundamentals', 'nici să ne spună dacă prețul este peste valoarea fundamentală: pentru asta sînt necesare fundamentele')]),
     T('Use it with the explosive-root tests, with fundamentals (valuation ratios) and with risk measures such as VaR 1\\% (Chapter 5), not alone', 'Folosiți-l împreună cu testele de rădăcini explozive, cu fundamentele (rapoarte de evaluare) și cu măsuri de risc precum VaR 1\\% (Capitolul 5), nu singur')))
 
-D.recap(('An honest evaluation', 'o evaluare onestă'), [
+D.recap(('An honest evaluation', 'o evaluare riguroasă'), [
     T('Fix windows, filter, threshold and the definition of a crash before looking at the outcomes', 'Fixați ferestrele, filtrul, pragul și definiția crahului înainte de a vă uita la rezultate'),
     T('Compare the hit rate after alarms with the base rate; count the false alarms', 'Comparați rata de reușită după alarme cu frecvența de bază; numărați alarmele false'),
     T('LPPL describes bubbles well; as a crash-timing tool its record is weak', 'LPPL descrie bine bulele; ca instrument de datare a crahurilor, rezultatele lui sînt slabe')])
@@ -725,9 +786,12 @@ D.recap(('An honest evaluation', 'o evaluare onestă'), [
 D.section('Possible contribution of AI', 'Contribuția posibilă a AI')
 
 D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
-    T('\\textbf{Code}: a first version of the BSADF recursion, of the Filimonov--Sornette two-step fit, of the indicator over many windows', '\\textbf{Cod}: o primă versiune a recursiei BSADF, a ajustării în doi pași Filimonov--Sornette, a indicatorului pe multe ferestre'),
-    T('\\textbf{Explanation}: a second explanation of the hazard-rate argument or of log-periodicity, with your own numbers', '\\textbf{Explicații}: o a doua explicație a argumentului ratei de hazard sau a log-periodicității, cu cifrele dumneavoastră'),
-    T('\\textbf{Exploration}: the indicator on many markets and periods, with different filters, under a protocol fixed in advance', '\\textbf{Explorare}: indicatorul pe multe piețe și perioade, cu filtre diferite, după un protocol fixat dinainte'),
+    (T('\\textbf{Code}', '\\textbf{Cod}'),
+         [T('a first version of the BSADF recursion, of the Filimonov--Sornette two-step fit, of the indicator over many windows', 'o primă versiune a recursiei BSADF, a ajustării în doi pași Filimonov--Sornette, a indicatorului pe multe ferestre')]),
+    (T('\\textbf{Explanation}', '\\textbf{Explicații}'),
+         [T('a second explanation of the hazard-rate argument or of log-periodicity, with your own numbers', 'o a doua explicație a argumentului ratei de hazard sau a log-periodicității, cu cifrele dumneavoastră')]),
+    (T('\\textbf{Exploration}', '\\textbf{Explorare}'),
+         [T('the indicator on many markets and periods, with different filters, under a protocol fixed in advance', 'indicatorul pe multe piețe și perioade, cu filtre diferite, după un protocol fixat dinainte')]),
     (T('Example prompt', 'Exemplu de prompt'),
      [T('\\aiprompt{Write Python code that fits the LPPL model to the daily log price of the Shanghai Composite between two dates with the Filimonov-Sornette method (OLS for A, B, C1, C2; grid search plus Nelder-Mead for tc, m, omega), checks the filter conditions of Shu and Zhu (2020) and plots the fit.}',
         '\\aiprompt{Write Python code that fits the LPPL model to the daily log price of the Shanghai Composite between two dates with the Filimonov-Sornette method (OLS for A, B, C1, C2; grid search plus Nelder-Mead for tc, m, omega), checks the filter conditions of Shu and Zhu (2020) and plots the fit.}')])))

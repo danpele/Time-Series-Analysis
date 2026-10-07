@@ -230,9 +230,9 @@ D.frame(T('Why this chapter', 'Motivația capitolului'), items(
       T('the VEC and BEKK models; the number of parameters', 'modelele VEC și BEKK; numărul de parametri'),
       T('CCC and DCC: volatilities and correlations estimated in two steps', 'CCC și DCC: volatilități și corelații estimate în doi pași'),
       T('applications: correlations in crises, portfolio VaR 1\\%, hedge ratios', 'aplicații: corelațiile în crize, VaR 1\\% al unui portofoliu, rapoarte de acoperire')]),
-    (T('\\textbf{Self-study chapter}: read the slides in order, redo the worked examples, run the notebook, then answer the self-assessment and the quiz',
-       '\\textbf{Capitol de studiu individual}: parcurgeți slide-urile în ordine, refaceți exemplele rezolvate, rulați notebook-ul, apoi răspundeți la autoevaluare și la quiz'),
-     [T('prerequisites: Chapter 5 (GARCH), Chapter 6 (VAR models), Chapter 7 (cointegration)', 'cunoștințe necesare: Capitolul 5 (GARCH), Capitolul 6 (modele VAR), Capitolul 7 (cointegrare)')])))
+    (T('\\textbf{Self-study chapter}', '\\textbf{Capitol de studiu individual}'),
+         [T('read the slides in order, redo the worked examples, run the notebook, then answer the self-assessment and the quiz', 'parcurgeți slide-urile în ordine, refaceți exemplele rezolvate, rulați notebook-ul, apoi răspundeți la autoevaluare și la quiz'),
+          T('prerequisites: Chapter 5 (GARCH), Chapter 6 (VAR models), Chapter 7 (cointegration)', 'cunoștințe necesare: Capitolul 5 (GARCH), Capitolul 6 (modele VAR), Capitolul 7 (cointegrare)')])))
 
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Explain why portfolio risk, hedging and contagion need a model for time-varying covariances', 'Explicați de ce riscul unui portofoliu, acoperirea riscului și contagiunea cer un model pentru covarianțe variabile în timp'),
@@ -259,15 +259,19 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 D.section('Why multivariate volatility', 'Rolul volatilității multivariate')
 
 D.frame(T('Three questions that need covariances', 'Trei întrebări care cer covarianțe'), items(
-    (T('\\textbf{Portfolio risk}: the variance of a portfolio with weights $\\mathbf{w}$ is $\\sigma_p^2 = \\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$ \\refMark',
-       '\\textbf{Riscul portofoliului}: varianța unui portofoliu cu ponderile $\\mathbf{w}$ este $\\sigma_p^2 = \\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$ \\refMark'),
-     [T('two assets: $\\sigma_p^2 = w_1^2\\sigma_1^2 + w_2^2\\sigma_2^2 + 2w_1w_2\\rho\\,\\sigma_1\\sigma_2$; the correlation $\\rho$ decides how much diversification helps',
-        'două active: $\\sigma_p^2 = w_1^2\\sigma_1^2 + w_2^2\\sigma_2^2 + 2w_1w_2\\rho\\,\\sigma_1\\sigma_2$; corelația $\\rho$ decide cît ajută diversificarea')]),
-    (T('\\textbf{Hedging}: how many units of an asset to sell to offset the risk of another', '\\textbf{Acoperirea riscului} (hedging): cîte unități dintr-un activ trebuie vîndute pentru a compensa riscul altuia'),
-     [T('the answer is a ratio of a covariance to a variance (Section 7)', 'răspunsul este raportul dintre o covarianță și o varianță (secțiunea 7)')]),
-    (T('\\textbf{Contagion}: do markets move more closely together in a crisis?', '\\textbf{Contagiunea}: se mișcă piețele mai strîns împreună într-o criză?'),
-     [T('if correlations rise exactly when volatility rises, diversification fails when it is needed most \\refLS', 'dacă corelațiile cresc tocmai cînd crește volatilitatea, diversificarea dispare cînd este mai necesară \\refLS')]),
-    T('A univariate GARCH (Chapter 5) gives $\\sigma_{1,t}$ and $\\sigma_{2,t}$; this chapter adds the time-varying $\\rho_t$', 'Un GARCH univariat (Capitolul 5) dă $\\sigma_{1,t}$ și $\\sigma_{2,t}$; acest capitol adaugă corelația variabilă $\\rho_t$')))
+    (T('\\textbf{Portfolio risk}', '\\textbf{Riscul portofoliului}'),
+         [T('the variance of a portfolio with weights $\\mathbf{w}$ is $\\sigma_p^2 = \\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$ \\refMark', 'varianța unui portofoliu cu ponderile $\\mathbf{w}$ este $\\sigma_p^2 = \\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$ \\refMark'),
+          T('$\\mathbf{w}$: the vector of portfolio weights; $\\mathbf{H}$: the covariance matrix of the returns; $\\sigma_p^2$: the portfolio variance', '$\\mathbf{w}$: vectorul ponderilor din portofoliu; $\\mathbf{H}$: matricea de covarianță a randamentelor; $\\sigma_p^2$: varianța portofoliului'),
+          T('two assets: $\\sigma_p^2 = w_1^2\\sigma_1^2 + w_2^2\\sigma_2^2 + 2w_1w_2\\rho\\,\\sigma_1\\sigma_2$, with volatilities $\\sigma_1$, $\\sigma_2$ and correlation $\\rho$',
+        'două active: $\\sigma_p^2 = w_1^2\\sigma_1^2 + w_2^2\\sigma_2^2 + 2w_1w_2\\rho\\,\\sigma_1\\sigma_2$, cu volatilitățile $\\sigma_1$, $\\sigma_2$ și corelația $\\rho$'),
+          T('the correlation $\\rho$ decides how much diversification helps', 'corelația $\\rho$ decide cît ajută diversificarea')]),
+    (T('\\textbf{Hedging}', '\\textbf{Acoperirea riscului} (hedging)'),
+         [T('how many units of an asset to sell to offset the risk of another', 'cîte unități dintr-un activ trebuie vîndute pentru a compensa riscul altuia'),
+          T('the answer is a ratio of a covariance to a variance (Section 7)', 'răspunsul este raportul dintre o covarianță și o varianță (secțiunea 7)')]),
+    (T('\\textbf{Contagion}', '\\textbf{Contagiunea}'),
+         [T('do markets move more closely together in a crisis?', 'se mișcă piețele mai strîns împreună într-o criză?'),
+          T('if correlations rise exactly when volatility rises, diversification fails when it is needed most \\refLS', 'dacă corelațiile cresc tocmai cînd crește volatilitatea, diversificarea dispare cînd este mai necesară \\refLS')]),
+    T('A univariate GARCH (Chapter 5) gives $\\sigma_{1,t}$ and $\\sigma_{2,t}$; this chapter adds the time-varying $\\rho_t$', 'Un GARCH univariat (Capitolul 5) dă $\\sigma_{1,t}$ și $\\sigma_{2,t}$; acest capitol adaugă corelația variabilă $\\rho_t$')), size='footnotesize')
 
 D.frame(T('Worked example: correlation and portfolio risk', 'Exemplu rezolvat: corelația și riscul portofoliului'), items(
     T('Two assets with annual volatility 20\\% each, weights 50\\% and 50\\%', 'Două active, fiecare cu volatilitatea anuală de 20\\%, ponderi 50\\% și 50\\%'),
@@ -317,7 +321,7 @@ D.frame(T('A trap: asynchronous trading', 'O capcană: tranzacționarea asincron
      [T('the gap is small for BET and DAX, which close almost together; remedies: weekly returns or returns between synchronous times',
         'diferența este mică pentru BET și DAX, care se închid aproape simultan; remedii: randamente săptămînale sau randamente între momente sincrone')])), size='footnotesize')
 
-D.recap(('Why multivariate volatility', 'de ce volatilitate multivariată'), [
+D.recap(('Why multivariate volatility', 'rolul volatilității multivariate'), [
     T('Portfolio variance $\\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$, hedge ratios and contagion all depend on covariances', 'Varianța portofoliului $\\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$, rapoartele de acoperire și contagiunea depind toate de covarianțe'),
     T('Rolling correlations of real markets move a lot: integration, crises, new asset classes', 'Corelațiile pe ferestre mobile se mișcă mult pe piețele reale: integrare, crize, clase noi de active'),
     T('Check the trading hours: asynchronous closes bias daily correlations towards zero', 'Verificați orele de tranzacționare: închiderile asincrone deplasează corelațiile zilnice spre zero')])
@@ -340,14 +344,15 @@ D.frame(T('The model for $N$ return series', 'Modelul pentru $N$ serii de randam
       'Un model \\textbf{GARCH multivariat} (MGARCH) este o regulă care calculează $\\mathbf{H}_t$ din șocurile trecute $\\boldsymbol{\\varepsilon}_{t-1}$ și din $\\mathbf{H}_{t-1}$')))
 
 D.frame(T('Two conditions on $\\mathbf{H}_t$', 'Două condiții pentru $\\mathbf{H}_t$'), items(
-    (T('\\textbf{Symmetry}: $h_{ij,t} = h_{ji,t}$, so only $N(N+1)/2$ elements are distinct', '\\textbf{Simetria}: $h_{ij,t} = h_{ji,t}$, deci doar $N(N+1)/2$ elemente sînt distincte'),
-     [T('the operator $\\mathrm{vech}$ stacks the lower triangle: $\\mathrm{vech}\\begin{pmatrix} h_{11} & h_{12}\\\\ h_{12} & h_{22}\\end{pmatrix} = (h_{11}, h_{12}, h_{22})^\\top$',
+    (T('\\textbf{Symmetry}', '\\textbf{Simetria}'),
+         [T('$h_{ij,t} = h_{ji,t}$, so only $N(N+1)/2$ elements are distinct', '$h_{ij,t} = h_{ji,t}$, deci doar $N(N+1)/2$ elemente sînt distincte'),
+          T('the operator $\\mathrm{vech}$ stacks the lower triangle: $\\mathrm{vech}\\begin{pmatrix} h_{11} & h_{12}\\\\ h_{12} & h_{22}\\end{pmatrix} = (h_{11}, h_{12}, h_{22})^\\top$',
         'operatorul $\\mathrm{vech}$ așază triunghiul inferior într-un vector: $\\mathrm{vech}\\begin{pmatrix} h_{11} & h_{12}\\\\ h_{12} & h_{22}\\end{pmatrix} = (h_{11}, h_{12}, h_{22})^\\top$'),
-      T('$N = 2$: 3 elements; $N = 10$: 55; $N = 50$: 1\\,275', '$N = 2$: 3 elemente; $N = 10$: 55; $N = 50$: 1\\,275')]),
-    (T('\\textbf{Positive definiteness}: $\\mathbf{w}^\\top\\mathbf{H}_t\\mathbf{w} > 0$ for every $\\mathbf{w} \\neq \\mathbf{0}$, i.e. every portfolio has a positive variance',
-       '\\textbf{Pozitiv definirea}: $\\mathbf{w}^\\top\\mathbf{H}_t\\mathbf{w} > 0$ pentru orice $\\mathbf{w} \\neq \\mathbf{0}$, adică orice portofoliu are varianță pozitivă'),
-     [T('$N = 2$: $h_{11,t} > 0$ and $h_{11,t}h_{22,t} - h_{12,t}^2 > 0$, i.e. $|\\rho_{12,t}| < 1$', '$N = 2$: $h_{11,t} > 0$ și $h_{11,t}h_{22,t} - h_{12,t}^2 > 0$, adică $|\\rho_{12,t}| < 1$'),
-      T('example: $h_{11} = 4$, $h_{22} = 1$, $h_{12} = 2.5$ gives $4 - 6.25 < 0$: an impossible ``correlation\'\' of 1.25', 'exemplu: $h_{11} = 4$, $h_{22} = 1$, $h_{12} = 2{,}5$ dau $4 - 6{,}25 < 0$: o „corelație” imposibilă, de 1,25')]),
+          T('$N = 2$: 3 elements; $N = 10$: 55; $N = 50$: 1\\,275', '$N = 2$: 3 elemente; $N = 10$: 55; $N = 50$: 1\\,275')]),
+    (T('\\textbf{Positive definiteness}', '\\textbf{Caracterul pozitiv definit}'),
+         [T('$\\mathbf{w}^\\top\\mathbf{H}_t\\mathbf{w} > 0$ for every $\\mathbf{w} \\neq \\mathbf{0}$, i.e. every portfolio has a positive variance', '$\\mathbf{w}^\\top\\mathbf{H}_t\\mathbf{w} > 0$ pentru orice $\\mathbf{w} \\neq \\mathbf{0}$, adică orice portofoliu are varianță pozitivă'),
+          T('$N = 2$: $h_{11,t} > 0$ and $h_{11,t}h_{22,t} - h_{12,t}^2 > 0$, i.e. $|\\rho_{12,t}| < 1$', '$N = 2$: $h_{11,t} > 0$ și $h_{11,t}h_{22,t} - h_{12,t}^2 > 0$, adică $|\\rho_{12,t}| < 1$'),
+          T('example: $h_{11} = 4$, $h_{22} = 1$, $h_{12} = 2.5$ gives $4 - 6.25 < 0$: an impossible ``correlation\'\' of 1.25', 'exemplu: $h_{11} = 4$, $h_{22} = 1$, $h_{12} = 2{,}5$ dau $4 - 6{,}25 < 0$: o „corelație” imposibilă, de 1,25')]),
     T('A good MGARCH model guarantees both conditions for \\textbf{every} $t$, with few parameters', 'Un model MGARCH bun garantează ambele condiții pentru \\textbf{orice} $t$, cu puțini parametri')))
 
 D.frame(T('Estimation by maximum likelihood', 'Estimarea prin verosimilitate maximă'), items(
@@ -363,7 +368,7 @@ D.frame(T('Estimation by maximum likelihood', 'Estimarea prin verosimilitate max
 
 D.recap(('The multivariate GARCH framework', 'cadrul GARCH multivariat'), [
     T('$\\mathbf{H}_t$: conditional variances on the diagonal, covariances off the diagonal; $\\rho_{ij,t} = h_{ij,t}/\\sqrt{h_{ii,t}h_{jj,t}}$', '$\\mathbf{H}_t$: varianțele condiționate pe diagonală, covarianțele în afara ei; $\\rho_{ij,t} = h_{ij,t}/\\sqrt{h_{ii,t}h_{jj,t}}$'),
-    T('Conditions: symmetry ($N(N+1)/2$ distinct elements) and positive definiteness', 'Condiții: simetria ($N(N+1)/2$ elemente distincte) și pozitiv definirea'),
+    T('Conditions: symmetry ($N(N+1)/2$ distinct elements) and positive definiteness', 'Condiții: simetria ($N(N+1)/2$ elemente distincte) și caracterul pozitiv definit'),
     T('Estimation by (quasi-)maximum likelihood with the multivariate Normal density', 'Estimare prin (cvasi-)verosimilitate maximă cu densitatea Normală multivariată')])
 
 # =============================================================================
@@ -376,22 +381,25 @@ D.frame(T('The VEC model', 'Modelul VEC'), items(
        '\\refBEW: fiecare element al lui $\\mathbf{H}_t$ depinde de toate pătratele și produsele încrucișate ale șocurilor trecute și de toate elementele lui $\\mathbf{H}_{t-1}$'),
      [T('VEC(1,1): $\\mathrm{vech}(\\mathbf{H}_t) = \\mathbf{c} + \\mathbf{A}\\,\\mathrm{vech}(\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top) + \\mathbf{B}\\,\\mathrm{vech}(\\mathbf{H}_{t-1})$',
         'VEC(1,1): $\\mathrm{vech}(\\mathbf{H}_t) = \\mathbf{c} + \\mathbf{A}\\,\\mathrm{vech}(\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top) + \\mathbf{B}\\,\\mathrm{vech}(\\mathbf{H}_{t-1})$'),
+      T('$\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top$: the matrix of yesterday\'s squared shocks and cross-products; $\\mathbf{c}$: a vector of constants; $\\mathbf{A}$: the reaction to shocks; $\\mathbf{B}$: the persistence', '$\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top$: matricea pătratelor și a produselor încrucișate ale șocurilor de ieri; $\\mathbf{c}$: un vector de constante; $\\mathbf{A}$: reacția la șocuri; $\\mathbf{B}$: persistența'),
       T('with $k = N(N+1)/2$: $\\mathbf{c}$ has $k$ elements, $\\mathbf{A}$ and $\\mathbf{B}$ are $k \\times k$: in total $k + 2k^2$ parameters', 'cu $k = N(N+1)/2$: $\\mathbf{c}$ are $k$ elemente, $\\mathbf{A}$ și $\\mathbf{B}$ sînt $k \\times k$: în total $k + 2k^2$ parametri')]),
     (T('$N = 2$: $k = 3$ and @{np.2.VEC} parameters; $N = 10$: @{np.10.VEC}', '$N = 2$: $k = 3$ și @{np.2.VEC} de parametri; $N = 10$: @{np.10.VEC}'),
-     [T('and positive definiteness of $\\mathbf{H}_t$ is \\textbf{not} guaranteed: it needs complicated restrictions', 'iar pozitiv definirea lui $\\mathbf{H}_t$ \\textbf{nu} este garantată: cere restricții complicate')]),
-    (T('\\textbf{Diagonal VEC}: $h_{ij,t} = c_{ij} + a_{ij}\\varepsilon_{i,t-1}\\varepsilon_{j,t-1} + b_{ij}h_{ij,t-1}$', '\\textbf{VEC diagonal}: $h_{ij,t} = c_{ij} + a_{ij}\\varepsilon_{i,t-1}\\varepsilon_{j,t-1} + b_{ij}h_{ij,t-1}$'),
-     [T('each element is a GARCH(1,1) of its own; $3k$ parameters (@{np.2.DVEC} for $N = 2$); still no guarantee of positive definiteness', 'fiecare element este un GARCH(1,1) separat; $3k$ parametri (@{np.2.DVEC} pentru $N = 2$); tot fără garanția pozitiv definirii')])))
+     [T('and positive definiteness of $\\mathbf{H}_t$ is \\textbf{not} guaranteed: it needs complicated restrictions', 'iar caracterul pozitiv definit al lui $\\mathbf{H}_t$ \\textbf{nu} este garantat: cere restricții complicate')]),
+    (T('\\textbf{Diagonal VEC}', '\\textbf{VEC diagonal}'),
+         [T('$h_{ij,t} = c_{ij} + a_{ij}\\varepsilon_{i,t-1}\\varepsilon_{j,t-1} + b_{ij}h_{ij,t-1}$', '$h_{ij,t} = c_{ij} + a_{ij}\\varepsilon_{i,t-1}\\varepsilon_{j,t-1} + b_{ij}h_{ij,t-1}$'),
+          T('each element is a GARCH(1,1) of its own; $3k$ parameters (@{np.2.DVEC} for $N = 2$); still no guarantee of positive definiteness', 'fiecare element este un GARCH(1,1) separat; $3k$ parametri (@{np.2.DVEC} pentru $N = 2$); tot fără garanția caracterului pozitiv definit')])), size='footnotesize')
 
 D.frame(T('The BEKK model', 'Modelul BEKK'), items(
     (T('\\refEK: $\\mathbf{H}_t = \\mathbf{C}\\mathbf{C}^\\top + \\mathbf{A}^\\top\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top\\mathbf{A} + \\mathbf{B}^\\top\\mathbf{H}_{t-1}\\mathbf{B}$',
        '\\refEK: $\\mathbf{H}_t = \\mathbf{C}\\mathbf{C}^\\top + \\mathbf{A}^\\top\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top\\mathbf{A} + \\mathbf{B}^\\top\\mathbf{H}_{t-1}\\mathbf{B}$'),
-     [T('BEKK: Baba, Engle, Kraft and Kroner; $\\mathbf{C}$ lower triangular, $\\mathbf{A}$ and $\\mathbf{B}$ are $N \\times N$', 'BEKK: Baba, Engle, Kraft și Kroner; $\\mathbf{C}$ inferior triunghiulară, $\\mathbf{A}$ și $\\mathbf{B}$ de dimensiune $N \\times N$')]),
-    (T('\\textbf{Positive definite by construction}: each term is a ``square\'\' $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ of a positive (semi)definite matrix',
-       '\\textbf{Pozitiv definită prin construcție}: fiecare termen este un „pătrat” $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ al unei matrice pozitiv (semi)definite'),
-     [T('parameters: $N(N+1)/2 + 2N^2$, i.e. @{np.2.BEKK} for $N = 2$ and @{np.10.BEKK} for $N = 10$', 'parametri: $N(N+1)/2 + 2N^2$, adică @{np.2.BEKK} pentru $N = 2$ și @{np.10.BEKK} pentru $N = 10$')]),
-    (T('\\textbf{Diagonal BEKK} ($\\mathbf{A}$, $\\mathbf{B}$ diagonal): $h_{12,t} = c_{12}^* + a_{11}a_{22}\\,\\varepsilon_{1,t-1}\\varepsilon_{2,t-1} + b_{11}b_{22}\\,h_{12,t-1}$',
-       '\\textbf{BEKK diagonal} ($\\mathbf{A}$, $\\mathbf{B}$ diagonale): $h_{12,t} = c_{12}^* + a_{11}a_{22}\\,\\varepsilon_{1,t-1}\\varepsilon_{2,t-1} + b_{11}b_{22}\\,h_{12,t-1}$'),
-     [T('\\textbf{scalar BEKK}: $\\mathbf{A} = a\\mathbf{I}$, $\\mathbf{B} = b\\mathbf{I}$, the same dynamics for all elements', '\\textbf{BEKK scalar}: $\\mathbf{A} = a\\mathbf{I}$, $\\mathbf{B} = b\\mathbf{I}$, aceeași dinamică pentru toate elementele')]),
+     [T('BEKK: Baba, Engle, Kraft and Kroner; $\\mathbf{C}$ lower triangular, $\\mathbf{A}$ and $\\mathbf{B}$ are $N \\times N$', 'BEKK: Baba, Engle, Kraft și Kroner; $\\mathbf{C}$ inferior triunghiulară, $\\mathbf{A}$ și $\\mathbf{B}$ de dimensiune $N \\times N$'),
+      T('$\\mathbf{A}$: the reaction to yesterday\'s shocks; $\\mathbf{B}$: the persistence of $\\mathbf{H}_{t-1}$; $c_{ij}^*$: the elements of $\\mathbf{C}\\mathbf{C}^\\top$', '$\\mathbf{A}$: reacția la șocurile de ieri; $\\mathbf{B}$: persistența lui $\\mathbf{H}_{t-1}$; $c_{ij}^*$: elementele matricei $\\mathbf{C}\\mathbf{C}^\\top$')]),
+    (T('\\textbf{Positive definite by construction}', '\\textbf{Pozitiv definită prin construcție}'),
+         [T("each term is a ``square'' $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ of a positive (semi)definite matrix", 'fiecare termen este un „pătrat” $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ al unei matrice pozitiv (semi)definite'),
+          T('parameters: $N(N+1)/2 + 2N^2$, i.e. @{np.2.BEKK} for $N = 2$ and @{np.10.BEKK} for $N = 10$', 'parametri: $N(N+1)/2 + 2N^2$, adică @{np.2.BEKK} pentru $N = 2$ și @{np.10.BEKK} pentru $N = 10$')]),
+    (T('\\textbf{Diagonal BEKK} ($\\mathbf{A}$, $\\mathbf{B}$ diagonal)', '\\textbf{BEKK diagonal} ($\\mathbf{A}$, $\\mathbf{B}$ diagonale)'),
+         [T('$h_{12,t} = c_{12}^* + a_{11}a_{22}\\,\\varepsilon_{1,t-1}\\varepsilon_{2,t-1} + b_{11}b_{22}\\,h_{12,t-1}$', '$h_{12,t} = c_{12}^* + a_{11}a_{22}\\,\\varepsilon_{1,t-1}\\varepsilon_{2,t-1} + b_{11}b_{22}\\,h_{12,t-1}$'),
+          T('\\textbf{scalar BEKK}: $\\mathbf{A} = a\\mathbf{I}$, $\\mathbf{B} = b\\mathbf{I}$, the same dynamics for all elements', '\\textbf{BEKK scalar}: $\\mathbf{A} = a\\mathbf{I}$, $\\mathbf{B} = b\\mathbf{I}$, aceeași dinamică pentru toate elementele')]),
     T('The off-diagonal elements of a full $\\mathbf{A}$ measure \\textbf{volatility spillovers}: a shock to asset 1 raises the variance of asset 2', 'Elementele din afara diagonalei ale unei matrice $\\mathbf{A}$ complete măsoară \\textbf{transmiterea volatilității}: un șoc al activului 1 crește varianța activului 2')),
     size='footnotesize')
 
@@ -431,7 +439,7 @@ interp(('the parameter counts', 'numărului de parametri'), [
     T('The price of parsimony: all pairs share the same correlation dynamics', 'Prețul parcimoniei: toate perechile au aceeași dinamică a corelației')])
 
 D.recap(('VEC and BEKK', 'VEC și BEKK'), [
-    T('VEC: the most general linear model; $k + 2k^2$ parameters, no positive-definiteness guarantee', 'VEC: cel mai general model liniar; $k + 2k^2$ parametri, fără garanția pozitiv definirii'),
+    T('VEC: the most general linear model; $k + 2k^2$ parameters, no positive-definiteness guarantee', 'VEC: cel mai general model liniar; $k + 2k^2$ parametri, fără garanția caracterului pozitiv definit'),
     T('BEKK: positive definite by construction; off-diagonal $a_{ij}$ measure volatility spillovers', 'BEKK: pozitiv definit prin construcție; elementele $a_{ij}$ din afara diagonalei măsoară transmiterea volatilității'),
     T('Diagonal and scalar versions cut the parameters but remove the spillovers', 'Versiunile diagonală și scalară reduc numărul de parametri, dar elimină transmiterea volatilității')])
 
@@ -445,30 +453,39 @@ D.frame(T('Splitting volatilities and correlations', 'Separarea volatilitățilo
        'Descompunerea: $\\mathbf{H}_t = \\mathbf{D}_t\\mathbf{R}_t\\mathbf{D}_t$, \\quad $\\mathbf{D}_t = \\mathrm{diag}(\\sigma_{1,t}, \\dots, \\sigma_{N,t})$'),
      [T('$\\mathbf{R}_t$: the conditional correlation matrix (ones on the diagonal); element by element: $h_{ij,t} = \\rho_{ij,t}\\,\\sigma_{i,t}\\sigma_{j,t}$', '$\\mathbf{R}_t$: matricea corelațiilor condiționate (cu 1 pe diagonală); element cu element: $h_{ij,t} = \\rho_{ij,t}\\,\\sigma_{i,t}\\sigma_{j,t}$'),
       T('each $\\sigma_{i,t}$ is a univariate GARCH(1,1) \\refBollG: $\\sigma_{i,t}^2 = \\omega_i + \\alpha_i\\varepsilon_{i,t-1}^2 + \\beta_i\\sigma_{i,t-1}^2$', 'fiecare $\\sigma_{i,t}$ este un GARCH(1,1) univariat \\refBollG: $\\sigma_{i,t}^2 = \\omega_i + \\alpha_i\\varepsilon_{i,t-1}^2 + \\beta_i\\sigma_{i,t-1}^2$')]),
-    (T('\\textbf{Standardised residuals}: $z_{i,t} = \\varepsilon_{i,t}/\\sigma_{i,t}$; their conditional covariance matrix is exactly $\\mathbf{R}_t$', '\\textbf{Reziduurile standardizate}: $z_{i,t} = \\varepsilon_{i,t}/\\sigma_{i,t}$; matricea lor de covarianță condiționată este chiar $\\mathbf{R}_t$'), []),
-    (T('\\textbf{CCC} (constant conditional correlation, \\refBoll): $\\mathbf{R}_t = \\mathbf{R}$ for all $t$', '\\textbf{CCC} (corelație condiționată constantă, \\refBoll): $\\mathbf{R}_t = \\mathbf{R}$ pentru orice $t$'),
-     [T('$\\mathbf{H}_t$ is positive definite whenever $\\mathbf{R}$ is; $\\mathbf{R}$ is estimated by the sample correlation of the $z_{i,t}$', '$\\mathbf{H}_t$ este pozitiv definită ori de cîte ori $\\mathbf{R}$ este; $\\mathbf{R}$ se estimează prin corelația de selecție a lui $z_{i,t}$'),
-      T('covariances still move, but only through the volatilities; the rolling correlations of Section 1 reject this', 'covarianțele se mișcă totuși, dar numai prin volatilități; corelațiile pe ferestre mobile din secțiunea 1 contrazic această ipoteză')])))
+    (T('\\textbf{Standardised residuals}', '\\textbf{Reziduurile standardizate}'),
+         [T('$z_{i,t} = \\varepsilon_{i,t}/\\sigma_{i,t}$', '$z_{i,t} = \\varepsilon_{i,t}/\\sigma_{i,t}$'),
+          T('their conditional covariance matrix is exactly $\\mathbf{R}_t$', 'matricea lor de covarianță condiționată este chiar $\\mathbf{R}_t$')]),
+    (T('\\textbf{CCC} (constant conditional correlation, \\refBoll)', '\\textbf{CCC} (corelație condiționată constantă, \\refBoll)'),
+         [T('$\\mathbf{R}_t = \\mathbf{R}$ for all $t$', '$\\mathbf{R}_t = \\mathbf{R}$ pentru orice $t$'),
+          T('$\\mathbf{H}_t$ is positive definite whenever $\\mathbf{R}$ is; $\\mathbf{R}$ is estimated by the sample correlation of the $z_{i,t}$', '$\\mathbf{H}_t$ este pozitiv definită ori de cîte ori $\\mathbf{R}$ este; $\\mathbf{R}$ se estimează prin corelația de selecție a lui $z_{i,t}$'),
+          T('covariances still move, but only through the volatilities; the rolling correlations of Section 1 reject this', 'covarianțele se mișcă totuși, dar numai prin volatilități; corelațiile pe ferestre mobile din secțiunea 1 contrazic această ipoteză')])))
 
 D.frame(T('Robert Engle and the DCC model', 'Robert Engle și modelul DCC'), two(
     ph('engle', T('Robert F. Engle (b.\\ 1942), Nobel Prize 2003', 'Robert F. Engle (n.\\ 1942), Premiul Nobel 2003'), h='0.42\\textheight'),
     items((T('\\refEngle: let the correlations follow a GARCH-like recursion', '\\refEngle: corelațiile urmează o recurență de tip GARCH'),
            [T('$\\mathbf{Q}_t = (1 - a - b)\\,\\bar{\\mathbf{Q}} + a\\,\\mathbf{z}_{t-1}\\mathbf{z}_{t-1}^\\top + b\\,\\mathbf{Q}_{t-1}$', '$\\mathbf{Q}_t = (1 - a - b)\\,\\bar{\\mathbf{Q}} + a\\,\\mathbf{z}_{t-1}\\mathbf{z}_{t-1}^\\top + b\\,\\mathbf{Q}_{t-1}$'),
+            T('$\\mathbf{Q}_t$: an auxiliary matrix with elements $q_{ij,t}$; $\\mathbf{z}_{t-1}$: yesterday\'s vector of standardised residuals', '$\\mathbf{Q}_t$: o matrice auxiliară, cu elementele $q_{ij,t}$; $\\mathbf{z}_{t-1}$: vectorul reziduurilor standardizate de ieri'),
             T('$\\rho_{ij,t} = q_{ij,t}/\\sqrt{q_{ii,t}\\,q_{jj,t}}$: the rescaling puts ones on the diagonal', '$\\rho_{ij,t} = q_{ij,t}/\\sqrt{q_{ii,t}\\,q_{jj,t}}$: rescalarea pune 1 pe diagonală')]),
           (T('$\\bar{\\mathbf{Q}}$: the unconditional correlation of $\\mathbf{z}_t$, set to its sample value (\\textbf{correlation targeting})', '$\\bar{\\mathbf{Q}}$: corelația necondiționată a lui $\\mathbf{z}_t$, fixată la valoarea de selecție (\\textbf{țintirea corelației})'),
            [T('$a \\ge 0$: reaction to yesterday\'s joint shock; $b \\ge 0$: persistence; $a + b < 1$: mean reversion to $\\bar{\\mathbf{Q}}$', '$a \\ge 0$: reacția la șocul comun de ieri; $b \\ge 0$: persistența; $a + b < 1$: revenire la $\\bar{\\mathbf{Q}}$')]),
           T('$a = b = 0$ gives back CCC', '$a = b = 0$ readuce modelul CCC')), wl='0.33', wr='0.65'), size='footnotesize')
 
 D.frame(T('Two-step estimation', 'Estimarea în doi pași'), items(
-    (T('The log-likelihood splits into a volatility part and a correlation part: $\\ell = \\ell_V(\\theta_1) + \\ell_C(\\theta_1, a, b)$', 'Logaritmul verosimilității se descompune într-o parte de volatilitate și o parte de corelație: $\\ell = \\ell_V(\\theta_1) + \\ell_C(\\theta_1, a, b)$'), []),
-    (T('\\textbf{Step 1}: fit a GARCH(1,1) to each series separately (Chapter 5); keep $\\hat\\sigma_{i,t}$ and $\\hat z_{i,t} = \\hat\\varepsilon_{i,t}/\\hat\\sigma_{i,t}$',
-       '\\textbf{Pasul 1}: estimați cîte un GARCH(1,1) pentru fiecare serie separat (Capitolul 5); păstrați $\\hat\\sigma_{i,t}$ și $\\hat z_{i,t} = \\hat\\varepsilon_{i,t}/\\hat\\sigma_{i,t}$'), []),
-    (T('\\textbf{Step 2}: set $\\bar{\\mathbf{Q}}$ to the sample correlation of $\\hat{\\mathbf{z}}_t$ and maximise over $(a, b)$ only', '\\textbf{Pasul 2}: fixați $\\bar{\\mathbf{Q}}$ la corelația de selecție a lui $\\hat{\\mathbf{z}}_t$ și maximizați doar după $(a, b)$'),
-     [T('$\\ell_C(a, b) = -\\frac12\\sum_t\\left(\\log|\\mathbf{R}_t| + \\hat{\\mathbf{z}}_t^\\top\\mathbf{R}_t^{-1}\\hat{\\mathbf{z}}_t - \\hat{\\mathbf{z}}_t^\\top\\hat{\\mathbf{z}}_t\\right)$', '$\\ell_C(a, b) = -\\frac12\\sum_t\\left(\\log|\\mathbf{R}_t| + \\hat{\\mathbf{z}}_t^\\top\\mathbf{R}_t^{-1}\\hat{\\mathbf{z}}_t - \\hat{\\mathbf{z}}_t^\\top\\hat{\\mathbf{z}}_t\\right)$')]),
+    (T('The log-likelihood splits into a volatility part and a correlation part: $\\ell = \\ell_V(\\theta_1) + \\ell_C(\\theta_1, a, b)$', 'Logaritmul verosimilității se descompune într-o parte de volatilitate și o parte de corelație: $\\ell = \\ell_V(\\theta_1) + \\ell_C(\\theta_1, a, b)$'),
+     [T('$\\theta_1$: the GARCH parameters of all series; $\\ell_V$ depends only on them, $\\ell_C$ also on $a$ and $b$', '$\\theta_1$: parametrii GARCH ai tuturor seriilor; $\\ell_V$ depinde doar de ei, $\\ell_C$ și de $a$ și $b$')]),
+    (T('\\textbf{Step 1}', '\\textbf{Pasul 1}'),
+         [T('fit a GARCH(1,1) to each series separately (Chapter 5)', 'estimați cîte un GARCH(1,1) pentru fiecare serie separat (Capitolul 5)'),
+          T('keep $\\hat\\sigma_{i,t}$ and $\\hat z_{i,t} = \\hat\\varepsilon_{i,t}/\\hat\\sigma_{i,t}$', 'păstrați $\\hat\\sigma_{i,t}$ și $\\hat z_{i,t} = \\hat\\varepsilon_{i,t}/\\hat\\sigma_{i,t}$')]),
+    (T('\\textbf{Step 2}', '\\textbf{Pasul 2}'),
+         [T('set $\\bar{\\mathbf{Q}}$ to the sample correlation of $\\hat{\\mathbf{z}}_t$ and maximise over $(a, b)$ only', 'fixați $\\bar{\\mathbf{Q}}$ la corelația de selecție a lui $\\hat{\\mathbf{z}}_t$ și maximizați doar după $(a, b)$'),
+          T('$\\ell_C(a, b) = -\\frac12\\sum_t\\left(\\log|\\mathbf{R}_t| + \\hat{\\mathbf{z}}_t^\\top\\mathbf{R}_t^{-1}\\hat{\\mathbf{z}}_t - \\hat{\\mathbf{z}}_t^\\top\\hat{\\mathbf{z}}_t\\right)$', '$\\ell_C(a, b) = -\\frac12\\sum_t\\left(\\log|\\mathbf{R}_t| + \\hat{\\mathbf{z}}_t^\\top\\mathbf{R}_t^{-1}\\hat{\\mathbf{z}}_t - \\hat{\\mathbf{z}}_t^\\top\\hat{\\mathbf{z}}_t\\right)$')]),
     (T('Consistent, fast, works for large $N$; the step-2 standard errors ignore the estimation error of step 1 (they are too small)', 'Estimatorul este consistent, rapid și funcționează pentru $N$ mare; erorile standard din pasul 2 ignoră eroarea de estimare din pasul 1 (sînt prea mici)'), []),
-    (T('\\textbf{Test against CCC}: likelihood ratio $LR = 2(\\ell_C^{DCC} - \\ell_C^{CCC})$, compared with $\\chi^2(2)$ (5\\% critical value @{dc.crit}); also \\refTse',
-       '\\textbf{Test față de CCC}: raportul de verosimilitate $LR = 2(\\ell_C^{DCC} - \\ell_C^{CCC})$, comparat cu $\\chi^2(2)$ (valoarea critică la 5\\%: @{dc.crit}); vezi și \\refTse'),
-     [T('$a = b = 0$ lies on the boundary of the parameter space, so the $\\chi^2(2)$ critical value is conservative', '$a = b = 0$ se află pe frontiera spațiului parametrilor, deci valoarea critică $\\chi^2(2)$ este conservatoare')])), size='footnotesize')
+    (T('\\textbf{Test against CCC}', '\\textbf{Test față de CCC}'),
+         [T('likelihood ratio $LR = 2(\\ell_C^{DCC} - \\ell_C^{CCC})$, compared with $\\chi^2(2)$ (5\\% critical value @{dc.crit})', 'raportul de verosimilitate $LR = 2(\\ell_C^{DCC} - \\ell_C^{CCC})$, comparat cu $\\chi^2(2)$ (valoarea critică la 5\\%: @{dc.crit})'),
+          T('also \\refTse', 'vezi și \\refTse'),
+          T('$\\ell_C^{DCC}$, $\\ell_C^{CCC}$: the maximised correlation log-likelihoods of the two models; a large $LR$ rejects constant correlation', '$\\ell_C^{DCC}$, $\\ell_C^{CCC}$: logaritmii maximizați ai verosimilității de corelație pentru cele două modele; un $LR$ mare respinge corelația constantă'),
+          T('$a = b = 0$ lies on the boundary of the parameter space, so the $\\chi^2(2)$ critical value is conservative', '$a = b = 0$ se află pe frontiera spațiului parametrilor, deci valoarea critică $\\chi^2(2)$ este conservatoare')])), size='footnotesize')
 
 D.frame(T('Worked example: one step of the DCC recursion', 'Exemplu rezolvat: un pas al recurenței DCC'), items(
     (T('Given: $a = 0.05$, $b = 0.93$, $\\bar q_{12} = 0.5$ (and $\\bar q_{11} = \\bar q_{22} = 1$), $\\mathbf{Q}_{t-1} = \\begin{pmatrix}1 & 0.5\\\\ 0.5 & 1\\end{pmatrix}$, yesterday $z_{1,t-1} = -2$, $z_{2,t-1} = -2.5$',
@@ -482,9 +499,12 @@ D.frame(T('Worked example: one step of the DCC recursion', 'Exemplu rezolvat: un
      [T('a large joint fall raises tomorrow\'s correlation from 0.50 to @{ex.rho}; without step 3 the ``correlation\'\' $q_{12,t}$ would be @{ex.q12}', 'o scădere comună mare crește corelația de mîine de la 0,50 la @{ex.rho}; fără pasul 3, „corelația” $q_{12,t}$ ar fi @{ex.q12}')])), size='footnotesize')
 
 D.frame(T('Reading $a$ and $b$', 'Interpretarea parametrilor $a$ și $b$'), items(
-    (T('$a$ is the \\textbf{news} coefficient: how much one day\'s joint shock moves the correlation; typical daily values 0.01--0.05', '$a$ este coeficientul de \\textbf{știri}: cît mișcă un șoc comun de o zi corelația; valori zilnice tipice: 0,01--0,05'), []),
-    (T('$a + b$ is the \\textbf{persistence}: a deviation of $q_{ij,t}$ from $\\bar q_{ij}$ shrinks by the factor $a + b$ each day', '$a + b$ este \\textbf{persistența}: o abatere a lui $q_{ij,t}$ de la $\\bar q_{ij}$ se reduce zilnic cu factorul $a + b$'),
-     [T('half-life: $\\ln 0.5/\\ln(a + b)$ days; $a + b = 0.98$ gives 34 days, $0.99$ gives 69 days', 'timpul de înjumătățire: $\\ln 0{,}5/\\ln(a + b)$ zile; $a + b = 0{,}98$ dă 34 de zile, $0{,}99$ dă 69 de zile')]),
+    (T('$a$ is the \\textbf{news} coefficient', '$a$ este coeficientul de \\textbf{știri}'),
+         [T("how much one day's joint shock moves the correlation", 'cît mișcă un șoc comun de o zi corelația'),
+          T('typical daily values 0.01--0.05', 'valori zilnice tipice: 0,01--0,05')]),
+    (T('$a + b$ is the \\textbf{persistence}', '$a + b$ este \\textbf{persistența}'),
+         [T('a deviation of $q_{ij,t}$ from $\\bar q_{ij}$ shrinks by the factor $a + b$ each day', 'o abatere a lui $q_{ij,t}$ de la $\\bar q_{ij}$ se reduce zilnic cu factorul $a + b$'),
+          T('half-life: $\\ln 0.5/\\ln(a + b)$ days; $a + b = 0.98$ gives 34 days, $0.99$ gives 69 days', 'timpul de înjumătățire: $\\ln 0{,}5/\\ln(a + b)$ zile; $a + b = 0{,}98$ dă 34 de zile, $0{,}99$ dă 69 de zile')]),
     (T('The same reading as $\\alpha$ and $\\alpha + \\beta$ in a GARCH(1,1) (Chapter 5)', 'Aceeași interpretare ca pentru $\\alpha$ și $\\alpha + \\beta$ într-un GARCH(1,1) (Capitolul 5)'), []),
     (T('Variants: asymmetric DCC (joint falls move correlations more than joint rises) \\refCES; corrected DCC \\refAielli', 'Variante: DCC asimetric (scăderile comune mișcă mai mult corelațiile decît creșterile comune) \\refCES; DCC corectat \\refAielli'), [])))
 
@@ -615,10 +635,10 @@ D.section('Portfolio VaR 1\\% with DCC', 'VaR 1\\% al unui portofoliu cu DCC')
 D.frame(T('From $\\mathbf{H}_t$ to the VaR of a portfolio', 'De la $\\mathbf{H}_t$ la VaR-ul unui portofoliu'), items(
     (T('Portfolio return $r_{p,t} = \\mathbf{w}^\\top\\mathbf{r}_t$; conditional mean $\\mu_p = \\mathbf{w}^\\top\\boldsymbol{\\mu}$ and volatility $\\sigma_{p,t} = \\sqrt{\\mathbf{w}^\\top\\mathbf{H}_t\\mathbf{w}}$',
        'Randamentul portofoliului $r_{p,t} = \\mathbf{w}^\\top\\mathbf{r}_t$; media condiționată $\\mu_p = \\mathbf{w}^\\top\\boldsymbol{\\mu}$ și volatilitatea $\\sigma_{p,t} = \\sqrt{\\mathbf{w}^\\top\\mathbf{H}_t\\mathbf{w}}$'), []),
-    (T('\\textbf{VaR 1\\%}: the loss exceeded with probability 1\\%, $\\mathrm{VaR}_{0.01,t} = -q_{0.01}(r_{p,t}) = -(\\mu_p + q\\,\\sigma_{p,t})$',
-       '\\textbf{VaR 1\\%}: pierderea depășită cu probabilitatea 1\\%, $\\mathrm{VaR}_{0{,}01,t} = -q_{0{,}01}(r_{p,t}) = -(\\mu_p + q\\,\\sigma_{p,t})$'),
-     [T('Normal: $q = z_{0.01} = -@{ex.z}$', 'distribuția Normală: $q = z_{0{,}01} = -@{ex.z}$'),
-      T('\\textbf{filtered historical simulation} (FHS): $q$ = the empirical 1\\% quantile of the past standardised portfolio returns $(r_{p,t} - \\mu_p)/\\sigma_{p,t}$', '\\textbf{simularea istorică filtrată} (FHS): $q$ = cuantila empirică de 1\\% a randamentelor standardizate trecute ale portofoliului, $(r_{p,t} - \\mu_p)/\\sigma_{p,t}$')]),
+    (T('\\textbf{VaR 1\\%}', '\\textbf{VaR 1\\%}'),
+         [T('the loss exceeded with probability 1\\%, $\\mathrm{VaR}_{0.01,t} = -q_{0.01}(r_{p,t}) = -(\\mu_p + q\\,\\sigma_{p,t})$', 'pierderea depășită cu probabilitatea 1\\%, $\\mathrm{VaR}_{0{,}01,t} = -q_{0{,}01}(r_{p,t}) = -(\\mu_p + q\\,\\sigma_{p,t})$'),
+          T('Normal: $q = z_{0.01} = -@{ex.z}$', 'distribuția Normală: $q = z_{0{,}01} = -@{ex.z}$'),
+          T('\\textbf{filtered historical simulation} (FHS): $q$ = the empirical 1\\% quantile of the past standardised portfolio returns $(r_{p,t} - \\mu_p)/\\sigma_{p,t}$', '\\textbf{simularea istorică filtrată} (FHS): $q$ = cuantila empirică de 1\\% a randamentelor standardizate trecute ale portofoliului, $(r_{p,t} - \\mu_p)/\\sigma_{p,t}$')]),
     (T('Three choices of $\\mathbf{H}_t$: DCC; CCC (GARCH volatilities with a constant correlation); \\textbf{static} (one sample covariance matrix for all days)',
        'Trei variante pentru $\\mathbf{H}_t$: DCC; CCC (volatilități GARCH cu o corelație constantă); \\textbf{statică} (o singură matrice de covarianță de selecție pentru toate zilele)'), [])))
 
@@ -631,13 +651,18 @@ D.frame(T('Worked example: VaR 1\\% of two assets', 'Exemplu rezolvat: VaR 1\\% 
     (T('For a portfolio of 1 million lei: VaR 1\\% of about @{ex.vark3} thousand lei in calm times and @{ex.vark9} thousand lei in the crisis case', 'Pentru un portofoliu de 1 milion de lei: VaR 1\\% de aproximativ @{ex.vark3} mii de lei în perioada calmă și @{ex.vark9} mii de lei în cazul de criză'), [])))
 
 D.frame(T('Backtesting a VaR', 'Backtesting pentru VaR'), items(
-    (T('A \\textbf{violation} on day $t$: $r_{p,t} < -\\mathrm{VaR}_{0.01,t}$; a correct VaR 1\\% has violations on 1\\% of the days, at random times', 'O \\textbf{încălcare} în ziua $t$: $r_{p,t} < -\\mathrm{VaR}_{0{,}01,t}$; un VaR 1\\% corect are încălcări în 1\\% din zile, la momente aleatoare'), []),
-    (T('\\textbf{Kupiec test} \\refKupiec\\ (frequency): $x$ violations in $n$ days, $\\hat p = x/n$', '\\textbf{Testul Kupiec} \\refKupiec\\ (frecvența): $x$ încălcări în $n$ zile, $\\hat p = x/n$'),
-     [T('$LR_{uc} = -2\\log\\dfrac{(1-0.01)^{n-x}\\,0.01^{x}}{(1-\\hat p)^{n-x}\\,\\hat p^{x}} \\sim \\chi^2(1)$; reject at 5\\% if $LR_{uc} > 3.84$', '$LR_{uc} = -2\\log\\dfrac{(1-0{,}01)^{n-x}\\,0{,}01^{x}}{(1-\\hat p)^{n-x}\\,\\hat p^{x}} \\sim \\chi^2(1)$; respingem la 5\\% dacă $LR_{uc} > 3{,}84$')]),
-    (T('\\textbf{Christoffersen test} \\refChr\\ (independence): is a violation more likely the day after a violation?', '\\textbf{Testul Christoffersen} \\refChr\\ (independența): este o încălcare mai probabilă în ziua de după o încălcare?'),
-     [T('compares $\\pi_{11} = P(\\text{violation} \\mid \\text{violation yesterday})$ with $\\pi_{01} = P(\\text{violation} \\mid \\text{no violation yesterday})$', 'compară $\\pi_{11} = P(\\text{încălcare} \\mid \\text{încălcare ieri})$ cu $\\pi_{01} = P(\\text{încălcare} \\mid \\text{fără încălcare ieri})$')]),
-    (T('\\textbf{Honest design}: estimate all parameters on 2000--2014 (@{vr.nin} days), then run the filters forward on 2015--2026 (@{vr.n} days) without re-estimating',
-       '\\textbf{Un design corect}: estimați toți parametrii pe 2000--2014 (@{vr.nin} de zile), apoi rulați filtrele mai departe pe 2015--2026 (@{vr.n} de zile), fără reestimare'), [])), size='footnotesize')
+    (T('A \\textbf{violation} on day $t$', 'O \\textbf{încălcare} în ziua $t$'),
+         [T('$r_{p,t} < -\\mathrm{VaR}_{0.01,t}$', '$r_{p,t} < -\\mathrm{VaR}_{0{,}01,t}$'),
+          T('a correct VaR 1\\% has violations on 1\\% of the days, at random times', 'un VaR 1\\% corect are încălcări în 1\\% din zile, la momente aleatoare')]),
+    (T('\\textbf{Kupiec test} \\refKupiec\\ (frequency)', '\\textbf{Testul Kupiec} \\refKupiec\\ (frecvența)'),
+         [T('$x$ violations in $n$ days, $\\hat p = x/n$', '$x$ încălcări în $n$ zile, $\\hat p = x/n$'),
+          T('$LR_{uc} = -2\\log\\dfrac{(1-0.01)^{n-x}\\,0.01^{x}}{(1-\\hat p)^{n-x}\\,\\hat p^{x}} \\sim \\chi^2(1)$; reject at 5\\% if $LR_{uc} > 3.84$', '$LR_{uc} = -2\\log\\dfrac{(1-0{,}01)^{n-x}\\,0{,}01^{x}}{(1-\\hat p)^{n-x}\\,\\hat p^{x}} \\sim \\chi^2(1)$; respingem la 5\\% dacă $LR_{uc} > 3{,}84$'),
+          T('$uc$: unconditional coverage; the ratio compares the likelihood of the violations under the rate 1\\% with that under the observed rate $\\hat p$', '$uc$: unconditional coverage (acoperirea necondiționată); raportul compară verosimilitatea încălcărilor la rata de 1\\% cu cea la rata observată $\\hat p$')]),
+    (T('\\textbf{Christoffersen test} \\refChr\\ (independence)', '\\textbf{Testul Christoffersen} \\refChr\\ (independența)'),
+         [T('is a violation more likely the day after a violation?', 'este o încălcare mai probabilă în ziua de după o încălcare?'),
+          T('compares $\\pi_{11} = P(\\text{violation} \\mid \\text{violation yesterday})$ with $\\pi_{01} = P(\\text{violation} \\mid \\text{no violation yesterday})$', 'compară $\\pi_{11} = P(\\text{încălcare} \\mid \\text{încălcare ieri})$ cu $\\pi_{01} = P(\\text{încălcare} \\mid \\text{fără încălcare ieri})$')]),
+    (T('\\textbf{Honest design}', '\\textbf{O schemă de evaluare corectă}'),
+         [T('estimate all parameters on 2000--2014 (@{vr.nin} days), then run the filters forward on 2015--2026 (@{vr.n} days) without re-estimating', 'estimați toți parametrii pe 2000--2014 (@{vr.nin} de zile), apoi rulați filtrele mai departe pe 2015--2026 (@{vr.n} de zile), fără reestimare')])), size='footnotesize')
 
 chart(T('VaR 1\\% of an S\\&P 500 and DAX portfolio, 2015--2026', 'VaR 1\\% al unui portofoliu S\\&P 500 și DAX, 2015--2026'), 'tsa_ch14_var_backtest', 'TSA_ch14_portfolio_var', [
     T('Daily return of a 50/50 portfolio and minus VaR 1\\% from DCC with filtered historical simulation and from a static covariance matrix; triangles: violations', 'Randamentul zilnic al unui portofoliu 50/50 și minus VaR 1\\% din DCC cu simulare istorică filtrată și dintr-o matrice de covarianță statică; triunghiuri: încălcări')],
@@ -671,11 +696,14 @@ D.section('Dynamic hedge ratios', 'Rapoarte dinamice de acoperire')
 D.frame(T('The minimum-variance hedge ratio', 'Raportul de acoperire cu varianță minimă'), items(
     (T('Hold one unit of asset $s$ (e.g. Romanian shares, the BET) and sell $h$ units of a hedging asset $f$ (e.g. a DAX futures contract)',
        'Dețineți o unitate din activul $s$ (de exemplu acțiuni românești, BET) și vindeți $h$ unități dintr-un activ de acoperire $f$ (de exemplu un contract futures pe DAX)'),
-     [T('hedged return $r_{s,t} - h\\,r_{f,t}$, with variance $\\sigma_s^2 - 2h\\,\\sigma_{sf} + h^2\\sigma_f^2$', 'randamentul acoperit $r_{s,t} - h\\,r_{f,t}$, cu varianța $\\sigma_s^2 - 2h\\,\\sigma_{sf} + h^2\\sigma_f^2$')]),
+     [T('hedged return $r_{s,t} - h\\,r_{f,t}$, with variance $\\sigma_s^2 - 2h\\,\\sigma_{sf} + h^2\\sigma_f^2$', 'randamentul acoperit $r_{s,t} - h\\,r_{f,t}$, cu varianța $\\sigma_s^2 - 2h\\,\\sigma_{sf} + h^2\\sigma_f^2$'),
+      T('$\\sigma_s^2$, $\\sigma_f^2$: the variances of the two returns; $\\sigma_{sf}$: their covariance', '$\\sigma_s^2$, $\\sigma_f^2$: varianțele celor două randamente; $\\sigma_{sf}$: covarianța lor')]),
     (T('Setting the derivative in $h$ to zero: $h^* = \\dfrac{\\sigma_{sf}}{\\sigma_f^2} = \\rho\\,\\dfrac{\\sigma_s}{\\sigma_f}$ \\refEd', 'Anulînd derivata în raport cu $h$: $h^* = \\dfrac{\\sigma_{sf}}{\\sigma_f^2} = \\rho\\,\\dfrac{\\sigma_s}{\\sigma_f}$ \\refEd'),
-     [T('static $h^*$: the OLS slope of $r_s$ on $r_f$; \\textbf{dynamic}: $h_t^* = h_{sf,t}/h_{ff,t}$ from an MGARCH model \\refKS', '$h^*$ static: panta OLS a regresiei lui $r_s$ pe $r_f$; \\textbf{dinamic}: $h_t^* = h_{sf,t}/h_{ff,t}$ dintr-un model MGARCH \\refKS')]),
-    (T('\\textbf{Hedging effectiveness}: $HE = 1 - \\Var(r_s - h\\,r_f)/\\Var(r_s)$, the share of the variance removed', '\\textbf{Eficiența acoperirii}: $HE = 1 - \\Var(r_s - h\\,r_f)/\\Var(r_s)$, ponderea varianței eliminate'),
-     [T('with $h = h^*$ constant: $HE = \\rho^2$; a hedge is only as good as the correlation', 'cu $h = h^*$ constant: $HE = \\rho^2$; o acoperire este atît de bună cît este corelația')])))
+     [T('static $h^*$: the OLS slope of $r_s$ on $r_f$', '$h^*$ static: panta OLS a regresiei lui $r_s$ pe $r_f$'),
+      T('\\textbf{dynamic}: $h_t^* = h_{sf,t}/h_{ff,t}$ from an MGARCH model \\refKS; $h_{sf,t}$, $h_{ff,t}$: elements of $\\mathbf{H}_t$', '\\textbf{dinamic}: $h_t^* = h_{sf,t}/h_{ff,t}$ dintr-un model MGARCH \\refKS; $h_{sf,t}$, $h_{ff,t}$: elemente ale lui $\\mathbf{H}_t$')]),
+    (T('\\textbf{Hedging effectiveness}', '\\textbf{Eficiența acoperirii}'),
+         [T('$HE = 1 - \\Var(r_s - h\\,r_f)/\\Var(r_s)$, the share of the variance removed', '$HE = 1 - \\Var(r_s - h\\,r_f)/\\Var(r_s)$, ponderea varianței eliminate'),
+          T('with $h = h^*$ constant: $HE = \\rho^2$; a hedge is only as good as the correlation', 'cu $h = h^*$ constant: $HE = \\rho^2$; o acoperire este atît de bună cît este corelația')])), size='footnotesize')
 
 D.frame(T('Worked example: a hedge ratio', 'Exemplu rezolvat: un raport de acoperire'), items(
     (T('Given: $\\sigma_s = 1.2\\%$, $\\sigma_f = 1.0\\%$ (daily), $\\rho = 0.8$', 'Date: $\\sigma_s = 1{,}2\\%$, $\\sigma_f = 1{,}0\\%$ (zilnic), $\\rho = 0{,}8$'), []),
@@ -709,20 +737,25 @@ D.recap(('Hedging', 'acoperirea riscului'), [
 D.section('Links with other chapters and limits', 'Legături cu alte capitole și limite')
 
 D.frame(T('Links with Chapters 5, 6 and 7', 'Legături cu Capitolele 5, 6 și 7'), items(
-    (T('\\textbf{Chapter 5}: every MGARCH model contains univariate GARCH models; in DCC they are literally step 1', '\\textbf{Capitolul 5}: orice model MGARCH conține modele GARCH univariate; în DCC ele sînt chiar pasul 1'), []),
-    (T('\\textbf{Chapter 6}: a VAR models spillovers in the \\textbf{mean} (e.g.\\ whether yesterday\'s DAX return helps to forecast today\'s BET return); BEKK with a full $\\mathbf{A}$ models spillovers in the \\textbf{variance}',
-       '\\textbf{Capitolul 6}: un VAR modelează transmiterea în \\textbf{medie} (de exemplu, dacă randamentul DAX de ieri ajută la prognoza randamentului BET de azi); BEKK cu $\\mathbf{A}$ complet modelează transmiterea în \\textbf{varianță}'),
-     [T('the two combine: a VAR for $\\boldsymbol{\\mu}_t$ and an MGARCH for $\\mathbf{H}_t$; spillover indices from variance decompositions \\refDY', 'cele două se combină: un VAR pentru $\\boldsymbol{\\mu}_t$ și un MGARCH pentru $\\mathbf{H}_t$; indicii de transmitere din descompunerea varianței \\refDY')]),
-    (T('\\textbf{Chapter 7}: cointegration is a \\textbf{long-run} link between price levels; correlation is a \\textbf{short-run} link between returns', '\\textbf{Capitolul 7}: cointegrarea este o legătură pe \\textbf{termen lung} între nivelurile prețurilor; corelația este o legătură pe \\textbf{termen scurt} între randamente'),
-     [T('two prices can be highly correlated day by day and drift apart for ever, or cointegrated with low daily correlation', 'două prețuri pot fi puternic corelate de la o zi la alta și să se îndepărteze definitiv, sau pot fi cointegrate cu o corelație zilnică mică'),
-      T('a VECM can carry a DCC error term: equilibrium in the mean, dynamic correlation in the shocks', 'un VECM poate avea erori de tip DCC: echilibru în medie, corelație dinamică în șocuri')])))
+    (T('\\textbf{Chapter 5}', '\\textbf{Capitolul 5}'),
+         [T('every MGARCH model contains univariate GARCH models', 'orice model MGARCH conține modele GARCH univariate'),
+          T('in DCC they are literally step 1', 'în DCC ele sînt chiar pasul 1')]),
+    (T('\\textbf{Chapter 6}', '\\textbf{Capitolul 6}'),
+         [T("a VAR models spillovers in the \\textbf{mean} (e.g.\\ whether yesterday's DAX return helps to forecast today's BET return)", 'un VAR modelează transmiterea în \\textbf{medie} (de exemplu, dacă randamentul DAX de ieri ajută la prognoza randamentului BET de azi)'),
+          T('BEKK with a full $\\mathbf{A}$ models spillovers in the \\textbf{variance}', 'BEKK cu $\\mathbf{A}$ complet modelează transmiterea în \\textbf{varianță}'),
+          T('the two combine: a VAR for $\\boldsymbol{\\mu}_t$ and an MGARCH for $\\mathbf{H}_t$; spillover indices from variance decompositions \\refDY', 'cele două se combină: un VAR pentru $\\boldsymbol{\\mu}_t$ și un MGARCH pentru $\\mathbf{H}_t$; indicii de transmitere din descompunerea varianței \\refDY')]),
+    (T('\\textbf{Chapter 7}', '\\textbf{Capitolul 7}'),
+         [T('cointegration is a \\textbf{long-run} link between price levels', 'cointegrarea este o legătură pe \\textbf{termen lung} între nivelurile prețurilor'),
+          T('correlation is a \\textbf{short-run} link between returns', 'corelația este o legătură pe \\textbf{termen scurt} între randamente'),
+          T('two prices can be highly correlated day by day and drift apart for ever, or cointegrated with low daily correlation', 'două prețuri pot fi puternic corelate de la o zi la alta și să se îndepărteze definitiv, sau pot fi cointegrate cu o corelație zilnică mică'),
+          T('a VECM can carry a DCC error term: equilibrium in the mean, dynamic correlation in the shocks', 'un VECM poate avea erori de tip DCC: echilibru în medie, corelație dinamică în șocuri')])))
 
 D.frame(T('Limits and extensions', 'Limite și extensii'), two(
     ph('frankfurt', T('Frankfurt Stock Exchange', 'Bursa din Frankfurt'), h='0.3\\textheight'),
     items(T('One $(a, b)$ for all pairs; no spillovers between volatilities in DCC', 'Un singur $(a, b)$ pentru toate perechile; DCC nu are transmitere între volatilități'),
           T('Normal QML underestimates the tails: use Student $t$ innovations or FHS for risk', 'QML cu distribuția Normală subestimează cozile: pentru risc folosiți inovații Student $t$ sau FHS'),
           T('Asymmetry: correlations react more to joint falls (asymmetric DCC, \\refCES)', 'Asimetria: corelațiile reacționează mai mult la scăderile comune (DCC asimetric, \\refCES)'),
-          T('Hundreds of assets: factor models, composite likelihood and shrinkage of $\\bar{\\mathbf{Q}}$', 'Sute de active: modele factoriale, verosimilitate compusă și contracția (shrinkage) lui $\\bar{\\mathbf{Q}}$'),
+          T('Hundreds of assets: factor models, composite likelihood and shrinkage of $\\bar{\\mathbf{Q}}$', 'Sute de active: modele factoriale, verosimilitate compusă și shrinkage aplicat lui $\\bar{\\mathbf{Q}}$'),
           T('Correlation is linear dependence; for joint extremes see copulas and tail dependence \\refLS', 'Corelația măsoară dependența liniară; pentru extreme comune vedeți copulele și dependența în cozi \\refLS')),
     wl='0.34', wr='0.64'), size='footnotesize')
 
@@ -732,9 +765,12 @@ D.frame(T('Limits and extensions', 'Limite și extensii'), two(
 D.section('Possible contribution of AI', 'Contribuția posibilă a AI')
 
 D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
-    T('\\textbf{Code}: a first draft of the DCC likelihood, of a BEKK filter, of a Kupiec test', '\\textbf{Cod}: o primă versiune a verosimilității DCC, a unui filtru BEKK, a testului Kupiec'),
-    T('\\textbf{Explanation}: a second explanation of $\\mathbf{D}_t\\mathbf{R}_t\\mathbf{D}_t$, of correlation targeting, of the hedge-ratio formula', '\\textbf{Explicații}: o a doua explicație a descompunerii $\\mathbf{D}_t\\mathbf{R}_t\\mathbf{D}_t$, a țintirii corelației, a formulei raportului de acoperire'),
-    T('\\textbf{Exploration}: DCC for many pairs (CEE markets, sectors, currencies) and their behaviour in crises', '\\textbf{Explorare}: DCC pentru multe perechi (piețe din Europa Centrală și de Est, sectoare, valute) și comportamentul lor în crize'),
+    (T('\\textbf{Code}', '\\textbf{Cod}'),
+         [T('a first draft of the DCC likelihood, of a BEKK filter, of a Kupiec test', 'o primă versiune a verosimilității DCC, a unui filtru BEKK, a testului Kupiec')]),
+    (T('\\textbf{Explanation}', '\\textbf{Explicații}'),
+         [T('a second explanation of $\\mathbf{D}_t\\mathbf{R}_t\\mathbf{D}_t$, of correlation targeting, of the hedge-ratio formula', 'o a doua explicație a descompunerii $\\mathbf{D}_t\\mathbf{R}_t\\mathbf{D}_t$, a țintirii corelației, a formulei raportului de acoperire')]),
+    (T('\\textbf{Exploration}', '\\textbf{Explorare}'),
+         [T('DCC for many pairs (CEE markets, sectors, currencies) and their behaviour in crises', 'DCC pentru multe perechi (piețe din Europa Centrală și de Est, sectoare, valute) și comportamentul lor în crize')]),
     (T('Example prompt', 'Exemplu de prompt'),
      [T('\\aiprompt{Write Python code that fits a GARCH(1,1) to daily BET and DAX log returns on common trading days, estimates a DCC(1,1) model by two-step maximum likelihood with correlation targeting, plots the dynamic hedge ratio and compares its out-of-sample hedging effectiveness with static OLS.}',
         '\\aiprompt{Write Python code that fits a GARCH(1,1) to daily BET and DAX log returns on common trading days, estimates a DCC(1,1) model by two-step maximum likelihood with correlation targeting, plots the dynamic hedge ratio and compares its out-of-sample hedging effectiveness with static OLS.}')])))

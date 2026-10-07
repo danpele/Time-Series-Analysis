@@ -344,7 +344,7 @@ D.section('From Chapter 1 to ARMA models', 'De la Capitolul 1 la modelele ARMA')
 
 D.frame(T('Tools from Chapter 1', 'Instrumente din Capitolul 1'), items(
     (T('\\textbf{Weak stationarity}: constant mean $\\mu$ and autocovariance $\\gamma(h) = \\mathrm{Cov}(X_t, X_{t+h})$ that depends only on the lag $h$',
-       '\\textbf{Staționaritatea slabă}: media constantă $\\mu$ și autocovarianța $\\gamma(h) = \\mathrm{Cov}(X_t, X_{t+h})$, care depinde doar de decalajul $h$'),
+       '\\textbf{Staționaritatea slabă}: media constantă $\\mu$ și autocovarianța $\\gamma(h) = \\mathrm{Cov}(X_t, X_{t+h})$, care depinde doar de lagul $h$'),
      [T('ACF $\\rho(h) = \\gamma(h)/\\gamma(0)$; PACF $\\phi_{hh}$ = correlation of $X_t$ and $X_{t+h}$ after removing $X_{t+1}, \\dots, X_{t+h-1}$',
         'ACF $\\rho(h) = \\gamma(h)/\\gamma(0)$; PACF $\\phi_{hh}$ = corelația dintre $X_t$ și $X_{t+h}$ după eliminarea efectului lui $X_{t+1}, \\dots, X_{t+h-1}$')]),
     (T('\\textbf{White noise} $\\varepsilon_t \\sim \\mathrm{WN}(0, \\sigma^2)$: mean 0, variance $\\sigma^2$, no autocorrelation', '\\textbf{Zgomotul alb} $\\varepsilon_t \\sim \\mathrm{WN}(0, \\sigma^2)$: media 0, varianța $\\sigma^2$, fără autocorelație'),
@@ -421,7 +421,7 @@ interp(('the AR(1) paths', 'traiectoriilor AR(1)'), [
      [T('variance @{ar1.b.var} (theory @{ar1.b.vth})', 'varianța @{ar1.b.var} (teoretic @{ar1.b.vth})')]),
     (T('$\\phi = -0.7$: zig-zag; $\\hat\\rho(1) = @{ar1.c.r1}$, $\\hat\\rho(2) = @{ar1.c.r2}$, alternating signs', '$\\phi = -0{,}7$: zigzag; $\\hat\\rho(1) = @{ar1.c.r1}$, $\\hat\\rho(2) = @{ar1.c.r2}$, semne alternante'),
      [T('in economics: overshooting and correction, or a measurement error that is corrected next period', 'în economie: depășire și corecție sau o eroare de măsurare corectată în perioada următoare')]),
-    T('With $T = 200$ the sample ACF is below the theoretical one at long lags: a small-sample bias that also affects the estimators (Section 5)', 'Cu $T = 200$, ACF de selecție este sub cea teoretică la decalaje mari: o deplasare de eșantion mic, care afectează și estimatorii (secțiunea 5)')])
+    T('With $T = 200$ the sample ACF is below the theoretical one at long lags: a small-sample bias that also affects the estimators (Section 5)', 'Cu $T = 200$, ACF de selecție este sub cea teoretică la laguri mari: o deplasare de eșantion mic, care afectează și estimatorii (secțiunea 5)')])
 
 D.frame(T('The AR($p$) model and its characteristic polynomial', 'Modelul AR($p$) și polinomul lui caracteristic'), items(
     (T('$\\phi(L)X_t = c + \\varepsilon_t$, with $\\phi(z) = 1 - \\phi_1z - \\dots - \\phi_pz^p$, a polynomial in a complex number $z$', '$\\phi(L)X_t = c + \\varepsilon_t$, cu $\\phi(z) = 1 - \\phi_1z - \\dots - \\phi_pz^p$, un polinom într-un număr complex $z$'),
@@ -450,24 +450,24 @@ interp(('the AR(2) examples', 'exemplelor AR(2)'), [
     (T('\\textbf{A}: real roots $@{ar2.a.z1}$ and $@{ar2.a.z2}$, both outside the circle: stationary', '\\textbf{A}: rădăcini reale $@{ar2.a.z1}$ și $@{ar2.a.z2}$, ambele în afara cercului: staționar'),
      [T('$\\rho(1) = 0.5/0.7 = @{ar2.a.r1}$, $\\rho(2) = 0.5\\rho(1) + 0.3 = @{ar2.a.r2}$: slow, smooth decay', '$\\rho(1) = 0{,}5/0{,}7 = @{ar2.a.r1}$, $\\rho(2) = 0{,}5\\rho(1) + 0{,}3 = @{ar2.a.r2}$: descreștere lentă și netedă')]),
     (T('\\textbf{B}: complex roots $@{ar2.b.re} \\pm @{ar2.b.im}\\,i$, modulus $@{ar2.b.mod} > 1$: stationary', '\\textbf{B}: rădăcini complexe $@{ar2.b.re} \\pm @{ar2.b.im}\\,i$, modul $@{ar2.b.mod} > 1$: staționar'),
-     [T('ACF: a wave with period @{ar2.b.per} lags, damped by $@{ar2.b.imod}$ per lag: a \\textbf{stochastic cycle}', 'ACF: o undă cu perioada de @{ar2.b.per} decalaje, amortizată cu $@{ar2.b.imod}$ pe decalaj: un \\textbf{ciclu stochastic}')]),
+     [T('ACF: a wave with period @{ar2.b.per} lags, damped by $@{ar2.b.imod}$ per lag: a \\textbf{stochastic cycle}', 'ACF: o undă cu perioada de @{ar2.b.per} laguri, amortizată cu $@{ar2.b.imod}$ pe lag: un \\textbf{ciclu stochastic}')]),
     (T('\\textbf{C}: $\\phi_1 + \\phi_2 = 1.1 > 1$; one root $@{ar2.c.z1} < 1$: \\textbf{not} stationary (explosive)', '\\textbf{C}: $\\phi_1 + \\phi_2 = 1{,}1 > 1$; o rădăcină $@{ar2.c.z1} < 1$: proces \\textbf{nestaționar} (exploziv)'),
      [T('each coefficient is below 1, yet the process explodes: always check the roots, not the coefficients one by one', 'fiecare coeficient este sub 1, totuși procesul explodează: verificați întotdeauna rădăcinile, nu coeficienții unul cîte unul')]),
     T('Complex roots are how linear models produce business cycles and the 11-year solar cycle', 'Rădăcinile complexe sînt mecanismul prin care modelele liniare produc ciclurile economice și ciclul solar de 11 ani')])
 
-D.frame(T('The PACF of an AR($p$) cuts off after lag $p$', 'PACF a unui AR($p$) se anulează după decalajul $p$'), items(
+D.frame(T('The PACF of an AR($p$) cuts off after lag $p$', 'PACF a unui AR($p$) se anulează după lagul $p$'), items(
     (T('$\\phi_{hh}$ = the last coefficient in the best linear prediction of $X_t$ from $X_{t-1}, \\dots, X_{t-h}$ (Chapter 1)', '$\\phi_{hh}$ = ultimul coeficient din cea mai bună predicție liniară a lui $X_t$ din $X_{t-1}, \\dots, X_{t-h}$ (Capitolul 1)'),
      [T('computed from the ACF by the Durbin--Levinson recursion (\\refDurbin)', 'calculat din ACF prin recursia Durbin--Levinson (\\refDurbin)')]),
     (T('For an AR($p$) and $h > p$, the best predictor is the model itself: $\\phi_1X_{t-1} + \\dots + \\phi_pX_{t-p}$', 'Pentru un AR($p$) și $h > p$, cel mai bun predictor este chiar modelul: $\\phi_1X_{t-1} + \\dots + \\phi_pX_{t-p}$'),
      [T('so $\\phi_{hh} = 0$ for $h > p$, and $\\phi_{pp} = \\phi_p$', 'deci $\\phi_{hh} = 0$ pentru $h > p$, iar $\\phi_{pp} = \\phi_p$')]),
     (T('\\textbf{Identification rule}: ACF decays gradually, PACF has $p$ spikes and then stays inside the band: AR($p$)', '\\textbf{Regula de identificare}: ACF descrește treptat, PACF are $p$ valori semnificative și apoi rămîne în bandă: AR($p$)'),
-     [T('band for the sample PACF of an AR($p$) at lags $h > p$: $\\pm 1.96/\\sqrt{T}$', 'banda pentru PACF de selecție a unui AR($p$) la decalajele $h > p$: $\\pm 1{,}96/\\sqrt{T}$')])))
+     [T('band for the sample PACF of an AR($p$) at lags $h > p$: $\\pm 1.96/\\sqrt{T}$', 'banda pentru PACF de selecție a unui AR($p$) la lagurile $h > p$: $\\pm 1{,}96/\\sqrt{T}$')])))
 
 D.recap(('Autoregressive models', 'modele autoregresive'), [
     T('AR($p$): $\\phi(L)X_t = c + \\varepsilon_t$; stationary iff all roots of $\\phi(z)$ lie outside the unit circle', 'AR($p$): $\\phi(L)X_t = c + \\varepsilon_t$; staționar dacă și numai dacă toate rădăcinile lui $\\phi(z)$ sînt în afara cercului unitate'),
     T('Mean $\\mu = c/\\phi(1)$; ACF from the Yule--Walker recursion, a mix of geometric decays and damped waves', 'Media $\\mu = c/\\phi(1)$; ACF din recurența Yule--Walker, o combinație de descreșteri geometrice și unde amortizate'),
     T('AR(1): $\\rho(h) = \\phi^h$, $\\psi_j = \\phi^j$, half-life $\\ln 0.5/\\ln\\phi$', 'AR(1): $\\rho(h) = \\phi^h$, $\\psi_j = \\phi^j$, timpul de înjumătățire $\\ln 0{,}5/\\ln\\phi$'),
-    T('PACF cuts off after lag $p$: the signature of an AR($p$)', 'PACF se anulează după decalajul $p$: semnătura unui AR($p$)')])
+    T('PACF cuts off after lag $p$: the signature of an AR($p$)', 'PACF se anulează după lagul $p$: semnătura unui AR($p$)')])
 
 # =============================================================================
 # 3. MA
@@ -479,9 +479,9 @@ D.frame(T('The MA($q$) model', 'Modelul MA($q$)'), items(
      [T('a finite Wold sum: \\textbf{always stationary}, for any $\\theta$', 'o sumă Wold finită: \\textbf{întotdeauna staționar}, pentru orice $\\theta$')]),
     (T('Moments (derived in Seminar 1 and Chapter 1): with $\\theta_0 = 1$', 'Momentele (deduse în Seminarul 1 și în Capitolul 1): cu $\\theta_0 = 1$'),
      [T('$E[X_t] = \\mu$; $\\gamma(h) = \\sigma^2\\sum_{j=0}^{q-h}\\theta_j\\theta_{j+h}$ for $0 \\le h \\le q$; $\\gamma(h) = 0$ for $h > q$', '$E[X_t] = \\mu$; $\\gamma(h) = \\sigma^2\\sum_{j=0}^{q-h}\\theta_j\\theta_{j+h}$ pentru $0 \\le h \\le q$; $\\gamma(h) = 0$ pentru $h > q$')]),
-    (T('\\textbf{Identification rule}: the ACF \\textbf{cuts off} after lag $q$; the PACF decays gradually', '\\textbf{Regula de identificare}: ACF \\textbf{se anulează} după decalajul $q$; PACF descrește treptat'),
+    (T('\\textbf{Identification rule}: the ACF \\textbf{cuts off} after lag $q$; the PACF decays gradually', '\\textbf{Regula de identificare}: ACF \\textbf{se anulează} după lagul $q$; PACF descrește treptat'),
      [T('the mirror image of the AR($p$) rule', 'imaginea în oglindă a regulii pentru AR($p$)'),
-      T('band for the sample ACF at lags $h > q$ (Bartlett): $\\pm 1.96\\sqrt{(1 + 2\\sum_{j=1}^{q}\\hat\\rho(j)^2)/T}$, wider than $\\pm 1.96/\\sqrt{T}$', 'banda pentru ACF de selecție la decalajele $h > q$ (Bartlett): $\\pm 1{,}96\\sqrt{(1 + 2\\sum_{j=1}^{q}\\hat\\rho(j)^2)/T}$, mai largă decît $\\pm 1{,}96/\\sqrt{T}$')])))
+      T('band for the sample ACF at lags $h > q$ (Bartlett): $\\pm 1.96\\sqrt{(1 + 2\\sum_{j=1}^{q}\\hat\\rho(j)^2)/T}$, wider than $\\pm 1.96/\\sqrt{T}$', 'banda pentru ACF de selecție la lagurile $h > q$ (Bartlett): $\\pm 1{,}96\\sqrt{(1 + 2\\sum_{j=1}^{q}\\hat\\rho(j)^2)/T}$, mai largă decît $\\pm 1{,}96/\\sqrt{T}$')])))
 
 chart(T('MA(1): $\\theta = 0.8$ and $\\theta = -0.8$', 'MA(1): $\\theta = 0{,}8$ și $\\theta = -0{,}8$'), 'tsa_ch2_ma1', 'TSA_ch2_ma_models', [
     T('$T = 300$; the ACF has one spike, the PACF decays (with alternating signs when $\\theta > 0$)', '$T = 300$; ACF are o singură valoare semnificativă, PACF descrește (cu semne alternante cînd $\\theta > 0$)')],
@@ -492,7 +492,7 @@ interp(('the MA(1) correlograms', 'corelogramelor MA(1)'), [
      [T('sample: $\\hat\\rho(1) = @{ma1.p.r1}$ and $@{ma1.m.r1}$', 'de selecție: $\\hat\\rho(1) = @{ma1.p.r1}$ și $@{ma1.m.r1}$')]),
     (T('The PACF does not cut off: $\\hat\\phi_{22} = @{ma1.p.p2}$ for $\\theta = 0.8$', 'PACF nu se anulează: $\\hat\\phi_{22} = @{ma1.p.p2}$ pentru $\\theta = 0{,}8$'),
      [T('an MA(1) is an AR($\\infty$) (next slides), so every past value helps a little', 'un MA(1) este un AR($\\infty$) (slide-urile următoare), deci fiecare valoare trecută ajută puțin')]),
-    T('An MA(1) remembers exactly one period: a shock today affects tomorrow and is then forgotten', 'Un MA(1) își amintește exact o perioadă: un șoc de azi afectează ziua de mîine și apoi este uitat'),
+    T('An MA(1) remembers exactly one period: a shock today affects tomorrow and is then forgotten', 'Un MA(1) are o memorie de exact o perioadă: un șoc de azi afectează valoarea de mîine, apoi efectul lui dispare'),
     T('Economic examples: overlapping observations (Section 9), a measurement error, a bid--ask bounce in prices', 'Exemple economice: observații care se suprapun (secțiunea 9), o eroare de măsurare, oscilația bid--ask a prețurilor')])
 
 chart(T('The largest autocorrelation of an MA(1)', 'Cea mai mare autocorelație a unui MA(1)'), 'tsa_ch2_ma1_rho', 'TSA_ch2_ma_models', [
@@ -512,7 +512,7 @@ D.frame(T('Invertibility', 'Invertibilitatea'), items(
       T('an \\textbf{AR($\\infty$) representation}: $X_t = \\theta X_{t-1} - \\theta^2X_{t-2} + \\dots + \\varepsilon_t$', 'o \\textbf{reprezentare AR($\\infty$)}: $X_t = \\theta X_{t-1} - \\theta^2X_{t-2} + \\dots + \\varepsilon_t$')]),
     (T('\\textbf{Invertible}: the shocks can be recovered from the past of $X$; condition: all roots of $\\theta(z) = 0$ outside the unit circle', '\\textbf{Invertibil}: șocurile pot fi recuperate din trecutul lui $X$; condiția: toate rădăcinile lui $\\theta(z) = 0$ în afara cercului unitate'),
      [T('MA(1): $|\\theta| < 1$; the same algebra as AR stationarity, applied to $\\theta(z)$', 'MA(1): $|\\theta| < 1$; aceeași algebră ca la staționaritatea AR, aplicată lui $\\theta(z)$')]),
-    (T('Why we want it', 'De ce o dorim'),
+    (T('Why we want it', 'Motivația'),
      [T('uniqueness: among $\\theta$ and $1/\\theta$ only one is invertible', 'unicitate: dintre $\\theta$ și $1/\\theta$ doar unul este invertibil'),
       T('forecasting: the shocks $\\varepsilon_t$ are computed from the data, so forecasts can use them', 'prognoză: șocurile $\\varepsilon_t$ se calculează din date, deci prognozele le pot folosi'),
       T('software reports invertible estimates; a root near the circle signals over-differencing (Chapter 1)', 'programele raportează estimări invertibile; o rădăcină aproape de cerc semnalează supradiferențierea (Capitolul 1)')])))
@@ -528,7 +528,7 @@ D.frame(T('Worked example: $\\theta = 2$ or $\\theta = 0.5$?', 'Exemplu rezolvat
     T('Rule: report the invertible version ($\\theta = 0.5$, $\\sigma^2 = 4$)', 'Regula: raportăm versiunea invertibilă ($\\theta = 0{,}5$, $\\sigma^2 = 4$)')))
 
 D.recap(('Moving-average models', 'modele de medie mobilă'), [
-    T('MA($q$) is always stationary; its ACF cuts off after lag $q$, its PACF decays', 'MA($q$) este întotdeauna staționar; ACF lui se anulează după decalajul $q$, PACF descrește'),
+    T('MA($q$) is always stationary; its ACF cuts off after lag $q$, its PACF decays', 'MA($q$) este întotdeauna staționar; ACF lui se anulează după lagul $q$, PACF descrește'),
     T('MA(1): $\\rho(1) = \\theta/(1 + \\theta^2)$, at most $0.5$ in absolute value', 'MA(1): $\\rho(1) = \\theta/(1 + \\theta^2)$, cel mult $0{,}5$ în valoare absolută'),
     T('Invertible iff the roots of $\\theta(z)$ lie outside the unit circle; then MA = AR($\\infty$)', 'Invertibil dacă și numai dacă rădăcinile lui $\\theta(z)$ sînt în afara cercului unitate; atunci MA = AR($\\infty$)'),
     T('$\\theta$ and $1/\\theta$ are observationally equivalent; we keep the invertible one', '$\\theta$ și $1/\\theta$ sînt echivalente observațional; îl păstrăm pe cel invertibil')])
@@ -571,7 +571,7 @@ D.frame(T('Moments of the ARMA(1,1)', 'Momentele procesului ARMA(1,1)'), items(
     (T('Autocorrelations:', 'Autocorelațiile:'),
      [T('$\\rho(1) = \\dfrac{(1 + \\phi\\theta)(\\phi + \\theta)}{1 + 2\\phi\\theta + \\theta^2}$, \\quad $\\rho(h) = \\phi\\,\\rho(h - 1)$ for $h \\ge 2$', '$\\rho(1) = \\dfrac{(1 + \\phi\\theta)(\\phi + \\theta)}{1 + 2\\phi\\theta + \\theta^2}$, \\quad $\\rho(h) = \\phi\\,\\rho(h - 1)$ pentru $h \\ge 2$'),
       T('example: $\\rho(1) = @{pt.arma.r1}$, $\\rho(2) = @{pt.arma.r2}$', 'exemplu: $\\rho(1) = @{pt.arma.r1}$, $\\rho(2) = @{pt.arma.r2}$')]),
-    T('The ACF decays like an AR(1) from lag 1 onwards, but $\\rho(1) \\ne \\phi$: the MA part only moves the starting point', 'ACF descrește ca la un AR(1) începînd cu decalajul 1, dar $\\rho(1) \\ne \\phi$: partea MA mută doar punctul de pornire')))
+    T('The ACF decays like an AR(1) from lag 1 onwards, but $\\rho(1) \\ne \\phi$: the MA part only moves the starting point', 'ACF descrește ca la un AR(1) începînd cu lagul 1, dar $\\rho(1) \\ne \\phi$: partea MA mută doar punctul de pornire')))
 
 D.frame(T('Common factors: a model that is too large', 'Factori comuni: un model prea mare'), items(
     (T('$X_t = 0.5X_{t-1} + \\varepsilon_t - 0.5\\varepsilon_{t-1}$', '$X_t = 0{,}5X_{t-1} + \\varepsilon_t - 0{,}5\\varepsilon_{t-1}$'),
@@ -585,10 +585,10 @@ D.frame(T('Common factors: a model that is too large', 'Factori comuni: un model
 
 D.frame(T('Identification: the ACF--PACF table', 'Identificarea: tabelul ACF--PACF'), table(
     'lll', T('\\textbf{Model}', '\\textbf{Modelul}') + ' & \\textbf{ACF} & \\textbf{PACF}',
-    [T('White noise', 'Zgomot alb') + ' & ' + T('no significant lag', 'niciun decalaj semnificativ') + ' & ' + T('no significant lag', 'niciun decalaj semnificativ'),
-     'AR($p$) & ' + T('decays (geometric or damped wave)', 'descrește (geometric sau undă amortizată)') + ' & ' + T('\\textbf{cuts off} after lag $p$', '\\textbf{se anulează} după decalajul $p$'),
-     'MA($q$) & ' + T('\\textbf{cuts off} after lag $q$', '\\textbf{se anulează} după decalajul $q$') + ' & ' + T('decays', 'descrește'),
-     'ARMA($p,q$) & ' + T('decays after lag $q - p$', 'descrește după decalajul $q - p$') + ' & ' + T('decays after lag $p - q$', 'descrește după decalajul $p - q$'),
+    [T('White noise', 'Zgomot alb') + ' & ' + T('no significant lag', 'niciun lag semnificativ') + ' & ' + T('no significant lag', 'niciun lag semnificativ'),
+     'AR($p$) & ' + T('decays (geometric or damped wave)', 'descrește (geometric sau undă amortizată)') + ' & ' + T('\\textbf{cuts off} after lag $p$', '\\textbf{se anulează} după lagul $p$'),
+     'MA($q$) & ' + T('\\textbf{cuts off} after lag $q$', '\\textbf{se anulează} după lagul $q$') + ' & ' + T('decays', 'descrește'),
+     'ARMA($p,q$) & ' + T('decays after lag $q - p$', 'descrește după lagul $q - p$') + ' & ' + T('decays after lag $p - q$', 'descrește după lagul $p - q$'),
      T('Unit root (Ch.~3)', 'Rădăcină unitară (cap.~3)') + ' & ' + T('very slow, almost linear decay', 'descreștere foarte lentă, aproape liniară') + ' & ' + T('$\\hat\\phi_{11} \\approx 1$', '$\\hat\\phi_{11} \\approx 1$')],
     size='footnotesize') + items(
     T('The table proposes \\textbf{candidates}; the information criteria and the diagnostics decide (Sections 5--6)', 'Tabelul propune \\textbf{candidați}; criteriile informaționale și diagnosticarea decid (secțiunile 5--6)'),
@@ -602,7 +602,7 @@ interp(('the three patterns', 'celor trei tipare'), [
     (T('AR(2): the PACF has two spikes, $\\phi_{22} = \\phi_2 = @{pt.ar2.p2}$, then zero; the ACF is a damped wave', 'AR(2): PACF are două valori semnificative, $\\phi_{22} = \\phi_2 = @{pt.ar2.p2}$, apoi zero; ACF este o undă amortizată'),
      [T('identification is easy: read $p$ from the PACF', 'identificarea este ușoară: citim $p$ din PACF')]),
     (T('MA(2): $\\rho(1) = @{pt.ma2.r1}$, $\\rho(2) = @{pt.ma2.r2}$, then zero; the PACF decays slowly', 'MA(2): $\\rho(1) = @{pt.ma2.r1}$, $\\rho(2) = @{pt.ma2.r2}$, apoi zero; PACF descrește lent'),
-     [T('the sample ACF at lag 2 is only just outside the band: with real data, MA(1) and MA(2) can look alike', 'ACF de selecție la decalajul 2 iese abia ușor din bandă: pe date reale, MA(1) și MA(2) pot semăna')]),
+     [T('the sample ACF at lag 2 is only just outside the band: with real data, MA(1) and MA(2) can look alike', 'ACF de selecție la lagul 2 iese abia ușor din bandă: pe date reale, MA(1) și MA(2) pot semăna')]),
     (T('ARMA(1,1): both decay; the ACF looks like an AR(1), the PACF has a second, smaller spike', 'ARMA(1,1): ambele descresc; ACF seamănă cu un AR(1), PACF are o a doua valoare, mai mică'),
      [T('an analyst who reads only the PACF would choose AR(2) or AR(3): close, but more parameters', 'un analist care citește doar PACF ar alege AR(2) sau AR(3): apropiat, dar cu mai mulți parametri')]),
     T('Sample correlograms are noisy even with $T = 500$; with 100 quarterly observations, much more so', 'Corelogramele de selecție sînt zgomotoase chiar cu $T = 500$; cu 100 de observații trimestriale, mult mai mult')])
@@ -630,11 +630,12 @@ D.frame(T('Three estimators', 'Trei estimatori'), items(
 
 D.frame(T('Yule--Walker for an AR($p$)', 'Yule--Walker pentru un AR($p$)'), cols(items(
     (T('For $h = 1, \\dots, p$: $\\rho(h) = \\phi_1\\rho(h - 1) + \\dots + \\phi_p\\rho(h - p)$', 'Pentru $h = 1, \\dots, p$: $\\rho(h) = \\phi_1\\rho(h - 1) + \\dots + \\phi_p\\rho(h - p)$'),
-     [T('in matrix form $R\\,\\phi = \\rho$, $R_{ij} = \\rho(|i - j|)$', 'matricial, $R\\,\\phi = \\rho$, $R_{ij} = \\rho(|i - j|)$'),
+     [T('in matrix form $R\\,\\phi = \\rho$, $R_{ij} = \\rho(|i - j|)$; $\\phi = (\\phi_1, \\dots, \\phi_p)^\\top$, $\\rho = (\\rho(1), \\dots, \\rho(p))^\\top$', 'matricial, $R\\,\\phi = \\rho$, $R_{ij} = \\rho(|i - j|)$; $\\phi = (\\phi_1, \\dots, \\phi_p)^\\top$, $\\rho = (\\rho(1), \\dots, \\rho(p))^\\top$'),
+      T('$R$: the $p \\times p$ matrix of autocorrelations; the hat marks the sample version', '$R$: matricea $p \\times p$ a autocorelațiilor; căciula marchează varianta de selecție'),
       T('estimator $\\hat\\phi = \\hat R^{-1}\\hat\\rho$; noise variance $\\hat\\sigma^2 = \\hat\\gamma(0)(1 - \\hat\\phi^\\top\\hat\\rho)$', 'estimatorul $\\hat\\phi = \\hat R^{-1}\\hat\\rho$; varianța zgomotului $\\hat\\sigma^2 = \\hat\\gamma(0)(1 - \\hat\\phi^\\top\\hat\\rho)$')]),
     (T('AR(2) by Cramer\'s rule:', 'AR(2) prin regula lui Cramer:'),
      [T('$\\hat\\phi_1 = \\dfrac{\\hat\\rho_1(1 - \\hat\\rho_2)}{1 - \\hat\\rho_1^2}$, \\quad $\\hat\\phi_2 = \\dfrac{\\hat\\rho_2 - \\hat\\rho_1^2}{1 - \\hat\\rho_1^2}$', '$\\hat\\phi_1 = \\dfrac{\\hat\\rho_1(1 - \\hat\\rho_2)}{1 - \\hat\\rho_1^2}$, \\quad $\\hat\\phi_2 = \\dfrac{\\hat\\rho_2 - \\hat\\rho_1^2}{1 - \\hat\\rho_1^2}$'),
-      T('$\\hat\\phi_2$ is the sample PACF at lag 2 (Chapter 1)', '$\\hat\\phi_2$ este PACF de selecție la decalajul 2 (Capitolul 1)')])),
+      T('$\\hat\\phi_2$ is the sample PACF at lag 2 (Chapter 1)', '$\\hat\\phi_2$ este PACF de selecție la lagul 2 (Capitolul 1)')])),
     ph('walker', T('Gilbert Walker (1868--1958), who extended Yule\'s method in 1931', 'Gilbert Walker (1868--1958), care a extins metoda lui Yule în 1931'), h='0.46\\textheight'),
     wl='0.64', wr='0.32'), 'footnotesize')
 
@@ -644,7 +645,7 @@ D.frame(T('Worked example: Yule--Walker on Romanian GDP growth', 'Exemplu rezolv
      [T('$\\hat\\phi_1 = @{gdp.r1}\\,(1 - @{gdp.r2})/@{yw.det} = @{yw.f1}$', '$\\hat\\phi_1 = @{gdp.r1}\\,(1 - @{gdp.r2})/@{yw.det} = @{yw.f1}$'),
       T('$\\hat\\phi_2 = (@{gdp.r2} - @{gdp.r1}^2)/@{yw.det} = @{yw.f2}$', '$\\hat\\phi_2 = (@{gdp.r2} - @{gdp.r1}^2)/@{yw.det} = @{yw.f2}$')]),
     T('$\\hat\\sigma^2 = @{yw.g0}\\,(1 - \\hat\\phi_1\\hat\\rho_1 - \\hat\\phi_2\\hat\\rho_2) = @{yw.s2}$', '$\\hat\\sigma^2 = @{yw.g0}\\,(1 - \\hat\\phi_1\\hat\\rho_1 - \\hat\\phi_2\\hat\\rho_2) = @{yw.s2}$'),
-    (T('$\\hat\\phi_2 \\approx 0$: the second lag adds nothing, AR(1) would do', '$\\hat\\phi_2 \\approx 0$: al doilea decalaj nu aduce nimic, AR(1) ar fi suficient'),
+    (T('$\\hat\\phi_2 \\approx 0$: the second lag adds nothing, AR(1) would do', '$\\hat\\phi_2 \\approx 0$: al doilea lag nu aduce nimic, AR(1) ar fi suficient'),
      [T('but is an AR model the right family at all? Section 9 shows that an MA(3) fits better', 'dar este familia AR cea potrivită? Secțiunea 9 arată că un MA(3) se potrivește mai bine')])), 'footnotesize')
 
 D.frame(T('Maximum likelihood', 'Verosimilitatea maximă'), items(
@@ -654,7 +655,7 @@ D.frame(T('Maximum likelihood', 'Verosimilitatea maximă'), items(
       T('$\\hat x_{t|t-1}$: one-step prediction; $v_t$: its error variance, larger for the first observations', '$\\hat x_{t|t-1}$: predicția cu un pas; $v_t$: varianța erorii ei, mai mare pentru primele observații')]),
     (T('AR(1) by hand: $X_1 \\sim N(\\mu, \\sigma^2/(1 - \\phi^2))$, then $X_t \\mid X_{t-1} \\sim N(c + \\phi X_{t-1}, \\sigma^2)$', 'AR(1) de mînă: $X_1 \\sim N(\\mu, \\sigma^2/(1 - \\phi^2))$, apoi $X_t \\mid X_{t-1} \\sim N(c + \\phi X_{t-1}, \\sigma^2)$'),
      [T('dropping the first factor gives conditional least squares', 'dacă renunțăm la primul factor, obținem cele mai mici pătrate condiționate')]),
-    (T('Standard errors from the curvature of $\\ln L$; asymptotically', 'Erorile standard din curbura lui $\\ln L$; asimptotic'),
+    (T('Standard errors (se) from the curvature of $\\ln L$; asymptotically', 'Erorile standard (se, standard error) din curbura lui $\\ln L$; asimptotic'),
      [T('AR(1): $\\mathrm{se}(\\hat\\phi) \\approx \\sqrt{(1 - \\phi^2)/T}$; MA(1): $\\mathrm{se}(\\hat\\theta) \\approx \\sqrt{(1 - \\theta^2)/T}$', 'AR(1): $\\mathrm{se}(\\hat\\phi) \\approx \\sqrt{(1 - \\phi^2)/T}$; MA(1): $\\mathrm{se}(\\hat\\theta) \\approx \\sqrt{(1 - \\theta^2)/T}$'),
       T('$t$-ratios $\\hat\\phi/\\mathrm{se}$ compared with $\\pm 1.96$, as in regression', 'rapoartele $t$, $\\hat\\phi/\\mathrm{se}$, se compară cu $\\pm 1{,}96$, ca în regresie')])))
 
@@ -696,7 +697,7 @@ D.frame(T('Information criteria', 'Criterii informaționale'), cols(items(
 D.frame(T('AIC or BIC?', 'AIC sau BIC?'), items(
     (T('\\textbf{BIC is consistent}: if the true model is among the candidates, BIC finds it with probability $\\to 1$', '\\textbf{BIC este consistent}: dacă modelul adevărat se află printre candidați, BIC îl găsește cu probabilitate $\\to 1$'),
      [T('but it may choose a model that is too small when $T$ is small', 'dar poate alege un model prea mic cînd $T$ este mic')]),
-    (T('\\textbf{AIC targets forecasting}: it estimates the expected out-of-sample fit (Kullback--Leibler distance)', '\\textbf{AIC țintește prognoza}: estimează ajustarea așteptată în afara eșantionului (distanța Kullback--Leibler)'),
+    (T('\\textbf{AIC targets forecasting}: it estimates the expected out-of-sample fit (Kullback--Leibler distance)', '\\textbf{AIC este orientat spre prognoză}: estimează ajustarea așteptată în afara eșantionului (distanța Kullback--Leibler)'),
      [T('it overfits with positive probability, even with large $T$', 'supraparametrizează cu probabilitate pozitivă, chiar pentru $T$ mare')]),
     (T('Practice (\\refFPP, Ch.~9; \\refHK)', 'Practica (\\refFPP, cap.~9; \\refHK)'),
      [T('automatic searches (\\texttt{auto.arima}, \\texttt{pmdarima}) minimise AICc over a grid of $(p, q)$', 'căutările automate (\\texttt{auto.arima}, \\texttt{pmdarima}) minimizează AICc pe o grilă de valori $(p, q)$'),
@@ -717,12 +718,13 @@ interp(('the selection experiment', 'experimentului de selecție'), [
 D.frame(T('Residual diagnostics', 'Diagnosticarea reziduurilor'), items(
     (T('If the model is right, the residuals $\\hat\\varepsilon_t$ behave like white noise', 'Dacă modelul este corect, reziduurile $\\hat\\varepsilon_t$ se comportă ca un zgomot alb'),
      [T('plot them: no pattern, no change of variance, no isolated huge values', 'le reprezentăm grafic: fără tipare, fără schimbări de varianță, fără valori izolate foarte mari'),
-      T('residual ACF inside $\\pm 1.96/\\sqrt{T}$, except about 1 lag in 20', 'ACF a reziduurilor în banda $\\pm 1{,}96/\\sqrt{T}$, cu excepția a aproximativ 1 decalaj din 20')]),
+      T('residual ACF inside $\\pm 1.96/\\sqrt{T}$, except about 1 lag in 20', 'ACF a reziduurilor în banda $\\pm 1{,}96/\\sqrt{T}$, cu excepția a aproximativ 1 lag din 20')]),
     (T('\\textbf{Ljung--Box} on residuals (\\refLB): $Q^*(m) = T(T + 2)\\sum_{h=1}^{m}\\hat\\rho_{\\hat\\varepsilon}(h)^2/(T - h)$', '\\textbf{Ljung--Box} pentru reziduuri (\\refLB): $Q^*(m) = T(T + 2)\\sum_{h=1}^{m}\\hat\\rho_{\\hat\\varepsilon}(h)^2/(T - h)$'),
      [T('under $H_0$ (correct model) $Q^*(m) \\approx \\chi^2(m - p - q)$ (\\refBP): estimating $p + q$ coefficients uses up $p + q$ degrees of freedom', 'în ipoteza $H_0$ (model corect), $Q^*(m) \\approx \\chi^2(m - p - q)$ (\\refBP): estimarea a $p + q$ coeficienți consumă $p + q$ grade de libertate'),
       T('choose $m$ well above $p + q$: $m = 10$ for annual or quarterly data, $m = 2s$ for seasonal data (\\refFPP)', 'alegem $m$ mult peste $p + q$: $m = 10$ pentru date anuale sau trimestriale, $m = 2s$ pentru date sezoniere (\\refFPP)')]),
     (T('\\textbf{Normality}: Jarque--Bera (\\refJB) $\\mathrm{JB} = \\frac{T}{6}\\big(S^2 + (K - 3)^2/4\\big) \\approx \\chi^2(2)$; QQ plot', '\\textbf{Normalitatea}: Jarque--Bera (\\refJB) $\\mathrm{JB} = \\frac{T}{6}\\big(S^2 + (K - 3)^2/4\\big) \\approx \\chi^2(2)$; graficul QQ'),
-     [T('$S$ = skewness, $K$ = kurtosis; non-Normal residuals do not bias $\\hat\\phi$, but they make Normal intervals wrong', '$S$ = asimetria, $K$ = boltirea; reziduurile ne-normale nu deplasează $\\hat\\phi$, dar fac greșite intervalele construite cu distribuția Normală')]),
+     [T('$S$ = skewness, $K$ = kurtosis (0 and 3 for the Normal distribution); reject normality at 5\\% if $\\mathrm{JB} > 5.99$, the 95\\% quantile of $\\chi^2(2)$', '$S$ = asimetria, $K$ = boltirea (0 și 3 pentru distribuția Normală); respingem normalitatea la 5\\% dacă $\\mathrm{JB} > 5{,}99$, cuantila de 95\\% a lui $\\chi^2(2)$'),
+      T('non-Normal residuals do not bias $\\hat\\phi$, but they make Normal intervals wrong', 'reziduurile ne-normale nu deplasează $\\hat\\phi$, dar fac greșite intervalele construite cu distribuția Normală')]),
     T('\\textbf{Squared residuals}: Ljung--Box on $\\hat\\varepsilon_t^2$ detects volatility clustering (Chapter 5)', '\\textbf{Pătratele reziduurilor}: testul Ljung--Box pentru $\\hat\\varepsilon_t^2$ detectează volatility clustering (Capitolul 5)')))
 
 chart(T('Why $m - p - q$ degrees of freedom', 'Justificarea celor $m - p - q$ grade de libertate'), 'tsa_ch2_lb_df', 'TSA_ch2_selection', [
@@ -731,7 +733,7 @@ chart(T('Why $m - p - q$ degrees of freedom', 'Justificarea celor $m - p - q$ gr
 
 interp(('the degrees-of-freedom experiment', 'experimentului cu gradele de libertate'), [
     (T('With $m = 10$ degrees of freedom the test rejects too rarely: @{lbdf.ar.m}\\% (AR(1)) and @{lbdf.arma.m}\\% (ARMA(1,1)) instead of 5\\%', 'Cu $m = 10$ grade de libertate testul respinge prea rar: @{lbdf.ar.m}\\% (AR(1)) și @{lbdf.arma.m}\\% (ARMA(1,1)) în loc de 5\\%'),
-     [T('residuals are fitted to look uncorrelated at the first lags: their ACF is smaller than that of true white noise', 'reziduurile sînt ajustate astfel încît să pară necorelate la primele decalaje: ACF lor este mai mică decît a unui zgomot alb adevărat')]),
+     [T('residuals are fitted to look uncorrelated at the first lags: their ACF is smaller than that of true white noise', 'reziduurile sînt ajustate astfel încît să pară necorelate la primele laguri: ACF lor este mai mică decît a unui zgomot alb adevărat')]),
     (T('With $m - p - q$: @{lbdf.ar.k}\\% and @{lbdf.arma.k}\\%, close to the nominal 5\\%', 'Cu $m - p - q$: @{lbdf.ar.k}\\% și @{lbdf.arma.k}\\%, aproape de nivelul nominal de 5\\%'),
      [T('the correction matters most when $p + q$ is large relative to $m$', 'corecția contează cel mai mult cînd $p + q$ este mare în raport cu $m$')]),
     T('Software (\\texttt{acorr\\_ljungbox}) uses $m$ by default: pass \\texttt{model\\_df = p + q}', 'Programele (\\texttt{acorr\\_ljungbox}) folosesc implicit $m$: transmiteți \\texttt{model\\_df = p + q}'),
@@ -739,7 +741,7 @@ interp(('the degrees-of-freedom experiment', 'experimentului cu gradele de liber
 
 D.recap(('Model selection and diagnostics', 'selecția modelului și diagnosticarea'), [
     T('AIC $= -2\\ln L + 2k$, BIC $= -2\\ln L + k\\ln T$; smallest wins; BIC picks smaller models', 'AIC $= -2\\ln L + 2k$, BIC $= -2\\ln L + k\\ln T$; cîștigă valoarea cea mai mică; BIC alege modele mai mici'),
-    T('BIC is consistent, AIC aims at forecasting and overfits sometimes', 'BIC este consistent, AIC țintește prognoza și uneori supraparametrizează'),
+    T('BIC is consistent, AIC aims at forecasting and overfits sometimes', 'BIC este consistent, AIC este orientat spre prognoză și uneori supraparametrizează'),
     T('Residuals: plot, ACF, Ljung--Box with $m - p - q$ degrees of freedom, Jarque--Bera, Ljung--Box on squares', 'Reziduurile: grafic, ACF, Ljung--Box cu $m - p - q$ grade de libertate, Jarque--Bera, Ljung--Box pe pătrate'),
     T('A model passes when its residuals are white noise; normality matters for the intervals', 'Un model este acceptat cînd reziduurile lui sînt zgomot alb; normalitatea contează pentru intervale')])
 
@@ -755,7 +757,7 @@ D.frame(T('The optimal forecast', 'Prognoza optimă'), items(
      [T('future shocks $\\varepsilon_{T+j}$, $j \\ge 1$, by 0', 'șocurile viitoare $\\varepsilon_{T+j}$, $j \\ge 1$, cu 0'),
       T('future values $X_{T+j}$ by their forecasts; past values and past residuals stay as they are', 'valorile viitoare $X_{T+j}$ cu prognozele lor; valorile trecute și reziduurile trecute rămîn neschimbate')]),
     (T('AR(1): $\\hat X_{T+h|T} = \\mu + \\phi^h(X_T - \\mu)$: \\textbf{mean reversion} at the speed $\\phi$', 'AR(1): $\\hat X_{T+h|T} = \\mu + \\phi^h(X_T - \\mu)$: \\textbf{revenirea la medie} cu viteza $\\phi$'),
-     [T('MA($q$): $\\hat X_{T+h|T} = \\mu$ for $h > q$: after $q$ steps the model knows nothing beyond the mean', 'MA($q$): $\\hat X_{T+h|T} = \\mu$ pentru $h > q$: după $q$ pași modelul nu mai știe nimic în afară de medie')])))
+     [T('MA($q$): $\\hat X_{T+h|T} = \\mu$ for $h > q$: after $q$ steps the model knows nothing beyond the mean', 'MA($q$): $\\hat X_{T+h|T} = \\mu$ pentru $h > q$: după $q$ pași modelul nu mai conține altă informație decît media')])))
 
 D.frame(T('Forecast errors and intervals', 'Erorile de prognoză și intervalele'), items(
     (T('From the causal form $X_{T+h} = \\mu + \\sum_j\\psi_j\\varepsilon_{T+h-j}$:', 'Din forma cauzală $X_{T+h} = \\mu + \\sum_j\\psi_j\\varepsilon_{T+h-j}$:'),
@@ -763,7 +765,7 @@ D.frame(T('Forecast errors and intervals', 'Erorile de prognoză și intervalele
       T('variance $\\sigma_h^2 = \\sigma^2(1 + \\psi_1^2 + \\dots + \\psi_{h-1}^2)$, increasing in $h$', 'varianța $\\sigma_h^2 = \\sigma^2(1 + \\psi_1^2 + \\dots + \\psi_{h-1}^2)$, crescătoare în $h$')]),
     (T('\\textbf{95\\% interval}: $\\hat X_{T+h|T} \\pm 1.96\\,\\sigma_h$ (Gaussian shocks)', '\\textbf{Intervalul de 95\\%}: $\\hat X_{T+h|T} \\pm 1{,}96\\,\\sigma_h$ (șocuri gaussiene)'),
      [T('$h = 1$: $\\pm 1.96\\,\\sigma$; $h \\to \\infty$: $\\sigma_h^2 \\to \\gamma(0)$, the unconditional variance', '$h = 1$: $\\pm 1{,}96\\,\\sigma$; $h \\to \\infty$: $\\sigma_h^2 \\to \\gamma(0)$, varianța necondiționată')]),
-    (T('What the interval leaves out', 'Ce nu include intervalul'),
+    (T('What the interval leaves out', 'Limitele intervalului'),
      [T('parameter uncertainty ($\\hat\\phi$ instead of $\\phi$), model uncertainty, fat tails: real coverage is usually below 95\\%', 'incertitudinea parametrilor ($\\hat\\phi$ în loc de $\\phi$), incertitudinea modelului, cozile groase: acoperirea reală este de obicei sub 95\\%')]),
     T('Errors of forecasts made at the same time for horizons $h$ and $h + 1$ are correlated: they share shocks', 'Erorile prognozelor făcute în același moment pentru orizonturile $h$ și $h + 1$ sînt corelate: au șocuri comune')))
 
@@ -854,21 +856,21 @@ chart(T('Step 1: identification', 'Pasul 1: identificarea'), 'tsa_ch2_gdp_ident'
     h='0.72\\textheight')
 
 interp(('the correlograms of GDP growth', 'corelogramelor creșterii PIB'), [
-    (T('ACF: $@{gdp.r1}$, $@{gdp.r2}$, $@{gdp.r3}$, then $@{gdp.r4}$ at lag 4: \\textbf{cuts off after lag 3}', 'ACF: $@{gdp.r1}$; $@{gdp.r2}$; $@{gdp.r3}$, apoi $@{gdp.r4}$ la decalajul 4: \\textbf{se anulează după decalajul 3}'),
+    (T('ACF: $@{gdp.r1}$, $@{gdp.r2}$, $@{gdp.r3}$, then $@{gdp.r4}$ at lag 4: \\textbf{cuts off after lag 3}', 'ACF: $@{gdp.r1}$; $@{gdp.r2}$; $@{gdp.r3}$, apoi $@{gdp.r4}$ la lagul 4: \\textbf{se anulează după lagul 3}'),
      [T('candidate: MA(3)', 'candidat: MA(3)')]),
-    (T('PACF: $@{gdp.p1}$ at lag 1, then small, except $@{gdp.p5}$ at lag 5', 'PACF: $@{gdp.p1}$ la decalajul 1, apoi valori mici, cu excepția lui $@{gdp.p5}$ la decalajul 5'),
-     [T('candidate: AR(1); lag 5 may be chance or a remnant of the season', 'candidat: AR(1); decalajul 5 poate fi întîmplător sau o urmă a sezonalității')]),
-    (T('Why MA(3)? $y_t$ is the sum of four quarterly growth rates, $y_t \\approx g_t + g_{t-1} + g_{t-2} + g_{t-3}$', 'De ce MA(3)? $y_t$ este suma a patru rate trimestriale de creștere, $y_t \\approx g_t + g_{t-1} + g_{t-2} + g_{t-3}$'),
+    (T('PACF: $@{gdp.p1}$ at lag 1, then small, except $@{gdp.p5}$ at lag 5', 'PACF: $@{gdp.p1}$ la lagul 1, apoi valori mici, cu excepția lui $@{gdp.p5}$ la lagul 5'),
+     [T('candidate: AR(1); lag 5 may be chance or a remnant of the season', 'candidat: AR(1); lagul 5 poate fi întîmplător sau o urmă a sezonalității')]),
+    (T('Why MA(3)? $y_t$ is the sum of four quarterly growth rates, $y_t \\approx g_t + g_{t-1} + g_{t-2} + g_{t-3}$', 'Motivul pentru MA(3): $y_t$ este suma a patru rate trimestriale de creștere, $y_t \\approx g_t + g_{t-1} + g_{t-2} + g_{t-3}$'),
      [T('if $g_t$ is close to white noise (Seminar 2, B2), consecutive annual rates share three quarters: an MA(3) by construction', 'dacă $g_t$ este aproape de un zgomot alb (Seminarul 2, B2), ratele anuale consecutive au trei trimestre comune: un MA(3) prin construcție')]),
     T('Ljung--Box $Q^*(8) = @{gdp.lb8}$ on the series itself: strongly autocorrelated, so a model is needed', 'Ljung--Box $Q^*(8) = @{gdp.lb8}$ pentru seria însăși: puternic autocorelată, deci este nevoie de un model')])
 
 D.frame(T('Step 2: estimation and information criteria', 'Pasul 2: estimarea și criteriile informaționale'), table(
-    'lrrrrrr', T('\\textbf{Model}', '\\textbf{Modelul}') + ' & $k$ & $\\ln L$ & \\textbf{AIC} & \\textbf{BIC} & $\\hat\\sigma$ & ' + T('\\textbf{LB p-value}', '\\textbf{LB, valoarea p}'),
+    'lrrrrrr', T('\\textbf{Model}', '\\textbf{Modelul}') + ' & $k$ & $\\ln L$ & \\textbf{AIC} & \\textbf{BIC} & $\\hat\\sigma$ & ' + T('\\textbf{LB p-value}', '\\textbf{LB, p-value}'),
     [f'ARMA({r[0]},{r[1]}) & @{{gt.{r}.k}} & $@{{gt.{r}.ll}}$ & @{{gt.{r}.aic}} & @{{gt.{r}.bic}} & @{{gt.{r}.sig}} & @{{gt.{r}.lbp}}' for r in ROWS_GDP],
     size='footnotesize') + items(
     T('Exact Gaussian MLE on the same @{gdp.T} quarters; LB = Ljung--Box $Q^*(8)$ on the residuals, $8 - p - q$ degrees of freedom; full grid $p, q \\le 3$ in the Quantlet', 'MLE exactă gaussiană pe aceleași @{gdp.T} trimestre; LB = Ljung--Box $Q^*(8)$ pentru reziduuri, cu $8 - p - q$ grade de libertate; grila completă $p, q \\le 3$ în Quantlet'),
     T('\\textbf{BIC} chooses MA(3); \\textbf{AIC} chooses ARMA(1,3), lower by only @{gt.daic}', '\\textbf{BIC} alege MA(3); \\textbf{AIC} alege ARMA(1,3), mai mic cu doar @{gt.daic}'),
-    T('AR(1), the PACF candidate, leaves autocorrelation: LB p-value @{gt.10.lbp}', 'AR(1), candidatul sugerat de PACF, lasă autocorelație: valoarea p a testului LB este @{gt.10.lbp}')), 'footnotesize')
+    T('AR(1), the PACF candidate, leaves autocorrelation: LB p-value @{gt.10.lbp}', 'AR(1), candidatul sugerat de PACF, lasă autocorelație: p-value-ul testului LB este @{gt.10.lbp}')), 'footnotesize')
 
 D.frame(T('Interpreting the estimated MA(3)', 'Interpretarea modelului MA(3) estimat'), items(
     (T('$\\hat y_t = @{ma3.mu} + \\hat\\varepsilon_t + @{ma3.t1}\\,\\hat\\varepsilon_{t-1} + @{ma3.t2}\\,\\hat\\varepsilon_{t-2} + @{ma3.t3}\\,\\hat\\varepsilon_{t-3}$, $\\hat\\sigma = @{ma3.sig}$', '$\\hat y_t = @{ma3.mu} + \\hat\\varepsilon_t + @{ma3.t1}\\,\\hat\\varepsilon_{t-1} + @{ma3.t2}\\,\\hat\\varepsilon_{t-2} + @{ma3.t3}\\,\\hat\\varepsilon_{t-3}$, $\\hat\\sigma = @{ma3.sig}$'),
@@ -881,12 +883,12 @@ D.frame(T('Interpreting the estimated MA(3)', 'Interpretarea modelului MA(3) est
     T('Mean growth @{ma3.mu}\\% per year, but with a standard error of @{ma3.mus}: overlapping data carry less information than $T$ suggests', 'Creșterea medie este de @{ma3.mu}\\% pe an, dar cu o eroare standard de @{ma3.mus}: datele care se suprapun conțin mai puțină informație decît sugerează $T$')))
 
 chart(T('Step 3: diagnostics of the MA(3)', 'Pasul 3: diagnosticarea modelului MA(3)'), 'tsa_ch2_gdp_diag', 'TSA_ch2_gdp_case', [
-    T('Residuals, their ACF, Ljung--Box p-values for $m = 4, \\dots, 16$ with $m - 3$ degrees of freedom, Normal QQ plot', 'Reziduurile, ACF lor, valorile p ale testului Ljung--Box pentru $m = 4, \\dots, 16$, cu $m - 3$ grade de libertate, graficul QQ față de distribuția Normală')],
+    T('Residuals, their ACF, Ljung--Box p-values for $m = 4, \\dots, 16$ with $m - 3$ degrees of freedom, Normal QQ plot', 'Reziduurile, ACF lor, p-value-urile testului Ljung--Box pentru $m = 4, \\dots, 16$, cu $m - 3$ grade de libertate, graficul QQ față de distribuția Normală')],
     h='0.72\\textheight')
 
 interp(('the MA(3) diagnostics', 'diagnosticării MA(3)'), [
     (T('No residual autocorrelation: $Q^*(8) = @{gd.q8}$ on 5 degrees of freedom, p = @{gd.p8}; $Q^*(16)$: p = @{gd.p16}', 'Fără autocorelație în reziduuri: $Q^*(8) = @{gd.q8}$ cu 5 grade de libertate, p = @{gd.p8}; $Q^*(16)$: p = @{gd.p16}'),
-     [T('every p-value in the chart is above @{gd.minp}; with 8 instead of 5 degrees of freedom, p would be @{gd.p8w}, too reassuring', 'toate valorile p din grafic sînt peste @{gd.minp}; cu 8 în loc de 5 grade de libertate, p ar fi @{gd.p8w}, prea liniștitor')]),
+     [T('every p-value in the chart is above @{gd.minp}; with 8 instead of 5 degrees of freedom, p would be @{gd.p8w}, too reassuring', 'toate p-value-urile din grafic sînt peste @{gd.minp}; cu 8 în loc de 5 grade de libertate, p ar fi @{gd.p8w}, prea liniștitor')]),
     (T('Not Normal: Jarque--Bera @{gd.jb}, p @{gd.jbp}; skewness @{gd.skew}, kurtosis @{gd.kurt}', 'Nu este Normal: Jarque--Bera @{gd.jb}, p @{gd.jbp}; asimetria @{gd.skew}, boltirea @{gd.kurt}'),
      [T('the largest residual: $@{gd.outv}$ in @{gd.outd}, @{gd.outz} standard deviations: the pandemic lockdown', 'cel mai mare reziduu: $@{gd.outv}$ în @{gd.outd}, @{gd.outz} abateri standard: perioada de lockdown din pandemie')]),
     T('Squared residuals: Ljung--Box p = @{gd.psq}, no volatility clustering at this frequency', 'Pătratele reziduurilor: testul Ljung--Box dă p = @{gd.psq}, fără volatility clustering la această frecvență'),
@@ -899,12 +901,12 @@ interp(('the GDP forecasts', 'prognozelor PIB'), [
     (T('MA(3): $@{gf.f1}$, $@{gf.f2}$, $@{gf.f3}$, then the mean $@{gf.f4}$\\% from the fourth quarter on', 'MA(3): $@{gf.f1}$; $@{gf.f2}$; $@{gf.f3}$, apoi media de $@{gf.f4}\\%$ începînd cu al patrulea trimestru'),
      [T('exactly the MA($q$) rule: after $q = 3$ steps the model only knows the mean', 'exact regula MA($q$): după $q = 3$ pași modelul cunoaște doar media')]),
     (T('AR(1): a smooth return to its mean, @{gf.ar8}\\% after 8 quarters (mean @{gf.armu}\\%)', 'AR(1): o revenire netedă la medie, @{gf.ar8}\\% după 8 trimestre (media @{gf.armu}\\%)'),
-     [T('the two models agree in the short run and differ in how fast they forget the recent slowdown', 'cele două modele coincid pe termen scurt și diferă prin viteza cu care uită încetinirea recentă')]),
+     [T('the two models agree in the short run and differ in how fast they forget the recent slowdown', 'cele două modele coincid pe termen scurt și diferă prin viteza cu care se estompează efectul încetinirii recente')]),
     T('Intervals: $[@{gf.lo1}, @{gf.hi1}]$ one quarter ahead, $[@{gf.lo4}, @{gf.hi4}]$ from four quarters on: $\\pm @{gf.hw1}$ and $\\pm @{gf.hw4}$ percentage points', 'Intervalele: $[@{gf.lo1}; @{gf.hi1}]$ pentru un trimestru, $[@{gf.lo4}; @{gf.hi4}]$ începînd cu patru trimestre: $\\pm @{gf.hw1}$ și $\\pm @{gf.hw4}$ puncte procentuale'),
-    T('A univariate model cannot anticipate a turning point; it tells us how unusual the next value would be', 'Un model univariat nu poate anticipa un punct de inflexiune; ne spune cît de neobișnuită ar fi următoarea valoare')])
+    T('A univariate model cannot anticipate a turning point; it tells us how unusual the next value would be', 'Un model univariat nu poate anticipa un punct de întoarcere; ne spune cît de neobișnuită ar fi următoarea valoare')])
 
 D.recap(('Romanian GDP growth', 'creșterea PIB-ului României'), [
-    T('Annual growth of quarterly GDP: ACF cuts off after lag 3, MA(3) by BIC, ARMA(1,3) by AIC', 'Creșterea anuală a PIB-ului trimestrial: ACF se anulează după decalajul 3, MA(3) după BIC, ARMA(1,3) după AIC'),
+    T('Annual growth of quarterly GDP: ACF cuts off after lag 3, MA(3) by BIC, ARMA(1,3) by AIC', 'Creșterea anuală a PIB-ului trimestrial: ACF se anulează după lagul 3, MA(3) după BIC, ARMA(1,3) după AIC'),
     T('The MA(3) is the overlap of four quarters: the data structure explains the model', 'MA(3) reflectă suprapunerea a patru trimestre: structura datelor explică modelul'),
     T('White-noise residuals but fat tails (2020): intervals are too narrow in crises', 'Reziduuri de tip zgomot alb, dar cozi groase (2020): intervalele sînt prea înguste în crize'),
     T('Forecasts reach the mean after three quarters', 'Prognozele ajung la medie după trei trimestre')])
@@ -924,8 +926,8 @@ interp(('the inflation model', 'modelului pentru inflație'), [
     (T('Very close to a unit root: is inflation stationary at all? The test is in Chapter 3', 'Foarte aproape de o rădăcină unitară: este inflația staționară? Testul este în Capitolul 3'),
      [T('the estimated mean, $@{in.mu}\\%$ (se @{in.mus}), is the average of 2005--2026, above the BNR target of 2.5\\% $\\pm$ 1 p.p.', 'media estimată, $@{in.mu}\\%$ (eroarea standard @{in.mus}), este media perioadei 2005--2026, peste ținta BNR de 2,5\\% $\\pm$ 1 p.p.')]),
     (T('Forecast: from @{in.lastv}\\% to @{in.f1}\\% next month and @{in.f24}\\% in @{in.flast}; 95\\% interval $[@{in.lo24}, @{in.hi24}]$', 'Prognoza: de la @{in.lastv}\\% la @{in.f1}\\% luna viitoare și @{in.f24}\\% în @{in.flast}; intervalul de 95\\%: $[@{in.lo24}; @{in.hi24}]$'),
-     [T('the model reverts to its historical mean, not to the target: it knows nothing about monetary policy', 'modelul revine la media istorică, nu la țintă: nu știe nimic despre politica monetară')]),
-    T('Diagnostics fail: Ljung--Box $Q^*(12) = @{in.q12}$, p @{in.p12}: correlation at lag 12 (base effects of the 12-month rate), a job for Chapter 4', 'Diagnosticarea eșuează: Ljung--Box $Q^*(12) = @{in.q12}$, p @{in.p12}: corelație la decalajul 12 (efectele de bază ale ratei pe 12 luni), o temă pentru Capitolul 4')], size='footnotesize')
+     [T('the model reverts to its historical mean, not to the target: it knows nothing about monetary policy', 'modelul revine la media istorică, nu la țintă: nu conține informații despre politica monetară')]),
+    T('Diagnostics fail: Ljung--Box $Q^*(12) = @{in.q12}$, p @{in.p12}: correlation at lag 12 (base effects of the 12-month rate), a job for Chapter 4', 'Diagnosticarea eșuează: Ljung--Box $Q^*(12) = @{in.q12}$, p @{in.p12}: corelație la lagul 12 (efectele de bază ale ratei pe 12 luni), o temă pentru Capitolul 4')], size='footnotesize')
 
 chart(T('Daily returns: BET and EUR/RON', 'Randamente zilnice: BET și EUR/RON'), 'tsa_ch2_returns', 'TSA_ch2_real_series', [
     T('Left: ACF of daily log returns; right: ACF of the squared residuals of an AR(1)', 'Stînga: ACF a randamentelor logaritmice zilnice; dreapta: ACF a pătratelor reziduurilor unui AR(1)')],
@@ -943,7 +945,7 @@ D.frame(T('Interpreting the AR(1) for daily returns', 'Interpretarea modelului A
      T('BIC choice, $p, q \\le 2$', 'Alegerea BIC, $p, q \\le 2$') + ' & @{bet.bic} & @{eurron.bic}'],
     size='footnotesize') + items(
     T('Highly significant $\\hat\\phi$, but $R^2$ of 1--3\\%: \\textbf{statistically} real, \\textbf{economically} small after trading costs', '$\\hat\\phi$ foarte semnificativ, dar un $R^2$ de 1--3\\%: real din punct de vedere \\textbf{statistic}, mic din punct de vedere \\textbf{economic} după costurile de tranzacționare'),
-    T('Positive $\\hat\\phi$: slow price adjustment (BET), a managed exchange rate (EUR/RON)', '$\\hat\\phi$ pozitiv: ajustarea lentă a prețurilor (BET), un curs de schimb administrat (EUR/RON)'),
+    T('Positive $\\hat\\phi$: slow price adjustment (BET), a managed exchange rate (EUR/RON)', '$\\hat\\phi$ pozitiv: ajustarea lentă a prețurilor (BET), un curs de schimb în regim de managed float (EUR/RON)'),
     T('Squared residuals and kurtosis: the mean is modelled, the variance is not; ARMA + GARCH in Chapter 5', 'Pătratele reziduurilor și boltirea: media este modelată, varianța nu; ARMA + GARCH în Capitolul 5')), 'footnotesize')
 
 D.frame(T('Case study: Yule (1927) and the sunspots', 'Studiu de caz: Yule (1927) și petele solare'), items(
@@ -965,20 +967,20 @@ interp(('the sunspot models', 'modelelor pentru petele solare'), [
      [T('the one-step predictions follow the cycle, but lag behind at the peaks', 'predicțiile cu un pas urmează ciclul, dar întîrzie la vîrfuri')]),
     (T('AIC and BIC both choose $p = @{sun.aic}$ over $p \\le 10$', 'AIC și BIC aleg amîndouă $p = @{sun.aic}$ dintre $p \\le 10$'),
      [T('the cycle is asymmetric (fast rise, slow decay), which a linear AR(2) cannot reproduce', 'ciclul este asimetric (creștere rapidă, scădere lentă), ceea ce un AR(2) liniar nu poate reproduce')]),
-    T('Lesson: two parameters capture the essence; more lags capture details; nonlinearity is beyond ARMA', 'Lecția: doi parametri surprind esențialul; mai multe decalaje surprind detaliile; neliniaritatea depășește cadrul ARMA')])
+    T('Lesson: two parameters capture the essence; more lags capture details; nonlinearity is beyond ARMA', 'Lecția: doi parametri surprind esențialul; mai multe laguri surprind detaliile; neliniaritatea depășește cadrul ARMA')])
 
 D.frame(T('Case study: forecasting competitions', 'Studiu de caz: competițiile de prognoză'), items(
     (T('\\refMH: the M3 competition, 3003 series (yearly, quarterly, monthly, other), 24 methods', '\\refMH: competiția M3, 3003 serii (anuale, trimestriale, lunare, altele), 24 de metode'),
      [T('forecasts compared out of sample, on several accuracy measures and horizons', 'prognoze comparate în afara eșantionului, după mai multe măsuri de acuratețe și orizonturi')]),
     (T('Conclusions confirmed from the earlier M-competitions', 'Concluzii confirmate față de competițiile M anterioare'),
      [T('statistically sophisticated methods do not necessarily forecast better than simple ones', 'metodele sofisticate statistic nu prognozează neapărat mai bine decît cele simple'),
-      T('the ranking depends on the accuracy measure and on the horizon; combinations of methods do well', 'clasamentul depinde de măsura de acuratețe și de orizont; combinațiile de metode se descurcă bine')]),
+      T('the ranking depends on the accuracy measure and on the horizon; combinations of methods do well', 'clasamentul depinde de măsura de acuratețe și de orizont; combinațiile de metode au rezultate bune')]),
     (T('Consequences for ARMA', 'Consecințe pentru ARMA'),
      [T('the Box--Jenkins loop must end with an out-of-sample comparison against simple benchmarks (mean, last value, exponential smoothing from Chapter 0)', 'bucla Box--Jenkins trebuie să se încheie cu o comparație în afara eșantionului cu repere simple (media, ultima valoare, netezirea exponențială din Capitolul 0)'),
       T('Seminar 2, C1 runs this comparison for Romanian inflation', 'Seminarul 2, C1 face această comparație pentru inflația din România')])))
 
 D.recap(('More real series', 'alte serii reale'), [
-    T('Inflation: AR(2) near a unit root; reverts to the historical mean; lag-12 residual correlation', 'Inflația: AR(2) aproape de o rădăcină unitară; revine la media istorică; corelație reziduală la decalajul 12'),
+    T('Inflation: AR(2) near a unit root; reverts to the historical mean; lag-12 residual correlation', 'Inflația: AR(2) aproape de o rădăcină unitară; revine la media istorică; corelație reziduală la lagul 12'),
     T('Daily returns: significant but tiny AR effects; the variance needs GARCH', 'Randamentele zilnice: efecte AR semnificative, dar foarte mici; varianța cere GARCH'),
     T('Sunspots: Yule\'s AR(2) gives the 11-year cycle from complex roots', 'Petele solare: AR(2)-ul lui Yule dă ciclul de 11 ani din rădăcini complexe'),
     T('Forecasting competitions: always compare with simple benchmarks', 'Competițiile de prognoză: comparați întotdeauna cu repere simple')])
@@ -1033,7 +1035,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
 D.frame(T('Self-assessment', 'Autoevaluare'), items(
     (T('\\textbf{Question}: is $X_t = 1.2X_{t-1} - 0.32X_{t-2} + \\varepsilon_t$ stationary?', '\\textbf{Întrebare}: este $X_t = 1{,}2X_{t-1} - 0{,}32X_{t-2} + \\varepsilon_t$ staționar?'),
      [T('\\textbf{Answer}: $1 - 1.2z + 0.32z^2 = (1 - 0.8z)(1 - 0.4z)$, roots 1.25 and 2.5, both outside the circle: yes', '\\textbf{Răspuns}: $1 - 1{,}2z + 0{,}32z^2 = (1 - 0{,}8z)(1 - 0{,}4z)$, rădăcinile 1,25 și 2,5, ambele în afara cercului: da')]),
-    (T('\\textbf{Question}: the ACF of a series has one spike $\\hat\\rho(1) = -0.45$ and the PACF decays. Which model?', '\\textbf{Întrebare}: ACF a unei serii are o singură valoare semnificativă, $\\hat\\rho(1) = -0{,}45$, iar PACF descrește. Ce model?'),
+    (T('\\textbf{Question}: the ACF of a series has one spike $\\hat\\rho(1) = -0.45$ and the PACF decays. Which model?', '\\textbf{Întrebare}: ACF a unei serii are o singură valoare semnificativă, $\\hat\\rho(1) = -0{,}45$, iar PACF descrește. Ce model propuneți?'),
      [T('\\textbf{Answer}: MA(1) with $\\theta < 0$; solve $\\theta/(1 + \\theta^2) = -0.45$ and keep the invertible root', '\\textbf{Răspuns}: MA(1) cu $\\theta < 0$; rezolvăm $\\theta/(1 + \\theta^2) = -0{,}45$ și păstrăm rădăcina invertibilă')]),
     (T('\\textbf{Question}: an ARMA(2,1) leaves $Q^*(10) = 15.2$ in its residuals. Reject at 5\\%?', '\\textbf{Întrebare}: un ARMA(2,1) lasă în reziduuri $Q^*(10) = 15{,}2$. Respingem la 5\\%?'),
      [T('\\textbf{Answer}: degrees of freedom $10 - 3 = 7$, $\\chi^2_{0.95}(7) = 14.07 < 15.2$: reject; with 10 degrees of freedom (critical 18.31) one would wrongly accept', '\\textbf{Răspuns}: gradele de libertate $10 - 3 = 7$, $\\chi^2_{0{,}95}(7) = 14{,}07 < 15{,}2$: respingem; cu 10 grade de libertate (valoarea critică 18,31) am accepta greșit')]),

@@ -130,7 +130,7 @@ MSCA Digital Finance}
         \item ideea de foundation model; Transformer-ul și atenția, pe scurt
         \item de la numere la tokeni: scalare, cuantizare, patching; principalele familii de modele
         \item prognozele probabiliste și scorurile lor; un test corect pe serii din România și din SUA
-        \item scurgerea de informație și contaminarea; cînd ajută aceste modele și cînd nu
+        \item leakage-ul și contaminarea; situațiile în care aceste modele ajută și cele în care nu ajută
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -147,20 +147,23 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Noțiuni necesare azi}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item Reperele de prognoză și evaluarea lor (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{capitolele 0} și \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{4})
     \begin{itemize}
-        \item prognoza sezonieră naivă $\hat y_{T+h} = y_{T+h-m}$; ETS; validarea încrucișată cu origine mobilă
-        \item MAE, RMSE, MASE; testul Diebold--Mariano
+        \item prognoza sezonieră naivă $\hat y_{T+h} = y_{T+h-m}$: prognoza repetă valoarea din același sezon al ciclului anterior
+        \item $T$: ultima perioadă observată; $h$: orizontul; $m$: lungimea sezonului (12 pentru date lunare, 168 pentru date orare cu ciclu săptămînal); căciula marchează o prognoză
+        \item ETS; validarea încrucișată cu origine mobilă; MAE, RMSE, MASE; testul Diebold--Mariano
     \end{itemize}
-    \item ARIMA și ARIMA sezonier (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf}{capitolele 3} și \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{4})
-    \item Noțiuni de bază de învățare automată (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf}{Capitolul 9})
+    \item ARIMA și ARIMA sezonier (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf}{capitolele 3} și \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{4}); noțiuni de bază de învățare automată (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf}{Capitolul 9})
     \begin{itemize}
         \item eșantioanele de antrenare, validare și test; o rețea neuronală ca funcție flexibilă cu mulți parametri
         \item modelele globale: un model antrenat pe multe serii
     \end{itemize}
     \item Cuantilele: $q_\tau$ este valoarea sub care variabila se află cu probabilitatea $\tau$
+    \begin{itemize}
+        \item $\tau \in (0, 1)$: nivelul; $q_{0{,}5}$ este mediana, $q_{0{,}1}$ și $q_{0{,}9}$ delimitează un interval central de 80\%
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -172,32 +175,41 @@ MSCA Digital Finance}
 \begin{frame}{Trei moduri de a prognoza multe serii}
 \itemsize{\small}
 \begin{itemize}
-    \item Modele \textbf{locale}: cîte un model pentru fiecare serie, estimat doar pe acea serie
+    \item Modele \textbf{locale}
     \begin{itemize}
+        \item cîte un model pentru fiecare serie, estimat doar pe acea serie
         \item ETS, ARIMA: puțini parametri, interpretabile; 10\,000 de serii înseamnă 10\,000 de estimări
     \end{itemize}
-    \item Modele \textbf{globale} (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf}{Capitolul 9}): un model antrenat pe toate seriile unui set de date
+    \item Modele \textbf{globale} (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf}{Capitolul 9})
     \begin{itemize}
+        \item un model antrenat pe toate seriile unui set de date
         \item exemplu: DeepAR (\refSalinas), o rețea recurentă antrenată pe toate produsele unui comerciant
     \end{itemize}
-    \item Modele de tip \textbf{foundation}: un model pre-antrenat o singură dată pe un corpus foarte larg de serii din multe domenii
+    \item Modele de tip \textbf{foundation}
     \begin{itemize}
+        \item un model pre-antrenat o singură dată pe un corpus foarte larg de serii din multe domenii
         \item folosit apoi pe serii noi și seturi de date noi, fără reestimare
         \item termenul provine de la \refBommasani: modele antrenate pe date largi, la scară mare, adaptabile la multe sarcini
     \end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Zero-shot, fine-tuning, în context}
+\begin{frame}{Zero-shot, fine-tuning și prognoza din context}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Contextul}: istoricul recent $y_{T-C+1}, \dots, y_T$ transmis modelului în momentul prognozei ($C$ = lungimea contextului)
-    \item Prognoza \textbf{zero-shot}: ponderile pre-antrenate rămîn fixe; se folosește doar contextul seriei noi
+    \item \textbf{Contextul}
     \begin{itemize}
+        \item istoricul recent $y_{T-C+1}, \dots, y_T$ transmis modelului în momentul prognozei ($C$ = lungimea contextului)
+    \end{itemize}
+    \item Prognoza \textbf{zero-shot}
+    \begin{itemize}
+        \item ponderile pre-antrenate rămîn fixe
+        \item se folosește doar contextul seriei noi
         \item niciun parametru nu se estimează pe seria-țintă: prognoza durează o fracțiune de secundă
     \end{itemize}
-    \item \textbf{Fine-tuning}: antrenarea suplimentară a ponderilor pre-antrenate pe datele-țintă
+    \item \textbf{Fine-tuning}
     \begin{itemize}
+        \item antrenarea suplimentară a ponderilor pre-antrenate pe datele-țintă
         \item poate ajuta la serii neobișnuite; cere un eșantion de validare și mai mult calcul
     \end{itemize}
     \item Rezultatul este de obicei o mulțime de \textbf{cuantile} $\hat q_{0,1}, \dots, \hat q_{0,9}$ pentru fiecare pas viitor, nu un singur număr
@@ -260,8 +272,10 @@ MSCA Digital Finance}
         \item creată pentru traducere; stă la baza oricărui model mare de limbaj (LLM)
     \end{itemize}
     \item Intrarea: o secvență de \textbf{tokeni}, fiecare transformat într-un vector (embedding)
-    \item \textbf{Encoder-ul}: citește toată intrarea; \textbf{decoder-ul}: produce ieșirea pas cu pas
+    \item \textbf{Encoder-ul}
     \begin{itemize}
+        \item citește toată intrarea
+        \item \textbf{decoder-ul}: produce ieșirea pas cu pas
         \item modelele \textbf{doar cu decoder} (GPT, TimesFM, Lag-Llama) prognozează tokenul următor din toți cei anteriori
     \end{itemize}
     \item Fiecărui vector i se adaugă informația despre poziție, deoarece atenția ignoră ordinea
@@ -270,20 +284,43 @@ MSCA Digital Finance}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Self-attention (atenția asupra propriei secvențe)}
+\begin{frame}{Self-attention (1/2): formula}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item Fiecare vector de intrare $x_i$ produce o interogare $q_i$, o cheie $k_i$ și o valoare $v_i$ (trei transformări liniare)
-    \item Ieșirea în poziția $i$: o medie ponderată a tuturor valorilor
+    \item Fiecare vector de intrare $x_i$ produce trei vectori, prin trei transformări liniare învățate la antrenare
+    \begin{itemize}
+        \item o interogare $q_i$ (ce caută poziția $i$), o cheie $k_i$ (ce oferă poziția $i$), o valoare $v_i$ (ce transmite poziția $i$)
+    \end{itemize}
+    \item Ieșirea în poziția $i$ este o medie ponderată a valorilor tuturor pozițiilor
     \begin{itemize}
         \item $\displaystyle \text{out}_i = \sum_j w_{ij} v_j, \qquad w_{ij} = \frac{\exp(q_i^\top k_j/\sqrt{d})}{\sum_l \exp(q_i^\top k_l/\sqrt{d})}$
-        \item matricial: $\text{softmax}(QK^\top/\sqrt{d})\,V$; $d$ = lungimea vectorilor-cheie
+    \end{itemize}
+    \item Notațiile
+    \begin{itemize}
+        \item $j, l$: indici care parcurg toate pozițiile de intrare; $w_{ij}$: ponderea pe care poziția $i$ o dă poziției $j$
+        \item $q_i^\top k_j$: produsul scalar dintre interogare și cheie, mare cînd cei doi vectori au aceeași direcție (scorul de similaritate)
+        \item $d$: lungimea vectorilor-cheie; împărțirea la $\sqrt{d}$ menține scorurile la o mărime moderată
+        \item exponențiala face toate ponderile pozitive, iar numitorul face ca ponderile poziției $i$ să aibă suma 1
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Self-attention (2/2): forma matricială și intuiția}
+\itemsize{\small}
+\begin{itemize}
+    \item Forma matricială a aceluiași calcul: $\text{softmax}(QK^\top/\sqrt{d})\,V$
+    \begin{itemize}
+        \item $Q$, $K$, $V$: matrice ale căror linii sînt vectorii $q_i$, $k_i$, $v_i$; $QK^\top$ conține toate scorurile $q_i^\top k_j$
+        \item softmax: aplicată pe fiecare linie, transformă scorurile în ponderile $w_{ij}$ de pe slide-ul anterior
     \end{itemize}
     \item Intuiția pentru serii: pasul de azi se poate uita la aceeași oră de săptămîna trecută și îi poate da o pondere mare
     \begin{itemize}
-        \item ponderile sînt învățate din date, nu fixate dinainte ca decalajele unui AR($p$)
+        \item ponderile sînt învățate din date, nu fixate dinainte, ca lagurile unui AR($p$)
     \end{itemize}
-    \item Costul: $n$ intrări cer $n^2$ comparații; un context de 2048 de valori dă circa 4 milioane
+    \item Costul: $n$ intrări cer $n^2$ comparații
+    \begin{itemize}
+        \item un context de 2048 de valori dă circa 4 milioane de comparații în fiecare strat de atenție
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -305,7 +342,7 @@ MSCA Digital Finance}
 \itemsize{\small}
 \begin{itemize}
     \item Atenția: fiecare pas este o medie ponderată, învățată, a tuturor pașilor
-    \item Construcții encoder--decoder (Chronos) și doar cu decoder (TimesFM, Lag-Llama)
+    \item Arhitecturi encoder--decoder (Chronos) și arhitecturi doar cu decoder (TimesFM, Lag-Llama)
     \item Costul crește cu pătratul numărului de intrări
 \end{itemize}
 \end{frame}
@@ -332,20 +369,37 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Scalarea prin medie și cuantizarea (Chronos)}
+\begin{frame}{Scalarea prin medie și cuantizarea (Chronos) (1/2)}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Scalarea prin medie}: $\tilde x_t = x_t / s$, cu $s = \frac{1}{C}\sum_{t=1}^{C} |x_t|$
+    \item \textbf{Scalarea prin medie}
     \begin{itemize}
+        \item fiecare valoare a contextului se împarte la media valorilor absolute ale contextului
+        \item $\tilde x_t = x_t / s, \qquad s = \frac{1}{C}\sum_{t=1}^{C} |x_t|$
+        \item $x_t$: a $t$-a valoare a contextului, $t = 1, \dots, C$; $C$: lungimea contextului; $s$: scala; $\tilde x_t$: valoarea scalată
         \item contextul scalat are valori de ordinul unității, oricare ar fi unitățile
     \end{itemize}
-    \item \textbf{Cuantizarea}: intervalul $[-15, 15]$ este împărțit în 4093 de intervale egale; tokenul lui $\tilde x_t$ este numărul celui mai apropiat centru
+    \item \textbf{Cuantizarea}
     \begin{itemize}
-        \item lățimea unui interval 0{,}0073; plus tokeni speciali (completare, sfîrșit de secvență)
+        \item fiecare valoare scalată este înlocuită cu numărul unui interval
+        \item intervalul $[-15, 15]$ este împărțit în 4093 de intervale egale, de lățime 0{,}0073; tokenul lui $\tilde x_t$ este numărul celui mai apropiat centru
+        \item plus tokeni speciali (completare, sfîrșit de secvență)
     \end{itemize}
-    \item Antrenarea: un model de limbaj (T5) învață să prognozeze tokenul următor, cu pierderea cross-entropy
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Scalarea prin medie și cuantizarea (Chronos) (2/2)}
+\itemsize{\small}
+\begin{itemize}
+    \item Antrenarea: un model de limbaj (T5) învață să prognozeze tokenul următor
     \begin{itemize}
-        \item prognoza: se eșantionează multe traiectorii de tokeni, se transformă în valori ($\times s$), se citesc cuantilele
+        \item funcția de pierdere: cross-entropy, minus logaritmul probabilității atribuite tokenului următor efectiv; este 0 cînd această probabilitate este 1
+    \end{itemize}
+    \item Prognoza, în trei pași
+    \begin{itemize}
+        \item se eșantionează din model multe traiectorii de tokeni
+        \item fiecare token se înlocuiește cu centrul intervalului său și se înmulțește cu $s$
+        \item se citesc cuantilele valorilor eșantionate la fiecare pas viitor
     \end{itemize}
     \item Limita: valorile scalate în afara intervalului $[-15, 15]$ nu pot fi produse
 \end{itemize}
@@ -394,8 +448,9 @@ MSCA Digital Finance}
 \begin{frame}{Patching-ul}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Patch}: un bloc de $P$ valori consecutive, transformat într-un vector de intrare de o rețea mică
+    \item \textbf{Patch}
     \begin{itemize}
+        \item un bloc de $P$ valori consecutive, transformat într-un vector de intrare de o rețea mică
         \item PatchTST (\refNie): „o serie de timp valorează cît 64 de cuvinte”
     \end{itemize}
     \item Două avantaje
@@ -456,12 +511,20 @@ MSCA Digital Finance}
 \end{column}
 \begin{column}{0.66\textwidth}
 \begin{itemize}
-    \item \textbf{Chronos} (\refAnsari): T5 encoder--decoder pe valori scalate și cuantizate; eșantionează traiectorii de tokeni
-    \item \textbf{Chronos-Bolt} (noiembrie 2024): patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1, \dots, 0,9
+    \item \textbf{Chronos} (\refAnsari)
     \begin{itemize}
+        \item T5 encoder--decoder pe valori scalate și cuantizate
+        \item eșantionează traiectorii de tokeni
+    \end{itemize}
+    \item \textbf{Chronos-Bolt} (noiembrie 2024)
+    \begin{itemize}
+        \item patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1, \dots, 0,9
         \item dimensiunile folosite aici: tiny, 9 milioane, și small, 48 de milioane de parametri; context de pînă la 2048 de valori
     \end{itemize}
-    \item \textbf{Chronos-2} (\refAnsariB, octombrie 2025): 119 milioane de parametri, 21 de niveluri de cuantile, covariate și grupuri de serii înrudite
+    \item \textbf{Chronos-2} (\refAnsariB, octombrie 2025)
+    \begin{itemize}
+        \item 119 milioane de parametri, 21 de niveluri de cuantile, covariate și grupuri de serii înrudite
+    \end{itemize}
     \item Ponderi deschise (licența Apache-2.0); pachetul Python \texttt{chronos-forecasting}; toate rulează pe un CPU
 \end{itemize}
 \end{column}
@@ -471,14 +534,16 @@ MSCA Digital Finance}
 \begin{frame}{TimesFM (Google) și Lag-Llama}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{TimesFM} (\refDas): Transformer doar cu decoder, patch-uri de intrare de 32 și de ieșire de 128 de valori
+    \item \textbf{TimesFM} (\refDas)
     \begin{itemize}
+        \item Transformer doar cu decoder, patch-uri de intrare de 32 și de ieșire de 128 de valori
         \item pre-antrenat pe serii reale (Google Trends, accesări de pagini Wikipedia) și sintetice; circa 200 de milioane de parametri
         \item ponderi deschise (Apache-2.0); versiunile ulterioare adaugă ieșiri cuantile
     \end{itemize}
-    \item \textbf{Lag-Llama} (\refRasul): doar cu decoder, construit pe arhitectura Llama a modelelor de limbaj
+    \item \textbf{Lag-Llama} (\refRasul)
     \begin{itemize}
-        \item intrările: valori întîrziate alese după frecvență (de exemplu 7 zile, 12 luni, 24 de ore) plus variabile de calendar
+        \item doar cu decoder, construit pe arhitectura Llama a modelelor de limbaj
+        \item intrările: valorile seriei la laguri alese după frecvență (de exemplu 7 zile, 12 luni, 24 de ore), plus variabile de calendar
         \item ieșirea: parametrii unei distribuții Student-$t$ pentru pasul următor; eșantionarea dă traiectorii
         \item mic și deschis (Apache-2.0); gîndit pentru fine-tuning
     \end{itemize}
@@ -496,14 +561,16 @@ MSCA Digital Finance}
 \end{column}
 \begin{column}{0.68\textwidth}
 \begin{itemize}
-    \item \textbf{Moirai} (\refWoo): model de prognoză „universal”
+    \item \textbf{Moirai} (\refWoo)
     \begin{itemize}
+        \item model de prognoză „universal”
         \item orice număr de variabile într-o singură secvență; mărimea patch-ului aleasă după frecvență
         \item ieșirea: un amestec de distribuții; corpusul LOTSA, circa 27 de miliarde de observații
         \item ponderi deschise, cu licență necomercială (CC BY-NC 4.0)
     \end{itemize}
-    \item \textbf{TimeGPT} (\refGarza): model închis, disponibil doar printr-un API cu plată
+    \item \textbf{TimeGPT} (\refGarza)
     \begin{itemize}
+        \item model închis, disponibil doar printr-un API cu plată
         \item ponderile și datele de antrenare nu pot fi inspectate; versiunea se poate schimba; datele pleacă de pe calculatorul dumneavoastră
         \item nu îl folosim în acest curs: rezultatele nu ar putea fi reproduse
     \end{itemize}
@@ -512,7 +579,7 @@ MSCA Digital Finance}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Familiile, una lîngă alta}
+\begin{frame}{Comparația familiilor de modele}
 \itemsize{\footnotesize}
 \begin{center}
 \scriptsize
@@ -525,7 +592,7 @@ Chronos-Bolt (2024) & encoder--decoder & patch-uri de 16 & 9 cuantile & Apache-2
 Chronos-2 (2025) & encoder & patch-uri + covariate & 21 de cuantile & Apache-2.0 \\
 TimesFM (2024) & decoder & patch-uri de 32 & patch-uri de 128 & Apache-2.0 \\
 Moirai (2024) & encoder & patch-uri, orice variabile & amestec & CC BY-NC 4.0 \\
-Lag-Llama (2023) & decoder (Llama) & valori întîrziate & Student-$t$ & Apache-2.0 \\
+Lag-Llama (2023) & decoder (Llama) & valori la laguri fixe & Student-$t$ & Apache-2.0 \\
 TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \bottomrule
 \end{tabular}
@@ -550,7 +617,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 %=============================================================================
 
 \begin{frame}{Prognozele cuantile}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item O \textbf{prognoză probabilistă} dă distribuția lui $y_{T+h}$, condiționată de datele pînă la $T$
     \begin{itemize}
@@ -563,26 +630,71 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
         \item \textbf{calibrarea}: intervalul de 80\% conține circa 80\% din valorile observate
         \item \textbf{precizia} (sharpness): dintre prognozele calibrate, cea mai îngustă este mai bună (\refGR)
     \end{itemize}
-    \item Pentru ETS și ARIMA folosim cuantilele distribuției Normale, $\hat y_{T+h} + z_\tau \hat\sigma_h$
+    \item Pentru ETS și ARIMA folosim cuantilele distribuției Normale, $\hat q_\tau = \hat y_{T+h} + z_\tau \hat\sigma_h$
+    \begin{itemize}
+        \item $z_\tau$: cuantila de nivel $\tau$ a distribuției Normale standard ($z_{0{,}9} = 1{,}28$); $\hat\sigma_h$: abaterea standard estimată a erorii de prognoză la orizontul $h$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Pierderea pinball și CRPS}
-\itemsize{\footnotesize}
+\begin{frame}{Pierderea pinball}
+\itemsize{\small}
 \begin{itemize}
-    \item Pierderea \textbf{pinball} (cuantilă) a lui $\hat q_\tau$ pentru valoarea observată $y$
+    \item Pierderea \textbf{pinball} (cuantilă) evaluează o cuantilă prognozată $\hat q_\tau$ față de valoarea observată $y$
     \begin{itemize}
         \item $L_\tau(y, \hat q_\tau) = \tau\,(y - \hat q_\tau)$ dacă $y \ge \hat q_\tau$ și $(1 - \tau)(\hat q_\tau - y)$ altfel
-        \item valoarea ei așteptată este minimă în cuantila adevărată: răsplătește cuantilele oneste
     \end{itemize}
-    \item \textbf{CRPS} (scorul de probabilitate continuu pe ranguri, \refMW) al unei funcții de repartiție prognozate $F$
+    \item Notațiile
+    \begin{itemize}
+        \item $\tau$: nivelul cuantilei; $\hat q_\tau$: cuantila prognozată; $y$: valoarea observată ulterior
+    \end{itemize}
+    \item Interpretarea
+    \begin{itemize}
+        \item pierderea este 0 cînd $\hat q_\tau = y$ și crește liniar cu distanța dintre ele
+        \item o valoare observată peste cuantilă primește ponderea $\tau$, una sub cuantilă, ponderea $1 - \tau$
+        \item valoarea ei așteptată este minimă în cuantila adevărată: raportarea cuantilei adevărate este strategia optimă
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Scorul CRPS}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{CRPS} (continuous ranked probability score, scorul de probabilitate continuu pe ranguri, \refMW) evaluează o întreagă distribuție prognozată față de valoarea observată $y$
     \begin{itemize}
         \item $\text{CRPS}(F, y) = \int (F(z) - \mathbf{1}\{z \ge y\})^2\,dz = 2\int_0^1 L_\tau(y, F^{-1}(\tau))\,d\tau$
-        \item în unitățile lui $y$; pentru o prognoză punctuală este $|y - \hat y|$: CRPS generalizează MAE
     \end{itemize}
-    \item \textbf{WQL} (pierderea cuantilă ponderată): CRPS aproximat cu cele 9 niveluri și împărțit la $\sum |y|$
+    \item Notațiile
     \begin{itemize}
-        \item $\text{WQL} = \frac{1}{9}\sum_{\tau}\frac{2\sum_t L_\tau(y_t, \hat q_{\tau,t})}{\sum_t |y_t|}$: fără unități, folosit de Chronos și de GIFT-Eval
+        \item $F$: funcția de repartiție prognozată; $z$: variabila de integrare, care parcurge toate valorile posibile
+        \item $\mathbf{1}\{z \ge y\}$: indicatorul, 1 dacă $z \ge y$ și 0 altfel (funcția de repartiție a unei prognoze care pune toată masa în $y$)
+        \item $F^{-1}(\tau)$: cuantila de nivel $\tau$ a lui $F$; a doua formă este pierderea pinball mediată pe toate nivelurile
+    \end{itemize}
+    \item Interpretarea
+    \begin{itemize}
+        \item $\text{CRPS} \ge 0$, în unitățile lui $y$; 0 doar pentru o prognoză care pune toată masa în valoarea observată; mai mic înseamnă mai bine
+        \item pentru o prognoză punctuală este $|y - \hat y|$: CRPS generalizează MAE
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pierderea cuantilă ponderată (WQL)}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{WQL} (weighted quantile loss, pierderea cuantilă ponderată)
+    \begin{itemize}
+        \item CRPS aproximat cu cele 9 niveluri 0,1, \dots, 0,9 și împărțit la mărimea seriei
+        \item $\text{WQL} = \frac{1}{9}\sum_{\tau}\frac{2\sum_t L_\tau(y_t, \hat q_{\tau,t})}{\sum_t |y_t|}$
+    \end{itemize}
+    \item Notațiile
+    \begin{itemize}
+        \item $\tau$: parcurge cele 9 niveluri; $t$: parcurge toți pașii de prognoză de la toate originile
+        \item $\hat q_{\tau,t}$: cuantila de nivel $\tau$ prognozată pentru pasul $t$; $y_t$: valoarea observată la pasul $t$
+    \end{itemize}
+    \item Interpretarea
+    \begin{itemize}
+        \item numitorul $\sum_t |y_t|$ elimină unitățile: se pot compara serii cu niveluri diferite
+        \item 0 pentru o prognoză perfectă; mai mic înseamnă mai bine; folosit de Chronos și de GIFT-Eval
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -623,20 +735,40 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Precizia punctuală și acoperirea}
+\begin{frame}{Precizia punctuală: MASE}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{MASE} (\refHK): MAE al prognozei împărțit la MAE în eșantion al prognozei sezoniere naive
+    \item \textbf{MASE} (mean absolute scaled error, eroarea absolută medie scalată, \refHK)
     \begin{itemize}
-        \item $\text{MASE} = \dfrac{\frac1h\sum_{j=1}^{h}|y_{T+j} - \hat y_{T+j}|}{\frac{1}{T-m}\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$; sub 1: mai bun decît prognoza sezonieră naivă în eșantion
+        \item MAE al prognozei împărțit la MAE în eșantion al prognozei sezoniere naive
+        \item $\text{MASE} = \dfrac{\frac1h\sum_{j=1}^{h}|y_{T+j} - \hat y_{T+j}|}{\frac{1}{T-m}\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$
+    \end{itemize}
+    \item Notațiile
+    \begin{itemize}
+        \item numărătorul: eroarea absolută medie a prognozelor $\hat y_{T+j}$ pe cei $h$ pași de după originea $T$
+        \item numitorul: eroarea absolută medie a prognozei sezoniere naive $y_{t-m}$ în interiorul eșantionului, $t = m+1, \dots, T$; $m$: lungimea sezonului
+    \end{itemize}
+    \item Interpretarea
+    \begin{itemize}
+        \item sub 1: mai bun decît prognoza sezonieră naivă în eșantion; peste 1: mai slab; fără unități
         \item exemplu: MAE 0{,}30, MAE naiv în eșantion 0{,}25, deci MASE = 1{,}2
     \end{itemize}
-    \item \textbf{Acoperirea}: proporția valorilor observate din $[\hat q_{0,1}, \hat q_{0,9}]$; ținta este 80\%
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Acoperirea și scorurile relative}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{Acoperirea}
     \begin{itemize}
-        \item 7 din 10 în interval înseamnă 70\%: intervale puțin prea înguste
+        \item proporția valorilor observate din intervalul de 80\%
+        \item $\text{Cov} = \frac1n\sum_{i=1}^{n} \mathbf{1}\{\hat q_{0{,}1,i} \le y_i \le \hat q_{0{,}9,i}\}$; $n$: numărul de prognoze; $\mathbf{1}\{\cdot\}$: 1 dacă valoarea observată este în interval, 0 altfel
+        \item ținta este 80\%; 7 din 10 în interval înseamnă 70\%: intervale puțin prea înguste
     \end{itemize}
-    \item \textbf{Scorurile relative}: MASE sau WQL al unui model împărțit la cel al prognozei sezoniere naive, pe aceleași origini
+    \item \textbf{Scorurile relative}
     \begin{itemize}
+        \item MASE sau WQL al unui model împărțit la cel al prognozei sezoniere naive, pe aceleași origini
+        \item sub 1: modelul este mai bun decît prognoza sezonieră naivă
         \item mediate pe serii cu media geometrică, astfel încît 2 și 0,5 se compensează
     \end{itemize}
 \end{itemize}
@@ -678,7 +810,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Consumul de energie electrică al României, cu 48 de ore înainte}
+\begin{frame}{Consumul de energie electrică al României, prognoză pe 48 de ore}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch11_fan_load.pdf}
@@ -714,7 +846,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Producția industrială a României, cu 12 luni înainte}
+\begin{frame}{Producția industrială a României, prognoză pe 12 luni}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch11_fan_ip.pdf}
@@ -736,7 +868,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{EUR/RON, cu 20 de zile înainte}
+\begin{frame}{EUR/RON, prognoză pe 20 de zile}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch11_fan_eurron.pdf}
@@ -763,7 +895,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \begin{itemize}
     \item Fără estimare, modelul copiază ciclurile și nivelurile din context
     \item Nu poate anticipa ce contextul nu arată (căldura, o recesiune)
-    \item Pe un mers aleator întoarce un mers aleator
+    \item Pentru un mers aleator, prognoza lui coincide practic cu cea a mersului aleator
 \end{itemize}
 \end{frame}
 
@@ -775,8 +907,9 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \begin{frame}{Protocolul testului}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Origine mobilă} (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{Capitolul 4}): la fiecare origine, fiecare model prognozează $h$ pași doar din datele pînă la origine
+    \item \textbf{Origine mobilă} (\tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol4_sezonalitate_prognoza.pdf}{Capitolul 4})
     \begin{itemize}
+        \item la fiecare origine, fiecare model prognozează $h$ pași doar din datele pînă la origine
         \item consumul: $h$ = 48 de ore, origini săptămînale din iulie 2025 pînă în iunie 2026; seriile lunare: $h$ = 12, origini lunare din 2016; PIB-ul: $h$ = 4, din 2012; EUR/RON: $h$ = 20 de zile, la fiecare 20 de zile din 2016
         \item 708 origini în total; contextul: tot trecutul, cel mult 2048 de observații
     \end{itemize}
@@ -785,7 +918,10 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
         \item prognoza sezonieră naivă (prognoza naivă pentru șomaj și EUR/RON)
         \item ETS cu trend amortizat și sezonalitate aditivă; ARIMA cu ordinele alese o singură dată după AIC, înainte de prima origine (consumul: ARMA(2,0,2) pe diferențele săptămînale)
     \end{itemize}
-    \item \textbf{Foundation models}, zero-shot: Chronos-Bolt tiny și small, Chronos-2
+    \item \textbf{Foundation models}, zero-shot
+    \begin{itemize}
+        \item Chronos-Bolt tiny și small, Chronos-2
+    \end{itemize}
     \item Aceleași origini, același context, același orizont, aceleași scoruri: MASE, WQL, acoperirea
 \end{itemize}
 \end{frame}
@@ -881,7 +1017,7 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Cît context este necesar?}
+\begin{frame}{Lungimea necesară a contextului}
 \itemsize{\footnotesize}
 \begin{center}
 \includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch11_context.pdf}
@@ -928,18 +1064,30 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \begin{frame}{Benchmark-uri de referință}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{M3} (\refMH): 3003 serii; metodele sofisticate nu le-au bătut în medie pe cele simple
-    \item \textbf{M4} (\refMSA): 100\,000 de serii; au cîștigat combinațiile și un hibrid de netezire exponențială și rețea neuronală
-    \item \textbf{Arhiva Monash} (\refMonash): seturi publice de date cu orizonturi fixe și rezultate de referință
-    \item \textbf{GIFT-Eval} (\refAksu): multe domenii și frecvențe, MASE și CRPS, un clasament public al foundation models
+    \item \textbf{M3} (\refMH)
     \begin{itemize}
+        \item 3003 serii
+        \item metodele sofisticate nu le-au bătut în medie pe cele simple
+    \end{itemize}
+    \item \textbf{M4} (\refMSA)
+    \begin{itemize}
+        \item 100\,000 de serii
+        \item au cîștigat combinațiile și un hibrid de netezire exponențială și rețea neuronală
+    \end{itemize}
+    \item \textbf{Arhiva Monash} (\refMonash)
+    \begin{itemize}
+        \item seturi publice de date cu orizonturi fixe și rezultate de referință
+    \end{itemize}
+    \item \textbf{GIFT-Eval} (\refAksu)
+    \begin{itemize}
+        \item multe domenii și frecvențe, MASE și CRPS, un clasament public al foundation models
         \item separă datele de test de un corpus de pre-antrenare, pentru a limita contaminarea
     \end{itemize}
     \item Studii critice: modele liniare simple au bătut primele modele de prognoză cu Transformer (\refZeng); componentele LLM nu adaugă precizie (\refTan)
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Cînd ajută foundation models și cînd nu}
+\begin{frame}{Utilitatea foundation models: avantaje și limite}
 \itemsize{\footnotesize}
 \begin{itemize}
     \item \textbf{Ajută}
@@ -969,13 +1117,16 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 
 
 %=============================================================================
-\section{Scurgerea de informație și contaminarea}
+\section{Leakage-ul și contaminarea}
 %=============================================================================
 
-\begin{frame}{Scurgerea de informație în propriul cod}
+\begin{frame}{Leakage-ul în propriul cod}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Scurgerea de informație} (leakage): informația din perioada de test ajunge în prognoze (\refHew)
+    \item \textbf{Leakage}
+    \begin{itemize}
+        \item informația din perioada de test ajunge în prognoze (\refHew)
+    \end{itemize}
     \item Greșeli tipice
     \begin{itemize}
         \item scalarea sau standardizarea cu media întregului eșantion
@@ -993,8 +1144,9 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \begin{frame}{Contaminarea benchmark-urilor}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Contaminarea}: seria de test (sau serii puternic corelate cu ea) a fost în corpusul de pre-antrenare
+    \item \textbf{Contaminarea}
     \begin{itemize}
+        \item seria de test (sau serii puternic corelate cu ea) a fost în corpusul de pre-antrenare
         \item scorul măsoară atunci memoria, nu prognoza: o distorsiune optimistă
     \end{itemize}
     \item Chronos raportează două benchmark-uri: în domeniu (seturi folosite la antrenare) și zero-shot (seturi nefolosite) (\refAnsari)
@@ -1033,10 +1185,10 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Recapitulare: scurgerea de informație și contaminarea}
+\begin{frame}{Recapitulare: leakage-ul și contaminarea}
 \itemsize{\small}
 \begin{itemize}
-    \item Scurgerea de informație este sub controlul dumneavoastră: folosiți doar datele disponibile la fiecare origine
+    \item Leakage-ul este sub controlul dumneavoastră: folosiți doar datele disponibile la fiecare origine
     \item Contaminarea nu este: corpusul de pre-antrenare poate conține seria dumneavoastră
     \item Verificați rezultatele pe date publicate după lansarea modelului
 \end{itemize}
@@ -1050,9 +1202,18 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \begin{frame}{Contribuția posibilă a AI}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Cod}: o primă versiune a unui backtest cu origine mobilă, a pierderii pinball și a WQL, a unui fan chart
-    \item \textbf{Lectură}: un rezumat al articolului unui model (arhitectura, corpusul, licența, data lansării)
-    \item \textbf{Explorare}: rularea mai multor modele deschise pe multe serii românești de la Eurostat sau INS
+    \item \textbf{Cod}
+    \begin{itemize}
+        \item o primă versiune a unui backtest cu origine mobilă, a pierderii pinball și a WQL, a unui fan chart
+    \end{itemize}
+    \item \textbf{Lectură}
+    \begin{itemize}
+        \item un rezumat al articolului unui model (arhitectura, corpusul, licența, data lansării)
+    \end{itemize}
+    \item \textbf{Explorare}
+    \begin{itemize}
+        \item rularea mai multor modele deschise pe multe serii românești de la Eurostat sau INS
+    \end{itemize}
     \item Exemplu de prompt
     \begin{itemize}
         \item \aiprompt{Write Python code that downloads Romanian monthly industrial production (Eurostat sts\_inpr\_m, not seasonally adjusted), forecasts 12 months ahead from monthly origins since 2016 with amazon/chronos-bolt-small (package chronos-forecasting, CPU), ETS and the seasonal naive, and reports MASE, the weighted quantile loss and the coverage of the 80\% interval.}
@@ -1084,7 +1245,7 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
     \item Seriile devin intrări ale unui Transformer prin scalare, cuantizare (Chronos) sau patching (TimesFM, Moirai, Chronos-Bolt)
     \item Ieșirile sînt cuantile: evaluați-le cu pierderea pinball, CRPS sau WQL și verificați acoperirea
     \item Pe cele șapte serii: cîștiguri mari la consumul orar, niciunul la seriile apropiate de un mers aleator, pierderi la PIB-ul trimestrial scurt; ARIMA rămîne un reper puternic
-    \item Contaminarea poate umfla scorurile publicate: testați pe date publicate după model
+    \item Contaminarea poate face scorurile publicate să pară mai bune decît sînt: testați pe date publicate după lansarea modelului
 \end{itemize}
 \end{frame}
 
@@ -1098,11 +1259,11 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \midrule
 Atenția & $\text{softmax}(QK^\top/\sqrt{d})\,V$ \\
 Scalarea prin medie & $\tilde x_t = x_t/s$, \quad $s = \frac1C\sum_{t=1}^{C}|x_t|$ \\
-Pierderea pinball & $L_\tau(y, q) = \max\{\tau(y - q),\ (\tau - 1)(y - q)\}$ \\
+Pierderea pinball & $L_\tau(y, \hat q_\tau) = \max\{\tau(y - \hat q_\tau),\ (\tau - 1)(y - \hat q_\tau)\}$ \\
 CRPS & $\int (F(z) - \mathbf{1}\{z \ge y\})^2\,dz = 2\int_0^1 L_\tau(y, F^{-1}(\tau))\,d\tau$ \\
-WQL & $\frac{1}{K}\sum_{k=1}^{K} 2\sum_t L_{\tau_k}(y_t, \hat q_{\tau_k,t}) \big/ \sum_t |y_t|$ \\
+WQL & $\frac{1}{9}\sum_{\tau} 2\sum_t L_{\tau}(y_t, \hat q_{\tau,t}) \big/ \sum_t |y_t|$ \\
 MASE & $\frac1h\sum_j |y_{T+j} - \hat y_{T+j}| \Big/ \frac{1}{T-m}\sum_{t>m}|y_t - y_{t-m}|$ \\
-Acoperirea & $\frac1n\sum \mathbf{1}\{\hat q_{0{,}1} \le y \le \hat q_{0{,}9}\}$, ținta 0,8 \\
+Acoperirea & $\frac1n\sum_i \mathbf{1}\{\hat q_{0{,}1,i} \le y_i \le \hat q_{0{,}9,i}\}$, ținta 0,8 \\
 \bottomrule
 \end{tabular}
 \end{center}

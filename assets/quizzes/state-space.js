@@ -563,7 +563,7 @@ window.TSA_DATA.quizzes['state-space'] = {
                 "incorrectExplanation": "Recessions last about 3--4 quarters, not 40; the data are seasonally adjusted; and 2020 lies outside 1947--2019."
             },
             "ro": {
-                "title": "Ce regim a găsit modelul?",
+                "title": "Regimul găsit de model",
                 "text": "Un model cu două regimuri, cu medie și varianță variabile, estimat pe creșterea PIB din SUA în 1947--2019, dă regimuri de aproximativ 40 de trimestre, cu varianțe foarte diferite. Ce a găsit cel mai probabil?",
                 "options": [
                     "Recesiunile NBER",

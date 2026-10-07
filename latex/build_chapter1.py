@@ -350,7 +350,7 @@ interp(('the four series', 'celor patru serii'), [
     (T('\\textbf{Inflation}: @{infl.max}\\% in @{infl.maxd}, @{infl.min}\\% in @{infl.mind}, @{infl.last}\\% in @{infl.lastd}',
        '\\textbf{Inflația}: @{infl.max}\\% în @{infl.maxd}, @{infl.min}\\% în @{infl.mind}, @{infl.last}\\% în @{infl.lastd}'),
      [T('a slow, persistent movement: this month resembles the previous one', 'o mișcare lentă, persistentă: luna aceasta seamănă cu luna trecută')]),
-    (T('\\textbf{EUR/RON}: from @{fx.v0} to @{fx.v1} lei; it wanders without returning to a fixed level', '\\textbf{EUR/RON}: de la @{fx.v0} la @{fx.v1} lei; rătăcește fără să revină la un nivel fix'),
+    (T('\\textbf{EUR/RON}: from @{fx.v0} to @{fx.v1} lei; it wanders without returning to a fixed level', '\\textbf{EUR/RON}: de la @{fx.v0} la @{fx.v1} lei; evoluează fără să revină la un nivel fix'),
      [T('a candidate for a random walk (Section 3)', 'un candidat pentru un mers aleator (secțiunea 3)')]),
     (T('\\textbf{BET returns}: they oscillate around a constant level close to 0; the extremes: $@{bet.min}\\%$ on @{bet.mind}, $+@{bet.max}\\%$ on @{bet.maxd}',
        '\\textbf{Randamentele BET}: oscilează în jurul unui nivel constant, apropiat de 0; extremele: $@{bet.min}\\%$ pe @{bet.mind}, $+@{bet.max}\\%$ pe @{bet.maxd}'),
@@ -418,7 +418,7 @@ D.frame(T('Strict stationarity', 'Staționaritatea strictă'), items(
         '$(X_{t_1}, \\dots, X_{t_k}) \\overset{d}{=} (X_{t_1 + h}, \\dots, X_{t_k + h})$, unde $\\overset{d}{=}$ înseamnă distribuții comune egale')]),
     (T('Consequences', 'Consecințe'),
      [T('$k = 1$: all $X_t$ have the same distribution', '$k = 1$: toate variabilele $X_t$ au aceeași distribuție'),
-      T('$k = 2$: the joint distribution of $(X_t, X_{t+h})$ depends only on the lag $h$', '$k = 2$: distribuția comună a lui $(X_t, X_{t+h})$ depinde doar de decalajul $h$')]),
+      T('$k = 2$: the joint distribution of $(X_t, X_{t+h})$ depends only on the lag $h$', '$k = 2$: distribuția comună a lui $(X_t, X_{t+h})$ depinde doar de lagul $h$')]),
     (T('Example: an i.i.d. sequence is strictly stationary', 'Exemplu: un șir i.i.d. este strict staționar'),
      [T('the definition concerns entire distributions; the moments need not even exist (an i.i.d. Cauchy sequence)', 'definiția privește distribuții întregi; momentele nici nu trebuie să existe (un șir i.i.d. Cauchy)')]),
     T('Hard to check from data: we would need all joint distributions', 'Greu de verificat din date: ar trebui cunoscute toate distribuțiile comune')))
@@ -428,8 +428,8 @@ D.frame(T('Weak stationarity', 'Staționaritatea slabă'), items(
        '\\textbf{Definiție} \\refKhinchin: $\\{X_t\\}$ este \\textbf{slab staționar} (staționar în covarianță, staționar de ordinul doi) dacă'),
      [T('(i) $E[X_t^2] < \\infty$ for every $t$', '(i) $E[X_t^2] < \\infty$ pentru orice $t$'),
       T('(ii) $E[X_t] = \\mu$, the same for every $t$', '(ii) $E[X_t] = \\mu$, aceeași pentru orice $t$'),
-      T('(iii) $\\mathrm{Cov}(X_t, X_{t+h}) = \\gamma(h)$ depends only on the lag $h$, not on $t$', '(iii) $\\mathrm{Cov}(X_t, X_{t+h}) = \\gamma(h)$ depinde doar de decalajul $h$, nu de $t$')]),
-    (T('Then the functions have one argument, the \\textbf{lag} $h$:', 'Atunci funcțiile au un singur argument, \\textbf{decalajul} $h$:'),
+      T('(iii) $\\mathrm{Cov}(X_t, X_{t+h}) = \\gamma(h)$ depends only on the lag $h$, not on $t$', '(iii) $\\mathrm{Cov}(X_t, X_{t+h}) = \\gamma(h)$ depinde doar de lagul $h$, nu de $t$')]),
+    (T('Then the functions have one argument, the \\textbf{lag} $h$:', 'Atunci funcțiile au un singur argument, \\textbf{lagul} $h$:'),
      [T('$\\gamma(h) = \\mathrm{Cov}(X_t, X_{t+h})$, $\\gamma(0) = \\mathrm{Var}(X_t)$', '$\\gamma(h) = \\mathrm{Cov}(X_t, X_{t+h})$, $\\gamma(0) = \\mathrm{Var}(X_t)$'),
       T('$\\rho(h) = \\gamma(h)/\\gamma(0)$: the \\textbf{ACF} (autocorrelation function)', '$\\rho(h) = \\gamma(h)/\\gamma(0)$: \\textbf{ACF} (funcția de autocorelație)')]),
     T('In this course, ``stationary\'\' means weakly stationary unless stated otherwise', 'În acest curs, „staționar” înseamnă slab staționar, dacă nu se precizează altfel')))
@@ -472,7 +472,8 @@ D.frame(T('Properties of the autocovariance function', 'Proprietățile funcție
 D.frame(T('Worked example: a moving average of order 1', 'Exemplu rezolvat: o medie mobilă de ordinul 1'), items(
     (T('$X_t = \\varepsilon_t + \\theta\\varepsilon_{t-1}$, $\\{\\varepsilon_t\\}$ uncorrelated, mean 0, variance $\\sigma^2$: the \\textbf{MA(1)} (moving average) process',
        '$X_t = \\varepsilon_t + \\theta\\varepsilon_{t-1}$, $\\{\\varepsilon_t\\}$ necorelate, media 0, varianța $\\sigma^2$: procesul \\textbf{MA(1)} (medie mobilă)'),
-     [T('mean: $E[X_t] = 0$', 'media: $E[X_t] = 0$'),
+     [T('$\\theta$: the weight of the previous shock; $\\varepsilon_t$: the shock of period $t$', '$\\theta$: ponderea șocului din perioada anterioară; $\\varepsilon_t$: șocul din perioada $t$'),
+      T('mean: $E[X_t] = 0$', 'media: $E[X_t] = 0$'),
       T('$\\gamma(0) = E[(\\varepsilon_t + \\theta\\varepsilon_{t-1})^2] = \\sigma^2(1 + \\theta^2)$ (the cross term has mean 0)', '$\\gamma(0) = E[(\\varepsilon_t + \\theta\\varepsilon_{t-1})^2] = \\sigma^2(1 + \\theta^2)$ (termenul încrucișat are media 0)'),
       T('$\\gamma(1) = E[(\\varepsilon_t + \\theta\\varepsilon_{t-1})(\\varepsilon_{t+1} + \\theta\\varepsilon_t)] = \\theta\\sigma^2$', '$\\gamma(1) = E[(\\varepsilon_t + \\theta\\varepsilon_{t-1})(\\varepsilon_{t+1} + \\theta\\varepsilon_t)] = \\theta\\sigma^2$'),
       T('$\\gamma(h) = 0$ for $|h| \\ge 2$: no common shock', '$\\gamma(h) = 0$ pentru $|h| \\ge 2$: nu există niciun șoc comun')]),
@@ -483,7 +484,8 @@ D.frame(T('Worked example: a moving average of order 1', 'Exemplu rezolvat: o me
 D.frame(T('Worked example: an autoregression of order 1', 'Exemplu rezolvat: o autoregresie de ordinul 1'), items(
     (T('$X_t = \\phi X_{t-1} + \\varepsilon_t$, $|\\phi| < 1$: the \\textbf{AR(1)} (autoregressive) process; assume it is stationary and solve for the moments',
        '$X_t = \\phi X_{t-1} + \\varepsilon_t$, $|\\phi| < 1$: procesul \\textbf{AR(1)} (autoregresiv); presupunem că este staționar și aflăm momentele'),
-     [T('mean: $\\mu = \\phi\\mu + 0$, so $\\mu = 0$', 'media: $\\mu = \\phi\\mu + 0$, deci $\\mu = 0$'),
+     [T('$\\phi$: the weight of the previous value; $\\varepsilon_t$: uncorrelated shocks with mean 0 and variance $\\sigma^2$', '$\\phi$: ponderea valorii din perioada anterioară; $\\varepsilon_t$: șocuri necorelate, cu media 0 și varianța $\\sigma^2$'),
+      T('mean: $\\mu = \\phi\\mu + 0$, so $\\mu = 0$', 'media: $\\mu = \\phi\\mu + 0$, deci $\\mu = 0$'),
       T('variance: $\\gamma(0) = \\phi^2\\gamma(0) + \\sigma^2$, so $\\gamma(0) = \\sigma^2/(1 - \\phi^2)$', 'varianța: $\\gamma(0) = \\phi^2\\gamma(0) + \\sigma^2$, deci $\\gamma(0) = \\sigma^2/(1 - \\phi^2)$'),
       T('multiply by $X_{t-h}$ and take expectations: $\\gamma(h) = \\phi\\gamma(h - 1)$, so $\\rho(h) = \\phi^{|h|}$', 'înmulțim cu $X_{t-h}$ și aplicăm media: $\\gamma(h) = \\phi\\gamma(h - 1)$, deci $\\rho(h) = \\phi^{|h|}$')]),
     (T('Numbers: $\\phi = 0.8$, $\\sigma^2 = 1$', 'Valori: $\\phi = 0{,}8$, $\\sigma^2 = 1$'),
@@ -496,7 +498,7 @@ chart(T('Question for the room: which series are stationary?', 'Întrebare pentr
     h='0.64\\textheight')
 
 D.frame(T('Answer: only series A is stationary', 'Răspuns: doar seria A este staționară'), items(
-    T('\\textbf{A}: stationary AR(1): constant mean and variance, the ACF depends only on the lag', '\\textbf{A}: AR(1) staționar: media și varianța constante, ACF depinde doar de decalaj'),
+    T('\\textbf{A}: stationary AR(1): constant mean and variance, the ACF depends only on the lag', '\\textbf{A}: AR(1) staționar: media și varianța constante, ACF depinde doar de lag'),
     (T('\\textbf{B}: deterministic trend, $\\mu_t = 0.04\\,t$: condition (ii) fails', '\\textbf{B}: trend determinist, $\\mu_t = 0{,}04\\,t$: condiția (ii) nu este îndeplinită'),
      [T('a \\textbf{trend-stationary} series: stationary around a line, after subtracting the trend', 'o serie \\textbf{staționară în jurul trendului}: staționară în jurul unei drepte, după eliminarea trendului')]),
     T('\\textbf{C}: the standard deviation grows @{nonst.sd1} times along the sample: condition (iii) fails at $h = 0$', '\\textbf{C}: abaterea standard crește de @{nonst.sd1} ori de-a lungul eșantionului: condiția (iii) nu este îndeplinită la $h = 0$'),
@@ -508,7 +510,7 @@ V.put('nonst.sd1', 3.0 / 0.4, 1)
 V.put('nonst.shift', 4.0, 0)
 
 D.recap(('Stationarity', 'staționaritate'), [
-    T('Strict: all joint distributions are shift-invariant; weak: constant mean, $\\gamma$ depends only on the lag', 'Strictă: toate distribuțiile comune sînt invariante la deplasare; slabă: media constantă, $\\gamma$ depinde doar de decalaj'),
+    T('Strict: all joint distributions are shift-invariant; weak: constant mean, $\\gamma$ depends only on the lag', 'Strictă: toate distribuțiile comune sînt invariante la deplasare; slabă: media constantă, $\\gamma$ depinde doar de lag'),
     T('Strict + finite variance $\\Rightarrow$ weak; for Gaussian processes they coincide', 'Strictă + varianță finită $\\Rightarrow$ slabă; pentru procesele gaussiene coincid'),
     T('MA(1) is always stationary; AR(1) is stationary for $|\\phi| < 1$, with $\\rho(h) = \\phi^{|h|}$', 'MA(1) este întotdeauna staționar; AR(1) este staționar pentru $|\\phi| < 1$, cu $\\rho(h) = \\phi^{|h|}$'),
     T('Trends, changing variance and breaks violate stationarity', 'Trendurile, varianța variabilă și rupturile încalcă staționaritatea')])
@@ -530,7 +532,7 @@ D.frame(T('White noise', 'Zgomotul alb'), items(
 
 chart(T('Three kinds of white noise', 'Trei tipuri de zgomot alb'), 'tsa_ch1_white_noise', 'TSA_ch1_processes', [
     T('Top: 500 of 1000 simulated values, variance 1 in all three; bottom: the ACF of the squares $X_t^2$', 'Sus: 500 din cele 1000 de valori simulate, varianța 1 în toate trei; jos: ACF a pătratelor $X_t^2$'),
-    T('GARCH(1,1) (Chapter 5): $\\sigma_t^2 = 0.05 + 0.10\\,\\varepsilon_{t-1}^2 + 0.85\\,\\sigma_{t-1}^2$, $\\varepsilon_t = \\sigma_t z_t$', 'GARCH(1,1) (Capitolul 5): $\\sigma_t^2 = 0{,}05 + 0{,}10\\,\\varepsilon_{t-1}^2 + 0{,}85\\,\\sigma_{t-1}^2$, $\\varepsilon_t = \\sigma_t z_t$')],
+    T('GARCH(1,1) (Chapter 5): $\\sigma_t^2 = 0.05 + 0.10\\,\\varepsilon_{t-1}^2 + 0.85\\,\\sigma_{t-1}^2$, $\\varepsilon_t = \\sigma_t z_t$; $\\sigma_t^2$: the variance of day $t$ given the past; $z_t$: i.i.d. $N(0, 1)$', 'GARCH(1,1) (Capitolul 5): $\\sigma_t^2 = 0{,}05 + 0{,}10\\,\\varepsilon_{t-1}^2 + 0{,}85\\,\\sigma_{t-1}^2$, $\\varepsilon_t = \\sigma_t z_t$; $\\sigma_t^2$: varianța din ziua $t$, condiționată de trecut; $z_t$: i.i.d. $N(0, 1)$')],
     h='0.64\\textheight')
 
 interp(('the three white noises', 'celor trei zgomote albe'), [
@@ -563,7 +565,7 @@ chart(T('Random walks and their variance', 'Mersuri aleatoare și varianța lor'
 interp(('the random walks', 'mersurilor aleatoare'), [
     (T('The spread grows like $\\sqrt{t}$: uncertainty about the level accumulates', 'Dispersia crește ca $\\sqrt{t}$: incertitudinea despre nivel se acumulează'),
      [T('a forecast of the level 100 days ahead has variance $100\\sigma^2$', 'o prognoză a nivelului peste 100 de zile are varianța $100\\sigma^2$')]),
-    (T('Paths look like they have trends and cycles, although nothing but chance drives them', 'Traiectoriile par să aibă trenduri și cicluri, deși nimic altceva decît hazardul nu le guvernează'),
+    (T('Paths look like they have trends and cycles, although nothing but chance drives them', 'Traiectoriile par să aibă trenduri și cicluri, deși sînt generate exclusiv de șocuri aleatoare'),
      [T('the same lesson as \\refSlutzky: sums of random shocks can look like economic cycles', 'aceeași lecție ca la \\refSlutzky: sumele de șocuri aleatoare pot semăna cu ciclurile economice')]),
     (T('Simulated $\\rho(X_{100}, X_{110}) = @{rw.corr}$ against @{rw.corrth} in theory', 'Valoarea simulată $\\rho(X_{100}, X_{110}) = @{rw.corr}$, față de @{rw.corrth} teoretic'),
      [T('levels far apart in time are still highly correlated: very slow ACF decay', 'nivelurile depărtate în timp rămîn puternic corelate: o ACF care scade foarte încet')])])
@@ -573,7 +575,7 @@ D.frame(T('The random walk with drift', 'Mersul aleator cu derivă'), items(
      [T('$E[X_t] = ct$: a linear trend in the mean; $\\mathrm{Var}(X_t) = t\\sigma^2$ as before', '$E[X_t] = ct$: un trend liniar în medie; $\\mathrm{Var}(X_t) = t\\sigma^2$, ca înainte')]),
     (T('The first difference is stationary: $\\Delta X_t = X_t - X_{t-1} = c + \\varepsilon_t$', 'Prima diferență este staționară: $\\Delta X_t = X_t - X_{t-1} = c + \\varepsilon_t$'),
      [T('a \\textbf{difference-stationary} series, with a \\textbf{stochastic trend}', 'o serie \\textbf{staționară în diferențe}, cu \\textbf{trend stochastic}')]),
-    (T('Compare with the trend-stationary $Y_t = a + bt + u_t$, $u_t$ stationary', 'Comparație cu seria staționară în jurul trendului $Y_t = a + bt + u_t$, $u_t$ staționar'),
+    (T('Compare with the trend-stationary $Y_t = a + bt + u_t$, $u_t$ stationary; $a$: intercept, $b$: slope of the trend', 'Comparație cu seria staționară în jurul trendului $Y_t = a + bt + u_t$, $u_t$ staționar; $a$: termenul liber, $b$: panta trendului'),
      [T('both have a linear mean; in $Y_t$ shocks fade, in $X_t$ they last forever', 'ambele au o medie liniară; în $Y_t$ șocurile se sting, în $X_t$ rămîn pentru totdeauna'),
       T('telling the two apart is the unit-root problem of Chapter 3', 'deosebirea celor două este problema rădăcinii unitare din Capitolul 3')]),
     T('Log prices of stocks and indices are often close to a random walk with a small positive drift', 'Logaritmii prețurilor acțiunilor și ai indicilor sînt adesea apropiați de un mers aleator cu o derivă mică și pozitivă')))
@@ -581,7 +583,7 @@ D.frame(T('The random walk with drift', 'Mersul aleator cu derivă'), items(
 D.frame(T('The Bucharest Stock Exchange', 'Bursa de Valori București'), cols(
     ph('bvb', T('The Bucharest Stock Exchange (BVB), 2024', 'Bursa de Valori București (BVB), 2024'), h='0.50\\textheight'),
     items(T('The BET index: the reference index of the BVB (Bucharest Stock Exchange), computed since 19 September 1997', 'Indicele BET: indicele de referință al BVB (Bursa de Valori București), calculat din 19 septembrie 1997'),
-          T('Daily closes since 2000: @{bet.n} log returns $r_t = 100\\,\\Delta\\ln P_t$; standard deviation @{bet.sd}\\% per day', 'Închideri zilnice din 2000: @{bet.n} randamente logaritmice $r_t = 100\\,\\Delta\\ln P_t$; abaterea standard @{bet.sd}\\% pe zi'),
+          T('Daily closes since 2000: @{bet.n} log returns $r_t = 100\\,\\Delta\\ln P_t$ ($P_t$: the closing level on day $t$); standard deviation @{bet.sd}\\% per day', 'Închideri zilnice din 2000: @{bet.n} randamente logaritmice $r_t = 100\\,\\Delta\\ln P_t$ ($P_t$: nivelul de închidere din ziua $t$); abaterea standard @{bet.sd}\\% pe zi'),
           T('Is the BET log price a random walk? A first, visual test on the next slide', 'Este logaritmul prețului BET un mers aleator? Un prim test, vizual, pe slide-ul următor')),
     wl='0.50', wr='0.46'))
 
@@ -594,7 +596,7 @@ D.frame(T('Answer: series @{sp.real}', 'Răspuns: seria @{sp.real}'), items(
     (T('Series @{sp.real} is the BET, @{sp.d0} to @{sp.d1}: mean daily change @{sp.mu}\\%, standard deviation @{sp.sd}\\%', 'Seria @{sp.real} este BET, @{sp.d0}--@{sp.d1}: variația zilnică medie @{sp.mu}\\%, abaterea standard @{sp.sd}\\%'),
      [T('by eye, it cannot be told apart from the random walks', 'cu ochiul liber, nu poate fi deosebită de mersurile aleatoare')]),
     (T('The data are not exactly a random walk: the first-order autocorrelation of the daily changes is @{sp.rho1}; Ljung--Box $Q^*(10)$ p-value @{sp.p}',
-       'Datele nu sînt exact un mers aleator: autocorelația de ordinul 1 a variațiilor zilnice este @{sp.rho1}; valoarea p a testului Ljung--Box $Q^*(10)$ este @{sp.p}'),
+       'Datele nu sînt exact un mers aleator: autocorelația de ordinul 1 a variațiilor zilnice este @{sp.rho1}; p-value-ul testului Ljung--Box $Q^*(10)$ este @{sp.p}'),
      [T('small departures, invisible in the level, show up in the ACF of the differences', 'abaterile mici, invizibile în nivel, apar în ACF a diferențelor')]),
     T('Lesson: study the changes, not the level; the tools are the ACF and the portmanteau tests (Sections 5--6)', 'Lecția: studiem variațiile, nu nivelul; instrumentele sînt ACF și testele portmanteau (secțiunile 5--6)')))
 
@@ -610,10 +612,11 @@ D.recap(('White noise and the random walk', 'zgomotul alb și mersul aleator'), 
 D.section('The lag operator, differencing and the Wold decomposition', 'Operatorul lag, diferențierea și descompunerea Wold')
 
 D.frame(T('The lag operator', 'Operatorul lag'), items(
-    (T('\\textbf{Definition}: $LX_t = X_{t-1}$; powers: $L^kX_t = X_{t-k}$, $L^0 = 1$ (also written $B$, the backshift operator)', '\\textbf{Definiție}: $LX_t = X_{t-1}$; puteri: $L^kX_t = X_{t-k}$, $L^0 = 1$ (notat și $B$, operatorul de întîrziere)'),
+    (T('\\textbf{Definition}: $LX_t = X_{t-1}$; powers: $L^kX_t = X_{t-k}$, $L^0 = 1$ (also written $B$, the backshift operator)', '\\textbf{Definiție}: $LX_t = X_{t-1}$; puteri: $L^kX_t = X_{t-k}$, $L^0 = 1$ (notat și $B$, de la \\emph{backshift})'),
      [T('a constant is unchanged: $Lc = c$', 'o constantă nu se schimbă: $Lc = c$')]),
     (T('\\textbf{Lag polynomials}: $\\phi(L) = 1 - \\phi_1L - \\dots - \\phi_pL^p$', '\\textbf{Polinoame în lag}: $\\phi(L) = 1 - \\phi_1L - \\dots - \\phi_pL^p$'),
-     [T('AR(1): $(1 - \\phi L)X_t = \\varepsilon_t$; MA(1): $X_t = (1 + \\theta L)\\varepsilon_t$', 'AR(1): $(1 - \\phi L)X_t = \\varepsilon_t$; MA(1): $X_t = (1 + \\theta L)\\varepsilon_t$'),
+     [T('$p$: the degree (the largest lag); $\\phi_1, \\dots, \\phi_p$: real coefficients; $\\phi(L)X_t = X_t - \\phi_1X_{t-1} - \\dots - \\phi_pX_{t-p}$', '$p$: gradul (lagul cel mai mare); $\\phi_1, \\dots, \\phi_p$: coeficienți reali; $\\phi(L)X_t = X_t - \\phi_1X_{t-1} - \\dots - \\phi_pX_{t-p}$'),
+      T('AR(1): $(1 - \\phi L)X_t = \\varepsilon_t$; MA(1): $X_t = (1 + \\theta L)\\varepsilon_t$', 'AR(1): $(1 - \\phi L)X_t = \\varepsilon_t$; MA(1): $X_t = (1 + \\theta L)\\varepsilon_t$'),
       T('they multiply like ordinary polynomials: $(1 - L)(1 + L) = 1 - L^2$', 'se înmulțesc ca polinoamele obișnuite: $(1 - L)(1 + L) = 1 - L^2$')]),
     (T('\\textbf{Inversion}: for $|\\phi| < 1$, $(1 - \\phi L)^{-1} = 1 + \\phi L + \\phi^2L^2 + \\dots$ (a geometric series)', '\\textbf{Inversare}: pentru $|\\phi| < 1$, $(1 - \\phi L)^{-1} = 1 + \\phi L + \\phi^2L^2 + \\dots$ (o serie geometrică)'),
      [T('so the AR(1) is $X_t = \\sum_{j \\ge 0}\\phi^j\\varepsilon_{t-j}$: an infinite moving average', 'deci AR(1) se scrie $X_t = \\sum_{j \\ge 0}\\phi^j\\varepsilon_{t-j}$: o medie mobilă infinită')]),
@@ -626,7 +629,7 @@ D.frame(T('Differencing', 'Diferențierea'), items(
      [T('\\textbf{seasonal difference} with period $s$: $\\Delta_sX_t = (1 - L^s)X_t = X_t - X_{t-s}$ ($s = 4$ for quarters, $s = 12$ for months)', '\\textbf{diferența sezonieră} cu perioada $s$: $\\Delta_sX_t = (1 - L^s)X_t = X_t - X_{t-s}$ ($s = 4$ pentru trimestre, $s = 12$ pentru luni)')]),
     (T('\\textbf{Worked example}: $x = (10, 12, 15, 14, 18)$', '\\textbf{Exemplu rezolvat}: $x = (10, 12, 15, 14, 18)$'),
      [T('$\\Delta x = (2, 3, -1, 4)$; $\\Delta^2x = (1, -4, 5)$; each difference loses one observation', '$\\Delta x = (2, 3, -1, 4)$; $\\Delta^2x = (1, -4, 5)$; fiecare diferențiere pierde o observație')]),
-    (T('What differencing removes', 'Ce elimină diferențierea'),
+    (T('What differencing removes', 'Efectele diferențierii'),
      [T('a linear trend: $\\Delta(a + bt) = b$; a quadratic trend needs $\\Delta^2$', 'un trend liniar: $\\Delta(a + bt) = b$; un trend pătratic necesită $\\Delta^2$'),
       T('a random walk: $\\Delta X_t = \\varepsilon_t$; a seasonal pattern that repeats exactly: $\\Delta_s$', 'un mers aleator: $\\Delta X_t = \\varepsilon_t$; un tipar sezonier care se repetă exact: $\\Delta_s$')]),
     (T('\\textbf{Integrated process}: $X_t \\sim I(d)$ if $\\Delta^dX_t$ is stationary and $\\Delta^{d-1}X_t$ is not', '\\textbf{Proces integrat}: $X_t \\sim I(d)$ dacă $\\Delta^dX_t$ este staționar, iar $\\Delta^{d-1}X_t$ nu este'),
@@ -637,9 +640,9 @@ chart(T('S\\&P 500: the level and its difference', 'S\\&P 500: nivelul și difer
     h='0.66\\textheight')
 
 interp(('the S\\&P 500 transformation', 'transformării S\\&P 500'), [
-    (T('Log price: sample ACF @{spx.acf1p} at lag 1 and still @{spx.acf50p} at lag 50', 'Logaritmul prețului: ACF de selecție @{spx.acf1p} la decalajul 1 și încă @{spx.acf50p} la decalajul 50'),
-     [T('the behaviour of a random walk: the level remembers everything', 'comportamentul unui mers aleator: nivelul își amintește totul')]),
-    (T('Log returns: mean @{spx.mean}\\% per day, standard deviation @{spx.sd}\\%; ACF at lag 1: $@{spx.acf1r}$', 'Randamentele logaritmice: media @{spx.mean}\\% pe zi, abaterea standard @{spx.sd}\\%; ACF la decalajul 1: $@{spx.acf1r}$'),
+    (T('Log price: sample ACF @{spx.acf1p} at lag 1 and still @{spx.acf50p} at lag 50', 'Logaritmul prețului: ACF de selecție @{spx.acf1p} la lagul 1 și încă @{spx.acf50p} la lagul 50'),
+     [T('the behaviour of a random walk: the level remembers everything', 'comportamentul unui mers aleator: nivelul rămîne corelat cu întregul său trecut')]),
+    (T('Log returns: mean @{spx.mean}\\% per day, standard deviation @{spx.sd}\\%; ACF at lag 1: $@{spx.acf1r}$', 'Randamentele logaritmice: media @{spx.mean}\\% pe zi, abaterea standard @{spx.sd}\\%; ACF la lagul 1: $@{spx.acf1r}$'),
      [T('a constant level: one difference removed the stochastic trend', 'un nivel constant: o singură diferențiere a eliminat trendul stochastic')]),
     (T('Not yet white noise in the strict sense: quiet and turbulent periods alternate (2008, 2020)', 'Nu încă zgomot alb în sens strict: perioadele liniștite alternează cu cele agitate (2008, 2020)'),
      [T('the returns are close to a weak white noise; their variance is the subject of Chapter 5', 'randamentele sînt apropiate de un zgomot alb slab; varianța lor este subiectul Capitolului 5')])])
@@ -703,9 +706,9 @@ D.frame(T('Sample autocovariance and autocorrelation', 'Autocovarianța și auto
     (T('From $x_1, \\dots, x_T$, with the sample mean $\\bar x = \\frac1T\\sum_t x_t$:', 'Din $x_1, \\dots, x_T$, cu media de selecție $\\bar x = \\frac1T\\sum_t x_t$:'),
      [T('$\\hat\\gamma(h) = \\frac1T\\sum_{t=1}^{T-h}(x_t - \\bar x)(x_{t+h} - \\bar x)$, $0 \\le h < T$', '$\\hat\\gamma(h) = \\frac1T\\sum_{t=1}^{T-h}(x_t - \\bar x)(x_{t+h} - \\bar x)$, $0 \\le h < T$'),
       T('$\\hat\\rho(h) = \\hat\\gamma(h)/\\hat\\gamma(0)$: the \\textbf{sample ACF}; the plot of $\\hat\\rho(h)$ against $h$ is the \\textbf{correlogram}', '$\\hat\\rho(h) = \\hat\\gamma(h)/\\hat\\gamma(0)$: \\textbf{ACF de selecție}; graficul lui $\\hat\\rho(h)$ în funcție de $h$ este \\textbf{corelograma}')]),
-    (T('Why divide by $T$ and not by $T - h$?', 'De ce împărțim la $T$ și nu la $T - h$?'),
+    (T('Why divide by $T$ and not by $T - h$?', 'Împărțitorul $T$ în locul lui $T - h$'),
      [T('the sequence $\\hat\\gamma(h)$ is then non-negative definite, like a true autocovariance \\refBD', 'șirul $\\hat\\gamma(h)$ este atunci pozitiv semidefinit, ca o autocovarianță adevărată \\refBD'),
-      T('the price: a small bias towards 0 at large lags; use $h \\le T/4$', 'prețul: o mică deplasare spre 0 la decalaje mari; folosim $h \\le T/4$')]),
+      T('the price: a small bias towards 0 at large lags; use $h \\le T/4$', 'prețul: o mică deplasare spre 0 la laguri mari; folosim $h \\le T/4$')]),
     (T('\\textbf{Worked example}: $x = (3, 5, 4, 6, 7)$, $\\bar x = 5$, deviations $(-2, 0, -1, 1, 2)$', '\\textbf{Exemplu rezolvat}: $x = (3, 5, 4, 6, 7)$, $\\bar x = 5$, abaterile $(-2, 0, -1, 1, 2)$'),
      [T('$\\hat\\gamma(0) = 10/5 = @{sx.g0}$; $\\hat\\gamma(1) = (0 + 0 - 1 + 2)/5 = @{sx.g1}$; $\\hat\\gamma(2) = (2 + 0 - 2)/5 = @{sx.g2}$', '$\\hat\\gamma(0) = 10/5 = @{sx.g0}$; $\\hat\\gamma(1) = (0 + 0 - 1 + 2)/5 = @{sx.g1}$; $\\hat\\gamma(2) = (2 + 0 - 2)/5 = @{sx.g2}$'),
       T('$\\hat\\rho(1) = @{sx.r1}$, $\\hat\\rho(2) = @{sx.r2}$; with $T = 5$ the band is $\\pm @{sx.band}$: far too few data', '$\\hat\\rho(1) = @{sx.r1}$, $\\hat\\rho(2) = @{sx.r2}$; cu $T = 5$ banda este $\\pm @{sx.band}$: mult prea puține date')])))
@@ -713,22 +716,22 @@ D.frame(T('Sample autocovariance and autocorrelation', 'Autocovarianța și auto
 D.frame(T('Confidence bands for the sample ACF', 'Benzi de încredere pentru ACF de selecție'), items(
     (T('\\textbf{Large-sample result} of \\refBartlett: if $X_t$ is i.i.d. with finite variance, for large $T$', '\\textbf{Rezultatul asimptotic} din \\refBartlett: dacă $X_t$ este i.i.d. cu varianță finită, pentru $T$ mare'),
      [T('$\\hat\\rho(1), \\dots, \\hat\\rho(m)$ are approximately independent $N(0, 1/T)$', '$\\hat\\rho(1), \\dots, \\hat\\rho(m)$ sînt aproximativ independente, $N(0, 1/T)$'),
-      T('95\\% band: $\\pm 1.96/\\sqrt{T}$; a bar outside it rejects $\\rho(h) = 0$ at 5\\%, \\textbf{for that lag alone}', 'banda de 95\\%: $\\pm 1{,}96/\\sqrt{T}$; o bară în afara ei respinge $\\rho(h) = 0$ la 5\\%, \\textbf{doar pentru acel decalaj}')]),
-    (T('For an MA($q$), at lags $h > q$: $\\mathrm{Var}(\\hat\\rho(h)) \\approx \\frac1T\\big(1 + 2\\sum_{k=1}^{q}\\rho(k)^2\\big)$', 'Pentru un MA($q$), la decalaje $h > q$: $\\mathrm{Var}(\\hat\\rho(h)) \\approx \\frac1T\\big(1 + 2\\sum_{k=1}^{q}\\rho(k)^2\\big)$'),
+      T('95\\% band: $\\pm 1.96/\\sqrt{T}$; a bar outside it rejects $\\rho(h) = 0$ at 5\\%, \\textbf{for that lag alone}', 'banda de 95\\%: $\\pm 1{,}96/\\sqrt{T}$; o bară în afara ei respinge $\\rho(h) = 0$ la 5\\%, \\textbf{doar pentru acel lag}')]),
+    (T('For an MA($q$), at lags $h > q$: $\\mathrm{Var}(\\hat\\rho(h)) \\approx \\frac1T\\big(1 + 2\\sum_{k=1}^{q}\\rho(k)^2\\big)$', 'Pentru un MA($q$), la laguri $h > q$: $\\mathrm{Var}(\\hat\\rho(h)) \\approx \\frac1T\\big(1 + 2\\sum_{k=1}^{q}\\rho(k)^2\\big)$'),
      [T('the wider bands of \\texttt{statsmodels} \\texttt{plot\\_acf} (Chapter 2)', 'benzile mai largi din \\texttt{plot\\_acf} din \\texttt{statsmodels} (Capitolul 2)')]),
     (T('Two traps', 'Două capcane'),
-     [T('with 20 lags and no correlation, about one bar is expected outside the band by chance', 'cu 20 de decalaje și nicio corelație, ne așteptăm ca aproximativ o bară să iasă din bandă din întîmplare'),
+     [T('with 20 lags and no correlation, about one bar is expected outside the band by chance', 'cu 20 de laguri și nicio corelație, ne așteptăm ca aproximativ o bară să iasă din bandă din întîmplare'),
       T('the band assumes i.i.d. data; for a weak white noise (GARCH returns) the true band is wider', 'banda presupune date i.i.d.; pentru un zgomot alb slab (randamente GARCH) banda adevărată este mai largă')])))
 
 chart(T('Sampling distribution of the sample ACF', 'Distribuția de selecție a ACF'), 'tsa_ch1_bartlett', 'TSA_ch1_acf_pacf', [
-    T('10000 samples of Gaussian white noise with $T = 100$: $\\hat\\rho(1)$ (left) and the number of lags, out of 20, outside $\\pm @{bt.band}$ (right)', '10000 de eșantioane de zgomot alb gaussian cu $T = 100$: $\\hat\\rho(1)$ (stînga) și numărul de decalaje, din 20, în afara lui $\\pm @{bt.band}$ (dreapta)')],
+    T('10000 samples of Gaussian white noise with $T = 100$: $\\hat\\rho(1)$ (left) and the number of lags, out of 20, outside $\\pm @{bt.band}$ (right)', '10000 de eșantioane de zgomot alb gaussian cu $T = 100$: $\\hat\\rho(1)$ (stînga) și numărul de laguri, din 20, în afara lui $\\pm @{bt.band}$ (dreapta)')],
     h='0.60\\textheight')
 
 interp(('the simulation', 'simulării'), [
     (T('$\\hat\\rho(1)$: mean $@{bt.mean}$ (theory $-1/T = -0.01$), standard deviation @{bt.sd} (theory $1/\\sqrt{T} = 0.1$)', '$\\hat\\rho(1)$: media $@{bt.mean}$ (teoretic $-1/T = -0{,}01$), abaterea standard @{bt.sd} (teoretic $1/\\sqrt{T} = 0{,}1$)'),
      [T('Bartlett\'s approximation is already good at $T = 100$', 'aproximarea lui Bartlett este deja bună la $T = 100$')]),
     (T('At least one of 20 bars outside the band in @{bt.pone}\\% of the samples, although there is no correlation at all', 'Cel puțin una din 20 de bare iese din bandă în @{bt.pone}\\% dintre eșantioane, deși nu există nicio corelație'),
-     [T('independent tests would give $1 - 0.95^{20} = @{bt.pth}\\%$; at distant lags $\\mathrm{Var}(\\hat\\rho(h)) < 1/T$, so slightly fewer bars cross', 'testele independente ar da $1 - 0{,}95^{20} = @{bt.pth}\\%$; la decalaje mari $\\mathrm{Var}(\\hat\\rho(h)) < 1/T$, deci ies ceva mai puține bare')]),
+     [T('independent tests would give $1 - 0.95^{20} = @{bt.pth}\\%$; at distant lags $\\mathrm{Var}(\\hat\\rho(h)) < 1/T$, so slightly fewer bars cross', 'testele independente ar da $1 - 0{,}95^{20} = @{bt.pth}\\%$; la laguri mari $\\mathrm{Var}(\\hat\\rho(h)) < 1/T$, deci ies ceva mai puține bare')]),
     T('Do not over-read single bars: judge the pattern, or use a joint test (Section 6)', 'Nu supra-interpretați bare izolate: judecați tiparul sau folosiți un test comun (secțiunea 6)')])
 
 chart(T('Theoretical and sample ACF of four processes', 'ACF teoretică și de selecție pentru patru procese'), 'tsa_ch1_acf_models', 'TSA_ch1_acf_pacf', [
@@ -738,15 +741,15 @@ chart(T('Theoretical and sample ACF of four processes', 'ACF teoretică și de s
 interp(('the four correlograms', 'celor patru corelograme'), [
     T('White noise: all bars small; the largest, $\\hat\\rho(2) = @{am.wn2}$, is noise', 'Zgomotul alb: toate barele sînt mici; cea mai mare, $\\hat\\rho(2) = @{am.wn2}$, este zgomot'),
     T('AR(1), $\\phi = 0.8$: geometric decay, $\\hat\\rho(1) = @{am.ar1}$, $\\hat\\rho(2) = @{am.ar2}$ (theory 0.80 and 0.64)', 'AR(1), $\\phi = 0{,}8$: descreștere geometrică, $\\hat\\rho(1) = @{am.ar1}$, $\\hat\\rho(2) = @{am.ar2}$ (teoretic 0,80 și 0,64)'),
-    T('MA(1), $\\theta = 0.6$: one spike, $\\hat\\rho(1) = @{am.ma1}$ (theory @{am.math}), then nothing: the ACF \\textbf{cuts off} after lag 1', 'MA(1), $\\theta = 0{,}6$: un singur vîrf, $\\hat\\rho(1) = @{am.ma1}$ (teoretic @{am.math}), apoi nimic: ACF \\textbf{se anulează} după decalajul 1'),
-    (T('Random walk: $\\hat\\rho(1) = @{am.rw1}$, still @{am.rw10} at lag 10: the slow, almost linear decay of a non-stationary series', 'Mersul aleator: $\\hat\\rho(1) = @{am.rw1}$, încă @{am.rw10} la decalajul 10: descreșterea lentă, aproape liniară, a unei serii nestaționare'),
+    T('MA(1), $\\theta = 0.6$: one spike, $\\hat\\rho(1) = @{am.ma1}$ (theory @{am.math}), then nothing: the ACF \\textbf{cuts off} after lag 1', 'MA(1), $\\theta = 0{,}6$: un singur vîrf, $\\hat\\rho(1) = @{am.ma1}$ (teoretic @{am.math}), apoi nimic: ACF \\textbf{se anulează} după lagul 1'),
+    (T('Random walk: $\\hat\\rho(1) = @{am.rw1}$, still @{am.rw10} at lag 10: the slow, almost linear decay of a non-stationary series', 'Mersul aleator: $\\hat\\rho(1) = @{am.rw1}$, încă @{am.rw10} la lagul 10: descreșterea lentă, aproape liniară, a unei serii nestaționare'),
      [T('the sample ACF of a random walk has no theoretical counterpart: $\\rho(h)$ is not defined', 'ACF de selecție a unui mers aleator nu are corespondent teoretic: $\\rho(h)$ nu este definit')])])
 
 D.frame(T('Partial autocorrelation', 'Autocorelația parțială'), items(
     (T('\\textbf{Definition}: the \\textbf{PACF} at lag $h$, $\\phi_{hh}$, is the last coefficient of the best linear predictor of $X_t$ from $X_{t-1}, \\dots, X_{t-h}$:',
-       '\\textbf{Definiție}: \\textbf{PACF} (funcția de autocorelație parțială) la decalajul $h$, $\\phi_{hh}$, este ultimul coeficient al celei mai bune prognoze liniare a lui $X_t$ din $X_{t-1}, \\dots, X_{t-h}$:'),
-     [T('$X_t = \\phi_{h1}X_{t-1} + \\dots + \\phi_{hh}X_{t-h} + e_t$', '$X_t = \\phi_{h1}X_{t-1} + \\dots + \\phi_{hh}X_{t-h} + e_t$'),
-      T('the correlation of $X_t$ and $X_{t-h}$ after removing the linear effect of the lags in between', 'corelația dintre $X_t$ și $X_{t-h}$ după eliminarea efectului liniar al decalajelor intermediare')]),
+       '\\textbf{Definiție}: \\textbf{PACF} (funcția de autocorelație parțială) la lagul $h$, $\\phi_{hh}$, este ultimul coeficient al celei mai bune prognoze liniare a lui $X_t$ din $X_{t-1}, \\dots, X_{t-h}$:'),
+     [T('$X_t = \\phi_{h1}X_{t-1} + \\dots + \\phi_{hh}X_{t-h} + e_t$; $\\phi_{h1}, \\dots, \\phi_{hh}$: the coefficients of the regression on $h$ lags; $e_t$: the prediction error', '$X_t = \\phi_{h1}X_{t-1} + \\dots + \\phi_{hh}X_{t-h} + e_t$; $\\phi_{h1}, \\dots, \\phi_{hh}$: coeficienții regresiei pe $h$ laguri; $e_t$: eroarea de prognoză'),
+      T('the correlation of $X_t$ and $X_{t-h}$ after removing the linear effect of the lags in between', 'corelația dintre $X_t$ și $X_{t-h}$ după eliminarea efectului liniar al lagurilor intermediare')]),
     (T('First two values', 'Primele două valori'),
      [T('$\\phi_{11} = \\rho(1)$; $\\phi_{22} = \\dfrac{\\rho(2) - \\rho(1)^2}{1 - \\rho(1)^2}$', '$\\phi_{11} = \\rho(1)$; $\\phi_{22} = \\dfrac{\\rho(2) - \\rho(1)^2}{1 - \\rho(1)^2}$'),
       T('the general case: the Durbin--Levinson recursion; the sample PACF uses $\\hat\\rho(h)$ in place of $\\rho(h)$', 'cazul general: recursia Durbin--Levinson; PACF de selecție folosește $\\hat\\rho(h)$ în locul lui $\\rho(h)$')]),
@@ -775,21 +778,21 @@ D.frame(T('Real data: three markets', 'Date reale: trei piețe'), cols(
     wl='0.40', wr='0.56'))
 
 chart(T('BET: ACF of returns, absolute and squared returns', 'BET: ACF a randamentelor, a valorilor absolute și a pătratelor'), 'tsa_ch1_bet_acf', 'TSA_ch1_acf_pacf', [
-    T('Daily log returns, @{bt2.n} days, lags 1--50; band $\\pm @{bet.band}$', 'Randamente logaritmice zilnice, @{bt2.n} zile, decalajele 1--50; banda $\\pm @{bet.band}$')],
+    T('Daily log returns, @{bt2.n} days, lags 1--50; band $\\pm @{bet.band}$', 'Randamente logaritmice zilnice, @{bt2.n} zile, lagurile 1--50; banda $\\pm @{bet.band}$')],
     h='0.58\\textheight')
 
 interp(('the BET correlograms', 'corelogramelor BET'), [
     (T('Returns: $\\hat\\rho(1) = @{bet.r1}$, clearly outside the band; $Q^*(10) = @{bet.q}$', 'Randamentele: $\\hat\\rho(1) = @{bet.r1}$, clar în afara benzii; $Q^*(10) = @{bet.q}$'),
      [T('statistically significant but small: yesterday\'s return explains about $\\hat\\rho(1)^2 = @{bet.r1sq}\\%$ of today\'s variance', 'semnificativă statistic, dar mică: randamentul de ieri explică aproximativ $\\hat\\rho(1)^2 = @{bet.r1sq}\\%$ din varianța celui de azi'),
       T('a typical sign of a less liquid market (non-synchronous trading)', 'un semn tipic al unei piețe mai puțin lichide (tranzacționare nesincronă)')]),
-    (T('Absolute returns: $\\hat\\rho(1) = @{bet.abs1}$ and still @{bet.abs50} at lag 50; squares: $\\hat\\rho(1) = @{bet.sq1}$', 'Valorile absolute: $\\hat\\rho(1) = @{bet.abs1}$ și încă @{bet.abs50} la decalajul 50; pătratele: $\\hat\\rho(1) = @{bet.sq1}$'),
+    (T('Absolute returns: $\\hat\\rho(1) = @{bet.abs1}$ and still @{bet.abs50} at lag 50; squares: $\\hat\\rho(1) = @{bet.sq1}$', 'Valorile absolute: $\\hat\\rho(1) = @{bet.abs1}$ și încă @{bet.abs50} la lagul 50; pătratele: $\\hat\\rho(1) = @{bet.sq1}$'),
      [T('large moves follow large moves: volatility clustering, a long memory in the size of returns', 'mișcările mari urmează după mișcări mari: volatility clustering, o memorie lungă a mărimii randamentelor')]),
     T('Conclusion: BET returns are close to a \\textbf{weak} white noise; the mean is hardly predictable, the variance is (Chapter 5)', 'Concluzie: randamentele BET sînt apropiate de un zgomot alb \\textbf{slab}; media este greu de anticipat, varianța nu (Capitolul 5)')])
 
 D.recap(('Sample ACF and PACF', 'ACF și PACF de selecție'), [
-    T('$\\hat\\rho(h) = \\hat\\gamma(h)/\\hat\\gamma(0)$, with divisor $T$; use lags up to about $T/4$', '$\\hat\\rho(h) = \\hat\\gamma(h)/\\hat\\gamma(0)$, cu împărțitorul $T$; folosim decalaje pînă la aproximativ $T/4$'),
+    T('$\\hat\\rho(h) = \\hat\\gamma(h)/\\hat\\gamma(0)$, with divisor $T$; use lags up to about $T/4$', '$\\hat\\rho(h) = \\hat\\gamma(h)/\\hat\\gamma(0)$, cu împărțitorul $T$; folosim laguri pînă la aproximativ $T/4$'),
     T('Under i.i.d. data: $\\hat\\rho(h) \\approx N(0, 1/T)$, band $\\pm 1.96/\\sqrt{T}$; 1 bar in 20 crosses by chance', 'Pentru date i.i.d.: $\\hat\\rho(h) \\approx N(0, 1/T)$, banda $\\pm 1{,}96/\\sqrt{T}$; o bară din 20 iese din întîmplare'),
-    T('PACF: direct effect of lag $h$; AR($p$) cuts off in the PACF, MA($q$) in the ACF', 'PACF: efectul direct al decalajului $h$; AR($p$) se anulează în PACF, MA($q$) în ACF'),
+    T('PACF: direct effect of lag $h$; AR($p$) cuts off in the PACF, MA($q$) in the ACF', 'PACF: efectul direct al lagului $h$; AR($p$) se anulează în PACF, MA($q$) în ACF'),
     T('Returns: small linear, strong non-linear dependence', 'Randamentele: dependență liniară slabă, dependență neliniară puternică')])
 
 # =============================================================================
@@ -798,23 +801,25 @@ D.recap(('Sample ACF and PACF', 'ACF și PACF de selecție'), [
 D.section('Portmanteau tests: Box--Pierce and Ljung--Box', 'Teste portmanteau: Box--Pierce și Ljung--Box')
 
 D.frame(T('Testing many autocorrelations at once', 'Testarea simultană a mai multor autocorelații'), items(
-    (T('$H_0$: $\\rho(1) = \\dots = \\rho(m) = 0$ (the series is white noise up to lag $m$); $H_1$: at least one $\\rho(h) \\ne 0$', '$H_0$: $\\rho(1) = \\dots = \\rho(m) = 0$ (seria este zgomot alb pînă la decalajul $m$); $H_1$: cel puțin un $\\rho(h) \\ne 0$'),
+    (T('$H_0$: $\\rho(1) = \\dots = \\rho(m) = 0$ (the series is white noise up to lag $m$); $H_1$: at least one $\\rho(h) \\ne 0$', '$H_0$: $\\rho(1) = \\dots = \\rho(m) = 0$ (seria este zgomot alb pînă la lagul $m$); $H_1$: cel puțin un $\\rho(h) \\ne 0$'),
      [T('a \\textbf{portmanteau} test: one statistic ``carries\'\' $m$ autocorrelations', 'un test \\textbf{portmanteau}: o singură statistică „poartă” $m$ autocorelații')]),
     (T('The \\textbf{Box--Pierce statistic}, from \\refBP: $Q(m) = T\\sum_{h=1}^{m}\\hat\\rho(h)^2$', '\\textbf{Statistica Box--Pierce}, din \\refBP: $Q(m) = T\\sum_{h=1}^{m}\\hat\\rho(h)^2$'),
      [T('under $H_0$, each $\\sqrt{T}\\hat\\rho(h) \\approx N(0, 1)$, independent: the sum of $m$ squares is $\\approx \\chi^2(m)$', 'în ipoteza $H_0$, fiecare $\\sqrt{T}\\hat\\rho(h) \\approx N(0, 1)$, independente: suma a $m$ pătrate este $\\approx \\chi^2(m)$')]),
     (T('The \\textbf{Ljung--Box statistic}, from \\refLB: $Q^*(m) = T(T + 2)\\sum_{h=1}^{m}\\dfrac{\\hat\\rho(h)^2}{T - h}$', '\\textbf{Statistica Ljung--Box}, din \\refLB: $Q^*(m) = T(T + 2)\\sum_{h=1}^{m}\\dfrac{\\hat\\rho(h)^2}{T - h}$'),
-     [T('the weight $(T + 2)/(T - h)$ corrects the small variance of $\\hat\\rho(h)$ at distant lags; same $\\chi^2(m)$ limit', 'ponderea $(T + 2)/(T - h)$ corectează varianța mică a lui $\\hat\\rho(h)$ la decalaje mari; aceeași limită $\\chi^2(m)$')]),
+     [T('the weight $(T + 2)/(T - h)$ corrects the small variance of $\\hat\\rho(h)$ at distant lags; same $\\chi^2(m)$ limit', 'ponderea $(T + 2)/(T - h)$ corectează varianța mică a lui $\\hat\\rho(h)$ la laguri mari; aceeași limită $\\chi^2(m)$')]),
     (T('Reject $H_0$ at 5\\% if $Q^* > \\chi^2_{0.95}(m)$; for example $\\chi^2_{0.95}(10) = @{chi10}$', 'Respingem $H_0$ la 5\\% dacă $Q^* > \\chi^2_{0{,}95}(m)$; de exemplu, $\\chi^2_{0{,}95}(10) = @{chi10}$'),
-     [T('on residuals of an ARMA($p, q$): $\\chi^2(m - p - q)$ (Chapter 2)', 'pentru reziduurile unui ARMA($p, q$): $\\chi^2(m - p - q)$ (Capitolul 2)')])))
+     [T('$\\chi^2(m)$: the chi-square distribution with $m$ degrees of freedom; $\\chi^2_{0.95}(m)$: its 95\\% quantile', '$\\chi^2(m)$: distribuția hi-pătrat cu $m$ grade de libertate; $\\chi^2_{0{,}95}(m)$: cuantila ei de 95\\%'),
+      T('p-value: the probability under $H_0$ of a statistic at least as large as the observed one; reject if it is below 0.05', 'p-value: probabilitatea, în ipoteza $H_0$, de a obține o statistică cel puțin la fel de mare ca cea observată; respingem dacă este sub 0,05'),
+      T('on residuals of an ARMA($p, q$): $\\chi^2(m - p - q)$ (Chapter 2)', 'pentru reziduurile unui ARMA($p, q$): $\\chi^2(m - p - q)$ (Capitolul 2)')])))
 
 D.frame(T('Worked example: the Ljung--Box statistic', 'Exemplu rezolvat: statistica Ljung--Box'), items(
     (T('$T = 100$; $\\hat\\rho(1) = 0.25$, $\\hat\\rho(2) = 0.12$, $\\hat\\rho(3) = -0.08$; band $\\pm @{lbx.band}$', '$T = 100$; $\\hat\\rho(1) = 0{,}25$, $\\hat\\rho(2) = 0{,}12$, $\\hat\\rho(3) = -0{,}08$; banda $\\pm @{lbx.band}$'),
      [T('only $\\hat\\rho(1)$ is outside the band', 'doar $\\hat\\rho(1)$ este în afara benzii')]),
     (T('Box--Pierce: $Q(3) = 100\\,(0.0625 + 0.0144 + 0.0064) = @{lbx.bp}$', 'Box--Pierce: $Q(3) = 100\\,(0{,}0625 + 0{,}0144 + 0{,}0064) = @{lbx.bp}$'),
      [T('Ljung--Box: $Q^*(3) = 100 \\cdot 102\\,\\big(\\frac{0.0625}{99} + \\frac{0.0144}{98} + \\frac{0.0064}{97}\\big) = @{lbx.lb}$', 'Ljung--Box: $Q^*(3) = 100 \\cdot 102\\,\\big(\\frac{0{,}0625}{99} + \\frac{0{,}0144}{98} + \\frac{0{,}0064}{97}\\big) = @{lbx.lb}$')]),
-    (T('Critical value $\\chi^2_{0.95}(3) = @{lbx.crit}$: reject $H_0$; p-value @{lbx.p}', 'Valoarea critică $\\chi^2_{0{,}95}(3) = @{lbx.crit}$: respingem $H_0$; valoarea p este @{lbx.p}'),
-     [T('the series is not white noise; the dependence is concentrated at lag 1', 'seria nu este zgomot alb; dependența este concentrată la decalajul 1')]),
-    (T('Choice of $m$: too small misses distant lags; too large dilutes the evidence', 'Alegerea lui $m$: prea mic ratează decalajele îndepărtate; prea mare diluează dovezile'),
+    (T('Critical value $\\chi^2_{0.95}(3) = @{lbx.crit}$: reject $H_0$; p-value @{lbx.p}', 'Valoarea critică $\\chi^2_{0{,}95}(3) = @{lbx.crit}$: respingem $H_0$; p-value-ul este @{lbx.p}'),
+     [T('the series is not white noise; the dependence is concentrated at lag 1', 'seria nu este zgomot alb; dependența este concentrată la lagul 1')]),
+    (T('Choice of $m$: too small misses distant lags; too large dilutes the evidence', 'Alegerea lui $m$: prea mic ratează lagurile îndepărtate; prea mare diluează dovezile'),
      [T('common choices: $m = 10$ for non-seasonal data, $m = 2s$ for seasonal data with period $s$ \\refFPP', 'alegeri uzuale: $m = 10$ pentru date nesezoniere, $m = 2s$ pentru date sezoniere cu perioada $s$ \\refFPP')])))
 
 chart(T('Box--Pierce and Ljung--Box in small samples', 'Box--Pierce și Ljung--Box în eșantioane mici'), 'tsa_ch1_lb_size', 'TSA_ch1_portmanteau', [
@@ -823,7 +828,7 @@ chart(T('Box--Pierce and Ljung--Box in small samples', 'Box--Pierce și Ljung--B
 
 interp(('the size simulation', 'simulării mărimii testelor'), [
     (T('$T = 50$, $m = 20$: Box--Pierce rejects in @{ls.50_20.bp}\\% of samples, Ljung--Box in @{ls.50_20.lb}\\%', '$T = 50$, $m = 20$: Box--Pierce respinge în @{ls.50_20.bp}\\% dintre eșantioane, Ljung--Box în @{ls.50_20.lb}\\%'),
-     [T('Box--Pierce is too lenient: it misses dependence; Ljung--Box errs the other way when $m$ is large relative to $T$', 'Box--Pierce este prea îngăduitor: ratează dependența; Ljung--Box greșește în sens opus cînd $m$ este mare față de $T$')]),
+     [T('Box--Pierce is too lenient: it misses dependence; Ljung--Box errs the other way when $m$ is large relative to $T$', 'Box--Pierce respinge prea rar, deci poate rata dependența; Ljung--Box respinge prea des cînd $m$ este mare față de $T$')]),
     T('$T = 500$, $m = 20$: @{ls.500_20.bp}\\% and @{ls.500_20.lb}\\%: both close to 5\\%', '$T = 500$, $m = 20$: @{ls.500_20.bp}\\% și @{ls.500_20.lb}\\%: ambele aproape de 5\\%'),
     T('Practice: use Ljung--Box (the default in software), and keep $m$ well below $T$ (for example $m \\le T/5$)', 'În practică: folosim Ljung--Box (implicit în programe) și păstrăm $m$ mult sub $T$ (de exemplu, $m \\le T/5$)')])
 
@@ -836,7 +841,7 @@ D.frame(T('Interpreting the Ljung--Box statistics', 'Interpretarea statisticilor
     [f'{lab} & @{{rl{i}.n}} & $@{{rl{i}.r1}}$ & $@{{rl{i}.r4}}$ & @{{rl{i}.q}} & @{{rl{i}.p}}' for i, (_, lab) in enumerate(ROWS)],
     size='scriptsize') + items(
     T('Every series rejects white noise; for the squared returns the statistic is tens of times larger than for the returns', 'Toate seriile resping ipoteza de zgomot alb; pentru pătratele randamentelor statistica este de zeci de ori mai mare decît pentru randamente'),
-    T('Rejection says only that \\textbf{some} correlation exists; the ACF shows where (GDP: lag 4, the season)', 'Respingerea spune doar că există \\textbf{o anumită} corelație; ACF arată unde (PIB: decalajul 4, sezonul)')), 'footnotesize')
+    T('Rejection says only that \\textbf{some} correlation exists; the ACF shows where (GDP: lag 4, the season)', 'Respingerea spune doar că există \\textbf{o anumită} corelație; ACF arată unde (PIB: lagul 4, sezonul)')), 'footnotesize')
 
 D.recap(('Portmanteau tests', 'teste portmanteau'), [
     T('$Q(m) = T\\sum\\hat\\rho(h)^2$, $Q^*(m) = T(T + 2)\\sum\\hat\\rho(h)^2/(T - h)$; both $\\approx \\chi^2(m)$ under white noise', '$Q(m) = T\\sum\\hat\\rho(h)^2$, $Q^*(m) = T(T + 2)\\sum\\hat\\rho(h)^2/(T - h)$; ambele $\\approx \\chi^2(m)$ pentru zgomot alb'),
@@ -865,7 +870,7 @@ chart(T('Romanian real GDP: log, quarterly and annual growth', 'PIB-ul real al R
     h='0.64\\textheight')
 
 interp(('the GDP transformations', 'transformărilor PIB'), [
-    T('$\\ln Y_t$: ACF @{gd.acf1_level} at lag 1 and @{gd.acf8_level} at lag 8, with peaks every 4 quarters: trend and season', '$\\ln Y_t$: ACF @{gd.acf1_level} la decalajul 1 și @{gd.acf8_level} la decalajul 8, cu vîrfuri la fiecare 4 trimestre: trend și sezon'),
+    T('$\\ln Y_t$: ACF @{gd.acf1_level} at lag 1 and @{gd.acf8_level} at lag 8, with peaks every 4 quarters: trend and season', '$\\ln Y_t$: ACF @{gd.acf1_level} la lagul 1 și @{gd.acf8_level} la lagul 8, cu vîrfuri la fiecare 4 trimestre: trend și sezon'),
     (T('$\\Delta\\ln Y_t$: the trend is gone, the season dominates: $\\hat\\rho(4) = @{gd.acf4_d1}$, $\\hat\\rho(2) = @{gd.acf2_d1}$; standard deviation @{gd.sd1}\\%', '$\\Delta\\ln Y_t$: trendul a dispărut, sezonul domină: $\\hat\\rho(4) = @{gd.acf4_d1}$, $\\hat\\rho(2) = @{gd.acf2_d1}$; abaterea standard @{gd.sd1}\\%'),
      [T('a quarter-on-quarter rate of unadjusted data mostly measures the season', 'rata trimestru față de trimestru a datelor neajustate măsoară mai ales sezonul')]),
     (T('$\\Delta_4\\ln Y_t$ (annual growth): mean @{gd.mean4}\\%, the ACF dies out after 2--3 quarters ($\\hat\\rho(1) = @{gd.acf1_d4}$, $\\hat\\rho(4) = @{gd.acf4_d4}$)',
@@ -880,7 +885,7 @@ D.frame(T('The Box--Cox transformation', 'Transformarea Box--Cox'), items(
      [T('$\\lambda = 0.5$: $w = @{bcx.05}$ and $@{bcx.05b}$; $\\lambda = 0$: $w = @{bcx.0}$ and $@{bcx.0b}$', '$\\lambda = 0{,}5$: $w = @{bcx.05}$ și $@{bcx.05b}$; $\\lambda = 0$: $w = @{bcx.0}$ și $@{bcx.0b}$'),
       T('the smaller $\\lambda$, the more large values are compressed', 'cu cît $\\lambda$ este mai mic, cu atît valorile mari sînt comprimate mai mult')]),
     (T('Choosing $\\lambda$: \\refGuerrero, as in \\refFPP', 'Alegerea lui $\\lambda$: \\refGuerrero, ca în \\refFPP'),
-     [T('split the series into years; choose $\\lambda$ so that $\\mathrm{sd}_i/\\mathrm{mean}_i^{1-\\lambda}$ is as constant as possible across years', 'împărțim seria pe ani; alegem $\\lambda$ astfel încît $\\mathrm{sd}_i/\\mathrm{medie}_i^{1-\\lambda}$ să fie cît mai constant de la un an la altul')]),
+     [T('split the series into years; choose $\\lambda$ so that $\\mathrm{sd}_i/\\mathrm{mean}_i^{1-\\lambda}$ is as constant as possible across years; $\\mathrm{sd}_i$, $\\mathrm{mean}_i$: the standard deviation and the mean of year $i$', 'împărțim seria pe ani; alegem $\\lambda$ astfel încît $\\mathrm{sd}_i/\\mathrm{medie}_i^{1-\\lambda}$ să fie cît mai constant de la un an la altul; $\\mathrm{sd}_i$, $\\mathrm{medie}_i$: abaterea standard și media din anul $i$')]),
     T('Forecasts are made for $w$ and transformed back: $y = (\\lambda w + 1)^{1/\\lambda}$; the back-transformed value is the median, not the mean', 'Prognozele se fac pentru $w$ și se transformă înapoi: $y = (\\lambda w + 1)^{1/\\lambda}$; valoarea obținută este mediana, nu media')))
 
 chart(T('Box--Cox for Romanian nominal GDP', 'Box--Cox pentru PIB-ul nominal al României'), 'tsa_ch1_boxcox', 'TSA_ch1_transformations', [
@@ -890,7 +895,7 @@ chart(T('Box--Cox for Romanian nominal GDP', 'Box--Cox pentru PIB-ul nominal al 
 interp(('the Box--Cox choice', 'alegerii Box--Cox'), [
     (T('Guerrero\'s $\\hat\\lambda = @{bx.lam}$: practically the logarithm (criterion @{bx.cvl} at $\\hat\\lambda$, @{bx.cv0} at $\\lambda = 0$, @{bx.cv1} at $\\lambda = 1$)', '$\\hat\\lambda$ al lui Guerrero $= @{bx.lam}$: practic logaritmul (criteriul @{bx.cvl} la $\\hat\\lambda$, @{bx.cv0} la $\\lambda = 0$, @{bx.cv1} la $\\lambda = 1$)'),
      [T('choose the round, interpretable value: $\\lambda = 0$', 'alegem valoarea rotundă și ușor de interpretat: $\\lambda = 0$')]),
-    (T('Why the log fits: the seasonal swing is a stable share of the level, about @{bx.amp0}\\% in the first five years and @{bx.amp1}\\% in the last five', 'De ce se potrivește logaritmul: oscilația sezonieră este o proporție stabilă din nivel, circa @{bx.amp0}\\% în primii cinci ani și @{bx.amp1}\\% în ultimii cinci'),
+    (T('Why the log fits: the seasonal swing is a stable share of the level, about @{bx.amp0}\\% in the first five years and @{bx.amp1}\\% in the last five', 'Logaritmul se potrivește deoarece oscilația sezonieră este o proporție stabilă din nivel, circa @{bx.amp0}\\% în primii cinci ani și @{bx.amp1}\\% în ultimii cinci'),
      [T('multiplicative seasonality becomes additive after the log', 'sezonalitatea multiplicativă devine aditivă după logaritmare')]),
     T('Box--Cox fixes the variance only; the trend and the season still need differencing', 'Box--Cox corectează doar varianța; trendul și sezonul tot trebuie eliminate prin diferențiere')])
 
@@ -934,14 +939,14 @@ D.frame(T('The Nile and the sunspots', 'Nilul și petele solare'), cols(
     wl='0.46', wr='0.50'))
 
 chart(T('The Nile and the sunspots: series and ACF', 'Nilul și petele solare: seriile și ACF'), 'tsa_ch1_textbook', 'TSA_ch1_textbook_series', [
-    T('Left: the Nile flow with its mean before and after 1898, and two ACFs; right: sunspot numbers and their ACF up to lag 40', 'Stînga: debitul Nilului cu media înainte și după 1898, și două ACF; dreapta: numărul de pete solare și ACF pînă la decalajul 40')],
+    T('Left: the Nile flow with its mean before and after 1898, and two ACFs; right: sunspot numbers and their ACF up to lag 40', 'Stînga: debitul Nilului cu media înainte și după 1898, și două ACF; dreapta: numărul de pete solare și ACF pînă la lagul 40')],
     h='0.64\\textheight')
 
 interp(('the two classic series', 'celor două serii clasice'), [
     (T('Nile: $\\hat\\rho(1) = @{nile.r1}$ and a slow decay; $Q^*(10) = @{nile.q}$ (p @{nile.p})', 'Nilul: $\\hat\\rho(1) = @{nile.r1}$ și o descreștere lentă; $Q^*(10) = @{nile.q}$ (p @{nile.p})'),
      [T('after removing the two means (@{nile.m0} and @{nile.m1}): $\\hat\\rho(1) = @{nile.rr}$, $Q^*(10) = @{nile.qr}$ (p = @{nile.pr})', 'după eliminarea celor două medii (@{nile.m0} și @{nile.m1}): $\\hat\\rho(1) = @{nile.rr}$, $Q^*(10) = @{nile.qr}$ (p = @{nile.pr})'),
       T('a slowly decaying ACF can come from a \\textbf{break}, not from persistence or a unit root', 'o ACF care scade lent poate proveni dintr-o \\textbf{ruptură}, nu din persistență sau dintr-o rădăcină unitară')]),
-    (T('Sunspots: a damped wave, minimum $@{sun.min}$ at lag @{sun.minlag}, peak @{sun.peak} at lag @{sun.lag}', 'Petele solare: o undă amortizată, minim $@{sun.min}$ la decalajul @{sun.minlag}, vîrf @{sun.peak} la decalajul @{sun.lag}'),
+    (T('Sunspots: a damped wave, minimum $@{sun.min}$ at lag @{sun.minlag}, peak @{sun.peak} at lag @{sun.lag}', 'Petele solare: o undă amortizată, minim $@{sun.min}$ la lagul @{sun.minlag}, vîrf @{sun.peak} la lagul @{sun.lag}'),
      [T('the solar cycle of about 11 years; a stationary series with a cycle, modelled by \\refYule\\ with an AR(2)', 'ciclul solar de circa 11 ani; o serie staționară cu un ciclu, modelată de \\refYule\\ printr-un AR(2)')]),
     T('Read an ACF together with the plot of the series and with what you know about how the data were produced', 'Interpretăm ACF împreună cu graficul seriei și cu ce știm despre modul în care au fost produse datele')])
 
@@ -963,8 +968,8 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
         '\\aiprompt{Write Python code that loads the Romanian monthly HICP from Eurostat, computes 100 times the monthly log difference since 2005, plots the series with its ACF and PACF up to lag 36, and reports the Ljung-Box statistic for m = 12 and m = 24.}')])))
 
 D.frame(T('Checks you must run', 'Verificări necesare'), items(
-    T('The divisor of $\\hat\\gamma(h)$ ($T$, not $T - h$) and whether lag 0 is included in the plot', 'Împărțitorul lui $\\hat\\gamma(h)$ ($T$, nu $T - h$) și dacă decalajul 0 este inclus în grafic'),
-    T('Which bands are drawn: $\\pm 1.96/\\sqrt{T}$ or Bartlett\'s MA bands; they answer different questions', 'Ce benzi sînt desenate: $\\pm 1{,}96/\\sqrt{T}$ sau benzile Bartlett pentru MA; ele răspund la întrebări diferite'),
+    T('The divisor of $\\hat\\gamma(h)$ ($T$, not $T - h$) and whether lag 0 is included in the plot', 'Împărțitorul lui $\\hat\\gamma(h)$ ($T$, nu $T - h$) și dacă lagul 0 este inclus în grafic'),
+    T('Which bands are drawn: $\\pm 1.96/\\sqrt{T}$ or Bartlett\'s MA bands; they answer different questions', 'Tipul benzilor desenate: $\\pm 1{,}96/\\sqrt{T}$ sau benzile Bartlett pentru MA; ele răspund la întrebări diferite'),
     T('That Ljung--Box is applied to the stationary transformation, not to the level; and with $m - p - q$ degrees of freedom on residuals', 'Că testul Ljung--Box se aplică transformării staționare, nu nivelului; și cu $m - p - q$ grade de libertate pentru reziduuri'),
     T('That ``significant\'\' is not read as ``large\'\' or ``profitable\'\'', 'Că „semnificativ” nu este citit ca „mare” sau „profitabil”'),
     T('Dates, frequencies and units of the data (seasonally adjusted or not, index base, percent or decimals)', 'Datele, frecvențele și unitățile seriilor (ajustate sezonier sau nu, baza indicelui, procente sau zecimale)'),
@@ -977,9 +982,9 @@ D.section('Summary', 'Rezumat')
 
 D.frame(T('Key takeaways', 'Idei de reținut'), items(
     T('A time series is one path of a stochastic process; inference from one path needs stationarity and ergodicity', 'O serie de timp este o traiectorie a unui proces stochastic; inferența dintr-o singură traiectorie cere staționaritate și ergodicitate'),
-    T('Weak stationarity: constant mean and an autocovariance that depends only on the lag', 'Staționaritatea slabă: media constantă și o autocovarianță care depinde doar de decalaj'),
+    T('Weak stationarity: constant mean and an autocovariance that depends only on the lag', 'Staționaritatea slabă: media constantă și o autocovarianță care depinde doar de lag'),
     T('White noise (weak, i.i.d., Gaussian) is the building block; the random walk is its cumulative sum and is not stationary', 'Zgomotul alb (slab, i.i.d., gaussian) este piesa de bază; mersul aleator este suma lui cumulată și nu este staționar'),
-    T('Sample ACF and PACF with $\\pm 1.96/\\sqrt{T}$ bands; Ljung--Box tests many lags jointly', 'ACF și PACF de selecție cu benzile $\\pm 1{,}96/\\sqrt{T}$; testul Ljung--Box testează simultan mai multe decalaje'),
+    T('Sample ACF and PACF with $\\pm 1.96/\\sqrt{T}$ bands; Ljung--Box tests many lags jointly', 'ACF și PACF de selecție cu benzile $\\pm 1{,}96/\\sqrt{T}$; testul Ljung--Box testează simultan mai multe laguri'),
     T('Real series need transformations: log or Box--Cox for the variance, differences for trend and season', 'Seriile reale au nevoie de transformări: logaritm sau Box--Cox pentru varianță, diferențe pentru trend și sezon'),
     T('Returns: nearly uncorrelated, but their squares are strongly correlated', 'Randamentele: aproape necorelate, dar pătratele lor sînt puternic corelate')))
 
@@ -999,7 +1004,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
 D.frame(T('Self-assessment', 'Autoevaluare'), items(
     (T('\\textbf{Question}: $X_t = \\varepsilon_t - 0.5\\varepsilon_{t-1}$, $\\sigma^2 = 4$. What are $\\gamma(0)$ and $\\rho(1)$?', '\\textbf{Întrebare}: $X_t = \\varepsilon_t - 0{,}5\\varepsilon_{t-1}$, $\\sigma^2 = 4$. Cît sînt $\\gamma(0)$ și $\\rho(1)$?'),
      [T('\\textbf{Answer}: $\\gamma(0) = 4 \\times 1.25 = 5$; $\\rho(1) = -0.5/1.25 = -0.4$', '\\textbf{Răspuns}: $\\gamma(0) = 4 \\times 1{,}25 = 5$; $\\rho(1) = -0{,}5/1{,}25 = -0{,}4$')]),
-    (T('\\textbf{Question}: a correlogram of 40 lags of a series with $T = 400$ shows two bars just outside $\\pm 0.098$. Is the series correlated?', '\\textbf{Întrebare}: o corelogramă cu 40 de decalaje pentru o serie cu $T = 400$ arată două bare ușor în afara lui $\\pm 0{,}098$. Este seria corelată?'),
+    (T('\\textbf{Question}: a correlogram of 40 lags of a series with $T = 400$ shows two bars just outside $\\pm 0.098$. Is the series correlated?', '\\textbf{Întrebare}: o corelogramă cu 40 de laguri pentru o serie cu $T = 400$ arată două bare ușor în afara lui $\\pm 0{,}098$. Este seria corelată?'),
      [T('\\textbf{Answer}: not necessarily: about 2 of 40 bars cross by chance; run Ljung--Box', '\\textbf{Răspuns}: nu neapărat: aproximativ 2 din 40 de bare ies din întîmplare; aplicăm testul Ljung--Box')]),
     (T('\\textbf{Question}: after differencing, $\\hat\\rho(1) = -0.48$ and nothing else is significant. What does this suggest?', '\\textbf{Întrebare}: după diferențiere, $\\hat\\rho(1) = -0{,}48$ și nimic altceva nu este semnificativ. Ce sugerează acest lucru?'),
      [T('\\textbf{Answer}: over-differencing: the original series was probably already stationary', '\\textbf{Răspuns}: supradiferențiere: seria inițială era probabil deja staționară')]),

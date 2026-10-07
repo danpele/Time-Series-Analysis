@@ -105,15 +105,15 @@ window.TSA_DATA.quizzes['review'] = {
             },
             "ro": {
                 "title": "Citirea ACF și PACF",
-                "text": "ACF scade geometric, iar PACF se anulează după decalajul 2. Ce model este sugerat?",
+                "text": "ACF scade geometric, iar PACF se anulează după lagul 2. Ce model este sugerat?",
                 "options": [
                     "MA(2)",
                     "ARMA(2,2)",
                     "Un mers aleator",
                     "AR(2)"
                 ],
-                "correctExplanation": "La un AR(p), PACF este zero după decalajul p, iar ACF descrește; aici p = 2.",
-                "incorrectExplanation": "Un MA(q) are tiparul opus (ACF se anulează); un ARMA are ambele funcții descrescătoare; un mers aleator are o ACF care rămîne aproape de 1 pe multe decalaje."
+                "correctExplanation": "La un AR(p), PACF este zero după lagul p, iar ACF descrește; aici p = 2.",
+                "incorrectExplanation": "Un MA(q) are tiparul opus (ACF se anulează); un ARMA are ambele funcții descrescătoare; un mers aleator are o ACF care rămîne aproape de 1 pe multe laguri."
             }
         },
         {
@@ -164,7 +164,7 @@ window.TSA_DATA.quizzes['review'] = {
                     "O ACF care scade lent",
                     "O primă autocorelație în jur de −0,5 și un coeficient MA estimat aproape de −1",
                     "O primă autocorelație mare și pozitivă",
-                    "O valoare sezonieră semnificativă la decalajul 12"
+                    "O valoare sezonieră semnificativă la lagul 12"
                 ],
                 "correctExplanation": "Diferențierea unei serii staționare creează o componentă MA neinvertibilă: prima autocorelație se apropie de −0,5, varianța crește, iar coeficientul MA se apropie de −1.",
                 "incorrectExplanation": "O ACF care scade lent arată prea puține diferențieri, nu prea multe; o valoare sezonieră mare cere termeni sezonieri."
@@ -193,8 +193,8 @@ window.TSA_DATA.quizzes['review'] = {
                     "$\\phi z_T + \\Phi z_{T-11} - \\phi\\Phi z_{T-12}$",
                     "$(\\phi + \\Phi) z_T$"
                 ],
-                "correctExplanation": "Înmulțirea celor două polinoame dă $z_t = \\phi z_{t-1} + \\Phi z_{t-12} - \\phi\\Phi z_{t-13} + \\varepsilon_t$; la $t = T + 1$, decalajele sînt $T$, $T - 11$ și $T - 12$.",
-                "incorrectExplanation": "Termenul încrucișat $\\phi\\Phi$ al modelului multiplicativ se uită ușor, iar decalajul sezonier al lui $T + 1$ este $T - 11$, nu $T - 12$."
+                "correctExplanation": "Înmulțirea celor două polinoame dă $z_t = \\phi z_{t-1} + \\Phi z_{t-12} - \\phi\\Phi z_{t-13} + \\varepsilon_t$; la $t = T + 1$, lagurile sînt $T$, $T - 11$ și $T - 12$.",
+                "incorrectExplanation": "Termenul încrucișat $\\phi\\Phi$ al modelului multiplicativ se uită ușor, iar lagul sezonier al lui $T + 1$ este $T - 11$, nu $T - 12$."
             }
         },
         {
@@ -375,7 +375,7 @@ window.TSA_DATA.quizzes['review'] = {
             },
             "ro": {
                 "title": "Testul Granger F din două RSS",
-                "text": "RSS restricționat = 110, RSS nerestricționat = 100, p = 2 decalaje testate, 100 de grade de libertate ale reziduurilor. Cît este F?",
+                "text": "RSS restricționat = 110, RSS nerestricționat = 100, p = 2 laguri testate, 100 de grade de libertate ale reziduurilor. Cît este F?",
                 "options": [
                     "10",
                     "5",
@@ -545,7 +545,7 @@ window.TSA_DATA.quizzes['review'] = {
                     "Cu origini mobile: antrenare pe trecut, test pe blocul următor, apoi mai departe"
                 ],
                 "correctExplanation": "Validarea walk-forward (cu origini mobile) respectă ordinea timpului, deci nicio informație din viitor nu intră în estimare.",
-                "incorrectExplanation": "Grupurile aleatoare pun observații din viitor în setul de antrenare (scurgere de informație) și dau scoruri spectaculoase, dar false; $R^2$ în eșantion nu spune nimic despre prognoză."
+                "incorrectExplanation": "Grupurile aleatoare pun observații din viitor în setul de antrenare (leakage) și dau scoruri spectaculoase, dar false; $R^2$ în eșantion nu spune nimic despre prognoză."
             }
         },
         {

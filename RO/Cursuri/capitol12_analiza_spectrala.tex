@@ -200,7 +200,7 @@ MSCA Digital Finance}
 \end{center}
 \vspace{-0.25cm}
 \begin{itemize}
-    \item Serie simulată, $T = 120$: $x_t = 2\cos(2\pi t/12) + \cos(2\pi t/4 + 1) + \varepsilon_t$, $\varepsilon_t \sim N(0;\ 0{,}49)$; dreapta: periodograma ei (definită în secțiunea 3)
+    \item Serie simulată, $T = 120$: $x_t = 2\cos(2\pi t/12) + \cos(2\pi t/4 + 1) + \varepsilon_t$, $\varepsilon_t \sim N(0;\ 0{,}49)$ (zgomot alb Normal cu varianța 0,49); dreapta: periodograma ei (definită în secțiunea 3)
 \end{itemize}
 \quantlet{TSA\_ch12\_fourier}{\qlurl{TSA_ch12_fourier}}
 \end{frame}
@@ -220,21 +220,39 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Frecvențele Fourier și transformata Fourier discretă}
+\begin{frame}{Frecvențele Fourier și transformata Fourier discretă (1/2)}
 \itemsize{\small}
 \begin{itemize}
     \item Pentru un eșantion $x_1, \ldots, x_T$, \textbf{frecvențele Fourier} sînt $\nu_j = j/T$, $j = 0, 1, \ldots, \lfloor T/2 \rfloor$
     \begin{itemize}
-        \item ciclurile care încap de un număr întreg de ori ($j$ ori) în eșantion
+        \item ciclurile care încap de un număr întreg de ori ($j$ ori) în eșantion; $\lfloor T/2 \rfloor$: partea întreagă a lui $T/2$
     \end{itemize}
-    \item \textbf{Transformata Fourier discretă} (DFT): $d(\nu_j) = T^{-1/2}\sum_{t=1}^{T} x_t\, e^{-2\pi i \nu_j t}$
+    \item \textbf{Transformata Fourier discretă} (DFT) măsoară cît de puternic se mișcă seria împreună cu un ciclu de frecvență $\nu_j$
     \begin{itemize}
-        \item $e^{-i\theta} = \cos\theta - i\sin\theta$: DFT corelează seria cu un cosinus și un sinus de frecvență $\nu_j$
-        \item cele $T$ valori $d(\nu_j)$ conțin exact aceeași informație ca cele $T$ observații
+        \item $d(\nu_j) = T^{-1/2}\sum_{t=1}^{T} x_t\, e^{-2\pi i \nu_j t}$
+        \item $i$: unitatea imaginară, $i^2 = -1$; $e^{-i\theta} = \cos\theta - i\sin\theta$ (formula lui Euler)
+        \item deci DFT corelează seria cu un cosinus (partea reală) și cu un sinus (partea imaginară) de frecvență $\nu_j$
     \end{itemize}
-    \item \textbf{Parseval}: $\sum_{t=1}^{T}(x_t - \bar x)^2 = \sum_{j=1}^{T-1}|d(\nu_j)|^2$: varianța se împarte pe frecvențe
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Frecvențele Fourier și transformata Fourier discretă (2/2)}
+\itemsize{\small}
+\begin{itemize}
+    \item Cele $T$ valori $d(\nu_j)$ conțin exact aceeași informație ca cele $T$ observații
     \begin{itemize}
-        \item \textbf{transformata Fourier rapidă} (FFT) a lui \refCT\ calculează toate valorile $d(\nu_j)$ în $O(T\log T)$ operații în loc de $O(T^2)$
+        \item datele se pot reconstitui din ele prin transformata inversă
+    \end{itemize}
+    \item \textbf{Parseval}
+    \begin{itemize}
+        \item suma pătratelor abaterilor este egală cu suma pătratelor modulelor DFT
+        \item $\sum_{t=1}^{T}(x_t - \bar x)^2 = \sum_{j=1}^{T-1}|d(\nu_j)|^2$
+        \item $\bar x$: media de selecție; $|d|^2 = (\mathrm{Re}\,d)^2 + (\mathrm{Im}\,d)^2$: pătratul modulului unui număr complex
+        \item interpretarea: varianța seriei se împarte pe frecvențe
+    \end{itemize}
+    \item \textbf{Transformata Fourier rapidă} (FFT) a lui \refCT\ calculează rapid toate valorile $d(\nu_j)$
+    \begin{itemize}
+        \item $O(T\log T)$ operații în loc de $O(T^2)$: numărul de operații crește ca $T\log T$, nu ca $T^2$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -301,15 +319,17 @@ MSCA Digital Finance}
 %=============================================================================
 
 \begin{frame}{De la autocovarianțe la spectru}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item Pentru o serie staționară cu autocovarianțele $\gamma(h)$, $\sum_h|\gamma(h)| < \infty$, \textbf{densitatea spectrală} este
     \begin{itemize}
         \item $f(\nu) = \sum_{h=-\infty}^{\infty}\gamma(h)e^{-2\pi i\nu h} = \gamma(0) + 2\sum_{h=1}^{\infty}\gamma(h)\cos(2\pi\nu h)$, $-1/2 \le \nu \le 1/2$
+        \item $\gamma(h) = \mathrm{Cov}(x_t, x_{t+h})$: autocovarianța la lagul $h$; $\sum_h|\gamma(h)| < \infty$: autocovarianțele se sting suficient de repede (memorie scurtă)
+        \item în cuvinte: $f(\nu)$ este o sumă ponderată a autocovarianțelor, cu ponderile $\cos(2\pi\nu h)$, care oscilează cu frecvența $\nu$
     \end{itemize}
     \item Relația inversă: $\gamma(h) = \int_{-1/2}^{1/2} f(\nu)e^{2\pi i\nu h}\,d\nu$
     \begin{itemize}
-        \item perechea $\gamma \leftrightarrow f$ este teorema \textbf{Wiener--Khinchin}: ACF și spectrul conțin aceeași informație
+        \item perechea $\gamma \leftrightarrow f$ este teorema \textbf{Wiener--Khinchin}: autocovarianțele și spectrul conțin aceeași informație
         \item pentru $h = 0$: $\mathrm{Var}(x_t) = \gamma(0) = \int_{-1/2}^{1/2} f(\nu)\,d\nu$: aria de sub $f$ este varianța
     \end{itemize}
     \item Proprietăți: $f(\nu) \ge 0$, $f(-\nu) = f(\nu)$; este suficient să desenăm $f$ pe $[0, 1/2]$
@@ -322,22 +342,41 @@ MSCA Digital Finance}
 \begin{frame}{Zgomot alb, AR(1) și MA(1)}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item \textbf{Zgomot alb}, varianța $\sigma^2$: $\gamma(h) = 0$ pentru $h \ne 0$, deci $f(\nu) = \sigma^2$ pentru orice $\nu$
+    \item \textbf{Zgomot alb} $w_t$, cu varianța $\sigma^2$
     \begin{itemize}
+        \item $\gamma(h) = 0$ pentru $h \ne 0$, deci $f(\nu) = \sigma^2$ pentru orice $\nu$
         \item un spectru plat: toate frecvențele contribuie în mod egal, ca lumina albă
     \end{itemize}
-    \item \textbf{AR(1)} $x_t = \phi x_{t-1} + w_t$: $f(\nu) = \dfrac{\sigma^2}{1 - 2\phi\cos(2\pi\nu) + \phi^2}$
+    \item \textbf{AR(1)} $x_t = \phi x_{t-1} + w_t$, $|\phi| < 1$
     \begin{itemize}
+        \item $f(\nu) = \dfrac{\sigma^2}{1 - 2\phi\cos(2\pi\nu) + \phi^2}$
+        \item $\phi$: coeficientul autoregresiv; $w_t$: zgomot alb cu varianța $\sigma^2$
         \item $\phi > 0$: putere la frecvențele joase (serie netedă, persistentă); $\phi < 0$: putere la frecvențele înalte (serie în zigzag)
     \end{itemize}
-    \item \textbf{MA(1)} $x_t = w_t + \theta w_{t-1}$: $f(\nu) = \sigma^2\,[1 + 2\theta\cos(2\pi\nu) + \theta^2]$
+    \item \textbf{MA(1)} $x_t = w_t + \theta w_{t-1}$
     \begin{itemize}
+        \item $f(\nu) = \sigma^2\,[1 + 2\theta\cos(2\pi\nu) + \theta^2]$
+        \item $\theta$: coeficientul de medie mobilă; $\theta > 0$ pune puterea la frecvențele joase, $\theta < 0$ la cele înalte
         \item direct din definiție: $\gamma(0) = \sigma^2(1 + \theta^2)$, $\gamma(1) = \sigma^2\theta$, deci $f = \gamma(0) + 2\gamma(1)\cos(2\pi\nu)$
     \end{itemize}
-    \item \textbf{ARMA}$(p,q)$, $\phi(L)x_t = \theta(L)w_t$: $f(\nu) = \sigma^2\dfrac{|\theta(e^{-2\pi i\nu})|^2}{|\phi(e^{-2\pi i\nu})|^2}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Spectrul unui model ARMA}
+\itemsize{\small}
+\begin{itemize}
+    \item \textbf{ARMA}$(p,q)$
     \begin{itemize}
-        \item un raport de două polinoame în $\cos(2\pi\nu)$: neted și ușor de calculat (\refBDtm, secț.~4.4)
+        \item $\phi(L)x_t = \theta(L)w_t$
+        \item $L$: operatorul lag, $Lx_t = x_{t-1}$
+        \item $\phi(z) = 1 - \phi_1 z - \cdots - \phi_p z^p$ și $\theta(z) = 1 + \theta_1 z + \cdots + \theta_q z^q$: polinoamele AR și MA
     \end{itemize}
+    \item Densitatea spectrală: cele două polinoame evaluate în $z = e^{-2\pi i\nu}$
+    \begin{itemize}
+        \item $f(\nu) = \sigma^2\dfrac{|\theta(e^{-2\pi i\nu})|^2}{|\phi(e^{-2\pi i\nu})|^2}$
+        \item partea MA (numărătorul) adaugă putere acolo unde $|\theta|$ este mare; partea AR (numitorul) adaugă putere acolo unde $|\phi|$ este mic
+    \end{itemize}
+    \item Un raport de două polinoame în $\cos(2\pi\nu)$: neted și ușor de calculat (\refBDtm, secț.~4.4)
 \end{itemize}
 \end{frame}
 
@@ -364,13 +403,15 @@ MSCA Digital Finance}
 \begin{frame}{AR(2) și pseudo-ciclurile}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{AR(2)} $x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t$: $f(\nu) = \dfrac{\sigma^2}{|1 - \phi_1 e^{-2\pi i\nu} - \phi_2 e^{-4\pi i\nu}|^2}$
+    \item \textbf{AR(2)} $x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t$
     \begin{itemize}
+        \item $f(\nu) = \dfrac{\sigma^2}{|1 - \phi_1 e^{-2\pi i\nu} - \phi_2 e^{-4\pi i\nu}|^2}$
         \item pentru rădăcini complexe ($\phi_1^2 + 4\phi_2 < 0$) ACF este o undă amortizată, iar spectrul are un vîrf în interiorul intervalului $(0, 1/2)$
-        \item vîrful se află la $\cos(2\pi\nu^*) = \phi_1(\phi_2 - 1)/(4\phi_2)$, cînd membrul drept este în $[-1, 1]$
+        \item vîrful se află la frecvența $\nu^*$ dată de $\cos(2\pi\nu^*) = \phi_1(\phi_2 - 1)/(4\phi_2)$, cînd membrul drept este în $[-1, 1]$
     \end{itemize}
-    \item Un \textbf{pseudo-ciclu}: un ciclu neregulat, a cărui lungime și amplitudine variază de la o rundă la alta
+    \item Un \textbf{pseudo-ciclu}
     \begin{itemize}
+        \item un ciclu neregulat, a cărui lungime și amplitudine variază de la o rundă la alta
         \item \refYule\ a estimat un AR(2) pentru numerele de pete solare ale lui Wolfer: primul model autoregresiv, o alternativă la undele sinusoidale fixe
     \end{itemize}
     \item Ciclurile economice sînt pseudo-cicluri de acest fel: recurente, dar niciodată de aceeași lungime (secțiunea 5)
@@ -463,8 +504,9 @@ MSCA Digital Finance}
 \begin{frame}{Periodograma}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Periodograma}: $I(\nu_j) = |d(\nu_j)|^2$ la frecvențele Fourier $\nu_j = j/T$ (după eliminarea mediei)
+    \item \textbf{Periodograma}
     \begin{itemize}
+        \item $I(\nu_j) = |d(\nu_j)|^2$ la frecvențele Fourier $\nu_j = j/T$ (după eliminarea mediei)
         \item echivalent $I(\nu_j) = \sum_{|h| < T}\hat\gamma(h)e^{-2\pi i\nu_j h}$: formula spectrului cu autocovarianțele de selecție $\hat\gamma(h)$
     \end{itemize}
     \item Interpretarea prin regresie: regresați $x_t$ pe $\cos(2\pi\nu_j t)$ și $\sin(2\pi\nu_j t)$ prin OLS, cu coeficienții $a_j, b_j$
@@ -507,15 +549,17 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Proprietățile statistice ale periodogramei}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item Pentru $T$ mare, la o frecvență Fourier $0 < \nu_j < 1/2$ (\refBDtm, secț.~10.3; \refSS, secț.~4.3):
     \begin{itemize}
         \item $\dfrac{2I(\nu_j)}{f(\nu_j)} \approx \chi^2_2$: deci $E[I(\nu_j)] \approx f(\nu_j)$ (nedeplasată) și $\mathrm{Var}[I(\nu_j)] \approx f(\nu_j)^2$
+        \item $\chi^2_2$: distribuția chi-pătrat cu 2 grade de libertate (media 2, varianța 4); $f(\nu_j)$: densitatea spectrală adevărată
         \item ordonatele de la frecvențe Fourier diferite sînt aproximativ independente
     \end{itemize}
-    \item Varianța \textbf{nu} scade cînd $T$ crește: periodograma \textbf{nu este un estimator consistent} al lui $f$
+    \item Varianța \textbf{nu} scade cînd $T$ crește
     \begin{itemize}
+        \item periodograma \textbf{nu este un estimator consistent} al lui $f$
         \item un $T$ mai mare dă mai multe ordonate (o grilă mai fină), nu ordonate mai precise
     \end{itemize}
     \item $\chi^2_2/2$ este o distribuție exponențială cu media 1: o singură ordonată poate depăși ușor de 3 ori valoarea adevărată
@@ -552,20 +596,44 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Testul lui Fisher pentru o periodicitate ascunsă}
+\begin{frame}{Testul lui Fisher pentru o periodicitate ascunsă (1/2)}
 \itemsize{\small}
 \begin{itemize}
-    \item $H_0$: zgomot alb gaussian; $H_1$: zgomot alb plus un ciclu la o frecvență Fourier necunoscută
+    \item Ipotezele
     \begin{itemize}
-        \item statistica lui \refFisher: $g = \max_j I(\nu_j)\,/\,\sum_{j=1}^{m} I(\nu_j)$, cu $m$ ordonate în $(0, 1/2)$
-        \item sub $H_0$ fiecare ordonată reprezintă aproximativ $1/m$ din total; un $g$ mult mai mare decît $1/m$ semnalează un ciclu
-        \item p-value exactă: $P(g > x) = \sum_{k \ge 1,\ kx < 1}(-1)^{k-1}\binom{m}{k}(1 - kx)^{m-1}$
+        \item $H_0$: zgomot alb gaussian; $H_1$: zgomot alb plus un ciclu la o frecvență Fourier necunoscută
+    \end{itemize}
+    \item Statistica lui \refFisher: ponderea celei mai mari ordonate în suma tuturor ordonatelor
+    \begin{itemize}
+        \item $g = \max_j I(\nu_j)\,/\,\sum_{j=1}^{m} I(\nu_j)$
+        \item $m$: numărul de ordonate din $(0, 1/2)$; $\max_j$: cea mai mare dintre ele; $1/m \le g \le 1$
+    \end{itemize}
+    \item Interpretarea
+    \begin{itemize}
+        \item sub $H_0$ fiecare ordonată reprezintă aproximativ $1/m$ din total
+        \item un $g$ mult mai mare decît $1/m$ semnalează un ciclu: o singură frecvență preia o parte mare din varianță
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Testul lui Fisher pentru o periodicitate ascunsă (2/2)}
+\itemsize{\small}
+\begin{itemize}
+    \item P-value-ul exact: probabilitatea, sub $H_0$, ca $g$ să depășească valoarea observată $x$
+    \begin{itemize}
+        \item $P(g > x) = \sum_{k \ge 1,\ kx < 1}(-1)^{k-1}\binom{m}{k}(1 - kx)^{m-1}$
+        \item $k$: indicele de însumare, de la 1 cît timp $kx < 1$; $\binom{m}{k}$: coeficientul binomial
+        \item un p-value mic (sub 0,05): se respinge zgomotul alb în favoarea unui ciclu
     \end{itemize}
     \item Petele solare: $m = 154$, $g = 0{,}268$, față de $1/m = 0{,}0065$; p-value $<$\,0{,}001
     \begin{itemize}
         \item vîrful de 11 ani este mult prea mare pentru a fi întîmplător
     \end{itemize}
-    \item Atenție: $H_0$ este zgomotul alb; pe un fond „roșu” (de tip AR(1)), vîrfurile de joasă frecvență apar mai ușor din întîmplare, deci comparați cu un spectru de fond neted
+    \item Atenție: $H_0$ este zgomotul alb
+    \begin{itemize}
+        \item pe un fond „roșu” (de tip AR(1)), vîrfurile de joasă frecvență apar mai ușor din întîmplare
+        \item de aceea comparați cu un spectru de fond neted
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -583,17 +651,19 @@ MSCA Digital Finance}
 \section{Estimarea spectrului}
 %=============================================================================
 
-\begin{frame}{Scurgerea spectrală și ferestrele de atenuare}
-\itemsize{\small}
+\begin{frame}{Scurgerea spectrală (leakage) și ferestrele de atenuare}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item Un ciclu a cărui frecvență nu este o frecvență Fourier nu încape de un număr întreg de ori în eșantion
     \begin{itemize}
         \item tăierea seriei la $t = 1$ și $t = T$ creează un salt; puterea lui se \textbf{scurge} la toate celelalte frecvențe
         \item scurgerea dintr-un vîrf puternic poate ascunde un ciclu slab în altă parte
     \end{itemize}
-    \item \textbf{Atenuarea} (tapering): înmulțiți datele cu o fereastră $h_t$ care scade lin spre 0 la ambele capete, înainte de DFT
+    \item \textbf{Atenuarea} (tapering)
     \begin{itemize}
+        \item înmulțiți datele cu o fereastră $h_t$ care scade lin spre 0 la ambele capete, înainte de DFT
         \item fereastra Hann (clopot cosinus): $h_t = \frac12[1 - \cos(2\pi(t - 0{,}5)/T)]$, rescalată pentru a păstra puterea totală
+        \item $h_t$ este aproape de 0 la $t = 1$ și $t = T$ și egal cu 1 la mijlocul eșantionului
         \item prețul: un vîrf principal puțin mai lat (rezoluție mai mică) pentru o scurgere mult mai mică
     \end{itemize}
     \item În practică: aplicați întotdeauna o atenuare ușoară; eliminați întîi media (și trendul, dacă există)
@@ -627,24 +697,39 @@ MSCA Digital Finance}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Netezirea periodogramei}
+\begin{frame}{Netezirea periodogramei (1/2): estimatorul Daniell}
 \itemsize{\footnotesize}
 \begin{itemize}
-    \item Ideea: $f$ este netedă, iar ordonatele sînt aproape independente: faceți media a $L = 2m + 1$ ordonate vecine
+    \item Ideea: $f$ este netedă, iar ordonatele sînt aproape independente, deci se face media a $L = 2m + 1$ ordonate vecine
     \begin{itemize}
-        \item estimatorul \textbf{Daniell}: $\hat f(\nu_j) = \frac{1}{L}\sum_{k=-m}^{m} I(\nu_{j+k})$; varianța aproximativ $f^2/L$
-        \item \textbf{lățimea de bandă} $B = L/T$: lățimea benzii de frecvențe peste care se face media
+        \item estimatorul \textbf{Daniell}: $\hat f(\nu_j) = \frac{1}{L}\sum_{k=-m}^{m} I(\nu_{j+k})$
+        \item $m$: numărul de vecini de fiecare parte; $k$: parcurge valorile de la $-m$ la $m$; $\hat f$: spectrul estimat
+        \item varianța este aproximativ $f^2/L$: de $L$ ori mai mică decît cea a unei singure ordonate
+    \end{itemize}
+    \item \textbf{Lățimea de bandă} $B = L/T$
+    \begin{itemize}
+        \item lățimea benzii de frecvențe peste care se face media
     \end{itemize}
     \item Compromisul deplasare--varianță: un $L$ mai mare reduce varianța, dar aplatizează vîrfurile înguste (deplasare)
     \begin{itemize}
         \item consistența cere $L \to \infty$ și $L/T \to 0$, de exemplu $L \approx \sqrt T$
     \end{itemize}
-    \item Perspective echivalente: netezirea în frecvență $=$ ponderi mai mici pentru autocovarianțele îndepărtate (ferestre de decalaj)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Netezirea periodogramei (2/2): ferestrele de lag și metoda Welch}
+\itemsize{\small}
+\begin{itemize}
+    \item Perspectiva echivalentă: netezirea în frecvență $=$ ponderi mai mici pentru autocovarianțele îndepărtate (ferestre de lag)
     \begin{itemize}
         \item fereastra Bartlett: $\hat f(\nu) = \sum_{|h| \le M}(1 - |h|/M)\hat\gamma(h)e^{-2\pi i\nu h}$ (\refBartlett; \refBT)
+        \item $M$: lagul de trunchiere; autocovarianțele de dincolo de lagul $M$ se elimină, celelalte primesc ponderile $1 - |h|/M$, care scad liniar
+        \item un $M$ mai mic înseamnă o netezire mai puternică
     \end{itemize}
-    \item \textbf{Welch} \refWelch: împărțiți seria în $K$ segmente care se suprapun, aplicați fereastra pe fiecare, faceți media periodogramelor
+    \item Metoda \textbf{Welch} (\refWelch)
     \begin{itemize}
+        \item o medie a periodogramelor a $K$ segmente
+        \item seria se împarte în $K$ segmente care se suprapun, se aplică fereastra pe fiecare și se face media periodogramelor
         \item \texttt{scipy.signal.welch}; lungimea segmentului fixează rezoluția
     \end{itemize}
 \end{itemize}
@@ -678,11 +763,12 @@ MSCA Digital Finance}
 \end{frame}
 
 \begin{frame}{Benzi de încredere pentru spectru}
-\itemsize{\small}
+\itemsize{\footnotesize}
 \begin{itemize}
     \item Estimarea Daniell cu $L$ termeni: $\dfrac{2L\,\hat f(\nu)}{f(\nu)} \approx \chi^2_{2L}$ (grade de libertate $df = 2L$)
     \begin{itemize}
         \item intervalul de 95\%: $\left[\dfrac{df\,\hat f(\nu)}{\chi^2_{df}(0{,}975)};\ \dfrac{df\,\hat f(\nu)}{\chi^2_{df}(0{,}025)}\right]$
+        \item $\chi^2_{df}(p)$: cuantila de nivel $p$ a distribuției chi-pătrat cu $df$ grade de libertate
     \end{itemize}
     \item Intervalul este un multiplu fix al lui $\hat f$: pe scară logaritmică lățimea lui este aceeași la toate frecvențele
     \begin{itemize}
@@ -756,8 +842,9 @@ MSCA Digital Finance}
         \item trendurile și rădăcinile aproape unitare pun aproape toată varianța la frecvențele cele mai joase și ascund ciclurile
         \item de aceea transformăm întîi seria într-una staționară: rate de creștere (diferențe) sau un ciclu fără trend
     \end{itemize}
-    \item \textbf{Banda ciclului economic}: fluctuații care durează între 1,5 și 8 ani, adică între 6 și 32 de trimestre (\refBK)
+    \item \textbf{Banda ciclului economic}
     \begin{itemize}
+        \item fluctuații care durează între 1,5 și 8 ani, adică între 6 și 32 de trimestre (\refBK)
         \item în frecvență: $1/32 \le \nu \le 1/6$ cicluri pe trimestru
     \end{itemize}
     \item Datele: PIB-ul real al SUA (FRED GDPC1, 291 de rate de creștere trimestriale) și PIB-ul real al României (Eurostat, ajustat sezonier, 99 de rate de creștere)
@@ -863,19 +950,39 @@ MSCA Digital Finance}
 \section{Memoria lungă: polul de la zero}
 %=============================================================================
 
-\begin{frame}{Memoria lungă în domeniul frecvenței}
-\itemsize{\small}
+\begin{frame}{Memoria lungă în domeniul frecvenței (1/2)}
+\itemsize{\footnotesize}
 \begin{itemize}
-    \item \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{Capitolul 8}: o serie cu memorie lungă are $\rho(h) \sim Ch^{2d-1}$; atunci $\sum_h\gamma(h) = \infty$ și $f(0) = \infty$
+    \item \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol8_memorie_lunga_arfima.pdf}{Capitolul 8}: o serie cu memorie lungă are autocorelații care scad ca o putere a lagului
     \begin{itemize}
-        \item ARFIMA$(0,d,0)$: $f(\nu) = \sigma^2\,|2\sin(\pi\nu)|^{-2d} \approx \sigma^2(2\pi\nu)^{-2d}$ în apropierea lui $\nu = 0$: un \textbf{pol} la zero
+        \item $\rho(h) \sim Ch^{2d-1}$: $\rho(h)$ este autocorelația la lagul $h$, $C > 0$ o constantă, iar $\sim$ înseamnă „proporțional pentru $h$ mare”
+        \item $d$: parametrul de memorie; $0 < d < 1/2$ dă memorie lungă staționară; atunci $\sum_h\gamma(h) = \infty$ și $f(0) = \infty$
     \end{itemize}
-    \item Pe un grafic log--log spectrul de joasă frecvență este o dreaptă cu panta $-2d$
+    \item ARFIMA$(0,d,0)$: spectrul tinde la infinit în zero
     \begin{itemize}
-        \item \refGPH\ regresează $\log I(\nu_j)$ pe $-\log(4\sin^2(\pi\nu_j))$ pentru $j = 1, \ldots, m$: panta este $\hat d$, cu eroarea standard $\pi/\sqrt{24m}$
-        \item se folosesc doar cele mai joase $m = \lfloor T^{0{,}65}\rfloor$ frecvențe, unde polul domină
+        \item $f(\nu) = \sigma^2\,|2\sin(\pi\nu)|^{-2d} \approx \sigma^2(2\pi\nu)^{-2d}$ în apropierea lui $\nu = 0$: un \textbf{pol} la zero
+        \item prin logaritmare: $\log f(\nu) \approx \log\sigma^2 - 2d\log(2\pi\nu)$, o dreaptă în $\log\nu$, cu panta $-2d$
     \end{itemize}
     \item Memoria scurtă (ARMA) are $f(0)$ finit: graficul log--log devine orizontal la frecvențele joase
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Memoria lungă în domeniul frecvenței (2/2): estimatorul GPH}
+\itemsize{\small}
+\begin{itemize}
+    \item \refGPH: o regresie a logaritmului periodogramei pe un termen logaritmic al frecvenței
+    \begin{itemize}
+        \item se regresează $\log I(\nu_j)$ pe $-\log(4\sin^2(\pi\nu_j))$ pentru $j = 1, \ldots, m$; panta este $\hat d$
+        \item eroarea standard $\pi/\sqrt{24m}$: scade pe măsură ce se folosesc mai multe frecvențe
+    \end{itemize}
+    \item Se folosesc doar cele mai joase $m = \lfloor T^{0{,}65}\rfloor$ frecvențe, unde polul domină
+    \begin{itemize}
+        \item un $m$ mai mare reduce eroarea standard, dar aduce efecte de memorie scurtă (deplasare)
+    \end{itemize}
+    \item Interpretarea
+    \begin{itemize}
+        \item $\hat d$ apropiat de 0: memorie scurtă; $0 < \hat d < 0{,}5$: memorie lungă staționară; $\hat d \ge 0{,}5$: nestaționaritate
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -911,21 +1018,36 @@ MSCA Digital Finance}
 \section{Filtre liniare}
 %=============================================================================
 
-\begin{frame}{Filtrele liniare și cîștigul lor}
-\itemsize{\footnotesize}
+\begin{frame}{Filtrele liniare și cîștigul lor (1/2)}
+\itemsize{\small}
 \begin{itemize}
-    \item Un \textbf{filtru liniar}: $y_t = \sum_j a_j x_{t-j}$; \textbf{răspunsul lui în frecvență} este $A(\nu) = \sum_j a_j e^{-2\pi i\nu j}$
+    \item Un \textbf{filtru liniar} transformă o serie de intrare $x_t$ într-o serie de ieșire $y_t$ printr-o sumă ponderată a valorilor curente și trecute
     \begin{itemize}
-        \item rezultatul de bază: $f_y(\nu) = |A(\nu)|^2 f_x(\nu)$; $|A(\nu)|^2$ este \textbf{cîștigul pătratic}
-        \item filtrul înmulțește puterea de la fiecare frecvență: amplifică unele cicluri și le elimină pe altele
+        \item $y_t = \sum_j a_j x_{t-j}$; $a_j$: ponderile filtrului; $j$: lagul
     \end{itemize}
+    \item \textbf{Răspunsul lui în frecvență} este $A(\nu) = \sum_j a_j e^{-2\pi i\nu j}$
+    \begin{itemize}
+        \item rezultatul de bază: $f_y(\nu) = |A(\nu)|^2 f_x(\nu)$; $f_x$, $f_y$: spectrele intrării și ieșirii
+        \item $|A(\nu)|^2$ este \textbf{cîștigul pătratic}: peste 1 filtrul amplifică ciclurile de frecvență $\nu$, sub 1 le atenuează, 0 le elimină
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Filtrele liniare și cîștigul lor (2/2)}
+\itemsize{\small}
+\begin{itemize}
     \item Prima diferență $y_t = x_t - x_{t-1}$: $|A(\nu)|^2 = |1 - e^{-2\pi i\nu}|^2 = 4\sin^2(\pi\nu)$
     \begin{itemize}
         \item zero la $\nu = 0$ (elimină trendul), 4 la $\nu = 1/2$ (amplifică zgomotul); la o perioadă de 40 de trimestre: 0{,}025; la 4 trimestre: 2
     \end{itemize}
-    \item Diferența sezonieră $1 - L^4$: $4\sin^2(4\pi\nu)$, zero la $\nu = 0, 1/4, 1/2$ (trendul și ciclurile sezoniere)
+    \item Diferența sezonieră $(1 - L^4)x_t = x_t - x_{t-4}$ (date trimestriale): cîștigul pătratic $4\sin^2(4\pi\nu)$
     \begin{itemize}
-        \item filtrul HP pentru ciclu: cîștigul pătratic $\dfrac{4\lambda(1 - \cos 2\pi\nu)^2}{1 + 4\lambda(1 - \cos 2\pi\nu)^2}$, un filtru trece-sus
+        \item zero la $\nu = 0, 1/4, 1/2$: elimină trendul și ciclurile sezoniere
+    \end{itemize}
+    \item Filtrul HP pentru ciclu: cîștigul pătratic $\dfrac{4\lambda(1 - \cos 2\pi\nu)^2}{1 + 4\lambda(1 - \cos 2\pi\nu)^2}$
+    \begin{itemize}
+        \item $\lambda$: parametrul de netezire (1600 pentru date trimestriale); un $\lambda$ mai mare mută pragul spre ciclurile mai lente
+        \item aproape de 0 la frecvențele joase și aproape de 1 la cele înalte: un filtru \textbf{trece-sus}
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -968,14 +1090,18 @@ MSCA Digital Finance}
     \item Pentru două serii staționare cu covarianțele încrucișate $\gamma_{xy}(h) = \mathrm{Cov}(x_{t+h}, y_t)$:
     \begin{itemize}
         \item \textbf{spectrul încrucișat} $f_{xy}(\nu) = \sum_h\gamma_{xy}(h)e^{-2\pi i\nu h}$, un număr complex la fiecare frecvență
+        \item $f_x$, $f_y$: spectrele lui $x$ și $y$, luate separat
     \end{itemize}
-    \item \textbf{Coerența pătratică}: $\rho^2_{xy}(\nu) = \dfrac{|f_{xy}(\nu)|^2}{f_x(\nu)f_y(\nu)} \in [0, 1]$
+    \item \textbf{Coerența pătratică}
     \begin{itemize}
+        \item $\rho^2_{xy}(\nu) = \dfrac{|f_{xy}(\nu)|^2}{f_x(\nu)f_y(\nu)} \in [0, 1]$
         \item un pătrat al corelației, frecvență cu frecvență: cît de bine se mișcă împreună ciclurile lui $x$ și $y$ la frecvența $\nu$
     \end{itemize}
-    \item \textbf{Faza} $\varphi(\nu) = \arg f_{xy}(\nu)$: decalajul dintre cele două cicluri, în radiani
+    \item \textbf{Faza} $\varphi(\nu) = \arg f_{xy}(\nu)$
     \begin{itemize}
-        \item un decalaj de $k$ perioade dă o fază liniară în frecvență: $\varphi(\nu) = \pm 2\pi\nu k$; deci decalajul este $|\varphi|/(2\pi\nu)$
+        \item defazajul dintre cele două cicluri, în radiani
+        \item $\arg$: unghiul unui număr complex în plan (argumentul lui)
+        \item un lag de $k$ perioade dă o fază liniară în frecvență: $\varphi(\nu) = \pm 2\pi\nu k$; deci lagul este $|\varphi|/(2\pi\nu)$
     \end{itemize}
     \item Estimarea: netezim periodograma încrucișată la fel ca periodograma; coerența brută este întotdeauna 1, deci netezirea este obligatorie
 \end{itemize}
@@ -1001,9 +1127,9 @@ MSCA Digital Finance}
         \item la frecvențele mai rapide de 6 luni media este doar 0{,}17: zgomotul lunar al celor două serii nu este legat
         \item corelația obișnuită, 0{,}49, amestecă legătura puternică a ciclurilor cu legătura slabă a zgomotului
     \end{itemize}
-    \item Faza la ciclul de 48 de luni: -0{,}23 radiani, un decalaj de aproximativ 1{,}7 luni
+    \item Faza la ciclul de 48 de luni: -0{,}23 radiani, un lag de aproximativ 1{,}7 luni
     \begin{itemize}
-        \item scăderea șomajului urmează revenirea producției cu o mică întîrziere (legea lui Okun, cu decalaj)
+        \item scăderea șomajului urmează revenirea producției cu o mică întîrziere (legea lui Okun, cu un lag)
     \end{itemize}
     \item Acolo unde coerența este mică, faza nu are sens: citiți faza doar în benzile cu coerență semnificativă
 \end{itemize}
@@ -1059,7 +1185,7 @@ MSCA Digital Finance}
 \begin{itemize}
     \item Memoria lungă este un pol la $\nu = 0$: panta $-2d$ pe un grafic log--log (GPH)
     \item Un filtru înmulțește spectrul cu cîștigul lui pătratic: diferențierea și filtrul HP remodelează ciclurile
-    \item Coerența este o corelație pe frecvențe; faza arată avansul sau întîrzierea
+    \item Coerența este o corelație pe frecvențe; faza arată avansul sau lagul unei serii față de cealaltă
     \item Wavelets arată cum se schimbă ciclurile în timp
 \end{itemize}
 \end{frame}
@@ -1072,9 +1198,18 @@ MSCA Digital Finance}
 \begin{frame}{Contribuția posibilă a AI}
 \itemsize{\small}
 \begin{itemize}
-    \item \textbf{Cod}: o primă versiune a unei periodograme, a unei neteziri Daniell, a unei estimări Welch sau a unui grafic al coerenței
-    \item \textbf{Explicații}: o a doua explicație a scurgerii spectrale, a fenomenului de aliasing sau a compromisului deplasare--varianță al lățimii de bandă
-    \item \textbf{Explorare}: spectrele multor serii deodată (consumul mai multor țări, PIB-ul tuturor statelor UE) și o primă interpretare a vîrfurilor
+    \item \textbf{Cod}
+    \begin{itemize}
+        \item o primă versiune a unei periodograme, a unei neteziri Daniell, a unei estimări Welch sau a unui grafic al coerenței
+    \end{itemize}
+    \item \textbf{Explicații}
+    \begin{itemize}
+        \item o a doua explicație a scurgerii spectrale, a fenomenului de aliasing sau a compromisului deplasare--varianță al lățimii de bandă
+    \end{itemize}
+    \item \textbf{Explorare}
+    \begin{itemize}
+        \item spectrele multor serii deodată (consumul mai multor țări, PIB-ul tuturor statelor UE) și o primă interpretare a vîrfurilor
+    \end{itemize}
     \item Exemplu de prompt
     \begin{itemize}
         \item \aiprompt{Write Python code that reads hourly electricity load, removes the mean, computes the periodogram with a Hann taper and a Welch estimate with 8-week segments, plots both on a log-log scale against the period in hours, and marks 24, 12 and 168 hours.}
@@ -1125,7 +1260,7 @@ Periodograma & $I(\nu_j) = |T^{-1/2}\sum_t x_t e^{-2\pi i\nu_j t}|^2$, \quad $\n
 Daniell & $\hat f(\nu_j) = \frac1L\sum_{|k| \le m} I(\nu_{j+k})$, \quad $L = 2m + 1$, \quad $B = L/T$ \\
 Banda de 95\% & $[2L\hat f/\chi^2_{2L}(0{,}975),\ 2L\hat f/\chi^2_{2L}(0{,}025)]$ \\
 Filtru liniar & $f_y(\nu) = |A(\nu)|^2 f_x(\nu)$, \quad $|1 - e^{-2\pi i\nu}|^2 = 4\sin^2(\pi\nu)$ \\
-Coerența, faza & $\rho^2_{xy} = |f_{xy}|^2/(f_x f_y)$, \quad $\varphi = \arg f_{xy}$, \quad decalaj $= |\varphi|/(2\pi\nu)$ \\
+Coerența, faza & $\rho^2_{xy} = |f_{xy}|^2/(f_x f_y)$, \quad $\varphi = \arg f_{xy}$, \quad lagul $= |\varphi|/(2\pi\nu)$ \\
 \bottomrule
 \end{tabular}
 \end{center}

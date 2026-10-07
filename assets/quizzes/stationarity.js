@@ -221,7 +221,7 @@ window.TSA_DATA.quizzes['stationarity'] = {
                     "$\\mathbb{E}[X_t] = \\mu t$ (crește liniar)"
                 ],
                 "correctExplanation": "Prin iterare, $X_t = \\mu t + \\sum_{i=1}^{t}\\varepsilon_i$, deci $\\mathbb{E}[X_t] = \\mu t$ și $\\text{Var}(X_t) = t\\sigma^2$. Ambele depind de $t$, deci procesul este nestaționar.",
-                "incorrectExplanation": "Drift-ul se cumulează: media este $\\mu t$, nu $\\mu$, iar varianța $t\\sigma^2$ crește și ea, deci seria nu este nici staționară, nici de varianță constantă."
+                "incorrectExplanation": "Deriva se cumulează: media este $\\mu t$, nu $\\mu$, iar varianța $t\\sigma^2$ crește și ea, deci seria nu este nici staționară, nici de varianță constantă."
             }
         },
         {
@@ -247,8 +247,8 @@ window.TSA_DATA.quizzes['stationarity'] = {
                     "Seria este staționară, cu memorie scurtă",
                     "Seria are sezonalitate"
                 ],
-                "correctExplanation": "O ACF de selecție care rămîne ridicată și scade aproape liniar pe multe decalaje este semnul clasic al unei rădăcini unitare. Un test formal, de exemplu ADF sau KPSS, trebuie să confirme acest lucru.",
-                "incorrectExplanation": "Zgomotul alb are ACF apropiată de zero la toate decalajele nenule, o serie staționară cu memorie scurtă are o ACF care se stinge repede, iar sezonalitatea apare ca vîrfuri la multiplii decalajului sezonier. Scăderea foarte lentă indică nestaționaritatea."
+                "correctExplanation": "O ACF de selecție care rămîne ridicată și scade aproape liniar pe multe laguri este semnul clasic al unei rădăcini unitare. Un test formal, de exemplu ADF sau KPSS, trebuie să confirme acest lucru.",
+                "incorrectExplanation": "Zgomotul alb are ACF apropiată de zero la toate lagurile nenule, o serie staționară cu memorie scurtă are o ACF care se stinge repede, iar sezonalitatea apare ca vîrfuri la multiplii lagului sezonier. Scăderea foarte lentă indică nestaționaritatea."
             }
         },
         {
@@ -274,8 +274,8 @@ window.TSA_DATA.quizzes['stationarity'] = {
                     "$\\rho(h)$ crește odată cu $h$",
                     "$\\rho(h) = 1$ pentru orice $h$"
                 ],
-                "correctExplanation": "ACF este simetrică ($\\rho(h) = \\rho(-h)$), egală cu 1 la decalajul 0 și mărginită: $|\\rho(h)| \\leq 1$ pentru orice $h$ (inegalitatea Cauchy-Schwarz).",
-                "incorrectExplanation": "Prin construcție $\\rho(0) = \\gamma(0)/\\gamma(0) = 1$, nu 0; $\\rho(h) = 1$ la toate decalajele ar însemna un proces perfect persistent, și nu există niciun motiv ca $\\rho(h)$ să crească. ACF este simetrică și mărginită în valoare absolută de 1."
+                "correctExplanation": "ACF este simetrică ($\\rho(h) = \\rho(-h)$), egală cu 1 la lagul 0 și mărginită: $|\\rho(h)| \\leq 1$ pentru orice $h$ (inegalitatea Cauchy-Schwarz).",
+                "incorrectExplanation": "Prin construcție $\\rho(0) = \\gamma(0)/\\gamma(0) = 1$, nu 0; $\\rho(h) = 1$ la toate lagurile ar însemna un proces perfect persistent, și nu există niciun motiv ca $\\rho(h)$ să crească. ACF este simetrică și mărginită în valoare absolută de 1."
             }
         },
         {
@@ -382,7 +382,7 @@ window.TSA_DATA.quizzes['stationarity'] = {
                     "Zgomotul alb are varianță constantă",
                     "Zgomotul alb nu are autocorelație"
                 ],
-                "correctExplanation": "Zgomotul alb cere doar medie zero, varianță constantă și autocorelație nulă la toate decalajele nenule. Zgomotul alb gaussian este un caz particular, nu definiția.",
+                "correctExplanation": "Zgomotul alb cere doar medie zero, varianță constantă și autocorelație nulă la toate lagurile nenule. Zgomotul alb gaussian este un caz particular, nu definiția.",
                 "incorrectExplanation": "Media zero, varianța constantă și absența autocorelației fac toate parte din definiție, deci acele afirmații sînt adevărate. Falsă este afirmația că zgomotul alb trebuie să urmeze distribuția Normală."
             }
         },
@@ -404,13 +404,13 @@ window.TSA_DATA.quizzes['stationarity'] = {
                 "title": "ACF a unui proces AR(1)",
                 "text": "Pentru un proces AR(1) cu $\\phi = 0{,}8$, ACF:",
                 "options": [
-                    "Se anulează după decalajul 1",
+                    "Se anulează după lagul 1",
                     "Își alternează semnul în jurul lui zero",
                     "Scade exponențial",
-                    "Este zero la toate decalajele"
+                    "Este zero la toate lagurile"
                 ],
                 "correctExplanation": "Pentru AR(1), $\\rho(h) = \\phi^h = 0{,}8^h$, care scade exponențial (geometric) spre zero și rămîne pozitivă, deoarece $\\phi > 0$.",
-                "incorrectExplanation": "Anularea după decalajul 1 este specifică procesului MA(1), alternarea semnului ar cere $\\phi < 0$, iar o ACF nulă corespunde zgomotului alb. Pentru $\\phi = 0{,}8$, ACF scade exponențial."
+                "incorrectExplanation": "Anularea după lagul 1 este specifică procesului MA(1), alternarea semnului ar cere $\\phi < 0$, iar o ACF nulă corespunde zgomotului alb. Pentru $\\phi = 0{,}8$, ACF scade exponențial."
             }
         },
         {
@@ -431,13 +431,13 @@ window.TSA_DATA.quizzes['stationarity'] = {
                 "title": "PACF a unui proces MA(1)",
                 "text": "Funcția de autocorelație parțială (PACF) a unui proces MA(1):",
                 "options": [
-                    "Se anulează după decalajul 1",
-                    "Este zero la toate decalajele",
+                    "Se anulează după lagul 1",
+                    "Este zero la toate lagurile",
                     "Prezintă un tipar sezonier",
                     "Scade exponențial"
                 ],
-                "correctExplanation": "Un proces MA(1) inversabil se poate scrie ca AR($\\infty$), deci PACF nu se anulează, ci scade exponențial (cu semne alternante cînd $\\theta > 0$). ACF este cea care se anulează după decalajul 1.",
-                "incorrectExplanation": "Anularea după decalajul 1 caracterizează ACF a procesului MA(1), nu PACF. Pentru procesele MA, ACF se anulează și PACF scade; pentru procesele AR este invers."
+                "correctExplanation": "Un proces MA(1) inversabil se poate scrie ca AR($\\infty$), deci PACF nu se anulează, ci scade exponențial (cu semne alternante cînd $\\theta > 0$). ACF este cea care se anulează după lagul 1.",
+                "incorrectExplanation": "Anularea după lagul 1 caracterizează ACF a procesului MA(1), nu PACF. Pentru procesele MA, ACF se anulează și PACF scade; pentru procesele AR este invers."
             }
         },
         {
@@ -518,7 +518,7 @@ window.TSA_DATA.quizzes['stationarity'] = {
                     "$0$"
                 ],
                 "correctExplanation": "$\\gamma(0) = \\sigma^2(1 + \\theta^2) = 1{,}36\\,\\sigma^2$ și $\\gamma(1) = \\theta\\sigma^2 = 0{,}6\\,\\sigma^2$, deci $\\rho(1) = 0{,}6/1{,}36 \\approx 0{,}44$.",
-                "incorrectExplanation": "Coeficientul 0,6 nu este autocorelația: trebuie împărțit la $1 + \\theta^2$. Valoarea 0,36 este $\\theta^2$, iar ACF a unui MA(1) este nulă abia de la decalajul 2. Aici $\\rho(1) = \\theta/(1 + \\theta^2) \\approx 0{,}44$."
+                "incorrectExplanation": "Coeficientul 0,6 nu este autocorelația: trebuie împărțit la $1 + \\theta^2$. Valoarea 0,36 este $\\theta^2$, iar ACF a unui MA(1) este nulă abia de la lagul 2. Aici $\\rho(1) = \\theta/(1 + \\theta^2) \\approx 0{,}44$."
             }
         },
         {
@@ -572,7 +572,7 @@ window.TSA_DATA.quizzes['stationarity'] = {
                     "Randamentele urmează distribuția Normală"
                 ],
                 "correctExplanation": "$Q^* > \\chi^2_{0{,}95}(10)$, deci la 5% respingem $H_0$: $\\rho(1) = \\dots = \\rho(10) = 0$. Cel puțin o autocorelație diferă de zero.",
-                "incorrectExplanation": "Testul Ljung–Box privește doar autocorelația: nu spune nimic despre staționaritate sau normalitate, iar nerespingerea nu ar dovedi independența. Aici $25{,}4 > 18{,}31$, deci ipoteza de zgomot alb pînă la decalajul 10 este respinsă."
+                "incorrectExplanation": "Testul Ljung–Box privește doar autocorelația: nu spune nimic despre staționaritate sau normalitate, iar nerespingerea nu ar dovedi independența. Aici $25{,}4 > 18{,}31$, deci ipoteza de zgomot alb pînă la lagul 10 este respinsă."
             }
         },
         {

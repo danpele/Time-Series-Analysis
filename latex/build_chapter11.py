@@ -224,7 +224,7 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
      [T('the idea of a foundation model; Transformers and attention in brief', 'ideea de foundation model; Transformer-ul și atenția, pe scurt'),
       T('from numbers to tokens: scaling, quantisation, patching; the main model families', 'de la numere la tokeni: scalare, cuantizare, patching; principalele familii de modele'),
       T('probabilistic forecasts and their scores; an honest test on Romanian and US series', 'prognozele probabiliste și scorurile lor; un test corect pe serii din România și din SUA'),
-      T('leakage and contamination; when these models help and when they do not', 'scurgerea de informație și contaminarea; cînd ajută aceste modele și cînd nu')])))
+      T('leakage and contamination; when these models help and when they do not', 'leakage-ul și contaminarea; situațiile în care aceste modele ajută și cele în care nu ajută')])))
 
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Define a foundation model, zero-shot forecasting and fine-tuning', 'Definiți un foundation model, prognoza zero-shot și fine-tuning-ul'),
@@ -235,13 +235,14 @@ D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
 
 D.frame(T('Prerequisites', 'Noțiuni necesare azi'), items(
     (T('Forecasting benchmarks and their evaluation (Chapters 0 and 4)', 'Reperele de prognoză și evaluarea lor (capitolele 0 și 4)'),
-     [T('seasonal naive $\\hat y_{T+h} = y_{T+h-m}$; ETS; time-series cross-validation with a rolling origin', 'prognoza sezonieră naivă $\\hat y_{T+h} = y_{T+h-m}$; ETS; validarea încrucișată cu origine mobilă'),
-      T('MAE, RMSE, MASE; the Diebold--Mariano test', 'MAE, RMSE, MASE; testul Diebold--Mariano')]),
-    (T('ARIMA and seasonal ARIMA (Chapters 3 and 4)', 'ARIMA și ARIMA sezonier (capitolele 3 și 4)'), []),
-    (T('Machine learning basics (Chapter 9)', 'Noțiuni de bază de învățare automată (Capitolul 9)'),
+     [T('seasonal naive $\\hat y_{T+h} = y_{T+h-m}$: the forecast repeats the value of the same season one cycle earlier', 'prognoza sezonieră naivă $\\hat y_{T+h} = y_{T+h-m}$: prognoza repetă valoarea din același sezon al ciclului anterior'),
+      T('$T$: the last observed period; $h$: the horizon; $m$: the season length (12 for monthly data, 168 for hourly data with a weekly cycle); the hat marks a forecast', '$T$: ultima perioadă observată; $h$: orizontul; $m$: lungimea sezonului (12 pentru date lunare, 168 pentru date orare cu ciclu săptămînal); căciula marchează o prognoză'),
+      T('ETS; time-series cross-validation with a rolling origin; MAE, RMSE, MASE; the Diebold--Mariano test', 'ETS; validarea încrucișată cu origine mobilă; MAE, RMSE, MASE; testul Diebold--Mariano')]),
+    (T('ARIMA and seasonal ARIMA (Chapters 3 and 4); machine learning basics (Chapter 9)', 'ARIMA și ARIMA sezonier (capitolele 3 și 4); noțiuni de bază de învățare automată (Capitolul 9)'),
      [T('training, validation and test samples; a neural network as a flexible function with many parameters', 'eșantioanele de antrenare, validare și test; o rețea neuronală ca funcție flexibilă cu mulți parametri'),
       T('global models: one model trained on many series', 'modelele globale: un model antrenat pe multe serii')]),
-    T('Quantiles: $q_\\tau$ is the value below which the variable falls with probability $\\tau$', 'Cuantilele: $q_\\tau$ este valoarea sub care variabila se află cu probabilitatea $\\tau$')))
+    (T('Quantiles: $q_\\tau$ is the value below which the variable falls with probability $\\tau$', 'Cuantilele: $q_\\tau$ este valoarea sub care variabila se află cu probabilitatea $\\tau$'),
+     [T('$\\tau \\in (0, 1)$: the level; $q_{0.5}$ is the median, $q_{0.1}$ and $q_{0.9}$ bound a central 80\\% interval', '$\\tau \\in (0, 1)$: nivelul; $q_{0.5}$ este mediana, $q_{0.1}$ și $q_{0.9}$ delimitează un interval central de 80\\%')])), size='footnotesize')
 
 # =============================================================================
 # 1. IDEEA
@@ -249,20 +250,27 @@ D.frame(T('Prerequisites', 'Noțiuni necesare azi'), items(
 D.section('The foundation-model idea', 'Ideea de foundation model')
 
 D.frame(T('Three ways to forecast many series', 'Trei moduri de a prognoza multe serii'), items(
-    (T('\\textbf{Local} models: one model per series, estimated on that series only', 'Modele \\textbf{locale}: cîte un model pentru fiecare serie, estimat doar pe acea serie'),
-     [T('ETS, ARIMA: few parameters, interpretable; 10\\,000 series mean 10\\,000 estimations', 'ETS, ARIMA: puțini parametri, interpretabile; 10\\,000 de serii înseamnă 10\\,000 de estimări')]),
-    (T('\\textbf{Global} models (Chapter 9): one model trained on all the series of a data set', 'Modele \\textbf{globale} (Capitolul 9): un model antrenat pe toate seriile unui set de date'),
-     [T('example: DeepAR (\\refSalinas), a recurrent network trained on all products of a retailer', 'exemplu: DeepAR (\\refSalinas), o rețea recurentă antrenată pe toate produsele unui comerciant')]),
-    (T('\\textbf{Foundation} models: one model pretrained once on a very broad corpus of series from many domains', 'Modele de tip \\textbf{foundation}: un model pre-antrenat o singură dată pe un corpus foarte larg de serii din multe domenii'),
-     [T('then used on new series and new data sets, without re-estimation', 'folosit apoi pe serii noi și seturi de date noi, fără reestimare'),
-      T('the term comes from \\refBommasani: models trained on broad data at scale, adaptable to many tasks', 'termenul provine de la \\refBommasani: modele antrenate pe date largi, la scară mare, adaptabile la multe sarcini')])))
+    (T('\\textbf{Local} models', 'Modele \\textbf{locale}'),
+         [T('one model per series, estimated on that series only', 'cîte un model pentru fiecare serie, estimat doar pe acea serie'),
+          T('ETS, ARIMA: few parameters, interpretable; 10\\,000 series mean 10\\,000 estimations', 'ETS, ARIMA: puțini parametri, interpretabile; 10\\,000 de serii înseamnă 10\\,000 de estimări')]),
+    (T('\\textbf{Global} models (Chapter 9)', 'Modele \\textbf{globale} (Capitolul 9)'),
+         [T('one model trained on all the series of a data set', 'un model antrenat pe toate seriile unui set de date'),
+          T('example: DeepAR (\\refSalinas), a recurrent network trained on all products of a retailer', 'exemplu: DeepAR (\\refSalinas), o rețea recurentă antrenată pe toate produsele unui comerciant')]),
+    (T('\\textbf{Foundation} models', 'Modele de tip \\textbf{foundation}'),
+         [T('one model pretrained once on a very broad corpus of series from many domains', 'un model pre-antrenat o singură dată pe un corpus foarte larg de serii din multe domenii'),
+          T('then used on new series and new data sets, without re-estimation', 'folosit apoi pe serii noi și seturi de date noi, fără reestimare'),
+          T('the term comes from \\refBommasani: models trained on broad data at scale, adaptable to many tasks', 'termenul provine de la \\refBommasani: modele antrenate pe date largi, la scară mare, adaptabile la multe sarcini')])))
 
-D.frame(T('Zero-shot, fine-tuning, in-context', 'Zero-shot, fine-tuning, în context'), items(
-    (T('\\textbf{Context}: the recent history $y_{T-C+1}, \\dots, y_T$ passed to the model at forecast time ($C$ = context length)', '\\textbf{Contextul}: istoricul recent $y_{T-C+1}, \\dots, y_T$ transmis modelului în momentul prognozei ($C$ = lungimea contextului)'), []),
-    (T('\\textbf{Zero-shot} forecasting: the pretrained weights stay fixed; only the context of the new series is used', 'Prognoza \\textbf{zero-shot}: ponderile pre-antrenate rămîn fixe; se folosește doar contextul seriei noi'),
-     [T('no parameter is estimated on the target series: forecasting takes a fraction of a second', 'niciun parametru nu se estimează pe seria-țintă: prognoza durează o fracțiune de secundă')]),
-    (T('\\textbf{Fine-tuning}: further training of the pretrained weights on the target data', '\\textbf{Fine-tuning}: antrenarea suplimentară a ponderilor pre-antrenate pe datele-țintă'),
-     [T('can help on unusual series; needs a validation sample and more computation', 'poate ajuta la serii neobișnuite; cere un eșantion de validare și mai mult calcul')]),
+D.frame(T('Zero-shot, fine-tuning, in-context', 'Zero-shot, fine-tuning și prognoza din context'), items(
+    (T('\\textbf{Context}', '\\textbf{Contextul}'),
+         [T('the recent history $y_{T-C+1}, \\dots, y_T$ passed to the model at forecast time ($C$ = context length)', 'istoricul recent $y_{T-C+1}, \\dots, y_T$ transmis modelului în momentul prognozei ($C$ = lungimea contextului)')]),
+    (T('\\textbf{Zero-shot} forecasting', 'Prognoza \\textbf{zero-shot}'),
+         [T('the pretrained weights stay fixed', 'ponderile pre-antrenate rămîn fixe'),
+          T('only the context of the new series is used', 'se folosește doar contextul seriei noi'),
+          T('no parameter is estimated on the target series: forecasting takes a fraction of a second', 'niciun parametru nu se estimează pe seria-țintă: prognoza durează o fracțiune de secundă')]),
+    (T('\\textbf{Fine-tuning}', '\\textbf{Fine-tuning}'),
+         [T('further training of the pretrained weights on the target data', 'antrenarea suplimentară a ponderilor pre-antrenate pe datele-țintă'),
+          T('can help on unusual series; needs a validation sample and more computation', 'poate ajuta la serii neobișnuite; cere un eșantion de validare și mai mult calcul')]),
     (T('The output is usually a set of \\textbf{quantiles} $\\hat q_{0.1}, \\dots, \\hat q_{0.9}$ for each future step, not a single number', 'Rezultatul este de obicei o mulțime de \\textbf{cuantile} $\\hat q_{0,1}, \\dots, \\hat q_{0,9}$ pentru fiecare pas viitor, nu un singur număr'), [])))
 
 D.frame(T('Pretraining at scale', 'Pre-antrenarea la scară mare'), two(
@@ -291,18 +299,31 @@ D.frame(T('The Transformer (Vaswani et al., 2017)', 'Transformer-ul (Vaswani et 
         (T('\\refVaswani: a network for sequences built on \\textbf{attention}, without recurrence', '\\refVaswani: o rețea pentru secvențe construită pe \\textbf{atenție}, fără recurență'),
          [T('designed for translation; behind every large language model (LLM)', 'creată pentru traducere; stă la baza oricărui model mare de limbaj (LLM)')]),
         (T('Input: a sequence of \\textbf{tokens}, each turned into a vector (an embedding)', 'Intrarea: o secvență de \\textbf{tokeni}, fiecare transformat într-un vector (embedding)'), []),
-        (T('\\textbf{Encoder}: reads the whole input; \\textbf{decoder}: produces the output step by step', '\\textbf{Encoder-ul}: citește toată intrarea; \\textbf{decoder-ul}: produce ieșirea pas cu pas'),
-         [T('\\textbf{decoder-only} models (GPT, TimesFM, Lag-Llama) forecast the next token from all previous ones', 'modelele \\textbf{doar cu decoder} (GPT, TimesFM, Lag-Llama) prognozează tokenul următor din toți cei anteriori')]),
+        (T('\\textbf{Encoder}', '\\textbf{Encoder-ul}'),
+             [T('reads the whole input', 'citește toată intrarea'),
+              T('\\textbf{decoder}: produces the output step by step', '\\textbf{decoder-ul}: produce ieșirea pas cu pas'),
+              T('\\textbf{decoder-only} models (GPT, TimesFM, Lag-Llama) forecast the next token from all previous ones', 'modelele \\textbf{doar cu decoder} (GPT, TimesFM, Lag-Llama) prognozează tokenul următor din toți cei anteriori')]),
         (T('Position information is added to each vector, since attention ignores order', 'Fiecărui vector i se adaugă informația despre poziție, deoarece atenția ignoră ordinea'), [])), wl='0.34', wr='0.64'))
 
-D.frame(T('Self-attention', 'Self-attention (atenția asupra propriei secvențe)'), items(
-    (T('Each input vector $x_i$ produces a query $q_i$, a key $k_i$ and a value $v_i$ (three linear maps)', 'Fiecare vector de intrare $x_i$ produce o interogare $q_i$, o cheie $k_i$ și o valoare $v_i$ (trei transformări liniare)'), []),
-    (T('Output at position $i$: a weighted average of all values', 'Ieșirea în poziția $i$: o medie ponderată a tuturor valorilor'),
-     [T('$\\displaystyle \\text{out}_i = \\sum_j w_{ij} v_j, \\qquad w_{ij} = \\frac{\\exp(q_i^\\top k_j/\\sqrt{d})}{\\sum_l \\exp(q_i^\\top k_l/\\sqrt{d})}$', '$\\displaystyle \\text{out}_i = \\sum_j w_{ij} v_j, \\qquad w_{ij} = \\frac{\\exp(q_i^\\top k_j/\\sqrt{d})}{\\sum_l \\exp(q_i^\\top k_l/\\sqrt{d})}$'),
-      T('in matrix form: $\\text{softmax}(QK^\\top/\\sqrt{d})\\,V$; $d$ = length of the key vectors', 'matricial: $\\text{softmax}(QK^\\top/\\sqrt{d})\\,V$; $d$ = lungimea vectorilor-cheie')]),
+D.frame(T('Self-attention (1/2): the formula', 'Self-attention (1/2): formula'), items(
+    (T('Each input vector $x_i$ produces three vectors, by three linear maps learnt in training', 'Fiecare vector de intrare $x_i$ produce trei vectori, prin trei transformări liniare învățate la antrenare'),
+     [T('a query $q_i$ (what position $i$ looks for), a key $k_i$ (what position $i$ offers), a value $v_i$ (what position $i$ passes on)', 'o interogare $q_i$ (ce caută poziția $i$), o cheie $k_i$ (ce oferă poziția $i$), o valoare $v_i$ (ce transmite poziția $i$)')]),
+    (T('The output at position $i$ is a weighted average of the values of all positions', 'Ieșirea în poziția $i$ este o medie ponderată a valorilor tuturor pozițiilor'),
+     [T('$\\displaystyle \\text{out}_i = \\sum_j w_{ij} v_j, \\qquad w_{ij} = \\frac{\\exp(q_i^\\top k_j/\\sqrt{d})}{\\sum_l \\exp(q_i^\\top k_l/\\sqrt{d})}$', '$\\displaystyle \\text{out}_i = \\sum_j w_{ij} v_j, \\qquad w_{ij} = \\frac{\\exp(q_i^\\top k_j/\\sqrt{d})}{\\sum_l \\exp(q_i^\\top k_l/\\sqrt{d})}$')]),
+    (T('Notation', 'Notațiile'),
+     [T('$j, l$: indices that run over all input positions; $w_{ij}$: the weight that position $i$ gives to position $j$', '$j, l$: indici care parcurg toate pozițiile de intrare; $w_{ij}$: ponderea pe care poziția $i$ o dă poziției $j$'),
+      T('$q_i^\\top k_j$: the scalar product of query and key, large when the two vectors point in the same direction (similarity score)', '$q_i^\\top k_j$: produsul scalar dintre interogare și cheie, mare cînd cei doi vectori au aceeași direcție (scorul de similaritate)'),
+      T('$d$: the length of the key vectors; dividing by $\\sqrt{d}$ keeps the scores of moderate size', '$d$: lungimea vectorilor-cheie; împărțirea la $\\sqrt{d}$ menține scorurile la o mărime moderată'),
+      T('the exponential makes every weight positive and the denominator makes the weights of position $i$ sum to 1', 'exponențiala face toate ponderile pozitive, iar numitorul face ca ponderile poziției $i$ să aibă suma 1')])), size='footnotesize')
+
+D.frame(T('Self-attention (2/2): matrix form and intuition', 'Self-attention (2/2): forma matricială și intuiția'), items(
+    (T('Matrix form of the same computation: $\\text{softmax}(QK^\\top/\\sqrt{d})\\,V$', 'Forma matricială a aceluiași calcul: $\\text{softmax}(QK^\\top/\\sqrt{d})\\,V$'),
+     [T('$Q$, $K$, $V$: matrices whose rows are the vectors $q_i$, $k_i$, $v_i$; $QK^\\top$ holds all the scores $q_i^\\top k_j$', '$Q$, $K$, $V$: matrice ale căror linii sînt vectorii $q_i$, $k_i$, $v_i$; $QK^\\top$ conține toate scorurile $q_i^\\top k_j$'),
+      T('softmax: applied row by row, it turns the scores into the weights $w_{ij}$ of the previous slide', 'softmax: aplicată pe fiecare linie, transformă scorurile în ponderile $w_{ij}$ de pe slide-ul anterior')]),
     (T('Intuition for series: today\'s step can look back at the same hour last week and give it a large weight', 'Intuiția pentru serii: pasul de azi se poate uita la aceeași oră de săptămîna trecută și îi poate da o pondere mare'),
-     [T('the weights are learnt from data, not fixed in advance as the lags of an AR($p$)', 'ponderile sînt învățate din date, nu fixate dinainte ca decalajele unui AR($p$)')]),
-    (T('Cost: $n$ inputs need $n^2$ comparisons; a context of 2048 values gives about 4 million', 'Costul: $n$ intrări cer $n^2$ comparații; un context de 2048 de valori dă circa 4 milioane'), [])), size='footnotesize')
+     [T('the weights are learnt from data, not fixed in advance as the lags of an AR($p$)', 'ponderile sînt învățate din date, nu fixate dinainte, ca lagurile unui AR($p$)')]),
+    (T('Cost: $n$ inputs need $n^2$ comparisons', 'Costul: $n$ intrări cer $n^2$ comparații'),
+     [T('a context of 2048 values gives about 4 million comparisons in each attention layer', 'un context de 2048 de valori dă circa 4 milioane de comparații în fiecare strat de atenție')])))
 
 D.frame(T('Worked example: attention weights', 'Exemplu rezolvat: ponderile atenției'), items(
     (T('One query and three keys; scores $q^\\top k_j/\\sqrt{d}$ = 2, 1, 0; values $v_j$ = 10, 20, 30', 'O interogare și trei chei; scorurile $q^\\top k_j/\\sqrt{d}$ = 2, 1, 0; valorile $v_j$ = 10, 20, 30'), []),
@@ -314,7 +335,7 @@ D.frame(T('Worked example: attention weights', 'Exemplu rezolvat: ponderile aten
 
 D.recap(('Transformers', 'Transformer-ul'), [
     T('Attention: each step is a learnt weighted average of all steps', 'Atenția: fiecare pas este o medie ponderată, învățată, a tuturor pașilor'),
-    T('Encoder--decoder (Chronos) and decoder-only (TimesFM, Lag-Llama) designs', 'Construcții encoder--decoder (Chronos) și doar cu decoder (TimesFM, Lag-Llama)'),
+    T('Encoder--decoder (Chronos) and decoder-only (TimesFM, Lag-Llama) designs', 'Arhitecturi encoder--decoder (Chronos) și arhitecturi doar cu decoder (TimesFM, Lag-Llama)'),
     T('The cost grows with the square of the number of inputs', 'Costul crește cu pătratul numărului de intrări')])
 
 # =============================================================================
@@ -331,14 +352,25 @@ D.frame(T('The problem: a language model reads words, a series has numbers', 'Pr
       T('\\textbf{digits as text}: a general LLM reads the numbers as strings (\\refGruver)', '\\textbf{cifrele ca text}: un LLM general citește numerele ca șiruri de caractere (\\refGruver)')]),
     T('In all cases the forecasts are transformed back to the original units', 'În toate cazurile, prognozele se transformă înapoi în unitățile inițiale')))
 
-D.frame(T('Mean scaling and quantisation (Chronos)', 'Scalarea prin medie și cuantizarea (Chronos)'), items(
-    (T('\\textbf{Mean scaling}: $\\tilde x_t = x_t / s$ with $s = \\frac{1}{C}\\sum_{t=1}^{C} |x_t|$', '\\textbf{Scalarea prin medie}: $\\tilde x_t = x_t / s$, cu $s = \\frac{1}{C}\\sum_{t=1}^{C} |x_t|$'),
-     [T('the scaled context has values of order one, whatever the units', 'contextul scalat are valori de ordinul unității, oricare ar fi unitățile')]),
-    (T('\\textbf{Quantisation}: $[-15, 15]$ is divided into 4093 equal bins; the token of $\\tilde x_t$ is the number of the nearest bin centre', '\\textbf{Cuantizarea}: intervalul $[-15, 15]$ este împărțit în 4093 de intervale egale; tokenul lui $\\tilde x_t$ este numărul celui mai apropiat centru'),
-     [T('bin width @{u.width}; plus special tokens (padding, end of sequence)', 'lățimea unui interval @{u.width}; plus tokeni speciali (completare, sfîrșit de secvență)')]),
-    (T('Training: a language model (T5) learns to predict the next token, with the cross-entropy loss', 'Antrenarea: un model de limbaj (T5) învață să prognozeze tokenul următor, cu pierderea cross-entropy'),
-     [T('forecast: sample many token paths, map them back to values ($\\times s$), read the quantiles', 'prognoza: se eșantionează multe traiectorii de tokeni, se transformă în valori ($\\times s$), se citesc cuantilele')]),
-    T('Limit: scaled values outside $[-15, 15]$ cannot be produced', 'Limita: valorile scalate în afara intervalului $[-15, 15]$ nu pot fi produse')), size='footnotesize')
+D.frame(T('Mean scaling and quantisation (Chronos) (1/2)', 'Scalarea prin medie și cuantizarea (Chronos) (1/2)'), items(
+    (T('\\textbf{Mean scaling}', '\\textbf{Scalarea prin medie}'),
+         [T('each value of the context is divided by the mean absolute value of the context', 'fiecare valoare a contextului se împarte la media valorilor absolute ale contextului'),
+          T('$\\tilde x_t = x_t / s, \\qquad s = \\frac{1}{C}\\sum_{t=1}^{C} |x_t|$', '$\\tilde x_t = x_t / s, \\qquad s = \\frac{1}{C}\\sum_{t=1}^{C} |x_t|$'),
+          T('$x_t$: the $t$-th value of the context, $t = 1, \\dots, C$; $C$: the context length; $s$: the scale; $\\tilde x_t$: the scaled value', '$x_t$: a $t$-a valoare a contextului, $t = 1, \\dots, C$; $C$: lungimea contextului; $s$: scala; $\\tilde x_t$: valoarea scalată'),
+          T('the scaled context has values of order one, whatever the units', 'contextul scalat are valori de ordinul unității, oricare ar fi unitățile')]),
+    (T('\\textbf{Quantisation}', '\\textbf{Cuantizarea}'),
+         [T('each scaled value is replaced by the number of a bin', 'fiecare valoare scalată este înlocuită cu numărul unui interval'),
+          T('$[-15, 15]$ is divided into 4093 equal bins of width @{u.width}; the token of $\\tilde x_t$ is the number of the nearest bin centre', 'intervalul $[-15, 15]$ este împărțit în 4093 de intervale egale, de lățime @{u.width}; tokenul lui $\\tilde x_t$ este numărul celui mai apropiat centru'),
+          T('plus special tokens (padding, end of sequence)', 'plus tokeni speciali (completare, sfîrșit de secvență)')])), size='footnotesize')
+
+D.frame(T('Mean scaling and quantisation (Chronos) (2/2)', 'Scalarea prin medie și cuantizarea (Chronos) (2/2)'), items(
+    (T('Training: a language model (T5) learns to predict the next token', 'Antrenarea: un model de limbaj (T5) învață să prognozeze tokenul următor'),
+     [T('loss: the cross-entropy, minus the log of the probability given to the true next token; it is 0 when that probability is 1', 'funcția de pierdere: cross-entropy, minus logaritmul probabilității atribuite tokenului următor efectiv; este 0 cînd această probabilitate este 1')]),
+    (T('Forecast in three steps', 'Prognoza, în trei pași'),
+     [T('sample many token paths from the model', 'se eșantionează din model multe traiectorii de tokeni'),
+      T('map each token back to its bin centre and multiply by $s$', 'fiecare token se înlocuiește cu centrul intervalului său și se înmulțește cu $s$'),
+      T('read the quantiles of the sampled values at each future step', 'se citesc cuantilele valorilor eșantionate la fiecare pas viitor')]),
+    T('Limit: scaled values outside $[-15, 15]$ cannot be produced', 'Limita: valorile scalate în afara intervalului $[-15, 15]$ nu pot fi produse')))
 
 D.frame(T('Worked example: scaling and tokens', 'Exemplu rezolvat: scalarea și tokenii'), items(
     (T('Context: the Romanian unemployment rate (\\%, seasonally adjusted, Eurostat), @{u.first} to @{u.last}', 'Contextul: rata șomajului din România (\\%, ajustată sezonier, Eurostat), @{u.first}--@{u.last}'),
@@ -361,8 +393,9 @@ interp(('the tokens', 'tokenilor'), [
     T('One extreme value inflates $s$ and shrinks all the other scaled values: outliers in the context matter', 'O valoare extremă mărește $s$ și micșorează toate celelalte valori scalate: valorile aberante din context contează')])
 
 D.frame(T('Patching', 'Patching-ul'), items(
-    (T('\\textbf{Patch}: a block of $P$ consecutive values, mapped to one input vector by a small network', '\\textbf{Patch}: un bloc de $P$ valori consecutive, transformat într-un vector de intrare de o rețea mică'),
-     [T('PatchTST (\\refNie): ``a time series is worth 64 words\'\'', 'PatchTST (\\refNie): „o serie de timp valorează cît 64 de cuvinte”')]),
+    (T('\\textbf{Patch}', '\\textbf{Patch}'),
+         [T('a block of $P$ consecutive values, mapped to one input vector by a small network', 'un bloc de $P$ valori consecutive, transformat într-un vector de intrare de o rețea mică'),
+          T('PatchTST (\\refNie): ``a time series is worth 64 words\'\'', 'PatchTST (\\refNie): „o serie de timp valorează cît 64 de cuvinte”')]),
     (T('Two gains', 'Două avantaje'),
      [T('fewer inputs: 2048 values with $P = 16$ give 128 patches, so attention needs $128^2$ instead of $2048^2$ comparisons', 'mai puține intrări: 2048 de valori cu $P = 16$ dau 128 de patch-uri, deci atenția cere $128^2$ în loc de $2048^2$ comparații'),
       T('each input carries a local shape (a slope, a peak), not a single noisy number', 'fiecare intrare poartă o formă locală (o pantă, un vîrf), nu un singur număr zgomotos')]),
@@ -391,33 +424,41 @@ D.section('The main model families', 'Principalele familii de modele')
 D.frame(T('Chronos, Chronos-Bolt and Chronos-2 (Amazon)', 'Chronos, Chronos-Bolt și Chronos-2 (Amazon)'), two(
     ph('spheres', T('The Amazon Spheres, Seattle', 'Amazon Spheres, Seattle'), h='0.62\\textheight'),
     items(
-        (T('\\textbf{Chronos} (\\refAnsari): T5 encoder--decoder on scaled and quantised values; samples token paths', '\\textbf{Chronos} (\\refAnsari): T5 encoder--decoder pe valori scalate și cuantizate; eșantionează traiectorii de tokeni'), []),
-        (T('\\textbf{Chronos-Bolt} (November 2024): patches of 16 values and a direct output of the quantiles 0.1, \\dots, 0.9', '\\textbf{Chronos-Bolt} (noiembrie 2024): patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1, \\dots, 0,9'),
-         [T('sizes used here: tiny @{sz.bt} and small @{sz.bs} million parameters; context up to 2048 values', 'dimensiunile folosite aici: tiny, @{sz.bt} @{sz.bt.de}milioane, și small, @{sz.bs} @{sz.bs.de}milioane de parametri; context de pînă la 2048 de valori')]),
-        (T('\\textbf{Chronos-2} (\\refAnsariB, October 2025): @{sz.c2} million parameters, 21 quantile levels, covariates and groups of related series', '\\textbf{Chronos-2} (\\refAnsariB, octombrie 2025): @{sz.c2} @{sz.c2.de}milioane de parametri, 21 de niveluri de cuantile, covariate și grupuri de serii înrudite'), []),
+        (T('\\textbf{Chronos} (\\refAnsari)', '\\textbf{Chronos} (\\refAnsari)'),
+             [T('T5 encoder--decoder on scaled and quantised values', 'T5 encoder--decoder pe valori scalate și cuantizate'),
+              T('samples token paths', 'eșantionează traiectorii de tokeni')]),
+        (T('\\textbf{Chronos-Bolt} (November 2024)', '\\textbf{Chronos-Bolt} (noiembrie 2024)'),
+             [T('patches of 16 values and a direct output of the quantiles 0.1, \\dots, 0.9', 'patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1, \\dots, 0,9'),
+              T('sizes used here: tiny @{sz.bt} and small @{sz.bs} million parameters; context up to 2048 values', 'dimensiunile folosite aici: tiny, @{sz.bt} @{sz.bt.de}milioane, și small, @{sz.bs} @{sz.bs.de}milioane de parametri; context de pînă la 2048 de valori')]),
+        (T('\\textbf{Chronos-2} (\\refAnsariB, October 2025)', '\\textbf{Chronos-2} (\\refAnsariB, octombrie 2025)'),
+             [T('@{sz.c2} million parameters, 21 quantile levels, covariates and groups of related series', '@{sz.c2} @{sz.c2.de}milioane de parametri, 21 de niveluri de cuantile, covariate și grupuri de serii înrudite')]),
         (T('Open weights (Apache-2.0 licence); Python package \\texttt{chronos-forecasting}; all run on a CPU', 'Ponderi deschise (licența Apache-2.0); pachetul Python \\texttt{chronos-forecasting}; toate rulează pe un CPU'), [])), wl='0.32', wr='0.66'), size='footnotesize')
 
 D.frame(T('TimesFM (Google) and Lag-Llama', 'TimesFM (Google) și Lag-Llama'), items(
-    (T('\\textbf{TimesFM} (\\refDas): decoder-only Transformer, input patches of 32, output patches of 128 values', '\\textbf{TimesFM} (\\refDas): Transformer doar cu decoder, patch-uri de intrare de 32 și de ieșire de 128 de valori'),
-     [T('pretrained on real series (Google Trends, Wikipedia page views) and synthetic ones; about 200 million parameters', 'pre-antrenat pe serii reale (Google Trends, accesări de pagini Wikipedia) și sintetice; circa 200 de milioane de parametri'),
-      T('open weights (Apache-2.0); later versions add quantile outputs', 'ponderi deschise (Apache-2.0); versiunile ulterioare adaugă ieșiri cuantile')]),
-    (T('\\textbf{Lag-Llama} (\\refRasul): decoder-only, built on the Llama architecture of language models', '\\textbf{Lag-Llama} (\\refRasul): doar cu decoder, construit pe arhitectura Llama a modelelor de limbaj'),
-     [T('inputs: lagged values chosen by frequency (for example 7 days, 12 months, 24 hours) plus calendar features', 'intrările: valori întîrziate alese după frecvență (de exemplu 7 zile, 12 luni, 24 de ore) plus variabile de calendar'),
-      T('output: the parameters of a Student-$t$ distribution for the next step; sampling gives paths', 'ieșirea: parametrii unei distribuții Student-$t$ pentru pasul următor; eșantionarea dă traiectorii'),
-      T('small and open (Apache-2.0); meant to be fine-tuned', 'mic și deschis (Apache-2.0); gîndit pentru fine-tuning')])), size='footnotesize')
+    (T('\\textbf{TimesFM} (\\refDas)', '\\textbf{TimesFM} (\\refDas)'),
+         [T('decoder-only Transformer, input patches of 32, output patches of 128 values', 'Transformer doar cu decoder, patch-uri de intrare de 32 și de ieșire de 128 de valori'),
+          T('pretrained on real series (Google Trends, Wikipedia page views) and synthetic ones; about 200 million parameters', 'pre-antrenat pe serii reale (Google Trends, accesări de pagini Wikipedia) și sintetice; circa 200 de milioane de parametri'),
+          T('open weights (Apache-2.0); later versions add quantile outputs', 'ponderi deschise (Apache-2.0); versiunile ulterioare adaugă ieșiri cuantile')]),
+    (T('\\textbf{Lag-Llama} (\\refRasul)', '\\textbf{Lag-Llama} (\\refRasul)'),
+         [T('decoder-only, built on the Llama architecture of language models', 'doar cu decoder, construit pe arhitectura Llama a modelelor de limbaj'),
+          T('inputs: lagged values chosen by frequency (for example 7 days, 12 months, 24 hours) plus calendar features', 'intrările: valorile seriei la laguri alese după frecvență (de exemplu 7 zile, 12 luni, 24 de ore), plus variabile de calendar'),
+          T('output: the parameters of a Student-$t$ distribution for the next step; sampling gives paths', 'ieșirea: parametrii unei distribuții Student-$t$ pentru pasul următor; eșantionarea dă traiectorii'),
+          T('small and open (Apache-2.0); meant to be fine-tuned', 'mic și deschis (Apache-2.0); gîndit pentru fine-tuning')])), size='footnotesize')
 
 D.frame(T('Moirai (Salesforce) and TimeGPT', 'Moirai (Salesforce) și TimeGPT'), two(
     ph('salesforce', T('Salesforce Tower, San Francisco', 'Salesforce Tower, San Francisco'), h='0.62\\textheight'),
     items(
-        (T('\\textbf{Moirai} (\\refWoo): ``universal\'\' forecaster', '\\textbf{Moirai} (\\refWoo): model de prognoză „universal”'),
-         [T('any number of variables in one sequence; patch size chosen by frequency', 'orice număr de variabile într-o singură secvență; mărimea patch-ului aleasă după frecvență'),
-          T('output: a mixture of distributions; corpus LOTSA, about 27 billion observations', 'ieșirea: un amestec de distribuții; corpusul LOTSA, circa 27 de miliarde de observații'),
-          T('open weights under a non-commercial licence (CC BY-NC 4.0)', 'ponderi deschise, cu licență necomercială (CC BY-NC 4.0)')]),
-        (T('\\textbf{TimeGPT} (\\refGarza): closed model, available only through a paid API', '\\textbf{TimeGPT} (\\refGarza): model închis, disponibil doar printr-un API cu plată'),
-         [T('the weights and the training data cannot be inspected; the version can change; the data leave your computer', 'ponderile și datele de antrenare nu pot fi inspectate; versiunea se poate schimba; datele pleacă de pe calculatorul dumneavoastră'),
-          T('not used in this course: the results could not be reproduced', 'nu îl folosim în acest curs: rezultatele nu ar putea fi reproduse')])), wl='0.3', wr='0.68'), size='footnotesize')
+        (T('\\textbf{Moirai} (\\refWoo)', '\\textbf{Moirai} (\\refWoo)'),
+             [T("``universal'' forecaster", 'model de prognoză „universal”'),
+              T('any number of variables in one sequence; patch size chosen by frequency', 'orice număr de variabile într-o singură secvență; mărimea patch-ului aleasă după frecvență'),
+              T('output: a mixture of distributions; corpus LOTSA, about 27 billion observations', 'ieșirea: un amestec de distribuții; corpusul LOTSA, circa 27 de miliarde de observații'),
+              T('open weights under a non-commercial licence (CC BY-NC 4.0)', 'ponderi deschise, cu licență necomercială (CC BY-NC 4.0)')]),
+        (T('\\textbf{TimeGPT} (\\refGarza)', '\\textbf{TimeGPT} (\\refGarza)'),
+             [T('closed model, available only through a paid API', 'model închis, disponibil doar printr-un API cu plată'),
+              T('the weights and the training data cannot be inspected; the version can change; the data leave your computer', 'ponderile și datele de antrenare nu pot fi inspectate; versiunea se poate schimba; datele pleacă de pe calculatorul dumneavoastră'),
+              T('not used in this course: the results could not be reproduced', 'nu îl folosim în acest curs: rezultatele nu ar putea fi reproduse')])), wl='0.3', wr='0.68'), size='footnotesize')
 
-D.frame(T('The families side by side', 'Familiile, una lîngă alta'), table(
+D.frame(T('The families side by side', 'Comparația familiilor de modele'), table(
     'lllll', T('\\textbf{Model}', '\\textbf{Model}') + ' & ' + T('\\textbf{Architecture}', '\\textbf{Arhitectura}') + ' & '
     + T('\\textbf{Input}', '\\textbf{Intrarea}') + ' & ' + T('\\textbf{Output}', '\\textbf{Ieșirea}') + ' & ' + T('\\textbf{Access}', '\\textbf{Acces}'),
     ['Chronos (2024) & encoder--decoder (T5) & ' + T('tokens (bins)', 'tokeni (intervale)') + ' & ' + T('sampled paths', 'traiectorii eșantionate') + ' & Apache-2.0',
@@ -425,7 +466,7 @@ D.frame(T('The families side by side', 'Familiile, una lîngă alta'), table(
      'Chronos-2 (2025) & encoder & ' + T('patches + covariates', 'patch-uri + covariate') + ' & ' + T('21 quantiles', '21 de cuantile') + ' & Apache-2.0',
      'TimesFM (2024) & decoder & ' + T('patches of 32', 'patch-uri de 32') + ' & ' + T('patches of 128', 'patch-uri de 128') + ' & Apache-2.0',
      'Moirai (2024) & encoder & ' + T('patches, any variables', 'patch-uri, orice variabile') + ' & ' + T('mixture', 'amestec') + ' & CC BY-NC 4.0',
-     'Lag-Llama (2023) & decoder (Llama) & ' + T('lagged values', 'valori întîrziate') + ' & Student-$t$ & Apache-2.0',
+     'Lag-Llama (2023) & decoder (Llama) & ' + T('lagged values', 'valori la laguri fixe') + ' & Student-$t$ & Apache-2.0',
      'TimeGPT (2023) & ' + T('not disclosed', 'nepublicată') + ' & -- & ' + T('points, intervals', 'puncte, intervale') + ' & ' + T('paid API', 'API cu plată')],
     size='scriptsize') + items(
     T('A further line of work feeds the digits to general LLMs (\\refGruver); \\refTan show that the language-model part adds cost but no accuracy', 'O altă direcție dă cifrele unor LLM-uri generale (\\refGruver); \\refTan arată că partea de model de limbaj adaugă cost, dar nu și precizie')),
@@ -449,17 +490,40 @@ D.frame(T('Quantile forecasts', 'Prognozele cuantile'), items(
     (T('Two qualities to check', 'Două calități de verificat'),
      [T('\\textbf{calibration}: the 80\\% interval contains about 80\\% of the outcomes', '\\textbf{calibrarea}: intervalul de 80\\% conține circa 80\\% din valorile observate'),
       T('\\textbf{sharpness}: among calibrated forecasts, narrower is better (\\refGR)', '\\textbf{precizia} (sharpness): dintre prognozele calibrate, cea mai îngustă este mai bună (\\refGR)')]),
-    T('For ETS and ARIMA we use Normal quantiles $\\hat y_{T+h} + z_\\tau \\hat\\sigma_h$', 'Pentru ETS și ARIMA folosim cuantilele distribuției Normale, $\\hat y_{T+h} + z_\\tau \\hat\\sigma_h$')))
+    (T('For ETS and ARIMA we use Normal quantiles $\\hat q_\\tau = \\hat y_{T+h} + z_\\tau \\hat\\sigma_h$', 'Pentru ETS și ARIMA folosim cuantilele distribuției Normale, $\\hat q_\\tau = \\hat y_{T+h} + z_\\tau \\hat\\sigma_h$'),
+     [T('$z_\\tau$: the $\\tau$ quantile of the standard Normal distribution ($z_{0.9} = 1.28$); $\\hat\\sigma_h$: the estimated standard deviation of the $h$-step forecast error', '$z_\\tau$: cuantila de nivel $\\tau$ a distribuției Normale standard ($z_{0.9} = 1.28$); $\\hat\\sigma_h$: abaterea standard estimată a erorii de prognoză la orizontul $h$')])), size='footnotesize')
 
-D.frame(T('The pinball loss and the CRPS', 'Pierderea pinball și CRPS'), items(
-    (T('\\textbf{Pinball} (quantile) loss of $\\hat q_\\tau$ for the outcome $y$', 'Pierderea \\textbf{pinball} (cuantilă) a lui $\\hat q_\\tau$ pentru valoarea observată $y$'),
-     [T('$L_\\tau(y, \\hat q_\\tau) = \\tau\\,(y - \\hat q_\\tau)$ if $y \\ge \\hat q_\\tau$, and $(1 - \\tau)(\\hat q_\\tau - y)$ otherwise', '$L_\\tau(y, \\hat q_\\tau) = \\tau\\,(y - \\hat q_\\tau)$ dacă $y \\ge \\hat q_\\tau$ și $(1 - \\tau)(\\hat q_\\tau - y)$ altfel'),
-      T('its expected value is smallest at the true quantile: it rewards honest quantiles', 'valoarea ei așteptată este minimă în cuantila adevărată: răsplătește cuantilele oneste')]),
-    (T('\\textbf{CRPS} (continuous ranked probability score, \\refMW) of a forecast CDF $F$', '\\textbf{CRPS} (scorul de probabilitate continuu pe ranguri, \\refMW) al unei funcții de repartiție prognozate $F$'),
-     [T('$\\text{CRPS}(F, y) = \\int (F(z) - \\mathbf{1}\\{z \\ge y\\})^2\\,dz = 2\\int_0^1 L_\\tau(y, F^{-1}(\\tau))\\,d\\tau$', '$\\text{CRPS}(F, y) = \\int (F(z) - \\mathbf{1}\\{z \\ge y\\})^2\\,dz = 2\\int_0^1 L_\\tau(y, F^{-1}(\\tau))\\,d\\tau$'),
-      T('in the units of $y$; for a point forecast it equals $|y - \\hat y|$: the CRPS generalises the MAE', 'în unitățile lui $y$; pentru o prognoză punctuală este $|y - \\hat y|$: CRPS generalizează MAE')]),
-    (T('\\textbf{WQL} (weighted quantile loss): the CRPS approximated with the 9 levels and divided by $\\sum |y|$', '\\textbf{WQL} (pierderea cuantilă ponderată): CRPS aproximat cu cele 9 niveluri și împărțit la $\\sum |y|$'),
-     [T('$\\text{WQL} = \\frac{1}{9}\\sum_{\\tau}\\frac{2\\sum_t L_\\tau(y_t, \\hat q_{\\tau,t})}{\\sum_t |y_t|}$: free of units, used by Chronos and GIFT-Eval', '$\\text{WQL} = \\frac{1}{9}\\sum_{\\tau}\\frac{2\\sum_t L_\\tau(y_t, \\hat q_{\\tau,t})}{\\sum_t |y_t|}$: fără unități, folosit de Chronos și de GIFT-Eval')])), size='footnotesize')
+D.frame(T('The pinball loss', 'Pierderea pinball'), items(
+    (T('The \\textbf{pinball} (quantile) loss scores one forecast quantile $\\hat q_\\tau$ against the outcome $y$', 'Pierderea \\textbf{pinball} (cuantilă) evaluează o cuantilă prognozată $\\hat q_\\tau$ față de valoarea observată $y$'),
+     [T('$L_\\tau(y, \\hat q_\\tau) = \\tau\\,(y - \\hat q_\\tau)$ if $y \\ge \\hat q_\\tau$, and $(1 - \\tau)(\\hat q_\\tau - y)$ otherwise', '$L_\\tau(y, \\hat q_\\tau) = \\tau\\,(y - \\hat q_\\tau)$ dacă $y \\ge \\hat q_\\tau$ și $(1 - \\tau)(\\hat q_\\tau - y)$ altfel')]),
+    (T('Notation', 'Notațiile'),
+     [T('$\\tau$: the quantile level; $\\hat q_\\tau$: the forecast quantile; $y$: the value observed later', '$\\tau$: nivelul cuantilei; $\\hat q_\\tau$: cuantila prognozată; $y$: valoarea observată ulterior')]),
+    (T('Reading', 'Interpretarea'),
+     [T('the loss is 0 when $\\hat q_\\tau = y$ and grows linearly with the distance between them', 'pierderea este 0 cînd $\\hat q_\\tau = y$ și crește liniar cu distanța dintre ele'),
+      T('an outcome above the quantile is weighted by $\\tau$, one below by $1 - \\tau$', 'o valoare observată peste cuantilă primește ponderea $\\tau$, una sub cuantilă, ponderea $1 - \\tau$'),
+      T('its expected value is smallest at the true quantile: reporting the true quantile is the best strategy', 'valoarea ei așteptată este minimă în cuantila adevărată: raportarea cuantilei adevărate este strategia optimă')])))
+
+D.frame(T('The CRPS', 'Scorul CRPS'), items(
+    (T('The \\textbf{CRPS} (continuous ranked probability score, \\refMW) scores a whole forecast distribution against the outcome $y$', '\\textbf{CRPS} (continuous ranked probability score, scorul de probabilitate continuu pe ranguri, \\refMW) evaluează o întreagă distribuție prognozată față de valoarea observată $y$'),
+     [T('$\\text{CRPS}(F, y) = \\int (F(z) - \\mathbf{1}\\{z \\ge y\\})^2\\,dz = 2\\int_0^1 L_\\tau(y, F^{-1}(\\tau))\\,d\\tau$', '$\\text{CRPS}(F, y) = \\int (F(z) - \\mathbf{1}\\{z \\ge y\\})^2\\,dz = 2\\int_0^1 L_\\tau(y, F^{-1}(\\tau))\\,d\\tau$')]),
+    (T('Notation', 'Notațiile'),
+     [T('$F$: the forecast cumulative distribution function (CDF); $z$: the integration variable, running over all possible values', '$F$: funcția de repartiție prognozată; $z$: variabila de integrare, care parcurge toate valorile posibile'),
+      T('$\\mathbf{1}\\{z \\ge y\\}$: the indicator, 1 if $z \\ge y$ and 0 otherwise (the CDF of a forecast that puts all mass on $y$)', '$\\mathbf{1}\\{z \\ge y\\}$: indicatorul, 1 dacă $z \\ge y$ și 0 altfel (funcția de repartiție a unei prognoze care pune toată masa în $y$)'),
+      T('$F^{-1}(\\tau)$: the $\\tau$ quantile of $F$; the second form is the pinball loss averaged over all levels', '$F^{-1}(\\tau)$: cuantila de nivel $\\tau$ a lui $F$; a doua formă este pierderea pinball mediată pe toate nivelurile')]),
+    (T('Reading', 'Interpretarea'),
+     [T('$\\text{CRPS} \\ge 0$, in the units of $y$; 0 only for a forecast that puts all its mass on the outcome; smaller is better', '$\\text{CRPS} \\ge 0$, în unitățile lui $y$; 0 doar pentru o prognoză care pune toată masa în valoarea observată; mai mic înseamnă mai bine'),
+      T('for a point forecast it equals $|y - \\hat y|$: the CRPS generalises the MAE', 'pentru o prognoză punctuală este $|y - \\hat y|$: CRPS generalizează MAE')])), size='footnotesize')
+
+D.frame(T('The weighted quantile loss (WQL)', 'Pierderea cuantilă ponderată (WQL)'), items(
+    (T('\\textbf{WQL} (weighted quantile loss)', '\\textbf{WQL} (weighted quantile loss, pierderea cuantilă ponderată)'),
+         [T('the CRPS approximated with the 9 levels 0.1, \\dots, 0.9 and divided by the size of the series', 'CRPS aproximat cu cele 9 niveluri 0,1, \\dots, 0,9 și împărțit la mărimea seriei'),
+          T('$\\text{WQL} = \\frac{1}{9}\\sum_{\\tau}\\frac{2\\sum_t L_\\tau(y_t, \\hat q_{\\tau,t})}{\\sum_t |y_t|}$', '$\\text{WQL} = \\frac{1}{9}\\sum_{\\tau}\\frac{2\\sum_t L_\\tau(y_t, \\hat q_{\\tau,t})}{\\sum_t |y_t|}$')]),
+    (T('Notation', 'Notațiile'),
+     [T('$\\tau$: runs over the 9 levels; $t$: runs over all forecast steps of all origins', '$\\tau$: parcurge cele 9 niveluri; $t$: parcurge toți pașii de prognoză de la toate originile'),
+      T('$\\hat q_{\\tau,t}$: the forecast $\\tau$ quantile for step $t$; $y_t$: the outcome at step $t$', '$\\hat q_{\\tau,t}$: cuantila de nivel $\\tau$ prognozată pentru pasul $t$; $y_t$: valoarea observată la pasul $t$')]),
+    (T('Reading', 'Interpretarea'),
+     [T('the denominator $\\sum_t |y_t|$ removes the units: series with different levels can be compared', 'numitorul $\\sum_t |y_t|$ elimină unitățile: se pot compara serii cu niveluri diferite'),
+      T('0 for a perfect forecast; smaller is better; used by Chronos and GIFT-Eval', '0 pentru o prognoză perfectă; mai mic înseamnă mai bine; folosit de Chronos și de GIFT-Eval')])))
 
 chart(T('The pinball loss and the CRPS', 'Pierderea pinball și CRPS'), 'tsa_ch11_scores', 'TSA_ch11_tokens_scores', [
     T('Left: $L_\\tau$ against $y - \\hat q$ for $\\tau$ = 0.1, 0.5, 0.9. Right: the forecast N(0, 1), the outcome $y = 1$', 'Stînga: $L_\\tau$ în funcție de $y - \\hat q$ pentru $\\tau$ = 0,1; 0,5; 0,9. Dreapta: prognoza N(0, 1), valoarea observată $y = 1$')],
@@ -479,14 +543,26 @@ D.frame(T('Worked example: pinball losses', 'Exemplu rezolvat: pierderile pinbal
     (T('Approximate CRPS with these three levels: $\\frac{2}{3}$ (sum of losses) = @{pin.sum} percentage points', 'CRPS aproximat cu aceste trei niveluri: $\\frac{2}{3}$ (suma pierderilor) = @{pin.sum} puncte procentuale'),
      [T('the outcome lies inside the 80\\% interval [6.5; 7.6]: coverage indicator 1', 'valoarea observată este în intervalul de 80\\% [6,5; 7,6]: indicatorul de acoperire este 1')])))
 
-D.frame(T('Point accuracy and coverage', 'Precizia punctuală și acoperirea'), items(
-    (T('\\textbf{MASE} (\\refHK): MAE of the forecast divided by the in-sample MAE of the seasonal naive', '\\textbf{MASE} (\\refHK): MAE al prognozei împărțit la MAE în eșantion al prognozei sezoniere naive'),
-     [T('$\\text{MASE} = \\dfrac{\\frac1h\\sum_{j=1}^{h}|y_{T+j} - \\hat y_{T+j}|}{\\frac{1}{T-m}\\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$; below 1: better than the in-sample seasonal naive', '$\\text{MASE} = \\dfrac{\\frac1h\\sum_{j=1}^{h}|y_{T+j} - \\hat y_{T+j}|}{\\frac{1}{T-m}\\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$; sub 1: mai bun decît prognoza sezonieră naivă în eșantion'),
-      T('example: MAE @{ex.mae}, in-sample naive MAE @{ex.scale}, so MASE = @{ex.mase}', 'exemplu: MAE @{ex.mae}, MAE naiv în eșantion @{ex.scale}, deci MASE = @{ex.mase}')]),
-    (T('\\textbf{Coverage}: the share of outcomes inside $[\\hat q_{0.1}, \\hat q_{0.9}]$; target 80\\%', '\\textbf{Acoperirea}: proporția valorilor observate din $[\\hat q_{0,1}, \\hat q_{0,9}]$; ținta este 80\\%'),
-     [T('7 of 10 inside means 70\\%: intervals somewhat too narrow', '7 din 10 în interval înseamnă 70\\%: intervale puțin prea înguste')]),
-    (T('\\textbf{Relative scores}: a model\'s MASE or WQL divided by that of the seasonal naive on the same origins', '\\textbf{Scorurile relative}: MASE sau WQL al unui model împărțit la cel al prognozei sezoniere naive, pe aceleași origini'),
-     [T('averaged over series with the geometric mean, so that 2 and 0.5 cancel out', 'mediate pe serii cu media geometrică, astfel încît 2 și 0,5 se compensează')])), size='footnotesize')
+D.frame(T('Point accuracy: the MASE', 'Precizia punctuală: MASE'), items(
+    (T('\\textbf{MASE} (mean absolute scaled error, \\refHK)', '\\textbf{MASE} (mean absolute scaled error, eroarea absolută medie scalată, \\refHK)'),
+         [T('the MAE of the forecast divided by the in-sample MAE of the seasonal naive', 'MAE al prognozei împărțit la MAE în eșantion al prognozei sezoniere naive'),
+          T('$\\text{MASE} = \\dfrac{\\frac1h\\sum_{j=1}^{h}|y_{T+j} - \\hat y_{T+j}|}{\\frac{1}{T-m}\\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$', '$\\text{MASE} = \\dfrac{\\frac1h\\sum_{j=1}^{h}|y_{T+j} - \\hat y_{T+j}|}{\\frac{1}{T-m}\\sum_{t=m+1}^{T}|y_t - y_{t-m}|}$')]),
+    (T('Notation', 'Notațiile'),
+     [T('numerator: the mean absolute error of the forecasts $\\hat y_{T+j}$ over the $h$ steps after the origin $T$', 'numărătorul: eroarea absolută medie a prognozelor $\\hat y_{T+j}$ pe cei $h$ pași de după originea $T$'),
+      T('denominator: the mean absolute error of the seasonal naive forecast $y_{t-m}$ inside the sample $t = m+1, \\dots, T$; $m$: the season length', 'numitorul: eroarea absolută medie a prognozei sezoniere naive $y_{t-m}$ în interiorul eșantionului, $t = m+1, \\dots, T$; $m$: lungimea sezonului')]),
+    (T('Reading', 'Interpretarea'),
+     [T('below 1: better than the in-sample seasonal naive; above 1: worse; free of units', 'sub 1: mai bun decît prognoza sezonieră naivă în eșantion; peste 1: mai slab; fără unități'),
+      T('example: MAE @{ex.mae}, in-sample naive MAE @{ex.scale}, so MASE = @{ex.mase}', 'exemplu: MAE @{ex.mae}, MAE naiv în eșantion @{ex.scale}, deci MASE = @{ex.mase}')])), size='footnotesize')
+
+D.frame(T('Coverage and relative scores', 'Acoperirea și scorurile relative'), items(
+    (T('\\textbf{Coverage}', '\\textbf{Acoperirea}'),
+         [T('the share of outcomes inside the 80\\% interval', 'proporția valorilor observate din intervalul de 80\\%'),
+          T('$\\text{Cov} = \\frac1n\\sum_{i=1}^{n} \\mathbf{1}\\{\\hat q_{0.1,i} \\le y_i \\le \\hat q_{0.9,i}\\}$; $n$: the number of forecasts; $\\mathbf{1}\\{\\cdot\\}$: 1 if the outcome is inside, 0 otherwise', '$\\text{Cov} = \\frac1n\\sum_{i=1}^{n} \\mathbf{1}\\{\\hat q_{0.1,i} \\le y_i \\le \\hat q_{0.9,i}\\}$; $n$: numărul de prognoze; $\\mathbf{1}\\{\\cdot\\}$: 1 dacă valoarea observată este în interval, 0 altfel'),
+          T('target 80\\%; 7 of 10 inside means 70\\%: intervals somewhat too narrow', 'ținta este 80\\%; 7 din 10 în interval înseamnă 70\\%: intervale puțin prea înguste')]),
+    (T('\\textbf{Relative scores}', '\\textbf{Scorurile relative}'),
+         [T("a model's MASE or WQL divided by that of the seasonal naive on the same origins", 'MASE sau WQL al unui model împărțit la cel al prognozei sezoniere naive, pe aceleași origini'),
+          T('below 1: the model beats the seasonal naive', 'sub 1: modelul este mai bun decît prognoza sezonieră naivă'),
+          T('averaged over series with the geometric mean, so that 2 and 0.5 cancel out', 'mediate pe serii cu media geometrică, astfel încît 2 și 0,5 se compensează')])))
 
 D.recap(('Scores', 'scorurile'), [
     T('Pinball loss for each quantile; CRPS for the whole distribution; WQL as its scaled approximation', 'Pierderea pinball pentru fiecare cuantilă; CRPS pentru întreaga distribuție; WQL ca aproximare scalată'),
@@ -508,7 +584,7 @@ interp(('the seven series', 'celor șapte serii'), [
     T('Breaks: the 2020 pandemic (industrial production, GDP, retail); the 2022 inflation surge', 'Rupturi: pandemia din 2020 (producția industrială, PIB-ul, vînzările); creșterea inflației din 2022'),
     T('Lengths from @{se.gdp.n} quarters (GDP) to @{se.load.n} hours (load): very different amounts of context', 'Lungimi de la @{se.gdp.n} @{se.gdp.de}trimestre (PIB) la @{se.load.n} @{se.load.de}ore (consumul): cantități foarte diferite de context')])
 
-chart(T('Romanian electricity load, 48 hours ahead', 'Consumul de energie electrică al României, cu 48 de ore înainte'), 'tsa_ch11_fan_load', 'TSA_ch11_zero_shot', [
+chart(T('Romanian electricity load, 48 hours ahead', 'Consumul de energie electrică al României, prognoză pe 48 de ore'), 'tsa_ch11_fan_load', 'TSA_ch11_zero_shot', [
     T('Chronos-Bolt small, zero-shot, context of 2048 hours (85 days); origin @{fl.origin}, 00:00; bands: 50\\% and 80\\% central intervals', 'Chronos-Bolt small, zero-shot, context de 2048 de ore (85 de zile); originea @{fl.origin}, ora 00:00; benzi: intervalele centrale de 50\\% și 80\\%')],
     h='0.62\\textheight')
 
@@ -526,7 +602,7 @@ D.frame(T('Worked example: scoring one hour', 'Exemplu rezolvat: evaluarea unei 
     (T('The outcome is above $\\hat q_{0.9}$: coverage indicator 0 for this hour', 'Valoarea observată este peste $\\hat q_{0,9}$: indicatorul de acoperire este 0 pentru această oră'), []),
     T('Averaged over many hours and origins, these losses give the WQL of the next section', 'Mediate pe multe ore și origini, aceste pierderi dau WQL din secțiunea următoare')))
 
-chart(T('Romanian industrial production, 12 months ahead', 'Producția industrială a României, cu 12 luni înainte'), 'tsa_ch11_fan_ip', 'TSA_ch11_zero_shot', [
+chart(T('Romanian industrial production, 12 months ahead', 'Producția industrială a României, prognoză pe 12 luni'), 'tsa_ch11_fan_ip', 'TSA_ch11_zero_shot', [
     T('Origin @{fi.origin}, forecasts to @{fi.end}; Chronos-Bolt small (zero-shot) and ETS (estimated on the series), both with 80\\% bands', 'Originea @{fi.origin}, prognoze pînă în @{fi.end}; Chronos-Bolt small (zero-shot) și ETS (estimat pe serie), ambele cu benzi de 80\\%')],
     h='0.62\\textheight')
 
@@ -536,7 +612,7 @@ interp(('the industrial-production forecast', 'prognozei producției industriale
     T('The weak production of 2026 is not announced by the context; the 80\\% bands cover @{fi.cb}\\% (Chronos-Bolt) and @{fi.ce}\\% (ETS) of the months', 'Producția slabă din 2026 nu este anunțată de context; benzile de 80\\% acoperă @{fi.cb}\\% (Chronos-Bolt) și @{fi.ce}\\% (ETS) din luni'),
     T('The bands of Chronos-Bolt are narrower than those of ETS at long horizons', 'Benzile Chronos-Bolt sînt mai înguste decît cele ale ETS la orizonturi lungi')])
 
-chart(T('EUR/RON, 20 days ahead', 'EUR/RON, cu 20 de zile înainte'), 'tsa_ch11_fan_eurron', 'TSA_ch11_zero_shot', [
+chart(T('EUR/RON, 20 days ahead', 'EUR/RON, prognoză pe 20 de zile'), 'tsa_ch11_fan_eurron', 'TSA_ch11_zero_shot', [
     T('BNR reference rate; origin @{fe.origin}, last value before it @{fe.last}; Chronos-Bolt small against the random walk with Normal bands', 'Cursul de referință BNR; originea @{fe.origin}, ultima valoare dinaintea ei @{fe.last}; Chronos-Bolt small comparat cu mersul aleator cu benzi Normale')],
     h='0.62\\textheight')
 
@@ -549,7 +625,7 @@ interp(('the EUR/RON forecast', 'prognozei EUR/RON'), [
 D.recap(('Zero-shot forecasts', 'prognozele zero-shot'), [
     T('Without estimation, the model copies cycles and levels from the context', 'Fără estimare, modelul copiază ciclurile și nivelurile din context'),
     T('It cannot anticipate what the context does not show (heat, a downturn)', 'Nu poate anticipa ce contextul nu arată (căldura, o recesiune)'),
-    T('On a random walk it returns a random walk', 'Pe un mers aleator întoarce un mers aleator')])
+    T('On a random walk it returns a random walk', 'Pentru un mers aleator, prognoza lui coincide practic cu cea a mersului aleator')])
 
 # =============================================================================
 # 7. EVALUARE
@@ -557,13 +633,15 @@ D.recap(('Zero-shot forecasts', 'prognozele zero-shot'), [
 D.section('An honest evaluation', 'O evaluare corectă')
 
 D.frame(T('The test protocol', 'Protocolul testului'), items(
-    (T('\\textbf{Rolling origin} (Chapter 4): at each origin every model forecasts $h$ steps from the data up to the origin only', '\\textbf{Origine mobilă} (Capitolul 4): la fiecare origine, fiecare model prognozează $h$ pași doar din datele pînă la origine'),
-     [T('load: $h$ = 48 hours, weekly origins July 2025 to June 2026; monthly series: $h$ = 12, monthly origins from 2016; GDP: $h$ = 4, from 2012; EUR/RON: $h$ = 20 days, every 20 days from 2016', 'consumul: $h$ = 48 de ore, origini săptămînale din iulie 2025 pînă în iunie 2026; seriile lunare: $h$ = 12, origini lunare din 2016; PIB-ul: $h$ = 4, din 2012; EUR/RON: $h$ = 20 de zile, la fiecare 20 de zile din 2016'),
-      T('@{nor} origins in total; context: all the past, at most 2048 observations', '@{nor} @{nor.de}origini în total; contextul: tot trecutul, cel mult 2048 de observații')]),
+    (T('\\textbf{Rolling origin} (Chapter 4)', '\\textbf{Origine mobilă} (Capitolul 4)'),
+         [T('at each origin every model forecasts $h$ steps from the data up to the origin only', 'la fiecare origine, fiecare model prognozează $h$ pași doar din datele pînă la origine'),
+          T('load: $h$ = 48 hours, weekly origins July 2025 to June 2026; monthly series: $h$ = 12, monthly origins from 2016; GDP: $h$ = 4, from 2012; EUR/RON: $h$ = 20 days, every 20 days from 2016', 'consumul: $h$ = 48 de ore, origini săptămînale din iulie 2025 pînă în iunie 2026; seriile lunare: $h$ = 12, origini lunare din 2016; PIB-ul: $h$ = 4, din 2012; EUR/RON: $h$ = 20 de zile, la fiecare 20 de zile din 2016'),
+          T('@{nor} origins in total; context: all the past, at most 2048 observations', '@{nor} @{nor.de}origini în total; contextul: tot trecutul, cel mult 2048 de observații')]),
     (T('\\textbf{Benchmarks}, re-estimated at every origin', '\\textbf{Reperele}, reestimate la fiecare origine'),
      [T('seasonal naive (the naive forecast for unemployment and EUR/RON)', 'prognoza sezonieră naivă (prognoza naivă pentru șomaj și EUR/RON)'),
       T('ETS with damped trend and additive seasonality; ARIMA with orders chosen once by AIC before the first origin (load: ARMA@{ar.load} on weekly differences)', 'ETS cu trend amortizat și sezonalitate aditivă; ARIMA cu ordinele alese o singură dată după AIC, înainte de prima origine (consumul: ARMA@{ar.load} pe diferențele săptămînale)')]),
-    (T('\\textbf{Foundation models}, zero-shot: Chronos-Bolt tiny and small, Chronos-2', '\\textbf{Foundation models}, zero-shot: Chronos-Bolt tiny și small, Chronos-2'), []),
+    (T('\\textbf{Foundation models}, zero-shot', '\\textbf{Foundation models}, zero-shot'),
+         [T('Chronos-Bolt tiny and small, Chronos-2', 'Chronos-Bolt tiny și small, Chronos-2')]),
     T('Same origins, same context, same horizon, same scores: MASE, WQL, coverage', 'Aceleași origini, același context, același orizont, aceleași scoruri: MASE, WQL, acoperirea')), size='footnotesize')
 
 D.frame(T('Results: WQL relative to the seasonal naive', 'Rezultate: WQL relativ la prognoza sezonieră naivă'), table(
@@ -609,7 +687,7 @@ interp(('the error by horizon', 'erorii în funcție de orizont'), [
     T('Chronos-2 keeps an advantage over the whole horizon (@{h.c2.48} GW at 48 hours against @{h.sn.48})', 'Chronos-2 își păstrează avantajul pe tot orizontul (@{h.c2.48} GW la 48 de ore, față de @{h.sn.48})'),
     T('ETS is good for a few hours and then the worst: a daily season cannot represent the weekend', 'ETS este bun cîteva ore, apoi cel mai slab: un sezon zilnic nu poate reprezenta weekendul')])
 
-chart(T('How much context is needed?', 'Cît context este necesar?'), 'tsa_ch11_context', 'TSA_ch11_context_contamination', [
+chart(T('How much context is needed?', 'Lungimea necesară a contextului'), 'tsa_ch11_context', 'TSA_ch11_context_contamination', [
     T('MASE on Romanian load for contexts of 96 to 2048 hours; @{cx.n} weekly origins (the last half year); the dashed line is the seasonal naive', 'MASE pentru consumul României cu contexte de 96 pînă la 2048 de ore; @{cx.n} @{cx.de}origini săptămînale (ultima jumătate de an); linia punctată este prognoza sezonieră naivă')],
     h='0.62\\textheight')
 
@@ -630,15 +708,21 @@ interp(('size and cost', 'dimensiunii și a costului'), [
     T('Zero-shot inference is cheap; the cost was paid once, in pretraining', 'Inferența zero-shot este ieftină; costul a fost plătit o singură dată, la pre-antrenare')])
 
 D.frame(T('Landmark benchmarks', 'Benchmark-uri de referință'), items(
-    (T('\\textbf{M3} (\\refMH): 3003 series; sophisticated methods did not beat simple ones on average', '\\textbf{M3} (\\refMH): 3003 serii; metodele sofisticate nu le-au bătut în medie pe cele simple'), []),
-    (T('\\textbf{M4} (\\refMSA): 100\\,000 series; combinations and a hybrid of exponential smoothing and a neural network won', '\\textbf{M4} (\\refMSA): 100\\,000 de serii; au cîștigat combinațiile și un hibrid de netezire exponențială și rețea neuronală'), []),
-    (T('\\textbf{Monash archive} (\\refMonash): public data sets with fixed horizons and benchmark results', '\\textbf{Arhiva Monash} (\\refMonash): seturi publice de date cu orizonturi fixe și rezultate de referință'), []),
-    (T('\\textbf{GIFT-Eval} (\\refAksu): many domains and frequencies, MASE and CRPS, a public leaderboard of foundation models', '\\textbf{GIFT-Eval} (\\refAksu): multe domenii și frecvențe, MASE și CRPS, un clasament public al foundation models'),
-     [T('separates the test data from a pretraining corpus, to limit contamination', 'separă datele de test de un corpus de pre-antrenare, pentru a limita contaminarea')]),
+    (T('\\textbf{M3} (\\refMH)', '\\textbf{M3} (\\refMH)'),
+         [T('3003 series', '3003 serii'),
+          T('sophisticated methods did not beat simple ones on average', 'metodele sofisticate nu le-au bătut în medie pe cele simple')]),
+    (T('\\textbf{M4} (\\refMSA)', '\\textbf{M4} (\\refMSA)'),
+         [T('100\\,000 series', '100\\,000 de serii'),
+          T('combinations and a hybrid of exponential smoothing and a neural network won', 'au cîștigat combinațiile și un hibrid de netezire exponențială și rețea neuronală')]),
+    (T('\\textbf{Monash archive} (\\refMonash)', '\\textbf{Arhiva Monash} (\\refMonash)'),
+         [T('public data sets with fixed horizons and benchmark results', 'seturi publice de date cu orizonturi fixe și rezultate de referință')]),
+    (T('\\textbf{GIFT-Eval} (\\refAksu)', '\\textbf{GIFT-Eval} (\\refAksu)'),
+         [T('many domains and frequencies, MASE and CRPS, a public leaderboard of foundation models', 'multe domenii și frecvențe, MASE și CRPS, un clasament public al foundation models'),
+          T('separates the test data from a pretraining corpus, to limit contamination', 'separă datele de test de un corpus de pre-antrenare, pentru a limita contaminarea')]),
     (T('Critical studies: simple linear models beat early Transformer forecasters (\\refZeng); LLM parts add no accuracy (\\refTan)', 'Studii critice: modele liniare simple au bătut primele modele de prognoză cu Transformer (\\refZeng); componentele LLM nu adaugă precizie (\\refTan)'), [])),
     size='footnotesize')
 
-D.frame(T('When foundation models help, and when not', 'Cînd ajută foundation models și cînd nu'), items(
+D.frame(T('When foundation models help, and when not', 'Utilitatea foundation models: avantaje și limite'), items(
     (T('\\textbf{Help}', '\\textbf{Ajută}'),
      [T('many series, little time per series; strong and regular seasonality; long contexts (load, sales, traffic)', 'multe serii, puțin timp pentru fiecare; sezonalitate puternică și regulată; contexte lungi (consum, vînzări, trafic)'),
       T('a quick, strong benchmark before building a dedicated model; probabilistic output at no extra cost', 'un reper rapid și puternic înaintea unui model dedicat; ieșire probabilistă fără cost suplimentar')]),
@@ -658,10 +742,11 @@ D.recap(('The evaluation', 'evaluarea'), [
 # =============================================================================
 # 8. LEAKAGE ȘI CONTAMINARE
 # =============================================================================
-D.section('Leakage and contamination', 'Scurgerea de informație și contaminarea')
+D.section('Leakage and contamination', 'Leakage-ul și contaminarea')
 
-D.frame(T('Leakage in your own pipeline', 'Scurgerea de informație în propriul cod'), items(
-    (T('\\textbf{Leakage}: information from the test period reaches the forecasts (\\refHew)', '\\textbf{Scurgerea de informație} (leakage): informația din perioada de test ajunge în prognoze (\\refHew)'), []),
+D.frame(T('Leakage in your own pipeline', 'Leakage-ul în propriul cod'), items(
+    (T('\\textbf{Leakage}', '\\textbf{Leakage}'),
+         [T('information from the test period reaches the forecasts (\\refHew)', 'informația din perioada de test ajunge în prognoze (\\refHew)')]),
     (T('Typical mistakes', 'Greșeli tipice'),
      [T('scaling or standardising with the mean of the whole sample', 'scalarea sau standardizarea cu media întregului eșantion'),
       T('choosing ARIMA orders, the context length or the model version after looking at test errors', 'alegerea ordinelor ARIMA, a lungimii contextului sau a versiunii modelului după ce ați văzut erorile de test'),
@@ -671,8 +756,9 @@ D.frame(T('Leakage in your own pipeline', 'Scurgerea de informație în propriul
      [T('remaining issue: Eurostat GDP and production are the latest vintage, not real-time data', 'problema rămasă: PIB-ul și producția de la Eurostat sînt ultima versiune revizuită, nu date în timp real')])), size='footnotesize')
 
 D.frame(T('Contamination of benchmarks', 'Contaminarea benchmark-urilor'), items(
-    (T('\\textbf{Contamination}: the test series (or series highly correlated with it) were in the pretraining corpus', '\\textbf{Contaminarea}: seria de test (sau serii puternic corelate cu ea) a fost în corpusul de pre-antrenare'),
-     [T('the score then measures memory, not forecasting: an optimistic bias', 'scorul măsoară atunci memoria, nu prognoza: o distorsiune optimistă')]),
+    (T('\\textbf{Contamination}', '\\textbf{Contaminarea}'),
+         [T('the test series (or series highly correlated with it) were in the pretraining corpus', 'seria de test (sau serii puternic corelate cu ea) a fost în corpusul de pre-antrenare'),
+          T('the score then measures memory, not forecasting: an optimistic bias', 'scorul măsoară atunci memoria, nu prognoza: o distorsiune optimistă')]),
     (T('Chronos reports two benchmarks: in-domain (data sets used in training) and zero-shot (data sets not used) (\\refAnsari)', 'Chronos raportează două benchmark-uri: în domeniu (seturi folosite la antrenare) și zero-shot (seturi nefolosite) (\\refAnsari)'),
      [T('public series such as M4 or US macro data are likely in many corpora; FRED is public, so is Eurostat', 'serii publice precum M4 sau datele macro din SUA sînt probabil în multe corpusuri; FRED este public, la fel și Eurostat')]),
     (T('Remedies', 'Remedii'),
@@ -691,8 +777,8 @@ interp(('the contamination check', 'verificării contaminării'), [
     T('Caution: 3 to 35 origins after the release are few; the after period also differs (2025--2026); a drop is a warning, not a proof', 'Atenție: 3--35 de origini după lansare sînt puține; și perioada de după diferă (2025--2026); o scădere este un semnal de alarmă, nu o dovadă'),
     T('Chronos-2 was released in October 2025: its monthly results above use only origins before that date', 'Chronos-2 a fost lansat în octombrie 2025: rezultatele lui lunare de mai sus folosesc doar origini dinaintea acestei date')], size='footnotesize')
 
-D.recap(('Leakage and contamination', 'scurgerea de informație și contaminarea'), [
-    T('Leakage is under your control: use only data available at each origin', 'Scurgerea de informație este sub controlul dumneavoastră: folosiți doar datele disponibile la fiecare origine'),
+D.recap(('Leakage and contamination', 'leakage-ul și contaminarea'), [
+    T('Leakage is under your control: use only data available at each origin', 'Leakage-ul este sub controlul dumneavoastră: folosiți doar datele disponibile la fiecare origine'),
     T('Contamination is not: the pretraining corpus may contain your series', 'Contaminarea nu este: corpusul de pre-antrenare poate conține seria dumneavoastră'),
     T('Check results on data released after the model', 'Verificați rezultatele pe date publicate după lansarea modelului')])
 
@@ -702,9 +788,12 @@ D.recap(('Leakage and contamination', 'scurgerea de informație și contaminarea
 D.section('Possible contribution of AI', 'Contribuția posibilă a AI')
 
 D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
-    T('\\textbf{Code}: a first draft of a rolling-origin backtest, of the pinball loss and the WQL, of a fan chart', '\\textbf{Cod}: o primă versiune a unui backtest cu origine mobilă, a pierderii pinball și a WQL, a unui fan chart'),
-    T('\\textbf{Reading}: a summary of a model paper (architecture, corpus, licence, release date)', '\\textbf{Lectură}: un rezumat al articolului unui model (arhitectura, corpusul, licența, data lansării)'),
-    T('\\textbf{Exploration}: run several open models on many Romanian series from Eurostat or INS', '\\textbf{Explorare}: rularea mai multor modele deschise pe multe serii românești de la Eurostat sau INS'),
+    (T('\\textbf{Code}', '\\textbf{Cod}'),
+         [T('a first draft of a rolling-origin backtest, of the pinball loss and the WQL, of a fan chart', 'o primă versiune a unui backtest cu origine mobilă, a pierderii pinball și a WQL, a unui fan chart')]),
+    (T('\\textbf{Reading}', '\\textbf{Lectură}'),
+         [T('a summary of a model paper (architecture, corpus, licence, release date)', 'un rezumat al articolului unui model (arhitectura, corpusul, licența, data lansării)')]),
+    (T('\\textbf{Exploration}', '\\textbf{Explorare}'),
+         [T('run several open models on many Romanian series from Eurostat or INS', 'rularea mai multor modele deschise pe multe serii românești de la Eurostat sau INS')]),
     (T('Example prompt', 'Exemplu de prompt'),
      [T('\\aiprompt{Write Python code that downloads Romanian monthly industrial production (Eurostat sts\\_inpr\\_m, not seasonally adjusted), forecasts 12 months ahead from monthly origins since 2016 with amazon/chronos-bolt-small (package chronos-forecasting, CPU), ETS and the seasonal naive, and reports MASE, the weighted quantile loss and the coverage of the 80\\% interval.}',
         '\\aiprompt{Write Python code that downloads Romanian monthly industrial production (Eurostat sts\\_inpr\\_m, not seasonally adjusted), forecasts 12 months ahead from monthly origins since 2016 with amazon/chronos-bolt-small (package chronos-forecasting, CPU), ETS and the seasonal naive, and reports MASE, the weighted quantile loss and the coverage of the 80\\% interval.}')])))
@@ -727,17 +816,17 @@ D.frame(T('Key takeaways', 'Idei de reținut'), items(
     T('Series become Transformer inputs by scaling, quantisation (Chronos) or patching (TimesFM, Moirai, Chronos-Bolt)', 'Seriile devin intrări ale unui Transformer prin scalare, cuantizare (Chronos) sau patching (TimesFM, Moirai, Chronos-Bolt)'),
     T('Outputs are quantiles: score them with the pinball loss, the CRPS or WQL, and check coverage', 'Ieșirile sînt cuantile: evaluați-le cu pierderea pinball, CRPS sau WQL și verificați acoperirea'),
     T('On our seven series: large gains on hourly load, none on random-walk-like series, losses on short quarterly GDP; ARIMA remains a strong benchmark', 'Pe cele șapte serii: cîștiguri mari la consumul orar, niciunul la seriile apropiate de un mers aleator, pierderi la PIB-ul trimestrial scurt; ARIMA rămîne un reper puternic'),
-    T('Contamination can inflate published scores: test on data released after the model', 'Contaminarea poate umfla scorurile publicate: testați pe date publicate după model')))
+    T('Contamination can inflate published scores: test on data released after the model', 'Contaminarea poate face scorurile publicate să pară mai bune decît sînt: testați pe date publicate după lansarea modelului')))
 
 D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretch}{1.4}' + table(
     'll', T('\\textbf{Quantity}', '\\textbf{Mărimea}') + ' & ' + T('\\textbf{Formula}', '\\textbf{Formula}'),
     [T('Attention', 'Atenția') + ' & $\\text{softmax}(QK^\\top/\\sqrt{d})\\,V$',
      T('Mean scaling', 'Scalarea prin medie') + ' & $\\tilde x_t = x_t/s$, \\quad $s = \\frac1C\\sum_{t=1}^{C}|x_t|$',
-     T('Pinball loss', 'Pierderea pinball') + ' & $L_\\tau(y, q) = \\max\\{\\tau(y - q),\\ (\\tau - 1)(y - q)\\}$',
+     T('Pinball loss', 'Pierderea pinball') + ' & $L_\\tau(y, \\hat q_\\tau) = \\max\\{\\tau(y - \\hat q_\\tau),\\ (\\tau - 1)(y - \\hat q_\\tau)\\}$',
      'CRPS & $\\int (F(z) - \\mathbf{1}\\{z \\ge y\\})^2\\,dz = 2\\int_0^1 L_\\tau(y, F^{-1}(\\tau))\\,d\\tau$',
-     'WQL & $\\frac{1}{K}\\sum_{k=1}^{K} 2\\sum_t L_{\\tau_k}(y_t, \\hat q_{\\tau_k,t}) \\big/ \\sum_t |y_t|$',
+     'WQL & $\\frac{1}{9}\\sum_{\\tau} 2\\sum_t L_{\\tau}(y_t, \\hat q_{\\tau,t}) \\big/ \\sum_t |y_t|$',
      'MASE & $\\frac1h\\sum_j |y_{T+j} - \\hat y_{T+j}| \\Big/ \\frac{1}{T-m}\\sum_{t>m}|y_t - y_{t-m}|$',
-     T('Coverage', 'Acoperirea') + ' & $\\frac1n\\sum \\mathbf{1}\\{\\hat q_{0.1} \\le y \\le \\hat q_{0.9}\\}$, ' + T('target 0.8', 'ținta 0,8')],
+     T('Coverage', 'Acoperirea') + ' & $\\frac1n\\sum_i \\mathbf{1}\\{\\hat q_{0.1,i} \\le y_i \\le \\hat q_{0.9,i}\\}$, ' + T('target 0.8', 'ținta 0,8')],
     size='footnotesize') + '}')
 
 D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(

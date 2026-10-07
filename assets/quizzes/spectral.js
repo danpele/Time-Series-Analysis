@@ -248,7 +248,7 @@ window.TSA_DATA.quizzes['spectral'] = {
                     "Într-un vîrf din interiorul intervalului $(0, 1/2)$"
                 ],
                 "correctExplanation": "Pentru $\\phi < 0$ numitorul $1 - 2\\phi\\cos(2\\pi\\nu) + \\phi^2$ este minim la $\\nu = 1/2$: valorile consecutive alternează ca semn.",
-                "incorrectExplanation": "Un $\\phi$ negativ oglindește spectrul AR(1): $f(1/2) = 1/(1 + \\phi)^2$ este maximul, semnul valorilor alternante."
+                "incorrectExplanation": "Un $\\phi$ negativ oglindește spectrul AR(1): $f(1/2) = 1/(1 + \\phi)^2$ este maximul, iar valorile consecutive au semne alternante."
             }
         },
         {
@@ -626,7 +626,7 @@ window.TSA_DATA.quizzes['spectral'] = {
                     "A doua serie este întîrziată cu 5 ani față de prima"
                 ],
                 "correctExplanation": "Coerența este un pătrat al corelației, frecvență cu frecvență: o mișcare comună puternică în banda ciclului economic și aproape niciuna la frecvențele înalte.",
-                "incorrectExplanation": "Coerența măsoară legătura liniară la fiecare frecvență; nu spune nimic despre cauzalitate, iar decalajul se citește din fază."
+                "incorrectExplanation": "Coerența măsoară legătura liniară la fiecare frecvență; nu spune nimic despre cauzalitate, iar lagul se citește din fază."
             }
         },
         {

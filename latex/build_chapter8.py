@@ -387,20 +387,23 @@ interp(('the four series', 'celor patru serii'), [
     T('The question of the chapter: is this a slowly decaying (long) memory, a near unit root, or a sequence of regimes?', 'Întrebarea capitolului: este aceasta o memorie care se stinge lent (lungă), o rădăcină aproape unitară sau o succesiune de regimuri?')])
 
 D.frame(T('Short memory', 'Memoria scurtă'), items(
-    (T('Recall (Chapter 1): $\\rho(k) = \\gamma(k)/\\gamma(0)$, the autocorrelation at lag $k$ of a stationary series', 'Reamintim (Capitolul 1): $\\rho(k) = \\gamma(k)/\\gamma(0)$, autocorelația la decalajul $k$ a unei serii staționare'),
+    (T('Recall (Chapter 1): $\\rho(k) = \\gamma(k)/\\gamma(0)$, the autocorrelation at lag $k$ of a stationary series', 'Reamintim (Capitolul 1): $\\rho(k) = \\gamma(k)/\\gamma(0)$, autocorelația la lagul $k$ a unei serii staționare'),
      [T('\\textbf{short memory}: the autocorrelations are absolutely summable, $\\sum_{k=0}^{\\infty}|\\rho(k)| < \\infty$', '\\textbf{memorie scurtă}: autocorelațiile sînt absolut sumabile, $\\sum_{k=0}^{\\infty}|\\rho(k)| < \\infty$')]),
     (T('Stationary ARMA processes: $|\\rho(k)| \\le C r^k$ with $0 < r < 1$: \\textbf{exponential} decay', 'Procesele ARMA staționare: $|\\rho(k)| \\le C r^k$, cu $0 < r < 1$: descreștere \\textbf{exponențială}'),
-     [T('AR(1): $\\rho(k) = \\phi^k$; with $\\phi = 0.9$, $\\rho(50) = 0.005$: after 50 periods the shock is forgotten', 'AR(1): $\\rho(k) = \\phi^k$; pentru $\\phi = 0{,}9$, $\\rho(50) = 0{,}005$: după 50 de perioade șocul este uitat')]),
+     [T('$C > 0$: a constant; $r$: the decay rate per lag (for an AR(1), $r = |\\phi|$)', '$C > 0$: o constantă; $r$: rata de descreștere pe lag (pentru un AR(1), $r = |\\phi|$)'),
+      T('AR(1): $\\rho(k) = \\phi^k$; with $\\phi = 0.9$, $\\rho(50) = 0.005$: after 50 periods the shock is forgotten', 'AR(1): $\\rho(k) = \\phi^k$; pentru $\\phi = 0{,}9$, $\\rho(50) = 0{,}005$: după 50 de perioade șocul este uitat')]),
     (T('Spectral view: the spectral density $f(\\lambda)$ is finite and positive at frequency $\\lambda = 0$', 'În domeniul frecvenței: densitatea spectrală $f(\\lambda)$ este finită și pozitivă la frecvența $\\lambda = 0$'),
-     [T('$f(0) = \\frac{1}{2\\pi}\\sum_k \\gamma(k)$: the long-run variance is finite; the variance of the sample mean falls like $1/T$', '$f(0) = \\frac{1}{2\\pi}\\sum_k \\gamma(k)$: varianța pe termen lung este finită; varianța mediei de selecție scade ca $1/T$')])))
+     [T('$\\lambda \\in [0, \\pi]$: the frequency in radians per period (a cycle of length $2\\pi/\\lambda$ periods); $\\gamma(k)$: the autocovariance at lag $k$', '$\\lambda \\in [0, \\pi]$: frecvența, în radiani pe perioadă (un ciclu de lungime $2\\pi/\\lambda$ perioade); $\\gamma(k)$: autocovarianța la lagul $k$'),
+      T('$f(0) = \\frac{1}{2\\pi}\\sum_k \\gamma(k)$: the long-run variance is finite; the variance of the sample mean falls like $1/T$', '$f(0) = \\frac{1}{2\\pi}\\sum_k \\gamma(k)$: varianța pe termen lung este finită; varianța mediei de selecție scade ca $1/T$')])))
 
 D.frame(T('Long memory', 'Memoria lungă'), items(
     (T('\\textbf{Long memory} (long-range dependence): $\\rho(k) \\sim C\\,k^{2d-1}$ as $k \\to \\infty$, with $0 < d < 1/2$', '\\textbf{Memorie lungă} (dependență pe termen lung): $\\rho(k) \\sim C\\,k^{2d-1}$ cînd $k \\to \\infty$, cu $0 < d < 1/2$'),
      [T('a \\textbf{hyperbolic} (power-law) decay: the exponent $2d - 1$ lies in $(-1, 0)$', 'o descreștere \\textbf{hiperbolică} (de tip putere): exponentul $2d - 1$ se află în $(-1, 0)$'),
-      T('the sum $\\sum_k \\rho(k)$ diverges: distant observations still matter together', 'suma $\\sum_k \\rho(k)$ diverge: observațiile îndepărtate contează încă, luate împreună')]),
+      T('the sum $\\sum_k \\rho(k)$ diverges: distant observations still matter together', 'suma $\\sum_k \\rho(k)$ diverge: observațiile îndepărtate contează încă, luate împreună'),
+      T('$\\sim$: the ratio of the two sides tends to 1; $C, G, c > 0$: constants; $d$: the memory parameter', '$\\sim$: raportul celor doi membri tinde la 1; $C, G, c > 0$: constante; $d$: parametrul de memorie')]),
     (T('Spectral view: $f(\\lambda) \\sim G\\,\\lambda^{-2d}$ as $\\lambda \\to 0$: a \\textbf{pole} at frequency zero', 'În domeniul frecvenței: $f(\\lambda) \\sim G\\,\\lambda^{-2d}$ cînd $\\lambda \\to 0$: un \\textbf{pol} la frecvența zero'),
      [T('the low frequencies (slow cycles of all lengths) carry most of the variance', 'frecvențele joase (cicluri lente de toate lungimile) poartă cea mai mare parte a varianței')]),
-    (T('Consequence: $\\Var(\\bar{x}_T) \\sim c\\,T^{2d-1}$, slower than $1/T$', 'Consecință: $\\Var(\\bar{x}_T) \\sim c\\,T^{2d-1}$, mai lent decît $1/T$'),
+    (T('Consequence: $\\Var(\\bar{x}_T) \\sim c\\,T^{2d-1}$ ($\\bar{x}_T$: the sample mean of $T$ observations), slower than $1/T$', 'Consecință: $\\Var(\\bar{x}_T) \\sim c\\,T^{2d-1}$ ($\\bar{x}_T$: media de selecție a $T$ observații), mai lent decît $1/T$'),
      [T('confidence intervals that assume independence are too narrow; the memory parameter $d$ measures how slowly the past fades', 'intervalele de încredere care presupun independența sînt prea înguste; parametrul de memorie $d$ măsoară cît de lent se estompează trecutul')])))
 
 chart(T('Sample ACF against an AR(1)', 'ACF de selecție comparată cu un AR(1)'), 'tsa_ch8_memory_acf', 'TSA_ch8_memory_data', [
@@ -411,7 +414,7 @@ chart(T('Sample ACF against an AR(1)', 'ACF de selecție comparată cu un AR(1)'
 interp(('the sample ACF', 'ACF de selecție'), [
     (T('Nile: $\\hat\\rho(1) = @{acf.nile.r1}$; an AR(1) would give $\\rho(10) = @{acf.nile.ar10}$, the data give @{acf.nile.r10}', 'Nilul: $\\hat\\rho(1) = @{acf.nile.r1}$; un AR(1) ar da $\\rho(10) = @{acf.nile.ar10}$, datele dau @{acf.nile.r10}'),
      [T('@{acf.nile.npos} of the first @{acf.nile.L} autocorrelations lie above the white-noise band', '@{acf.nile.npos} dintre primele @{acf.nile.L} autocorelații sînt deasupra benzii zgomotului alb')]),
-    (T('Romanian monthly inflation: $\\hat\\rho(1) = @{acf.infl.r1}$, $\\hat\\rho(10) = @{acf.infl.r10}$; @{acf.infl.npos} of @{acf.infl.L} lags above the band', 'Inflația lunară din România: $\\hat\\rho(1) = @{acf.infl.r1}$, $\\hat\\rho(10) = @{acf.infl.r10}$; @{acf.infl.npos} din @{acf.infl.L} decalaje deasupra benzii'),
+    (T('Romanian monthly inflation: $\\hat\\rho(1) = @{acf.infl.r1}$, $\\hat\\rho(10) = @{acf.infl.r10}$; @{acf.infl.npos} of @{acf.infl.L} lags above the band', 'Inflația lunară din România: $\\hat\\rho(1) = @{acf.infl.r1}$, $\\hat\\rho(10) = @{acf.infl.r10}$; @{acf.infl.npos} din @{acf.infl.L} de laguri deasupra benzii'),
      [T('US monthly inflation: @{acf.usinfl.npos} of @{acf.usinfl.L}; S\\&P 500 log realised volatility: @{acf.sp500.npos} of @{acf.sp500.L}', 'inflația lunară din SUA: @{acf.usinfl.npos} din @{acf.usinfl.L}; logaritmul volatilității realizate S\\&P 500: @{acf.sp500.npos} din @{acf.sp500.L}')]),
     T('A low first autocorrelation with a long, slowly decaying tail is the signature of long memory; an AR(1) cannot produce it', 'O primă autocorelație moderată, urmată de o coadă lungă care scade lent, este semnătura memoriei lungi; un AR(1) nu o poate produce')])
 
@@ -421,11 +424,11 @@ chart(T('Hyperbolic against exponential decay', 'Descreștere hiperbolică și d
     h='0.7\\textheight')
 
 interp(('the two decay laws', 'celor două legi de descreștere'), [
-    (T('Same start, different tails: at lag 10, @{dc.r10} against @{dc.a10}; at lag 50, @{dc.r50} against $@{dc.a50}$', 'Același început, cozi diferite: la decalajul 10, @{dc.r10} față de @{dc.a10}; la decalajul 50, @{dc.r50} față de $@{dc.a50}$'),
-     [T('the long-memory ACF is still @{dc.r1000} at lag 1000', 'ACF cu memorie lungă este încă @{dc.r1000} la decalajul 1000')]),
+    (T('Same start, different tails: at lag 10, @{dc.r10} against @{dc.a10}; at lag 50, @{dc.r50} against $@{dc.a50}$', 'Același început, cozi diferite: la lagul 10, @{dc.r10} față de @{dc.a10}; la lagul 50, @{dc.r50} față de $@{dc.a50}$'),
+     [T('the long-memory ACF is still @{dc.r1000} at lag 1000', 'ACF cu memorie lungă este încă @{dc.r1000} la lagul 1000')]),
     (T('On log--log axes the hyperbolic ACF becomes a straight line of slope $2d - 1 = -0.2$; the exponential ACF bends down', 'Pe axe log--log ACF hiperbolică devine o dreaptă de pantă $2d - 1 = -0{,}2$; ACF exponențială se curbează în jos'),
      [T('the slope of a log--log plot is the idea behind every estimator of this chapter', 'panta unui grafic log--log este ideea din spatele tuturor estimatorilor din acest capitol')]),
-    T('Sums of autocorrelations: AR(1) $\\sum_{k\\ge1}\\phi^k = @{dc.asum}$; ARFIMA: @{dc.sum100} up to lag 100 and @{dc.sum1000} up to lag 1000, still growing', 'Sumele autocorelațiilor: AR(1) $\\sum_{k\\ge1}\\phi^k = @{dc.asum}$; ARFIMA: @{dc.sum100} pînă la decalajul 100 și @{dc.sum1000} pînă la decalajul 1000, în creștere')])
+    T('Sums of autocorrelations: AR(1) $\\sum_{k\\ge1}\\phi^k = @{dc.asum}$; ARFIMA: @{dc.sum100} up to lag 100 and @{dc.sum1000} up to lag 1000, still growing', 'Sumele autocorelațiilor: AR(1) $\\sum_{k\\ge1}\\phi^k = @{dc.asum}$; ARFIMA: @{dc.sum100} pînă la lagul 100 și @{dc.sum1000} pînă la lagul 1000, în creștere')])
 
 D.recap(('Short and long memory', 'memorie scurtă și memorie lungă'), [
     T('Short memory: summable ACF, exponential decay, finite spectrum at zero (ARMA)', 'Memorie scurtă: ACF sumabilă, descreștere exponențială, spectru finit la zero (ARMA)'),
@@ -439,12 +442,13 @@ D.recap(('Short and long memory', 'memorie scurtă și memorie lungă'), [
 D.section('Fractional differencing', 'Diferențierea fracționară')
 
 D.frame(T('From integer to fractional differences', 'De la diferențe întregi la diferențe fracționare'), items(
-    (T('Lag operator: $Lx_t = x_{t-1}$; first difference $(1-L)x_t = x_t - x_{t-1}$ (Chapter 3)', 'Operatorul de decalaj: $Lx_t = x_{t-1}$; prima diferență $(1-L)x_t = x_t - x_{t-1}$ (Capitolul 3)'),
+    (T('Lag operator: $Lx_t = x_{t-1}$; first difference $(1-L)x_t = x_t - x_{t-1}$ (Chapter 3)', 'Operatorul de lag: $Lx_t = x_{t-1}$; prima diferență $(1-L)x_t = x_t - x_{t-1}$ (Capitolul 3)'),
      [T('$d = 0$: the level; $d = 1$: the first difference; $d = 2$: $x_t - 2x_{t-1} + x_{t-2}$', '$d = 0$: nivelul; $d = 1$: prima diferență; $d = 2$: $x_t - 2x_{t-1} + x_{t-2}$')]),
     (T('\\textbf{Fractional difference} for any real $d$ (binomial series): $(1-L)^d = \\sum_{k=0}^{\\infty}\\binom{d}{k}(-L)^k = \\sum_{k=0}^{\\infty}\\pi_k L^k$',
        '\\textbf{Diferența fracționară}, pentru orice $d$ real (seria binomială): $(1-L)^d = \\sum_{k=0}^{\\infty}\\binom{d}{k}(-L)^k = \\sum_{k=0}^{\\infty}\\pi_k L^k$'),
      [T('$(1-L)^d = 1 - dL - \\frac{d(1-d)}{2!}L^2 - \\frac{d(1-d)(2-d)}{3!}L^3 - \\dots$', '$(1-L)^d = 1 - dL - \\frac{d(1-d)}{2!}L^2 - \\frac{d(1-d)(2-d)}{3!}L^3 - \\dots$'),
-      T('recursion: $\\pi_0 = 1$, $\\pi_k = \\pi_{k-1}\\,\\dfrac{k - 1 - d}{k}$; for large $k$: $\\pi_k \\approx -\\dfrac{d}{\\Gamma(1-d)}\\,k^{-1-d}$', 'recurența: $\\pi_0 = 1$, $\\pi_k = \\pi_{k-1}\\,\\dfrac{k - 1 - d}{k}$; pentru $k$ mare: $\\pi_k \\approx -\\dfrac{d}{\\Gamma(1-d)}\\,k^{-1-d}$')]),
+      T('recursion: $\\pi_0 = 1$, $\\pi_k = \\pi_{k-1}\\,\\dfrac{k - 1 - d}{k}$; for large $k$: $\\pi_k \\approx -\\dfrac{d}{\\Gamma(1-d)}\\,k^{-1-d}$', 'recurența: $\\pi_0 = 1$, $\\pi_k = \\pi_{k-1}\\,\\dfrac{k - 1 - d}{k}$; pentru $k$ mare: $\\pi_k \\approx -\\dfrac{d}{\\Gamma(1-d)}\\,k^{-1-d}$'),
+      T('$\\binom{d}{k} = d(d-1)\\cdots(d-k+1)/k!$: the binomial coefficient for real $d$; $\\pi_k$: the weight of $x_{t-k}$; $\\Gamma(\\cdot)$: the gamma function, $\\Gamma(n) = (n-1)!$ for integers', '$\\binom{d}{k} = d(d-1)\\cdots(d-k+1)/k!$: coeficientul binomial pentru $d$ real; $\\pi_k$: ponderea lui $x_{t-k}$; $\\Gamma(\\cdot)$: funcția gamma, $\\Gamma(n) = (n-1)!$ pentru numere întregi')]),
     T('A fractional difference uses \\textbf{all} past values, with weights that decay hyperbolically: it removes part of the memory, not all of it', 'O diferență fracționară folosește \\textbf{toate} valorile trecute, cu ponderi care scad hiperbolic: elimină o parte din memorie, nu toată memoria')))
 
 D.frame(T('Worked example: the weights of $(1-L)^{0.4}$', 'Exemplu rezolvat: ponderile lui $(1-L)^{0{,}4}$'), items(
@@ -453,7 +457,7 @@ D.frame(T('Worked example: the weights of $(1-L)^{0.4}$', 'Exemplu rezolvat: pon
       T('$\\pi_2 = @{w4.1} \\cdot (1 - 0.4)/2 = @{w4.2}$', '$\\pi_2 = @{w4.1} \\cdot (1 - 0{,}4)/2 = @{w4.2}$'),
       T('$\\pi_3 = @{w4.2} \\cdot (2 - 0.4)/3 = @{w4.3}$; \\quad $\\pi_4 = @{w4.3} \\cdot 3.6/4 = @{w4.4}$; \\quad $\\pi_5 = @{w4.5}$', '$\\pi_3 = @{w4.2} \\cdot (2 - 0{,}4)/3 = @{w4.3}$; \\quad $\\pi_4 = @{w4.3} \\cdot 3{,}6/4 = @{w4.4}$; \\quad $\\pi_5 = @{w4.5}$')]),
     (T('So $(1-L)^{0.4}x_t = x_t - 0.4x_{t-1} - 0.12x_{t-2} - 0.064x_{t-3} - 0.0416x_{t-4} - \\dots$', 'Deci $(1-L)^{0{,}4}x_t = x_t - 0{,}4x_{t-1} - 0{,}12x_{t-2} - 0{,}064x_{t-3} - 0{,}0416x_{t-4} - \\dots$'),
-     [T('the weights sum to $(1-1)^{0.4} = 0$ over all lags: a constant level is removed, as with $d = 1$', 'ponderile însumează $(1-1)^{0{,}4} = 0$ pe toate decalajele: un nivel constant este eliminat, ca la $d = 1$')]),
+     [T('the weights sum to $(1-1)^{0.4} = 0$ over all lags: a constant level is removed, as with $d = 1$', 'ponderile însumează $(1-1)^{0{,}4} = 0$ pe toate lagurile: un nivel constant este eliminat, ca la $d = 1$')]),
     T('Compare $d = 1$: $\\pi_1 = -1$ and all other weights are 0; $d = 0.7$: $\\pi_1 = @{wt.7.1}$, $\\pi_2 = @{wt.7.2}$', 'Comparați cu $d = 1$: $\\pi_1 = -1$, iar toate celelalte ponderi sînt 0; $d = 0{,}7$: $\\pi_1 = @{wt.7.1}$, $\\pi_2 = @{wt.7.2}$')))
 
 chart(T('Fractional differencing and fractional integration', 'Diferențiere fracționară și integrare fracționară'), 'tsa_ch8_weights', 'TSA_ch8_fractional_differencing', [
@@ -464,18 +468,18 @@ chart(T('Fractional differencing and fractional integration', 'Diferențiere fra
 interp(('the weights', 'ponderilor'), [
     (T('Fractional integration: $x_t = (1-L)^{-d}\\varepsilon_t = \\sum_k\\psi_k\\varepsilon_{t-k}$, with $\\psi_k = \\psi_{k-1}(k-1+d)/k \\approx k^{d-1}/\\Gamma(d)$', 'Integrarea fracționară: $x_t = (1-L)^{-d}\\varepsilon_t = \\sum_k\\psi_k\\varepsilon_{t-k}$, cu $\\psi_k = \\psi_{k-1}(k-1+d)/k \\approx k^{d-1}/\\Gamma(d)$'),
      [T('after 100 periods a shock still has weight @{wt.4.p100} ($d = 0.4$) and @{wt.7.p100} ($d = 0.7$); the AR(1) keeps $@{wt.ar100}$', 'după 100 de perioade un șoc are încă ponderea @{wt.4.p100} ($d = 0{,}4$) și @{wt.7.p100} ($d = 0{,}7$); AR(1) păstrează $@{wt.ar100}$')]),
-    (T('Early on the AR(1) remembers more (@{wt.ar10} at lag 10, against @{wt.4.p10} for $d = 0.4$); later it forgets much faster', 'La început AR(1) își amintește mai mult (@{wt.ar10} la decalajul 10, față de @{wt.4.p10} pentru $d = 0{,}4$); apoi uită mult mai repede'),
+    (T('Early on the AR(1) remembers more (@{wt.ar10} at lag 10, against @{wt.4.p10} for $d = 0.4$); later it forgets much faster', 'La început AR(1) își amintește mai mult (@{wt.ar10} la lagul 10, față de @{wt.4.p10} pentru $d = 0{,}4$); apoi uită mult mai repede'),
      [T('$d = 1$ (random walk): $\\psi_k = 1$ forever, the shock never fades', '$d = 1$ (mers aleator): $\\psi_k = 1$ mereu, șocul nu se stinge niciodată')]),
     T('For $0 < d < 1$ the responses tend to zero: the series is \\textbf{mean-reverting}, even when it is non-stationary ($d \\ge 0.5$)', 'Pentru $0 < d < 1$ răspunsurile tind spre zero: seria \\textbf{revine la medie}, chiar și cînd este nestaționară ($d \\ge 0{,}5$)')])
 
-chart(T('How much differencing does a price need?', 'Cîtă diferențiere îi trebuie unui preț?'), 'tsa_ch8_ffd', 'TSA_ch8_fractional_differencing', [
+chart(T('How much differencing does a price need?', 'Gradul de diferențiere necesar pentru un preț'), 'tsa_ch8_ffd', 'TSA_ch8_fractional_differencing', [
     T('Log S\\&P 500, daily, @{ffd.n} days since 2000; $(1-L)^d$ with a fixed window (weights below $10^{-4}$ dropped), $d = 0, 0.05, \\dots, 1$; left: ADF statistic (Chapter 3); right: correlation with the log level',
       'Logaritmul S\\&P 500, zilnic, @{ffd.n} de zile din 2000; $(1-L)^d$ cu fereastră fixă (ponderile sub $10^{-4}$ sînt eliminate), $d = 0;\\ 0{,}05;\\ \\dots;\\ 1$; stînga: statistica ADF (Capitolul 3); dreapta: corelația cu nivelul logaritmic')],
     h='0.7\\textheight')
 
 interp(('fractional differencing of a price', 'diferențierii fracționare a unui preț'), [
     (T('The log level ($d = 0$) has a unit root (ADF @{ffd.adf0}); the return ($d = 1$) is stationary (ADF @{ffd.adf1}) but has correlation @{ffd.cor1} with the level', 'Nivelul logaritmic ($d = 0$) are rădăcină unitară (ADF @{ffd.adf0}); randamentul ($d = 1$) este staționar (ADF @{ffd.adf1}), dar are corelația @{ffd.cor1} cu nivelul'),
-     [T('the first difference throws away all the information about the level', 'prima diferență aruncă toată informația despre nivel')]),
+     [T('the first difference throws away all the information about the level', 'prima diferență elimină toată informația despre nivel')]),
     (T('The ADF statistic crosses the 5\\% critical value (@{ffd.crit}) already at $d = @{ffd.dmin}$, where the correlation with the level is still @{ffd.cor}', 'Statistica ADF trece de valoarea critică de 5\\% (@{ffd.crit}) deja la $d = @{ffd.dmin}$, unde corelația cu nivelul este încă @{ffd.cor}'),
      [T('the fixed window then has @{ffd.w} weights', 'fereastra fixă are atunci @{ffd.w} de ponderi')]),
     T('A fractional difference can make a series stationary while keeping most of its memory: a tool used for forecasting features in machine learning (Chapter 9)', 'O diferență fracționară poate face o serie staționară păstrîndu-i cea mai mare parte a memoriei: un instrument folosit pentru variabilele explicative din machine learning (Capitolul 9)')])
@@ -493,7 +497,7 @@ D.section('The ARFIMA$(p,d,q)$ model', 'Modelul ARFIMA$(p,d,q)$')
 D.frame(T('The ARFIMA$(p,d,q)$ model', 'Modelul ARFIMA$(p,d,q)$'), items(
     (T('\\textbf{Definition}: $\\phi(L)(1-L)^d(x_t - \\mu) = \\theta(L)\\varepsilon_t$, $\\varepsilon_t$ white noise with variance $\\sigma^2$', '\\textbf{Definiție}: $\\phi(L)(1-L)^d(x_t - \\mu) = \\theta(L)\\varepsilon_t$, $\\varepsilon_t$ zgomot alb cu varianța $\\sigma^2$'),
      [T('$\\phi(L) = 1 - \\phi_1L - \\dots - \\phi_pL^p$ and $\\theta(L) = 1 + \\theta_1L + \\dots + \\theta_qL^q$, with roots outside the unit circle (Chapter 2)', '$\\phi(L) = 1 - \\phi_1L - \\dots - \\phi_pL^p$ și $\\theta(L) = 1 + \\theta_1L + \\dots + \\theta_qL^q$, cu rădăcinile în afara cercului unitate (Capitolul 2)'),
-      T('ARFIMA: autoregressive fractionally integrated moving average', 'ARFIMA: autoregresiv, fracționar integrat, cu medie mobilă')]),
+      T('$\\mu$: the mean of $x_t$; ARFIMA: autoregressive fractionally integrated moving average', '$\\mu$: media lui $x_t$; ARFIMA: autoregresiv, fracționar integrat, cu medie mobilă')]),
     (T('Two parts with two jobs', 'Două părți cu două roluri'),
      [T('$d$: the \\textbf{long-run} memory, the hyperbolic tail of the ACF', '$d$: memoria \\textbf{pe termen lung}, coada hiperbolică a ACF'),
       T('$\\phi$, $\\theta$: the \\textbf{short-run} dynamics, the first few autocorrelations', '$\\phi$, $\\theta$: dinamica \\textbf{pe termen scurt}, primele cîteva autocorelații')]),
@@ -524,10 +528,10 @@ D.frame(T('Autocorrelations of ARFIMA$(0,d,0)$', 'Autocorelațiile unui ARFIMA$(
     (T('For $x_t = (1-L)^{-d}\\varepsilon_t$, $-1/2 < d < 1/2$ (\\refHosking):', 'Pentru $x_t = (1-L)^{-d}\\varepsilon_t$, $-1/2 < d < 1/2$ (\\refHosking):'),
      [T('variance $\\gamma(0) = \\sigma^2\\,\\dfrac{\\Gamma(1-2d)}{\\Gamma(1-d)^2}$', 'varianța $\\gamma(0) = \\sigma^2\\,\\dfrac{\\Gamma(1-2d)}{\\Gamma(1-d)^2}$'),
       T('autocorrelations $\\rho(k) = \\dfrac{\\Gamma(1-d)\\,\\Gamma(k+d)}{\\Gamma(d)\\,\\Gamma(k+1-d)}$, computed with $\\rho(k) = \\rho(k-1)\\,\\dfrac{k-1+d}{k-d}$', 'autocorelațiile $\\rho(k) = \\dfrac{\\Gamma(1-d)\\,\\Gamma(k+d)}{\\Gamma(d)\\,\\Gamma(k+1-d)}$, calculate cu $\\rho(k) = \\rho(k-1)\\,\\dfrac{k-1+d}{k-d}$')]),
-    (T('First lags: $\\rho(1) = \\dfrac{d}{1-d}$, \\quad $\\rho(2) = \\dfrac{d(1+d)}{(1-d)(2-d)}$', 'Primele decalaje: $\\rho(1) = \\dfrac{d}{1-d}$, \\quad $\\rho(2) = \\dfrac{d(1+d)}{(1-d)(2-d)}$'),
+    (T('First lags: $\\rho(1) = \\dfrac{d}{1-d}$, \\quad $\\rho(2) = \\dfrac{d(1+d)}{(1-d)(2-d)}$', 'Primele laguri: $\\rho(1) = \\dfrac{d}{1-d}$, \\quad $\\rho(2) = \\dfrac{d(1+d)}{(1-d)(2-d)}$'),
      [T('large $k$: $\\rho(k) \\approx \\dfrac{\\Gamma(1-d)}{\\Gamma(d)}\\,k^{2d-1}$, the power law of Section 1 with $C = \\Gamma(1-d)/\\Gamma(d)$', '$k$ mare: $\\rho(k) \\approx \\dfrac{\\Gamma(1-d)}{\\Gamma(d)}\\,k^{2d-1}$, legea de putere din secțiunea 1, cu $C = \\Gamma(1-d)/\\Gamma(d)$')]),
-    T('Spectral density: $f(\\lambda) = \\dfrac{\\sigma^2}{2\\pi}\\,|1 - e^{-i\\lambda}|^{-2d} = \\dfrac{\\sigma^2}{2\\pi}\\,\\bigl(2\\sin(\\lambda/2)\\bigr)^{-2d} \\approx \\dfrac{\\sigma^2}{2\\pi}\\lambda^{-2d}$ near 0',
-      'Densitatea spectrală: $f(\\lambda) = \\dfrac{\\sigma^2}{2\\pi}\\,|1 - e^{-i\\lambda}|^{-2d} = \\dfrac{\\sigma^2}{2\\pi}\\,\\bigl(2\\sin(\\lambda/2)\\bigr)^{-2d} \\approx \\dfrac{\\sigma^2}{2\\pi}\\lambda^{-2d}$ în apropierea lui 0')))
+    T('Spectral density ($i$: the imaginary unit): $f(\\lambda) = \\dfrac{\\sigma^2}{2\\pi}\\,|1 - e^{-i\\lambda}|^{-2d} = \\dfrac{\\sigma^2}{2\\pi}\\,\\bigl(2\\sin(\\lambda/2)\\bigr)^{-2d} \\approx \\dfrac{\\sigma^2}{2\\pi}\\lambda^{-2d}$ near 0',
+      'Densitatea spectrală ($i$: unitatea imaginară): $f(\\lambda) = \\dfrac{\\sigma^2}{2\\pi}\\,|1 - e^{-i\\lambda}|^{-2d} = \\dfrac{\\sigma^2}{2\\pi}\\,\\bigl(2\\sin(\\lambda/2)\\bigr)^{-2d} \\approx \\dfrac{\\sigma^2}{2\\pi}\\lambda^{-2d}$ în apropierea lui 0')))
 
 D.frame(T('Worked example: ARFIMA$(0, 0.3, 0)$', 'Exemplu rezolvat: ARFIMA$(0;\\ 0{,}3;\\ 0)$'), items(
     (T('$\\rho(1) = 0.3/0.7 = @{r3.1}$; \\quad $\\rho(2) = @{r3.1} \\cdot 1.3/1.7 = @{r3.2}$; \\quad $\\rho(3) = @{r3.2} \\cdot 2.3/2.7 = @{r3.3}$', '$\\rho(1) = 0{,}3/0{,}7 = @{r3.1}$; \\quad $\\rho(2) = @{r3.1} \\cdot 1{,}3/1{,}7 = @{r3.2}$; \\quad $\\rho(3) = @{r3.2} \\cdot 2{,}3/2{,}7 = @{r3.3}$'),
@@ -592,7 +596,7 @@ D.frame(T('Five estimators', 'Cinci estimatori'), table(
 
 D.frame(T('The R/S statistic, step by step', 'Statistica R/S, pas cu pas'), items(
     (T('Block $x_1, \\dots, x_n$: mean $\\bar x$, cumulative deviations $Y_k = \\sum_{i\\le k}(x_i - \\bar x)$', 'Blocul $x_1, \\dots, x_n$: media $\\bar x$, abaterile cumulate $Y_k = \\sum_{i\\le k}(x_i - \\bar x)$'),
-     [T('range $R = \\max_k Y_k - \\min_k Y_k$, standard deviation $S$; rescaled range $R/S$', 'amplitudinea $R = \\max_k Y_k - \\min_k Y_k$, abaterea standard $S$; amplitudinea rescalată $R/S$')]),
+     [T('range $R = \\max_k Y_k - \\min_k Y_k$, $S$: the standard deviation of the block; rescaled range $R/S$', 'amplitudinea $R = \\max_k Y_k - \\min_k Y_k$, $S$: abaterea standard a blocului; amplitudinea rescalată $R/S$')]),
     (T('Example: $x = (0.5, -0.3, 0.8, -0.2, 0.6, -0.1, 0.4, -0.7)$, $\\bar x = @{rs.mean}$', 'Exemplu: $x = (0{,}5;\\ -0{,}3;\\ 0{,}8;\\ -0{,}2;\\ 0{,}6;\\ -0{,}1;\\ 0{,}4;\\ -0{,}7)$, $\\bar x = @{rs.mean}$'),
      [T('$Y_k$: 0.375, $-$0.050, 0.625, 0.300, 0.775, 0.550, 0.825, 0; $R = @{rs.max} - (@{rs.min}) = @{rs.R}$', '$Y_k$: 0,375; $-$0,050; 0,625; 0,300; 0,775; 0,550; 0,825; 0; $R = @{rs.max} - (@{rs.min}) = @{rs.R}$'),
       T('$S = @{rs.S}$, so $R/S = @{rs.RS}$', '$S = @{rs.S}$, deci $R/S = @{rs.RS}$')]),
@@ -614,10 +618,11 @@ interp(('the R/S and DFA slopes', 'pantelor R/S și DFA'), [
 
 D.frame(T('The periodogram and the GPH estimator', 'Periodograma și estimatorul GPH'), items(
     (T('\\textbf{Periodogram} at the Fourier frequencies $\\lambda_j = 2\\pi j/T$: $I(\\lambda_j) = \\frac{1}{2\\pi T}\\bigl|\\sum_t (x_t - \\bar x)e^{-i\\lambda_j t}\\bigr|^2$', '\\textbf{Periodograma} la frecvențele Fourier $\\lambda_j = 2\\pi j/T$: $I(\\lambda_j) = \\frac{1}{2\\pi T}\\bigl|\\sum_t (x_t - \\bar x)e^{-i\\lambda_j t}\\bigr|^2$'),
-     [T('a noisy estimate of the spectral density $f(\\lambda_j)$; $\\lambda_j$ near 0 = slow cycles of period $T/j$', 'o estimare zgomotoasă a densității spectrale $f(\\lambda_j)$; $\\lambda_j$ apropiat de 0 = cicluri lente, de perioadă $T/j$')]),
+     [T('$i$: the imaginary unit; $|\\cdot|$: the modulus of a complex number; $j = 1, \\dots, \\lfloor T/2\\rfloor$', '$i$: unitatea imaginară; $|\\cdot|$: modulul unui număr complex; $j = 1, \\dots, \\lfloor T/2\\rfloor$'),
+      T('a noisy estimate of the spectral density $f(\\lambda_j)$; $\\lambda_j$ near 0 = slow cycles of period $T/j$', 'o estimare zgomotoasă a densității spectrale $f(\\lambda_j)$; $\\lambda_j$ apropiat de 0 = cicluri lente, de perioadă $T/j$')]),
     (T('Near zero, $f(\\lambda) \\approx G\\,(4\\sin^2(\\lambda/2))^{-d}$; taking logs:', 'În apropierea lui zero, $f(\\lambda) \\approx G\\,(4\\sin^2(\\lambda/2))^{-d}$; logaritmînd:'),
      [T('\\textbf{GPH regression} \\refGPH: $\\log I(\\lambda_j) = c + d\\,\\bigl[-\\log(4\\sin^2(\\lambda_j/2))\\bigr] + u_j$, $j = 1, \\dots, m$', '\\textbf{Regresia GPH} \\refGPH: $\\log I(\\lambda_j) = c + d\\,\\bigl[-\\log(4\\sin^2(\\lambda_j/2))\\bigr] + u_j$, $j = 1, \\dots, m$'),
-      T('$\\hat d$ = OLS slope; standard error $\\pi/\\sqrt{24m}$', '$\\hat d$ = panta OLS; eroarea standard $\\pi/\\sqrt{24m}$')]),
+      T('$c$: constant; $u_j$: regression error; $\\hat d$ = OLS slope; standard error $\\pi/\\sqrt{24m}$', '$c$: termenul liber; $u_j$: eroarea regresiei; $\\hat d$ = panta OLS; eroarea standard $\\pi/\\sqrt{24m}$')]),
     (T('\\textbf{Bandwidth} $m$: how many low frequencies we use; here $m = \\lfloor T^{0.65}\\rfloor$', '\\textbf{Lățimea de bandă} $m$: cîte frecvențe joase folosim; aici $m = \\lfloor T^{0{,}65}\\rfloor$'),
      [T('small $m$: little bias from the short-run part, large variance; large $m$: small variance, but short memory leaks into $\\hat d$', '$m$ mic: puțină deplasare din partea pe termen scurt, varianță mare; $m$ mare: varianță mică, dar memoria scurtă se strecoară în $\\hat d$')])))
 
@@ -635,7 +640,7 @@ interp(('the GPH regressions', 'regresiilor GPH'), [
 
 D.frame(T('The local Whittle estimator', 'Estimatorul Whittle local'), items(
     (T('\\refRob: assume $f(\\lambda) \\approx G\\lambda^{-2d}$ for $\\lambda_1, \\dots, \\lambda_m$ and maximise the Gaussian (Whittle) likelihood of these ordinates', '\\refRob: presupunem $f(\\lambda) \\approx G\\lambda^{-2d}$ pentru $\\lambda_1, \\dots, \\lambda_m$ și maximizăm verosimilitatea gaussiană (Whittle) a acestor valori'),
-     [T('after concentrating out $G$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$', 'după eliminarea lui $G$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$')]),
+     [T('after concentrating out the constant $G$ of $f(\\lambda) \\approx G\\lambda^{-2d}$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$', 'după eliminarea constantei $G$ din $f(\\lambda) \\approx G\\lambda^{-2d}$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$')]),
     (T('Standard error $1/(2\\sqrt m)$, smaller than GPH ($\\pi/\\sqrt{24m} \\approx 0.64/\\sqrt m$)', 'Eroarea standard $1/(2\\sqrt m)$, mai mică decît la GPH ($\\pi/\\sqrt{24m} \\approx 0{,}64/\\sqrt m$)'),
      [T('valid also for non-stationary series with $d$ up to about 1 \\refVelasco', 'valabil și pentru serii nestaționare cu $d$ pînă la aproximativ 1 \\refVelasco')]),
     T('Both GPH and local Whittle depend on $m$: always report $\\hat d$ for several bandwidths', 'Atît GPH, cît și Whittle local depind de $m$: raportați întotdeauna $\\hat d$ pentru mai multe lățimi de bandă')))
@@ -655,9 +660,11 @@ interp(('the bandwidth plot', 'graficului lățimii de bandă'), [
 D.frame(T('Maximum likelihood for ARFIMA$(p,d,q)$', 'Verosimilitatea maximă pentru ARFIMA$(p,d,q)$'), items(
     (T('\\textbf{Exact ML} \\refSowell: for Gaussian $x = (x_1, \\dots, x_T)\'$ with covariance matrix $\\Gamma(\\vartheta)$, $\\vartheta = (d, \\phi, \\theta, \\sigma^2)$:', '\\textbf{ML exactă} \\refSowell: pentru $x = (x_1, \\dots, x_T)\'$ gaussian, cu matricea de covarianță $\\Gamma(\\vartheta)$, $\\vartheta = (d, \\phi, \\theta, \\sigma^2)$:'),
      [T('$\\ell(\\vartheta) = -\\frac{T}{2}\\log 2\\pi - \\frac12\\log\\det\\Gamma(\\vartheta) - \\frac12 (x - \\mu)\'\\Gamma(\\vartheta)^{-1}(x - \\mu)$', '$\\ell(\\vartheta) = -\\frac{T}{2}\\log 2\\pi - \\frac12\\log\\det\\Gamma(\\vartheta) - \\frac12 (x - \\mu)\'\\Gamma(\\vartheta)^{-1}(x - \\mu)$'),
+      T('$\\ell$: the log-likelihood; $\\mu$: the vector of means; $\\Gamma(\\vartheta)$: the $T \\times T$ matrix of the ARFIMA autocovariances', '$\\ell$: logaritmul verosimilității; $\\mu$: vectorul mediilor; $\\Gamma(\\vartheta)$: matricea $T \\times T$ a autocovarianțelor ARFIMA'),
       T('$\\Gamma$ comes from the ARFIMA autocovariances; the Durbin--Levinson recursion evaluates $\\ell$ in $O(T^2)$ operations', '$\\Gamma$ provine din autocovarianțele ARFIMA; recurența Durbin--Levinson calculează $\\ell$ în $O(T^2)$ operații')]),
     (T('\\textbf{Whittle} (approximate) ML \\refFT: replace the likelihood by $-\\frac12\\sum_j\\bigl[\\log f(\\lambda_j;\\vartheta) + I(\\lambda_j)/f(\\lambda_j;\\vartheta)\\bigr]$ over all Fourier frequencies', '\\textbf{Whittle} (ML aproximativă) \\refFT: înlocuim verosimilitatea cu $-\\frac12\\sum_j\\bigl[\\log f(\\lambda_j;\\vartheta) + I(\\lambda_j)/f(\\lambda_j;\\vartheta)\\bigr]$ pe toate frecvențele Fourier'),
-     [T('fast ($O(T\\log T)$ with the FFT, the fast Fourier transform), close to exact ML in large samples', 'rapidă ($O(T\\log T)$ cu FFT, transformata Fourier rapidă), apropiată de ML exactă în eșantioane mari')]),
+     [T('$f(\\lambda_j;\\vartheta)$: the spectral density implied by the parameters $\\vartheta$', '$f(\\lambda_j;\\vartheta)$: densitatea spectrală implicată de parametrii $\\vartheta$'),
+      T('fast ($O(T\\log T)$ with the FFT, the fast Fourier transform), close to exact ML in large samples', 'rapidă ($O(T\\log T)$ cu FFT, transformata Fourier rapidă), apropiată de ML exactă în eșantioane mari')]),
     T('Parametric estimators are efficient (SE about $\\sqrt{6}/(\\pi\\sqrt T)$ for ARFIMA$(0,d,0)$) only if the ARMA orders are right; choose $p$, $q$ by AIC/BIC', 'Estimatorii parametrici sînt eficienți (SE în jur de $\\sqrt{6}/(\\pi\\sqrt T)$ pentru ARFIMA$(0,d,0)$) doar dacă ordinele ARMA sînt corecte; alegem $p$, $q$ după AIC/BIC')), size='footnotesize')
 
 chart(T('Monte Carlo: five estimators of $d$', 'Monte Carlo: cinci estimatori ai lui $d$'), 'tsa_ch8_mc', 'TSA_ch8_monte_carlo', [
@@ -682,7 +689,7 @@ D.frame(T('Romanian inflation: ARMA or ARFIMA?', 'Inflația din România: ARMA s
      'ARFIMA(1,$d$,1) & @{ft.ARFIMA1d1.d} & @{ft.ARFIMA1d1.phi} / @{ft.ARFIMA1d1.th} & @{ft.ARFIMA1d1.ll} & @{ft.ARFIMA1d1.aic} & @{ft.ARFIMA1d1.bic}'],
     size='scriptsize') + items(
     T('Romanian monthly HICP inflation, seasonally adjusted, $T = @{ft.T}$ months (2005--2026); $\\ell$: maximised log-likelihood; bold: the smallest criterion', 'Inflația lunară IAPC din România, ajustată sezonier, $T = @{ft.T}$ de luni (2005--2026); $\\ell$: logaritmul verosimilității maximizate; aldin: cel mai mic criteriu'),
-    T('ARFIMA$(0,d,0)$ wins with one parameter: $\\hat d = @{ft.ARFIMA0d0.d}$ (SE @{ft.se}); adding $\\phi$ or $\\theta$ barely changes $\\ell$', 'ARFIMA$(0,d,0)$ cîștigă cu un singur parametru: $\\hat d = @{ft.ARFIMA0d0.d}$ (SE @{ft.se}); adăugarea lui $\\phi$ sau $\\theta$ abia schimbă $\\ell$'),
+    T('ARFIMA$(0,d,0)$ wins with one parameter: $\\hat d = @{ft.ARFIMA0d0.d}$ (SE @{ft.se}); adding $\\phi$ or $\\theta$ barely changes $\\ell$', 'ARFIMA$(0,d,0)$ are cele mai mici criterii, cu un singur parametru: $\\hat d = @{ft.ARFIMA0d0.d}$ (SE @{ft.se}); adăugarea lui $\\phi$ sau $\\theta$ abia schimbă $\\ell$'),
     T('The best ARMA needs $\\phi = @{ft.ARMA11.phi}$ close to 1 and a cancelling MA term to imitate the slow decay', 'Cel mai bun ARMA are nevoie de $\\phi = @{ft.ARMA11.phi}$, aproape de 1, și de un termen MA care îl compensează, pentru a imita descreșterea lentă')))
 
 chart(T('Romanian inflation: fitted autocorrelations', 'Inflația din România: autocorelațiile modelelor estimate'), 'tsa_ch8_arfima_fit', 'TSA_ch8_estimation', [
@@ -690,7 +697,7 @@ chart(T('Romanian inflation: fitted autocorrelations', 'Inflația din România: 
     h='0.7\\textheight')
 
 interp(('the fitted ACF', 'ACF a modelelor estimate'), [
-    (T('At lag 12: sample @{ft.r12}, ARFIMA @{ft.d12}, ARMA(1,1) @{ft.a12}; at lag 24: @{ft.r24}, @{ft.d24} and @{ft.a24}', 'La decalajul 12: în eșantion @{ft.r12}, ARFIMA @{ft.d12}, ARMA(1,1) @{ft.a12}; la decalajul 24: @{ft.r24}, @{ft.d24} și @{ft.a24}'),
+    (T('At lag 12: sample @{ft.r12}, ARFIMA @{ft.d12}, ARMA(1,1) @{ft.a12}; at lag 24: @{ft.r24}, @{ft.d24} and @{ft.a24}', 'La lagul 12: în eșantion @{ft.r12}, ARFIMA @{ft.d12}, ARMA(1,1) @{ft.a12}; la lagul 24: @{ft.r24}, @{ft.d24} și @{ft.a24}'),
      [T('the two models agree on the first year and disagree on the second: their long-horizon forecasts will differ', 'cele două modele sînt de acord pentru primul an și diferă pentru al doilea: prognozele lor pe termen lung vor fi diferite')]),
     T('The ARFIMA curve matches the slow tail with one parameter; the ARMA curve goes to zero exponentially', 'Curba ARFIMA reproduce coada lentă cu un singur parametru; curba ARMA tinde exponențial spre zero'),
     T('Seasonal adjustment matters: a seasonal peak near the lowest frequencies would distort $\\hat d$ (Chapter 4)', 'Ajustarea sezonieră contează: un vîrf sezonier aproape de cele mai joase frecvențe ar distorsiona $\\hat d$ (Capitolul 4)')])
@@ -712,8 +719,8 @@ interp(('the table', 'tabelului'), [
 D.recap(('Estimating $d$', 'estimarea lui $d$'), [
     T('R/S and DFA: slopes of log--log plots, graphical, biased in small samples', 'R/S și DFA: pantele unor grafice log--log, instrumente grafice, deplasate în eșantioane mici'),
     T('GPH and local Whittle: regressions or likelihoods on the $m$ lowest frequencies; report several $m$', 'GPH și Whittle local: regresii sau verosimilități pe cele mai joase $m$ frecvențe; raportați mai multe valori ale lui $m$'),
-    T('Exact ML and Whittle: efficient if the ARMA part is right; short memory can masquerade as $d$', 'ML exactă și Whittle: eficienți dacă partea ARMA este corectă; memoria scurtă se poate deghiza în $d$'),
-    T('Romanian monthly inflation: ARFIMA$(0,d,0)$ with $\\hat d = @{ft.ARFIMA0d0.d}$ beats ARMA by AIC and BIC', 'Inflația lunară din România: ARFIMA$(0,d,0)$ cu $\\hat d = @{ft.ARFIMA0d0.d}$ bate ARMA după AIC și BIC')])
+    T('Exact ML and Whittle: efficient if the ARMA part is right; short memory can masquerade as $d$', 'ML exactă și Whittle: eficienți dacă partea ARMA este corectă; memoria scurtă poate fi confundată cu $d$'),
+    T('Romanian monthly inflation: ARFIMA$(0,d,0)$ with $\\hat d = @{ft.ARFIMA0d0.d}$ beats ARMA by AIC and BIC', 'Inflația lunară din România: ARFIMA$(0,d,0)$ cu $\\hat d = @{ft.ARFIMA0d0.d}$ este preferat modelelor ARMA după AIC și BIC')])
 
 # =============================================================================
 # 5. PROGNOZA
@@ -722,11 +729,12 @@ D.section('Forecasting with ARFIMA', 'Prognoza cu ARFIMA')
 
 D.frame(T('Forecasts from the AR($\\infty$) form', 'Prognoze din forma AR($\\infty$)'), items(
     (T('An invertible ARFIMA can be written as $\\pi(L)(x_t - \\mu) = \\varepsilon_t$, with $\\pi(L) = \\phi(L)(1-L)^d/\\theta(L) = \\sum_k\\pi_kL^k$', 'Un ARFIMA inversabil se poate scrie $\\pi(L)(x_t - \\mu) = \\varepsilon_t$, cu $\\pi(L) = \\phi(L)(1-L)^d/\\theta(L) = \\sum_k\\pi_kL^k$'),
-     [T('one step: $\\hat x_{T+1} = \\mu - \\sum_{k=1}^{T}\\pi_k(x_{T+1-k} - \\mu)$; $h$ steps: the same recursion, with forecasts in place of unknown values', 'un pas: $\\hat x_{T+1} = \\mu - \\sum_{k=1}^{T}\\pi_k(x_{T+1-k} - \\mu)$; $h$ pași: aceeași recurență, cu prognoze în locul valorilor necunoscute')]),
+     [T('$\\pi_k$: the AR($\\infty$) weights (for ARFIMA$(0,d,0)$, the weights of $(1-L)^d$); $\\hat x_{T+h}$: the forecast made at $T$ for $T + h$', '$\\pi_k$: ponderile AR($\\infty$) (pentru ARFIMA$(0,d,0)$, ponderile lui $(1-L)^d$); $\\hat x_{T+h}$: prognoza făcută la $T$ pentru $T + h$'),
+      T('one step: $\\hat x_{T+1} = \\mu - \\sum_{k=1}^{T}\\pi_k(x_{T+1-k} - \\mu)$; $h$ steps: the same recursion, with forecasts in place of unknown values', 'un pas: $\\hat x_{T+1} = \\mu - \\sum_{k=1}^{T}\\pi_k(x_{T+1-k} - \\mu)$; $h$ pași: aceeași recurență, cu prognoze în locul valorilor necunoscute')]),
     (T('Example, ARFIMA$(0,0.4,0)$: $-\\pi_k = 0.4,\\ 0.12,\\ 0.064,\\ 0.042, \\dots$', 'Exemplu, ARFIMA$(0;\\ 0{,}4;\\ 0)$: $-\\pi_k = 0{,}4;\\ 0{,}12;\\ 0{,}064;\\ 0{,}042;\\ \\dots$'),
      [T('$\\hat x_{T+1} - \\mu = 0.4(x_T - \\mu) + 0.12(x_{T-1} - \\mu) + 0.064(x_{T-2} - \\mu) + \\dots$: the whole history counts', '$\\hat x_{T+1} - \\mu = 0{,}4(x_T - \\mu) + 0{,}12(x_{T-1} - \\mu) + 0{,}064(x_{T-2} - \\mu) + \\dots$: contează toată istoria'),
       T('an AR(1) uses only $x_T$; after a long period above the mean the ARFIMA forecast stays higher, for longer', 'un AR(1) folosește doar $x_T$; după o perioadă lungă peste medie, prognoza ARFIMA rămîne mai sus, mai mult timp')]),
-    T('Forecasts revert to $\\mu$ hyperbolically; the forecast error variance $\\sigma^2\\sum_{j<h}\\psi_j^2$ grows slowly towards $\\gamma(0)$ \\refRay', 'Prognozele revin la $\\mu$ hiperbolic; varianța erorii de prognoză $\\sigma^2\\sum_{j<h}\\psi_j^2$ crește lent spre $\\gamma(0)$ \\refRay')))
+    T('Forecasts revert to $\\mu$ hyperbolically; the forecast error variance $\\sigma^2\\sum_{j<h}\\psi_j^2$ ($\\psi_j$: the MA($\\infty$) weights) grows slowly towards $\\gamma(0)$ \\refRay', 'Prognozele revin la $\\mu$ hiperbolic; varianța erorii de prognoză $\\sigma^2\\sum_{j<h}\\psi_j^2$ ($\\psi_j$: ponderile MA($\\infty$)) crește lent spre $\\gamma(0)$ \\refRay')))
 
 chart(T('US inflation: ARFIMA and AR forecasts', 'Inflația din SUA: prognoze ARFIMA și AR'), 'tsa_ch8_forecast_path', 'TSA_ch8_forecasting', [
     T('US monthly CPI inflation, annualised, $T = @{fp.T}$ months up to @{fp.lastd}; ARFIMA(1,$d$,0) estimated by Whittle; AR($p$) with $p$ by AIC; 36 months ahead',
@@ -734,28 +742,28 @@ chart(T('US inflation: ARFIMA and AR forecasts', 'Inflația din SUA: prognoze AR
     h='0.7\\textheight')
 
 interp(('the two forecasts', 'celor două prognoze'), [
-    (T('ARFIMA: $\\hat d = @{fp.d}$, $\\hat\\phi = @{fp.phi}$; AR: $p = @{fp.p}$ lags, the largest allowed', 'ARFIMA: $\\hat d = @{fp.d}$, $\\hat\\phi = @{fp.phi}$; AR: $p = @{fp.p}$ decalaje, numărul maxim permis'),
-     [T('the AR needs a year of lags to imitate what $d$ does with one parameter', 'AR are nevoie de un an de decalaje pentru a imita ce face $d$ cu un singur parametru')]),
+    (T('ARFIMA: $\\hat d = @{fp.d}$, $\\hat\\phi = @{fp.phi}$; AR: $p = @{fp.p}$ lags, the largest allowed', 'ARFIMA: $\\hat d = @{fp.d}$, $\\hat\\phi = @{fp.phi}$; AR: $p = @{fp.p}$ laguri, numărul maxim permis'),
+     [T('the AR needs a year of lags to imitate what $d$ does with one parameter', 'AR are nevoie de un an de laguri pentru a imita ce face $d$ cu un singur parametru')]),
     (T('Last 12 months average @{fp.m12}\\%; the forecasts: @{fp.fa1}\\% and @{fp.fr1}\\% next month, @{fp.fa12}\\% and @{fp.fr12}\\% in a year, @{fp.fa36}\\% and @{fp.fr36}\\% in three years', 'Media ultimelor 12 luni @{fp.m12}\\%; prognozele: @{fp.fa1}\\% și @{fp.fr1}\\% luna viitoare, @{fp.fa12}\\% și @{fp.fr12}\\% peste un an, @{fp.fa36}\\% și @{fp.fr36}\\% peste trei ani'),
      [T('both approach the long-run mean @{fp.mean}\\%; the paths differ little because the AR(12) already carries a long memory', 'ambele se apropie de media pe termen lung @{fp.mean}\\%; traiectoriile diferă puțin, deoarece AR(12) poartă deja o memorie lungă')]),
     T('Whether the long-run mean of 1947--2026 is the right anchor today is a question about regimes, not about $d$', 'Dacă media pe termen lung din 1947--2026 este ancora potrivită azi este o întrebare despre regimuri, nu despre $d$')])
 
-chart(T('Does long memory improve forecasts?', 'Îmbunătățește memoria lungă prognozele?'), 'tsa_ch8_forecast', 'TSA_ch8_forecasting', [
+chart(T('Does long memory improve forecasts?', 'Contribuția memoriei lungi la prognoză'), 'tsa_ch8_forecast', 'TSA_ch8_forecasting', [
     T('Pseudo out-of-sample, expanding window: Romania @{fc.ro.n} origins (@{fc.ro.f0}--@{fc.ro.f1}), seasonal adjustment inside each window; United States @{fc.us.n} origins (@{fc.us.f0}--@{fc.us.f1}). RMSE relative to AR($p$); below 1: better',
       'În afara eșantionului, fereastră extinsă: România @{fc.ro.n} de origini (@{fc.ro.f0}--@{fc.ro.f1}), ajustare sezonieră în fiecare fereastră; Statele Unite @{fc.us.n} de origini (@{fc.us.f0}--@{fc.us.f1}). RMSE relativ la AR($p$); sub 1: mai bun')],
     h='0.7\\textheight')
 
 interp(('the forecast comparison', 'comparației prognozelor'), [
-    (T('Romania: ARFIMA beats the AR at every horizon, by 2--4\\% (ratio @{fc.ro.rel.1} at 1 month, @{fc.ro.rel.12} at 12, @{fc.ro.rel.24} at 24)', 'România: ARFIMA bate AR la toate orizonturile, cu 2--4\\% (raportul @{fc.ro.rel.1} la o lună, @{fc.ro.rel.12} la 12, @{fc.ro.rel.24} la 24)'),
+    (T('Romania: ARFIMA beats the AR at every horizon, by 2--4\\% (ratio @{fc.ro.rel.1} at 1 month, @{fc.ro.rel.12} at 12, @{fc.ro.rel.24} at 24)', 'România: ARFIMA este mai precis decît AR la toate orizonturile, cu 2--4\\% (raportul @{fc.ro.rel.1} la o lună, @{fc.ro.rel.12} la 12, @{fc.ro.rel.24} la 24)'),
      [T('RMSE at 12 months: ARFIMA @{fc.ro.ARFIMA.12}, AR @{fc.ro.AR.12}, mean @{fc.ro.Mean.12}, random walk @{fc.ro.RW.12} (pp per month)', 'RMSE la 12 luni: ARFIMA @{fc.ro.ARFIMA.12}, AR @{fc.ro.AR.12}, media @{fc.ro.Mean.12}, mers aleator @{fc.ro.RW.12} (pp pe lună)')]),
-    (T('United States: ratios between @{fc.us.rel.6} and @{fc.us.rel.12}: practically a tie with a rich AR($p$)', 'Statele Unite: rapoarte între @{fc.us.rel.6} și @{fc.us.rel.12}: practic egalitate cu un AR($p$) bogat'),
+    (T('United States: ratios between @{fc.us.rel.6} and @{fc.us.rel.12}: practically a tie with a rich AR($p$)', 'Statele Unite: rapoarte între @{fc.us.rel.6} și @{fc.us.rel.12}: practic aceeași precizie ca un AR($p$) cu multe laguri'),
      [T('the random walk is far worse at all horizons beyond one month', 'mersul aleator este mult mai slab la toate orizonturile de peste o lună')]),
     T('Long memory gives modest, steady gains; the large errors come from regime changes (2008, 2021--2022) that no linear model foresees; test the gains with Diebold--Mariano (Chapter 4)', 'Memoria lungă aduce cîștiguri modeste, dar constante; erorile mari provin din schimbări de regim (2008, 2021--2022) pe care niciun model liniar nu le anticipează; testați cîștigurile cu Diebold--Mariano (Capitolul 4)')])
 
 D.recap(('Forecasting with ARFIMA', 'prognoza cu ARFIMA'), [
     T('Forecasts from the AR($\\infty$) weights $\\pi_k$: the whole history counts', 'Prognoze din ponderile AR($\\infty$) $\\pi_k$: contează toată istoria'),
     T('Hyperbolic return to the mean; slowly growing forecast uncertainty', 'Revenire hiperbolică la medie; incertitudinea prognozei crește lent'),
-    T('Inflation: small gains over AR in Romania, a tie in the United States', 'Inflația: cîștiguri mici față de AR în România, egalitate în Statele Unite')])
+    T('Inflation: small gains over AR in Romania, a tie in the United States', 'Inflația: cîștiguri mici față de AR în România, aceeași precizie în Statele Unite')])
 
 # =============================================================================
 # 6. MEMORIA LUNGĂ A VOLATILITĂȚII
@@ -765,19 +773,19 @@ D.section('Long memory in volatility', 'Memoria lungă a volatilității')
 D.frame(T('Case study: Ding, Granger and Engle (1993)', 'Studiu de caz: Ding, Granger și Engle (1993)'), two(
     ph('engle', T('Robert F. Engle, Nobel Prize 2003 with Clive Granger', 'Robert F. Engle, Premiul Nobel 2003, împreună cu Clive Granger'), h='0.44\\textheight'),
     items((T('\\refDGE: daily S\\&P 500 returns, 1928--1991', '\\refDGE: randamentele zilnice S\\&P 500, 1928--1991'),
-           [T('returns are almost uncorrelated, but $|r_t|^\\delta$ is autocorrelated for thousands of lags, most strongly for $\\delta \\approx 1$', 'randamentele sînt aproape necorelate, dar $|r_t|^\\delta$ este autocorelat pe mii de decalaje, cel mai puternic pentru $\\delta \\approx 1$'),
-            T('the ``long memory property\'\' of stock market returns: memory lives in the size, not in the sign', '„proprietatea de memorie lungă” a randamentelor bursiere: memoria stă în mărime, nu în semn')]),
+           [T('returns are almost uncorrelated, but $|r_t|^\\delta$ is autocorrelated for thousands of lags, most strongly for $\\delta \\approx 1$', 'randamentele sînt aproape necorelate, dar $|r_t|^\\delta$ este autocorelat pe mii de laguri, cel mai puternic pentru $\\delta \\approx 1$'),
+            T('the ``long memory property\'\' of stock market returns: memory lives in the size, not in the sign', '„proprietatea de memorie lungă” a randamentelor bursiere: memoria se află în mărimea randamentelor, nu în semnul lor')]),
           T('A GARCH(1,1) (Chapter 5) implies autocorrelations of $r_t^2$ that fall like $(\\alpha + \\beta)^k$: exponentially', 'Un GARCH(1,1) (Capitolul 5) implică autocorelații ale lui $r_t^2$ care scad ca $(\\alpha + \\beta)^k$: exponențial'),
           T('This led to FIGARCH \\refBBM\\ and, with high-frequency data, to realised volatility models \\refABDL, \\refCorsi', 'Rezultatul a dus la FIGARCH \\refBBM\\ și, cu date de înaltă frecvență, la modelele de volatilitate realizată \\refABDL, \\refCorsi'))))
 
 chart(T('Returns, absolute and squared returns', 'Randamente, randamente absolute și pătrate'), 'tsa_ch8_vol_acf', 'TSA_ch8_volatility_memory', [
     T('Daily log returns of the S\\&P 500 ($T = @{vo.sp500.n}$) and of the BET ($T = @{vo.bet.n}$), 2000--2026; ACF up to lag 250 (one trading year); shaded: $\\pm 1.96/\\sqrt T$',
-      'Randamentele logaritmice zilnice ale S\\&P 500 ($T = @{vo.sp500.n}$) și BET ($T = @{vo.bet.n}$), 2000--2026; ACF pînă la decalajul 250 (un an bursier); zona colorată: $\\pm 1{,}96/\\sqrt T$')],
+      'Randamentele logaritmice zilnice ale S\\&P 500 ($T = @{vo.sp500.n}$) și BET ($T = @{vo.bet.n}$), 2000--2026; ACF pînă la lagul 250 (un an bursier); zona colorată: $\\pm 1{,}96/\\sqrt T$')],
     h='0.7\\textheight')
 
 interp(('the volatility ACF', 'ACF a volatilității'), [
-    (T('S\\&P 500: $|r_t|$ has $\\hat\\rho = @{vo.sp500.a.1}$ at lag 1 and still @{vo.sp500.a.100} at lag 100; @{vo.sp500.a.npos} of 250 lags above the band', 'S\\&P 500: $|r_t|$ are $\\hat\\rho = @{vo.sp500.a.1}$ la decalajul 1 și încă @{vo.sp500.a.100} la decalajul 100; @{vo.sp500.a.npos} din 250 de decalaje deasupra benzii'),
-     [T('BET: @{vo.bet.a.1} at lag 1, @{vo.bet.a.250} at lag 250, @{vo.bet.a.npos} of 250 above the band', 'BET: @{vo.bet.a.1} la decalajul 1, @{vo.bet.a.250} la decalajul 250, @{vo.bet.a.npos} din 250 deasupra benzii')]),
+    (T('S\\&P 500: $|r_t|$ has $\\hat\\rho = @{vo.sp500.a.1}$ at lag 1 and still @{vo.sp500.a.100} at lag 100; @{vo.sp500.a.npos} of 250 lags above the band', 'S\\&P 500: $|r_t|$ are $\\hat\\rho = @{vo.sp500.a.1}$ la lagul 1 și încă @{vo.sp500.a.100} la lagul 100; @{vo.sp500.a.npos} din 250 de laguri deasupra benzii'),
+     [T('BET: @{vo.bet.a.1} at lag 1, @{vo.bet.a.250} at lag 250, @{vo.bet.a.npos} of 250 above the band', 'BET: @{vo.bet.a.1} la lagul 1, @{vo.bet.a.250} la lagul 250, @{vo.bet.a.npos} din 250 deasupra benzii')]),
     (T('$|r_t|$ is more persistent than $r_t^2$, as in \\refDGE; squares are dominated by a few crash days', '$|r_t|$ este mai persistent decît $r_t^2$, ca în \\refDGE; pătratele sînt dominate de cîteva zile de crah'),
      [T('local Whittle for $|r_t|$: @{vo.sp500.alw} (S\\&P 500), @{vo.bet.alw} (BET); after a random shuffle of the days: @{vo.sp500.shuf} and @{vo.bet.shuf}', 'Whittle local pentru $|r_t|$: @{vo.sp500.alw} (S\\&P 500), @{vo.bet.alw} (BET); după o permutare aleatoare a zilelor: @{vo.sp500.shuf} și @{vo.bet.shuf}')]),
     T('The shuffle keeps the distribution and destroys the order: the memory is in the timing of calm and turbulent days, not in fat tails', 'Permutarea păstrează distribuția și distruge ordinea: memoria se află în succesiunea zilelor calme și agitate, nu în cozile groase')])
@@ -795,18 +803,19 @@ chart(T('Monthly realised volatility: ARFIMA or ARMA?', 'Volatilitatea realizat�
 
 interp(('realised volatility', 'volatilității realizate'), [
     (T('All estimators agree: $d$ between 0.36 and 0.47 for both markets (ML @{rv.sp500.ml} and @{rv.bet.ml})', 'Toți estimatorii sînt de acord: $d$ între 0,36 și 0,47 pentru ambele piețe (ML @{rv.sp500.ml} și @{rv.bet.ml})'),
-     [T('BET: ARFIMA fits the slow tail (lag 24: sample @{rv.bet.r24}) and wins on BIC (@{rv.bet.bicf} against @{rv.bet.bica} for ARMA(1,1))', 'BET: ARFIMA reproduce coada lentă (decalajul 24: în eșantion @{rv.bet.r24}) și cîștigă după BIC (@{rv.bet.bicf} față de @{rv.bet.bica} pentru ARMA(1,1))')]),
+     [T('BET: ARFIMA fits the slow tail (lag 24: sample @{rv.bet.r24}) and wins on BIC (@{rv.bet.bicf} against @{rv.bet.bica} for ARMA(1,1))', 'BET: ARFIMA reproduce coada lentă (lagul 24: în eșantion @{rv.bet.r24}) și are un BIC mai mic (@{rv.bet.bicf} față de @{rv.bet.bica} pentru ARMA(1,1))')]),
     (T('S\\&P 500: the sample ACF dies out after about 20 months; ARMA(1,1) with $\\phi = @{rv.sp500.a_phi}$ fits as well (BIC @{rv.sp500.bica} against @{rv.sp500.bicf})', 'S\\&P 500: ACF de selecție se stinge după aproximativ 20 de luni; ARMA(1,1) cu $\\phi = @{rv.sp500.a_phi}$ se potrivește la fel de bine (BIC @{rv.sp500.bica} față de @{rv.sp500.bicf})'),
      [T('with 27 years of data, long memory and a persistent ARMA are hard to tell apart', 'cu 27 de ani de date, memoria lungă și un ARMA persistent sînt greu de deosebit')]),
-    T('The sample ACF of a long-memory series is biased downwards (the sample mean absorbs part of the slow component): judge models by likelihood, not by eye', 'ACF de selecție a unei serii cu memorie lungă este deplasată în jos (media de selecție absoarbe o parte din componenta lentă): judecați modelele după verosimilitate, nu din ochi')])
+    T('The sample ACF of a long-memory series is biased downwards (the sample mean absorbs part of the slow component): judge models by likelihood, not by eye', 'ACF de selecție a unei serii cu memorie lungă este deplasată în jos (media de selecție absoarbe o parte din componenta lentă): judecați modelele după verosimilitate, nu vizual')])
 
 D.frame(T('FIGARCH and HAR', 'FIGARCH și HAR'), items(
     (T('\\textbf{FIGARCH}$(1,d,1)$ \\refBBM: write GARCH(1,1) as an ARMA(1,1) in $\\varepsilon_t^2$ and apply $(1-L)^d$:', '\\textbf{FIGARCH}$(1,d,1)$ \\refBBM: scriem GARCH(1,1) ca ARMA(1,1) în $\\varepsilon_t^2$ și aplicăm $(1-L)^d$:'),
-     [T('$\\sigma_t^2 = \\omega + \\beta\\sigma_{t-1}^2 + \\bigl[1 - \\beta L - (1 - \\phi L)(1-L)^d\\bigr]\\varepsilon_t^2 = \\omega^* + \\sum_{k\\ge1}\\lambda_k\\varepsilon_{t-k}^2$', '$\\sigma_t^2 = \\omega + \\beta\\sigma_{t-1}^2 + \\bigl[1 - \\beta L - (1 - \\phi L)(1-L)^d\\bigr]\\varepsilon_t^2 = \\omega^* + \\sum_{k\\ge1}\\lambda_k\\varepsilon_{t-k}^2$'),
+     [T('$\\sigma_t^2$: the conditional variance; $\\varepsilon_t$: the return shock; $\\omega > 0$, $\\beta$, $\\phi$: GARCH-type parameters (Chapter 5)', '$\\sigma_t^2$: varianța condiționată; $\\varepsilon_t$: șocul randamentului; $\\omega > 0$, $\\beta$, $\\phi$: parametri de tip GARCH (Capitolul 5)'),
+      T('$\\sigma_t^2 = \\omega + \\beta\\sigma_{t-1}^2 + \\bigl[1 - \\beta L - (1 - \\phi L)(1-L)^d\\bigr]\\varepsilon_t^2 = \\omega^* + \\sum_{k\\ge1}\\lambda_k\\varepsilon_{t-k}^2$', '$\\sigma_t^2 = \\omega + \\beta\\sigma_{t-1}^2 + \\bigl[1 - \\beta L - (1 - \\phi L)(1-L)^d\\bigr]\\varepsilon_t^2 = \\omega^* + \\sum_{k\\ge1}\\lambda_k\\varepsilon_{t-k}^2$'),
       T('the ARCH($\\infty$) weights $\\lambda_k$ decay like $k^{-1-d}$; $d = 0$: GARCH, $d = 1$: IGARCH', 'ponderile ARCH($\\infty$) $\\lambda_k$ scad ca $k^{-1-d}$; $d = 0$: GARCH, $d = 1$: IGARCH')]),
     (T('\\textbf{HAR} (heterogeneous autoregressive model) \\refCorsi: $RV_{t+1} = c + \\beta_d RV_t + \\beta_w \\overline{RV}_{t-4:t} + \\beta_m \\overline{RV}_{t-21:t} + u_{t+1}$',
        '\\textbf{HAR} (model autoregresiv heterogen) \\refCorsi: $RV_{t+1} = c + \\beta_d RV_t + \\beta_w \\overline{RV}_{t-4:t} + \\beta_m \\overline{RV}_{t-21:t} + u_{t+1}$'),
-     [T('daily, weekly and monthly averages: traders with three horizons; estimated by OLS', 'medii zilnice, săptămînale și lunare: participanți cu trei orizonturi; estimat prin OLS'),
+     [T('$\\overline{RV}_{t-4:t}$, $\\overline{RV}_{t-21:t}$: averages over the last 5 and 22 days (weekly, monthly); $\\beta_d$, $\\beta_w$, $\\beta_m$: their weights; traders with three horizons; estimated by OLS', '$\\overline{RV}_{t-4:t}$, $\\overline{RV}_{t-21:t}$: mediile pe ultimele 5 și 22 de zile (săptămînală, lunară); $\\beta_d$, $\\beta_w$, $\\beta_m$: ponderile lor; participanți cu trei orizonturi; estimat prin OLS'),
       T('not a long-memory model, but three steps that imitate a power law over the horizons that matter', 'nu este un model cu memorie lungă, ci trei trepte care imită o lege de putere pe orizonturile relevante')]),
     T('Both answer the failure of GARCH from Chapter 5: volatility shocks die out too fast in GARCH', 'Ambele răspund unei slăbiciuni a modelului GARCH din Capitolul 5: în GARCH șocurile volatilității se sting prea repede')))
 
@@ -820,11 +829,11 @@ interp(('FIGARCH and HAR', 'modelelor FIGARCH și HAR'), [
      [T('weight of a shock 100 days ago in today\'s variance: GARCH $@{vm.sp500.w100g}$, FIGARCH $@{vm.sp500.w100f} \\cdot 10^{-4}$ (S\\&P 500): three orders of magnitude more', 'ponderea unui șoc de acum 100 de zile în varianța de azi: GARCH $@{vm.sp500.w100g}$, FIGARCH $@{vm.sp500.w100f} \\cdot 10^{-4}$ (S\\&P 500): cu trei ordine de mărime mai mult')]),
     (T('GARCH reaches persistence by $\\alpha + \\beta = @{vm.sp500.ab}$, near 1: the near-IGARCH result of Chapter 5 is a symptom of long memory', 'GARCH obține persistența prin $\\alpha + \\beta = @{vm.sp500.ab}$, aproape de 1: rezultatul aproape IGARCH din Capitolul 5 este un simptom al memoriei lungi'),
      [T('HAR: $\\hat\\beta_d = @{har.bd}$, $\\hat\\beta_w = @{har.bw}$, $\\hat\\beta_m = @{har.bm}$; the weekly component dominates', 'HAR: $\\hat\\beta_d = @{har.bd}$, $\\hat\\beta_w = @{har.bw}$, $\\hat\\beta_m = @{har.bm}$; componenta săptămînală domină')]),
-    T('The HAR steps (@{har.w1} at lag 1, @{har.w2} at lags 2--5, @{har.w6} at lags 6--22) follow the hyperbolic weights of $(1-L)^d$ with $d = @{har.d}$ from local Whittle', 'Treptele HAR (@{har.w1} la decalajul 1, @{har.w2} la decalajele 2--5, @{har.w6} la decalajele 6--22) urmează ponderile hiperbolice ale lui $(1-L)^d$, cu $d = @{har.d}$ din estimatorul Whittle local')])
+    T('The HAR steps (@{har.w1} at lag 1, @{har.w2} at lags 2--5, @{har.w6} at lags 6--22) follow the hyperbolic weights of $(1-L)^d$ with $d = @{har.d}$ from local Whittle', 'Treptele HAR (@{har.w1} la lagul 1, @{har.w2} la lagurile 2--5, @{har.w6} la lagurile 6--22) urmează ponderile hiperbolice ale lui $(1-L)^d$, cu $d = @{har.d}$ din estimatorul Whittle local')])
 
 D.recap(('Long memory in volatility', 'memoria lungă a volatilității'), [
     T('Returns: $d \\approx 0$; absolute returns and realised volatility: $d \\approx 0.4$', 'Randamente: $d \\approx 0$; randamente absolute și volatilitate realizată: $d \\approx 0{,}4$'),
-    T('The shuffle test: memory in the order of the days, not in the distribution', 'Testul permutării: memoria stă în ordinea zilelor, nu în distribuție'),
+    T('The shuffle test: memory in the order of the days, not in the distribution', 'Testul permutării: memoria se află în ordinea zilelor, nu în distribuție'),
     T('FIGARCH: hyperbolic ARCH($\\infty$) weights; HAR: a simple OLS approximation', 'FIGARCH: ponderi ARCH($\\infty$) hiperbolice; HAR: o aproximare simplă prin OLS')])
 
 # =============================================================================
@@ -833,7 +842,7 @@ D.recap(('Long memory in volatility', 'memoria lungă a volatilității'), [
 D.section('Spurious long memory', 'Memoria lungă aparentă')
 
 D.frame(T('Breaks and regimes look like long memory', 'Rupturile și regimurile seamănă cu memoria lungă'), items(
-    (T('A level shift adds a slow, step-like component: low frequencies gain power and the sample ACF decays slowly', 'O schimbare de nivel adaugă o componentă lentă, în trepte: frecvențele joase cîștigă putere, iar ACF de selecție scade lent'),
+    (T('A level shift adds a slow, step-like component: low frequencies gain power and the sample ACF decays slowly', 'O schimbare de nivel adaugă o componentă lentă, în trepte: crește puterea spectrală la frecvențele joase, iar ACF de selecție scade lent'),
      [T('the same mechanism that makes a broken series look like a unit root (Perron, Chapter 3)', 'același mecanism care face ca o serie cu ruptură să pară cu rădăcină unitară (Perron, Capitolul 3)')]),
     (T('\\refDI: a Markov-switching mean with rare switches is ``observationally equivalent\'\' to long memory', '\\refDI: o medie cu schimbări de regim de tip Markov, cu schimbări rare, este „echivalentă observațional” cu memoria lungă'),
      [T('the fewer the switches in a sample of length $T$, the closer the series looks to $I(d)$', 'cu cît sînt mai puține schimbări într-un eșantion de lungime $T$, cu atît seria seamănă mai mult cu $I(d)$'),
@@ -849,7 +858,7 @@ interp(('the spurious memory', 'memoriei aparente'), [
     (T('One shift of half a standard deviation already gives $\\hat d = @{sp.b05.lw}$ (local Whittle); a shift of one standard deviation gives @{sp.b10.lw}', 'O singură schimbare de o jumătate de abatere standard dă deja $\\hat d = @{sp.b05.lw}$ (Whittle local); o schimbare de o abatere standard dă @{sp.b10.lw}'),
      [T('the break is hard to see by eye in noisy data, yet the estimator reports moderate long memory', 'ruptura se vede greu cu ochiul în date zgomotoase, dar estimatorul raportează o memorie lungă moderată')]),
     (T('Regime switching: with $p = 0.01$ (about @{sp.s001.sw} switches) $\\hat d = @{sp.s001.lw}$; with $p = 0.2$ (frequent switches) $\\hat d = @{sp.s02.lw}$', 'Schimbări de regim: cu $p = 0{,}01$ (aproximativ @{sp.s001.sw} schimbări) $\\hat d = @{sp.s001.lw}$; cu $p = 0{,}2$ (schimbări frecvente) $\\hat d = @{sp.s02.lw}$'),
-     [T('rare regimes look like memory, frequent ones average out into short memory', 'regimurile rare par memorie, cele frecvente se compensează și dau memorie scurtă')]),
+     [T('rare regimes look like memory, frequent ones average out into short memory', 'regimurile rare imită memoria lungă, cele frecvente se compensează și dau memorie scurtă')]),
     T('A significant $\\hat d$ is consistent with long memory and with breaks: other evidence is needed to decide', 'Un $\\hat d$ semnificativ este compatibil atît cu memoria lungă, cît și cu rupturile: este nevoie de alte dovezi pentru a decide')])
 
 chart(T('The Nile in 1898: memory or a break?', 'Nilul în 1898: memorie sau ruptură?'), 'tsa_ch8_nile_break', 'TSA_ch8_spurious_memory', [
@@ -864,21 +873,21 @@ interp(('the Nile break', 'rupturii Nilului'), [
      [T('for these 100 years one break explains almost all of the memory', 'pentru acești 100 de ani o singură ruptură explică aproape toată memoria')]),
     T('Hurst\'s own evidence came from much longer records (the Roda gauge, from the 7th century); the lesson is to test for breaks before reading $d$', 'Dovezile lui Hurst proveneau din înregistrări mult mai lungi (nilometrul de la Roda, din secolul al VII-lea); lecția: testați rupturile înainte de a interpreta $d$')])
 
-chart(T('Is memory stable over time?', 'Este memoria stabilă în timp?'), 'tsa_ch8_rolling', 'TSA_ch8_spurious_memory', [
+chart(T('Is memory stable over time?', 'Stabilitatea memoriei în timp'), 'tsa_ch8_rolling', 'TSA_ch8_spurious_memory', [
     T('Top: local Whittle $\\hat d$ of US monthly inflation in rolling 20-year windows (dated at the window end); bottom: DFA exponent of daily S\\&P 500 and BET returns in 1000-day windows moved by 21 days; shaded: 95\\% Monte Carlo bands for i.i.d. series \\refWeron',
       'Sus: $\\hat d$ Whittle local pentru inflația lunară din SUA, pe ferestre mobile de 20 de ani (datate la sfîrșitul ferestrei); jos: exponentul DFA al randamentelor zilnice S\\&P 500 și BET, pe ferestre de 1000 de zile mutate cu 21 de zile; zona colorată: benzi Monte Carlo de 95\\% pentru serii i.i.d. \\refWeron')],
     h='0.7\\textheight')
 
 interp(('the rolling estimates', 'estimărilor pe ferestre mobile'), [
     (T('US inflation: $\\hat d$ peaks at @{rl.us.max} in the window ending @{rl.us.maxd} (the Great Inflation and the Volcker disinflation) and falls to @{rl.us.min} (@{rl.us.mind})', 'Inflația din SUA: $\\hat d$ atinge @{rl.us.max} în fereastra care se încheie în @{rl.us.maxd} (Marea Inflație și dezinflația Volcker) și coboară la @{rl.us.min} (@{rl.us.mind})'),
-     [T('in the calm years of inflation targeting $d$ is inside the band of no memory [@{rl.us.lo}, @{rl.us.hi}]; the 2021--2022 surge brings it back to @{rl.us.last}', 'în anii calmi ai țintirii inflației $d$ se află în banda fără memorie [@{rl.us.lo}, @{rl.us.hi}]; puseul din 2021--2022 îl readuce la @{rl.us.last}')]),
+     [T('in the calm years of inflation targeting $d$ is inside the band of no memory [@{rl.us.lo}, @{rl.us.hi}]; the 2021--2022 surge brings it back to @{rl.us.last}', 'în anii calmi ai țintirii inflației $d$ se află în banda fără memorie [@{rl.us.lo}, @{rl.us.hi}]; creșterea bruscă din 2021--2022 îl readuce la @{rl.us.last}')]),
     (T('Returns: the S\\&P 500 exponent stays mostly below 0.5 (minimum @{rl.sp500.min}, @{rl.sp500.mind}); the BET exceeds the band in @{rl.bet.above}\\% of the windows', 'Randamentele: exponentul S\\&P 500 stă mai ales sub 0,5 (minimum @{rl.sp500.min}, @{rl.sp500.mind}); BET depășește banda în @{rl.bet.above}\\% din ferestre'),
      [T('a less liquid market shows some persistence in returns, fading in recent years', 'o piață mai puțin lichidă arată o anumită persistență a randamentelor, care slăbește în ultimii ani')]),
     T('The full-sample US estimate (0.55) mixes regimes: memory that comes and goes with monetary regimes is a sign of breaks, not of a constant $d$', 'Estimarea pe tot eșantionul pentru SUA (0,55) amestecă regimuri: o memorie care apare și dispare odată cu regimurile monetare semnalează rupturi, nu un $d$ constant')])
 
 D.frame(T('Checks against spurious long memory', 'Verificări împotriva memoriei lungi aparente'), items(
     T('Plot the series and test for breaks (Chapter 3: Zivot--Andrews, Bai--Perron); re-estimate $d$ on subsamples and after removing regime means', 'Reprezentați seria grafic și testați rupturile (Capitolul 3: Zivot--Andrews, Bai--Perron); reestimați $d$ pe subeșantioane și după eliminarea mediilor de regim'),
-    T('Report $\\hat d$ for several bandwidths $m$; a value that collapses when $m$ changes is fragile', 'Raportați $\\hat d$ pentru mai multe lățimi de bandă $m$; o valoare care se prăbușește cînd $m$ se schimbă este fragilă'),
+    T('Report $\\hat d$ for several bandwidths $m$; a value that collapses when $m$ changes is fragile', 'Raportați $\\hat d$ pentru mai multe lățimi de bandă $m$; o valoare care se modifică puternic cînd $m$ se schimbă este fragilă'),
     T('Compare ARFIMA with ARMA and with regime-switching models by likelihood and out-of-sample forecasts (Chapter 10)', 'Comparați ARFIMA cu ARMA și cu modele cu schimbare de regim după verosimilitate și prin prognoze în afara eșantionului (Capitolul 10)'),
     T('Use the shuffle test and Monte Carlo bands built for the same sample length', 'Folosiți testul permutării și benzi Monte Carlo construite pentru aceeași lungime a eșantionului'),
     T('Avoid overlapping data (12-month inflation, rolling sums): they create artificial low-frequency power', 'Evitați datele suprapuse (inflația anuală, sumele pe ferestre mobile): ele creează putere artificială la frecvențele joase')))
@@ -898,7 +907,7 @@ D.frame(T('Fractional cointegration', 'Cointegrarea fracționară'), items(
      [T('\\textbf{fractional cointegration}: $x_t, y_t \\sim I(d)$ and $y_t - \\beta x_t \\sim I(d - b)$ with $0 < b \\le d$', '\\textbf{cointegrare fracționară}: $x_t, y_t \\sim I(d)$ și $y_t - \\beta x_t \\sim I(d - b)$, cu $0 < b \\le d$'),
       T('the equilibrium error may itself have long memory: deviations from equilibrium are corrected, but slowly', 'eroarea de echilibru poate avea ea însăși memorie lungă: abaterile de la echilibru sînt corectate, dar lent')]),
     (T('Example: purchasing power parity \\refCL: the real exchange rate reverts to parity with $d$ between 0 and 1', 'Exemplu: paritatea puterii de cumpărare \\refCL: cursul real revine la paritate cu un $d$ între 0 și 1'),
-     [T('the Engle--Granger and Johansen tests of Chapter 7 assume $b = 1$ and may miss such slow adjustment', 'testele Engle--Granger și Johansen din Capitolul 7 presupun $b = 1$ și pot rata o astfel de ajustare lentă')]),
+     [T('the Engle--Granger and Johansen tests of Chapter 7 assume $b = 1$ and may miss such slow adjustment', 'testele Engle--Granger și Johansen din Capitolul 7 presupun $b = 1$ și pot să nu detecteze o astfel de ajustare lentă')]),
     T('Beyond this course; a natural project: estimate $d$ of the residual of a cointegrating regression with local Whittle', 'Dincolo de acest curs; un proiect natural: estimați $d$ al reziduului unei regresii de cointegrare cu estimatorul Whittle local')))
 
 # =============================================================================

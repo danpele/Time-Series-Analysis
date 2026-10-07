@@ -363,7 +363,7 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
      [T('one equation per variable, each with the past of all variables: the vector autoregression (VAR)', 'cîte o ecuație pentru fiecare variabilă, fiecare cu trecutul tuturor variabilelor: modelul vector autoregresiv (VAR)')]),
     (T('\\textbf{Route} of the chapter', '\\textbf{Traseul} capitolului'),
      [T('from one series to several: vector processes and cross-correlations; the VAR$(p)$ model and its stability', 'de la o serie la mai multe: procese vectoriale și corelații încrucișate; modelul VAR$(p)$ și stabilitatea lui'),
-      T('estimation, lag selection and diagnostics; Granger causality and its pitfalls', 'estimare, alegerea numărului de decalaje și diagnosticare; cauzalitatea Granger și capcanele ei'),
+      T('estimation, lag selection and diagnostics; Granger causality and its pitfalls', 'estimare, alegerea numărului de laguri și diagnosticare; cauzalitatea Granger și capcanele ei'),
       T('impulse responses, variance decomposition, forecasts; the structural VAR idea of Sims (1980)', 'funcții de răspuns la impuls, descompunerea varianței, prognoze; ideea VAR-ului structural, Sims (1980)')]),
     T('We build on Chapter 2 (AR models) and Chapter 3 (stationarity tests); Seminar 6 comes before this lecture',
       'Pornim de la Capitolul 2 (modele AR) și de la Capitolul 3 (teste de staționaritate); Seminarul 6 are loc înaintea acestui curs')))
@@ -409,25 +409,27 @@ interp(('the Romanian series', 'seriilor românești'), [
 
 D.frame(T('Vector time series', 'Serii de timp vectoriale'), items(
     (T('\\textbf{Definition}: $\\bY_t = (Y_{1t}, \\dots, Y_{Kt})\'$ collects $K$ series observed at the same dates', '\\textbf{Definiție}: $\\bY_t = (Y_{1t}, \\dots, Y_{Kt})\'$ grupează $K$ serii observate la aceleași date'),
-     [T('example: $\\bY_t = (g_t, \\pi_t, i_t)\'$, GDP growth, inflation and ROBOR 3M of quarter $t$; $K = 3$', 'exemplu: $\\bY_t = (g_t, \\pi_t, i_t)\'$, creșterea PIB-ului, inflația și ROBOR 3M din trimestrul $t$; $K = 3$')]),
+     [T('example: $\\bY_t = (g_t, \\pi_t, i_t)\'$, GDP growth, inflation and ROBOR 3M of quarter $t$; $K = 3$', 'exemplu: $\\bY_t = (g_t, \\pi_t, i_t)\'$, creșterea PIB-ului, inflația și ROBOR 3M din trimestrul $t$; $K = 3$'),
+      T('$Y_{jt}$: the value of series $j$ at date $t$; the prime $\'$ denotes the transpose (a column vector)', '$Y_{jt}$: valoarea seriei $j$ la data $t$; apostroful $\'$ notează transpusa (un vector coloană)')]),
     (T('\\textbf{Mean vector}: $\\boldsymbol{\\mu} = E[\\bY_t]$, $K \\times 1$', '\\textbf{Vectorul mediilor}: $\\boldsymbol{\\mu} = E[\\bY_t]$, de dimensiune $K \\times 1$'),
      [T('\\textbf{autocovariance matrix} at lag $h$: $\\bGamma(h) = \\Cov(\\bY_t, \\bY_{t-h}) = E[(\\bY_t - \\boldsymbol{\\mu})(\\bY_{t-h} - \\boldsymbol{\\mu})\']$, $K \\times K$',
-        '\\textbf{matricea de autocovarianță} la decalajul $h$: $\\bGamma(h) = \\Cov(\\bY_t, \\bY_{t-h}) = E[(\\bY_t - \\boldsymbol{\\mu})(\\bY_{t-h} - \\boldsymbol{\\mu})\']$, $K \\times K$'),
+        '\\textbf{matricea de autocovarianță} la lagul $h$: $\\bGamma(h) = \\Cov(\\bY_t, \\bY_{t-h}) = E[(\\bY_t - \\boldsymbol{\\mu})(\\bY_{t-h} - \\boldsymbol{\\mu})\']$, $K \\times K$'),
       T('diagonal: the autocovariances of each series (Chapter 1); off-diagonal: \\textbf{cross-covariances} $\\gamma_{jk}(h) = \\Cov(Y_{jt}, Y_{k,t-h})$', 'diagonala: autocovarianțele fiecărei serii (Capitolul 1); în afara diagonalei: \\textbf{covarianțele încrucișate} $\\gamma_{jk}(h) = \\Cov(Y_{jt}, Y_{k,t-h})$')]),
     (T('\\textbf{Weak stationarity}: $\\boldsymbol{\\mu}$ and $\\bGamma(h)$ do not depend on $t$', '\\textbf{Staționaritate slabă}: $\\boldsymbol{\\mu}$ și $\\bGamma(h)$ nu depind de $t$'),
      [T('$\\bGamma(h)$ is not symmetric, but $\\bGamma(-h) = \\bGamma(h)\'$: ``$Y_1$ leads $Y_2$\'\' and ``$Y_2$ leads $Y_1$\'\' are different statements', '$\\bGamma(h)$ nu este simetrică, dar $\\bGamma(-h) = \\bGamma(h)\'$: „$Y_1$ precedă $Y_2$” și „$Y_2$ precedă $Y_1$” sînt afirmații diferite')])))
 
 D.frame(T('The cross-correlation function', 'Funcția de corelație încrucișată'), items(
     (T('\\textbf{Definition}: $\\rho_{yx}(k) = \\Corr(y_t, x_{t-k}) = \\gamma_{yx}(k)/(\\sigma_y\\sigma_x)$, for $k = 0, \\pm 1, \\pm 2, \\dots$', '\\textbf{Definiție}: $\\rho_{yx}(k) = \\Corr(y_t, x_{t-k}) = \\gamma_{yx}(k)/(\\sigma_y\\sigma_x)$, pentru $k = 0, \\pm 1, \\pm 2, \\dots$'),
-     [T('the cross-correlation function (CCF): $k > 0$: past $x$ with today\'s $y$ ($x$ leads); $k < 0$: $y$ leads', 'funcția de corelație încrucișată (CCF): $k > 0$: $x$ din trecut cu $y$ de azi ($x$ precedă); $k < 0$: $y$ precedă')]),
+     [T('the cross-correlation function (CCF): $k > 0$: past $x$ with today\'s $y$ ($x$ leads); $k < 0$: $y$ leads', 'funcția de corelație încrucișată (CCF): $k > 0$: $x$ din trecut cu $y$ de azi ($x$ precedă); $k < 0$: $y$ precedă'),
+      T('$\\gamma_{yx}(k) = \\Cov(y_t, x_{t-k})$: the cross-covariance; $\\sigma_y$, $\\sigma_x$: the standard deviations of the two series', '$\\gamma_{yx}(k) = \\Cov(y_t, x_{t-k})$: covarianța încrucișată; $\\sigma_y$, $\\sigma_x$: abaterile standard ale celor două serii')]),
     (T('Sample version: $\\hat\\rho_{yx}(k)$, the correlation of the pairs $(y_t, x_{t-k})$', 'Versiunea de eșantion: $\\hat\\rho_{yx}(k)$, corelația perechilor $(y_t, x_{t-k})$'),
-     [T('if the two series are independent white noises, $\\hat\\rho_{yx}(k) \\approx N(0, 1/T)$: bands $\\pm 1.96/\\sqrt{T}$', 'dacă cele două serii sînt zgomote albe independente, $\\hat\\rho_{yx}(k) \\approx N(0, 1/T)$: benzile $\\pm 1{,}96/\\sqrt{T}$'),
+     [T('if the two series are independent white noises, $\\hat\\rho_{yx}(k) \\approx N(0, 1/T)$, with $T$ the number of observations: bands $\\pm 1.96/\\sqrt{T}$', 'dacă cele două serii sînt zgomote albe independente, $\\hat\\rho_{yx}(k) \\approx N(0, 1/T)$, unde $T$ este numărul de observații: benzile $\\pm 1{,}96/\\sqrt{T}$'),
       T('with autocorrelated series the bands are too narrow: spurious lead--lag patterns (compare Chapter 3, spurious regression)', 'pentru serii autocorelate benzile sînt prea înguste: apar relații false de precedență (comparați cu Capitolul 3, regresia falsă)')]),
-    T('The CCF looks at one pair and one lag at a time; a VAR looks at all variables and all lags together', 'CCF privește o pereche și un decalaj pe rînd; un VAR privește împreună toate variabilele și toate decalajele')))
+    T('The CCF looks at one pair and one lag at a time; a VAR looks at all variables and all lags together', 'CCF privește o pereche și un lag pe rînd; un VAR privește împreună toate variabilele și toate lagurile')))
 
 chart(T('Cross-correlations: markets and Romanian macro data', 'Corelații încrucișate: piețe și date macroeconomice românești'), 'tsa_ch6_ccf', 'TSA_ch6_multivariate_data', [
     T('Left: daily log returns (EODHD), @{cc.T} common trading days, 2000--2026; bars: $\\Corr(\\text{DAX}_t, \\text{S\\&P}_{t-k})$ and $\\Corr(\\text{BET}_t, \\text{S\\&P}_{t-k})$. Right: quarterly ROBOR 3M against lags of inflation',
-      'Stînga: randamente logaritmice zilnice (EODHD), @{cc.T} de zile comune de tranzacționare, 2000--2026; bare: $\\Corr(\\text{DAX}_t, \\text{S\\&P}_{t-k})$ și $\\Corr(\\text{BET}_t, \\text{S\\&P}_{t-k})$. Dreapta: ROBOR 3M trimestrial față de decalajele inflației')],
+      'Stînga: randamente logaritmice zilnice (EODHD), @{cc.T} de zile comune de tranzacționare, 2000--2026; bare: $\\Corr(\\text{DAX}_t, \\text{S\\&P}_{t-k})$ și $\\Corr(\\text{BET}_t, \\text{S\\&P}_{t-k})$. Dreapta: ROBOR 3M trimestrial față de lagurile inflației')],
     h='0.56\\textheight')
 
 interp(('the cross-correlations', 'corelațiilor încrucișate'), [
@@ -496,26 +498,26 @@ interp(('the simulated VAR(1)', 'VAR(1) simulat'), [
     (T('A unit shock to $y_1$ reaches $y_2$ one period later ($a_{21} = 0.3$), then both fade', 'Un șoc unitar în $y_1$ ajunge la $y_2$ după o perioadă ($a_{21} = 0{,}3$), apoi ambele se sting'),
      [T('the decay is governed by the largest eigenvalue of $\\bA$, @{wx.l1}: after 5 periods about $0.7^5 \\approx 0.17$ of the effect remains', 'stingerea este guvernată de cea mai mare valoare proprie a lui $\\bA$, @{wx.l1}: după 5 perioade rămîne circa $0{,}7^5 \\approx 0{,}17$ din efect')])])
 
-D.frame(T('How many parameters?', 'Cîți parametri?'), items(
+D.frame(T('How many parameters?', 'Numărul de parametri'), items(
     (T('A VAR$(p)$ with $K$ variables and a constant: $K + pK^2$ coefficients, plus $K(K+1)/2$ in $\\bSigma$', 'Un VAR$(p)$ cu $K$ variabile și termen liber: $K + pK^2$ coeficienți, plus $K(K+1)/2$ în $\\bSigma$'),
      [T('each equation has $1 + pK$ regressors', 'fiecare ecuație are $1 + pK$ regresori'),
-      T('Romanian VAR: $K = 3$, $p = 2$: $3 + 2 \\cdot 9 = @{ex.k3p2}$ coefficients estimated on @{e.n} quarters', 'VAR-ul românesc: $K = 3$, $p = 2$: $3 + 2 \\cdot 9 = @{ex.k3p2}$ coeficienți estimați pe @{e.n} trimestre')]),
+      T('Romanian VAR: $K = 3$, $p = 2$: $3 + 2 \\cdot 9 = @{ex.k3p2}$ coefficients estimated on @{e.n} quarters', 'VAR-ul românesc: $K = 3$, $p = 2$: $3 + 2 \\cdot 9 = @{ex.k3p2}$ de coeficienți estimați pe @{e.n} de trimestre')]),
     (T('\\textbf{The curse of dimensionality}: $K = 5$, $p = 4$: $5 + 4 \\cdot 25 = @{ex.k5p4}$ coefficients', '\\textbf{Blestemul dimensionalității}: $K = 5$, $p = 4$: $5 + 4 \\cdot 25 = @{ex.k5p4}$ de coeficienți'),
      [T('with 25 years of quarterly data (100 observations) each equation has 21 regressors and 79 residual degrees of freedom', 'cu 25 de ani de date trimestriale (100 de observații) fiecare ecuație are 21 de regresori și 79 de grade de libertate reziduale')]),
-    T('Hence small VARs (3--6 variables), few lags, and estimates with large standard errors; individual coefficients are rarely interpreted', 'De aici VAR-uri mici (3--6 variabile), puține decalaje și estimări cu erori standard mari; coeficienții individuali se interpretează rar')))
+    T('Hence small VARs (3--6 variables), few lags, and estimates with large standard errors; individual coefficients are rarely interpreted', 'De aici VAR-uri mici (3--6 variabile), puține laguri și estimări cu erori standard mari; coeficienții individuali se interpretează rar')))
 
 D.frame(T('Christopher Sims and "Macroeconomics and Reality"', 'Christopher Sims și „Macroeconomics and Reality”'), '\\begin{columns}[T]\n\\begin{column}{0.38\\textwidth}\n'
         + ph('sims', T('Christopher A. Sims, Nobel Prize in Economics 2011', 'Christopher A. Sims, Premiul Nobel pentru economie 2011'), h='0.56\\textheight')
         + '\n\\end{column}\n\\begin{column}{0.6\\textwidth}\n' + items(
-            (T('\\refSims: the large macro models of the 1970s imposed ``incredible\'\' restrictions (which variables are exogenous, which lags are zero)', '\\refSims: marile modele macroeconomice din anii 1970 impuneau restricții „incredibile” (ce variabile sînt exogene, ce decalaje sînt nule)'),
-             [T('his proposal: let the data speak with an unrestricted VAR, then add only the few assumptions needed to interpret shocks', 'propunerea lui: lăsăm datele să vorbească printr-un VAR nerestricționat, apoi adăugăm doar puținele ipoteze necesare pentru interpretarea șocurilor')]),
+            (T('\\refSims: the large macro models of the 1970s imposed ``incredible\'\' restrictions (which variables are exogenous, which lags are zero)', '\\refSims: marile modele macroeconomice din anii 1970 impuneau restricții „incredibile” (ce variabile sînt exogene, ce laguri sînt nule)'),
+             [T('his proposal: let the data speak with an unrestricted VAR, then add only the few assumptions needed to interpret shocks', 'propunerea lui: un VAR nerestricționat, care descrie datele fără restricții impuse a priori, completat apoi doar cu ipotezele minime necesare pentru interpretarea șocurilor')]),
             T('The VAR became the standard tool of central banks for forecasting and for measuring the effects of monetary policy', 'VAR-ul a devenit instrumentul standard al băncilor centrale pentru prognoză și pentru măsurarea efectelor politicii monetare'),
             T('Nobel Prize 2011, with Thomas Sargent, ``for their empirical research on cause and effect in the macroeconomy\'\'', 'Premiul Nobel 2011, împreună cu Thomas Sargent, „pentru cercetarea empirică a cauzei și efectului în macroeconomie”'))
         + '\n\\end{column}\n\\end{columns}')
 
 D.recap(('The VAR$(p)$ model', 'modelul VAR$(p)$'), [
     T('$\\bY_t = \\bc + \\sum_{j=1}^{p}\\bA_j\\bY_{t-j} + \\bepsilon_t$, $\\bepsilon_t$ white noise with covariance $\\bSigma$', '$\\bY_t = \\bc + \\sum_{j=1}^{p}\\bA_j\\bY_{t-j} + \\bepsilon_t$, $\\bepsilon_t$ zgomot alb cu covarianța $\\bSigma$'),
-    T('$a_{jk}$: effect of the lag of variable $k$ in the equation of variable $j$', '$a_{jk}$: efectul decalajului variabilei $k$ în ecuația variabilei $j$'),
+    T('$a_{jk}$: effect of the lag of variable $k$ in the equation of variable $j$', '$a_{jk}$: efectul lagului variabilei $k$ în ecuația variabilei $j$'),
     T('$K + pK^2$ coefficients: keep $K$ and $p$ small', '$K + pK^2$ coeficienți: păstrăm $K$ și $p$ mici'),
     T('\\refSims: VARs as an alternative to ``incredible\'\' restrictions', '\\refSims: VAR-ul ca alternativă la restricțiile „incredibile”')])
 
@@ -529,12 +531,13 @@ D.frame(T('Stability of a VAR(1)', 'Stabilitatea unui VAR(1)'), items(
      [T('the past is forgotten only if $\\bA^h \\to \\mathbf{0}$', 'trecutul este uitat doar dacă $\\bA^h \\to \\mathbf{0}$')]),
     (T('\\textbf{Stability condition}: all eigenvalues $\\lambda$ of $\\bA$ satisfy $|\\lambda| < 1$', '\\textbf{Condiția de stabilitate}: toate valorile proprii $\\lambda$ ale lui $\\bA$ au $|\\lambda| < 1$'),
      [T('eigenvalues: the roots of $\\det(\\bA - \\lambda\\mathbf{I}) = 0$; for $K = 2$: $\\lambda^2 - \\mathrm{tr}(\\bA)\\lambda + \\det(\\bA) = 0$', 'valorile proprii: rădăcinile ecuației $\\det(\\bA - \\lambda\\mathbf{I}) = 0$; pentru $K = 2$: $\\lambda^2 - \\mathrm{tr}(\\bA)\\lambda + \\det(\\bA) = 0$'),
+      T('$\\mathbf{I}$: the identity matrix; $\\mathrm{tr}(\\bA) = a_{11} + a_{22}$: the trace; $\\det(\\bA) = a_{11}a_{22} - a_{12}a_{21}$: the determinant; $|\\lambda|$: the modulus (eigenvalues can be complex)', '$\\mathbf{I}$: matricea identitate; $\\mathrm{tr}(\\bA) = a_{11} + a_{22}$: urma; $\\det(\\bA) = a_{11}a_{22} - a_{12}a_{21}$: determinantul; $|\\lambda|$: modulul (valorile proprii pot fi complexe)'),
       T('a stable VAR is weakly stationary (if it started long ago); this is the multivariate version of $|\\phi| < 1$ (Chapter 2)', 'un VAR stabil este slab staționar (dacă a pornit demult); aceasta este versiunea multivariată a condiției $|\\phi| < 1$ (Capitolul 2)')]),
     (T('\\textbf{Example}: $\\mathrm{tr}(\\bA) = @{wx.tr}$, $\\det(\\bA) = 0.5 \\cdot 0.4 - 0.2 \\cdot 0.3 = @{wx.dA}$: $\\lambda^2 - 0.9\\lambda + 0.14 = 0$', '\\textbf{Exemplu}: $\\mathrm{tr}(\\bA) = @{wx.tr}$, $\\det(\\bA) = 0{,}5 \\cdot 0{,}4 - 0{,}2 \\cdot 0{,}3 = @{wx.dA}$: $\\lambda^2 - 0{,}9\\lambda + 0{,}14 = 0$'),
      [T('$\\lambda = (0.9 \\pm 0.5)/2$: $\\lambda_1 = @{wx.l1}$, $\\lambda_2 = @{wx.l2}$; both inside the unit circle: stable', '$\\lambda = (0{,}9 \\pm 0{,}5)/2$: $\\lambda_1 = @{wx.l1}$, $\\lambda_2 = @{wx.l2}$; ambele în interiorul cercului unitate: stabil')])))
 
 D.frame(T('Mean and variance of a stable VAR(1)', 'Media și varianța unui VAR(1) stabil'), items(
-    (T('\\textbf{Mean}: take expectations, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, so $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$', '\\textbf{Media}: aplicăm media, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, deci $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$'),
+    (T('\\textbf{Mean}: take expectations, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, so $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$', '\\textbf{Media}: luăm speranța matematică în ambii membri, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, deci $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$'),
      [T('example: $\\mathbf{I} - \\bA = \\begin{pmatrix} 0.5 & -0.2 \\\\ -0.3 & 0.6 \\end{pmatrix}$, determinant @{wx.det}; $\\boldsymbol{\\mu} = \\frac{1}{0.24}\\begin{pmatrix} 0.6 & 0.2 \\\\ 0.3 & 0.5 \\end{pmatrix}\\begin{pmatrix} 1.2 \\\\ 0.6 \\end{pmatrix} = \\begin{pmatrix} @{wx.mu1} \\\\ @{wx.mu2} \\end{pmatrix}$',
         'exemplu: $\\mathbf{I} - \\bA = \\begin{pmatrix} 0{,}5 & -0{,}2 \\\\ -0{,}3 & 0{,}6 \\end{pmatrix}$, determinantul @{wx.det}; $\\boldsymbol{\\mu} = \\frac{1}{0{,}24}\\begin{pmatrix} 0{,}6 & 0{,}2 \\\\ 0{,}3 & 0{,}5 \\end{pmatrix}\\begin{pmatrix} 1{,}2 \\\\ 0{,}6 \\end{pmatrix} = \\begin{pmatrix} @{wx.mu1} \\\\ @{wx.mu2} \\end{pmatrix}$')]),
     (T('\\textbf{Variance}: $\\bGamma(0) = \\bA\\bGamma(0)\\bA\' + \\bSigma$ (a discrete Lyapunov equation); $\\bGamma(h) = \\bA^h\\bGamma(0)$', '\\textbf{Varianța}: $\\bGamma(0) = \\bA\\bGamma(0)\\bA\' + \\bSigma$ (o ecuație Lyapunov discretă); $\\bGamma(h) = \\bA^h\\bGamma(0)$'),
@@ -544,12 +547,13 @@ D.frame(T('Mean and variance of a stable VAR(1)', 'Media și varianța unui VAR(
 
 D.frame(T('The companion form of a VAR$(p)$', 'Forma companion a unui VAR$(p)$'), items(
     (T('Stack $p$ consecutive vectors: $\\boldsymbol{\\xi}_t = (\\bY_t\', \\bY_{t-1}\', \\dots, \\bY_{t-p+1}\')\'$, of size $Kp$', 'Grupăm $p$ vectori consecutivi: $\\boldsymbol{\\xi}_t = (\\bY_t\', \\bY_{t-1}\', \\dots, \\bY_{t-p+1}\')\'$, de dimensiune $Kp$'),
-     [T('then $\\boldsymbol{\\xi}_t = \\boldsymbol{\\nu} + \\mathbf{F}\\boldsymbol{\\xi}_{t-1} + \\mathbf{v}_t$: every VAR$(p)$ is a VAR(1) in $\\boldsymbol{\\xi}_t$', 'atunci $\\boldsymbol{\\xi}_t = \\boldsymbol{\\nu} + \\mathbf{F}\\boldsymbol{\\xi}_{t-1} + \\mathbf{v}_t$: orice VAR$(p)$ este un VAR(1) în $\\boldsymbol{\\xi}_t$')]),
+     [T('then $\\boldsymbol{\\xi}_t = \\boldsymbol{\\nu} + \\mathbf{F}\\boldsymbol{\\xi}_{t-1} + \\mathbf{v}_t$: every VAR$(p)$ is a VAR(1) in $\\boldsymbol{\\xi}_t$', 'atunci $\\boldsymbol{\\xi}_t = \\boldsymbol{\\nu} + \\mathbf{F}\\boldsymbol{\\xi}_{t-1} + \\mathbf{v}_t$: orice VAR$(p)$ este un VAR(1) în $\\boldsymbol{\\xi}_t$'),
+      T('$\\boldsymbol{\\nu}$: $\\bc$ followed by zeros; $\\mathbf{v}_t$: $\\bepsilon_t$ followed by zeros; $\\mathbf{F}$: the $Kp \\times Kp$ companion matrix', '$\\boldsymbol{\\nu}$: $\\bc$ urmat de zerouri; $\\mathbf{v}_t$: $\\bepsilon_t$ urmat de zerouri; $\\mathbf{F}$: matricea companion, $Kp \\times Kp$')]),
     (T('For $p = 2$: $\\begin{pmatrix} \\bY_t \\\\ \\bY_{t-1} \\end{pmatrix} = \\begin{pmatrix} \\bc \\\\ \\mathbf{0} \\end{pmatrix} + \\underbrace{\\begin{pmatrix} \\bA_1 & \\bA_2 \\\\ \\mathbf{I}_K & \\mathbf{0} \\end{pmatrix}}_{\\mathbf{F}}\\begin{pmatrix} \\bY_{t-1} \\\\ \\bY_{t-2} \\end{pmatrix} + \\begin{pmatrix} \\bepsilon_t \\\\ \\mathbf{0} \\end{pmatrix}$',
        'Pentru $p = 2$: $\\begin{pmatrix} \\bY_t \\\\ \\bY_{t-1} \\end{pmatrix} = \\begin{pmatrix} \\bc \\\\ \\mathbf{0} \\end{pmatrix} + \\underbrace{\\begin{pmatrix} \\bA_1 & \\bA_2 \\\\ \\mathbf{I}_K & \\mathbf{0} \\end{pmatrix}}_{\\mathbf{F}}\\begin{pmatrix} \\bY_{t-1} \\\\ \\bY_{t-2} \\end{pmatrix} + \\begin{pmatrix} \\bepsilon_t \\\\ \\mathbf{0} \\end{pmatrix}$'),
      [T('the second block row is the identity $\\bY_{t-1} = \\bY_{t-1}$', 'al doilea bloc de rînduri este identitatea $\\bY_{t-1} = \\bY_{t-1}$')]),
     (T('\\textbf{Stability of a VAR$(p)$}: all $Kp$ eigenvalues of the companion matrix $\\mathbf{F}$ have modulus below 1', '\\textbf{Stabilitatea unui VAR$(p)$}: toate cele $Kp$ valori proprii ale matricei companion $\\mathbf{F}$ au modulul sub 1'),
-     [T('equivalently: all roots of $\\det(\\mathbf{I}_K - \\bA_1z - \\dots - \\bA_pz^p) = 0$ lie outside the unit circle', 'echivalent: toate rădăcinile ecuației $\\det(\\mathbf{I}_K - \\bA_1z - \\dots - \\bA_pz^p) = 0$ sînt în afara cercului unitate'),
+     [T('equivalently: all roots $z$ (complex numbers) of $\\det(\\mathbf{I}_K - \\bA_1z - \\dots - \\bA_pz^p) = 0$ lie outside the unit circle', 'echivalent: toate rădăcinile $z$ (numere complexe) ale ecuației $\\det(\\mathbf{I}_K - \\bA_1z - \\dots - \\bA_pz^p) = 0$ sînt în afara cercului unitate'),
       T('the eigenvalues of $\\bA_1$ alone say nothing about the stability of a VAR(2)', 'valorile proprii ale lui $\\bA_1$ singure nu spun nimic despre stabilitatea unui VAR(2)')])))
 
 chart(T('Eigenvalues of three estimated VARs', 'Valorile proprii a trei VAR-uri estimate'), 'tsa_ch6_roots', 'TSA_ch6_var_stability', [
@@ -566,7 +570,8 @@ interp(('the eigenvalues', 'valorilor proprii'), [
 
 D.frame(T('The moving-average representation', 'Reprezentarea de medie mobilă'), items(
     (T('A stable VAR can be written as an infinite moving average of the shocks (Wold, Chapter 1):', 'Un VAR stabil se poate scrie ca o medie mobilă infinită a șocurilor (Wold, Capitolul 1):'),
-     [T('$\\bY_t = \\boldsymbol{\\mu} + \\bepsilon_t + \\bPhi_1\\bepsilon_{t-1} + \\bPhi_2\\bepsilon_{t-2} + \\dots = \\boldsymbol{\\mu} + \\sum_{h=0}^{\\infty}\\bPhi_h\\bepsilon_{t-h}$, $\\bPhi_0 = \\mathbf{I}$', '$\\bY_t = \\boldsymbol{\\mu} + \\bepsilon_t + \\bPhi_1\\bepsilon_{t-1} + \\bPhi_2\\bepsilon_{t-2} + \\dots = \\boldsymbol{\\mu} + \\sum_{h=0}^{\\infty}\\bPhi_h\\bepsilon_{t-h}$, $\\bPhi_0 = \\mathbf{I}$')]),
+     [T('$\\bY_t = \\boldsymbol{\\mu} + \\bepsilon_t + \\bPhi_1\\bepsilon_{t-1} + \\bPhi_2\\bepsilon_{t-2} + \\dots = \\boldsymbol{\\mu} + \\sum_{h=0}^{\\infty}\\bPhi_h\\bepsilon_{t-h}$, $\\bPhi_0 = \\mathbf{I}$', '$\\bY_t = \\boldsymbol{\\mu} + \\bepsilon_t + \\bPhi_1\\bepsilon_{t-1} + \\bPhi_2\\bepsilon_{t-2} + \\dots = \\boldsymbol{\\mu} + \\sum_{h=0}^{\\infty}\\bPhi_h\\bepsilon_{t-h}$, $\\bPhi_0 = \\mathbf{I}$'),
+      T('$\\bPhi_h$: the $K \\times K$ matrix that weights the shock of $h$ periods ago', '$\\bPhi_h$: matricea $K \\times K$ care ponderează șocul de acum $h$ perioade')]),
     (T('VAR(1): $\\bPhi_h = \\bA^h$; VAR$(p)$: $\\bPhi_h = \\sum_{j=1}^{\\min(h,p)}\\bA_j\\bPhi_{h-j}$', 'VAR(1): $\\bPhi_h = \\bA^h$; VAR$(p)$: $\\bPhi_h = \\sum_{j=1}^{\\min(h,p)}\\bA_j\\bPhi_{h-j}$'),
      [T('example: $\\bPhi_2 = \\bA^2 = @{wx.A2}$', 'exemplu: $\\bPhi_2 = \\bA^2 = @{wx.A2}$')]),
     (T('Element $(j, k)$ of $\\bPhi_h$: the effect on $Y_{j,t+h}$ of a unit change in $\\varepsilon_{kt}$, all other shocks fixed', 'Elementul $(j, k)$ al lui $\\bPhi_h$: efectul asupra lui $Y_{j,t+h}$ al unei modificări unitare a lui $\\varepsilon_{kt}$, celelalte șocuri fiind fixe'),
@@ -581,35 +586,37 @@ D.recap(('Stationarity and the companion form', 'staționaritate și forma compa
 # =============================================================================
 # 4. ESTIMARE ȘI ALEGEREA LUI p
 # =============================================================================
-D.section('Estimation and lag selection', 'Estimare și alegerea numărului de decalaje')
+D.section('Estimation and lag selection', 'Estimare și alegerea numărului de laguri')
 
 D.frame(T('Estimation by OLS, equation by equation', 'Estimarea prin OLS, ecuație cu ecuație'), items(
     (T('Each equation is a linear regression of $Y_{jt}$ on a constant and $\\bY_{t-1}, \\dots, \\bY_{t-p}$', 'Fiecare ecuație este o regresie liniară a lui $Y_{jt}$ pe o constantă și pe $\\bY_{t-1}, \\dots, \\bY_{t-p}$'),
      [T('the same $1 + Kp$ regressors in every equation; OLS (ordinary least squares) on each equation separately', 'aceiași $1 + Kp$ regresori în fiecare ecuație; OLS (ordinary least squares, metoda celor mai mici pătrate) pe fiecare ecuație separat')]),
-    (T('\\textbf{Why OLS is enough}: with identical regressors, system estimation (GLS on all equations) gives exactly the OLS estimates', '\\textbf{De ce ajunge OLS}: cu regresori identici, estimarea sistemului (GLS pe toate ecuațiile) dă exact estimările OLS'),
+    (T('\\textbf{Why OLS is enough}: with identical regressors, system estimation (GLS, generalised least squares, on all equations) gives exactly the OLS estimates', '\\textbf{Suficiența OLS}: cu regresori identici, estimarea sistemului (GLS, generalized least squares, metoda celor mai mici pătrate generalizate, pe toate ecuațiile) dă exact estimările OLS'),
      [T('the correlation of the shocks does not improve the estimates; under Normal errors OLS is also the maximum likelihood estimator', 'corelația șocurilor nu îmbunătățește estimările; cu erori Normale, OLS este și estimatorul de verosimilitate maximă')]),
     (T('\\textbf{Covariance of the shocks}: $\\hat\\bSigma = \\frac{1}{T - Kp - 1}\\sum_t\\hat\\bepsilon_t\\hat\\bepsilon_t\'$, from the residuals of all equations', '\\textbf{Covarianța șocurilor}: $\\hat\\bSigma = \\frac{1}{T - Kp - 1}\\sum_t\\hat\\bepsilon_t\\hat\\bepsilon_t\'$, din reziduurile tuturor ecuațiilor'),
-     [T('stationarity matters: with stationary series the usual $t$ and $F$ tests are valid in large samples', 'staționaritatea contează: pentru serii staționare testele $t$ și $F$ obișnuite sînt valide în eșantioane mari')])))
+     [T('$\\hat\\bepsilon_t$: the vector of residuals at date $t$; $T - Kp - 1$: the residual degrees of freedom of each equation', '$\\hat\\bepsilon_t$: vectorul reziduurilor la data $t$; $T - Kp - 1$: gradele de libertate reziduale ale fiecărei ecuații'),
+      T('stationarity matters: with stationary series the usual $t$ and $F$ tests are valid in large samples', 'staționaritatea contează: pentru serii staționare testele $t$ și $F$ obișnuite sînt valide în eșantioane mari')])))
 
 D.frame(T('Choosing $p$: information criteria', 'Alegerea lui $p$: criterii informaționale'), items(
     (T('Fit VAR$(p)$ for $p = 0, \\dots, p_{\\max}$ on the \\textbf{same sample}; $\\tilde\\bSigma(p)$: residual covariance divided by $T$', 'Estimăm VAR$(p)$ pentru $p = 0, \\dots, p_{\\max}$ pe \\textbf{același eșantion}; $\\tilde\\bSigma(p)$: covarianța reziduurilor împărțită la $T$'),
      [T('AIC (Akaike) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{2}{T}pK^2$ \\refAkaike', 'AIC (Akaike) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{2}{T}pK^2$ \\refAkaike'),
       T('BIC (Schwarz) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{\\ln T}{T}pK^2$ \\refSchwarz', 'BIC (Schwarz) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{\\ln T}{T}pK^2$ \\refSchwarz'),
-      T('HQ (Hannan--Quinn) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{2\\ln\\ln T}{T}pK^2$ \\refHQ', 'HQ (Hannan--Quinn) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{2\\ln\\ln T}{T}pK^2$ \\refHQ')]),
+      T('HQ (Hannan--Quinn) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{2\\ln\\ln T}{T}pK^2$ \\refHQ', 'HQ (Hannan--Quinn) $= \\ln\\det\\tilde\\bSigma(p) + \\frac{2\\ln\\ln T}{T}pK^2$ \\refHQ'),
+      T('$\\det\\tilde\\bSigma(p)$: a generalised residual variance; $pK^2$: the number of lag coefficients; $p_{\\max}$: the largest order tried', '$\\det\\tilde\\bSigma(p)$: o varianță generalizată a reziduurilor; $pK^2$: numărul coeficienților lagurilor; $p_{\\max}$: ordinul maxim încercat')]),
     (T('First term: fit (smaller residual ``volume\'\'); second: a penalty per coefficient; choose the $p$ with the smallest value', 'Primul termen: calitatea ajustării („volumul” reziduurilor mai mic); al doilea: o penalizare pe coeficient; alegem $p$ cu cea mai mică valoare'),
      [T('penalties: AIC $<$ HQ $<$ BIC (for $T \\ge 16$): BIC chooses the smallest $p$, AIC the largest', 'penalizările: AIC $<$ HQ $<$ BIC (pentru $T \\ge 16$): BIC alege cel mai mic $p$, AIC cel mai mare'),
       T('BIC and HQ are consistent (they find the true $p$ as $T \\to \\infty$); AIC tends to overfit, but often forecasts well', 'BIC și HQ sînt consistente (găsesc $p$ adevărat cînd $T \\to \\infty$); AIC tinde să supraajusteze, dar prognozează adesea bine')])))
 
-chart(T('Romanian VAR: which $p$?', 'VAR-ul românesc: ce $p$?'), 'tsa_ch6_ic', 'TSA_ch6_estimation_diagnostics', [
+chart(T('Romanian VAR: which $p$?', 'VAR-ul românesc: alegerea lui $p$'), 'tsa_ch6_ic', 'TSA_ch6_estimation_diagnostics', [
     T('GDP growth, 12-month inflation and ROBOR 3M, @{ro.q0}--@{ro.q1}; VAR$(p)$ for $p = 0, \\dots, @{ic.pmax}$ on the common sample of @{ic.T} quarters; circles mark the minima',
       'Creșterea PIB-ului, inflația anuală și ROBOR 3M, @{ro.q0}--@{ro.q1}; VAR$(p)$ pentru $p = 0, \\dots, @{ic.pmax}$ pe eșantionul comun de @{ic.T} de trimestre; cercurile marchează minimele')],
     h='0.56\\textheight')
 
-interp(('the lag selection', 'alegerii numărului de decalaje'), [
+interp(('the lag selection', 'alegerii numărului de laguri'), [
     (T('BIC chooses $p = @{ic.b.bic}$, HQ $p = @{ic.b.hq}$, AIC $p = @{ic.b.aic}$: the three criteria disagree, as they often do in short samples', 'BIC alege $p = @{ic.b.bic}$, HQ $p = @{ic.b.hq}$, AIC $p = @{ic.b.aic}$: cele trei criterii nu coincid, cum se întîmplă adesea în eșantioane scurte'),
      [T('AIC: @{ic.1.aic} at $p = 1$, @{ic.2.aic} at $p = 2$, @{ic.5.aic} at $p = 5$: a flat curve after $p = 2$', 'AIC: @{ic.1.aic} pentru $p = 1$, @{ic.2.aic} pentru $p = 2$, @{ic.5.aic} pentru $p = 5$: o curbă plată după $p = 2$')]),
     (T('$p = 5$ would mean $3 + 5 \\cdot 9 = 48$ coefficients for about 80 quarters', '$p = 5$ ar însemna $3 + 5 \\cdot 9 = 48$ de coeficienți pentru circa 80 de trimestre'),
-     [T('we take $p = 2$ (HQ), then check whether the residuals are white noise; if not, we add lags', 'alegem $p = 2$ (HQ), apoi verificăm dacă reziduurile sînt zgomot alb; dacă nu, adăugăm decalaje')]),
+     [T('we take $p = 2$ (HQ), then check whether the residuals are white noise; if not, we add lags', 'alegem $p = 2$ (HQ), apoi verificăm dacă reziduurile sînt zgomot alb; dacă nu, adăugăm laguri')]),
     T('A rule of thumb: start from the criteria, never stop at them', 'O regulă practică: pornim de la criterii, dar nu ne oprim la ele')])
 
 D.frame(T('The estimated Romanian VAR(2)', 'VAR(2) românesc estimat'), table(
@@ -629,9 +636,9 @@ interp(('the coefficients', 'coeficienților'), [
     (T('In the ROBOR equation, past GDP growth ($t = @{e.i.L1g.t}$) and past inflation ($t = @{e.i.L1pi.t}$) matter: the interest rate follows the economy', 'În ecuația ROBOR contează creșterea PIB-ului din trecut ($t = @{e.i.L1g.t}$) și inflația din trecut ($t = @{e.i.L1pi.t}$): dobînda urmează economia'),
      [T('GDP growth is hard to predict: $R^2 = @{e.r2.g}$', 'Creșterea PIB-ului este greu de prognozat: $R^2 = @{e.r2.g}$')]),
     T('Single coefficients of correlated lags are unstable (e.g.\\ $i_{t-1}$ and $i_{t-2}$ with opposite signs in the $g$ equation): read the system through tests, responses and forecasts, not one coefficient at a time',
-      'Coeficienții individuali ai unor decalaje corelate sînt instabili (de exemplu $i_{t-1}$ și $i_{t-2}$ cu semne opuse în ecuația lui $g$): interpretăm sistemul prin teste, răspunsuri și prognoze, nu coeficient cu coeficient')])
+      'Coeficienții individuali ai unor laguri corelate sînt instabili (de exemplu $i_{t-1}$ și $i_{t-2}$ cu semne opuse în ecuația lui $g$): interpretăm sistemul prin teste, răspunsuri și prognoze, nu coeficient cu coeficient')])
 
-D.recap(('Estimation and lag selection', 'estimare și alegerea numărului de decalaje'), [
+D.recap(('Estimation and lag selection', 'estimare și alegerea numărului de laguri'), [
     T('OLS equation by equation is efficient: all equations have the same regressors', 'OLS ecuație cu ecuație este eficient: toate ecuațiile au aceiași regresori'),
     T('AIC, BIC, HQ: $\\ln\\det\\tilde\\bSigma(p)$ plus a penalty; compare on a common sample', 'AIC, BIC, HQ: $\\ln\\det\\tilde\\bSigma(p)$ plus o penalizare; comparăm pe un eșantion comun'),
     T('BIC $\\le$ HQ $\\le$ AIC in the chosen $p$; Romanian VAR: $p = 2$', 'BIC $\\le$ HQ $\\le$ AIC ca $p$ ales; VAR-ul românesc: $p = 2$'),
@@ -642,13 +649,13 @@ D.recap(('Estimation and lag selection', 'estimare și alegerea numărului de de
 # =============================================================================
 D.section('Residual diagnostics', 'Diagnosticarea reziduurilor')
 
-D.frame(T('Are the residuals white noise?', 'Sînt reziduurile zgomot alb?'), items(
-    (T('\\textbf{Multivariate portmanteau test} \\refHosking: $H_0$: no autocorrelation and no cross-correlation of the residuals up to lag $h$', '\\textbf{Testul portmanteau multivariat} \\refHosking: $H_0$: nicio autocorelație și nicio corelație încrucișată a reziduurilor pînă la decalajul $h$'),
-     [T('$Q_h = T^2\\sum_{j=1}^{h}\\frac{1}{T - j}\\mathrm{tr}(\\hat{\\mathbf{C}}_j\'\\hat{\\mathbf{C}}_0^{-1}\\hat{\\mathbf{C}}_j\\hat{\\mathbf{C}}_0^{-1})$, $\\hat{\\mathbf{C}}_j$: residual autocovariance matrices', '$Q_h = T^2\\sum_{j=1}^{h}\\frac{1}{T - j}\\mathrm{tr}(\\hat{\\mathbf{C}}_j\'\\hat{\\mathbf{C}}_0^{-1}\\hat{\\mathbf{C}}_j\\hat{\\mathbf{C}}_0^{-1})$, $\\hat{\\mathbf{C}}_j$: matricele de autocovarianță ale reziduurilor'),
-      T('under $H_0$: $\\chi^2$ with $K^2(h - p)$ degrees of freedom; the multivariate Ljung--Box test (Chapter 2)', 'în ipoteza $H_0$: $\\chi^2$ cu $K^2(h - p)$ grade de libertate; testul Ljung--Box multivariat (Capitolul 2)')]),
+D.frame(T('Are the residuals white noise?', 'Verificarea reziduurilor: zgomot alb'), items(
+    (T('\\textbf{Multivariate portmanteau test} \\refHosking: $H_0$: no autocorrelation and no cross-correlation of the residuals up to lag $h$', '\\textbf{Testul portmanteau multivariat} \\refHosking: $H_0$: nicio autocorelație și nicio corelație încrucișată a reziduurilor pînă la lagul $h$'),
+     [T('$Q_h = T^2\\sum_{j=1}^{h}\\frac{1}{T - j}\\mathrm{tr}(\\hat{\\mathbf{C}}_j\'\\hat{\\mathbf{C}}_0^{-1}\\hat{\\mathbf{C}}_j\\hat{\\mathbf{C}}_0^{-1})$, $\\hat{\\mathbf{C}}_j = \\frac{1}{T}\\sum_t\\hat\\bepsilon_t\\hat\\bepsilon_{t-j}\'$: the residual autocovariance matrix at lag $j$; $\\mathrm{tr}$: the trace', '$Q_h = T^2\\sum_{j=1}^{h}\\frac{1}{T - j}\\mathrm{tr}(\\hat{\\mathbf{C}}_j\'\\hat{\\mathbf{C}}_0^{-1}\\hat{\\mathbf{C}}_j\\hat{\\mathbf{C}}_0^{-1})$, $\\hat{\\mathbf{C}}_j = \\frac{1}{T}\\sum_t\\hat\\bepsilon_t\\hat\\bepsilon_{t-j}\'$: matricea de autocovarianță a reziduurilor la lagul $j$; $\\mathrm{tr}$: urma'),
+      T('under $H_0$: $\\chi^2$ with $K^2(h - p)$ degrees of freedom; the multivariate Ljung--Box test (Chapter 2); a small p-value: the residuals are still autocorrelated', 'în ipoteza $H_0$: $\\chi^2$ cu $K^2(h - p)$ grade de libertate; testul Ljung--Box multivariat (Capitolul 2); un p-value mic: reziduurile sînt încă autocorelate')]),
     (T('\\textbf{Normality}: a multivariate Jarque--Bera test \\refJB\\ on the standardised residuals (skewness and kurtosis)', '\\textbf{Normalitatea}: un test Jarque--Bera multivariat \\refJB\\ pe reziduurile standardizate (asimetrie și boltire)'),
      [T('Normality is not needed for OLS; it matters for exact intervals and for small samples', 'normalitatea nu este necesară pentru OLS; contează pentru intervale exacte și pentru eșantioane mici')]),
-    (T('If the portmanteau test rejects: add lags, add a variable, or model breaks and outliers (dummy variables)', 'Dacă testul portmanteau respinge: adăugăm decalaje, adăugăm o variabilă sau modelăm rupturile și valorile extreme (variabile dummy)'),
+    (T('If the portmanteau test rejects: add lags, add a variable, or model breaks and outliers (dummy variables)', 'Dacă testul portmanteau respinge: adăugăm laguri, adăugăm o variabilă sau modelăm rupturile și valorile extreme (variabile dummy)'),
      [T('also check stability (eigenvalues) and, for long samples, parameter stability over time', 'verificăm și stabilitatea (valorile proprii) și, pentru eșantioane lungi, stabilitatea parametrilor în timp')])))
 
 chart(T('Residuals of the Romanian VAR(2)', 'Reziduurile VAR(2) românesc'), 'tsa_ch6_resid', 'TSA_ch6_estimation_diagnostics', [
@@ -658,15 +665,15 @@ chart(T('Residuals of the Romanian VAR(2)', 'Reziduurile VAR(2) românesc'), 'ts
 interp(('the residuals', 'reziduurilor'), [
     (T('Largest residuals: GDP @{rs.gv} in @{rs.gd} (the pandemic), ROBOR $+@{rs.iv}$ in @{rs.id} (the 2008 liquidity squeeze), inflation @{rs.piv} in @{rs.pid}', 'Cele mai mari reziduuri: PIB @{rs.gv} în @{rs.gd} (pandemia), ROBOR $+@{rs.iv}$ în @{rs.id} (criza de lichiditate din 2008), inflația @{rs.piv} în @{rs.pid}'),
      [T('kurtosis @{rs.kg} ($g$) and @{rs.ki} ($i$), against 3 under the Normal distribution: Jarque--Bera @{rs.jb} (p @{rs.jbp})', 'boltire @{rs.kg} ($g$) și @{rs.ki} ($i$), față de 3 pentru distribuția Normală: Jarque--Bera @{rs.jb} (p @{rs.jbp})')]),
-    (T('Portmanteau: $Q_8 = @{rs.q8}$ ($@{rs.q8df}$ d.f., p @{rs.q8p}); $Q_{12} = @{rs.q12}$ ($@{rs.q12df}$ d.f., p @{rs.q12p})', 'Portmanteau: $Q_8 = @{rs.q8}$ ($@{rs.q8df}$ grade de libertate, p @{rs.q8p}); $Q_{12} = @{rs.q12}$ ($@{rs.q12df}$ grade de libertate, p @{rs.q12p})'),
-     [T('borderline at 8 lags, fine at 12: some short-run correlation is left, partly from overlapping 12-month inflation rates', 'la limită pentru 8 decalaje, acceptabil pentru 12: rămîne o corelație pe termen scurt, în parte din cauza ratelor anuale ale inflației care se suprapun')]),
+    (T('Portmanteau: $Q_8 = @{rs.q8}$ ($@{rs.q8df}$ d.f., p @{rs.q8p}); $Q_{12} = @{rs.q12}$ ($@{rs.q12df}$ d.f., p @{rs.q12p})', 'Portmanteau: $Q_8 = @{rs.q8}$ ($@{rs.q8df}$ de grade de libertate, p @{rs.q8p}); $Q_{12} = @{rs.q12}$ ($@{rs.q12df}$ de grade de libertate, p @{rs.q12p})'),
+     [T('borderline at 8 lags, fine at 12: some short-run correlation is left, partly from overlapping 12-month inflation rates', 'la limită pentru 8 laguri, acceptabil pentru 12: rămîne o corelație pe termen scurt, în parte din cauza ratelor anuale ale inflației care se suprapun')]),
     T('Consequence: point estimates are usable, but the intervals of the next sections rely on large-sample approximations; we use bootstrap bands for the responses',
       'Consecință: estimările punctuale pot fi folosite, dar intervalele din secțiunile următoare se bazează pe aproximări pentru eșantioane mari; pentru răspunsuri folosim benzi bootstrap')])
 
 D.recap(('Residual diagnostics', 'diagnosticarea reziduurilor'), [
     T('Portmanteau test: $H_0$ white-noise residuals, $\\chi^2$ with $K^2(h - p)$ d.f.', 'Testul portmanteau: $H_0$ reziduuri zgomot alb, $\\chi^2$ cu $K^2(h - p)$ grade de libertate'),
     T('Normality fails in macro data: crises produce outliers', 'Normalitatea nu se verifică în datele macroeconomice: crizele produc valori extreme'),
-    T('Remedies: more lags, more variables, dummies for crisis quarters', 'Remedii: mai multe decalaje, mai multe variabile, dummy pentru trimestrele de criză')])
+    T('Remedies: more lags, more variables, dummies for crisis quarters', 'Remedii: mai multe laguri, mai multe variabile, dummy pentru trimestrele de criză')])
 
 # =============================================================================
 # 6. CAUZALITATE GRANGER
@@ -687,17 +694,19 @@ D.frame(T('Granger causality: the definition', 'Cauzalitatea Granger: definiția
 D.frame(T('Testing Granger causality in a VAR', 'Testarea cauzalității Granger într-un VAR'), items(
     (T('In a VAR$(p)$, $x$ does not Granger-cause $y$ if all coefficients of $x_{t-1}, \\dots, x_{t-p}$ in the equation of $y$ are zero', 'Într-un VAR$(p)$, $x$ nu cauzează în sens Granger pe $y$ dacă toți coeficienții lui $x_{t-1}, \\dots, x_{t-p}$ din ecuația lui $y$ sînt zero'),
      [T('bivariate VAR(2): $H_0$: $a_{12}^{(1)} = a_{12}^{(2)} = 0$ in $y_t = c + a_{11}^{(1)}y_{t-1} + a_{12}^{(1)}x_{t-1} + a_{11}^{(2)}y_{t-2} + a_{12}^{(2)}x_{t-2} + \\varepsilon_t$',
-        'VAR(2) cu două variabile: $H_0$: $a_{12}^{(1)} = a_{12}^{(2)} = 0$ în $y_t = c + a_{11}^{(1)}y_{t-1} + a_{12}^{(1)}x_{t-1} + a_{11}^{(2)}y_{t-2} + a_{12}^{(2)}x_{t-2} + \\varepsilon_t$')]),
+        'VAR(2) cu două variabile: $H_0$: $a_{12}^{(1)} = a_{12}^{(2)} = 0$ în $y_t = c + a_{11}^{(1)}y_{t-1} + a_{12}^{(1)}x_{t-1} + a_{11}^{(2)}y_{t-2} + a_{12}^{(2)}x_{t-2} + \\varepsilon_t$'),
+      T('$a_{12}^{(j)}$: the coefficient of $x_{t-j}$ in the equation of $y$ (the superscript is the lag)', '$a_{12}^{(j)}$: coeficientul lui $x_{t-j}$ în ecuația lui $y$ (indicele de sus este lagul)')]),
     (T('\\textbf{$F$ test}: $F = \\dfrac{(RSS_R - RSS_U)/p}{RSS_U/(T - Kp - 1)} \\sim F(p, T - Kp - 1)$ under $H_0$', '\\textbf{Testul $F$}: $F = \\dfrac{(RSS_R - RSS_U)/p}{RSS_U/(T - Kp - 1)} \\sim F(p, T - Kp - 1)$ în ipoteza $H_0$'),
-     [T('$RSS_U$: residual sum of squares of the equation of $y$; $RSS_R$: the same without the lags of $x$', '$RSS_U$: suma pătratelor reziduurilor din ecuația lui $y$; $RSS_R$: aceeași sumă fără decalajele lui $x$')]),
+     [T('$RSS_U$: residual sum of squares of the equation of $y$; $RSS_R$: the same without the lags of $x$', '$RSS_U$: suma pătratelor reziduurilor din ecuația lui $y$; $RSS_R$: aceeași sumă fără lagurile lui $x$'),
+      T('a large $F$ (a small p-value): dropping the lags of $x$ raises the RSS too much, so $H_0$ is rejected', 'un $F$ mare (un p-value mic): eliminarea lagurilor lui $x$ crește prea mult RSS, deci respingem $H_0$')]),
     (T('\\textbf{Wald test}: $W = (\\mathbf{R}\\hat{\\boldsymbol{\\beta}})\'[\\mathbf{R}\\hat{\\mathbf{V}}\\mathbf{R}\']^{-1}(\\mathbf{R}\\hat{\\boldsymbol{\\beta}}) \\sim \\chi^2(p)$; here $W = pF$', '\\textbf{Testul Wald}: $W = (\\mathbf{R}\\hat{\\boldsymbol{\\beta}})\'[\\mathbf{R}\\hat{\\mathbf{V}}\\mathbf{R}\']^{-1}(\\mathbf{R}\\hat{\\boldsymbol{\\beta}}) \\sim \\chi^2(p)$; aici $W = pF$'),
-     [T('$\\mathbf{R}$ selects the tested coefficients, $\\hat{\\mathbf{V}}$ is their estimated covariance; both versions need stationary variables', '$\\mathbf{R}$ selectează coeficienții testați, $\\hat{\\mathbf{V}}$ este covarianța lor estimată; ambele versiuni cer variabile staționare')])))
+     [T('$\\hat{\\boldsymbol{\\beta}}$: the estimated coefficients of the equation of $y$; $\\mathbf{R}$ selects the tested ones; $\\hat{\\mathbf{V}}$: the estimated covariance of $\\hat{\\boldsymbol{\\beta}}$; both versions need stationary variables', '$\\hat{\\boldsymbol{\\beta}}$: coeficienții estimați ai ecuației lui $y$; $\\mathbf{R}$ îi selectează pe cei testați; $\\hat{\\mathbf{V}}$: covarianța estimată a lui $\\hat{\\boldsymbol{\\beta}}$; ambele versiuni cer variabile staționare')])))
 
-D.frame(T('Worked example: does GDP growth Granger-cause ROBOR?', 'Exemplu rezolvat: cauzează creșterea PIB-ului ROBOR în sens Granger?'), items(
+D.frame(T('Worked example: does GDP growth Granger-cause ROBOR?', 'Exemplu rezolvat: este creșterea PIB-ului o cauză Granger pentru ROBOR?'), items(
     (T('Equation of $i_t$ in the Romanian VAR(2), $T = @{gh.T}$, $K = 3$, $p = 2$', 'Ecuația lui $i_t$ din VAR(2) românesc, $T = @{gh.T}$, $K = 3$, $p = 2$'),
      [T('unrestricted (with $g_{t-1}$, $g_{t-2}$): $RSS_U = @{gh.ru}$; restricted (without them): $RSS_R = @{gh.rr}$', 'nerestricționat (cu $g_{t-1}$, $g_{t-2}$): $RSS_U = @{gh.ru}$; restricționat (fără ele): $RSS_R = @{gh.rr}$')]),
     (T('$F = \\dfrac{(@{gh.rr} - @{gh.ru})/2}{@{gh.ru}/@{gh.df2}} = \\dfrac{@{gh.num}}{@{gh.den}} = @{gh.F}$', '$F = \\dfrac{(@{gh.rr} - @{gh.ru})/2}{@{gh.ru}/@{gh.df2}} = \\dfrac{@{gh.num}}{@{gh.den}} = @{gh.F}$'),
-     [T('degrees of freedom $(2, @{gh.T} - 6 - 1) = (2, @{gh.df2})$; 5\\% critical value @{gh.cv}; p-value @{gh.p}', 'grade de libertate $(2, @{gh.T} - 6 - 1) = (2, @{gh.df2})$; valoarea critică de 5\\%: @{gh.cv}; valoarea p: @{gh.p}')]),
+     [T('degrees of freedom $(2, @{gh.T} - 6 - 1) = (2, @{gh.df2})$; 5\\% critical value @{gh.cv}; p-value @{gh.p}', 'grade de libertate $(2, @{gh.T} - 6 - 1) = (2, @{gh.df2})$; valoarea critică de 5\\%: @{gh.cv}; p-value-ul: @{gh.p}')]),
     (T('\\textbf{Decision}: reject $H_0$: past GDP growth helps to forecast ROBOR 3M, given past inflation and past ROBOR', '\\textbf{Decizia}: respingem $H_0$: creșterea PIB-ului din trecut ajută la prognoza ROBOR 3M, dat fiind trecutul inflației și al ROBOR'),
      [T('consistent with a central bank that tightens when the economy grows fast', 'compatibil cu o bancă centrală care înăsprește politica atunci cînd economia crește repede')])))
 
@@ -720,9 +729,9 @@ interp(('the Granger tests', 'testelor Granger'), [
     (T('ROBOR does not Granger-cause inflation (p @{gr.ipi.p}): no evidence that past rates improve inflation forecasts', 'ROBOR nu cauzează inflația în sens Granger (p @{gr.ipi.p}): nicio dovadă că dobînzile din trecut îmbunătățesc prognoza inflației'),
      [T('this does not say that monetary policy is ineffective: the effect may be slow, small relative to the noise, or already anticipated', 'aceasta nu înseamnă că politica monetară este ineficientă: efectul poate fi lent, mic față de zgomot sau deja anticipat')]),
     T('ROBOR $\\to$ GDP growth (p @{gr.ig.p}): higher rates come before weaker growth; in the bivariate VAR (GDP, ROBOR) alone the p-value is @{gr.bi.ig}',
-      'ROBOR $\\to$ creșterea PIB (p @{gr.ig.p}): dobînzile mai mari preced o creștere mai slabă; în VAR-ul cu două variabile (PIB, ROBOR) valoarea p este @{gr.bi.ig}')])
+      'ROBOR $\\to$ creșterea PIB (p @{gr.ig.p}): dobînzile mai mari preced o creștere mai slabă; în VAR-ul cu două variabile (PIB, ROBOR) p-value-ul este @{gr.bi.ig}')])
 
-D.frame(T('Markets: does New York lead Frankfurt and Bucharest?', 'Piețe: precedă New York-ul Frankfurtul și Bucureștiul?'), '\\begin{columns}[T]\n\\begin{column}{0.36\\textwidth}\n'
+D.frame(T('Markets: does New York lead Frankfurt and Bucharest?', 'Piețe: New York-ul precedă Frankfurtul și Bucureștiul'), '\\begin{columns}[T]\n\\begin{column}{0.36\\textwidth}\n'
         + ph('fse', T('Trading floor of the Frankfurt Stock Exchange (DAX)', 'Sala de tranzacționare a Bursei din Frankfurt (DAX)'), h='0.34\\textheight')
         + '\n\\end{column}\n\\begin{column}{0.62\\textwidth}\n' + table(
             'llrr', T('\\textbf{Cause} & \\textbf{Effect} & $F$ & \\textbf{p}', '\\textbf{Cauza} & \\textbf{Efectul} & $F$ & \\textbf{p}'),
@@ -738,11 +747,11 @@ D.frame(T('Markets: does New York lead Frankfurt and Bucharest?', 'Piețe: prece
 interp(('the market tests', 'testelor pentru piețe'), [
     (T('Strong one-way causality from the S\\&P 500 to the DAX and the BET: a 1\\% S\\&P return yesterday adds about @{gm.b1}\\% to the BET today', 'Cauzalitate puternică, într-un singur sens, de la S\\&P 500 spre DAX și BET: un randament de 1\\% al S\\&P 500 ieri adaugă circa @{gm.b1}\\% la BET azi'),
      [T('the BET does not Granger-cause the S\\&P 500 (p @{gm.bet_sp500.p})', 'BET nu cauzează S\\&P 500 în sens Granger (p @{gm.bet_sp500.p})')]),
-    (T('Cause: the closing times (non-synchronous trading), not a slow market', 'Cauza: orele de închidere (tranzacționare nesincronă), nu o piață lentă'),
+    (T('Cause: the closing times (non-synchronous trading), not a slow market', 'Cauza: orele de închidere (tranzacționare nesincronă), nu o reacție lentă a pieței'),
      [T('New York keeps trading after Europe closes; ``yesterday\'s\'\' S\\&P return partly happened while Europe was closed', 'New York tranzacționează și după închiderea Europei; randamentul S\\&P „de ieri” s-a produs parțial cînd Europa era închisă'),
       T('on weekly data the effect is much weaker (Seminar 6, B2)', 'pe date săptămînale efectul este mult mai slab (Seminarul 6, B2)')]),
     T('Can you trade on it? You would buy at the Bucharest open, after prices have already adjusted: Granger causality in closing prices is not a free profit',
-      'Se poate cîștiga din asta? Ați cumpăra la deschiderea Bursei de la București, după ce prețurile s-au ajustat deja: cauzalitatea Granger în prețurile de închidere nu este un profit gratuit')])
+      'Regularitatea nu aduce un profit sigur: ați cumpăra la deschiderea Bursei de la București, după ce prețurile s-au ajustat deja; cauzalitatea Granger în prețurile de închidere nu este o sursă de profit fără risc')])
 
 D.frame(T('Pitfall 1: omitted variables', 'Capcana 1: variabilele omise'), items(
     (T('Granger causality is relative to the information set: adding or removing a variable can create or destroy it \\refLutOm', 'Cauzalitatea Granger depinde de setul de informații: adăugarea sau eliminarea unei variabile o poate crea sau distruge \\refLutOm'),
@@ -764,7 +773,7 @@ interp(('the simulation', 'simulării'), [
     T('Romanian example: inflation $\\to$ GDP growth has p @{gr.pig.p} in the three-variable VAR and @{gr.bi.pig} in the bivariate one', 'Exemplu românesc: inflația $\\to$ creșterea PIB are p @{gr.pig.p} în VAR-ul cu trei variabile și @{gr.bi.pig} în cel cu două variabile')])
 
 D.frame(T('Pitfall 2: instantaneous causality', 'Capcana 2: cauzalitatea instantanee'), items(
-    (T('Granger tests only use lags; effects within the same period are hidden in the correlation of the shocks $\\bSigma$', 'Testele Granger folosesc doar decalaje; efectele din aceeași perioadă sînt ascunse în corelația șocurilor $\\bSigma$'),
+    (T('Granger tests only use lags; effects within the same period are hidden in the correlation of the shocks $\\bSigma$', 'Testele Granger folosesc doar laguri; efectele din aceeași perioadă sînt ascunse în corelația șocurilor $\\bSigma$'),
      [T('\\textbf{instantaneous causality} between $x$ and $y$: $\\Cov(\\varepsilon_{xt}, \\varepsilon_{yt}) \\ne 0$; tested by a Wald test on the off-diagonal elements of $\\bSigma$', '\\textbf{cauzalitate instantanee} între $x$ și $y$: $\\Cov(\\varepsilon_{xt}, \\varepsilon_{yt}) \\ne 0$; testată printr-un test Wald pe elementele din afara diagonalei lui $\\bSigma$')]),
     (T('It has \\textbf{no direction}: the data cannot tell whether $x$ moved $y$ or $y$ moved $x$ within the quarter', 'Nu are \\textbf{direcție}: datele nu pot spune dacă $x$ l-a mișcat pe $y$ sau $y$ pe $x$ în cursul trimestrului'),
      [T('Romania: ROBOR shocks are instantaneously correlated with the others (p @{gr.inst.i}); the residual correlation of inflation and ROBOR is @{e.cpii}', 'România: șocurile ROBOR sînt corelate instantaneu cu celelalte (p @{gr.inst.i}); corelația reziduurilor inflației și ROBOR este @{e.cpii}')]),
@@ -773,14 +782,14 @@ D.frame(T('Pitfall 2: instantaneous causality', 'Capcana 2: cauzalitatea instant
 
 D.frame(T('Pitfall 3: trends, expectations and the meaning of "cause"', 'Capcana 3: trenduri, așteptări și sensul cuvîntului „cauză”'), items(
     (T('\\textbf{Non-stationary variables}: with $I(1)$ series the $F$ and Wald tests do not have their usual distributions \\refSSW', '\\textbf{Variabile nestaționare}: pentru serii $I(1)$, testele $F$ și Wald nu au distribuțiile obișnuite \\refSSW'),
-     [T('remedies: test on differences (if there is no cointegration), or the Toda--Yamamoto approach \\refTY: estimate a VAR$(p + d_{\\max})$ in levels and test only the first $p$ lags', 'remedii: testăm pe diferențe (dacă nu există cointegrare) sau abordarea Toda--Yamamoto \\refTY: estimăm un VAR$(p + d_{\\max})$ în niveluri și testăm doar primele $p$ decalaje'),
+     [T('remedies: test on differences (if there is no cointegration), or the Toda--Yamamoto approach \\refTY: estimate a VAR$(p + d_{\\max})$ in levels and test only the first $p$ lags', 'remedii: testăm pe diferențe (dacă nu există cointegrare) sau abordarea Toda--Yamamoto \\refTY: estimăm un VAR$(p + d_{\\max})$ în niveluri și testăm doar primele $p$ laguri'),
       T('cointegrated series need a VECM: Chapter 7', 'seriile cointegrate cer un VECM: Capitolul 7')]),
     (T('\\textbf{Expectations}: forward-looking prices move before the events they anticipate', '\\textbf{Așteptările}: prețurile orientate spre viitor se mișcă înaintea evenimentelor pe care le anticipează'),
      [T('stock prices Granger-cause GDP, and weather forecasts ``cause\'\' rain; neither is a cause in the everyday sense', 'prețurile acțiunilor cauzează PIB-ul în sens Granger, iar prognozele meteo „cauzează” ploaia; niciuna nu este o cauză în sensul obișnuit')]),
     T('Report: ``$x$ helps to predict $y$, given these variables and this sample\'\'; never ``$x$ causes $y$\'\'', 'Raportăm: „$x$ ajută la prognoza lui $y$, date fiind aceste variabile și acest eșantion”; niciodată „$x$ cauzează pe $y$”')))
 
 D.recap(('Granger causality', 'cauzalitatea Granger'), [
-    T('$x \\to y$ (Granger): the lags of $x$ improve the forecast of $y$; $F$ or Wald test of zero restrictions', '$x \\to y$ (Granger): decalajele lui $x$ îmbunătățesc prognoza lui $y$; test $F$ sau Wald al restricțiilor nule'),
+    T('$x \\to y$ (Granger): the lags of $x$ improve the forecast of $y$; $F$ or Wald test of zero restrictions', '$x \\to y$ (Granger): lagurile lui $x$ îmbunătățesc prognoza lui $y$; test $F$ sau Wald al restricțiilor nule'),
     T('Romania: GDP growth and inflation $\\to$ ROBOR; markets: S\\&P 500 $\\to$ DAX, BET (time zones)', 'România: creșterea PIB și inflația $\\to$ ROBOR; piețe: S\\&P 500 $\\to$ DAX, BET (fusurile orare)'),
     T('Pitfalls: omitted variables, instantaneous effects, non-stationarity, expectations', 'Capcane: variabile omise, efecte instantanee, nestaționaritate, așteptări'),
     T('Granger causality is predictability, not causation', 'Cauzalitatea Granger înseamnă predictibilitate, nu cauzalitate')])
@@ -790,13 +799,14 @@ D.recap(('Granger causality', 'cauzalitatea Granger'), [
 # =============================================================================
 D.section('Impulse responses', 'Funcții de răspuns la impuls')
 
-D.frame(T('Impulse responses and why we orthogonalise', 'Răspunsurile la impuls și de ce le ortogonalizăm'), items(
+D.frame(T('Impulse responses and why we orthogonalise', 'Răspunsurile la impuls și necesitatea ortogonalizării'), items(
     (T('\\textbf{Impulse response function} (IRF): the path of $Y_{j,t+h}$, $h = 0, 1, 2, \\dots$, after a one-time shock to variable $k$ at time $t$', '\\textbf{Funcția de răspuns la impuls} (IRF): traiectoria lui $Y_{j,t+h}$, $h = 0, 1, 2, \\dots$, după un șoc unic în variabila $k$ la momentul $t$'),
      [T('from the moving-average form: the response to a unit change in $\\varepsilon_{kt}$ is the column $k$ of $\\bPhi_h$', 'din forma de medie mobilă: răspunsul la o modificare unitară a lui $\\varepsilon_{kt}$ este coloana $k$ a lui $\\bPhi_h$')]),
     (T('\\textbf{Problem}: the shocks are correlated ($\\bSigma$ not diagonal)', '\\textbf{Problema}: șocurile sînt corelate ($\\bSigma$ nu este diagonală)'),
      [T('``a shock to inflation with no shock to ROBOR\'\' is an experiment that the data rarely show: the two shocks usually come together (correlation @{e.cpii})', '„un șoc al inflației fără niciun șoc al ROBOR” este un experiment pe care datele îl arată rar: cele două șocuri vin de obicei împreună (corelația @{e.cpii})')]),
     (T('\\textbf{Solution}: rewrite the shocks as $\\bepsilon_t = \\mathbf{P}\\mathbf{u}_t$, with $\\mathbf{u}_t$ uncorrelated, unit variance: $\\bSigma = \\mathbf{P}\\mathbf{P}\'$', '\\textbf{Soluția}: rescriem șocurile ca $\\bepsilon_t = \\mathbf{P}\\mathbf{u}_t$, cu $\\mathbf{u}_t$ necorelate, de varianță unitară: $\\bSigma = \\mathbf{P}\\mathbf{P}\'$'),
-     [T('the \\textbf{orthogonalised} IRF: $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$; element $(j, k)$: the response of $Y_j$ to a one-standard-deviation shock $u_k$', '\\textbf{IRF ortogonalizată}: $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$; elementul $(j, k)$: răspunsul lui $Y_j$ la un șoc $u_k$ de o abatere standard')])))
+     [T('the \\textbf{orthogonalised} IRF: $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$; element $(j, k)$: the response of $Y_j$ to a one-standard-deviation shock $u_k$', '\\textbf{IRF ortogonalizată}: $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$; elementul $(j, k)$: răspunsul lui $Y_j$ la un șoc $u_k$ de o abatere standard'),
+      T('$\\mathbf{P}$: a $K \\times K$ matrix that turns the uncorrelated shocks $\\mathbf{u}_t$ into the observed shocks $\\bepsilon_t$', '$\\mathbf{P}$: o matrice $K \\times K$ care transformă șocurile necorelate $\\mathbf{u}_t$ în șocurile observate $\\bepsilon_t$')])))
 
 D.frame(T('The Cholesky decomposition and the ordering', 'Descompunerea Cholesky și ordinea variabilelor'), items(
     (T('\\textbf{Cholesky}: the unique lower triangular $\\mathbf{P}$ with positive diagonal such that $\\bSigma = \\mathbf{P}\\mathbf{P}\'$', '\\textbf{Cholesky}: matricea unică $\\mathbf{P}$, inferior triunghiulară, cu diagonala pozitivă, pentru care $\\bSigma = \\mathbf{P}\\mathbf{P}\'$'),
@@ -828,7 +838,7 @@ interp(('the Romanian responses', 'răspunsurilor românești'), [
       T('a likely reason: the rate rises when the central bank expects inflation; information omitted from the VAR (exchange rate, energy prices) shows up as a ``shock\'\'', 'un motiv probabil: dobînda crește atunci cînd banca centrală anticipează inflația; informația omisă din VAR (cursul de schimb, prețurile energiei) apare ca „șoc”')]),
     T('Inflation shocks themselves are persistent: @{ir.pi4} pp after a year, @{ir.pi12} pp after three', 'Șocurile inflației sînt persistente: @{ir.pi4} pp după un an, @{ir.pi12} pp după trei')])
 
-chart(T('Does the ordering change the answer?', 'Schimbă ordinea răspunsul?'), 'tsa_ch6_irf_order', 'TSA_ch6_irf_fevd', [
+chart(T('Does the ordering change the answer?', 'Efectul ordinii asupra răspunsurilor'), 'tsa_ch6_irf_order', 'TSA_ch6_irf_fevd', [
     T('Same VAR(2), two Cholesky orderings (inflation before ROBOR, ROBOR before inflation) and the generalised responses of \\refPS, which do not depend on the order',
       'Același VAR(2), două ordini Cholesky (inflația înaintea ROBOR, ROBOR înaintea inflației) și răspunsurile generalizate din \\refPS, care nu depind de ordine')],
     h='0.52\\textheight')
@@ -843,7 +853,7 @@ interp(('the two orderings', 'celor două ordini'), [
 
 D.frame(T('Generalised impulse responses', 'Răspunsuri la impuls generalizate'), items(
     (T('\\textbf{Generalised IRF} \\refPS\\ (after \\refKPP): shock variable $k$ by one standard deviation and let the other shocks move as they usually do with it', '\\textbf{IRF generalizată} \\refPS\\ (după \\refKPP): aplicăm variabilei $k$ un șoc de o abatere standard și lăsăm celelalte șocuri să se miște așa cum se mișcă de obicei odată cu ea'),
-     [T('$\\boldsymbol{\\psi}_k(h) = \\bPhi_h\\bSigma\\mathbf{e}_k/\\sqrt{\\sigma_{kk}}$; $\\mathbf{e}_k$: column $k$ of the identity matrix', '$\\boldsymbol{\\psi}_k(h) = \\bPhi_h\\bSigma\\mathbf{e}_k/\\sqrt{\\sigma_{kk}}$; $\\mathbf{e}_k$: coloana $k$ a matricei identitate')]),
+     [T('$\\boldsymbol{\\psi}_k(h) = \\bPhi_h\\bSigma\\mathbf{e}_k/\\sqrt{\\sigma_{kk}}$; $\\mathbf{e}_k$: column $k$ of the identity matrix; $\\sigma_{kk}$: the variance of shock $k$', '$\\boldsymbol{\\psi}_k(h) = \\bPhi_h\\bSigma\\mathbf{e}_k/\\sqrt{\\sigma_{kk}}$; $\\mathbf{e}_k$: coloana $k$ a matricei identitate; $\\sigma_{kk}$: varianța șocului $k$')]),
     (T('Properties', 'Proprietăți'),
      [T('no ordering is needed; for the variable ordered first, it equals the Cholesky response', 'nu este nevoie de nicio ordine; pentru variabila așezată prima coincide cu răspunsul Cholesky'),
       T('the shocks are not orthogonal: the responses to different shocks overlap and cannot be added up', 'șocurile nu sînt ortogonale: răspunsurile la șocuri diferite se suprapun și nu se pot aduna')]),
@@ -856,10 +866,10 @@ chart(T('Markets: responses to an S\\&P 500 shock', 'Piețe: răspunsuri la un �
 
 interp(('the market responses', 'răspunsurilor piețelor'), [
     (T('Generalised: DAX @{mi.d0}\\% on the same day and @{mi.d1}\\% the next; BET @{mi.b0}\\% and @{mi.b1}\\%', 'Generalizate: DAX @{mi.d0}\\% în aceeași zi și @{mi.d1}\\% în ziua următoare; BET @{mi.b0}\\% și @{mi.b1}\\%'),
-     [T('identical to the Cholesky responses with the S\\&P 500 first, as the theory says', 'identice cu răspunsurile Cholesky cu S\\&P 500 primul, cum spune teoria')]),
+     [T('identical to the Cholesky responses with the S\\&P 500 first, as the theory says', 'identice cu răspunsurile Cholesky cu S\\&P 500 primul, conform teoriei')]),
     (T('With the S\\&P 500 last (it closes last), the same-day response is zero by assumption and the next-day responses are @{mi.Bd1}\\% (DAX) and @{mi.Bb1}\\% (BET)', 'Cu S\\&P 500 ultimul (se închide ultimul), răspunsul din aceeași zi este zero prin ipoteză, iar cele din ziua următoare sînt @{mi.Bd1}\\% (DAX) și @{mi.Bb1}\\% (BET)'),
      [T('the same-day correlation (@{mi.cu} with the DAX) is attributed to Europe in this order', 'corelația din aceeași zi (@{mi.cu} cu DAX) este atribuită Europei în această ordine')]),
-    T('Either way, the effect is over after two days: markets absorb the news quickly', 'Oricum, efectul dispare după două zile: piețele absorb rapid știrile')])
+    T('Either way, the effect is over after two days: markets absorb the news quickly', 'În ambele variante, efectul dispare după două zile: piețele încorporează rapid informația')])
 
 D.recap(('Impulse responses', 'funcții de răspuns la impuls'), [
     T('IRF: columns of $\\bPhi_h$; orthogonalised: $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$, $\\bSigma = \\mathbf{P}\\mathbf{P}\'$', 'IRF: coloanele lui $\\bPhi_h$; ortogonalizată: $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$, $\\bSigma = \\mathbf{P}\\mathbf{P}\'$'),
@@ -876,7 +886,8 @@ D.frame(T('Forecast error variance decomposition', 'Descompunerea varianței ero
     (T('$h$-step forecast error: $\\bY_{t+h} - \\hat\\bY_{t+h|t} = \\sum_{s=0}^{h-1}\\bPhi_s\\bepsilon_{t+h-s} = \\sum_{s=0}^{h-1}\\boldsymbol{\\Theta}_s\\mathbf{u}_{t+h-s}$', 'Eroarea de prognoză la $h$ pași: $\\bY_{t+h} - \\hat\\bY_{t+h|t} = \\sum_{s=0}^{h-1}\\bPhi_s\\bepsilon_{t+h-s} = \\sum_{s=0}^{h-1}\\boldsymbol{\\Theta}_s\\mathbf{u}_{t+h-s}$'),
      [T('the orthogonal shocks $u_k$ are uncorrelated, so the variance splits into $K$ parts', 'șocurile ortogonale $u_k$ sînt necorelate, deci varianța se împarte în $K$ părți')]),
     (T('\\textbf{FEVD}: $\\omega_{jk}(h) = \\dfrac{\\sum_{s=0}^{h-1}\\theta_{jk,s}^2}{\\sum_{s=0}^{h-1}\\sum_{m=1}^{K}\\theta_{jm,s}^2}$, the share of shock $k$ in the $h$-step error variance of $Y_j$', '\\textbf{FEVD}: $\\omega_{jk}(h) = \\dfrac{\\sum_{s=0}^{h-1}\\theta_{jk,s}^2}{\\sum_{s=0}^{h-1}\\sum_{m=1}^{K}\\theta_{jm,s}^2}$, ponderea șocului $k$ în varianța erorii de prognoză la $h$ pași a lui $Y_j$'),
-     [T('each row sums to 100\\%; it depends on the Cholesky ordering; at $h = 1$ the first variable is explained 100\\% by its own shock', 'fiecare rînd însumează 100\\%; depinde de ordinea Cholesky; la $h = 1$ prima variabilă este explicată 100\\% de propriul șoc')]),
+     [T('$\\theta_{jk,s}$: element $(j, k)$ of $\\boldsymbol{\\Theta}_s$; $\\hat\\bY_{t+h|t}$: the forecast of $\\bY_{t+h}$ made at $t$', '$\\theta_{jk,s}$: elementul $(j, k)$ al lui $\\boldsymbol{\\Theta}_s$; $\\hat\\bY_{t+h|t}$: prognoza lui $\\bY_{t+h}$ făcută la momentul $t$'),
+      T('each row sums to 100\\%; it depends on the Cholesky ordering; at $h = 1$ the first variable is explained 100\\% by its own shock', 'fiecare rînd însumează 100\\%; depinde de ordinea Cholesky; la $h = 1$ prima variabilă este explicată 100\\% de propriul șoc')]),
     (T('Example (VAR(1) of Section 2), $h = 2$: the variance of the error of $y_2$ is @{wx.mse22}; shock $u_1$ explains @{wx.fe21}\\%', 'Exemplu (VAR(1) din secțiunea 2), $h = 2$: varianța erorii pentru $y_2$ este @{wx.mse22}; șocul $u_1$ explică @{wx.fe21}\\%'),
      [T('$(0.5^2 + 0.5^2)/@{wx.mse22}$: the impact $p_{21} = 0.5$ and the next-period response @{wx.th21}', '$(0{,}5^2 + 0{,}5^2)/@{wx.mse22}$: impactul $p_{21} = 0{,}5$ și răspunsul din perioada următoare @{wx.th21}')])))
 
@@ -925,7 +936,7 @@ interp(('the spillover index', 'indicelui de spillover'), [
 D.recap(('Variance decomposition', 'descompunerea varianței'), [
     T('FEVD: share of each orthogonal shock in the $h$-step forecast error variance; rows sum to 100\\%', 'FEVD: ponderea fiecărui șoc ortogonal în varianța erorii de prognoză la $h$ pași; rîndurile însumează 100\\%'),
     T('Romania: ROBOR is driven by inflation at long horizons; inflation mainly by its own shocks', 'România: ROBOR este determinat de inflație pe orizonturi lungi; inflația mai ales de propriile șocuri'),
-    T('Diebold--Yilmaz spillover index: the off-diagonal mass of the generalised FEVD', 'Indicele de spillover Diebold--Yilmaz: masa din afara diagonalei a FEVD generalizate'),
+    T('Diebold--Yilmaz spillover index: the off-diagonal mass of the generalised FEVD', 'Indicele de spillover Diebold--Yilmaz: ponderea totală din afara diagonalei a FEVD generalizate'),
     T('Spillovers among S\\&P 500, DAX and BET peak in crises (2008, 2020)', 'Spillover-ul dintre S\\&P 500, DAX și BET atinge maximele în crize (2008, 2020)')])
 
 # =============================================================================
@@ -937,7 +948,7 @@ D.frame(T('VAR forecasts and their uncertainty', 'Prognozele VAR și incertitudi
     (T('\\textbf{Point forecasts} by recursion: $\\hat\\bY_{T+h|T} = \\bc + \\bA_1\\hat\\bY_{T+h-1|T} + \\dots + \\bA_p\\hat\\bY_{T+h-p|T}$, with $\\hat\\bY_{T+j|T} = \\bY_{T+j}$ for $j \\le 0$', '\\textbf{Prognozele punctuale} prin recurență: $\\hat\\bY_{T+h|T} = \\bc + \\bA_1\\hat\\bY_{T+h-1|T} + \\dots + \\bA_p\\hat\\bY_{T+h-p|T}$, cu $\\hat\\bY_{T+j|T} = \\bY_{T+j}$ pentru $j \\le 0$'),
      [T('for a stable VAR they converge to the mean $\\boldsymbol{\\mu}$ as $h$ grows', 'pentru un VAR stabil ele converg spre media $\\boldsymbol{\\mu}$ cînd $h$ crește')]),
     (T('\\textbf{Error covariance}: $\\bSigma(h) = \\sum_{s=0}^{h-1}\\bPhi_s\\bSigma\\bPhi_s\'$; it grows with $h$ towards $\\bGamma(0)$', '\\textbf{Covarianța erorii}: $\\bSigma(h) = \\sum_{s=0}^{h-1}\\bPhi_s\\bSigma\\bPhi_s\'$; crește cu $h$ spre $\\bGamma(0)$'),
-     [T('95\\% interval for $Y_j$: $\\hat Y_{j,T+h|T} \\pm 1.96\\sqrt{\\sigma_{jj}(h)}$ (Normal shocks; parameter uncertainty ignored)', 'intervalul de 95\\% pentru $Y_j$: $\\hat Y_{j,T+h|T} \\pm 1{,}96\\sqrt{\\sigma_{jj}(h)}$ (șocuri Normale; incertitudinea parametrilor este ignorată)'),
+     [T('95\\% interval for $Y_j$: $\\hat Y_{j,T+h|T} \\pm 1.96\\sqrt{\\sigma_{jj}(h)}$, $\\sigma_{jj}(h)$: element $(j, j)$ of $\\bSigma(h)$ (Normal shocks; parameter uncertainty ignored)', 'intervalul de 95\\% pentru $Y_j$: $\\hat Y_{j,T+h|T} \\pm 1{,}96\\sqrt{\\sigma_{jj}(h)}$, $\\sigma_{jj}(h)$: elementul $(j, j)$ al lui $\\bSigma(h)$ (șocuri Normale; incertitudinea parametrilor este ignorată)'),
       T('example (Section 2): $\\bSigma(2) = \\bSigma + \\bA\\bSigma\\bA\'$, with variances @{wx.mse11} and @{wx.mse22}', 'exemplu (secțiunea 2): $\\bSigma(2) = \\bSigma + \\bA\\bSigma\\bA\'$, cu varianțele @{wx.mse11} și @{wx.mse22}')]),
     T('Same logic as the ARMA forecasts of Chapter 2, with matrices in place of numbers', 'Aceeași logică precum prognozele ARMA din Capitolul 2, cu matrice în locul numerelor')))
 
@@ -953,7 +964,7 @@ interp(('the forecasts', 'prognozelor'), [
     T('A mechanical forecast: it knows nothing of the budget, energy prices or BNR decisions; its value is as a transparent benchmark', 'O prognoză mecanică: nu știe nimic despre buget, prețurile energiei sau deciziile BNR; valoarea ei este aceea de reper transparent')])
 
 D.frame(T('Evaluating VAR forecasts fairly', 'Evaluarea corectă a prognozelor VAR'), items(
-    (T('\\textbf{Pseudo out-of-sample}: re-estimate on data up to $t$ only, forecast $t + h$, move $t$ forward (expanding window)', '\\textbf{Pseudo în afara eșantionului}: reestimăm doar pe datele pînă la $t$, prognozăm $t + h$, avansăm $t$ (fereastră care crește)'),
+    (T('\\textbf{Pseudo out-of-sample}: re-estimate on data up to $t$ only, forecast $t + h$, move $t$ forward (expanding window)', '\\textbf{Evaluarea pseudo în afara eșantionului} (pseudo out-of-sample): reestimăm doar pe datele pînă la $t$, prognozăm $t + h$, avansăm $t$ (fereastră care crește)'),
      [T('never evaluate on the data used for estimation (Chapter 0)', 'nu evaluăm niciodată pe datele folosite la estimare (Capitolul 0)')]),
     (T('\\textbf{Benchmarks}: the random walk (no change) and a univariate AR$(p)$ for each variable, $p$ by AIC', '\\textbf{Metode de referință}: mersul aleator (nicio schimbare) și un AR$(p)$ univariat pentru fiecare variabilă, $p$ după AIC'),
      [T('the question is not ``is the VAR good?\'\', but ``do the other variables add anything to the series\' own past?\'\'', 'întrebarea nu este „este VAR-ul bun?”, ci „adaugă ceva celelalte variabile la propriul trecut al seriei?”')]),
@@ -966,10 +977,10 @@ chart(T('VAR against univariate benchmarks', 'VAR față de metodele univariate 
     h='0.5\\textheight')
 
 interp(('the forecast comparison', 'comparației prognozelor'), [
-    (T('Romania, one quarter ahead: the VAR loses to the AR for GDP growth (@{oo.ro.rv.g.1} against @{oo.ro.ra.g.1}; DM = @{oo.dm.g}, p @{oo.dm.g.p}) and is no better for inflation or ROBOR', 'România, un trimestru înainte: VAR-ul pierde în fața AR pentru creșterea PIB-ului (@{oo.ro.rv.g.1} față de @{oo.ro.ra.g.1}; DM = @{oo.dm.g}, p @{oo.dm.g.p}) și nu este mai bun pentru inflație sau ROBOR'),
-     [T('@{ex.k3p2} coefficients on @{oo.n0} to @{e.n} quarters: the estimation noise eats the information of the other variables', '@{ex.k3p2} de coeficienți pe @{oo.n0}--@{e.n} de trimestre: zgomotul estimării consumă informația celorlalte variabile')]),
-    (T('United States, 8 quarters ahead: the VAR beats the AR for unemployment (@{oo.us.rv.u.8} against @{oo.us.ra.u.8}) and the fed funds rate (@{oo.us.rv.R.8} against @{oo.us.ra.R.8})', 'Statele Unite, 8 trimestre înainte: VAR-ul bate AR pentru șomaj (@{oo.us.rv.u.8} față de @{oo.us.ra.u.8}) și pentru dobînda federală (@{oo.us.rv.R.8} față de @{oo.us.ra.R.8})'),
-     [T('for inflation, nothing beats the random walk (@{oo.us.rv.pi.8}) at this horizon in this period', 'pentru inflație, nimic nu bate mersul aleator (@{oo.us.rv.pi.8}) la acest orizont, în această perioadă')]),
+    (T('Romania, one quarter ahead: the VAR loses to the AR for GDP growth (@{oo.ro.rv.g.1} against @{oo.ro.ra.g.1}; DM = @{oo.dm.g}, p @{oo.dm.g.p}) and is no better for inflation or ROBOR', 'România, orizontul de un trimestru: VAR-ul este mai puțin precis decît AR pentru creșterea PIB-ului (@{oo.ro.rv.g.1} față de @{oo.ro.ra.g.1}; DM = @{oo.dm.g}, p @{oo.dm.g.p}) și nu este mai bun pentru inflație sau ROBOR'),
+     [T('@{ex.k3p2} coefficients on @{oo.n0} to @{e.n} quarters: the estimation noise eats the information of the other variables', '@{ex.k3p2} de coeficienți pe @{oo.n0}--@{e.n} de trimestre: erorile de estimare anulează informația adusă de celelalte variabile')]),
+    (T('United States, 8 quarters ahead: the VAR beats the AR for unemployment (@{oo.us.rv.u.8} against @{oo.us.ra.u.8}) and the fed funds rate (@{oo.us.rv.R.8} against @{oo.us.ra.R.8})', 'Statele Unite, orizontul de 8 trimestre: VAR-ul este mai precis decît AR pentru șomaj (@{oo.us.rv.u.8} față de @{oo.us.ra.u.8}) și pentru dobînda federală (@{oo.us.rv.R.8} față de @{oo.us.ra.R.8})'),
+     [T('for inflation, nothing beats the random walk (@{oo.us.rv.pi.8}) at this horizon in this period', 'pentru inflație, niciun model nu este mai precis decît mersul aleator (@{oo.us.rv.pi.8}) la acest orizont, în această perioadă')]),
     T('VARs help when the sample is long and the links are strong; in short, noisy samples a simple AR is hard to beat', 'VAR-urile ajută cînd eșantionul este lung și legăturile sînt puternice; în eșantioane scurte și zgomotoase, un AR simplu este greu de depășit')])
 
 D.recap(('Forecasting with a VAR', 'prognoza cu un VAR'), [
@@ -984,7 +995,7 @@ D.section('Structural VARs and a landmark case study', 'VAR-uri structurale și 
 
 D.frame(T('From reduced form to structural VAR', 'De la forma redusă la VAR-ul structural'), items(
     (T('\\textbf{Structural VAR} (SVAR): $\\mathbf{B}_0\\bY_t = \\mathbf{d} + \\mathbf{B}_1\\bY_{t-1} + \\dots + \\mathbf{B}_p\\bY_{t-p} + \\mathbf{u}_t$, $\\mathbf{u}_t$ uncorrelated \\textbf{structural shocks}', '\\textbf{VAR structural} (SVAR): $\\mathbf{B}_0\\bY_t = \\mathbf{d} + \\mathbf{B}_1\\bY_{t-1} + \\dots + \\mathbf{B}_p\\bY_{t-p} + \\mathbf{u}_t$, $\\mathbf{u}_t$ \\textbf{șocuri structurale} necorelate'),
-     [T('$\\mathbf{B}_0$: the contemporaneous effects (e.g.\\ the policy rate reacts to this quarter\'s inflation)', '$\\mathbf{B}_0$: efectele contemporane (de exemplu, dobînda de politică monetară reacționează la inflația din acest trimestru)'),
+     [T('$\\mathbf{d}$: constants; $\\mathbf{B}_1, \\dots, \\mathbf{B}_p$: structural lag coefficients; $\\mathbf{B}_0$: the contemporaneous effects (e.g.\\ the policy rate reacts to this quarter\'s inflation)', '$\\mathbf{d}$: termenii liberi; $\\mathbf{B}_1, \\dots, \\mathbf{B}_p$: coeficienții structurali ai lagurilor; $\\mathbf{B}_0$: efectele contemporane (de exemplu, dobînda de politică monetară reacționează la inflația din acest trimestru)'),
       T('multiplying by $\\mathbf{B}_0^{-1}$ gives the reduced form, with $\\bepsilon_t = \\mathbf{B}_0^{-1}\\mathbf{u}_t$', 'înmulțind cu $\\mathbf{B}_0^{-1}$ obținem forma redusă, cu $\\bepsilon_t = \\mathbf{B}_0^{-1}\\mathbf{u}_t$')]),
     (T('\\textbf{Identification}: $\\bSigma$ has $K(K+1)/2$ distinct elements, $\\mathbf{B}_0^{-1}$ has $K^2$; we need $K(K-1)/2$ restrictions', '\\textbf{Identificarea}: $\\bSigma$ are $K(K+1)/2$ elemente distincte, $\\mathbf{B}_0^{-1}$ are $K^2$; avem nevoie de $K(K-1)/2$ restricții'),
      [T('Cholesky: $\\mathbf{B}_0^{-1} = \\mathbf{P}$ lower triangular: exactly $K(K-1)/2$ zeros; the recursive SVAR of \\refSims', 'Cholesky: $\\mathbf{B}_0^{-1} = \\mathbf{P}$ inferior triunghiulară: exact $K(K-1)/2$ zerouri; SVAR-ul recursiv din \\refSims'),
@@ -995,7 +1006,7 @@ D.frame(T('Case study: Stock and Watson (2001)', 'Studiu de caz: Stock și Watso
         + ph('fed', T('Eccles Building, Washington: the Federal Reserve Board', 'Clădirea Eccles, Washington: Consiliul Rezervei Federale'), h='0.3\\textheight')
         + '\n\\end{column}\n\\begin{column}{0.58\\textwidth}\n' + items(
             (T('\\refSW: ``Vector autoregressions\'\', a widely used survey of the method', '\\refSW: „Vector autoregressions”, o sinteză a metodei, folosită pe scară largă'),
-             [T('three variables: inflation (GDP price index, $\\pi_t = 400\\ln(P_t/P_{t-1})$), unemployment, the federal funds rate', 'trei variabile: inflația (indicele de preț al PIB, $\\pi_t = 400\\ln(P_t/P_{t-1})$), șomajul, dobînda federală'),
+             [T('three variables: inflation ($\\pi_t = 400\\ln(P_t/P_{t-1})$, $P_t$: the GDP price index; 400 annualises, in \\%), unemployment, the federal funds rate', 'trei variabile: inflația ($\\pi_t = 400\\ln(P_t/P_{t-1})$, $P_t$: indicele de preț al PIB; factorul 400 anualizează, în \\%), șomajul, dobînda federală'),
               T('quarterly, 1960Q1--2000Q4, VAR(4), Cholesky order $\\pi, u, R$', 'trimestrial, T1 1960--T4 2000, VAR(4), ordinea Cholesky $\\pi, u, R$')]),
             (T('Four tasks: data description, forecasting, structural inference, policy analysis', 'Patru sarcini: descrierea datelor, prognoza, inferența structurală, analiza politicilor'),
              [T('their verdict: VARs are good at the first two; the last two depend on the identifying assumptions', 'verdictul lor: VAR-urile sînt bune la primele două; ultimele două depind de ipotezele de identificare')]),
@@ -1048,7 +1059,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
         '\\aiprompt{Write Python code that builds a quarterly data set for Romania (real GDP growth from Eurostat namq\\_10\\_gdp, 12-month HICP inflation from prc\\_hicp\\_minr, ROBOR 3M from irt\\_st\\_m), chooses the VAR lag order by AIC, BIC and HQ, checks stability and residuals, runs Granger tests and plots orthogonalised impulse responses with bootstrap bands.}')])))
 
 D.frame(T('Checks you must run', 'Verificări necesare'), items(
-    T('The dates: series aligned on the same quarters, no forward-filled or overlapping values that create spurious leads', 'Datele calendaristice: serii aliniate pe aceleași trimestre, fără valori completate înainte sau suprapuse care creează precedențe false'),
+    T('The dates: series aligned on the same quarters, no forward-filled or overlapping values that create spurious leads', 'Datele calendaristice: serii aliniate pe aceleași trimestre, fără valori propagate înainte (forward fill) sau suprapuse, care creează precedențe false'),
     T('Stationarity of each variable (Chapter 3) before Granger tests; with $I(1)$ variables, differences, Toda--Yamamoto or a VECM', 'Staționaritatea fiecărei variabile (Capitolul 3) înaintea testelor Granger; pentru variabile $I(1)$: diferențe, Toda--Yamamoto sau un VECM'),
     T('Stability from the companion matrix, not from $\\bA_1$ alone', 'Stabilitatea din matricea companion, nu doar din $\\bA_1$'),
     T('The Cholesky ordering used and its justification; the same results with another ordering or with generalised responses', 'Ordinea Cholesky folosită și justificarea ei; aceleași rezultate cu altă ordine sau cu răspunsuri generalizate'),
@@ -1061,12 +1072,12 @@ D.frame(T('Checks you must run', 'Verificări necesare'), items(
 D.section('Summary', 'Rezumat')
 
 D.frame(T('Key takeaways', 'Idei de reținut'), items(
-    T('A VAR$(p)$ regresses each variable on the past of all; OLS equation by equation; few variables and lags', 'Un VAR$(p)$ regresează fiecare variabilă pe trecutul tuturor; OLS ecuație cu ecuație; puține variabile și decalaje'),
+    T('A VAR$(p)$ regresses each variable on the past of all; OLS equation by equation; few variables and lags', 'Un VAR$(p)$ regresează fiecare variabilă pe trecutul tuturor; OLS ecuație cu ecuație; puține variabile și laguri'),
     T('Stability: all eigenvalues of the companion matrix inside the unit circle; then a mean and a moving-average form exist', 'Stabilitatea: toate valorile proprii ale matricei companion în interiorul cercului unitate; atunci există o medie și o formă de medie mobilă'),
     T('Choose $p$ with AIC, BIC, HQ, then check the residuals with the portmanteau test', 'Alegem $p$ cu AIC, BIC, HQ, apoi verificăm reziduurile cu testul portmanteau'),
     T('Granger causality = incremental predictability, relative to the chosen variables', 'Cauzalitatea Granger = predictibilitate suplimentară, relativă la variabilele alese'),
     T('IRF and FEVD need orthogonal shocks: the Cholesky ordering is an identifying assumption', 'IRF și FEVD cer șocuri ortogonale: ordinea Cholesky este o ipoteză de identificare'),
-    T('VAR forecasts must beat AR and random-walk benchmarks out of sample; often they do not', 'Prognozele VAR trebuie să bată în afara eșantionului metodele AR și mersul aleator; adesea nu reușesc')))
+    T('VAR forecasts must beat AR and random-walk benchmarks out of sample; often they do not', 'Prognozele VAR trebuie să fie mai precise, în afara eșantionului, decît modelele AR și mersul aleator; adesea nu sînt')))
 
 D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretch}{1.35}' + table(
     'll', T('\\textbf{Quantity}', '\\textbf{Mărimea}') + ' & ' + T('\\textbf{Formula}', '\\textbf{Formula}'),
@@ -1084,7 +1095,7 @@ D.frame(T('Self-assessment', 'Autoevaluare'), items(
     (T('\\textbf{Question}: is the VAR(1) with $\\bA = \\begin{pmatrix} 0.9 & 0.3 \\\\ 0.2 & 0.8 \\end{pmatrix}$ stable?', '\\textbf{Întrebare}: este stabil VAR(1) cu $\\bA = \\begin{pmatrix} 0{,}9 & 0{,}3 \\\\ 0{,}2 & 0{,}8 \\end{pmatrix}$?'),
      [T('\\textbf{Answer}: no: $\\lambda^2 - 1.7\\lambda + 0.66 = 0$ gives $\\lambda = 1.1$ and $0.6$', '\\textbf{Răspuns}: nu: $\\lambda^2 - 1{,}7\\lambda + 0{,}66 = 0$ dă $\\lambda = 1{,}1$ și $0{,}6$')]),
     (T('\\textbf{Question}: a Granger test gives p = 0.30 for $x \\to y$. Does $x$ have no effect on $y$?', '\\textbf{Întrebare}: un test Granger dă p = 0,30 pentru $x \\to y$. Nu are $x$ niciun efect asupra lui $y$?'),
-     [T('\\textbf{Answer}: no such conclusion: the lags of $x$ do not improve the forecast; effects within the period, slow effects or low power remain possible', '\\textbf{Răspuns}: nu putem concluziona asta: decalajele lui $x$ nu îmbunătățesc prognoza; rămîn posibile efecte în aceeași perioadă, efecte lente sau o putere mică a testului')]),
+     [T('\\textbf{Answer}: no such conclusion: the lags of $x$ do not improve the forecast; effects within the period, slow effects or low power remain possible', '\\textbf{Răspuns}: nu putem concluziona asta: lagurile lui $x$ nu îmbunătățesc prognoza; rămîn posibile efecte în aceeași perioadă, efecte lente sau o putere mică a testului')]),
     (T('\\textbf{Question}: in a Cholesky FEVD, what share of the 1-step error variance of the first variable comes from its own shock?', '\\textbf{Întrebare}: într-o FEVD Cholesky, ce pondere din varianța erorii la un pas a primei variabile provine din propriul șoc?'),
      [T('\\textbf{Answer}: 100\\%, by construction of the ordering', '\\textbf{Răspuns}: 100\\%, prin construcția ordinii')]),
     T('Next: Chapter 7, cointegration and the vector error correction model (VECM)', 'Urmează: Capitolul 7, cointegrarea și modelul vectorial cu corecția erorii (VECM)')))

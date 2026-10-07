@@ -32,7 +32,7 @@ window.TSA_DATA.quizzes['seasonal'] = {
                     "SARIMA$(2,1,0)(0,1,0)_{12}$"
                 ],
                 "correctExplanation": "O diferență obișnuită și una sezonieră, cu un termen MA obișnuit și unul sezonier: $\\Delta\\Delta_{12}y_t = (1 + \\theta L)(1 + \\Theta L^{12})\\varepsilon_t$, doi parametri.",
-                "incorrectExplanation": "Un ARIMA simplu nu are parte sezonieră; un AR sezonier pur, fără diferențe, nu poate urmări date sezoniere cu trend; iar un model fără termenul MA sezonier lasă o valoare semnificativă la decalajul 12 în reziduuri."
+                "incorrectExplanation": "Un ARIMA simplu nu are parte sezonieră; un AR sezonier pur, fără diferențe, nu poate urmări date sezoniere cu trend; iar un model fără termenul MA sezonier lasă o valoare semnificativă la lagul 12 în reziduuri."
             }
         },
         {
@@ -53,13 +53,13 @@ window.TSA_DATA.quizzes['seasonal'] = {
                 "title": "Parametri liberi",
                 "text": "Cîți parametri, inclusiv $\\sigma^2$, are SARIMA$(0,1,1)(0,1,1)_4$?",
                 "options": [
-                    "5: coeficienții MA la decalajele 1, 4 și 5, o constantă și $\\sigma^2$",
+                    "5: coeficienții MA la lagurile 1, 4 și 5, o constantă și $\\sigma^2$",
                     "4: $\\theta$, $\\Theta$, $\\theta\\Theta$ și $\\sigma^2$",
-                    "6: cîte unul pentru fiecare decalaj de la 1 la 5 și $\\sigma^2$",
+                    "6: cîte unul pentru fiecare lag de la 1 la 5 și $\\sigma^2$",
                     "3: $\\theta$, $\\Theta$ și $\\sigma^2$"
                 ],
-                "correctExplanation": "Polinomul MA $(1 + \\theta L)(1 + \\Theta L^4)$ are coeficientul $\\theta\\Theta$ la decalajul 5, dar acesta este produsul celor doi parametri, nu unul nou; cu $d = D = 1$ nu există constantă.",
-                "incorrectExplanation": "Coeficientul de la decalajul 5 este determinat de $\\theta$ și $\\Theta$; constanta lipsește cînd $d + D \\ge 2$; iar polinomul MA nu are coeficienți liberi la decalajele 2 și 3."
+                "correctExplanation": "Polinomul MA $(1 + \\theta L)(1 + \\Theta L^4)$ are coeficientul $\\theta\\Theta$ la lagul 5, dar acesta este produsul celor doi parametri, nu unul nou; cu $d = D = 1$ nu există constantă.",
+                "incorrectExplanation": "Coeficientul de la lagul 5 este determinat de $\\theta$ și $\\Theta$; constanta lipsește cînd $d + D \\ge 2$; iar polinomul MA nu are coeficienți liberi la lagurile 2 și 3."
             }
         },
         {
@@ -78,7 +78,7 @@ window.TSA_DATA.quizzes['seasonal'] = {
             },
             "ro": {
                 "title": "Sateliții din ACF",
-                "text": "ACF a lui $\\Delta\\Delta_{12}y_t$ are valori semnificative la decalajele 1 și 12 și două valori mici la decalajele 11 și 13. Ce arată valorile mici?",
+                "text": "ACF a lui $\\Delta\\Delta_{12}y_t$ are valori semnificative la lagurile 1 și 12 și două valori mici la lagurile 11 și 13. Ce arată valorile mici?",
                 "options": [
                     "Produsul $\\rho_1\\rho_{12}$ al modelului airline multiplicativ",
                     "O a doua perioadă sezonieră, de 11 luni",
@@ -86,7 +86,7 @@ window.TSA_DATA.quizzes['seasonal'] = {
                     "Un zgomot de eșantionare care trebuie ignorat în orice situație"
                 ],
                 "correctExplanation": "Pentru $(1 + \\theta L)(1 + \\Theta L^{12})\\varepsilon_t$, $\\rho_{11} = \\rho_{13} = \\rho_1\\rho_{12}$: „sateliții” sînt amprenta structurii multiplicative.",
-                "incorrectExplanation": "Nu există un ciclu de 11 luni; valorile la decalaje fixe nu semnalează o rădăcină unitară lipsă; iar sateliții sînt prevăzuți de model, deci sînt informație, nu zgomot."
+                "incorrectExplanation": "Nu există un ciclu de 11 luni; valorile la laguri fixe nu semnalează o rădăcină unitară lipsă; iar sateliții sînt prevăzuți de model, deci sînt informație, nu zgomot."
             }
         },
         {
@@ -105,14 +105,14 @@ window.TSA_DATA.quizzes['seasonal'] = {
             },
             "ro": {
                 "title": "MA sezonier sau AR sezonier?",
-                "text": "După diferențiere, ACF are o singură valoare semnificativă la decalajul 12, iar PACF descrește la decalajele 12, 24, 36. Ce termen sezonier este sugerat?",
+                "text": "După diferențiere, ACF are o singură valoare semnificativă la lagul 12, iar PACF descrește la lagurile 12, 24, 36. Ce termen sezonier este sugerat?",
                 "options": [
                     "Un AR(1) sezonier, $\\Phi(L^{12}) = 1 - \\Phi L^{12}$",
                     "Un MA(1) sezonier, $\\Theta(L^{12}) = 1 + \\Theta L^{12}$",
                     "Un MA(12) obișnuit",
                     "Niciun termen sezonier, pentru că o singură valoare nu este suficientă"
                 ],
-                "correctExplanation": "Regulile din Capitolul 2, la decalajele sezoniere: o ACF care se anulează după decalajul $s$, cu PACF sezonieră descrescătoare, indică un MA(1) sezonier.",
+                "correctExplanation": "Regulile din Capitolul 2, la lagurile sezoniere: o ACF care se anulează după lagul $s$, cu PACF sezonieră descrescătoare, indică un MA(1) sezonier.",
                 "incorrectExplanation": "Un AR(1) sezonier dă tiparul opus (ACF descrescătoare la 12, 24, 36, PACF care se anulează); un MA(12) ar folosi 12 parametri pentru o singură valoare; iar o valoare sezonieră semnificativă trebuie modelată."
             }
         },
@@ -137,10 +137,10 @@ window.TSA_DATA.quizzes['seasonal'] = {
                     "Mediile sezoniere sînt constante, deci variabilele dummy sezoniere elimină sezonalitatea",
                     "Varianța lui $y_t$ este constantă în timp",
                     "Fiecare trimestru urmează propriul mers aleator, deci tiparul sezonier se poate deplasa",
-                    "ACF a lui $y_t$ este zero la decalajul 4"
+                    "ACF a lui $y_t$ este zero la lagul 4"
                 ],
                 "correctExplanation": "Trimestrele 1, 2, 3 și 4 formează patru mersuri aleatoare separate: tiparul sezonier se schimbă permanent cu fiecare șoc, iar filtrul potrivit este $\\Delta_4$.",
-                "incorrectExplanation": "Mediile sezoniere constante descriu sezonalitatea deterministă; varianța unui mers aleator crește cu $t$; iar ACF la decalajul 4 este aproape de 1, nu de 0."
+                "incorrectExplanation": "Mediile sezoniere constante descriu sezonalitatea deterministă; varianța unui mers aleator crește cu $t$; iar ACF la lagul 4 este aproape de 1, nu de 0."
             }
         },
         {
@@ -564,14 +564,14 @@ window.TSA_DATA.quizzes['seasonal'] = {
             },
             "ro": {
                 "title": "Citirea unui test Diebold–Mariano",
-                "text": "Cu $d_t = L(e_{1t}) - L(e_{2t})$, un test DM dă o statistică de $-3{,}2$ cu valoarea p $0{,}004$. Ce rezultă?",
+                "text": "Cu $d_t = L(e_{1t}) - L(e_{2t})$, un test DM dă o statistică de $-3{,}2$ cu p-value-ul $0{,}004$. Ce rezultă?",
                 "options": [
                     "Prognoza 2 este semnificativ mai precisă",
                     "Cele două prognoze sînt la fel de precise",
                     "Prognoza 1 este semnificativ mai precisă",
                     "Prognoza 1 este nedeplasată"
                 ],
-                "correctExplanation": "O medie negativă a lui $d_t$ înseamnă pierderi mai mici pentru prognoza 1, iar valoarea p respinge acuratețea egală la 5%.",
+                "correctExplanation": "O medie negativă a lui $d_t$ înseamnă pierderi mai mici pentru prognoza 1, iar p-value-ul duce la respingerea acuratețea egală la 5%.",
                 "incorrectExplanation": "Semnul arată care prognoză cîștigă: negativ o favorizează pe prima; acuratețea egală se respinge; iar testul compară acuratețea, nu deplasarea."
             }
         },
@@ -590,7 +590,7 @@ window.TSA_DATA.quizzes['seasonal'] = {
                 "incorrectExplanation": "An MSE of 1 would mean perfectly correlated errors; 0.5 would need uncorrelated errors ($\\rho = 0$); and the average of two forecasts can never be worse than the worse of the two."
             },
             "ro": {
-                "title": "De ce combinăm prognozele",
+                "title": "Avantajul combinării prognozelor",
                 "text": "Două prognoze nedeplasate au variațiile erorilor $\\sigma_1^2 = \\sigma_2^2 = 1$ și corelația erorilor $\\rho = 0{,}5$. Cît este MSE al mediei lor simple?",
                 "options": [
                     "0,75",
@@ -621,11 +621,11 @@ window.TSA_DATA.quizzes['seasonal'] = {
                 "text": "Ce este „paradoxul combinării prognozelor”?",
                 "options": [
                     "Combinațiile sînt întotdeauna mai slabe decît cea mai bună prognoză individuală",
-                    "Ponderile egale simple bat adesea ponderile estimate ca optime",
+                    "Ponderile egale simple sînt adesea mai bune decît ponderile estimate ca optime",
                     "Combinarea prognozelor face imposibil calculul intervalelor de prognoză",
                     "Se pot combina doar prognoze din aceeași clasă de modele"
                 ],
-                "correctExplanation": "Ponderile optime trebuie estimate, iar eroarea lor de estimare consumă adesea cîștigul teoretic: media simplă este greu de bătut (Stock și Watson, 2004).",
+                "correctExplanation": "Ponderile optime trebuie estimate, iar eroarea lor de estimare consumă adesea cîștigul teoretic: media simplă este greu de depășit (Stock și Watson, 2004).",
                 "incorrectExplanation": "Combinațiile sînt adesea mai bune decît majoritatea componentelor și uneori decît toate; intervalele se pot calcula (de exemplu prin simulare); iar se pot face medii ale prognozelor din orice metode."
             }
         },
@@ -645,12 +645,12 @@ window.TSA_DATA.quizzes['seasonal'] = {
             },
             "ro": {
                 "title": "Sărbătorile în consumul de electricitate",
-                "text": "În validarea încrucișată pentru consumul zilnic din România, regresia armonică dinamică și Prophet bat TBATS și SARIMA. Care este motivul principal?",
+                "text": "În validarea încrucișată pentru consumul zilnic din România, regresia armonică dinamică și Prophet sînt mai precise decît TBATS și SARIMA. Care este motivul principal?",
                 "options": [
                     "Folosesc mai multe date",
                     "Estimează ciclul săptămînal cu mai multe armonici",
                     "Sînt reestimate mai des",
-                    "Cunosc datele sărbătorilor legale și ale Paștelui ortodox"
+                    "Includ datele sărbătorilor legale și ale Paștelui ortodox"
                 ],
                 "correctExplanation": "Sărbătorile sînt cele mai mari abateri de la tiparul săptămînal; un model cu regresori de sărbătoare coboară prognoza în zilele corecte, în timp ce modelele săptămînale tratează o sărbătoare dintr-o zi lucrătoare ca pe o zi obișnuită.",
                 "incorrectExplanation": "Toate metodele folosesc aceleași date și aceleași origini; iar ciclul săptămînal este ușor pentru orice metodă, deci diferența vine din calendar."

@@ -140,7 +140,7 @@ window.TSA_DATA.quizzes['arima'] = {
                     "Panta estimată converge la 0"
                 ],
                 "correctExplanation": "Phillips (1986): panta converge la o variabilă aleatoare, nu la 0, iar $t$ crește ca $\\sqrt{T}$. În simularea din capitol, rata de respingere urcă de la circa 68% pentru $T = 50$ la circa 92% pentru $T = 1000$.",
-                "incorrectExplanation": "Mai multe date nu vindecă o regresie falsă: panta nu converge la 0, iar rata de respingere crește cu $T$. Remediul este diferențierea seriilor sau testarea cointegrării."
+                "incorrectExplanation": "Mai multe date nu corectează o regresie falsă: panta nu converge la 0, iar rata de respingere crește cu $T$. Remediul este diferențierea seriilor sau testarea cointegrării."
             }
         },
         {
@@ -167,7 +167,7 @@ window.TSA_DATA.quizzes['arima'] = {
                     "$H_0$: toți $\\delta_j = 0$; $H_1$: unii $\\delta_j \\neq 0$"
                 ],
                 "correctExplanation": "Cu $\\gamma = \\phi - 1$, ipoteza nulă este rădăcina unitară, iar alternativa staționaritatea; testul este unilateral și respinge pentru valori foarte negative ale lui $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$.",
-                "incorrectExplanation": "Ipoteza nulă ADF este rădăcina unitară; staționaritatea ca ipoteză nulă aparține testului KPSS. Alternativa este unilaterală ($\\gamma < 0$), iar diferențele decalate doar curăță erorile; ele nu sînt testate."
+                "incorrectExplanation": "Ipoteza nulă ADF este rădăcina unitară; staționaritatea ca ipoteză nulă aparține testului KPSS. Alternativa este unilaterală ($\\gamma < 0$), iar diferențele trecute doar curăță erorile; ele nu sînt testate."
             }
         },
         {
@@ -266,16 +266,16 @@ window.TSA_DATA.quizzes['arima'] = {
                 "incorrectExplanation": "The lags do not difference the series again and are not a seasonality test; a higher $R^2$ is not the goal. They make the errors close to white noise so that the Dickey-Fuller critical values apply."
             },
             "ro": {
-                "title": "Decalajele din testul ADF",
-                "text": "De ce se adaugă diferențe decalate $\\Delta y_{t-j}$ în regresia Dickey-Fuller?",
+                "title": "Lagurile din testul ADF",
+                "text": "De ce se adaugă diferențele trecute $\\Delta y_{t-j}$ în regresia Dickey-Fuller?",
                 "options": [
                     "Pentru a mări $R^2$ al regresiei",
                     "Pentru a testa sezonalitatea",
                     "Pentru a face seria staționară înainte de testare",
                     "Pentru a elimina autocorelația din erori, astfel încît testul să aibă mărimea corectă"
                 ],
-                "correctExplanation": "Dacă $\\Delta y_t$ este autocorelat, erorile DF nu sînt zgomot alb, iar mărimea testului este greșită. Said și Dickey (1984): cu suficiente decalaje, testul rămîne valid chiar și pentru erori ARMA. Numărul de decalaje se alege după AIC sau BIC, pînă la $12(T/100)^{1/4}$.",
-                "incorrectExplanation": "Decalajele nu diferențiază din nou seria și nu testează sezonalitatea; un $R^2$ mai mare nu este scopul. Ele fac erorile apropiate de zgomotul alb, astfel încît valorile critice Dickey-Fuller să fie valabile."
+                "correctExplanation": "Dacă $\\Delta y_t$ este autocorelat, erorile DF nu sînt zgomot alb, iar mărimea testului este greșită. Said și Dickey (1984): cu suficiente laguri, testul rămîne valid chiar și pentru erori ARMA. Numărul de laguri se alege după AIC sau BIC, pînă la $12(T/100)^{1/4}$.",
+                "incorrectExplanation": "Lagurile nu diferențiază din nou seria și nu testează sezonalitatea; un $R^2$ mai mare nu este scopul. Ele fac erorile apropiate de zgomotul alb, astfel încît valorile critice Dickey-Fuller să fie valabile."
             }
         },
         {
@@ -325,7 +325,7 @@ window.TSA_DATA.quizzes['arima'] = {
                 "options": [
                     "Are staționaritatea ca ipoteză nulă",
                     "Folosește valorile critice ale distribuției Normale",
-                    "Păstrează regresia fără diferențe decalate și corectează $\\tau$ printr-o estimare a varianței pe termen lung",
+                    "Păstrează regresia fără diferențele trecute și corectează $\\tau$ printr-o estimare a varianței pe termen lung",
                     "Permite o ruptură structurală la o dată necunoscută"
                 ],
                 "correctExplanation": "Phillips și Perron (1988) corectează neparametric raportul $t$ Dickey-Fuller (Newey-West, ponderi Bartlett); ipoteza nulă și valorile critice sînt cele ale testului ADF. Testul este robust la heteroscedasticitate, dar are probleme de mărime cînd există o componentă MA negativă.",

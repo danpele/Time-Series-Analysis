@@ -104,6 +104,7 @@ MSCA Digital Finance}
 \begin{column}{0.49\textwidth}
 \begin{itemize}\setlength{\itemsep}{0pt}
     \item \textbf{ROBOR}: Romanian Interbank Offer Rate
+    \item \textbf{RSS}: Residual Sum of Squares
     \item \textbf{SE}: Standard Error
     \item \textbf{SVAR}: Structural Vector AutoRegression
     \item \textbf{UNRATE}: Unemployment Rate (FRED series code)
@@ -206,6 +207,7 @@ MSCA Digital Finance}
     \item \textbf{Definition}: $\bY_t = (Y_{1t}, \dots, Y_{Kt})'$ collects $K$ series observed at the same dates
     \begin{itemize}
         \item example: $\bY_t = (g_t, \pi_t, i_t)'$, GDP growth, inflation and ROBOR 3M of quarter $t$; $K = 3$
+        \item $Y_{jt}$: the value of series $j$ at date $t$; the prime $'$ denotes the transpose (a column vector)
     \end{itemize}
     \item \textbf{Mean vector}: $\boldsymbol{\mu} = E[\bY_t]$, $K \times 1$
     \begin{itemize}
@@ -225,10 +227,11 @@ MSCA Digital Finance}
     \item \textbf{Definition}: $\rho_{yx}(k) = \Corr(y_t, x_{t-k}) = \gamma_{yx}(k)/(\sigma_y\sigma_x)$, for $k = 0, \pm 1, \pm 2, \dots$
     \begin{itemize}
         \item the cross-correlation function (CCF): $k > 0$: past $x$ with today's $y$ ($x$ leads); $k < 0$: $y$ leads
+        \item $\gamma_{yx}(k) = \Cov(y_t, x_{t-k})$: the cross-covariance; $\sigma_y$, $\sigma_x$: the standard deviations of the two series
     \end{itemize}
     \item Sample version: $\hat\rho_{yx}(k)$, the correlation of the pairs $(y_t, x_{t-k})$
     \begin{itemize}
-        \item if the two series are independent white noises, $\hat\rho_{yx}(k) \approx N(0, 1/T)$: bands $\pm 1.96/\sqrt{T}$
+        \item if the two series are independent white noises, $\hat\rho_{yx}(k) \approx N(0, 1/T)$, with $T$ the number of observations: bands $\pm 1.96/\sqrt{T}$
         \item with autocorrelated series the bands are too narrow: spurious lead--lag patterns (compare \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter3_unit_roots_arima_models.pdf}{Chapter 3}, spurious regression)
     \end{itemize}
     \item The CCF looks at one pair and one lag at a time; a VAR looks at all variables and all lags together
@@ -440,6 +443,7 @@ MSCA Digital Finance}
     \item \textbf{Stability condition}: all eigenvalues $\lambda$ of $\bA$ satisfy $|\lambda| < 1$
     \begin{itemize}
         \item eigenvalues: the roots of $\det(\bA - \lambda\mathbf{I}) = 0$; for $K = 2$: $\lambda^2 - \mathrm{tr}(\bA)\lambda + \det(\bA) = 0$
+        \item $\mathbf{I}$: the identity matrix; $\mathrm{tr}(\bA) = a_{11} + a_{22}$: the trace; $\det(\bA) = a_{11}a_{22} - a_{12}a_{21}$: the determinant; $|\lambda|$: the modulus (eigenvalues can be complex)
         \item a stable VAR is weakly stationary (if it started long ago); this is the multivariate version of $|\phi| < 1$ (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter2_arma_models.pdf}{Chapter 2})
     \end{itemize}
     \item \textbf{Example}: $\mathrm{tr}(\bA) = 0.9$, $\det(\bA) = 0.5 \cdot 0.4 - 0.2 \cdot 0.3 = 0.14$: $\lambda^2 - 0.9\lambda + 0.14 = 0$
@@ -471,6 +475,7 @@ MSCA Digital Finance}
     \item Stack $p$ consecutive vectors: $\boldsymbol{\xi}_t = (\bY_t', \bY_{t-1}', \dots, \bY_{t-p+1}')'$, of size $Kp$
     \begin{itemize}
         \item then $\boldsymbol{\xi}_t = \boldsymbol{\nu} + \mathbf{F}\boldsymbol{\xi}_{t-1} + \mathbf{v}_t$: every VAR$(p)$ is a VAR(1) in $\boldsymbol{\xi}_t$
+        \item $\boldsymbol{\nu}$: $\bc$ followed by zeros; $\mathbf{v}_t$: $\bepsilon_t$ followed by zeros; $\mathbf{F}$: the $Kp \times Kp$ companion matrix
     \end{itemize}
     \item For $p = 2$: $\begin{pmatrix} \bY_t \\ \bY_{t-1} \end{pmatrix} = \begin{pmatrix} \bc \\ \mathbf{0} \end{pmatrix} + \underbrace{\begin{pmatrix} \bA_1 & \bA_2 \\ \mathbf{I}_K & \mathbf{0} \end{pmatrix}}_{\mathbf{F}}\begin{pmatrix} \bY_{t-1} \\ \bY_{t-2} \end{pmatrix} + \begin{pmatrix} \bepsilon_t \\ \mathbf{0} \end{pmatrix}$
     \begin{itemize}
@@ -478,7 +483,7 @@ MSCA Digital Finance}
     \end{itemize}
     \item \textbf{Stability of a VAR$(p)$}: all $Kp$ eigenvalues of the companion matrix $\mathbf{F}$ have modulus below 1
     \begin{itemize}
-        \item equivalently: all roots of $\det(\mathbf{I}_K - \bA_1z - \dots - \bA_pz^p) = 0$ lie outside the unit circle
+        \item equivalently: all roots $z$ (complex numbers) of $\det(\mathbf{I}_K - \bA_1z - \dots - \bA_pz^p) = 0$ lie outside the unit circle
         \item the eigenvalues of $\bA_1$ alone say nothing about the stability of a VAR(2)
     \end{itemize}
 \end{itemize}
@@ -517,6 +522,7 @@ MSCA Digital Finance}
     \item A stable VAR can be written as an infinite moving average of the shocks (Wold, \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter1_stochastic_processes_stationarity.pdf}{Chapter 1}):
     \begin{itemize}
         \item $\bY_t = \boldsymbol{\mu} + \bepsilon_t + \bPhi_1\bepsilon_{t-1} + \bPhi_2\bepsilon_{t-2} + \dots = \boldsymbol{\mu} + \sum_{h=0}^{\infty}\bPhi_h\bepsilon_{t-h}$, $\bPhi_0 = \mathbf{I}$
+        \item $\bPhi_h$: the $K \times K$ matrix that weights the shock of $h$ periods ago
     \end{itemize}
     \item VAR(1): $\bPhi_h = \bA^h$; VAR$(p)$: $\bPhi_h = \sum_{j=1}^{\min(h,p)}\bA_j\bPhi_{h-j}$
     \begin{itemize}
@@ -551,12 +557,13 @@ MSCA Digital Finance}
     \begin{itemize}
         \item the same $1 + Kp$ regressors in every equation; OLS (ordinary least squares) on each equation separately
     \end{itemize}
-    \item \textbf{Why OLS is enough}: with identical regressors, system estimation (GLS on all equations) gives exactly the OLS estimates
+    \item \textbf{Why OLS is enough}: with identical regressors, system estimation (GLS, generalised least squares, on all equations) gives exactly the OLS estimates
     \begin{itemize}
         \item the correlation of the shocks does not improve the estimates; under Normal errors OLS is also the maximum likelihood estimator
     \end{itemize}
     \item \textbf{Covariance of the shocks}: $\hat\bSigma = \frac{1}{T - Kp - 1}\sum_t\hat\bepsilon_t\hat\bepsilon_t'$, from the residuals of all equations
     \begin{itemize}
+        \item $\hat\bepsilon_t$: the vector of residuals at date $t$; $T - Kp - 1$: the residual degrees of freedom of each equation
         \item stationarity matters: with stationary series the usual $t$ and $F$ tests are valid in large samples
     \end{itemize}
 \end{itemize}
@@ -570,6 +577,7 @@ MSCA Digital Finance}
         \item AIC (Akaike) $= \ln\det\tilde\bSigma(p) + \frac{2}{T}pK^2$ \refAkaike
         \item BIC (Schwarz) $= \ln\det\tilde\bSigma(p) + \frac{\ln T}{T}pK^2$ \refSchwarz
         \item HQ (Hannan--Quinn) $= \ln\det\tilde\bSigma(p) + \frac{2\ln\ln T}{T}pK^2$ \refHQ
+        \item $\det\tilde\bSigma(p)$: a generalised residual variance; $pK^2$: the number of lag coefficients; $p_{\max}$: the largest order tried
     \end{itemize}
     \item First term: fit (smaller residual ``volume''); second: a penalty per coefficient; choose the $p$ with the smallest value
     \begin{itemize}
@@ -666,8 +674,8 @@ $R^2$ & 0.16 & 0.90 & 0.93 \\
 \begin{itemize}
     \item \textbf{Multivariate portmanteau test} \refHosking: $H_0$: no autocorrelation and no cross-correlation of the residuals up to lag $h$
     \begin{itemize}
-        \item $Q_h = T^2\sum_{j=1}^{h}\frac{1}{T - j}\mathrm{tr}(\hat{\mathbf{C}}_j'\hat{\mathbf{C}}_0^{-1}\hat{\mathbf{C}}_j\hat{\mathbf{C}}_0^{-1})$, $\hat{\mathbf{C}}_j$: residual autocovariance matrices
-        \item under $H_0$: $\chi^2$ with $K^2(h - p)$ degrees of freedom; the multivariate Ljung--Box test (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter2_arma_models.pdf}{Chapter 2})
+        \item $Q_h = T^2\sum_{j=1}^{h}\frac{1}{T - j}\mathrm{tr}(\hat{\mathbf{C}}_j'\hat{\mathbf{C}}_0^{-1}\hat{\mathbf{C}}_j\hat{\mathbf{C}}_0^{-1})$, $\hat{\mathbf{C}}_j = \frac{1}{T}\sum_t\hat\bepsilon_t\hat\bepsilon_{t-j}'$: the residual autocovariance matrix at lag $j$; $\mathrm{tr}$: the trace
+        \item under $H_0$: $\chi^2$ with $K^2(h - p)$ degrees of freedom; the multivariate Ljung--Box test (\tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter2_arma_models.pdf}{Chapter 2}); a small p-value: the residuals are still autocorrelated
     \end{itemize}
     \item \textbf{Normality}: a multivariate Jarque--Bera test \refJB\ on the standardised residuals (skewness and kurtosis)
     \begin{itemize}
@@ -752,14 +760,16 @@ $R^2$ & 0.16 & 0.90 & 0.93 \\
     \item In a VAR$(p)$, $x$ does not Granger-cause $y$ if all coefficients of $x_{t-1}, \dots, x_{t-p}$ in the equation of $y$ are zero
     \begin{itemize}
         \item bivariate VAR(2): $H_0$: $a_{12}^{(1)} = a_{12}^{(2)} = 0$ in $y_t = c + a_{11}^{(1)}y_{t-1} + a_{12}^{(1)}x_{t-1} + a_{11}^{(2)}y_{t-2} + a_{12}^{(2)}x_{t-2} + \varepsilon_t$
+        \item $a_{12}^{(j)}$: the coefficient of $x_{t-j}$ in the equation of $y$ (the superscript is the lag)
     \end{itemize}
     \item \textbf{$F$ test}: $F = \dfrac{(RSS_R - RSS_U)/p}{RSS_U/(T - Kp - 1)} \sim F(p, T - Kp - 1)$ under $H_0$
     \begin{itemize}
         \item $RSS_U$: residual sum of squares of the equation of $y$; $RSS_R$: the same without the lags of $x$
+        \item a large $F$ (a small p-value): dropping the lags of $x$ raises the RSS too much, so $H_0$ is rejected
     \end{itemize}
     \item \textbf{Wald test}: $W = (\mathbf{R}\hat{\boldsymbol{\beta}})'[\mathbf{R}\hat{\mathbf{V}}\mathbf{R}']^{-1}(\mathbf{R}\hat{\boldsymbol{\beta}}) \sim \chi^2(p)$; here $W = pF$
     \begin{itemize}
-        \item $\mathbf{R}$ selects the tested coefficients, $\hat{\mathbf{V}}$ is their estimated covariance; both versions need stationary variables
+        \item $\hat{\boldsymbol{\beta}}$: the estimated coefficients of the equation of $y$; $\mathbf{R}$ selects the tested ones; $\hat{\mathbf{V}}$: the estimated covariance of $\hat{\boldsymbol{\beta}}$; both versions need stationary variables
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -972,6 +982,7 @@ BET & DAX & 2.6 & 0.032 \\
     \item \textbf{Solution}: rewrite the shocks as $\bepsilon_t = \mathbf{P}\mathbf{u}_t$, with $\mathbf{u}_t$ uncorrelated, unit variance: $\bSigma = \mathbf{P}\mathbf{P}'$
     \begin{itemize}
         \item the \textbf{orthogonalised} IRF: $\boldsymbol{\Theta}_h = \bPhi_h\mathbf{P}$; element $(j, k)$: the response of $Y_j$ to a one-standard-deviation shock $u_k$
+        \item $\mathbf{P}$: a $K \times K$ matrix that turns the uncorrelated shocks $\mathbf{u}_t$ into the observed shocks $\bepsilon_t$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -1070,7 +1081,7 @@ BET & DAX & 2.6 & 0.032 \\
 \begin{itemize}
     \item \textbf{Generalised IRF} \refPS\ (after \refKPP): shock variable $k$ by one standard deviation and let the other shocks move as they usually do with it
     \begin{itemize}
-        \item $\boldsymbol{\psi}_k(h) = \bPhi_h\bSigma\mathbf{e}_k/\sqrt{\sigma_{kk}}$; $\mathbf{e}_k$: column $k$ of the identity matrix
+        \item $\boldsymbol{\psi}_k(h) = \bPhi_h\bSigma\mathbf{e}_k/\sqrt{\sigma_{kk}}$; $\mathbf{e}_k$: column $k$ of the identity matrix; $\sigma_{kk}$: the variance of shock $k$
     \end{itemize}
     \item Properties
     \begin{itemize}
@@ -1132,6 +1143,7 @@ BET & DAX & 2.6 & 0.032 \\
     \end{itemize}
     \item \textbf{FEVD}: $\omega_{jk}(h) = \dfrac{\sum_{s=0}^{h-1}\theta_{jk,s}^2}{\sum_{s=0}^{h-1}\sum_{m=1}^{K}\theta_{jm,s}^2}$, the share of shock $k$ in the $h$-step error variance of $Y_j$
     \begin{itemize}
+        \item $\theta_{jk,s}$: element $(j, k)$ of $\boldsymbol{\Theta}_s$; $\hat\bY_{t+h|t}$: the forecast of $\bY_{t+h}$ made at $t$
         \item each row sums to 100\%; it depends on the Cholesky ordering; at $h = 1$ the first variable is explained 100\% by its own shock
     \end{itemize}
     \item Example (VAR(1) of Section 2), $h = 2$: the variance of the error of $y_2$ is 1.37; shock $u_1$ explains 36.5\%
@@ -1258,7 +1270,7 @@ BET & 7.2 & 7.5 & 85.3 & 14.7 \\
     \end{itemize}
     \item \textbf{Error covariance}: $\bSigma(h) = \sum_{s=0}^{h-1}\bPhi_s\bSigma\bPhi_s'$; it grows with $h$ towards $\bGamma(0)$
     \begin{itemize}
-        \item 95\% interval for $Y_j$: $\hat Y_{j,T+h|T} \pm 1.96\sqrt{\sigma_{jj}(h)}$ (Normal shocks; parameter uncertainty ignored)
+        \item 95\% interval for $Y_j$: $\hat Y_{j,T+h|T} \pm 1.96\sqrt{\sigma_{jj}(h)}$, $\sigma_{jj}(h)$: element $(j, j)$ of $\bSigma(h)$ (Normal shocks; parameter uncertainty ignored)
         \item example (Section 2): $\bSigma(2) = \bSigma + \bA\bSigma\bA'$, with variances 1.39 and 1.37
     \end{itemize}
     \item Same logic as the ARMA forecasts of \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter2_arma_models.pdf}{Chapter 2}, with matrices in place of numbers
@@ -1356,7 +1368,7 @@ BET & 7.2 & 7.5 & 85.3 & 14.7 \\
 \begin{itemize}
     \item \textbf{Structural VAR} (SVAR): $\mathbf{B}_0\bY_t = \mathbf{d} + \mathbf{B}_1\bY_{t-1} + \dots + \mathbf{B}_p\bY_{t-p} + \mathbf{u}_t$, $\mathbf{u}_t$ uncorrelated \textbf{structural shocks}
     \begin{itemize}
-        \item $\mathbf{B}_0$: the contemporaneous effects (e.g.\ the policy rate reacts to this quarter's inflation)
+        \item $\mathbf{d}$: constants; $\mathbf{B}_1, \dots, \mathbf{B}_p$: structural lag coefficients; $\mathbf{B}_0$: the contemporaneous effects (e.g.\ the policy rate reacts to this quarter's inflation)
         \item multiplying by $\mathbf{B}_0^{-1}$ gives the reduced form, with $\bepsilon_t = \mathbf{B}_0^{-1}\mathbf{u}_t$
     \end{itemize}
     \item \textbf{Identification}: $\bSigma$ has $K(K+1)/2$ distinct elements, $\mathbf{B}_0^{-1}$ has $K^2$; we need $K(K-1)/2$ restrictions
@@ -1381,7 +1393,7 @@ BET & 7.2 & 7.5 & 85.3 & 14.7 \\
 \begin{itemize}
     \item \refSW: ``Vector autoregressions'', a widely used survey of the method
     \begin{itemize}
-        \item three variables: inflation (GDP price index, $\pi_t = 400\ln(P_t/P_{t-1})$), unemployment, the federal funds rate
+        \item three variables: inflation ($\pi_t = 400\ln(P_t/P_{t-1})$, $P_t$: the GDP price index; 400 annualises, in \%), unemployment, the federal funds rate
         \item quarterly, 1960Q1--2000Q4, VAR(4), Cholesky order $\pi, u, R$
     \end{itemize}
     \item Four tasks: data description, forecasting, structural inference, policy analysis

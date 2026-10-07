@@ -53,12 +53,12 @@ window.TSA_DATA.quizzes['garch'] = {
                 "title": "ACF a randamentelor și a pătratelor lor",
                 "text": "Pentru randamentele zilnice S&P 500 din 2000, ce arată de obicei ACF de selecție a lui $r_t$ și a lui $r_t^2$?",
                 "options": [
-                    "Ambele ACF sînt apropiate de zero la toate decalajele",
+                    "Ambele ACF sînt apropiate de zero la toate lagurile",
                     "ACF a lui $r_t$ este apropiată de zero, iar ACF a lui $r_t^2$ este pozitivă și scade lent",
                     "ACF a lui $r_t$ scade lent, iar ACF a lui $r_t^2$ este apropiată de zero",
-                    "Ambele ACF sînt mari și negative la decalajul 1"
+                    "Ambele ACF sînt mari și negative la lagul 1"
                 ],
-                "correctExplanation": "Randamentele sînt apropiate de zgomotul alb (Capitolul 1), deci direcția variației de mîine este aproape imprevizibilă; pătratele lor au o ACF pozitivă care scade lent (circa 0,3 la decalajul 1 și încă pozitivă la decalajul 50): mărimea variației este previzibilă.",
+                "correctExplanation": "Randamentele sînt apropiate de zgomotul alb (Capitolul 1), deci direcția variației de mîine este aproape imprevizibilă; pătratele lor au o ACF pozitivă care scade lent (circa 0,3 la lagul 1 și încă pozitivă la lagul 50): mărimea variației este previzibilă.",
                 "incorrectExplanation": "Semnul randamentelor zilnice este aproape imprevizibil, deci ACF a lui $r_t$ rămîne aproape de zero; pătratele sînt autocorelate puternic și persistent. Necorelat nu înseamnă independent."
             }
         },
@@ -78,7 +78,7 @@ window.TSA_DATA.quizzes['garch'] = {
             },
             "ro": {
                 "title": "Testul ARCH-LM",
-                "text": "O regresie ARCH-LM a lui $\\hat\\varepsilon_t^2$ pe o constantă și 5 decalaje folosește $n = 500$ de observații și dă $R^2 = 0,05$. Ce concluzie trageți la 5% ($\\chi^2_{0,95}(5) = 11,07$)?",
+                "text": "O regresie ARCH-LM a lui $\\hat\\varepsilon_t^2$ pe o constantă și 5 laguri folosește $n = 500$ de observații și dă $R^2 = 0,05$. Ce concluzie trageți la 5% ($\\chi^2_{0,95}(5) = 11,07$)?",
                 "options": [
                     "$\\mathrm{LM} = 0,05$: nu există efecte ARCH",
                     "$\\mathrm{LM} = 2,5$: nu există efecte ARCH",
@@ -162,7 +162,7 @@ window.TSA_DATA.quizzes['garch'] = {
                 "text": "Care este principalul avantaj al GARCH(1,1) față de ARCH($q$)?",
                 "options": [
                     "Nu mai este nevoie de estimarea vreunui parametru",
-                    "Cu trei parametri reproduce o memorie lungă a varianței pentru care ARCH are nevoie de multe decalaje",
+                    "Cu trei parametri reproduce o memorie lungă a varianței pentru care ARCH are nevoie de multe laguri",
                     "Face ca randamentele să aibă distribuția Normală",
                     "Modelează media condiționată în locul varianței"
                 ],

@@ -236,7 +236,8 @@ GDP growth, returns & recession or expansion; calm or turbulent & Markov switchi
     \item \textbf{Transition equation}: $\alpha_{t+1} = T\alpha_t + R\eta_t$, \quad $\eta_t \sim N(0, Q)$
     \begin{itemize}
         \item the state evolves as a first-order vector autoregression (VAR(1), \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter6_var_models_granger_causality.pdf}{Chapter 6}); $T$ is $m \times m$
-        \item initial state: $\alpha_1 \sim N(a_1, P_1)$; $\varepsilon_t$, $\eta_s$ and $\alpha_1$ mutually independent
+        \item $R$: maps the shocks $\eta_t$ into the state; $H$, $Q$: the variances of the measurement and of the state shocks
+        \item initial state: $\alpha_1 \sim N(a_1, P_1)$, $a_1$, $P_1$: its mean and variance; $\varepsilon_t$, $\eta_s$ and $\alpha_1$ mutually independent
     \end{itemize}
     \item The \textbf{system matrices} $Z_t, H, T, R, Q$ contain the parameters $\theta$; they are estimated by maximum likelihood
     \begin{itemize}
@@ -590,6 +591,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \end{itemize}
     \item \textbf{Rauch--Tung--Striebel} smoother \refRTS: one backward pass after the filter, from $t = n-1$ to 1
     \begin{itemize}
+        \item $n$: the sample size; $J_t$: the smoother gain, the weight of the revision coming from the future
         \item $J_t = P_{t|t}T'P_{t+1}^{-1}$, \quad $\hat\alpha_t = a_{t|t} + J_t(\hat\alpha_{t+1} - a_{t+1})$
         \item $V_t = P_{t|t} + J_t(V_{t+1} - P_{t+1})J_t'$; at $t = n$ smoothed and filtered coincide
     \end{itemize}
@@ -634,6 +636,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \item \textbf{Prediction-error decomposition}
     \begin{itemize}
         \item $\log L(\theta) = -\dfrac{n}{2}\log 2\pi - \dfrac12\sum_{t=1}^{n}\left(\log F_t + \dfrac{v_t^2}{F_t}\right)$
+        \item $\theta$: the parameters (the variances of the model); $v_t$, $F_t$: the prediction errors and their variances, from the filter
         \item one run of the filter gives $\log L$ for one value of $\theta$; a numerical optimiser searches over $\theta$
     \end{itemize}
     \item Diffuse start: the first $d$ terms (here $d = 1$ for the level) are left out, since $F_t$ is huge there \refDK
@@ -742,7 +745,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \end{itemize}
     \item Uses: irregular data (holidays), series that start at different dates, mixed frequencies, the ragged edge of a nowcast
     \begin{itemize}
-        \item the smoother fills the gaps with $\hat\alpha_t$ and an honest standard error
+        \item the smoother fills the gaps with $\hat\alpha_t$ and the corresponding standard error
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -799,6 +802,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \end{itemize}
     \item The \textbf{cycle}: a stationary AR(2) $\psi_t = \phi_1\psi_{t-1} + \phi_2\psi_{t-2} + \kappa_t$, or a damped stochastic cycle with period $2\pi/\lambda_c$
     \begin{itemize}
+        \item $\phi_1$, $\phi_2$: the AR coefficients of the cycle; $\kappa_t$: the cycle shock; $\lambda_c$: the frequency of the cycle, in radians
         \item for log GDP, $\psi_t$ is the \textbf{output gap}: the percentage deviation of output from its trend (potential)
     \end{itemize}
     \item In Python: \texttt{UnobservedComponents(y, level='smooth trend', autoregressive=2)}; the whole state is estimated by the Kalman filter and smoother
@@ -810,6 +814,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
 \begin{itemize}
     \item \refHPf: the trend $\tau_t$ minimises $\sum_t(y_t - \tau_t)^2 + \lambda\sum_t(\Delta^2\tau_t)^2$; $\lambda = 1600$ for quarterly data
     \begin{itemize}
+        \item $\Delta^2\tau_t = \tau_t - 2\tau_{t-1} + \tau_{t-2}$: the change in the slope of the trend; $\lambda \ge 0$: the smoothing parameter
         \item large $\lambda$: a straight-line trend; $\lambda = 0$: the trend is the series itself
     \end{itemize}
     \item This is exactly the \textbf{smoothed} trend of a UC model: smooth trend ($\Delta^2\mu_{t+1} = \zeta_t$) plus white noise, with $\lambda = \sigma^2_\varepsilon/\sigma^2_\zeta$ \refHJ
@@ -951,6 +956,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \item \textbf{Dynamic factor model}: $y_{it} = \lambda_if_t + u_{it}$, \quad $f_t = \phi_1f_{t-1} + \phi_2f_{t-2} + \eta_t$
     \begin{itemize}
         \item many series $y_{1t}, \dots, y_{Nt}$ driven by one unobserved common factor $f_t$ (the state) with loadings $\lambda_i$
+        \item $u_{it}$: the part of series $i$ not explained by the factor; $\phi_1$, $\phi_2$: the AR coefficients of the factor
         \item \refSW: a coincident index of US activity from four monthly indicators
     \end{itemize}
     \item \textbf{Nowcasting} \refGRS: estimate the current quarter before GDP is published
@@ -1072,7 +1078,7 @@ $t$ & $y_t$ & $a_t$ & $P_t$ & $F_t$ & $K_t$ & $v_t$ & $a_{t|t}$ & $P_{t|t}$ \\
     \item Track $\xi_{t|t} = \Pr(S_t = j \mid Y_t)$, the \textbf{filtered probabilities}, for each regime $j$
     \begin{itemize}
         \item \textbf{prediction}: $\Pr(S_t = j \mid Y_{t-1}) = \sum_i p_{ij}\Pr(S_{t-1} = i \mid Y_{t-1})$
-        \item \textbf{densities}: $f_j(y_t) = \phi\bigl((y_t - \mu_j)/\sigma_j\bigr)/\sigma_j$, the likelihood of $y_t$ in each regime
+        \item \textbf{densities}: $f_j(y_t) = \phi\bigl((y_t - \mu_j)/\sigma_j\bigr)/\sigma_j$, the likelihood of $y_t$ in each regime; $\phi$: the standard Normal density; $\mu_j$, $\sigma_j$: the mean and standard deviation of regime $j$
         \item \textbf{update} (Bayes): $\Pr(S_t = j \mid Y_t) = \dfrac{\Pr(S_t = j \mid Y_{t-1})\,f_j(y_t)}{\sum_i\Pr(S_t = i \mid Y_{t-1})\,f_i(y_t)}$
     \end{itemize}
     \item The denominator is $p(y_t \mid Y_{t-1})$: the log-likelihood is $\sum_t\log p(y_t \mid Y_{t-1})$, as for the Kalman filter

@@ -401,7 +401,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
                 "incorrectExplanation": "Scaling by the context only, a common horizon and a rolling origin are all correct practice."
             },
             "ro": {
-                "title": "Scurgerea de informație în propriul cod",
+                "title": "Leakage-ul în propriul cod",
                 "text": "Care pas introduce în prognoze informație din perioada de test?",
                 "options": [
                     "Scalarea fiecărui context cu media propriilor valori",
@@ -429,7 +429,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
             },
             "ro": {
                 "title": "Cursurile de schimb",
-                "text": "Un foundation model este folosit pentru a prognoza cursul zilnic EUR/RON cu 20 de zile înainte. La ce vă așteptați?",
+                "text": "Un foundation model este folosit pentru a prognoza cursul zilnic EUR/RON pe un orizont de 20 de zile. La ce vă așteptați?",
                 "options": [
                     "Bate ușor mersul aleator, deoarece a văzut multe cursuri de schimb",
                     "Prognozează o sezonalitate săptămînală puternică",
@@ -515,7 +515,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
                     "Este un model închis, disponibil doar printr-un API",
                     "Prognozează doar serii zilnice",
                     "Acceptă orice număr de variabile și mai multe mărimi de patch după frecvență, iar ieșirea este un amestec de distribuții",
-                    "Este o regresie liniară pe valori întîrziate"
+                    "Este o regresie liniară pe valorile seriei la anumite laguri"
                 ],
                 "correctExplanation": "Moirai aranjează seriile multivariate într-o singură secvență (atenție pentru orice număr de variabile), alege mărimea patch-ului după frecvență și dă la ieșire un amestec de distribuții; ponderile sînt deschise, cu o licență necomercială.",
                 "incorrectExplanation": "Moirai are ponderi deschise, funcționează pentru mai multe frecvențe și este un Transformer, nu o regresie liniară."
@@ -544,7 +544,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
                     "Un token dintr-un vocabular de 4093 de intervale",
                     "Ordinele ARIMA ale seriei"
                 ],
-                "correctExplanation": "Lag-Llama este un Transformer doar cu decodor care folosește valori întîrziate ca intrări și dă gradele de libertate, poziția și scala unei distribuții Student-$t$; eșantionarea dă traiectorii de prognoză.",
+                "correctExplanation": "Lag-Llama este un Transformer doar cu decodor care folosește ca intrări valorile seriei la anumite laguri și dă gradele de libertate, poziția și scala unei distribuții Student-$t$; eșantionarea dă traiectorii de prognoză.",
                 "incorrectExplanation": "Este probabilist, nu cuantizează valorile în intervale (aceasta face Chronos) și nu alege ordine ARIMA."
             }
         },
