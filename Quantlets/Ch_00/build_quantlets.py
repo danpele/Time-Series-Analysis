@@ -35,7 +35,7 @@ QUANTLETS = [
               'reference rate of the BNR, the BET and S&P 500 indices since 2000 (log scale), net electricity generation in '
               'Romania (monthly, Eurostat) and atmospheric CO2 at Mauna Loa (statsmodels data set).',
          keywords='time series, GDP, inflation, HICP, exchange rate, EUR/RON, BET, S&P 500, electricity, CO2, seasonality, trend',
-         consts=CONSTS, funcs=SERIES + [g.fig_gdp, g.fig_hicp, g.fig_eurron, g.fig_markets, g.fig_electricity, g.fig_co2],
+         consts=CONSTS, funcs=[g._tidy_dates] + SERIES + [g.fig_gdp, g.fig_hicp, g.fig_eurron, g.fig_markets, g.fig_electricity, g.fig_co2],
          run="gdp = fig_gdp()\nhicp = fig_hicp()\nfx = fig_eurron()\nidx = fig_markets()\nel = fig_electricity()\nco2 = fig_co2()\n"
              "print(gdp.tail(4).round(0))\nprint(hicp.tail(3).round(2))",
          charts=['tsa_ch0_gdp', 'tsa_ch0_hicp', 'tsa_ch0_eurron', 'tsa_ch0_markets', 'tsa_ch0_electricity', 'tsa_ch0_co2']),
@@ -43,14 +43,14 @@ QUANTLETS = [
          desc="Slutsky's experiment (1927, 1937): a moving sum of 10 independent standard Normal shocks produces smooth, "
               'irregular waves that look like business cycles, although no cycle was put into the data.',
          keywords='Slutsky effect, moving average, white noise, business cycle, MA process, simulation',
-         funcs=[g.fig_slutsky],
+         funcs=[g._tidy_dates] + [g.fig_slutsky],
          run="eps, ma, up = fig_slutsky()\nprint('upward zero crossings of the moving sum:', up)",
          charts=['tsa_ch0_slutsky']),
     dict(name='TSA_ch0_decomposition',
          desc='Classical multiplicative decomposition (2x4 centred moving average, seasonal factors, remainder) of the '
               'Romanian real GDP, and robust STL decomposition (period 12) of the monthly CO2 series at Mauna Loa.',
          keywords='decomposition, trend, seasonality, seasonal factors, moving average, STL, LOESS, GDP, CO2',
-         consts=CONSTS, funcs=[g.gdp_series, g.co2_series, g.classical_decomposition, g.fig_components, g.fig_stl],
+         consts=CONSTS, funcs=[g._tidy_dates] + [g.gdp_series, g.co2_series, g.classical_decomposition, g.fig_components, g.fig_stl],
          run="y, trend, seas, rem, q = fig_components()\nprint('seasonal factors by quarter:', {k: round(v, 3) for k, v in q.items()})\n"
              "c, res = fig_stl()\nprint('remainder standard deviation (ppm):', round(res.resid.std(), 3))",
          charts=['tsa_ch0_components', 'tsa_ch0_stl']),
@@ -59,7 +59,7 @@ QUANTLETS = [
               'autocorrelation function: slow decay for a trending level (CO2), seasonal peaks (electricity generation), '
               'almost no memory (BET daily log returns), with the band +-1.96/sqrt(T).',
          keywords='log returns, autocorrelation, ACF, correlogram, trend, seasonality, BET, CO2, electricity',
-         consts=CONSTS, funcs=[g.co2_series, g.electricity_series, g.fig_returns, g.sample_acf, g.fig_acf],
+         consts=CONSTS, funcs=[g._tidy_dates] + [g.co2_series, g.electricity_series, g.fig_returns, g.sample_acf, g.fig_acf],
          run="p, r = fig_returns()\nout = fig_acf()\nfor k, (a, band, n) in out.items():\n"
              "    print(f'{k}: r1 = {a[0]:.3f}, r12 = {a[11]:.3f}, band = {band:.3f}, T = {n}')",
          charts=['tsa_ch0_returns', 'tsa_ch0_acf']),
@@ -67,7 +67,7 @@ QUANTLETS = [
          desc='Simple exponential smoothing of the monthly average EUR/RON reference rate (BNR) since January 2015 with '
               'smoothing constants 0.1 and 0.7, and the estimated smoothing constant (close to 1: the naive forecast).',
          keywords='exponential smoothing, SES, smoothing constant, naive forecast, EUR/RON, BNR',
-         funcs=[g.ses_path, g.eurron_monthly, g.fig_ses],
+         funcs=[g._tidy_dates] + [g.ses_path, g.eurron_monthly, g.fig_ses],
          run="y, alpha = fig_ses()\nprint('estimated alpha:', round(alpha, 3))\nprint('one-step SES forecasts, last 3 months:')\n"
              "print(ses_path(y, 0.1).tail(3).round(4), ses_path(y, 0.7).tail(3).round(4))",
          charts=['tsa_ch0_ses']),
@@ -76,7 +76,7 @@ QUANTLETS = [
               'forecasts of Romanian electricity generation for the last 24 months (MAE, RMSE, MAPE, MASE), and a small '
               'M-competition on four seasonal series (Romanian GDP, HICP, electricity generation, CO2).',
          keywords='forecast evaluation, naive forecast, seasonal naive, Holt-Winters, MAE, RMSE, MAPE, MASE, M4 competition',
-         consts=CONSTS, funcs=SERIES + [g.method_forecasts, g.accuracy, g.fig_forecast, g.benchmark_data, g.fig_benchmarks],
+         consts=CONSTS, funcs=[g._tidy_dates] + SERIES + [g.method_forecasts, g.accuracy, g.fig_forecast, g.benchmark_data, g.fig_benchmarks],
          run="train, test, f, acc = fig_forecast()\nprint(pd.DataFrame(acc).T.round(3))\n"
              "tab, piv = fig_benchmarks()\nprint(piv.round(2))",
          charts=['tsa_ch0_forecast', 'tsa_ch0_benchmarks'], extra=['ch0_accuracy.csv']),

@@ -29,7 +29,7 @@ A = {
     'ACF': ('Autocorrelation Function', 'en', 'funcția de autocorelație', None),
     'ADF': ('Augmented Dickey–Fuller (test)', 'en', 'testul Dickey–Fuller augmentat', None),
     'VAR': ('Vector AutoRegression', 'en', 'model vector autoregresiv', None),
-    'AR': ('AutoRegressive (model); in event studies: Abnormal Return', 'en', 'model autoregresiv; în studiile de eveniment: randament anormal', None),
+    'AR': ('AutoRegressive (model)', 'en', 'model autoregresiv', None),
     'ARCH': ('AutoRegressive Conditional Heteroskedasticity', 'en', 'heteroscedasticitate condiționată autoregresivă', None),
     'ARCH-LM': ('ARCH Lagrange Multiplier (test)', 'en', 'testul multiplicatorului Lagrange pentru efecte ARCH', None),
     'BDS': ('Brock–Dechert–Scheinkman (test)', 'en', 'testul Brock–Dechert–Scheinkman de independență', None),
@@ -85,7 +85,7 @@ A = {
     'ARIMA': ('AutoRegressive Integrated Moving Average (model)', 'en', 'model autoregresiv integrat cu medie mobilă', None),
     'ARMA': ('AutoRegressive Moving Average (model)', 'en', 'model autoregresiv cu medie mobilă', None),
     'BEKK': ('Baba–Engle–Kraft–Kroner (multivariate GARCH model)', 'en', 'modelul GARCH multivariat Baba–Engle–Kraft–Kroner', None),
-    'BIC': ('Bayesian Information Criterion', 'en', 'criteriul informațional bayesian (Schwarz)', None),
+    'BIC': ('Bayesian Information Criterion', 'en', 'criteriul informațional bayesian al lui Schwarz', None),
     'CCC': ('Constant Conditional Correlation (model)', 'en', 'model cu corelație condiționată constantă', None),
     'CPI': ('Consumer Price Index', 'en', 'indicele prețurilor de consum', None),
     'DFT': ('Discrete Fourier Transform', 'en', 'transformata Fourier discretă', None),
@@ -134,11 +134,11 @@ A = {
     'FF5': ('Fama–French five-factor model', 'en', 'modelul Fama–French cu cinci factori', None),
     'HML': ('High Minus Low (value factor)', 'en', 'factorul valoare: B/M mare minus mic', None),
     'IPCA': ('Instrumented Principal Component Analysis', 'en', 'analiza componentelor principale instrumentată', None),
-    'MDD': ('Maximum DrawDown', 'en', 'drawdown maxim', None),
+    'MDD': ('Maximum DrawDown', 'en', 'drawdown-ul maxim', None),
     'MKT': ('MarKeT factor (market excess return)', 'en', 'factorul piață (randamentul în exces al pieței)', None),
     'MOM': ('MOMentum factor', 'en', 'factorul momentum', None),
     'OHLC': ('Open, High, Low, Close', 'en', 'deschidere, maxim, minim, închidere', None),
-    'RF': ('Risk-Free rate (Fama–French data) / Random Forest (machine learning)', 'en', 'rata fără risc (datele Fama–French) / pădure aleatoare (machine learning)', None),
+    'RF': ('Random Forest', 'en', 'pădure aleatoare', None),
     'RMW': ('Robust Minus Weak (profitability factor)', 'en', 'factorul profitabilitate: firme robuste minus slabe', None),
     'ROE': ('Return On Equity', 'en', 'rentabilitatea capitalului propriu', None),
     'SDF': ('Stochastic Discount Factor', 'en', 'factorul stochastic de actualizare', None),
@@ -249,11 +249,14 @@ A = {
     'CSIE': ('Facultatea de Cibernetică, Statistică și Informatică Economică', 'ro', None, 'the Faculty of Cybernetics, Statistics and Economic Informatics'),
     'WIG20': ('Warszawski Indeks Giełdowy 20', 'pl', 'indicele celor mai mari 20 de companii de la Bursa din Varșovia', 'the Warsaw Stock Exchange index of the 20 largest companies'),
 }
-IGNORE = set("""CC CC0 BY BY-SA EDHAC QK VQ NDSR RS RISK SA AG SUM SIGKDD TB3MS DE""".split())   # licente, credite, simboluri matematice
+IGNORE = set("""CC CC0 BY BY-SA EDHAC QK VQ NDSR RS RISK SA AG SUM SIGKDD TB3MS DE"""   # licente, credite, simboluri
+             # coduri de serii FRED, simboluri bursiere, unitati de masura, formule chimice, etichete de modele:
+             # nu sint acronime si se explica in text
+             """ CPIAUCSL FEDFUNDS GDPC1 GDPCTPI GDPPOT GS1 GS5 GS10 INDPRO RSXFSN UNRATE USREC
+             BAC GS JPM MS WFC GW MW CO2 NN1""".split())
 
 
 OVERRIDE = {  # acelasi acronim, sens diferit in capitole diferite: (capitol, acronim) -> tuplu
-    ('13', 'RF'): ('Random Forest', 'en', 'pădure aleatoare', None),
 }
 
 
@@ -271,14 +274,92 @@ for _f in sorted(_glob.glob(os.path.join(HERE, 'acronyms_extra', 'ch*.py'))):
         OVERRIDE[(_n, _k)] = _v
 
 
-def entry(key, lang, chap=None):
+def entry_text(key, lang, chap=None):
     origin, olang, ro, en = OVERRIDE.get((chap, key), A[key])
     if lang == 'ro':
         tr = ro if olang != 'ro' else None
     else:
         tr = en if olang != 'en' else None
-    tex = origin if not tr else (f'{origin} — {tr}' if origin.endswith(')') else f'{origin} ({tr})')   # no doubled parentheses
-    return r'\item \textbf{' + key + '}: ' + tex.replace('&', r'\&')
+    # no doubled parentheses: a dash before the translation when the origin or the translation has its own
+    tex = origin if not tr else (f'{origin} — {tr}' if origin.endswith(')') or '(' in tr else f'{origin} ({tr})')
+    return tex.replace('&', r'\&')
+
+
+def entry(key, lang, chap=None):
+    return r'\item \textbf{' + key + '}: ' + entry_text(key, lang, chap)
+
+
+COLW = 188.0      # latimea textului unei coloane de 0,49\textwidth, dupa marcaj (pt), masurata in PDF
+FS = 6.9738       # \footnotesize in deck-urile TSA (clasa 9pt), pt
+CAP = 180         # inaltimea utila a unei coloane (pt): de sub titlu pina deasupra subsolului
+L1, L2 = 10.0, 9.0      # primul rind al unei intrari (cu spatiul dintre intrari), rindurile urmatoare (pt)
+_FONTS = {}
+
+
+def _width(text, bold=False):
+    """Latimea (pt) unui text la \footnotesize: metricile reale ale fonturilor cm-super (sfss0700/sfsx0700, prin
+    kpsewhich si pymupdf); daca nu sint disponibile, o latime medie de 3,6 pt pe caracter."""
+    name = 'sfsx0700.pfb' if bold else 'sfss0700.pfb'
+    if name not in _FONTS:
+        try:
+            import subprocess
+            import pymupdf
+            path = subprocess.run(['kpsewhich', name], capture_output=True, text=True).stdout.strip()
+            _FONTS[name] = pymupdf.Font(fontfile=path) if path else None
+        except Exception:
+            _FONTS[name] = None
+    f = _FONTS[name]
+    return f.text_length(text, fontsize=FS) if f else 3.6 * len(text)
+
+
+def entry_lines(key, lang, chap=None):
+    """Inaltimea (pt) a unei intrari, prin despartirea simulata pe rinduri a textului."""
+    t = re.sub(r'\\textit\{|\\&|---', 'x', entry_text(key, lang, chap)).replace('}', '').replace('\\', '')
+    n, w, sp = 1, _width(key + ':', bold=True), _width(' ')
+    for word in t.split():
+        ww = _width(word)
+        if w + sp + ww > COLW:
+            n, w = n + 1, ww
+        else:
+            w += sp + ww
+    return L1 + (n - 1) * L2
+
+
+def columns(keys, lines, cap=CAP):
+    """Imparte lista (ordinea alfabetica pastrata) in coloane de cel mult `cap` rinduri, cu inaltimi cit mai
+    egale: numarul minim de pagini (2 coloane pe pagina), apoi inaltimea maxima minima pentru acel numar
+    (fara pagina finala aproape goala)."""
+    def greedy(h):
+        cols, cur, n = [], [], 0
+        for k, l in zip(keys, lines):
+            if cur and n + l > h:
+                cols.append(cur); cur, n = [], 0
+            cur.append(k); n += l
+        return cols + ([cur] if cur else [])
+
+    def balanced(h, ncol):
+        # fiecare coloana tinteste media rindurilor ramase, fara a depasi h
+        cols, i, rem = [], 0, sum(lines)
+        for c in range(ncol):
+            if i >= len(keys):
+                break
+            target, cur, n = rem / (ncol - c), [], 0
+            while i < len(keys) and n + lines[i] <= h and (not cur or n + lines[i] / 2 <= target):
+                cur.append(keys[i]); n += lines[i]; i += 1
+            cols.append(cur); rem -= n
+        return cols if i == len(keys) else None
+
+    total = sum(lines)
+    pages = max(1, int(-(-total // (2 * cap))))
+    while True:
+        ncol = 2 * pages
+        h = max(max(lines), total / ncol)
+        while len(greedy(h)) > ncol:
+            h += 1.0
+        if h <= cap or h <= max(lines):
+            bal = balanced(h, ncol)
+            return bal if bal else greedy(h)
+        pages += 1
 
 
 sys.path.insert(0, HERE)
@@ -291,16 +372,17 @@ def found_in(tex_path):
     return [a for a in m.scan(tex_path) if a not in IGNORE]
 
 
-def glossary_frames(keys, lang, per_col=13, chap=None):
+def glossary_frames(keys, lang, chap=None):
     title = 'Acronime folosite în acest material' if lang == 'ro' else 'Acronyms used in this material'
     keys = sorted(keys, key=lambda k: k.upper())
-    chunks = [keys[i:i + 2 * per_col] for i in range(0, len(keys), 2 * per_col)]
+    cols = columns(keys, [entry_lines(k, lang, chap) for k in keys]) if keys else [[]]
+    chunks = [cols[i:i + 2] for i in range(0, len(cols), 2)]
     out = ['% BEGIN-ACRONYMS (generat de latex/acronyms.py; nu editati manual)']
     for n, ch in enumerate(chunks, 1):
         t = title + (f' ({n}/{len(chunks)})' if len(chunks) > 1 else '')
-        left, right = ch[:per_col], ch[per_col:]
+        left, right = ch[0], (ch[1] if len(ch) > 1 else [])
         out.append(r'\begin{frame}{' + t + '}')
-        out.append(r'\setbeamertemplate{itemize/enumerate body begin}{\tiny}')
+        out.append(r'\setbeamertemplate{itemize/enumerate body begin}{\footnotesize}')
         out.append(r'\begin{columns}[T]')
         for col in (left, right):
             out.append(r'\begin{column}{0.49\textwidth}')

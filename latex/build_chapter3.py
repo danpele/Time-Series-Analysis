@@ -855,7 +855,7 @@ chart(T('Romanian GDP: residual checks', 'PIB-ul României: verificarea reziduur
 interp(('the residual checks', 'verificării reziduurilor'), [
     (T('No autocorrelation left: $Q^*(8) = @{gd.q8}$ (p = @{gd.q8p}), $Q^*(12)$ p = @{gd.q12p}; all p-values above 5\\%', 'Nu a rămas autocorelație: $Q^*(8) = @{gd.q8}$ (p = @{gd.q8p}), $Q^*(12)$ p = @{gd.q12p}; toate p-value-urile sînt peste 5\\%'),
      []),
-    (T('Not Normal: kurtosis @{gd.k}, Jarque--Bera @{gd.jb}; the largest residual is $@{gd.min}$ in @{gd.mind}', 'Nu sînt normale: coeficientul de boltire @{gd.k}, Jarque--Bera @{gd.jb}; cel mai mare reziduu este $@{gd.min}$ în @{gd.mind}'),
+    (T('Not Normal: kurtosis @{gd.k}, Jarque--Bera @{gd.jb}; the largest residual is $@{gd.min}$ in @{gd.mind}', 'Nu sînt normale: kurtosis-ul @{gd.k}, Jarque--Bera @{gd.jb}; cel mai mare reziduu este $@{gd.min}$ în @{gd.mind}'),
      [T('two crises dominate the tails; the Normal intervals of the next slides are too narrow in a crisis and slightly too wide in calm times', 'două crize domină cozile; intervalele normale din slide-urile următoare sînt prea înguste într-o criză și ușor prea largi în perioadele calme'),
       T('options: dummy variables for 2009 and 2020, or a bootstrap of the residuals for the intervals', 'opțiuni: variabile dummy pentru 2009 și 2020 sau un bootstrap al reziduurilor pentru intervale')])])
 

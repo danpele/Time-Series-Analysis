@@ -20,26 +20,16 @@ QLURL = 'https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_
 
 
 def polish(paths):
-    """Typography of the written decks (used by the generators of Chapters 6-10):
-    a negative number in text mode gets a real minus sign ($-$0{,}13 instead of the hyphen -0{,}13);
-    a p-value written as 'p 0.023' becomes 'p = 0.023' ('p $<$ 0.001' stays). Math, comments, DOIs and AI prompts
-    are left as they are."""
+    """Typography of the written decks (used by the generators of Chapters 6-10): a p-value written as 'p 0.023'
+    becomes 'p = 0.023' ('p $<$ 0.001' stays). Comments, DOIs and AI prompts are left as they are. (The minus sign
+    of negative numbers in text mode is set centrally by tsa_build.render.)"""
     import re
     for path in paths:
         out = []
         for line in open(path, encoding='utf-8').read().split('\n'):
-            if line.lstrip().startswith('%') or 'aiprompt' in line or 'prompt{' in line or 'doi.org' in line:
-                out.append(line)
-                continue
-            line = re.sub(r'(?<=[( ])p (?=\d)', 'p = ', line)
-            parts = re.split(r'(?<!\\)(\$)', line)
-            inside = False
-            for i, part in enumerate(parts):
-                if part == '$':
-                    inside = not inside
-                elif not inside:
-                    parts[i] = re.sub(r'(?<=[ (;[])-(?=\d)', '$-$', part)
-            out.append(''.join(parts))
+            if not (line.lstrip().startswith('%') or 'aiprompt' in line or 'prompt{' in line or 'doi.org' in line):
+                line = re.sub(r'(?<=[( ])p (?=\d)', 'p = ', line)
+            out.append(line)
         open(path, 'w', encoding='utf-8').write('\n'.join(out))
 
 

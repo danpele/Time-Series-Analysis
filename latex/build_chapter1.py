@@ -539,7 +539,7 @@ interp(('the three white noises', 'celor trei zgomote albe'), [
     (T('All three are white noise by construction; Ljung--Box $Q^*(10)$ (Section 6) on $X_t$: p = @{wn.g.p} (Gaussian), @{wn.l.p} (Laplace), @{wn.h.p} (GARCH)', 'Toate trei sînt zgomot alb prin construcție; testul Ljung--Box $Q^*(10)$ (secțiunea 6) pentru $X_t$: p = @{wn.g.p} (gaussian), @{wn.l.p} (Laplace), @{wn.h.p} (GARCH)'),
      [T('the GARCH series is close to rejection although it is uncorrelated: with changing variance the usual test rejects too often', 'seria GARCH este aproape de respingere, deși este necorelată: cînd varianța se schimbă, testul obișnuit respinge prea des')]),
     (T('Laplace: heavier tails (kurtosis @{wn.l.k} against @{wn.g.k}), but still i.i.d.: the squares are uncorrelated (p = @{wn.l.p2})',
-       'Laplace: cozi mai groase (coeficientul de boltire @{wn.l.k}, față de @{wn.g.k}), dar tot i.i.d.: pătratele sînt necorelate (p = @{wn.l.p2})'),
+       'Laplace: cozi mai groase (kurtosis-ul @{wn.l.k}, față de @{wn.g.k}), dar tot i.i.d.: pătratele sînt necorelate (p = @{wn.l.p2})'),
      [T('heavy tails alone do not create dependence', 'cozile groase singure nu creează dependență')]),
     (T('GARCH: the squares are strongly correlated, $Q^*(10) = @{wn.h.q2}$, p @{wn.h.p2}', 'GARCH: pătratele sînt puternic corelate, $Q^*(10) = @{wn.h.q2}$, p @{wn.h.p2}'),
      [T('a weak white noise: unpredictable sign and level, predictable size (volatility clustering)', 'un zgomot alb slab: semnul și nivelul nu pot fi anticipate, mărimea poate fi (volatility clustering)'),

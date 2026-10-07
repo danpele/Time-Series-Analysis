@@ -2,7 +2,7 @@
 # format: acronim -> (forma de origine, limba de origine, traducere RO, traducere EN)
 # OVERRIDE_CH (optional): acronim -> tuplu, sens diferit doar in acest capitol.
 EXTRA = {
-    'VEC': ('Vector (half-vectorised) GARCH model', 'en', 'modelul GARCH vectorial (pe semivectorizarea vech)', None),
+    'VEC': ('Vector (half-vectorised) GARCH model', 'en', 'modelul GARCH vectorial, scris pe semivectorizarea vech', None),
     'QML': ('Quasi-Maximum Likelihood', 'en', 'cvasi-verosimilitate maximă', None),
     'FHS': ('Filtered Historical Simulation', 'en', 'simularea istorică filtrată', None),
     'CET': ('Central European Time', 'en', 'ora Europei Centrale', None),

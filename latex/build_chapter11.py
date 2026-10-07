@@ -233,7 +233,7 @@ D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Score a quantile forecast with the pinball loss, the CRPS, MASE and the coverage of an interval', 'Evaluați o prognoză cuantilă cu pierderea pinball, CRPS, MASE și acoperirea unui interval'),
     T('Run an open model on a CPU, compare it fairly with seasonal naive, ETS and ARIMA and recognise contamination', 'Rulați un model deschis pe un CPU, comparați-l corect cu prognoza sezonieră naivă, ETS și ARIMA și recunoașteți contaminarea')))
 
-D.frame(T('Prerequisites', 'Noțiuni necesare azi'), items(
+D.frame(T('Prerequisites for Today', 'Noțiuni necesare azi'), items(
     (T('Forecasting benchmarks and their evaluation (Chapters 0 and 4)', 'Reperele de prognoză și evaluarea lor (capitolele 0 și 4)'),
      [T('seasonal naive $\\hat y_{T+h} = y_{T+h-m}$: the forecast repeats the value of the same season one cycle earlier', 'prognoza sezonieră naivă $\\hat y_{T+h} = y_{T+h-m}$: prognoza repetă valoarea din același sezon al ciclului anterior'),
       T('$T$: the last observed period; $h$: the horizon; $m$: the season length (12 for monthly data, 168 for hourly data with a weekly cycle); the hat marks a forecast', '$T$: ultima perioadă observată; $h$: orizontul; $m$: lungimea sezonului (12 pentru date lunare, 168 pentru date orare cu ciclu săptămînal); căciula marchează o prognoză'),

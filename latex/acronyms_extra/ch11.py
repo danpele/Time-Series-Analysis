@@ -9,7 +9,6 @@ EXTRA = {
     'HICP': ('Harmonised Index of Consumer Prices', 'en', 'indicele armonizat al prețurilor de consum', None),
     'IAPC': ('Indicele armonizat al prețurilor de consum', 'ro', None, 'the harmonised index of consumer prices'),
     'ENTSO-E': ('European Network of Transmission System Operators for Electricity', 'en', 'rețeaua europeană a operatorilor de transport și de sistem pentru energie electrică', None),
-    'GW': ('Gigawatt', 'en', 'gigawatt', None),
     'NSA': ('Not Seasonally Adjusted', 'en', 'neajustat sezonier', None),
     'SA': ('Seasonally Adjusted', 'en', 'ajustat sezonier', None),
     'T5': ('Text-to-Text Transfer Transformer (Google language model)', 'en', 'modelul de limbaj Text-to-Text Transfer Transformer al Google', None),
@@ -20,7 +19,7 @@ EXTRA = {
     'BY-NC': ('Attribution–NonCommercial (Creative Commons licence terms)', 'en', 'atribuire, utilizare necomercială (condițiile licenței Creative Commons)', None),
     'GIFT-Eval': ('General Time Series Forecasting Model Evaluation (benchmark)', 'en', 'benchmark-ul general de evaluare a modelelor de prognoză', None),
     'RSXFSN': ('Retail Sales excluding Food Services, Not seasonally adjusted (FRED series code)', 'en', 'codul FRED al vînzărilor cu amănuntul din SUA, fără alimentație publică, neajustate sezonier', None),
-    'RW': ('Random Walk (forecast)', 'en', 'prognoza mers aleator', None),
+    'RW': ('Random Walk (forecast)', 'en', 'prognoza de tip mers aleator', None),
     'FPP3': ('Forecasting: Principles and Practice, 3rd edition (Hyndman and Athanasopoulos)', 'en', 'manualul Forecasting: Principles and Practice, ediția a 3-a', None),
 }
 OVERRIDE_CH = {}

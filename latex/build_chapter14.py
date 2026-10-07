@@ -520,13 +520,13 @@ D.recap(('CCC and DCC', 'CCC și DCC'), [
 D.section('DCC for the S\\&P 500 and the DAX', 'DCC pentru S\\&P 500 și DAX')
 
 D.frame(T('Step 1: two univariate GARCH models', 'Pasul 1: două modele GARCH univariate'), table(
-    'lrrrrrrr', T('\\textbf{Index}', '\\textbf{Indice}') + ' & $\\mu$ & $\\omega$ & $\\alpha$ & $\\beta$ & $\\alpha + \\beta$ & ' + T('kurt.\\ $r_t$', 'boltire $r_t$') + ' & ' + T('kurt.\\ $z_t$', 'boltire $z_t$'),
+    'lrrrrrrr', T('\\textbf{Index}', '\\textbf{Indice}') + ' & $\\mu$ & $\\omega$ & $\\alpha$ & $\\beta$ & $\\alpha + \\beta$ & ' + T('kurt.\\ $r_t$', 'kurtosis $r_t$') + ' & ' + T('kurt.\\ $z_t$', 'kurtosis $z_t$'),
     ['S\\&P 500 & @{s1.sp500.mu} & @{s1.sp500.om} & @{s1.sp500.al} & @{s1.sp500.be} & @{s1.sp500.pers} & @{s1.sp500.rk} & @{s1.sp500.zk}',
      'DAX & @{s1.dax.mu} & @{s1.dax.om} & @{s1.dax.al} & @{s1.dax.be} & @{s1.dax.pers} & @{s1.dax.rk} & @{s1.dax.zk}'], size='small')
     + items(T('Daily log returns in \\%, @{s1.n} common trading days, @{s1.first}--@{s1.last} (EODHD); GARCH(1,1) with a constant mean, Gaussian QML; kurt.: excess kurtosis',
-              'Randamente logaritmice zilnice în \\%, @{s1.n} zile comune de tranzacționare, @{s1.first}--@{s1.last} (EODHD); GARCH(1,1) cu medie constantă, QML gaussian; boltire: excesul de boltire'),
+              'Randamente logaritmice zilnice în \\%, @{s1.n} zile comune de tranzacționare, @{s1.first}--@{s1.last} (EODHD); GARCH(1,1) cu medie constantă, QML gaussian; kurtosis: excesul de kurtosis'),
             T('Standardising by $\\hat\\sigma_{i,t}$ removes most of the excess kurtosis, but not all: the tails of $z_t$ are still fatter than Normal',
-              'Standardizarea cu $\\hat\\sigma_{i,t}$ elimină cea mai mare parte a excesului de boltire, dar nu tot: cozile lui $z_t$ rămîn mai groase decît la distribuția Normală'),
+              'Standardizarea cu $\\hat\\sigma_{i,t}$ elimină cea mai mare parte a excesului de kurtosis, dar nu tot: cozile lui $z_t$ rămîn mai groase decît la distribuția Normală'),
             T('Correlation of the returns @{s1.rcorr}; correlation of the residuals $\\bar q_{12} = @{s1.zcorr}$, the CCC estimate', 'Corelația randamentelor @{s1.rcorr}; corelația reziduurilor $\\bar q_{12} = @{s1.zcorr}$, estimația CCC')),
     size='footnotesize')
 

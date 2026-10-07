@@ -360,7 +360,7 @@ def fig_seasonal_plot(save_it=True):
 # =============================================================================
 def fig_unit_circle(save_it=True):
     """The roots of 1 - z^4 and 1 - z^12 on the unit circle, with their frequencies."""
-    fig, ax = plt.subplots(1, 2, figsize=(9.6, 4.3))
+    fig, ax = plt.subplots(1, 2, figsize=(7.0, 3.6))
     th = np.linspace(0, 2 * np.pi, 400)
     for a, s, c in [(ax[0], 4, st.MainBlue), (ax[1], 12, st.IDAred)]:
         a.plot(np.cos(th), np.sin(th), color=st.DarkText, lw=0.8)
@@ -386,14 +386,16 @@ def fig_gdp_differencing(nlags=16, save_it=True):
     d1 = 100 * y.diff().dropna()
     d4 = 100 * y.diff(4).dropna()
     dd = 100 * y.diff(4).diff().dropna()
-    fig, ax = plt.subplots(2, 3, figsize=(11.0, 5.0))
+    fig, ax = plt.subplots(2, 3, figsize=(7.6, 3.6))
     out = {}
     for j, (lab, s, c) in enumerate([(r'$100\,\Delta \ln Y_t$ (quarter on quarter)', d1, st.MainBlue),
                                      (r'$100\,\Delta_4 \ln Y_t$ (year on year)', d4, st.Forest),
                                      (r'$100\,\Delta\Delta_4 \ln Y_t$', dd, st.Purple)]):
         ax[0, j].plot(s.index, s.values, color=c, lw=1.0)
         ax[0, j].axhline(0, color=st.DarkText, lw=0.5)
-        ax[0, j].set_title(lab, fontsize=11.5)
+        ax[0, j].set_title(lab, fontsize=10)
+        ax[0, j].xaxis.set_major_locator(mdates.YearLocator(8))
+        ax[0, j].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
         r = sample_acf(s.values, nlags)
         acf_bars(ax[1, j], r, len(s), color=c, mark=[4, 8, 12, 16])
         ax[1, j].set_ylim(-1, 1)
@@ -856,10 +858,11 @@ def fig_mstl(save_it=True):
     comp = [('load (GW)', s.values, st.Teal), ('trend', res.trend, st.MainBlue),
             ('daily seasonal (period 24)', res.seasonal[:, 0], st.Forest),
             ('weekly seasonal (period 168)', res.seasonal[:, 1], st.Orange), ('remainder', res.resid, st.Purple)]
-    fig, ax = plt.subplots(5, 1, figsize=(10.6, 6.2), sharex=True)
+    fig, ax = plt.subplots(5, 1, figsize=(7.0, 3.7), sharex=True)
     for a, (t, v, c) in zip(ax, comp):
         a.plot(s.index, v, color=c, lw=0.8)
-        a.set_ylabel(t, fontsize=9.5, rotation=0, ha='right', va='center')
+        a.set_ylabel(t, fontsize=10.5, rotation=0, ha='right', va='center')
+        a.tick_params(labelsize=10.5)
     ax[0].set_title('MSTL decomposition of hourly load, 3 February - 2 March 2025')
     date_axis(ax[-1], 'week')
     plt.tight_layout()

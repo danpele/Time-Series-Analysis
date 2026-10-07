@@ -578,7 +578,7 @@ review(5, ('Conditional volatility: ARCH and GARCH', 'volatilitate condiționat�
        [T('GARCH(1,1) $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2 + \\beta\\sigma_{t-1}^2$ \\refEngle, \\refBoll; $\\bar\\sigma^2 = \\omega/(1 - \\alpha - \\beta)$, $h_{1/2} = \\ln 0.5/\\ln(\\alpha + \\beta)$', 'GARCH(1,1) $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2 + \\beta\\sigma_{t-1}^2$ \\refEngle, \\refBoll; $\\bar\\sigma^2 = \\omega/(1 - \\alpha - \\beta)$, $h_{1/2} = \\ln 0.5/\\ln(\\alpha + \\beta)$'),
         T('ARCH-LM $= nR^2 \\sim \\chi^2(q)$; VaR 1\\% $= -(\\mu + \\sigma_{t+1}q_{0.01}(z))$', 'ARCH-LM $= nR^2 \\sim \\chi^2(q)$; VaR 1\\% $= -(\\mu + \\sigma_{t+1}q_{0.01}(z))$')],
        [T('GARCH(1,1)-$t$: $\\alpha + \\beta = @{f5.psp}$ for the S\\&P 500 (half-life @{f5.hsp} days), $@{f5.pbet}$ for the BET (@{f5.hbet} days)', 'GARCH(1,1)-$t$: $\\alpha + \\beta = @{f5.psp}$ pentru S\\&P 500 (timp de înjumătățire @{f5.hsp} de zile), $@{f5.pbet}$ pentru BET (@{f5.hbet} de zile)'),
-        T('S\\&P 500: GJR $\\hat\\gamma = @{f5.gj}$ ($t = @{f5.gjt}$); kurtosis @{f5.kr} for returns, @{f5.kz} for standardised residuals', 'S\\&P 500: GJR $\\hat\\gamma = @{f5.gj}$ ($t = @{f5.gjt}$); coeficientul de boltire @{f5.kr} pentru randamente, @{f5.kz} pentru reziduurile standardizate')],
+        T('S\\&P 500: GJR $\\hat\\gamma = @{f5.gj}$ ($t = @{f5.gjt}$); kurtosis @{f5.kr} for returns, @{f5.kz} for standardised residuals', 'S\\&P 500: GJR $\\hat\\gamma = @{f5.gj}$ ($t = @{f5.gjt}$); kurtosis-ul @{f5.kr} pentru randamente, @{f5.kz} pentru reziduurile standardizate')],
        [T('the half-life written as $1/(1 - \\alpha - \\beta)$; a long-run variance reported when $\\alpha + \\beta \\ge 1$', 'timpul de înjumătățire scris $1/(1 - \\alpha - \\beta)$; o varianță pe termen lung raportată cînd $\\alpha + \\beta \\ge 1$'),
         T('``VaR 99\\%\'\' or a negative VaR: the course writes VaR 1\\%, a positive loss', '„VaR 99\\%” sau un VaR negativ: în curs scriem VaR 1\\%, o pierdere pozitivă')])
 
@@ -809,7 +809,7 @@ interp(('the residual checks', 'verificării reziduurilor'), [
          [T('Ljung--Box $Q(12) = @{dg.lb12}$ ($@{dg.lb12df}$ df, $p = @{dg.lb12p}$), $Q(24) = @{dg.lb24}$ ($p = @{dg.lb24p}$)', 'Ljung--Box $Q(12) = @{dg.lb12}$ ($@{dg.lb12df}$ grade de libertate, $p = @{dg.lb12p}$), $Q(24) = @{dg.lb24}$ ($p = @{dg.lb24p}$)'),
           T('the identified model had $p = @{di.lb12p}$ and @{di.lb24p}: the extra AR and MA terms reduce the autocorrelation at lags 6--7', 'modelul identificat avea $p = @{di.lb12p}$ și @{di.lb24p}: termenii AR și MA în plus reduc autocorelația de la lagurile 6--7')]),
     (T('\\textbf{Not Normal}', '\\textbf{Nu este Normal}'),
-         [T('Jarque--Bera @{dg.jb}, kurtosis @{dg.kurt}', 'Jarque--Bera @{dg.jb}, coeficientul de boltire @{dg.kurt}'),
+         [T('Jarque--Bera @{dg.jb}, kurtosis @{dg.kurt}', 'Jarque--Bera @{dg.jb}, kurtosis-ul @{dg.kurt}'),
           T('the two largest residuals: @{dg.big1} ($@{dg.big1v}\\sigma$, the VAT cut on food) and @{dg.big2} ($@{dg.big2v}\\sigma$, the VAT increase)', 'cele mai mari două reziduuri: @{dg.big1} ($@{dg.big1v}\\sigma$, reducerea TVA la alimente) și @{dg.big2} ($@{dg.big2v}\\sigma$, creșterea TVA)')]),
     T('Consequence: point forecasts are fine, Normal intervals are too narrow when taxes change; dummies for known tax changes would help', 'Consecința: prognozele punctuale sînt bune, dar intervalele Normale sînt prea înguste cînd se schimbă taxele; variabile dummy pentru modificările de taxe cunoscute ar ajuta')])
 

@@ -10,7 +10,7 @@ tsa_style.py -- chart style of the TSA course (the same as MFM)
 Use:
     import tsa_style as st
     st.apply()                                   # once, before the first chart
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(7, 3.2))
     ax.plot(x, y, color=st.COL['sp500'], label='S&P 500')
     st.legend_outside_bottom(ax, ncol=3)
     st.save_fig('tsa_ch1_returns')               # charts/tsa_ch1_returns.pdf + .png
@@ -55,7 +55,10 @@ def apply():
     rc['axes.grid'] = False
     rc['font.family'] = 'sans-serif'
     rc['font.sans-serif'] = ['Helvetica', 'Arial', 'DejaVu Sans']
-    # font sizes for slides (charts are 9-11 inches wide and shown at 8-14 cm)
+    # default size about 7 inches wide (as in MFM); a chart is shown 11-13 cm wide on a slide, so these font sizes
+    # give 7-9 pt text there. Multi-panel charts should stay near 7-7.6 inches wide: at 10-11 inches the axis
+    # text drops to about 5 pt on the slide.
+    rc['figure.figsize'] = (7.0, 3.4)
     rc['font.size'] = 12
     rc['axes.labelsize'] = 13
     rc['axes.titlesize'] = 13

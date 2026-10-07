@@ -723,7 +723,7 @@ D.frame(T('Residual diagnostics', 'Diagnosticarea reziduurilor'), items(
      [T('under $H_0$ (correct model) $Q^*(m) \\approx \\chi^2(m - p - q)$ (\\refBP): estimating $p + q$ coefficients uses up $p + q$ degrees of freedom', 'în ipoteza $H_0$ (model corect), $Q^*(m) \\approx \\chi^2(m - p - q)$ (\\refBP): estimarea a $p + q$ coeficienți consumă $p + q$ grade de libertate'),
       T('choose $m$ well above $p + q$: $m = 10$ for annual or quarterly data, $m = 2s$ for seasonal data (\\refFPP)', 'alegem $m$ mult peste $p + q$: $m = 10$ pentru date anuale sau trimestriale, $m = 2s$ pentru date sezoniere (\\refFPP)')]),
     (T('\\textbf{Normality}: Jarque--Bera (\\refJB) $\\mathrm{JB} = \\frac{T}{6}\\big(S^2 + (K - 3)^2/4\\big) \\approx \\chi^2(2)$; QQ plot', '\\textbf{Normalitatea}: Jarque--Bera (\\refJB) $\\mathrm{JB} = \\frac{T}{6}\\big(S^2 + (K - 3)^2/4\\big) \\approx \\chi^2(2)$; graficul QQ'),
-     [T('$S$ = skewness, $K$ = kurtosis (0 and 3 for the Normal distribution); reject normality at 5\\% if $\\mathrm{JB} > 5.99$, the 95\\% quantile of $\\chi^2(2)$', '$S$ = asimetria, $K$ = boltirea (0 și 3 pentru distribuția Normală); respingem normalitatea la 5\\% dacă $\\mathrm{JB} > 5{,}99$, cuantila de 95\\% a lui $\\chi^2(2)$'),
+     [T('$S$ = skewness, $K$ = kurtosis (0 and 3 for the Normal distribution); reject normality at 5\\% if $\\mathrm{JB} > 5.99$, the 95\\% quantile of $\\chi^2(2)$', '$S$ = asimetria, $K$ = kurtosis-ul (0 și 3 pentru distribuția Normală); respingem normalitatea la 5\\% dacă $\\mathrm{JB} > 5{,}99$, cuantila de 95\\% a lui $\\chi^2(2)$'),
       T('non-Normal residuals do not bias $\\hat\\phi$, but they make Normal intervals wrong', 'reziduurile ne-normale nu deplasează $\\hat\\phi$, dar fac greșite intervalele construite cu distribuția Normală')]),
     T('\\textbf{Squared residuals}: Ljung--Box on $\\hat\\varepsilon_t^2$ detects volatility clustering (Chapter 5)', '\\textbf{Pătratele reziduurilor}: testul Ljung--Box pentru $\\hat\\varepsilon_t^2$ detectează volatility clustering (Capitolul 5)')))
 
@@ -889,7 +889,7 @@ chart(T('Step 3: diagnostics of the MA(3)', 'Pasul 3: diagnosticarea modelului M
 interp(('the MA(3) diagnostics', 'diagnosticării MA(3)'), [
     (T('No residual autocorrelation: $Q^*(8) = @{gd.q8}$ on 5 degrees of freedom, p = @{gd.p8}; $Q^*(16)$: p = @{gd.p16}', 'Fără autocorelație în reziduuri: $Q^*(8) = @{gd.q8}$ cu 5 grade de libertate, p = @{gd.p8}; $Q^*(16)$: p = @{gd.p16}'),
      [T('every p-value in the chart is above @{gd.minp}; with 8 instead of 5 degrees of freedom, p would be @{gd.p8w}, too reassuring', 'toate p-value-urile din grafic sînt peste @{gd.minp}; cu 8 în loc de 5 grade de libertate, p ar fi @{gd.p8w}, prea liniștitor')]),
-    (T('Not Normal: Jarque--Bera @{gd.jb}, p @{gd.jbp}; skewness @{gd.skew}, kurtosis @{gd.kurt}', 'Nu este Normal: Jarque--Bera @{gd.jb}, p @{gd.jbp}; asimetria @{gd.skew}, boltirea @{gd.kurt}'),
+    (T('Not Normal: Jarque--Bera @{gd.jb}, p @{gd.jbp}; skewness @{gd.skew}, kurtosis @{gd.kurt}', 'Nu este Normal: Jarque--Bera @{gd.jb}, p @{gd.jbp}; asimetria @{gd.skew}, kurtosis-ul @{gd.kurt}'),
      [T('the largest residual: $@{gd.outv}$ in @{gd.outd}, @{gd.outz} standard deviations: the pandemic lockdown', 'cel mai mare reziduu: $@{gd.outv}$ în @{gd.outd}, @{gd.outz} abateri standard: perioada de lockdown din pandemie')]),
     T('Squared residuals: Ljung--Box p = @{gd.psq}, no volatility clustering at this frequency', 'Pătratele reziduurilor: testul Ljung--Box dă p = @{gd.psq}, fără volatility clustering la această frecvență'),
     T('Verdict: the MA(3) captures the dependence; the Normal intervals understate the risk of recessions', 'Verdictul: MA(3) surprinde dependența; intervalele construite cu distribuția Normală subestimează riscul recesiunilor')])
@@ -941,12 +941,12 @@ D.frame(T('Interpreting the AR(1) for daily returns', 'Interpretarea modelului A
      T('$R^2$ (\\%)', '$R^2$ (\\%)') + ' & @{bet.r2} & @{eurron.r2}',
      T('LB $Q^*(10)$ residuals, 9 df (p)', 'LB $Q^*(10)$ reziduuri, 9 g.l. (p)') + ' & @{bet.q} (@{bet.qp}) & @{eurron.q} (@{eurron.qp})',
      T('LB $Q^*(10)$ squared residuals', 'LB $Q^*(10)$ pătratele reziduurilor') + ' & @{bet.q2} & @{eurron.q2}',
-     T('Kurtosis of residuals', 'Boltirea reziduurilor') + ' & @{bet.kurt} & @{eurron.kurt}',
+     T('Kurtosis of residuals', 'Kurtosis-ul reziduurilor') + ' & @{bet.kurt} & @{eurron.kurt}',
      T('BIC choice, $p, q \\le 2$', 'Alegerea BIC, $p, q \\le 2$') + ' & @{bet.bic} & @{eurron.bic}'],
     size='footnotesize') + items(
     T('Highly significant $\\hat\\phi$, but $R^2$ of 1--3\\%: \\textbf{statistically} real, \\textbf{economically} small after trading costs', '$\\hat\\phi$ foarte semnificativ, dar un $R^2$ de 1--3\\%: real din punct de vedere \\textbf{statistic}, mic din punct de vedere \\textbf{economic} după costurile de tranzacționare'),
     T('Positive $\\hat\\phi$: slow price adjustment (BET), a managed exchange rate (EUR/RON)', '$\\hat\\phi$ pozitiv: ajustarea lentă a prețurilor (BET), un curs de schimb în regim de managed float (EUR/RON)'),
-    T('Squared residuals and kurtosis: the mean is modelled, the variance is not; ARMA + GARCH in Chapter 5', 'Pătratele reziduurilor și boltirea: media este modelată, varianța nu; ARMA + GARCH în Capitolul 5')), 'footnotesize')
+    T('Squared residuals and kurtosis: the mean is modelled, the variance is not; ARMA + GARCH in Chapter 5', 'Pătratele reziduurilor și kurtosis-ul: media este modelată, varianța nu; ARMA + GARCH în Capitolul 5')), 'footnotesize')
 
 D.frame(T('Case study: Yule (1927) and the sunspots', 'Studiu de caz: Yule (1927) și petele solare'), items(
     (T('\\refYule fitted the first autoregression: Wolfer\'s yearly sunspot numbers, 1749--1924', '\\refYule a estimat prima autoregresie: numerele anuale ale petelor solare ale lui Wolfer, 1749--1924'),

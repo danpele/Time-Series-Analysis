@@ -28,7 +28,7 @@ Repo: `~/Documents/Teaching/TSA - Serii de timp/repo` (GitHub `danpele/Time-Seri
 - „sînt/sîntem/sînteți”; „î” în interiorul cuvintelor („â” doar în familia „român”); „nicio/niciun”; ș și ț cu virgulă dedesubt.
 - Titluri și etichete: grupuri nominale, cu literă mare doar la început („Procese stochastice și staționaritate”). Fără „Ce + verb” („Ce predați”, „Ce măsurăm”). Titluri recurente: „Noțiuni necesare azi”, „Rezultatele învățării”, „Verificări necesare”, „Idei de reținut”, „Idee de proiect”, „Contribuția posibilă a AI”, „Autoevaluare”, „Exemplu rezolvat”, „Interpretarea …”.
 - Fără „vs” în textul RO („față de”, „și”, „comparat cu”); fără calcuri („bazat pe” → „pe baza”, „per” → „pe”). „mers aleator” (nu „mers aleatoriu”), „nestaționaritate”, „stochastic” (nu „stocastic”), „termenul liber” (nu „interceptul”).
-- „distribuția Normală” (N mare), niciodată „Normala” substantivizat; „boltire”, „excesul de boltire”.
+- „distribuția Normală” (N mare), niciodată „Normala” substantivizat; „kurtosis” (kurtosis-ul), „excesul de kurtosis”, ca în MFM (doar SFM folosește „boltire”).
 - Jargonul consacrat rămîne în engleză: drawdown, volatility clustering, backtesting, bootstrap, notebook, repository. Termenii cu traducere consacrată se traduc: „zgomot alb”, „mers aleator”, „rădăcină unitară”, „funcția de autocorelație”.
 - Întrebări către sală: „Întrebare pentru sală” / „Ce credeți?” + „Răspuns”; niciodată „preziceți”. O singură întrebare pe bullet.
 - Numere: virgulă zecimală; „de” după numerale ≥ 20 („21 de observații”); intervale cu „;” ([1,38; 1,45]); date „2 octombrie 2026”.

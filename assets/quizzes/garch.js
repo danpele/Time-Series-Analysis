@@ -434,9 +434,9 @@ window.TSA_DATA.quizzes['garch'] = {
                     "Pentru ca varianța să fie constantă",
                     "Pentru a elimina autocorelația lui $r_t$",
                     "Pentru că distribuția t este simetrică, iar cea Normală nu",
-                    "Pentru că reziduurile standardizate ale unui GARCH Normal au încă un coeficient de boltire mult peste 3"
+                    "Pentru că reziduurile standardizate ale unui GARCH Normal au încă un kurtosis mult peste 3"
                 ],
-                "correctExplanation": "GARCH explică o parte din boltirea randamentelor, dar reziduurile standardizate ale GARCH Normal pe S&P 500 au încă boltire de circa 4,7; distribuția t standardizată cu $\\nu \\approx 6$ surprinde aceste cozi groase rămase, importante pentru VaR.",
+                "correctExplanation": "GARCH explică o parte din kurtosis-ul randamentelor, dar reziduurile standardizate ale GARCH Normal pe S&P 500 au încă un kurtosis de circa 4,7; distribuția t standardizată cu $\\nu \\approx 6$ surprinde aceste cozi groase rămase, importante pentru VaR.",
                 "incorrectExplanation": "Ambele distribuții sînt simetrice; distribuția inovațiilor nu schimbă dinamica varianței și nici autocorelația mediei. Rolul ei privește cozile lui $z_t$."
             }
         },

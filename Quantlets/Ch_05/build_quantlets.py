@@ -31,7 +31,7 @@ CONSTS = ['import statsmodels.api as sm', 'from statsmodels.stats.diagnostic imp
           f'COLORS = {g.COLORS!r}', f'SCALE = {g.SCALE!r}', f'EPISODES = {g.EPISODES!r}', f'OOS_START = {g.OOS_START!r}',
           f'REFIT = {g.REFIT!r}', f'LAMBDA = {g.LAMBDA!r}', f'ALPHA_VAR = {g.ALPHA_VAR!r}', f'LB_LAGS = {g.LB_LAGS!r}',
           f'ARCH_LAGS = {g.ARCH_LAGS!r}', f'IG = {g.IG!r}', f'TERM_DATES = {g.TERM_DATES!r}']
-CORE = [g.returns, g.save, g.acf_vals, g.ljung_box, g.arch_lm, g.fit, g.par, g.sig, g.persistence, g.half_life,
+CORE = [g.returns, g.tidy_dates, g.save, g.acf_vals, g.ljung_box, g.arch_lm, g.fit, g.par, g.sig, g.persistence, g.half_life,
         g.summary, g.ols_ar1, g.ar_order]
 
 QUANTLETS = [

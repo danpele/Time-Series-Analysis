@@ -23,8 +23,6 @@ EXTRA = {
     'UTC': ('Coordinated Universal Time', 'en', 'timpul universal coordonat', None),
     'VAT': ('Value Added Tax', 'en', 'taxa pe valoarea adăugată', None),
     'TVA': ('Taxa pe valoarea adăugată', 'ro', None, 'value added tax'),
-    'MW': ('Megawatt', 'en', 'megawatt', None),
-    'GW': ('Gigawatt', 'en', 'gigawatt', None),
     'EUR': ('Euro', 'en', 'euro', None),
     'MAP': ('Maximum A Posteriori (estimate)', 'en', 'estimarea prin maximul a posteriori', None),
 }

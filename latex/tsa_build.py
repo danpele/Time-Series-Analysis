@@ -99,8 +99,17 @@ class Values(dict):
 
 
 RO_NOUNS = ('zile|randamente|perechi|traiectorii|decalaje|observații|extrageri|prognoze|acțiuni|ferestre|'
-            'reziduuri|luni|ani|simulări|valori|companii|săptămîni|săptămâni|tranzacții|indici|serii')
-RO_NUM = re.compile(r'(?<![\d,.}{\\-])(⁅?)(\d{1,3}(?:(?:\\,|\\ )\d{3})+|\d+)(⁆?) (?=(?:' + RO_NOUNS + r')\b)')
+            'reziduuri|luni|ani|simulări|valori|companii|săptămîni|săptămâni|tranzacții|indici|serii|'
+            'lei|laguri|depășiri|puncte|trimestre|prognozatori|regresii|reguli|replicări|reeșantionări|țări|modele|'
+            'iterații|parametri|ore|minute|secunde|pași|eșantioane|bănci|state|coeficienți|intervale|termeni|'
+            'componente|variabile|rînduri|teste|estimări|scenarii|orizonturi|frecvențe|cicluri|episoade|crize|bule|'
+            'grade|perioade|sezoane|firme|active|monede|neuroni|straturi|arbori|caracteristici|epoci|tokeni|'
+            'milioane|miliarde|mii|dolari|euro|procente|vectori|matrice|ecuații|rezultate|studii|articole|regimuri|'
+            'stări|întrebări|exerciții|credite|cursuri|seminarii|capitole|slide-uri|bare|lucrări|date|mersuri|variații|'
+            'autocorelații|ori|încălcări|ordonate|bucle|cuvinte|tranșe|clase|categorii|niveluri|puteri')
+# a numeral (or the upper end of a range 74--131) followed by a noun; numbers inside decimals, dates and
+# other numbers are skipped
+RO_NUM = re.compile(r'(?<![\d,.}{\\-])(?:⁅?\d+⁆?--)?(⁅?)(\d{1,3}(?:(?:\\,|\\ )\d{3})+|\d+)(⁆?) (?=(?:' + RO_NOUNS + r')\b)')
 
 
 def ro_de(tex):
@@ -110,6 +119,50 @@ def ro_de(tex):
         need = v >= 20 and (v % 100 >= 20 or v % 100 == 0)
         return m.group(0) + ('de ' if need else '')
     return RO_NUM.sub(f, tex)
+
+
+MINUS = '\ue000'                                   # placeholder of a text-mode minus, written as $-$ at the end
+MATH_ENVS = r'(?:equation|align|alignat|gather|multline|flalign|eqnarray|displaymath|math)\*?'
+MATH_TOK = re.compile(r'\\\\|\\\$|\$\$?|\\\(|\\\)|\\\[|\\\]|\\begin\{' + MATH_ENVS + r'\}|\\end\{' + MATH_ENVS + r'\}'
+                      r'|(?<!\\)%[^\n]*|⁅-')
+
+
+def text_minus(tex):
+    r"""A marked negative number (⁅-0.13⁆, from Values.put / n / pv) in text mode gets a real minus sign:
+    $-$0.13 instead of the hyphen -0.13. Inside math ($...$, \(...\), \[...\], equation/align/...) the hyphen
+    is already a minus and is left alone; comments, \aiprompt{...} and \texttt{...} are skipped."""
+    skip = []                                   # typewriter text (AI prompts, code) keeps the typed hyphen
+    for m in re.finditer(r'\\(?:aiprompt|texttt)\{', tex):
+        depth, i = 1, m.end()
+        while i < len(tex) and depth:
+            depth += {'{': 1, '}': -1}.get(tex[i], 0) if tex[i - 1] != '\\' else 0
+            i += 1
+        skip.append((m.start(), i))
+    out, last, inline, display = [], 0, None, 0
+    for m in MATH_TOK.finditer(tex):
+        t = m.group(0)
+        if t == '⁅-':
+            if inline is None and display == 0 and not any(a <= m.start() < b for a, b in skip):
+                out.append(tex[last:m.start()] + '⁅' + MINUS)
+                last = m.end()
+        elif t in ('$', '$$'):
+            if inline is None:
+                inline = t
+            elif inline == t:
+                inline = None
+        elif t == '\\(':
+            inline = inline or t
+        elif t == '\\)':
+            inline = None if inline == '\\(' else inline
+        elif t == '\\[' and inline is None:
+            display += 1
+        elif t == '\\]' and display:
+            display -= 1
+        elif t.startswith('\\begin{'):
+            display += 1
+        elif t.startswith('\\end{') and display:
+            display -= 1
+    return ''.join(out) + tex[last:]
 
 
 def render(tex, lang, values=None):
@@ -122,6 +175,7 @@ def render(tex, lang, values=None):
         return str(values[key])
     tex = TOKEN.sub(tok, tex)
     tex = MARK.sub(lambda m: m.group(1) if lang == 'en' else m.group(2), tex)
+    tex = text_minus(tex)
     if lang == 'ro':
         # the comma becomes the decimal mark: two numbers separated by a comma ([1.23, 1.45]) get a semicolon
         tex = re.sub(r'(⁅[^⁆]*⁆),(\s*)(?=⁅)', lambda m: m.group(1) + (';' if '.' in m.group(1) else ',') + m.group(2), tex)
@@ -130,7 +184,7 @@ def render(tex, lang, values=None):
         tex = re.sub(r'(?<!\\)\$(.+?)(?<!\\)\$', lambda m: '$' + re.sub(r'(\d)\.(\d)', r'\1{,}\2', m.group(1)) + '$', tex)
         tex = re.sub(r'\b(ES|VaR|CoVaR|MES) (\d+)\.(\d+)\\%', r'\1 \2,\3\\%', tex)   # risk-measure levels in plain text: ES 2,5%
         tex = ro_de(tex)
-    tex = re.sub(r'⁅([^⁆]*)⁆', r'\1', tex)
+    tex = re.sub(r'⁅([^⁆]*)⁆', r'\1', tex).replace(MINUS, '$-$')
     leftover = MARK.search(tex) or re.search(r'⟦|⟧', tex)
     if leftover:
         raise ValueError(f'unbalanced ⟦..||..⟧ near: {tex[max(0, leftover.start() - 60):leftover.start() + 60]!r}')
@@ -248,11 +302,12 @@ class Deck:
         self.frame(title, body, size)
 
     def recap(self, title, bullets):
-        ro = title[1]
+        en, ro = title
+        en = en[0].upper() + en[1:]          # EN: capital after the colon (Recap: The Kalman filter)
         w = ro.split(' ')[0]
         if w[1:].isalpha() and w[1:].islower() and not w.startswith('Student'):   # RO: lower case after the colon, except names and acronyms
             ro = ro[0].lower() + ro[1:]
-        self.frame(f'⟦Recap: {title[0]}||Recapitulare: {ro}⟧', items(*bullets))
+        self.frame(f'⟦Recap: {en}||Recapitulare: {ro}⟧', items(*bullets))
 
     # ---- seminar: probleme rezolvate / propuse (formatul A/B/C din MFM)
     def solved(self, title, task, solution, size='small'):
@@ -261,7 +316,16 @@ class Deck:
                 '\n\\end{column}\n\\end{columns}')
         self.frame(f'{title} {SOLVED}', body, size)
 
-    def proposed(self, title, task, solution, size='small'):
+    def proposed(self, title, task, solution, size='small', split=False):
+        """Proposed task; the solution only in the instructor version. split=True: the task on its own slide (full
+        width) and the solution on a second, instructor-only slide 'A3: solution [Proposed]' (long tasks)."""
+        if split:
+            label = re.search(r'([A-C]\d+):', title).group(1)
+            sz = f'\\itemsize{{\\{size}}}\n' if size else ''
+            self.FR.append(f'\\begin{{frame}}{{{title} {PROP}}}\n\\propsub\n' + sz + block(TASK, task) + '\n\\end{frame}\n')
+            self.FR.append('\\ifsolutions\n' + f'\\begin{{frame}}{{{label}: ⟦solution||rezolvare⟧ {PROP}}}\n' + sz
+                           + block(SOL, solution, 'exampleblock') + '\n\\end{frame}\n\\fi\n')
+            return
         body = ('\\propsub\n' + (f'\\itemsize{{\\{size}}}\n' if size else '') +
                 '\\begin{columns}[T]\n\\begin{column}{\\taskw}\n' + block(TASK, task) +
                 '\n\\end{column}\n\\begin{column}{\\solw}\n\\solonly{%\n' + block(SOL, solution, 'exampleblock') +
@@ -283,10 +347,13 @@ class Deck:
     def references(self, refs, per=16):
         """Bibliografia: intrari complete cu \\href (DOI verificat), in ordine alfabetica."""
         self.section('References', 'Bibliografie')
-        chunks = [refs[i:i + per] for i in range(0, len(refs), per)]
+        per = min(per, 11)                             # at most 11 entries per page at \scriptsize
+        k = -(-len(refs) // per)                       # pages needed, then entries spread evenly (no near-empty last page)
+        cut = [round(i * len(refs) / k) for i in range(k + 1)]
+        chunks = [refs[cut[i]:cut[i + 1]] for i in range(k)]
         for i, ch in enumerate(chunks, 1):
             num = f' ({i}/{len(chunks)})' if len(chunks) > 1 else ''
-            self.FR.append(f'\\begin{{frame}}{{⟦References||Bibliografie⟧{num}}}\n\\itemsize{{\\tiny}}\n'
+            self.FR.append(f'\\begin{{frame}}{{⟦References||Bibliografie⟧{num}}}\n\\itemsize{{\\scriptsize}}\n'
                            + items(*ch) + '\n\\end{frame}\n')
 
     # ---- antet

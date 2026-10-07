@@ -215,11 +215,11 @@ def strow(k):
 
 D.frame(T('Stylised facts in numbers', 'Faptele stilizate în cifre'), table(
     'lrrrrrrrrr', T('& $T$ & s.d. & skew. & kurt. & $\\hat\\rho_1(r)$ & $\\hat\\rho_1(r^2)$ & $Q(10)$, $r$ & $Q(10)$, $r^2$ & LM(5)',
-                    '& $T$ & ab. std. & asim. & boltire & $\\hat\\rho_1(r)$ & $\\hat\\rho_1(r^2)$ & $Q(10)$, $r$ & $Q(10)$, $r^2$ & LM(5)'),
+                    '& $T$ & ab. std. & asim. & kurtosis & $\\hat\\rho_1(r)$ & $\\hat\\rho_1(r^2)$ & $Q(10)$, $r$ & $Q(10)$, $r^2$ & LM(5)'),
     [strow(k) for k in ASSETS], size='scriptsize') + items(
     (T('\\textbf{Heavy tails}: kurtosis between @{sty.kmin} and @{sty.kmax}, far above 3, the value of the Normal distribution',
-       '\\textbf{Cozi groase}: coeficientul de boltire între @{sty.kmin} și @{sty.kmax}, mult peste 3, valoarea distribuției Normale'),
-     [T('kurtosis $K = E[(r - \\mu)^4]/\\sigma^4$; skewness $E[(r - \\mu)^3]/\\sigma^3$ (Chapter 1)', 'coeficientul de boltire $K = E[(r - \\mu)^4]/\\sigma^4$; asimetria $E[(r - \\mu)^3]/\\sigma^3$ (Capitolul 1)')]),
+       '\\textbf{Cozi groase}: kurtosis-ul între @{sty.kmin} și @{sty.kmax}, mult peste 3, valoarea distribuției Normale'),
+     [T('kurtosis $K = E[(r - \\mu)^4]/\\sigma^4$; skewness $E[(r - \\mu)^3]/\\sigma^3$ (Chapter 1)', 'kurtosis-ul $K = E[(r - \\mu)^4]/\\sigma^4$; asimetria $E[(r - \\mu)^3]/\\sigma^3$ (Capitolul 1)')]),
     T('\\textbf{Little autocorrelation in $r_t$}, strong autocorrelation in $r_t^2$: $Q(10)$ of the squares is @{sty.qmin}--@{sty.qmax} times larger',
       '\\textbf{Autocorelație mică în $r_t$}, autocorelație puternică în $r_t^2$: $Q(10)$ al pătratelor este de @{sty.qmin}--@{sty.qmax} de ori mai mare'),
     T('$Q(10)$: the statistic of \\refLB\\ (Chapter 1), $\\chi^2(10)$, 5\\% value 18.31; LM(5): the ARCH-LM test (two slides ahead), $\\chi^2(5)$, 5\\% value @{lm.chi}',
@@ -302,7 +302,7 @@ D.frame(T('Worked example: conditional and unconditional variance', 'Exemplu rez
     (T('The unconditional variance is an average; the conditional variance tells which day we are in', 'Varianța necondiționată este o medie; varianța condiționată ne spune în ce fel de zi ne aflăm'),
      [T('a calm day: $\\sigma_t = @{ltv.calm}\\%$; a stormy day: $\\sigma_t = @{ltv.storm}\\%$; the average $@{ltv.s}\\%$ fits neither', 'o zi liniștită: $\\sigma_t = @{ltv.calm}\\%$; o zi agitată: $\\sigma_t = @{ltv.storm}\\%$; media de $@{ltv.s}\\%$ nu descrie niciuna dintre ele')]),
     T('With Normal $z_t$, the mixture has kurtosis $3E[\\sigma_t^4]/(E[\\sigma_t^2])^2 = @{ltv.k}$: a time-varying variance creates heavy tails',
-      'Cu $z_t$ Normale, amestecul are coeficientul de boltire $3E[\\sigma_t^4]/(E[\\sigma_t^2])^2 = @{ltv.k}$: o varianță variabilă în timp creează cozi groase')))
+      'Cu $z_t$ Normale, amestecul are kurtosis-ul $3E[\\sigma_t^4]/(E[\\sigma_t^2])^2 = @{ltv.k}$: o varianță variabilă în timp creează cozi groase')))
 
 chart(T('The mean model leaves ARCH effects', 'Modelul pentru medie lasă efecte ARCH'), 'tsa_ch5_arma_resid', 'TSA_ch5_mean_model', [
     T('BET: left, an AR(1) for the mean (order chosen by BIC among AR(0)--AR(5): $p = @{ar.p}$), constant variance; right, the same AR(1) with a GARCH(1,1)-t variance (Section 6)',
@@ -356,7 +356,7 @@ D.frame(T('ARCH(1): properties', 'ARCH(1): proprietăți'), items(
        '\\textbf{Varianța necondiționată} (staționar dacă $\\alpha < 1$): aplicăm media în $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2$'),
      [T('$\\bar\\sigma^2 = E[\\varepsilon_t^2] = \\omega + \\alpha\\bar\\sigma^2$, so $\\bar\\sigma^2 = \\omega/(1 - \\alpha)$', '$\\bar\\sigma^2 = E[\\varepsilon_t^2] = \\omega + \\alpha\\bar\\sigma^2$, deci $\\bar\\sigma^2 = \\omega/(1 - \\alpha)$')]),
     (T('\\textbf{Kurtosis} with Normal $z_t$ (if $3\\alpha^2 < 1$): $K = 3\\,\\dfrac{1 - \\alpha^2}{1 - 3\\alpha^2} > 3$',
-       '\\textbf{Coeficientul de boltire} cu $z_t$ Normale (dacă $3\\alpha^2 < 1$): $K = 3\\,\\dfrac{1 - \\alpha^2}{1 - 3\\alpha^2} > 3$'),
+       '\\textbf{Kurtosis-ul} cu $z_t$ Normale (dacă $3\\alpha^2 < 1$): $K = 3\\,\\dfrac{1 - \\alpha^2}{1 - 3\\alpha^2} > 3$'),
      [T('Normal innovations, yet heavy-tailed shocks; if $\\alpha \\ge 1/\\sqrt{3} = @{ex.a1.lim}$, the fourth moment is infinite', 'inovații Normale, dar șocuri cu cozi groase; dacă $\\alpha \\ge 1/\\sqrt{3} = @{ex.a1.lim}$, momentul de ordinul patru este infinit')]),
     (T('\\textbf{Worked example}: $\\omega = 0.5$, $\\alpha = 0.5$', '\\textbf{Exemplu rezolvat}: $\\omega = 0{,}5$, $\\alpha = 0{,}5$'),
      [T('$\\bar\\sigma^2 = 0.5/0.5 = @{ex.a1.uv}$; $K = 3 \\times 0.75/0.25 = @{ex.a1.k}$', '$\\bar\\sigma^2 = 0{,}5/0{,}5 = @{ex.a1.uv}$; $K = 3 \\times 0{,}75/0{,}25 = @{ex.a1.k}$'),
@@ -367,7 +367,7 @@ chart(T('Simulated paths: i.i.d., ARCH(1) and GARCH(1,1)', 'Traiectorii simulate
     T('Three series of 1000 values with unconditional variance 1: i.i.d.\\ Normal; ARCH(1) with $\\omega = \\alpha = 0.5$; GARCH(1,1) with $\\omega = 0.02$, $\\alpha = 0.10$, $\\beta = 0.88$ (next section)',
       'Trei serii de 1000 de valori cu varianța necondiționată 1: i.i.d.\\ Normale; ARCH(1) cu $\\omega = \\alpha = 0{,}5$; GARCH(1,1) cu $\\omega = 0{,}02$, $\\alpha = 0{,}10$, $\\beta = 0{,}88$ (secțiunea următoare)'),
     T('Sample kurtosis: i.i.d.\\ $@{sim.iid.k}$, ARCH $@{sim.arch.k}$, GARCH $@{sim.garch.k}$ (theory: 3, $@{ex.a1.k}$, $@{sim.garch.kth}$): the fourth moment converges slowly',
-      'Coeficientul de boltire de selecție: i.i.d.\\ $@{sim.iid.k}$, ARCH $@{sim.arch.k}$, GARCH $@{sim.garch.k}$ (teoretic: 3, $@{ex.a1.k}$, $@{sim.garch.kth}$): momentul de ordinul patru converge lent'),
+      'Kurtosis-ul de selecție: i.i.d.\\ $@{sim.iid.k}$, ARCH $@{sim.arch.k}$, GARCH $@{sim.garch.k}$ (teoretic: 3, $@{ex.a1.k}$, $@{sim.garch.kth}$): momentul de ordinul patru converge lent'),
     T('Interpretation: ARCH(1) gives isolated spikes; GARCH(1,1) gives long calm and long agitated periods, as in real returns',
       'Interpretare: ARCH(1) produce vîrfuri izolate; GARCH(1,1) produce perioade lungi liniștite și perioade lungi agitate, ca randamentele reale')],
     h='0.54\\textheight')
@@ -390,7 +390,7 @@ D.frame(T('ARCH($q$) and its limits', 'ARCH($q$) și limitele lui'), items(
 
 D.recap(('the ARCH model', 'modelul ARCH'), [
     T('$\\sigma_t^2 = \\omega + \\sum_i\\alpha_i\\varepsilon_{t-i}^2$: an AR model for the squared shocks', '$\\sigma_t^2 = \\omega + \\sum_i\\alpha_i\\varepsilon_{t-i}^2$: un model AR pentru pătratele șocurilor'),
-    T('Unconditional variance $\\omega/(1 - \\sum\\alpha_i)$; kurtosis above 3 even with Normal innovations', 'Varianța necondiționată $\\omega/(1 - \\sum\\alpha_i)$; boltire peste 3 chiar cu inovații Normale'),
+    T('Unconditional variance $\\omega/(1 - \\sum\\alpha_i)$; kurtosis above 3 even with Normal innovations', 'Varianța necondiționată $\\omega/(1 - \\sum\\alpha_i)$; kurtosis peste 3 chiar cu inovații Normale'),
     T('Real clustering needs many lags: GARCH replaces them with one extra parameter', 'Clustering-ul real cere multe laguri: GARCH le înlocuiește cu un singur parametru în plus')])
 
 # =============================================================================
@@ -428,11 +428,11 @@ D.frame(T('GARCH(1,1) as an ARMA(1,1) for the squared shocks', 'GARCH(1,1) ca AR
         'ACF a lui $\\varepsilon_t^2$ scade ca $(\\alpha + \\beta)^k$: lent cînd persistența este aproape de 1, ca în ACF a pătratelor randamentelor reale'),
       T('identification by the ACF and the PACF (partial autocorrelation function) of $\\varepsilon_t^2$ is possible in principle, but in practice we use maximum likelihood (Section 5)', 'identificarea prin ACF și PACF (partial autocorrelation function, funcția de autocorelație parțială) a lui $\\varepsilon_t^2$ este posibilă în principiu, dar în practică folosim verosimilitatea maximă (secțiunea 5)')])))
 
-D.frame(T('Long-run variance, kurtosis, persistence and half-life', 'Varianța de lungă durată, boltirea, persistența și timpul de înjumătățire'), items(
+D.frame(T('Long-run variance, kurtosis, persistence and half-life', 'Varianța de lungă durată, kurtosis-ul, persistența și timpul de înjumătățire'), items(
     (T('\\textbf{Long-run (unconditional) variance}: $\\bar\\sigma^2 = \\omega/(1 - \\alpha - \\beta)$; annualised volatility $\\sqrt{252\\,\\bar\\sigma^2}$ for 252 trading days',
        '\\textbf{Varianța de lungă durată (necondiționată)}: $\\bar\\sigma^2 = \\omega/(1 - \\alpha - \\beta)$; volatilitatea anualizată $\\sqrt{252\\,\\bar\\sigma^2}$ pentru 252 de zile de tranzacționare'),
      [T('kurtosis with Normal $z_t$: $K = 3\\,\\dfrac{1 - (\\alpha + \\beta)^2}{1 - (\\alpha + \\beta)^2 - 2\\alpha^2} > 3$; $\\alpha = 0.10$, $\\beta = 0.88$: $K = @{ex.g.k}$',
-        'boltirea cu $z_t$ Normale: $K = 3\\,\\dfrac{1 - (\\alpha + \\beta)^2}{1 - (\\alpha + \\beta)^2 - 2\\alpha^2} > 3$; $\\alpha = 0{,}10$, $\\beta = 0{,}88$: $K = @{ex.g.k}$')]),
+        'kurtosis-ul cu $z_t$ Normale: $K = 3\\,\\dfrac{1 - (\\alpha + \\beta)^2}{1 - (\\alpha + \\beta)^2 - 2\\alpha^2} > 3$; $\\alpha = 0{,}10$, $\\beta = 0{,}88$: $K = @{ex.g.k}$')]),
     (T('A deviation from $\\bar\\sigma^2$ shrinks by the factor $\\alpha + \\beta$ each day (Section 9): $E_t[\\sigma_{t+h}^2] - \\bar\\sigma^2 = (\\alpha + \\beta)^{h-1}(\\sigma_{t+1}^2 - \\bar\\sigma^2)$',
        'O abatere de la $\\bar\\sigma^2$ se micșorează cu factorul $\\alpha + \\beta$ în fiecare zi (secțiunea 9): $E_t[\\sigma_{t+h}^2] - \\bar\\sigma^2 = (\\alpha + \\beta)^{h-1}(\\sigma_{t+1}^2 - \\bar\\sigma^2)$'),
      [T('$E_t[\\cdot]$: the expectation given the information of day $t$; $\\sigma_{t+1}^2$: tomorrow\'s variance, already known at $t$', '$E_t[\\cdot]$: media condiționată de informația din ziua $t$; $\\sigma_{t+1}^2$: varianța de mîine, cunoscută deja la momentul $t$'),
@@ -543,11 +543,11 @@ D.frame(T('Quasi-maximum likelihood and practical rules', 'Cvasi-verosimilitatea
 
 D.frame(T('Student-t and skewed-t innovations', 'Inovații Student-t și t asimetrice'), items(
     (T('GARCH with Normal $z_t$ explains only part of the kurtosis: S\\&P 500 returns $@{kurt.r}$, standardised residuals $\\hat z_t = \\hat\\varepsilon_t/\\hat\\sigma_t$ still $@{kurt.z}$',
-       'GARCH cu $z_t$ Normale explică doar o parte din boltire: randamentele S\\&P 500 au $@{kurt.r}$, reziduurile standardizate $\\hat z_t = \\hat\\varepsilon_t/\\hat\\sigma_t$ încă $@{kurt.z}$'),
+       'GARCH cu $z_t$ Normale explică doar o parte din kurtosis: randamentele S\\&P 500 au $@{kurt.r}$, reziduurile standardizate $\\hat z_t = \\hat\\varepsilon_t/\\hat\\sigma_t$ încă $@{kurt.z}$'),
      [T('the remaining heavy tails must come from the distribution of $z_t$', 'cozile groase rămase trebuie să vină din distribuția lui $z_t$')]),
     (T('\\textbf{Standardised Student-t} with $\\nu > 2$ degrees of freedom \\refBollT', '\\textbf{Student-t standardizată} cu $\\nu > 2$ grade de libertate \\refBollT'),
      [T('$z_t = t_\\nu\\sqrt{(\\nu - 2)/\\nu}$ has variance 1; kurtosis $3 + 6/(\\nu - 4)$ for $\\nu > 4$; $\\nu \\to \\infty$: the Normal distribution',
-        '$z_t = t_\\nu\\sqrt{(\\nu - 2)/\\nu}$ are varianța 1; coeficientul de boltire $3 + 6/(\\nu - 4)$ pentru $\\nu > 4$; $\\nu \\to \\infty$: distribuția Normală'),
+        '$z_t = t_\\nu\\sqrt{(\\nu - 2)/\\nu}$ are varianța 1; kurtosis-ul $3 + 6/(\\nu - 4)$ pentru $\\nu > 4$; $\\nu \\to \\infty$: distribuția Normală'),
       T('$\\nu$ is estimated together with $(\\mu, \\omega, \\alpha, \\beta)$: \\texttt{dist=\'t\'} in \\texttt{arch}', '$\\nu$ se estimează împreună cu $(\\mu, \\omega, \\alpha, \\beta)$: \\texttt{dist=\'t\'} în \\texttt{arch}')]),
     (T('\\textbf{Skewed t} \\refHansen: one more parameter $\\lambda \\in (-1, 1)$; $\\lambda < 0$: a longer left tail (\\texttt{dist=\'skewt\'})', '\\textbf{t asimetrică} \\refHansen: încă un parametru $\\lambda \\in (-1, 1)$; $\\lambda < 0$: o coadă stîngă mai lungă (\\texttt{dist=\'skewt\'})'),
      [T('nested models: Normal $\\subset$ t $\\subset$ skewed t; compare them with LR (likelihood ratio) tests or AIC/BIC',

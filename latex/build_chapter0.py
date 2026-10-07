@@ -218,9 +218,9 @@ ANSWER = '⟦Answer||Răspuns⟧'
 D = LangDeck(0, 'lecture', refs=REFS)
 
 # ===============================================================================================================
-D.section('Course Organisation', 'Organizarea cursului')
+D.section('Course organisation', 'Organizarea cursului')
 # ===============================================================================================================
-D.frame('⟦Route of This Chapter||Traseul acestui capitol⟧', cols(
+D.frame('⟦Route of this chapter||Traseul acestui capitol⟧', cols(
     items(('⟦\\textbf{Guiding questions}||\\textbf{Întrebări de pornire}⟧',
            ['⟦what is a time series, and where do we meet one?||ce este o serie de timp și unde o întîlnim?⟧',
             '⟦which patterns repeat in economic, financial, energy and climate data?||ce tipare se repetă în datele economice, financiare, energetice și climatice?⟧',
@@ -242,7 +242,7 @@ D.frame('⟦Route of This Chapter||Traseul acestui capitol⟧', cols(
           '⟦Seminar 0 comes \\textbf{before} this lecture and practises the first tools on data||Seminarul 0 are loc \\textbf{înaintea} acestui curs și exersează primele instrumente pe date⟧'),
     '0.47', '0.50'), size='footnotesize')
 
-D.frame('⟦The Course at a Glance||Cursul pe scurt⟧', cols(
+D.frame('⟦The course at a glance||Cursul pe scurt⟧', cols(
     items(('⟦\\textbf{Programme}||\\textbf{Program}⟧',
            ["⟦Bachelor's programmes Economic Informatics and Economic Cybernetics, year 3, semester 2||Licență, programele Informatică economică și Cibernetică economică, anul III, semestrul 2⟧",
             '⟦Faculty of Cybernetics, Statistics and Economic Informatics (CSIE), ASE Bucharest||Facultatea de Cibernetică, Statistică și Informatică Economică (CSIE), ASE București⟧',
@@ -284,7 +284,7 @@ def ch_rows(rng):
     return [f'{n} & ⟦{TITLES[n][0]}||{TITLES[n][1]}⟧' + ('$^*$' if n in SELF_STUDY else '') for n in rng]
 
 
-D.frame('⟦Course Map: Chapters 0--15||Harta cursului: Capitolele 0--15⟧', cols(
+D.frame('⟦Course map: chapters 0--15||Harta cursului: Capitolele 0--15⟧', cols(
     table('r>{\\raggedright\\arraybackslash}p{5.6cm}', '\\textbf{⟦No.||Nr.⟧} & \\textbf{⟦Chapter||Capitol⟧}', ch_rows(range(0, 8)), size='footnotesize'),
     table('r>{\\raggedright\\arraybackslash}p{5.6cm}', '\\textbf{⟦No.||Nr.⟧} & \\textbf{⟦Chapter||Capitol⟧}', ch_rows(range(8, 16)), size='footnotesize'),
     '0.49', '0.49') + '\n' + items(
@@ -292,7 +292,7 @@ D.frame('⟦Course Map: Chapters 0--15||Harta cursului: Capitolele 0--15⟧', co
     '⟦Self-study, marked $^*$: Chapters 11--14 (shorter materials and a quiz, no compulsory seminar)||Studiu individual, marcat cu $^*$: Capitolele 11--14 (materiale mai scurte și un quiz, fără seminar obligatoriu)⟧'),
     size='footnotesize')
 
-D.frame('⟦Materials and Tools||Materiale și instrumente⟧', items(
+D.frame('⟦Materials and tools||Materiale și instrumente⟧', items(
     ('⟦\\textbf{For every chapter}||\\textbf{Pentru fiecare capitol}⟧',
      ['⟦lecture and seminar slides, in Romanian and in English||slide-urile de curs și de seminar, în română și în engleză⟧',
       '⟦a lecture notebook and a seminar notebook (Python), opened in Google Colab with one click||un notebook de curs și unul de seminar (Python), care se deschid în Google Colab cu un singur clic⟧',
@@ -314,7 +314,7 @@ D.frame('⟦Seminars||Seminarii⟧', items(
       '⟦\\textbf{[Proposed]}: you solve it; the solution is discussed in class||\\textbf{[Propus]}: îl rezolvați dumneavoastră; rezolvarea se discută la seminar⟧']),
     '⟦\\textbf{Nothing is handed in}: the seminar is practice for the exam and for the project||\\textbf{Seminarul nu se notează}: are rol de exercițiu pentru examen și pentru proiect⟧'))
 
-D.frame('⟦The Team Project||Proiectul de echipă⟧', items(
+D.frame('⟦The team project||Proiectul de echipă⟧', items(
     '⟦\\textbf{Question}: one forecasting or modelling question on real time series, chosen by the team||\\textbf{Întrebarea}: o întrebare de prognoză sau de modelare pe serii de timp reale, aleasă de echipă⟧',
     ('⟦\\textbf{Methods}: those of the course||\\textbf{Metode}: cele din curs⟧',
      ['⟦decomposition and smoothing, ARIMA and SARIMA, GARCH, VAR or VECM, Granger causality, impulse responses, forecast evaluation||descompunere și netezire, ARIMA și SARIMA, GARCH, VAR sau VECM, cauzalitate Granger, funcții de răspuns la impuls, evaluarea prognozei⟧',
@@ -326,7 +326,7 @@ D.frame('⟦The Team Project||Proiectul de echipă⟧', items(
      ['⟦a clear question, correct methods and diagnostics, an honest out-of-sample evaluation||o întrebare clară, metode și diagnosticări corecte, o evaluare onestă în afara eșantionului⟧',
       '⟦\\textbf{oral defence}: each member explains the code and the results||\\textbf{susținere orală}: fiecare membru explică codul și rezultatele⟧'])))
 
-D.frame('⟦AI Policy||Politica privind AI⟧', items(
+D.frame('⟦AI policy||Politica privind AI⟧', items(
     ('⟦\\textbf{AI tools are allowed and must be declared}||\\textbf{Instrumentele AI sînt permise și trebuie declarate}⟧',
      ['⟦AI: artificial intelligence; here, assistants based on an LLM (large language model) that write text and code||AI (artificial intelligence, inteligență artificială): aici, asistenți construiți pe un LLM (model lingvistic de mari dimensiuni), care scriu text și cod⟧',
       '⟦every use goes into \\texttt{AI\\_USE.md}: the tool, the prompt, what was kept, what was corrected||fiecare utilizare se consemnează în \\texttt{AI\\_USE.md}: instrumentul, promptul, ce s-a păstrat, ce s-a corectat⟧']),
@@ -345,7 +345,7 @@ D.recap(('Organisation', 'organizarea cursului'), [
     '⟦AI is allowed, declared in \\texttt{AI\\_USE.md}, and checked at the oral defence||AI este permis, declarat în \\texttt{AI\\_USE.md} și verificat la susținerea orală⟧'])
 
 # ===============================================================================================================
-D.section('What a Time Series Is', 'Seria de timp')
+D.section('What a time series is', 'Seria de timp')
 # ===============================================================================================================
 D.frame('⟦Definition||Definiție⟧', items(
     '⟦\\textbf{Time series}: observations of one variable, recorded at successive moments and ordered in time||\\textbf{Serie de timp}: observații ale unei variabile, înregistrate în momente succesive și ordonate în timp⟧',
@@ -357,7 +357,7 @@ D.frame('⟦Definition||Definiție⟧', items(
       '⟦the order matters: shuffling the five numbers destroys the information||ordinea contează: dacă amestecăm cele cinci valori, pierdem informația⟧']),
     '⟦GDP: gross domestic product; Q1--Q4: the four quarters of a year||PIB: produsul intern brut; T1--T4: cele patru trimestre ale unui an⟧'))
 
-D.frame('⟦Three Kinds of Data||Trei tipuri de date⟧', table(
+D.frame('⟦Three kinds of data||Trei tipuri de date⟧', table(
     '>{\\raggedright\\arraybackslash}p{2.6cm}>{\\raggedright\\arraybackslash}p{4.2cm}>{\\raggedright\\arraybackslash}p{5.4cm}',
     '\\textbf{⟦Type||Tip⟧} & \\textbf{⟦Structure||Structură⟧} & \\textbf{⟦Example||Exemplu⟧}',
     ['⟦Cross-section||Date transversale⟧ & ⟦many units, one moment||multe unități, un singur moment⟧ & ⟦GDP of the 27 EU countries in 2025||PIB-ul celor 27 de țări UE în 2025⟧',
@@ -370,7 +370,7 @@ D.frame('⟦Three Kinds of Data||Trei tipuri de date⟧', table(
       '⟦the classical formulas for independent samples (standard errors, tests) must be adapted||formulele clasice pentru eșantioane independente (erori standard, teste) trebuie adaptate⟧']),
     '⟦EU: European Union||UE: Uniunea Europeană⟧'), size='footnotesize')
 
-D.frame('⟦Why Time Series Matter||Importanța seriilor de timp⟧', table(
+D.frame('⟦Why time series matter||Importanța seriilor de timp⟧', table(
     '>{\\raggedright\\arraybackslash}p{1.9cm}>{\\raggedright\\arraybackslash}p{4.3cm}>{\\raggedright\\arraybackslash}p{6.2cm}',
     '\\textbf{⟦Field||Domeniu⟧} & \\textbf{⟦Series||Serie⟧} & \\textbf{⟦Typical question||Întrebare tipică⟧}',
     ['⟦Economics||Economie⟧ & ⟦GDP, inflation, unemployment||PIB, inflație, șomaj⟧ & ⟦Where will inflation be in a year?||Unde va fi inflația peste un an?⟧',
@@ -381,7 +381,7 @@ D.frame('⟦Why Time Series Matter||Importanța seriilor de timp⟧', table(
     '⟦Decisions depend on forecasts: the central bank sets the interest rate on its inflation forecast; the grid operator plans production on its demand forecast||Deciziile depind de prognoze: banca centrală stabilește dobînda pe baza prognozei inflației; operatorul de rețea planifică producția pe baza prognozei cererii⟧'),
     size='footnotesize')
 
-D.frame('⟦Four Goals of Time Series Analysis||Patru obiective ale analizei seriilor de timp⟧', items(
+D.frame('⟦Four goals of time series analysis||Patru obiective ale analizei seriilor de timp⟧', items(
     ('⟦\\textbf{Describe}: trend, seasonality, cycles, unusual observations||\\textbf{Descriere}: trend, sezonalitate, cicluri, observații neobișnuite⟧',
      ['⟦charts, decomposition, autocorrelation (this chapter and Chapter 1)||grafice, descompunere, autocorelație (acest capitol și Capitolul 1)⟧']),
     ('⟦\\textbf{Model}: a probability model that could have produced the data||\\textbf{Modelare}: un model probabilist care ar fi putut genera datele⟧',
@@ -392,7 +392,7 @@ D.frame('⟦Four Goals of Time Series Analysis||Patru obiective ale analizei ser
      ['⟦VAR models, Granger causality, cointegration (Chapters 6 and 7)||modele VAR, cauzalitate Granger, cointegrare (Capitolele 6 și 7)⟧']),
     '⟦\\refBJ\\ framed the same goals: identify, estimate, check, forecast||\\refBJ\\ au formulat aceleași obiective: identificare, estimare, verificare, prognoză⟧'))
 
-D.frame('⟦Frequency, Flows and Stocks, Adjusted Data||Frecvență, fluxuri și stocuri, date ajustate⟧', items(
+D.frame('⟦Frequency, flows and stocks, adjusted data||Frecvență, fluxuri și stocuri, date ajustate⟧', items(
     ('⟦\\textbf{Flow}: measured over a period; \\textbf{stock}: measured at a moment||\\textbf{Flux}: măsurat pe o perioadă; \\textbf{stoc}: măsurat la un moment⟧',
      ['⟦flows: GDP of a quarter, electricity produced in a month; they add up over time||fluxuri: PIB-ul unui trimestru, electricitatea produsă într-o lună; se adună în timp⟧',
       '⟦stocks: exchange rate on a day, CO2 concentration, an index level; we average them, we do not add them||stocuri: cursul de schimb dintr-o zi, concentrația de CO2, nivelul unui indice; le mediem, nu le adunăm⟧']),
@@ -410,7 +410,7 @@ DATA_ROWS = [
     'BET, S\\&P 500 & EODHD & ⟦daily||zilnic⟧ & 2000 -- 2026',
     '⟦CO2 at Mauna Loa||CO2 la Mauna Loa⟧ & ⟦statsmodels data set||setul de date statsmodels⟧ & ⟦weekly, averaged monthly||săptămînal, mediat lunar⟧ & 1958 -- 2001',
 ]
-D.frame('⟦Data Used in This Chapter||Datele folosite în acest capitol⟧', table(
+D.frame('⟦Data used in this chapter||Datele folosite în acest capitol⟧', table(
     '>{\\raggedright\\arraybackslash}p{4.0cm}>{\\raggedright\\arraybackslash}p{3.0cm}>{\\raggedright\\arraybackslash}p{2.6cm}>{\\raggedright\\arraybackslash}p{2.8cm}',
     '\\textbf{⟦Series||Serie⟧} & \\textbf{⟦Source||Sursă⟧} & \\textbf{⟦Frequency||Frecvență⟧} & \\textbf{⟦Sample||Eșantion⟧}',
     DATA_ROWS, size='footnotesize') + items(
@@ -426,9 +426,9 @@ D.recap(('What a time series is', 'seria de timp'), [
     '⟦Flows add up, stocks are averaged; adjusted series are estimates||Fluxurile se adună, stocurile se mediază; seriile ajustate sînt estimări⟧'])
 
 # ===============================================================================================================
-D.section('Time Series on Real Data', 'Serii de timp pe date reale')
+D.section('Time series on real data', 'Serii de timp pe date reale')
 # ===============================================================================================================
-chart(D, '⟦Romanian Real GDP||PIB-ul real al României⟧', 'tsa_ch0_gdp', 'TSA_ch0_examples', [
+chart(D, '⟦Romanian real GDP||PIB-ul real al României⟧', 'tsa_ch0_gdp', 'TSA_ch0_examples', [
     '⟦Quarterly, @{gdp_first} -- @{gdp_last_q}, chain-linked volumes at 2010 prices (billion EUR); blue: as measured; red: seasonally and calendar adjusted (Eurostat)||Trimestrial, @{gdp_first} -- @{gdp_last_q}, volume înlănțuite în prețurile anului 2010 (miliarde EUR); albastru: seria măsurată; roșu: seria ajustată sezonier și cu efectele de calendar (Eurostat)⟧'],
     h='0.6\\textheight')
 
@@ -442,11 +442,11 @@ D.frame('⟦Interpretation: GDP||Interpretarea: PIB⟧', items(
      ['⟦annual GDP fell by @{gdp_fall_2009_abs}\\% in 2009 (global financial crisis) and by @{gdp_fall_2020_abs}\\% in 2020 (COVID-19 pandemic)||PIB-ul anual a scăzut cu @{gdp_fall_2009_abs}\\% în 2009 (criza financiară globală) și cu @{gdp_fall_2020_abs}\\% în 2020 (pandemia de COVID-19)⟧']),
     '⟦Last value, @{gdp_last_q}: @{gdp_last_nsa} billion EUR unadjusted, @{gdp_last_sca} adjusted||Ultima valoare, @{gdp_last_q}: @{gdp_last_nsa} miliarde EUR neajustat, @{gdp_last_sca} ajustat⟧'))
 
-chart(D, '⟦Romanian Consumer Prices and Inflation||Prețurile de consum și inflația în România⟧', 'tsa_ch0_hicp', 'TSA_ch0_examples', [
+chart(D, '⟦Romanian consumer prices and inflation||Prețurile de consum și inflația în România⟧', 'tsa_ch0_hicp', 'TSA_ch0_examples', [
     '⟦Left: HICP, 2015 = 100, log scale; right: annual inflation rate $100\\,(P_t/P_{t-12} - 1)$ since 2005, against the BNR target of 2.5\\%; $P_t$: the HICP in month $t$||Stînga: IAPC, 2015 = 100, scară logaritmică; dreapta: rata anuală a inflației $100\\,(P_t/P_{t-12} - 1)$ din 2005, față de ținta BNR de 2,5\\%; $P_t$: IAPC în luna $t$⟧'],
     h='0.58\\textheight')
 
-D.frame('⟦Interpretation: Inflation||Interpretarea: inflația⟧', items(
+D.frame('⟦Interpretation: inflation||Interpretarea: inflația⟧', items(
     ('⟦\\textbf{Level and rate tell different stories}||\\textbf{Nivelul și rata oferă informații diferite}⟧',
      ['⟦the price index almost never falls: its trend is the accumulated inflation||indicele prețurilor aproape nu scade niciodată: trendul lui este inflația acumulată⟧',
       '⟦the inflation rate rises and falls: it is the series the central bank targets||rata inflației crește și scade: este seria pe care o țintește banca centrală⟧']),
@@ -458,7 +458,7 @@ D.frame('⟦Interpretation: Inflation||Interpretarea: inflația⟧', items(
     '⟦A rate over 12 months removes the seasonal pattern but reacts with a delay: it reflects the whole past year||O rată calculată pe 12 luni elimină tiparul sezonier, dar reacționează cu întîrziere: reflectă întregul an trecut⟧',
     '⟦VAT: value added tax||TVA: taxa pe valoarea adăugată⟧'))
 
-chart(D, '⟦EUR/RON, BNR Reference Rate||EUR/RON, cursul de referință BNR⟧', 'tsa_ch0_eurron', 'TSA_ch0_examples', [
+chart(D, '⟦EUR/RON, BNR reference rate||EUR/RON, cursul de referință BNR⟧', 'tsa_ch0_eurron', 'TSA_ch0_examples', [
     '⟦Lei per euro, every working day from @{eurron_first_date} to 18 September 2026 (@{eurron_n} observations)||Lei pentru un euro, în fiecare zi lucrătoare de la @{eurron_first_date} la 18 septembrie 2026 (@{eurron_n} de observații)⟧'],
     h='0.6\\textheight')
 
@@ -476,7 +476,7 @@ chart(D, '⟦BET and S\\&P 500 since 2000||BET și S\\&P 500 din 2000⟧', 'tsa_
     '⟦Value of 100 invested on @{mk_first}, closing prices, log scale: equal vertical distances are equal percentage changes||Valoarea a 100 de unități investite pe @{mk_first}, prețuri de închidere, scară logaritmică: distanțele verticale egale sînt modificări procentuale egale⟧'],
     h='0.6\\textheight')
 
-D.frame('⟦Interpretation: Stock Indices||Interpretarea: indicii bursieri⟧', items(
+D.frame('⟦Interpretation: stock indices||Interpretarea: indicii bursieri⟧', items(
     ('⟦\\textbf{Long-run growth with deep falls}||\\textbf{Creștere pe termen lung, cu scăderi adînci}⟧',
      ['⟦100 invested became about @{bet_mult} times more in the BET and @{sp_mult} times more in the S\\&P 500 (price indices, without dividends)||100 de unități investite s-au înmulțit de aproximativ @{bet_mult} de ori în BET și de @{sp_mult} ori în S\\&P 500 (indici de preț, fără dividende)⟧',
       '⟦2008--2009: the BET lost more than three quarters of its value; it took years to recover||2008--2009: BET a pierdut mai mult de trei sferturi din valoare; revenirea a durat ani⟧']),
@@ -485,11 +485,11 @@ D.frame('⟦Interpretation: Stock Indices||Interpretarea: indicii bursieri⟧', 
       '⟦the logarithm turns constant percentage growth into a straight line||logaritmul transformă o creștere procentuală constantă într-o dreaptă⟧']),
     '⟦Prices of traded assets are hard to forecast; their \\textbf{risk} is easier to forecast (Chapter 5)||Prețurile activelor tranzacționate se prognozează greu; \\textbf{riscul} lor se prognozează mai ușor (Capitolul 5)⟧'))
 
-chart(D, '⟦Electricity Generation in Romania||Producția de electricitate în România⟧', 'tsa_ch0_electricity', 'TSA_ch0_examples', [
+chart(D, '⟦Electricity generation in Romania||Producția de electricitate în România⟧', 'tsa_ch0_electricity', 'TSA_ch0_examples', [
     '⟦Net electricity generation, TWh per month, @{elec_first_m} -- @{elec_last_m} (Eurostat); dots: January of each year||Producția netă de electricitate, TWh pe lună, @{elec_first_m} -- @{elec_last_m} (Eurostat); puncte: luna ianuarie a fiecărui an⟧'],
     h='0.58\\textheight')
 
-D.frame('⟦Interpretation: Electricity||Interpretarea: electricitatea⟧', items(
+D.frame('⟦Interpretation: electricity||Interpretarea: electricitatea⟧', items(
     ('⟦\\textbf{Strong seasonality}||\\textbf{Sezonalitate puternică}⟧',
      ['⟦highest average month: @{elec_max_m} (@{elec_max_mean} TWh); lowest: @{elec_min_m} (@{elec_min_mean} TWh)||luna cu media cea mai mare: @{elec_max_m} (@{elec_max_mean} TWh); cea mai mică: @{elec_min_m} (@{elec_min_mean} TWh)⟧',
       '⟦winter demand for heating and lighting; the ratio of the two averages is @{elec_ratio}||cererea de iarnă pentru încălzire și iluminat; raportul celor două medii este @{elec_ratio}⟧']),
@@ -499,7 +499,7 @@ D.frame('⟦Interpretation: Electricity||Interpretarea: electricitatea⟧', item
      ['⟦dry years reduce hydropower; mild winters reduce demand||anii secetoși reduc producția hidro; iernile blînde reduc cererea⟧']),
     '⟦TWh: terawatt-hour, $10^{12}$ watt-hours; GWh: gigawatt-hour, $10^{9}$ watt-hours||TWh: terawatt-oră, $10^{12}$ wați-oră; GWh: gigawatt-oră, $10^{9}$ wați-oră⟧'))
 
-D.frame('⟦The Keeling Curve||Curba Keeling⟧', cols(
+D.frame('⟦The Keeling curve||Curba Keeling⟧', cols(
     items(('⟦\\textbf{1958}: Charles David Keeling starts measuring CO2 at Mauna Loa, Hawaii, far from local sources (\\refKeeling)||\\textbf{1958}: Charles David Keeling începe măsurarea CO2 la Mauna Loa, Hawaii, departe de surse locale (\\refKeeling)⟧',
            ['⟦the longest continuous record of atmospheric CO2||cea mai lungă serie continuă de măsurători ale CO2 din atmosferă⟧']),
           ('⟦\\textbf{Two patterns in one series}||\\textbf{Două tipare într-o singură serie}⟧',
@@ -523,7 +523,7 @@ D.frame('⟦Interpretation: CO2||Interpretarea: CO2⟧', items(
      ['⟦a careful physical measurement, unlike GDP or exchange rates||o măsurătoare fizică atentă, spre deosebire de PIB sau de cursul de schimb⟧']),
     '⟦A smooth series with a clear trend and season: the easiest case for decomposition and smoothing||O serie netedă, cu trend și sezonalitate clare: cazul cel mai simplu pentru descompunere și netezire⟧'))
 
-D.frame('⟦Patterns in Six Series||Tipare în șase serii⟧', table(
+D.frame('⟦Patterns in six series||Tipare în șase serii⟧', table(
     'lllll',
     '\\textbf{⟦Series||Serie⟧} & \\textbf{Trend} & \\textbf{⟦Season||Sezonalitate⟧} & \\textbf{⟦Cycle||Ciclu⟧} & \\textbf{⟦Noise||Zgomot⟧}',
     ['⟦GDP (unadjusted)||PIB (neajustat)⟧ & ⟦up||crescător⟧ & ⟦strong, multiplicative||puternică, multiplicativă⟧ & ⟦recessions||recesiuni⟧ & ⟦small||mic⟧',
@@ -546,9 +546,9 @@ D.recap(('Time series on real data', 'serii de timp pe date reale'), [
     '⟦Look at the chart first: it decides the model||Priviți întîi graficul: el orientează alegerea modelului⟧'])
 
 # ===============================================================================================================
-D.section('A Short History', 'O scurtă istorie')
+D.section('A short history', 'O scurtă istorie')
 # ===============================================================================================================
-D.frame('⟦Sunspots: the First Famous Time Series||Petele solare: prima serie de timp celebră⟧', cols(
+D.frame('⟦Sunspots: the first famous time series||Petele solare: prima serie de timp celebră⟧', cols(
     ph('wolf', 'Rudolf Wolf (1816--1893)', h='0.42\\textheight'),
     items('⟦\\textbf{1848}: the Swiss astronomer Rudolf Wolf defines a daily index of solar activity from the number of sunspots||\\textbf{1848}: astronomul elvețian Rudolf Wolf definește un indice zilnic al activității solare, pe baza numărului de pete solare⟧',
           '⟦he reconstructs it back to 1749: the Wolf (later Wolfer) sunspot numbers||îl reconstituie pînă în 1749: numerele de pete solare Wolf (ulterior Wolfer)⟧',
@@ -557,7 +557,7 @@ D.frame('⟦Sunspots: the First Famous Time Series||Petele solare: prima serie d
     + '\n' + ph('sunspots', '⟦Sunspots drawn by Richard Carrington, 1 September 1859||Pete solare desenate de Richard Carrington, 1 septembrie 1859⟧', h='0.26\\textheight'),
     '0.30', '0.66'), size='footnotesize')
 
-D.frame('⟦Yule (1926, 1927): Dependence Is the Model||Yule (1926, 1927): dependența este modelul⟧', items(
+D.frame('⟦Yule (1926, 1927): dependence is the model||Yule (1926, 1927): dependența este modelul⟧', items(
     ('⟦\\textbf{1926}: \\emph{nonsense correlations} between time series (\\refYuleNonsense)||\\textbf{1926}: \\emph{corelațiile fără sens} dintre seriile de timp (\\refYuleNonsense)⟧',
      ['⟦two unrelated series with trends can show a correlation close to 1||două serii fără nicio legătură, dar cu trend, pot avea o corelație apropiată de 1⟧',
       '⟦his example: the share of Church of England marriages and the mortality rate in England and Wales||exemplul lui: ponderea căsătoriilor oficiate de Biserica Angliei și rata mortalității în Anglia și Țara Galilor⟧',
@@ -568,7 +568,7 @@ D.frame('⟦Yule (1926, 1927): Dependence Is the Model||Yule (1926, 1927): depen
       '⟦the first \\textbf{autoregressive} model: AR(2) (Chapter 2)||primul model \\textbf{autoregresiv}: AR(2) (Capitolul 2)⟧',
       '⟦disturbances shift the waves, so the period drifts, as in the data||perturbațiile deplasează valurile, deci perioada variază, ca în date⟧'])))
 
-D.frame('⟦Slutsky (1937): Cycles from Random Shocks||Slutsky (1937): cicluri din șocuri aleatoare⟧', cols(
+D.frame('⟦Slutsky (1937): cycles from random shocks||Slutsky (1937): cicluri din șocuri aleatoare⟧', cols(
     ph('slutsky', 'Eugen Slutsky (1880--1948)', h='0.42\\textheight'),
     items('⟦\\textbf{1927} (Moscow), \\textbf{1937} in English: \\emph{The summation of random causes as the source of cyclic processes} (\\refSlutsky)||\\textbf{1927} (Moscova), \\textbf{1937} în engleză: \\emph{Însumarea cauzelor aleatoare ca sursă a proceselor ciclice} (\\refSlutsky)⟧',
           ('⟦\\textbf{The experiment}||\\textbf{Experimentul}⟧',
@@ -578,11 +578,11 @@ D.frame('⟦Slutsky (1937): Cycles from Random Shocks||Slutsky (1937): cicluri d
           '⟦Today this is a \\textbf{moving-average} process: MA(9) (Chapter 2)||Astăzi, acesta este un proces de \\textbf{medie mobilă}: MA(9) (Capitolul 2)⟧'),
     '0.28', '0.68'), size='footnotesize')
 
-chart(D, '⟦Slutsky\'s Experiment, Simulated||Experimentul lui Slutsky, simulat⟧', 'tsa_ch0_slutsky', 'TSA_ch0_slutsky', [
+chart(D, '⟦Slutsky\'s experiment, simulated||Experimentul lui Slutsky, simulat⟧', 'tsa_ch0_slutsky', 'TSA_ch0_slutsky', [
     '⟦Top: 240 independent shocks with the standard Normal distribution; bottom: the moving sum of 10 consecutive shocks||Sus: 240 de șocuri independente, cu distribuția Normală standard; jos: suma mobilă a cîte 10 șocuri consecutive⟧'],
     h='0.58\\textheight')
 
-D.frame('⟦Interpretation: Slutsky\'s Experiment||Interpretarea: experimentul lui Slutsky⟧', items(
+D.frame('⟦Interpretation: Slutsky\'s experiment||Interpretarea: experimentul lui Slutsky⟧', items(
     ('⟦\\textbf{No cycle was put in, yet waves appear}||\\textbf{Nu am introdus niciun ciclu, totuși apar valuri}⟧',
      ['⟦the moving sum crosses zero upwards @{slutsky_waves} times in 240 periods: waves of irregular length||suma mobilă traversează zero în sus de @{slutsky_waves} ori în 240 de perioade: valuri de lungime neregulată⟧',
       '⟦neighbouring values share 9 of their 10 shocks, so they are strongly correlated||valorile vecine au în comun 9 din cele 10 șocuri, deci sînt puternic corelate⟧']),
@@ -591,7 +591,7 @@ D.frame('⟦Interpretation: Slutsky\'s Experiment||Interpretarea: experimentul l
       '⟦smoothing (moving averages) can \\emph{create} apparent cycles: be careful with smoothed data||netezirea (mediile mobile) poate \\emph{crea} cicluri aparente: atenție la datele netezite⟧']),
     '⟦Yule (AR) and Slutsky (MA) gave the two building blocks of the ARMA models||Yule (AR) și Slutsky (MA) au oferit cele două componente de bază ale modelelor ARMA⟧'))
 
-D.frame('⟦Kolmogorov and Wiener: the Best Linear Forecast||Kolmogorov și Wiener: cea mai bună prognoză liniară⟧', cols(
+D.frame('⟦Kolmogorov and Wiener: the best linear forecast||Kolmogorov și Wiener: cea mai bună prognoză liniară⟧', cols(
     ph('kolmogorov', 'Andrei Kolmogorov (1903--1987)', h='0.36\\textheight')
     + '\\\\[1mm]\n\\raggedright\n' + items(
         '⟦\\textbf{1941}: the theory of interpolation and extrapolation of stationary sequences (\\refKolmogorov)||\\textbf{1941}: teoria interpolării și extrapolării șirurilor staționare (\\refKolmogorov)⟧'),
@@ -602,7 +602,7 @@ D.frame('⟦Kolmogorov and Wiener: the Best Linear Forecast||Kolmogorov și Wien
     '⟦Both answer: which weighted sum of past values forecasts the future with the smallest mean squared error? The ancestor of the Kalman filter (Chapter 10)||Amîndoi răspund la întrebarea: ce sumă ponderată a valorilor trecute prognozează viitorul cu cea mai mică eroare pătratică medie? Strămoșul filtrului Kalman (Capitolul 10)⟧'),
     size='footnotesize')
 
-D.frame('⟦Box and Jenkins (1970): a Method for Practice||Box și Jenkins (1970): o metodă pentru practică⟧', cols(
+D.frame('⟦Box and Jenkins (1970): a method for practice||Box și Jenkins (1970): o metodă pentru practică⟧', cols(
     items('⟦\\textbf{1970}: George Box and Gwilym Jenkins publish \\emph{Time Series Analysis: Forecasting and Control} (\\refBJ)||\\textbf{1970}: George Box și Gwilym Jenkins publică \\emph{Time Series Analysis: Forecasting and Control} (\\refBJ)⟧',
           ('⟦\\textbf{The Box--Jenkins cycle}||\\textbf{Ciclul Box--Jenkins}⟧',
            ['⟦\\textbf{identify}: choose a model from charts and the ACF||\\textbf{identificare}: alegerea modelului din grafice și din ACF⟧',
@@ -623,7 +623,7 @@ TIMELINE = r"""\centering
   \node[above, text=DarkGray, inner sep=1pt] at (\x,\h-0.12) {\l};
 }
 \end{tikzpicture}"""
-D.frame('⟦A Century in One Line||Un secol pe o singură axă⟧', TIMELINE + '\n' + items(
+D.frame('⟦A century in one line||Un secol pe o singură axă⟧', TIMELINE + '\n' + items(
     '⟦1927 Yule, 1937 Slutsky, 1941 Kolmogorov, 1949 Wiener: the foundations (Chapters 1 and 2)||1927 Yule, 1937 Slutsky, 1941 Kolmogorov, 1949 Wiener: fundamentele (Capitolele 1 și 2)⟧',
     '⟦1957 \\refHolt, 1960 \\refWinters: exponential smoothing, born in industry for sales and inventories (this chapter)||1957 \\refHolt, 1960 \\refWinters: netezirea exponențială, apărută în industrie, pentru vînzări și stocuri (acest capitol)⟧',
     '⟦1970 Box--Jenkins (Chapters 2--4); 1980 \\refSims\\ (Chapter 6); 1982 \\refEngle\\ (Chapter 5); 1987 \\refEG\\ (Chapter 7)||1970 Box--Jenkins (Capitolele 2--4); 1980 \\refSims\\ (Capitolul 6); 1982 \\refEngle\\ (Capitolul 5); 1987 \\refEG\\ (Capitolul 7)⟧',
@@ -638,9 +638,9 @@ D.recap(('a short history', 'o scurtă istorie'), [
     '⟦Forecasting competitions: simple methods are hard to beat||Competițiile de prognoză: metodele simple sînt greu de depășit⟧'])
 
 # ===============================================================================================================
-D.section('Components and Decomposition', 'Componente și descompunere')
+D.section('Components and decomposition', 'Componente și descompunere')
 # ===============================================================================================================
-D.frame('⟦Four Components||Patru componente⟧', items(
+D.frame('⟦Four components||Patru componente⟧', items(
     ('⟦\\textbf{Trend} $T_t$: the long-run movement of the level||\\textbf{Trendul} $T_t$: evoluția pe termen lung a nivelului⟧',
      ['⟦GDP growth, the rise of CO2; it can change direction slowly||creșterea PIB, creșterea CO2; își poate schimba lent direcția⟧']),
     ('⟦\\textbf{Seasonality} $S_t$: a pattern that repeats with a \\textbf{fixed, known period} $m$||\\textbf{Sezonalitatea} $S_t$: un tipar care se repetă cu o \\textbf{perioadă fixă și cunoscută} $m$⟧',
@@ -650,7 +650,7 @@ D.frame('⟦Four Components||Patru componente⟧', items(
     ('⟦\\textbf{Remainder} $R_t$ (irregular component, noise): what is left||\\textbf{Componenta neregulată} $R_t$ (reziduală, zgomot): ce rămîne⟧',
      ['⟦it should look unpredictable; if it does not, the decomposition missed something||ar trebui să pară imprevizibilă; dacă nu, descompunerea a omis ceva⟧'])))
 
-D.frame('⟦Cycle or Seasonality?||Ciclu sau sezonalitate?⟧', items(
+D.frame('⟦Cycle or seasonality?||Ciclu sau sezonalitate?⟧', items(
     (f'\\textbf{{{QUESTION}}}: ⟦electricity generation is high every January||producția de electricitate este mare în fiecare ianuarie⟧',
      ['⟦is this a cycle or seasonality?||este un ciclu sau sezonalitate?⟧']),
     '\\pause',
@@ -661,7 +661,7 @@ D.frame('⟦Cycle or Seasonality?||Ciclu sau sezonalitate?⟧', items(
       '⟦cycles are hard to forecast: their timing changes (Slutsky)||ciclurile se prognozează greu: momentul lor se schimbă (Slutsky)⟧',
       '⟦sunspots: an 11-year \\emph{cycle}, not a season, because its length varies||petele solare: un \\emph{ciclu} de 11 ani, nu o sezonalitate, pentru că durata lui variază⟧'])))
 
-D.frame('⟦Additive and Multiplicative Models||Modelul aditiv și modelul multiplicativ⟧', items(
+D.frame('⟦Additive and multiplicative models||Modelul aditiv și modelul multiplicativ⟧', items(
     ('⟦\\textbf{Additive}: $y_t = T_t + S_t + R_t$||\\textbf{Aditiv}: $y_t = T_t + S_t + R_t$⟧',
      ['⟦the seasonal swing has a constant size in units of $y$ (CO2: a few ppm every year)||oscilația sezonieră are o mărime constantă, în unitățile lui $y$ (CO2: cîțiva ppm în fiecare an)⟧']),
     ('⟦\\textbf{Multiplicative}: $y_t = T_t \\times S_t \\times R_t$||\\textbf{Multiplicativ}: $y_t = T_t \\times S_t \\times R_t$⟧',
@@ -672,7 +672,7 @@ D.frame('⟦Additive and Multiplicative Models||Modelul aditiv și modelul multi
     ('⟦\\textbf{How to choose}: look at the chart||\\textbf{Alegerea}: priviți graficul⟧',
      ['⟦does the seasonal swing grow with the level? Multiplicative (or logs); otherwise additive||oscilația sezonieră crește odată cu nivelul? Multiplicativ (sau logaritmi); altfel, aditiv⟧'])))
 
-D.frame('⟦Centred Moving Averages||Medii mobile centrate⟧', items(
+D.frame('⟦Centred moving averages||Medii mobile centrate⟧', items(
     ('⟦\\textbf{Moving average of order} $k$ (odd): the mean of $k$ neighbouring values||\\textbf{Media mobilă de ordin} $k$ (impar): media a $k$ valori vecine⟧',
      ['⟦$\\hat T_t = \\frac{1}{k} \\sum_{j=-q}^{q} y_{t+j}$, with $k = 2q + 1$; it smooths out the noise||$\\hat T_t = \\frac{1}{k} \\sum_{j=-q}^{q} y_{t+j}$, cu $k = 2q + 1$; netezește zgomotul⟧',
       '⟦$q$: the number of values on each side of $t$; $j$: the position relative to $t$; the hat marks an estimate||$q$: numărul de valori de fiecare parte a lui $t$; $j$: poziția față de $t$; căciula marchează o estimare⟧']),
@@ -683,7 +683,7 @@ D.frame('⟦Centred Moving Averages||Medii mobile centrate⟧', items(
       '⟦five quarters, the two ends with half weight; for monthly data, $2 \\times 12$||cinci trimestre, cele două capete cu pondere înjumătățită; pentru date lunare, $2 \\times 12$⟧']),
     '⟦The first and the last $m/2$ values have no centred average: the trend estimate is missing at both ends||Primele și ultimele $m/2$ valori nu au medie centrată: estimarea trendului lipsește la ambele capete⟧'))
 
-D.frame('⟦Worked Example: a $2 \\times 4$ Moving Average||Exemplu rezolvat: o medie mobilă $2 \\times 4$⟧', cols(
+D.frame('⟦Worked example: a $2 \\times 4$ moving average||Exemplu rezolvat: o medie mobilă $2 \\times 4$⟧', cols(
     table('lr', '\\textbf{⟦Quarter||Trimestru⟧} & \\textbf{$y_t$}',
           ['@{ma_d0} & @{ma_y0}', '@{ma_d1} & @{ma_y1}', '@{ma_d2} & @{ma_y2}', '@{ma_d3} & @{ma_y3}', '@{ma_d4} & @{ma_y4}'],
           size='footnotesize'),
@@ -695,7 +695,7 @@ D.frame('⟦Worked Example: a $2 \\times 4$ Moving Average||Exemplu rezolvat: o 
           '⟦Averaging such ratios over all years gives the seasonal factor of each quarter||Media acestor rapoarte pe toți anii oferă factorul sezonier al fiecărui trimestru⟧'),
     '0.32', '0.64'), size='footnotesize')
 
-D.frame('⟦Classical Decomposition, Step by Step||Descompunerea clasică, pas cu pas⟧', clean(items(
+D.frame('⟦Classical decomposition, step by step||Descompunerea clasică, pas cu pas⟧', clean(items(
     ('⟦\\textbf{Step 1}: trend-cycle $\\hat T_t$ by a centred $2 \\times m$ moving average||\\textbf{Pasul 1}: trend-ciclul $\\hat T_t$, printr-o medie mobilă centrată $2 \\times m$⟧', []),
     ('⟦\\textbf{Step 2}: detrend||\\textbf{Pasul 2}: eliminarea trendului⟧',
      ['⟦multiplicative: $y_t / \\hat T_t$; additive: $y_t - \\hat T_t$||multiplicativ: $y_t / \\hat T_t$; aditiv: $y_t - \\hat T_t$⟧']),
@@ -710,7 +710,7 @@ chart(D, '⟦Decomposition of the Romanian GDP||Descompunerea PIB-ului României
     '⟦Classical multiplicative decomposition, $m = 4$: observed series and trend-cycle, trend-cycle, seasonal factors, remainder||Descompunere clasică multiplicativă, $m = 4$: seria observată și trend-ciclul, trend-ciclul, factorii sezonieri, componenta neregulată⟧'],
     h='0.66\\textheight')
 
-D.frame('⟦Interpretation: Seasonal Factors of GDP||Interpretarea: factorii sezonieri ai PIB⟧', cols(
+D.frame('⟦Interpretation: seasonal factors of GDP||Interpretarea: factorii sezonieri ai PIB⟧', cols(
     table('lrr', '\\textbf{⟦Quarter||Trimestru⟧} & $\\hat S_q$ & ⟦relative to trend||față de trend⟧',
           ['⟦Q1||T1⟧ & @{gdp_S1} & $@{gdp_S1_pct}$\\%', '⟦Q2||T2⟧ & @{gdp_S2} & $@{gdp_S2_pct}$\\%',
            '⟦Q3||T3⟧ & @{gdp_S3} & $+$@{gdp_S3_pct}\\%', '⟦Q4||T4⟧ & @{gdp_S4} & $+$@{gdp_S4_pct}\\%'], size='footnotesize'),
@@ -723,7 +723,7 @@ D.frame('⟦Interpretation: Seasonal Factors of GDP||Interpretarea: factorii sez
           '⟦Consequence: compare a quarter with the same quarter of the previous year, never with the previous quarter of the raw series||Consecință: comparați un trimestru cu același trimestru din anul anterior, niciodată cu trimestrul precedent al seriei neajustate⟧'),
     '0.36', '0.60'), size='footnotesize')
 
-D.frame('⟦STL: a Flexible Decomposition||STL: o descompunere flexibilă⟧', items(
+D.frame('⟦STL: a flexible decomposition||STL: o descompunere flexibilă⟧', items(
     ('⟦\\textbf{STL}: Seasonal and Trend decomposition using LOESS (\\refSTL)||\\textbf{STL}: Seasonal and Trend decomposition using LOESS, descompunere în sezonalitate și trend cu LOESS (\\refSTL)⟧',
      ['⟦LOESS (locally estimated scatterplot smoothing): a weighted regression fitted around each point||LOESS (locally estimated scatterplot smoothing): o regresie ponderată, estimată în jurul fiecărui punct⟧']),
     ('⟦\\textbf{Advantages over the classical method}||\\textbf{Avantaje față de metoda clasică}⟧',
@@ -735,7 +735,7 @@ D.frame('⟦STL: a Flexible Decomposition||STL: o descompunere flexibilă⟧', i
       '⟦no calendar effects (working days, Easter)||nu tratează efectele de calendar (zile lucrătoare, Paște)⟧']),
     '⟦Statistical offices use X-13ARIMA-SEATS or TRAMO-SEATS, which build on ARIMA models (Chapter 4)||Institutele de statistică folosesc X-13ARIMA-SEATS sau TRAMO-SEATS, metode construite pe modele ARIMA (Capitolul 4)⟧'))
 
-chart(D, '⟦STL Decomposition of CO2||Descompunerea STL a seriei CO2⟧', 'tsa_ch0_stl', 'TSA_ch0_decomposition', [
+chart(D, '⟦STL decomposition of CO2||Descompunerea STL a seriei CO2⟧', 'tsa_ch0_stl', 'TSA_ch0_decomposition', [
     '⟦Robust STL with period 12 on the monthly CO2 series: observed, trend, seasonal, remainder (ppm)||STL robustă cu perioada 12, pe seria lunară CO2: seria observată, trendul, sezonalitatea, componenta neregulată (ppm)⟧'],
     h='0.66\\textheight')
 
@@ -756,9 +756,9 @@ D.recap(('components and decomposition', 'componente și descompunere'), [
     '⟦STL lets the seasonal pattern change and is robust to outliers||STL permite modificarea tiparului sezonier și este robustă la valori extreme⟧'])
 
 # ===============================================================================================================
-D.section('Notation, Transformations and the ACF', 'Notație, transformări și ACF')
+D.section('Notation, transformations and the ACF', 'Notație, transformări și ACF')
 # ===============================================================================================================
-D.frame('⟦Notation Used in the Course||Notația folosită în curs⟧', table(
+D.frame('⟦Notation used in the course||Notația folosită în curs⟧', table(
     '>{\\raggedright\\arraybackslash}p{3.2cm}>{\\raggedright\\arraybackslash}p{8.8cm}',
     '\\textbf{⟦Symbol||Simbol⟧} & \\textbf{⟦Meaning||Semnificație⟧}',
     ['$y_t$, $t = 1, \\ldots, T$ & ⟦the observation at time $t$; $T$ observations in the sample||observația din momentul $t$; $T$ observații în eșantion⟧',
@@ -772,7 +772,7 @@ D.frame('⟦Notation Used in the Course||Notația folosită în curs⟧', table(
     '⟦Hats ($\\hat{\\ }$) mark estimates and forecasts; Greek letters ($\\phi, \\theta, \\alpha$) mark parameters||Căciula ($\\hat{\\ }$) marchează estimările și prognozele; literele grecești ($\\phi, \\theta, \\alpha$) marchează parametrii⟧'),
     size='footnotesize')
 
-D.frame('⟦Transformations: Logs, Differences, Growth Rates||Transformări: logaritmi, diferențe, rate de creștere⟧', clean(items(
+D.frame('⟦Transformations: logs, differences, growth rates||Transformări: logaritmi, diferențe, rate de creștere⟧', clean(items(
     ('⟦\\textbf{Logarithm} $\\ln y_t$: stabilises a variance that grows with the level||\\textbf{Logaritmul} $\\ln y_t$: stabilizează o varianță care crește odată cu nivelul⟧', []),
     ('⟦\\textbf{Growth rate over one period}: $g_t = 100\\,(y_t / y_{t-1} - 1)$||\\textbf{Rata de creștere pe o perioadă}: $g_t = 100\\,(y_t / y_{t-1} - 1)$⟧',
      ['⟦log approximation: $100\\,\\Delta \\ln y_t \\approx g_t$ for small changes||aproximarea logaritmică: $100\\,\\Delta \\ln y_t \\approx g_t$ pentru variații mici⟧']),
@@ -784,11 +784,11 @@ D.frame('⟦Transformations: Logs, Differences, Growth Rates||Transformări: log
     ('⟦\\textbf{Log return} of a price: $r_t = 100\\,(\\ln P_t - \\ln P_{t-1})$, in \\%; $P_t$: the price on day $t$||\\textbf{Randamentul logaritmic} al unui preț: $r_t = 100\\,(\\ln P_t - \\ln P_{t-1})$, în \\%; $P_t$: prețul din ziua $t$⟧', []))),
     size='footnotesize')
 
-chart(D, '⟦From Prices to Returns: the BET||De la prețuri la randamente: BET⟧', 'tsa_ch0_returns', 'TSA_ch0_acf', [
+chart(D, '⟦From prices to returns: the BET||De la prețuri la randamente: BET⟧', 'tsa_ch0_returns', 'TSA_ch0_acf', [
     '⟦Top: closing value of the BET since 2000; bottom: daily log returns in \\% (@{bet_n} trading days)||Sus: valoarea de închidere a indicelui BET din 2000; jos: randamentele logaritmice zilnice, în \\% (@{bet_n} de zile de tranzacționare)⟧'],
     h='0.6\\textheight')
 
-D.frame('⟦Interpretation: Prices and Returns||Interpretarea: prețuri și randamente⟧', items(
+D.frame('⟦Interpretation: prices and returns||Interpretarea: prețuri și randamente⟧', items(
     ('⟦\\textbf{The price has a trend; the returns do not}||\\textbf{Prețul are trend; randamentele nu au}⟧',
      ['⟦returns fluctuate around a mean of @{bet_mean}\\% a day, with a standard deviation of @{bet_sd}\\% (about @{bet_sd_ann}\\% a year)||randamentele fluctuează în jurul unei medii de @{bet_mean}\\% pe zi, cu abaterea standard de @{bet_sd}\\% (aproximativ @{bet_sd_ann}\\% pe an)⟧']),
     ('⟦\\textbf{Extreme days}||\\textbf{Zile extreme}⟧',
@@ -797,7 +797,7 @@ D.frame('⟦Interpretation: Prices and Returns||Interpretarea: prețuri și rand
      ['⟦large moves cluster in 2008--2010 and in March 2020: \\emph{volatility clustering} (Chapter 5)||variațiile mari apar grupat în 2008--2010 și în martie 2020: \\emph{volatility clustering} (Capitolul 5)⟧']),
     '⟦Differencing the log price removes the trend: most models of the course work on such transformed series||Diferențierea logaritmului prețului elimină trendul: majoritatea modelelor din curs se aplică unor astfel de serii transformate⟧'))
 
-D.frame('⟦The Sample Autocorrelation Function||Funcția de autocorelație de selecție⟧', clean(items(
+D.frame('⟦The sample autocorrelation function||Funcția de autocorelație de selecție⟧', clean(items(
     ('⟦\\textbf{Question}: how strongly is $y_t$ related to its own value $k$ periods earlier?||\\textbf{Întrebarea}: cît de puternic este legat $y_t$ de propria valoare de acum $k$ perioade?⟧', []),
     ('⟦\\textbf{Sample autocovariance} at lag $k$||\\textbf{Autocovarianța de selecție} la lagul $k$⟧',
      ['$c_k = \\frac{1}{T} \\sum_{t=k+1}^{T} (y_t - \\bar y)(y_{t-k} - \\bar y)$',
@@ -809,7 +809,7 @@ D.frame('⟦The Sample Autocorrelation Function||Funcția de autocorelație de s
      ['⟦if the series were independent noise, about 95\\% of the $r_k$ would fall inside it; 1.96: the 97.5\\% quantile of the standard Normal distribution||dacă seria ar fi un zgomot independent, aproximativ 95\\% dintre valorile $r_k$ ar cădea în interiorul ei; 1,96: cuantila de 97,5\\% a distribuției Normale standard⟧',
       '⟦the theory (stationarity, white noise, the Ljung--Box test) comes in Chapter 1||teoria (staționaritate, zgomot alb, testul Ljung--Box) urmează în Capitolul 1⟧']))))
 
-D.frame('⟦Worked Example: $r_1$ by Hand||Exemplu rezolvat: $r_1$ calculat de mînă⟧', cols(
+D.frame('⟦Worked example: $r_1$ by hand||Exemplu rezolvat: $r_1$ calculat de mînă⟧', cols(
     table('rrrr', '$t$ & $y_t$ & $y_t - \\bar y$ & $(y_t - \\bar y)(y_{t-1} - \\bar y)$',
           ['1 & 2 & $-2$ & --', '2 & 4 & $0$ & $0$', '3 & 3 & $-1$ & $0$', '4 & 5 & $1$ & $-1$',
            '5 & 4 & $0$ & $0$', '6 & 6 & $2$ & $0$', '\\midrule ⟦sum||sumă⟧ & 24 & 0 & $-1$'], size='footnotesize'),
@@ -821,11 +821,11 @@ D.frame('⟦Worked Example: $r_1$ by Hand||Exemplu rezolvat: $r_1$ calculat de m
            ['⟦band $\\pm 1.96/\\sqrt 6 = \\pm 0.80$: with 6 observations, neither value is distinguishable from 0||banda $\\pm 1.96/\\sqrt 6 = \\pm 0.80$: cu 6 observații, nicio valoare nu se deosebește de 0⟧'])),
     '0.48', '0.48'), size='footnotesize')
 
-chart(D, '⟦Three Correlograms||Trei corelograme⟧', 'tsa_ch0_acf', 'TSA_ch0_acf', [
+chart(D, '⟦Three correlograms||Trei corelograme⟧', 'tsa_ch0_acf', 'TSA_ch0_acf', [
     '⟦Sample ACF for lags 1--36; shaded: the band $\\pm 1.96/\\sqrt{T}$. Left: CO2 level; centre: monthly electricity generation; right: BET daily log returns||ACF de selecție pentru lagurile 1--36; zona colorată: banda $\\pm 1.96/\\sqrt{T}$. Stînga: nivelul CO2; centru: producția lunară de electricitate; dreapta: randamentele logaritmice zilnice ale BET⟧'],
     h='0.5\\textheight')
 
-D.frame('⟦Interpretation: Three Correlograms||Interpretarea: trei corelograme⟧', items(
+D.frame('⟦Interpretation: three correlograms||Interpretarea: trei corelograme⟧', items(
     ('⟦\\textbf{Trend}: CO2, $r_1 = $ @{acf_co2_1}, still @{acf_co2_36} at lag 36||\\textbf{Trend}: CO2, $r_1 = $ @{acf_co2_1}, încă @{acf_co2_36} la lagul 36⟧',
      ['⟦a slow, almost linear decay is the signature of a trend: the level remembers its past for years||o descreștere lentă, aproape liniară, este semnătura unui trend: nivelul rămîne corelat cu valorile de acum cîțiva ani⟧']),
     ('⟦\\textbf{Seasonality}: electricity, $r_6 = $ @{acf_el_6}, $r_{12} = $ @{acf_el_12}||\\textbf{Sezonalitate}: electricitatea, $r_6 = $ @{acf_el_6}, $r_{12} = $ @{acf_el_12}⟧',
@@ -842,9 +842,9 @@ D.recap(('notation, transformations and the ACF', 'notație, transformări și A
     '⟦Slow decay: trend; peaks at $m, 2m, \\ldots$: seasonality; all close to 0: little linear memory||Descreștere lentă: trend; vîrfuri la $m, 2m, \\ldots$: sezonalitate; toate aproape de 0: memorie liniară redusă⟧'])
 
 # ===============================================================================================================
-D.section('Exponential Smoothing', 'Netezirea exponențială')
+D.section('Exponential smoothing', 'Netezirea exponențială')
 # ===============================================================================================================
-D.frame('⟦Simple Exponential Smoothing (SES)||Netezirea exponențială simplă (SES)⟧', clean(items(
+D.frame('⟦Simple exponential smoothing (SES)||Netezirea exponențială simplă (SES)⟧', clean(items(
     ('⟦\\textbf{Idea}: forecast with a weighted average of the past, recent values weighing more||\\textbf{Ideea}: prognoza este o medie ponderată a trecutului, în care valorile recente au ponderi mai mari⟧', []),
     ('⟦\\textbf{Level equation}: $\\ell_t = \\alpha y_t + (1 - \\alpha)\\, \\ell_{t-1}$, with $0 < \\alpha \\le 1$||\\textbf{Ecuația nivelului}: $\\ell_t = \\alpha y_t + (1 - \\alpha)\\, \\ell_{t-1}$, cu $0 < \\alpha \\le 1$⟧',
      ['⟦$\\ell_t$: the smoothed level at time $t$; $\\alpha$: the smoothing constant; $\\ell_t$ moves from $\\ell_{t-1}$ towards $y_t$ by the fraction $\\alpha$||$\\ell_t$: nivelul netezit în momentul $t$; $\\alpha$: constanta de netezire; $\\ell_t$ se deplasează de la $\\ell_{t-1}$ spre $y_t$ cu fracțiunea $\\alpha$⟧',
@@ -856,7 +856,7 @@ D.frame('⟦Simple Exponential Smoothing (SES)||Netezirea exponențială simplă
      ['⟦small $\\alpha$: long memory, smooth forecasts, slow reaction; $\\alpha = 1$: the naive forecast $\\hat y_{T+1} = y_T$||$\\alpha$ mic: memorie lungă, prognoze netede, reacție lentă; $\\alpha = 1$: prognoza naivă $\\hat y_{T+1} = y_T$⟧',
       '⟦estimated by minimising the sum of squared one-step forecast errors||se estimează prin minimizarea sumei pătratelor erorilor de prognoză cu un pas înainte⟧']))))
 
-D.frame('⟦Worked Example: SES with $\\alpha = 0.5$||Exemplu rezolvat: SES cu $\\alpha = 0.5$⟧', cols(
+D.frame('⟦Worked example: SES with $\\alpha = 0.5$||Exemplu rezolvat: SES cu $\\alpha = 0.5$⟧', cols(
     table('rrrr', '$t$ & $y_t$ & $\\hat y_{t|t-1} = \\ell_{t-1}$ & $\\ell_t = 0.5\\,y_t + 0.5\\,\\ell_{t-1}$',
           ['0 & -- & -- & $\\ell_0 = 10$', '1 & 10 & 10 & 10', '2 & 12 & 10 & 11', '3 & 11 & 11 & 11', '4 & 13 & 11 & 12',
            '5 & ? & \\textbf{12} & --'], size='footnotesize'),
@@ -868,11 +868,11 @@ D.frame('⟦Worked Example: SES with $\\alpha = 0.5$||Exemplu rezolvat: SES cu $
             '⟦one-step errors: 0, 2, 0, 2: the forecasts lag behind the rising data||erorile cu un pas: 0, 2, 0, 2: prognozele rămîn în urma datelor crescătoare⟧'])),
     '0.52', '0.44'), size='footnotesize')
 
-chart(D, '⟦SES on the Monthly EUR/RON||SES pe cursul EUR/RON lunar⟧', 'tsa_ch0_ses', 'TSA_ch0_smoothing', [
+chart(D, '⟦SES on the monthly EUR/RON||SES pe cursul EUR/RON lunar⟧', 'tsa_ch0_ses', 'TSA_ch0_smoothing', [
     '⟦Dots: monthly averages of the BNR reference rate, @{ses_first_m} -- @{ses_last_m}; lines: one-step SES forecasts $\\hat y_{t|t-1}$ with $\\alpha = 0.1$ and $\\alpha = 0.7$||Puncte: mediile lunare ale cursului de referință BNR, @{ses_first_m} -- @{ses_last_m}; linii: prognozele SES cu un pas, $\\hat y_{t|t-1}$, cu $\\alpha = 0.1$ și $\\alpha = 0.7$⟧'],
     h='0.58\\textheight')
 
-D.frame('⟦Interpretation: the Choice of $\\alpha$||Interpretarea: alegerea lui $\\alpha$⟧', clean(items(
+D.frame('⟦Interpretation: the choice of $\\alpha$||Interpretarea: alegerea lui $\\alpha$⟧', clean(items(
     ('⟦\\textbf{$\\alpha = 0.1$}: smooth, but always below the rising rate||\\textbf{$\\alpha = 0.1$}: netedă, dar mereu sub cursul crescător⟧',
      ['⟦it remembers several years: after the jump of 2025 it needs many months to catch up||ponderează observații din mai mulți ani: după saltul din 2025 are nevoie de multe luni pentru a ajunge la noul nivel⟧']),
     ('⟦\\textbf{$\\alpha = 0.7$}: follows the data closely, one month late||\\textbf{$\\alpha = 0.7$}: urmărește îndeaproape datele, cu o lună întîrziere⟧', []),
@@ -908,9 +908,9 @@ D.recap(('exponential smoothing', 'netezirea exponențială'), [
     '⟦Holt adds a trend, Holt--Winters a season; ETS turns them into statistical models||Holt adaugă un trend, Holt--Winters o sezonalitate; ETS le transformă în modele statistice⟧'])
 
 # ===============================================================================================================
-D.section('Forecasts and Their Evaluation', 'Prognoza și evaluarea ei')
+D.section('Forecasts and their evaluation', 'Prognoza și evaluarea ei')
 # ===============================================================================================================
-D.frame('⟦Forecasting: the Setting||Prognoza: cadrul general⟧', items(
+D.frame('⟦Forecasting: the setting||Prognoza: cadrul general⟧', items(
     ('⟦\\textbf{Forecast} $\\hat y_{T+h|T}$: a statement about $y_{T+h}$ made at time $T$||\\textbf{Prognoza} $\\hat y_{T+h|T}$: o afirmație despre $y_{T+h}$, făcută în momentul $T$⟧',
      ['⟦it may use only the information available at $T$: the \\textbf{information set}||poate folosi doar informația disponibilă în momentul $T$: \\textbf{mulțimea de informație}⟧',
       '⟦$h = 1, 2, \\ldots$: the \\textbf{horizon}; uncertainty grows with $h$||$h = 1, 2, \\ldots$: \\textbf{orizontul}; incertitudinea crește odată cu $h$⟧']),
@@ -920,7 +920,7 @@ D.frame('⟦Forecasting: the Setting||Prognoza: cadrul general⟧', items(
      ['⟦a stable pattern (CO2) rather than one driven by news (exchange rates)||un tipar stabil (CO2), nu unul determinat de știri (cursurile de schimb)⟧',
       '⟦a forecast that does not change the outcome: a price forecast published to millions of traders changes the price||o prognoză care nu modifică rezultatul: o prognoză a prețului publicată pentru milioane de participanți la piață schimbă prețul⟧'])))
 
-D.frame('⟦Four Benchmark Methods||Patru metode de referință⟧', items(
+D.frame('⟦Four benchmark methods||Patru metode de referință⟧', items(
     ('⟦\\textbf{Mean}: $\\hat y_{T+h|T} = \\bar y$||\\textbf{Media}: $\\hat y_{T+h|T} = \\bar y$⟧',
      ['⟦the future looks like the average past||viitorul seamănă cu trecutul mediu⟧']),
     ('⟦\\textbf{Naive}: $\\hat y_{T+h|T} = y_T$||\\textbf{Naivă}: $\\hat y_{T+h|T} = y_T$⟧',
@@ -943,7 +943,7 @@ SPLIT = r"""\centering
 \node[text=IDAred] at (17, 1.6) {⟦test set||set de test⟧};
 \draw[-{Latex}, thick] (0, -3.9) -- (21, -3.9) node[right] {$t$};
 \end{tikzpicture}"""
-D.frame('⟦Training Set and Test Set||Setul de antrenare și setul de test⟧', SPLIT + '\n' + items(
+D.frame('⟦Training set and test set||Setul de antrenare și setul de test⟧', SPLIT + '\n' + items(
     ('⟦\\textbf{Split by time, never at random}||\\textbf{Împărțirea se face în timp, niciodată aleator}⟧',
      ['⟦training set: the first observations, used to choose and fit the method||setul de antrenare: primele observații, folosite pentru alegerea și estimarea metodei⟧',
       '⟦test set: the last $h$ observations, kept hidden and used only to measure the errors||setul de test: ultimele $h$ observații, ascunse și folosite doar pentru măsurarea erorilor⟧',
@@ -952,7 +952,7 @@ D.frame('⟦Training Set and Test Set||Setul de antrenare și setul de test⟧',
      ['⟦average the errors over origins: a more stable estimate of accuracy||mediați erorile pe toate originile: o estimare mai stabilă a acurateței⟧'])),
     size='footnotesize')
 
-D.frame('⟦Measures of Forecast Error||Măsuri ale erorii de prognoză⟧', items(
+D.frame('⟦Measures of forecast error||Măsuri ale erorii de prognoză⟧', items(
     '⟦Errors on the test set: $e_{T+j} = y_{T+j} - \\hat y_{T+j|T}$, $j = 1, \\ldots, h$||Erorile pe setul de test: $e_{T+j} = y_{T+j} - \\hat y_{T+j|T}$, $j = 1, \\ldots, h$⟧',
     ('⟦\\textbf{MAE} (mean absolute error) $= \\frac1h \\sum_j |e_{T+j}|$||\\textbf{MAE} (mean absolute error, eroarea absolută medie) $= \\frac1h \\sum_j |e_{T+j}|$⟧',
      ['⟦in the units of the series; easy to explain||în unitățile seriei; ușor de explicat⟧']),
@@ -963,7 +963,7 @@ D.frame('⟦Measures of Forecast Error||Măsuri ale erorii de prognoză⟧', ite
     ('⟦\\textbf{MASE} (mean absolute scaled error) $=$ MAE $/$ in-sample MAE of the seasonal naive method (\\refHK)||\\textbf{MASE} (mean absolute scaled error, eroarea absolută medie scalată) $=$ MAE $/$ MAE în eșantion a metodei naive sezoniere (\\refHK)⟧',
      ['⟦below 1: better than the seasonal naive method on the training data; comparable across series||sub 1: mai bună decît metoda naivă sezonieră pe datele de antrenare; comparabilă între serii⟧'])), size='footnotesize')
 
-D.frame('⟦Worked Example: Errors by Hand||Exemplu rezolvat: erorile calculate de mînă⟧', cols(
+D.frame('⟦Worked example: errors by hand||Exemplu rezolvat: erorile calculate de mînă⟧', cols(
     table('lrrrr', '& ⟦Q1||T1⟧ & ⟦Q2||T2⟧ & ⟦Q3||T3⟧ & ⟦Q4||T4⟧',
           ['⟦year 1||anul 1⟧ & 10 & 14 & 18 & 12', '⟦year 2||anul 2⟧ & 11 & 15 & 20 & 13', '\\midrule ⟦year 3 (test)||anul 3 (test)⟧ & 12 & 16 & 21 & 14',
            '⟦naive||naivă⟧ & 13 & 13 & 13 & 13', '⟦seasonal naive||naivă sezonieră⟧ & 11 & 15 & 20 & 13'], size='footnotesize'),
@@ -976,11 +976,11 @@ D.frame('⟦Worked Example: Errors by Hand||Exemplu rezolvat: erorile calculate 
             '⟦on seasonal data, the seasonal naive method is the benchmark to beat||pentru datele sezoniere, metoda naivă sezonieră este reperul de depășit⟧'])),
     '0.46', '0.50'), size='footnotesize')
 
-chart(D, '⟦Forecasting Electricity Generation||Prognoza producției de electricitate⟧', 'tsa_ch0_forecast', 'TSA_ch0_forecast', [
+chart(D, '⟦Forecasting electricity generation||Prognoza producției de electricitate⟧', 'tsa_ch0_forecast', 'TSA_ch0_forecast', [
     '⟦Test set: @{fc_test_first_m} -- @{fc_test_last_m} (24 months); training data: all earlier months; dashed: forecasts made once, at the end of the training set||Setul de test: @{fc_test_first_m} -- @{fc_test_last_m} (24 de luni); datele de antrenare: toate lunile anterioare; linii întrerupte: prognoze făcute o singură dată, la sfîrșitul setului de antrenare⟧'],
     h='0.58\\textheight')
 
-D.frame('⟦Interpretation: Which Forecast Wins?||Interpretarea: metoda cîștigătoare⟧', cols(
+D.frame('⟦Interpretation: which forecast wins?||Interpretarea: metoda cîștigătoare⟧', cols(
     table('lrrrr', '\\textbf{⟦Method||Metodă⟧} & MAE & RMSE & MAPE & MASE',
           ['⟦Naive||Naivă⟧ & @{fc_nv_mae} & @{fc_nv_rmse} & @{fc_nv_mape}\\% & @{fc_nv_mase}',
            '⟦Seasonal naive||Naivă sezonieră⟧ & @{fc_snv_mae} & @{fc_snv_rmse} & @{fc_snv_mape}\\% & @{fc_snv_mase}',
@@ -994,7 +994,7 @@ D.frame('⟦Interpretation: Which Forecast Wins?||Interpretarea: metoda cîștig
           '⟦One test period of 24 months is one sample: a rolling origin gives a firmer answer||O singură perioadă de test de 24 de luni este un singur eșantion: o origine mobilă oferă un răspuns mai solid⟧'),
     '0.50', '0.46'), size='footnotesize')
 
-D.frame('⟦Case Study: the M4 Competition||Studiu de caz: competiția M4⟧', items(
+D.frame('⟦Case study: the M4 competition||Studiu de caz: competiția M4⟧', items(
     ('⟦\\textbf{The question}: which forecasting methods work best on real data?||\\textbf{Întrebarea}: ce metode de prognoză funcționează cel mai bine pe date reale?⟧',
      ['⟦the M competitions, started by Spyros Makridakis in 1982: forecasts submitted blind, scored on hidden test data||competițiile M, inițiate de Spyros Makridakis în 1982: prognozele sînt trimise fără acces la datele de test și sînt evaluate pe acestea⟧']),
     ('⟦\\textbf{M4 (2018)}: 100\\,000 series (yearly to hourly), 61 methods (\\refMfour)||\\textbf{M4 (2018)}: 100\\,000 de serii (de la anuale la orare), 61 de metode (\\refMfour)⟧',
@@ -1005,11 +1005,11 @@ D.frame('⟦Case Study: the M4 Competition||Studiu de caz: competiția M4⟧', i
      ['⟦benchmarks first; accuracy measured out of sample, on many series rather than one||întîi metodele de referință; acuratețea se măsoară în afara eșantionului, pe multe serii, nu pe una singură⟧',
       '⟦the same lesson appeared in M3 (\\refMthree): complex is not automatically better||aceeași lecție apăruse și în M3 (\\refMthree): o metodă complexă nu este automat mai bună⟧'])), size='footnotesize')
 
-chart(D, '⟦A Small M-Competition on Romanian Data||O mică competiție M pe date românești⟧', 'tsa_ch0_benchmarks', 'TSA_ch0_forecast', [
+chart(D, '⟦A small M-Competition on Romanian data||O mică competiție M pe date românești⟧', 'tsa_ch0_benchmarks', 'TSA_ch0_forecast', [
     '⟦MASE on the test set (log scale) of four methods on four seasonal series; test sets: the last 8 quarters (GDP) or 24 months; dashed line: MASE = 1||MASE pe setul de test (scară logaritmică) pentru patru metode și patru serii sezoniere; seturi de test: ultimele 8 trimestre (PIB) sau 24 de luni; linia întreruptă: MASE = 1⟧'],
     h='0.56\\textheight')
 
-D.frame('⟦Interpretation: the Mini-Competition||Interpretarea: mini-competiția⟧', items(
+D.frame('⟦Interpretation: the mini-competition||Interpretarea: mini-competiția⟧', items(
     ('⟦\\textbf{Holt--Winters wins on @{bm_hw_wins} of 4 series}||\\textbf{Holt--Winters cîștigă pe @{bm_hw_wins} din 4 serii}⟧',
      ['⟦CO2: MASE @{bm_co2_hw} against @{bm_co2_snv} for the seasonal naive method; HICP: @{bm_hicp_hw} against @{bm_hicp_nv} for the naive one||CO2: MASE @{bm_co2_hw}, față de @{bm_co2_snv} pentru metoda naivă sezonieră; IAPC: @{bm_hicp_hw}, față de @{bm_hicp_nv} pentru cea naivă⟧']),
     ('⟦\\textbf{GDP: the seasonal naive method wins}, MASE @{bm_gdp_snv} against @{bm_gdp_hw}||\\textbf{PIB: cîștigă metoda naivă sezonieră}, MASE @{bm_gdp_snv} față de @{bm_gdp_hw}⟧',
@@ -1027,7 +1027,7 @@ D.recap(('forecasts and their evaluation', 'prognoza și evaluarea ei'), [
 # ===============================================================================================================
 D.section('Tools', 'Instrumente')
 # ===============================================================================================================
-D.frame('⟦Python for Time Series||Python pentru serii de timp⟧', items(
+D.frame('⟦Python for time series||Python pentru serii de timp⟧', items(
     ('⟦\\textbf{The libraries of the course}||\\textbf{Bibliotecile cursului}⟧',
      ['⟦\\textbf{NumPy}: arrays and linear algebra (\\refNumpy)||\\textbf{NumPy}: tablouri și algebră liniară (\\refNumpy)⟧',
       '⟦\\textbf{pandas}: tables indexed by date, resampling, lags, differences (\\refPandas)||\\textbf{pandas}: tabele indexate după dată, schimbarea frecvenței, laguri, diferențe (\\refPandas)⟧',
@@ -1038,7 +1038,7 @@ D.frame('⟦Python for Time Series||Python pentru serii de timp⟧', items(
      ['⟦open a course notebook with one click; \\emph{File $\\to$ Save a copy in Drive} keeps your changes||deschideți un notebook al cursului cu un singur clic; \\emph{File $\\to$ Save a copy in Drive} vă păstrează modificările⟧',
       '⟦every chart of the slides has a Quantlet: the same code, runnable in Colab||fiecare grafic din slide-uri are un Quantlet: același cod, care poate fi rulat în Colab⟧'])))
 
-D.frame('⟦A First Script||Primul script⟧', cols(
+D.frame('⟦A first script||Primul script⟧', cols(
     r"""\begin{lstlisting}
 import pandas as pd
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -1070,9 +1070,9 @@ print(hw.forecast(4))                    # next four quarters
     '0.62', '0.35'), opts='fragile', size='scriptsize')
 
 # ===============================================================================================================
-D.section('Possible Contribution of AI', 'Contribuția posibilă a AI')
+D.section('Possible contribution of AI', 'Contribuția posibilă a AI')
 # ===============================================================================================================
-D.frame('⟦Possible Contribution of AI||Contribuția posibilă a AI⟧', items(
+D.frame('⟦Possible contribution of AI||Contribuția posibilă a AI⟧', items(
     ('⟦\\textbf{Where an AI assistant helps}||\\textbf{Unde ajută un asistent AI}⟧',
      ['⟦a first draft of the code that reads a Eurostat or BNR series and plots it||o primă variantă a codului care citește și reprezintă grafic o serie Eurostat sau BNR⟧',
       '⟦explaining an error message or a statsmodels function||explicarea unui mesaj de eroare sau a unei funcții statsmodels⟧',
@@ -1083,7 +1083,7 @@ D.frame('⟦Possible Contribution of AI||Contribuția posibilă a AI⟧', items(
       '⟦an RMSE without the square root; a MAPE on a series that crosses zero||RMSE fără rădăcina pătrată; MAPE pe o serie care trece prin zero⟧']),
     '⟦Seminar 0, exercise C2: find three such errors in an AI answer||Seminarul 0, exercițiul C2: găsiți trei astfel de greșeli într-un răspuns generat de AI⟧'))
 
-D.frame('⟦Checks Before Trusting a Result||Verificări necesare⟧', items(
+D.frame('⟦Checks before trusting a result||Verificări necesare⟧', items(
     ('⟦\\textbf{The data}||\\textbf{Datele}⟧',
      ['⟦plot the series first; check the frequency, the units, the first and the last date||reprezentați seria grafic înainte de orice calcul; verificați frecvența, unitățile de măsură, prima și ultima dată⟧',
       '⟦adjusted or unadjusted? A model for the season needs the unadjusted series||ajustată sau neajustată? Un model pentru sezonalitate are nevoie de seria neajustată⟧']),
@@ -1097,7 +1097,7 @@ D.frame('⟦Checks Before Trusting a Result||Verificări necesare⟧', items(
 # ===============================================================================================================
 D.section('Conclusions', 'Concluzii')
 # ===============================================================================================================
-D.frame('⟦Key Takeaways||Idei de reținut⟧', items(
+D.frame('⟦Key takeaways||Idei de reținut⟧', items(
     '⟦Grade: 70\\% exam, 20\\% project, 10\\% attendance; AI allowed and declared; seminars before lectures||Nota: 70\\% examen, 20\\% proiect, 10\\% prezență; AI permis și declarat; seminariile înaintea cursurilor⟧',
     '⟦A time series is ordered in time; its dependence on the past is what makes forecasting possible||O serie de timp este ordonată în timp; dependența de trecut face posibilă prognoza⟧',
     '⟦Components: trend, seasonality (fixed period), cycle (no fixed period), remainder; additive or multiplicative||Componente: trend, sezonalitate (perioadă fixă), ciclu (fără perioadă fixă), componenta neregulată; aditiv sau multiplicativ⟧',
@@ -1105,7 +1105,7 @@ D.frame('⟦Key Takeaways||Idei de reținut⟧', items(
     '⟦The ACF reveals trend (slow decay), season (peaks at $m$) and memory||ACF dezvăluie trendul (descreștere lentă), sezonalitatea (vîrfuri la $m$) și memoria⟧',
     '⟦Exponential smoothing weighs the recent past more; evaluate every forecast against naive benchmarks on a test set||Netezirea exponențială acordă ponderi mai mari trecutului recent; evaluați orice prognoză față de metodele naive, pe un set de test⟧'))
 
-D.frame('⟦Self-Assessment, Project Idea, and Next: Chapter 1||Autoevaluare, idee de proiect; urmează Capitolul 1⟧', cols(
+D.frame('⟦Self-assessment, project idea and next: Chapter 1||Autoevaluare, idee de proiect; urmează Capitolul 1⟧', cols(
     items(('⟦\\textbf{Self-assessment}||\\textbf{Autoevaluare}⟧',
            ['⟦Why is the quarter-on-quarter growth of unadjusted GDP misleading?||De ce este înșelătoare creșterea față de trimestrul anterior a PIB-ului neajustat?⟧',
             '⟦What does a seasonal factor of 0.76 for Q1 mean?||Ce înseamnă un factor sezonier de 0,76 pentru trimestrul I?⟧',

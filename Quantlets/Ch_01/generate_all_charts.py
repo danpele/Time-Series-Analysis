@@ -251,7 +251,7 @@ def fig_white_noise(n=1000, save_it=True):
          'Laplace i.i.d.': rng.laplace(0, 1 / np.sqrt(2), size=n),
          'GARCH(1,1): weak WN': simulate_garch(n, rng=rng)}
     cols = [st.MainBlue, st.Forest, st.IDAred]
-    fig, ax = plt.subplots(2, 3, figsize=(10.4, 4.6))
+    fig, ax = plt.subplots(2, 3, figsize=(7.4, 3.4))
     out = {}
     for j, ((lab, x), c) in enumerate(zip(w.items(), cols)):
         ax[0, j].plot(x[:500], color=c, lw=0.6)
@@ -444,15 +444,15 @@ def fig_acf_pacf(n=500, nlags=20, save_it=True):
     rng = np.random.default_rng(SEED + 9)
     cases = [(r'AR(1), $\phi = 0.7$', [0.7], []), (r'AR(2), $\phi_1 = 0.5$, $\phi_2 = 0.3$', [0.5, 0.3], []),
              (r'MA(1), $\theta = 0.7$', [], [0.7])]
-    fig, ax = plt.subplots(2, 3, figsize=(10.4, 4.5), sharey=True)
+    fig, ax = plt.subplots(2, 3, figsize=(7.4, 3.4), sharey=True)
     out = {}
     for j, (lab, ph, th) in enumerate(cases):
         x = simulate_arma(ph, th, n=n, rng=rng)
         r, p = sample_acf(x, nlags), sample_pacf(x, nlags)
         acf_bars(ax[0, j], r, n, color=st.MainBlue, label='sample ACF')
         acf_bars(ax[1, j], p, n, color=st.Forest, label='sample PACF')
-        ax[0, j].set_title(lab + ': ACF')
-        ax[1, j].set_title('PACF')
+        ax[0, j].set_title(lab + ': ACF', fontsize=10.5)
+        ax[1, j].set_title('PACF', fontsize=10.5)
         ax[1, j].set_xlabel('lag h')
         key = ['ar1', 'ar2', 'ma1'][j]
         out[key] = {'r1': float(r[0]), 'r2': float(r[1]), 'p1': float(p[0]), 'p2': float(p[1]), 'p3': float(p[2])}
@@ -578,11 +578,11 @@ def fig_gdp_transform(nlags=16, save_it=True):
     g = np.log(ro_gdp('real'))
     d1 = (100 * g.diff()).dropna()
     d4 = (100 * g.diff(4)).dropna()
-    fig, ax = plt.subplots(2, 3, figsize=(10.4, 4.6))
+    fig, ax = plt.subplots(2, 3, figsize=(7.4, 3.4))
     for j, (lab, x, c) in enumerate([(r'$\ln Y_t$', g, st.MainBlue), (r'$100\,\Delta \ln Y_t$ (q/q, %)', d1, st.Forest),
                                      (r'$100\,\Delta_4 \ln Y_t$ (y/y, %)', d4, st.IDAred)]):
         ax[0, j].plot(x.index, x, color=c, lw=1.0)
-        ax[0, j].set_title(lab)
+        ax[0, j].set_title(lab, fontsize=11)
         import matplotlib.dates as mdates
         ax[0, j].xaxis.set_major_locator(mdates.YearLocator(10))
         ax[0, j].xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
