@@ -744,8 +744,8 @@ D.frame(T('X-11 and X-13ARIMA-SEATS', 'X-11 și X-13ARIMA-SEATS'), cols(items(
       T('ARIMA forecasts extend the series, so the symmetric filters also work at the end: smaller revisions', 'prognozele ARIMA prelungesc seria, astfel încît filtrele simetrice funcționează și la capăt: revizuiri mai mici'),
       T('then X-11 filters or SEATS (model-based decomposition of the ARIMA model)', 'apoi filtrele X-11 sau SEATS (descompunerea pe baza modelului ARIMA)')]),
     T('EU: Eurostat and the national institutes follow \\refESS, with the JDemetra+ software (X-13 and TRAMO-SEATS)', 'UE: Eurostat și institutele naționale urmează \\refESS, cu programul JDemetra+ (X-13 și TRAMO-SEATS)')),
-    ph('census', T('US Census Bureau, Suitland, Maryland: the home of X-11 and X-13', 'US Census Bureau, Suitland, Maryland: locul de naștere al X-11 și X-13'), h='0.28\\textheight'),
-    wl='0.62', wr='0.34'), 'scriptsize')
+    ph('census', T('US Census Bureau, Suitland, Maryland: the home of X-11 and X-13', 'US Census Bureau, Suitland, Maryland: locul de naștere al X-11 și X-13'), h='0.24\\textheight'),
+    wl='0.66', wr='0.30'), 'footnotesize')
 
 D.frame(T('Eurostat series: NSA, CA, SA, SCA', 'Seriile Eurostat: NSA, CA, SA, SCA'), items(
     (T('Each series comes in several versions (dimension \\texttt{s\\_adj}):', 'Fiecare serie apare în mai multe variante (dimensiunea \\texttt{s\\_adj}):'),
@@ -808,8 +808,8 @@ D.frame(T('Calendar effects and Orthodox Easter', 'Efecte de calendar și Paște
       T('in Python: \\texttt{dateutil.easter.easter(y, EASTER\\_ORTHODOX)}; Pentecost is 49 days later', 'în Python: \\texttt{dateutil.easter.easter(y, EASTER\\_ORTHODOX)}; Rusaliile sînt cu 49 de zile mai tîrziu')]),
     (T('\\textbf{Easter regressor} (X-13 \\texttt{easter[w]}): $E_t$ = share of the $w$ days before Easter Sunday that fall in month $t$', '\\textbf{Regresorul Paște} (\\texttt{easter[w]} din X-13): $E_t$ = partea din cele $w$ zile dinaintea Duminicii Paștelui care cade în luna $t$'),
      [T('$w = 10$: Easter on 20 April gives $E_{\\text{April}} = 1$; on 5 May, $E_{\\text{April}} = 0.6$ and $E_{\\text{May}} = 0.4$', '$w = 10$: Paștele pe 20 aprilie dă $E_{\\text{aprilie}} = 1$; pe 5 mai, $E_{\\text{aprilie}} = 0{,}6$ și $E_{\\text{mai}} = 0{,}4$')])),
-    ph('eggs', T('Painted Easter eggs from Romania', 'Ouă încondeiate de Paște din România'), h='0.32\\textheight'),
-    wl='0.62', wr='0.34'), 'scriptsize')
+    ph('eggs', T('Painted Easter eggs from Romania', 'Ouă încondeiate de Paște din România'), h='0.26\\textheight'),
+    wl='0.66', wr='0.30'), 'footnotesize')
 
 D.frame(T('Regression with SARIMA errors', 'Regresia cu erori SARIMA'), items(
     (T('$100\\ln y_t = \\beta_EE_t + \\beta_W\\,\\mathrm{WD}_t + \\text{outlier dummies} + u_t$, with $u_t \\sim$ SARIMA$(0,1,1)(0,1,1)_{12}$', '$100\\ln y_t = \\beta_EE_t + \\beta_W\\,\\mathrm{WD}_t + \\text{variabile dummy pentru valori aberante} + u_t$, cu $u_t \\sim$ SARIMA$(0,1,1)(0,1,1)_{12}$'),
@@ -1119,4 +1119,7 @@ D.frame(T('Self-assessment', 'Autoevaluare'), items(
 D.references(bib())
 
 if __name__ == '__main__':
+    for _k, _v in list(V.items()):   # a true minus sign for negative numbers, in text and in math
+        if isinstance(_v, str) and _v.startswith('⁅-'):
+            V[_k] = '⁅\\ensuremath{-}' + _v[2:]
     finalize(D.write(V))

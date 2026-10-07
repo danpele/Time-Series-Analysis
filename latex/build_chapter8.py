@@ -373,9 +373,11 @@ D.frame(T('Harold Edwin Hurst and the Nile', 'Harold Edwin Hurst și Nilul'), tw
     + ph('aswan', T('The Aswan Low Dam (1902), on the Nile', 'Barajul Aswan Low (1902), pe Nil'), h='0.17\\textheight')), size='footnotesize')
 
 chart(T('Four persistent series', 'Patru serii persistente'), 'tsa_ch8_memory_data', 'TSA_ch8_memory_data', [
-    T('Nile flow at Aswan, 1871--1970 (statsmodels); Romanian HICP inflation, 12-month and monthly, seasonally adjusted (SA) with the monthly means (Eurostat); US unemployment rate (FRED UNRATE); monthly realised volatility of daily S\\&P 500 and BET returns (EODHD)',
-      'Debitul Nilului la Aswan, 1871--1970 (statsmodels); inflația IAPC din România, anuală și lunară, ajustată sezonier (SA) cu mediile lunare (Eurostat); rata șomajului din SUA (FRED UNRATE); volatilitatea realizată lunară a randamentelor zilnice S\\&P 500 și BET (EODHD)')],
-    h='0.7\\textheight')
+    T('Nile flow at Aswan, 1871--1970 (statsmodels); Romanian HICP inflation, 12-month and monthly, seasonally adjusted (SA) with the monthly means (Eurostat)',
+      'Debitul Nilului la Aswan, 1871--1970 (statsmodels); inflația IAPC din România, anuală și lunară, ajustată sezonier (SA) cu mediile lunare (Eurostat)'),
+    T('US unemployment rate (FRED UNRATE); monthly realised volatility of daily S\\&P 500 and BET returns (EODHD)',
+      'Rata șomajului din SUA (FRED UNRATE); volatilitatea realizată lunară a randamentelor zilnice S\\&P 500 și BET (EODHD)')],
+    h='0.66\\textheight')
 
 interp(('the four series', 'celor patru serii'), [
     (T('Each series stays above or below its mean for long stretches', 'Fiecare serie stă mult timp deasupra sau sub media ei'),
@@ -393,7 +395,8 @@ D.frame(T('Short memory', 'Memoria scurtă'), items(
      [T('$C > 0$: a constant; $r$: the decay rate per lag (for an AR(1), $r = |\\phi|$)', '$C > 0$: o constantă; $r$: rata de descreștere pe lag (pentru un AR(1), $r = |\\phi|$)'),
       T('AR(1): $\\rho(k) = \\phi^k$; with $\\phi = 0.9$, $\\rho(50) = 0.005$: after 50 periods the shock is forgotten', 'AR(1): $\\rho(k) = \\phi^k$; pentru $\\phi = 0{,}9$, $\\rho(50) = 0{,}005$: după 50 de perioade șocul este uitat')]),
     (T('Spectral view: the spectral density $f(\\lambda)$ is finite and positive at frequency $\\lambda = 0$', 'În domeniul frecvenței: densitatea spectrală $f(\\lambda)$ este finită și pozitivă la frecvența $\\lambda = 0$'),
-     [T('$\\lambda \\in [0, \\pi]$: the frequency in radians per period (a cycle of length $2\\pi/\\lambda$ periods); $\\gamma(k)$: the autocovariance at lag $k$', '$\\lambda \\in [0, \\pi]$: frecvența, în radiani pe perioadă (un ciclu de lungime $2\\pi/\\lambda$ perioade); $\\gamma(k)$: autocovarianța la lagul $k$'),
+     [T('$\\lambda \\in [0, \\pi]$: the frequency in radians per period (a cycle of length $2\\pi/\\lambda$ periods)', '$\\lambda \\in [0, \\pi]$: frecvența, în radiani pe perioadă (un ciclu de lungime $2\\pi/\\lambda$ perioade)'),
+      T('$\\gamma(k)$: the autocovariance at lag $k$', '$\\gamma(k)$: autocovarianța la lagul $k$'),
       T('$f(0) = \\frac{1}{2\\pi}\\sum_k \\gamma(k)$: the long-run variance is finite; the variance of the sample mean falls like $1/T$', '$f(0) = \\frac{1}{2\\pi}\\sum_k \\gamma(k)$: varianța pe termen lung este finită; varianța mediei de selecție scade ca $1/T$')])))
 
 D.frame(T('Long memory', 'Memoria lungă'), items(
@@ -444,9 +447,9 @@ D.section('Fractional differencing', 'Diferențierea fracționară')
 D.frame(T('From integer to fractional differences', 'De la diferențe întregi la diferențe fracționare'), items(
     (T('Lag operator: $Lx_t = x_{t-1}$; first difference $(1-L)x_t = x_t - x_{t-1}$ (Chapter 3)', 'Operatorul de lag: $Lx_t = x_{t-1}$; prima diferență $(1-L)x_t = x_t - x_{t-1}$ (Capitolul 3)'),
      [T('$d = 0$: the level; $d = 1$: the first difference; $d = 2$: $x_t - 2x_{t-1} + x_{t-2}$', '$d = 0$: nivelul; $d = 1$: prima diferență; $d = 2$: $x_t - 2x_{t-1} + x_{t-2}$')]),
-    (T('\\textbf{Fractional difference} for any real $d$ (binomial series): $(1-L)^d = \\sum_{k=0}^{\\infty}\\binom{d}{k}(-L)^k = \\sum_{k=0}^{\\infty}\\pi_k L^k$',
-       '\\textbf{Diferența fracționară}, pentru orice $d$ real (seria binomială): $(1-L)^d = \\sum_{k=0}^{\\infty}\\binom{d}{k}(-L)^k = \\sum_{k=0}^{\\infty}\\pi_k L^k$'),
-     [T('$(1-L)^d = 1 - dL - \\frac{d(1-d)}{2!}L^2 - \\frac{d(1-d)(2-d)}{3!}L^3 - \\dots$', '$(1-L)^d = 1 - dL - \\frac{d(1-d)}{2!}L^2 - \\frac{d(1-d)(2-d)}{3!}L^3 - \\dots$'),
+    (T('\\textbf{Fractional difference} for any real $d$ (binomial series)', '\\textbf{Diferența fracționară}, pentru orice $d$ real (seria binomială)'),
+     [T('$(1-L)^d = \\sum_{k=0}^{\\infty}\\binom{d}{k}(-L)^k = \\sum_{k=0}^{\\infty}\\pi_k L^k$', '$(1-L)^d = \\sum_{k=0}^{\\infty}\\binom{d}{k}(-L)^k = \\sum_{k=0}^{\\infty}\\pi_k L^k$'),
+      T('$(1-L)^d = 1 - dL - \\frac{d(1-d)}{2!}L^2 - \\frac{d(1-d)(2-d)}{3!}L^3 - \\dots$', '$(1-L)^d = 1 - dL - \\frac{d(1-d)}{2!}L^2 - \\frac{d(1-d)(2-d)}{3!}L^3 - \\dots$'),
       T('recursion: $\\pi_0 = 1$, $\\pi_k = \\pi_{k-1}\\,\\dfrac{k - 1 - d}{k}$; for large $k$: $\\pi_k \\approx -\\dfrac{d}{\\Gamma(1-d)}\\,k^{-1-d}$', 'recurența: $\\pi_0 = 1$, $\\pi_k = \\pi_{k-1}\\,\\dfrac{k - 1 - d}{k}$; pentru $k$ mare: $\\pi_k \\approx -\\dfrac{d}{\\Gamma(1-d)}\\,k^{-1-d}$'),
       T('$\\binom{d}{k} = d(d-1)\\cdots(d-k+1)/k!$: the binomial coefficient for real $d$; $\\pi_k$: the weight of $x_{t-k}$; $\\Gamma(\\cdot)$: the gamma function, $\\Gamma(n) = (n-1)!$ for integers', '$\\binom{d}{k} = d(d-1)\\cdots(d-k+1)/k!$: coeficientul binomial pentru $d$ real; $\\pi_k$: ponderea lui $x_{t-k}$; $\\Gamma(\\cdot)$: funcția gamma, $\\Gamma(n) = (n-1)!$ pentru numere întregi')]),
     T('A fractional difference uses \\textbf{all} past values, with weights that decay hyperbolically: it removes part of the memory, not all of it', 'O diferență fracționară folosește \\textbf{toate} valorile trecute, cu ponderi care scad hiperbolic: elimină o parte din memorie, nu toată memoria')))
@@ -472,7 +475,7 @@ interp(('the weights', 'ponderilor'), [
      [T('$d = 1$ (random walk): $\\psi_k = 1$ forever, the shock never fades', '$d = 1$ (mers aleator): $\\psi_k = 1$ mereu, șocul nu se stinge niciodată')]),
     T('For $0 < d < 1$ the responses tend to zero: the series is \\textbf{mean-reverting}, even when it is non-stationary ($d \\ge 0.5$)', 'Pentru $0 < d < 1$ răspunsurile tind spre zero: seria \\textbf{revine la medie}, chiar și cînd este nestaționară ($d \\ge 0{,}5$)')])
 
-chart(T('How much differencing does a price need?', 'Gradul de diferențiere necesar pentru un preț'), 'tsa_ch8_ffd', 'TSA_ch8_fractional_differencing', [
+chart(T('The degree of differencing a price needs', 'Gradul de diferențiere necesar pentru un preț'), 'tsa_ch8_ffd', 'TSA_ch8_fractional_differencing', [
     T('Log S\\&P 500, daily, @{ffd.n} days since 2000; $(1-L)^d$ with a fixed window (weights below $10^{-4}$ dropped), $d = 0, 0.05, \\dots, 1$; left: ADF statistic (Chapter 3); right: correlation with the log level',
       'Logaritmul S\\&P 500, zilnic, @{ffd.n} de zile din 2000; $(1-L)^d$ cu fereastră fixă (ponderile sub $10^{-4}$ sînt eliminate), $d = 0;\\ 0{,}05;\\ \\dots;\\ 1$; stînga: statistica ADF (Capitolul 3); dreapta: corelația cu nivelul logaritmic')],
     h='0.7\\textheight')
@@ -639,8 +642,9 @@ interp(('the GPH regressions', 'regresiilor GPH'), [
     T('The cloud is wide: each periodogram ordinate is roughly an exponential variable around $f(\\lambda_j)$; the slope needs many points', 'Norul de puncte este larg: fiecare valoare a periodogramei este aproximativ o variabilă exponențială în jurul lui $f(\\lambda_j)$; panta are nevoie de multe puncte')])
 
 D.frame(T('The local Whittle estimator', 'Estimatorul Whittle local'), items(
-    (T('\\refRob: assume $f(\\lambda) \\approx G\\lambda^{-2d}$ for $\\lambda_1, \\dots, \\lambda_m$ and maximise the Gaussian (Whittle) likelihood of these ordinates', '\\refRob: presupunem $f(\\lambda) \\approx G\\lambda^{-2d}$ pentru $\\lambda_1, \\dots, \\lambda_m$ și maximizăm verosimilitatea gaussiană (Whittle) a acestor valori'),
-     [T('after concentrating out the constant $G$ of $f(\\lambda) \\approx G\\lambda^{-2d}$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$', 'după eliminarea constantei $G$ din $f(\\lambda) \\approx G\\lambda^{-2d}$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$')]),
+    (T('Local Whittle (LW) \\refRob', 'Whittle local (LW) \\refRob'),
+     [T('assume $f(\\lambda) \\approx G\\lambda^{-2d}$ for $\\lambda_1, \\dots, \\lambda_m$ and maximise the Gaussian (Whittle) likelihood of these ordinates', 'presupunem $f(\\lambda) \\approx G\\lambda^{-2d}$ pentru $\\lambda_1, \\dots, \\lambda_m$ și maximizăm verosimilitatea gaussiană (Whittle) a acestor valori'),
+      T('after concentrating out the constant $G$ of $f(\\lambda) \\approx G\\lambda^{-2d}$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$', 'după eliminarea constantei $G$ din $f(\\lambda) \\approx G\\lambda^{-2d}$: $\\hat d = \\arg\\min_d\\ \\log\\Bigl(\\frac1m\\sum_{j=1}^m \\lambda_j^{2d}I(\\lambda_j)\\Bigr) - \\frac{2d}{m}\\sum_{j=1}^m\\log\\lambda_j$')]),
     (T('Standard error $1/(2\\sqrt m)$, smaller than GPH ($\\pi/\\sqrt{24m} \\approx 0.64/\\sqrt m$)', 'Eroarea standard $1/(2\\sqrt m)$, mai mică decît la GPH ($\\pi/\\sqrt{24m} \\approx 0{,}64/\\sqrt m$)'),
      [T('valid also for non-stationary series with $d$ up to about 1 \\refVelasco', 'valabil și pentru serii nestaționare cu $d$ pînă la aproximativ 1 \\refVelasco')]),
     T('Both GPH and local Whittle depend on $m$: always report $\\hat d$ for several bandwidths', 'Atît GPH, cît și Whittle local depind de $m$: raportați întotdeauna $\\hat d$ pentru mai multe lățimi de bandă')))
@@ -707,7 +711,7 @@ for i, (_, en, ro) in enumerate(TROWS):
     rows.append(T(en, ro) + f' & @{{tb{i}.n}} & @{{tb{i}.rs}} & @{{tb{i}.dfa}} & @{{tb{i}.gph}} & @{{tb{i}.lw}} (@{{tb{i}.se}})')
 D.frame(T('Long memory in twelve series', 'Memoria lungă în douăsprezece serii'), table(
     'lrrrrr', T('\\textbf{Series}', '\\textbf{Seria}') + ' & $T$ & $H_{R/S}$ & $H_{DFA}$ & $d_{GPH}$ & $d_{LW}$ (SE)', rows, size='scriptsize') + items(
-    T('$m = \\lfloor T^{0.65}\\rfloor$; data: statsmodels, Eurostat, FRED, EODHD, BNR; returns daily since 2000 (EUR/RON since 2005)', '$m = \\lfloor T^{0{,}65}\\rfloor$; date: statsmodels, Eurostat, FRED, EODHD, BNR; randamente zilnice din 2000 (EUR/RON din 2005)')), size='footnotesize')
+    T('$m = \\lfloor T^{0.65}\\rfloor$; LW: local Whittle; data: statsmodels, Eurostat, FRED, EODHD, BNR; returns daily since 2000 (EUR/RON since 2005)', '$m = \\lfloor T^{0{,}65}\\rfloor$; LW: Whittle local; date: statsmodels, Eurostat, FRED, EODHD, BNR; randamente zilnice din 2000 (EUR/RON din 2005)')), size='footnotesize')
 
 interp(('the table', 'tabelului'), [
     (T('Returns: $d \\approx 0$ for the S\\&P 500 (@{tb6.lw}) and EUR/RON (@{tb10.lw}); small but positive for the BET (@{tb8.lw})', 'Randamente: $d \\approx 0$ pentru S\\&P 500 (@{tb6.lw}) și EUR/RON (@{tb10.lw}); mic, dar pozitiv pentru BET (@{tb8.lw})'),
@@ -773,9 +777,10 @@ D.section('Long memory in volatility', 'Memoria lungă a volatilității')
 D.frame(T('Case study: Ding, Granger and Engle (1993)', 'Studiu de caz: Ding, Granger și Engle (1993)'), two(
     ph('engle', T('Robert F. Engle, Nobel Prize 2003 with Clive Granger', 'Robert F. Engle, Premiul Nobel 2003, împreună cu Clive Granger'), h='0.44\\textheight'),
     items((T('\\refDGE: daily S\\&P 500 returns, 1928--1991', '\\refDGE: randamentele zilnice S\\&P 500, 1928--1991'),
-           [T('returns are almost uncorrelated, but $|r_t|^\\delta$ is autocorrelated for thousands of lags, most strongly for $\\delta \\approx 1$', 'randamentele sînt aproape necorelate, dar $|r_t|^\\delta$ este autocorelat pe mii de laguri, cel mai puternic pentru $\\delta \\approx 1$'),
+           [T('returns are almost uncorrelated, but $|r_t|^\\delta$ is autocorrelated for thousands of lags', 'randamentele sînt aproape necorelate, dar $|r_t|^\\delta$ este autocorelat pe mii de laguri'),
+            T('$\\delta > 0$: a power; the autocorrelation is strongest for $\\delta \\approx 1$', '$\\delta > 0$: o putere; autocorelația este cea mai puternică pentru $\\delta \\approx 1$'),
             T('the ``long memory property\'\' of stock market returns: memory lives in the size, not in the sign', '„proprietatea de memorie lungă” a randamentelor bursiere: memoria se află în mărimea randamentelor, nu în semnul lor')]),
-          T('A GARCH(1,1) (Chapter 5) implies autocorrelations of $r_t^2$ that fall like $(\\alpha + \\beta)^k$: exponentially', 'Un GARCH(1,1) (Capitolul 5) implică autocorelații ale lui $r_t^2$ care scad ca $(\\alpha + \\beta)^k$: exponențial'),
+          T('A GARCH(1,1) (Chapter 5) implies autocorrelations of $r_t^2$ that fall like $(\\alpha + \\beta)^k$ ($\\alpha$, $\\beta$: the ARCH and GARCH parameters): exponentially', 'Un GARCH(1,1) (Capitolul 5) implică autocorelații ale lui $r_t^2$ care scad ca $(\\alpha + \\beta)^k$ ($\\alpha$, $\\beta$: parametrii ARCH și GARCH): exponențial'),
           T('This led to FIGARCH \\refBBM\\ and, with high-frequency data, to realised volatility models \\refABDL, \\refCorsi', 'Rezultatul a dus la FIGARCH \\refBBM\\ și, cu date de înaltă frecvență, la modelele de volatilitate realizată \\refABDL, \\refCorsi'))))
 
 chart(T('Returns, absolute and squared returns', 'Randamente, randamente absolute și pătrate'), 'tsa_ch8_vol_acf', 'TSA_ch8_volatility_memory', [
@@ -791,8 +796,9 @@ interp(('the volatility ACF', 'ACF a volatilității'), [
     T('The shuffle keeps the distribution and destroys the order: the memory is in the timing of calm and turbulent days, not in fat tails', 'Permutarea păstrează distribuția și distruge ordinea: memoria se află în succesiunea zilelor calme și agitate, nu în cozile groase')])
 
 D.frame(T('Realised volatility', 'Volatilitatea realizată'), items(
-    (T('\\textbf{Realised variance} of month $m$: $RV_m = \\sum_{t \\in m} r_t^2$, the sum of the squared daily returns of the month \\refABDL', '\\textbf{Varianța realizată} a lunii $m$: $RV_m = \\sum_{t \\in m} r_t^2$, suma pătratelor randamentelor zilnice din lună \\refABDL'),
-     [T('realised volatility $\\sqrt{RV_m}$ measures the volatility of month $m$ almost without a model; with intraday data the same idea gives a daily RV', 'volatilitatea realizată $\\sqrt{RV_m}$ măsoară volatilitatea lunii $m$ aproape fără model; cu date intrazilnice aceeași idee dă un RV zilnic')]),
+    (T('\\textbf{Realised variance} of month $m$ \\refABDL', '\\textbf{Varianța realizată} a lunii $m$ \\refABDL'),
+     [T('$RV_m = \\sum_{t \\in m} r_t^2$: the sum of the squared daily returns of the month', '$RV_m = \\sum_{t \\in m} r_t^2$: suma pătratelor randamentelor zilnice din lună'),
+      T('realised volatility $\\sqrt{RV_m}$ measures the volatility of month $m$ almost without a model; with intraday data the same idea gives a daily RV', 'volatilitatea realizată $\\sqrt{RV_m}$ măsoară volatilitatea lunii $m$ aproape fără model; cu date intrazilnice aceeași idee dă un RV zilnic')]),
     (T('We model $\\log\\sqrt{RV_m}$: the logarithm makes the distribution close to the Normal distribution and removes the positivity constraint', 'Modelăm $\\log\\sqrt{RV_m}$: logaritmul aduce distribuția aproape de distribuția Normală și elimină restricția de pozitivitate'),
      [T('the stylised fact of \\refABDL: log RV is well described by a long-memory model with $d \\approx 0.4$', 'faptul stilizat din \\refABDL: logaritmul RV este bine descris de un model cu memorie lungă, cu $d \\approx 0{,}4$')]),
     T('Unlike $|r_t|$, $\\log\\sqrt{RV_m}$ is a precise measure: the noise of single days averages out within the month', 'Spre deosebire de $|r_t|$, $\\log\\sqrt{RV_m}$ este o măsură precisă: zgomotul zilelor individuale se compensează în cadrul lunii')))
@@ -812,17 +818,20 @@ D.frame(T('FIGARCH and HAR', 'FIGARCH și HAR'), items(
     (T('\\textbf{FIGARCH}$(1,d,1)$ \\refBBM: write GARCH(1,1) as an ARMA(1,1) in $\\varepsilon_t^2$ and apply $(1-L)^d$:', '\\textbf{FIGARCH}$(1,d,1)$ \\refBBM: scriem GARCH(1,1) ca ARMA(1,1) în $\\varepsilon_t^2$ și aplicăm $(1-L)^d$:'),
      [T('$\\sigma_t^2$: the conditional variance; $\\varepsilon_t$: the return shock; $\\omega > 0$, $\\beta$, $\\phi$: GARCH-type parameters (Chapter 5)', '$\\sigma_t^2$: varianța condiționată; $\\varepsilon_t$: șocul randamentului; $\\omega > 0$, $\\beta$, $\\phi$: parametri de tip GARCH (Capitolul 5)'),
       T('$\\sigma_t^2 = \\omega + \\beta\\sigma_{t-1}^2 + \\bigl[1 - \\beta L - (1 - \\phi L)(1-L)^d\\bigr]\\varepsilon_t^2 = \\omega^* + \\sum_{k\\ge1}\\lambda_k\\varepsilon_{t-k}^2$', '$\\sigma_t^2 = \\omega + \\beta\\sigma_{t-1}^2 + \\bigl[1 - \\beta L - (1 - \\phi L)(1-L)^d\\bigr]\\varepsilon_t^2 = \\omega^* + \\sum_{k\\ge1}\\lambda_k\\varepsilon_{t-k}^2$'),
-      T('the ARCH($\\infty$) weights $\\lambda_k$ decay like $k^{-1-d}$; $d = 0$: GARCH, $d = 1$: IGARCH', 'ponderile ARCH($\\infty$) $\\lambda_k$ scad ca $k^{-1-d}$; $d = 0$: GARCH, $d = 1$: IGARCH')]),
+      T('$\\omega^* = \\omega/(1 - \\beta)$; the ARCH($\\infty$) weights $\\lambda_k$ decay like $k^{-1-d}$; $d = 0$: GARCH, $d = 1$: IGARCH', '$\\omega^* = \\omega/(1 - \\beta)$; ponderile ARCH($\\infty$) $\\lambda_k$ scad ca $k^{-1-d}$; $d = 0$: GARCH, $d = 1$: IGARCH')]),
     (T('\\textbf{HAR} (heterogeneous autoregressive model) \\refCorsi: $RV_{t+1} = c + \\beta_d RV_t + \\beta_w \\overline{RV}_{t-4:t} + \\beta_m \\overline{RV}_{t-21:t} + u_{t+1}$',
        '\\textbf{HAR} (model autoregresiv heterogen) \\refCorsi: $RV_{t+1} = c + \\beta_d RV_t + \\beta_w \\overline{RV}_{t-4:t} + \\beta_m \\overline{RV}_{t-21:t} + u_{t+1}$'),
-     [T('$\\overline{RV}_{t-4:t}$, $\\overline{RV}_{t-21:t}$: averages over the last 5 and 22 days (weekly, monthly); $\\beta_d$, $\\beta_w$, $\\beta_m$: their weights; traders with three horizons; estimated by OLS', '$\\overline{RV}_{t-4:t}$, $\\overline{RV}_{t-21:t}$: mediile pe ultimele 5 și 22 de zile (săptămînală, lunară); $\\beta_d$, $\\beta_w$, $\\beta_m$: ponderile lor; participanți cu trei orizonturi; estimat prin OLS'),
+     [T('$\\overline{RV}_{t-4:t}$, $\\overline{RV}_{t-21:t}$: averages over the last 5 and 22 days (weekly, monthly); $\\beta_d$, $\\beta_w$, $\\beta_m$: their weights; estimated by OLS', '$\\overline{RV}_{t-4:t}$, $\\overline{RV}_{t-21:t}$: mediile pe ultimele 5 și 22 de zile (săptămînală, lunară); $\\beta_d$, $\\beta_w$, $\\beta_m$: ponderile lor; estimat prin OLS'),
+      T('the idea: market participants with daily, weekly and monthly horizons', 'intuiția: participanți la piață cu orizonturi zilnice, săptămînale și lunare'),
       T('not a long-memory model, but three steps that imitate a power law over the horizons that matter', 'nu este un model cu memorie lungă, ci trei trepte care imită o lege de putere pe orizonturile relevante')]),
     T('Both answer the failure of GARCH from Chapter 5: volatility shocks die out too fast in GARCH', 'Ambele răspund unei slăbiciuni a modelului GARCH din Capitolul 5: în GARCH șocurile volatilității se sting prea repede')))
 
 chart(T('FIGARCH against GARCH; HAR against $(1-L)^d$', 'FIGARCH comparat cu GARCH; HAR comparat cu $(1-L)^d$'), 'tsa_ch8_vol_models', 'TSA_ch8_volatility_memory', [
-    T('Left: ARCH($\\infty$) weights of GARCH(1,1) and FIGARCH(1,$d$,1), Student $t$ errors, daily returns 2000--2026 (\\texttt{arch}). Right: HAR for the daily range-based volatility of the S\\&P 500 (Parkinson estimator from high and low prices)',
-      'Stînga: ponderile ARCH($\\infty$) ale GARCH(1,1) și FIGARCH(1,$d$,1), erori Student $t$, randamente zilnice 2000--2026 (\\texttt{arch}). Dreapta: HAR pentru volatilitatea zilnică pe baza amplitudinii S\\&P 500 (estimatorul Parkinson, din prețurile maxime și minime)')],
-    h='0.7\\textheight')
+    T('Left: ARCH($\\infty$) weights of GARCH(1,1) and FIGARCH(1,$d$,1), Student $t$ errors, daily returns 2000--2026 (\\texttt{arch})',
+      'Stînga: ponderile ARCH($\\infty$) ale GARCH(1,1) și FIGARCH(1,$d$,1), erori Student $t$, randamente zilnice 2000--2026 (\\texttt{arch})'),
+    T('Right: HAR for the daily range-based volatility of the S\\&P 500 (Parkinson estimator from high and low prices)',
+      'Dreapta: HAR pentru volatilitatea zilnică pe baza amplitudinii S\\&P 500 (estimatorul Parkinson, din prețurile maxime și minime)')],
+    h='0.66\\textheight')
 
 interp(('FIGARCH and HAR', 'modelelor FIGARCH și HAR'), [
     (T('FIGARCH: $\\hat d = @{vm.sp500.d}$ (S\\&P 500) and @{vm.bet.d} (BET); BIC falls by @{vm.sp500.dbic} and @{vm.bet.dbic} against GARCH', 'FIGARCH: $\\hat d = @{vm.sp500.d}$ (S\\&P 500) și @{vm.bet.d} (BET); BIC scade cu @{vm.sp500.dbic} și @{vm.bet.dbic} față de GARCH'),
@@ -873,10 +882,12 @@ interp(('the Nile break', 'rupturii Nilului'), [
      [T('for these 100 years one break explains almost all of the memory', 'pentru acești 100 de ani o singură ruptură explică aproape toată memoria')]),
     T('Hurst\'s own evidence came from much longer records (the Roda gauge, from the 7th century); the lesson is to test for breaks before reading $d$', 'Dovezile lui Hurst proveneau din înregistrări mult mai lungi (nilometrul de la Roda, din secolul al VII-lea); lecția: testați rupturile înainte de a interpreta $d$')])
 
-chart(T('Is memory stable over time?', 'Stabilitatea memoriei în timp'), 'tsa_ch8_rolling', 'TSA_ch8_spurious_memory', [
-    T('Top: local Whittle $\\hat d$ of US monthly inflation in rolling 20-year windows (dated at the window end); bottom: DFA exponent of daily S\\&P 500 and BET returns in 1000-day windows moved by 21 days; shaded: 95\\% Monte Carlo bands for i.i.d. series \\refWeron',
-      'Sus: $\\hat d$ Whittle local pentru inflația lunară din SUA, pe ferestre mobile de 20 de ani (datate la sfîrșitul ferestrei); jos: exponentul DFA al randamentelor zilnice S\\&P 500 și BET, pe ferestre de 1000 de zile mutate cu 21 de zile; zona colorată: benzi Monte Carlo de 95\\% pentru serii i.i.d. \\refWeron')],
-    h='0.7\\textheight')
+chart(T('The stability of memory over time', 'Stabilitatea memoriei în timp'), 'tsa_ch8_rolling', 'TSA_ch8_spurious_memory', [
+    T('Top: local Whittle $\\hat d$ of US monthly inflation in rolling 20-year windows (dated at the window end)',
+      'Sus: $\\hat d$ Whittle local pentru inflația lunară din SUA, pe ferestre mobile de 20 de ani (datate la sfîrșitul ferestrei)'),
+    T('Bottom: DFA exponent of daily S\\&P 500 and BET returns in 1000-day windows moved by 21 days; shaded: 95\\% Monte Carlo bands for i.i.d. series \\refWeron',
+      'Jos: exponentul DFA al randamentelor zilnice S\\&P 500 și BET, pe ferestre de 1000 de zile mutate cu 21 de zile; zona colorată: benzi Monte Carlo de 95\\% pentru serii i.i.d. \\refWeron')],
+    h='0.64\\textheight')
 
 interp(('the rolling estimates', 'estimărilor pe ferestre mobile'), [
     (T('US inflation: $\\hat d$ peaks at @{rl.us.max} in the window ending @{rl.us.maxd} (the Great Inflation and the Volcker disinflation) and falls to @{rl.us.min} (@{rl.us.mind})', 'Inflația din SUA: $\\hat d$ atinge @{rl.us.max} în fereastra care se încheie în @{rl.us.maxd} (Marea Inflație și dezinflația Volcker) și coboară la @{rl.us.min} (@{rl.us.mind})'),
@@ -953,7 +964,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      T('Local Whittle', 'Whittle local') + ' & $\\min_d \\log\\bigl(\\tfrac1m\\sum_j\\lambda_j^{2d}I(\\lambda_j)\\bigr) - \\tfrac{2d}{m}\\sum_j\\log\\lambda_j$, \\quad SE $= 1/(2\\sqrt m)$',
      'R/S, DFA & $E(R/S)_n \\approx cn^H$, \\quad $F(n) \\approx cn^H$, \\quad $H = d + 1/2$',
      'FIGARCH & $\\sigma_t^2 = \\omega + \\beta\\sigma_{t-1}^2 + [1 - \\beta L - (1 - \\phi L)(1-L)^d]\\varepsilon_t^2$'],
-    size='scriptsize') + '}')
+    size='footnotesize') + '}')
 
 D.frame(T('Self-assessment', 'Autoevaluare'), items(
     (T('\\textbf{Question}: what are $\\pi_1$ and $\\pi_2$ of $(1-L)^{0.2}$?', '\\textbf{Întrebare}: cît sînt $\\pi_1$ și $\\pi_2$ pentru $(1-L)^{0{,}2}$?'),

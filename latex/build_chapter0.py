@@ -106,6 +106,7 @@ for k in ('hicp_last_date', 'infl_max_date', 'infl_min10_date', 'infl_peak22_dat
 V.put('gdp_fall_2009_abs', -VAL['gdp_fall_2009'], 1)
 V.put('gdp_fall_2020_abs', -VAL['gdp_fall_2020'], 1)
 V.put('bet_sd_ann', VAL['bet_sd'] * 252 ** 0.5, 0)
+V.put('gdp_S1_abs', -VAL['gdp_S1_pct'], 1)
 V.put('gdp_q1_rel', 100 * (VAL['gdp_S4'] / VAL['gdp_S1'] - 1), 0)
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -284,11 +285,11 @@ def ch_rows(rng):
 
 
 D.frame('⟦Course Map: Chapters 0--15||Harta cursului: Capitolele 0--15⟧', cols(
-    table('r>{\\raggedright\\arraybackslash}p{6.2cm}', '\\textbf{⟦No.||Nr.⟧} & \\textbf{⟦Chapter||Capitol⟧}', ch_rows(range(0, 8)), size='scriptsize'),
-    table('r>{\\raggedright\\arraybackslash}p{6.2cm}', '\\textbf{⟦No.||Nr.⟧} & \\textbf{⟦Chapter||Capitol⟧}', ch_rows(range(8, 16)), size='scriptsize'),
+    table('r>{\\raggedright\\arraybackslash}p{5.6cm}', '\\textbf{⟦No.||Nr.⟧} & \\textbf{⟦Chapter||Capitol⟧}', ch_rows(range(0, 8)), size='footnotesize'),
+    table('r>{\\raggedright\\arraybackslash}p{5.6cm}', '\\textbf{⟦No.||Nr.⟧} & \\textbf{⟦Chapter||Capitol⟧}', ch_rows(range(8, 16)), size='footnotesize'),
     '0.49', '0.49') + '\n' + items(
     '⟦Univariate models (0--5), several series (6, 7), extensions (8--10), review (15)||Modele univariate (0--5), mai multe serii (6, 7), extensii (8--10), recapitulare (15)⟧',
-    '⟦$^*$ Chapters 11--14: self-study (shorter materials and a quiz, no compulsory seminar)||$^*$ Capitolele 11--14: studiu individual (materiale mai scurte și un quiz, fără seminar obligatoriu)⟧'),
+    '⟦Self-study, marked $^*$: Chapters 11--14 (shorter materials and a quiz, no compulsory seminar)||Studiu individual, marcat cu $^*$: Capitolele 11--14 (materiale mai scurte și un quiz, fără seminar obligatoriu)⟧'),
     size='footnotesize')
 
 D.frame('⟦Materials and Tools||Materiale și instrumente⟧', items(
@@ -688,9 +689,9 @@ D.frame('⟦Worked Example: a $2 \\times 4$ Moving Average||Exemplu rezolvat: o 
           size='footnotesize'),
     items('⟦Romanian real GDP, billion EUR (Eurostat, unadjusted)||PIB-ul real al României, miliarde EUR (Eurostat, neajustat)⟧',
           ('⟦\\textbf{Trend in @{ma_d2}}||\\textbf{Trendul în @{ma_d2}}⟧',
-           ['$\\hat T = \\frac{1}{4}\\left(\\frac{@{ma_y0}}{2} + @{ma_y1} + @{ma_y2} + @{ma_y3} + \\frac{@{ma_y4}}{2}\\right) = $ @{ma_2x4}']),
+           ['$\\hat T_t = \\frac{1}{4}\\left(\\frac{@{ma_y0}}{2} + @{ma_y1} + @{ma_y2} + @{ma_y3} + \\frac{@{ma_y4}}{2}\\right) = @{ma_2x4}$']),
           ('⟦\\textbf{Seasonal ratio}||\\textbf{Raportul sezonier}⟧',
-           ['$y / \\hat T = @{ma_y2} / $ @{ma_2x4}: ⟦the third quarter is above the trend||trimestrul III este peste trend⟧']),
+           ['$y_t / \\hat T_t = @{ma_y2} / @{ma_2x4}$: ⟦the third quarter is above the trend||trimestrul III este peste trend⟧']),
           '⟦Averaging such ratios over all years gives the seasonal factor of each quarter||Media acestor rapoarte pe toți anii oferă factorul sezonier al fiecărui trimestru⟧'),
     '0.32', '0.64'), size='footnotesize')
 
@@ -711,11 +712,11 @@ chart(D, '⟦Decomposition of the Romanian GDP||Descompunerea PIB-ului României
 
 D.frame('⟦Interpretation: Seasonal Factors of GDP||Interpretarea: factorii sezonieri ai PIB⟧', cols(
     table('lrr', '\\textbf{⟦Quarter||Trimestru⟧} & $\\hat S_q$ & ⟦relative to trend||față de trend⟧',
-          ['⟦Q1||T1⟧ & @{gdp_S1} & @{gdp_S1_pct}\\%', '⟦Q2||T2⟧ & @{gdp_S2} & @{gdp_S2_pct}\\%',
+          ['⟦Q1||T1⟧ & @{gdp_S1} & $@{gdp_S1_pct}$\\%', '⟦Q2||T2⟧ & @{gdp_S2} & $@{gdp_S2_pct}$\\%',
            '⟦Q3||T3⟧ & @{gdp_S3} & $+$@{gdp_S3_pct}\\%', '⟦Q4||T4⟧ & @{gdp_S4} & $+$@{gdp_S4_pct}\\%'], size='footnotesize'),
     items(('⟦\\textbf{Reading the factors}||\\textbf{Citirea factorilor}⟧',
            ['⟦$\\hat S_q$: the estimated seasonal factor of quarter $q$||$\\hat S_q$: factorul sezonier estimat al trimestrului $q$⟧',
-            '⟦a typical first quarter is @{gdp_S1_pct}\\% below the trend, a typical fourth quarter $+$@{gdp_S4_pct}\\% above it||un trimestru I tipic se află la @{gdp_S1_pct}\\% față de trend, un trimestru IV tipic la $+$@{gdp_S4_pct}\\%⟧',
+            '⟦a typical first quarter is @{gdp_S1_abs}\\% below the trend, a typical fourth quarter @{gdp_S4_pct}\\% above it||un trimestru I tipic se află cu @{gdp_S1_abs}\\% sub trend, un trimestru IV tipic cu @{gdp_S4_pct}\\% peste trend⟧',
             '⟦Q4 is about @{gdp_q1_rel}\\% larger than Q1 for purely seasonal reasons||trimestrul IV este cu aproximativ @{gdp_q1_rel}\\% mai mare decît trimestrul I, din motive pur sezoniere⟧']),
           ('⟦\\textbf{Remainder}||\\textbf{Componenta neregulată}⟧',
            ['⟦standard deviation about @{gdp_rem_sd}\\%; larger in the 1990s and in 2020||abaterea standard este de aproximativ @{gdp_rem_sd}\\%; mai mare în anii 1990 și în 2020⟧']),
@@ -751,7 +752,7 @@ D.recap(('components and decomposition', 'componente și descompunere'), [
     '⟦Trend, seasonality (fixed period), cycle (no fixed period), remainder||Trend, sezonalitate (perioadă fixă), ciclu (fără perioadă fixă), componenta neregulată⟧',
     '⟦Additive if the seasonal swing is constant, multiplicative if it grows with the level; logs turn one into the other||Aditiv dacă oscilația sezonieră este constantă, multiplicativ dacă ea crește odată cu nivelul; logaritmul transformă un model în celălalt⟧',
     '⟦A centred $2 \\times m$ moving average removes the season and estimates the trend-cycle||O medie mobilă centrată $2 \\times m$ elimină sezonalitatea și estimează trend-ciclul⟧',
-    '⟦Romanian GDP: Q1 about @{gdp_S1_pct}\\% and Q4 about $+$@{gdp_S4_pct}\\% relative to the trend||PIB-ul României: trimestrul I la aproximativ @{gdp_S1_pct}\\%, iar trimestrul IV la aproximativ $+$@{gdp_S4_pct}\\% față de trend⟧',
+    '⟦Romanian GDP: Q1 about @{gdp_S1_abs}\\% below the trend, Q4 about @{gdp_S4_pct}\\% above it||PIB-ul României: trimestrul I cu aproximativ @{gdp_S1_abs}\\% sub trend, trimestrul IV cu aproximativ @{gdp_S4_pct}\\% peste trend⟧',
     '⟦STL lets the seasonal pattern change and is robust to outliers||STL permite modificarea tiparului sezonier și este robustă la valori extreme⟧'])
 
 # ===============================================================================================================
@@ -1122,4 +1123,7 @@ D.frame('⟦Self-Assessment, Project Idea, and Next: Chapter 1||Autoevaluare, id
 D.references(REFERENCES, per=13)
 
 if __name__ == '__main__':
+    for _k, _v in list(V.items()):   # a true minus sign for negative numbers, in text and in math
+        if isinstance(_v, str) and _v.startswith('⁅-'):
+            V[_k] = '⁅\\ensuremath{-}' + _v[2:]
     D.write(V)

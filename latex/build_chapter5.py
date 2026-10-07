@@ -222,13 +222,13 @@ D.frame(T('Stylised facts in numbers', 'Faptele stilizate în cifre'), table(
      [T('kurtosis $K = E[(r - \\mu)^4]/\\sigma^4$; skewness $E[(r - \\mu)^3]/\\sigma^3$ (Chapter 1)', 'coeficientul de boltire $K = E[(r - \\mu)^4]/\\sigma^4$; asimetria $E[(r - \\mu)^3]/\\sigma^3$ (Capitolul 1)')]),
     T('\\textbf{Little autocorrelation in $r_t$}, strong autocorrelation in $r_t^2$: $Q(10)$ of the squares is @{sty.qmin}--@{sty.qmax} times larger',
       '\\textbf{Autocorelație mică în $r_t$}, autocorelație puternică în $r_t^2$: $Q(10)$ al pătratelor este de @{sty.qmin}--@{sty.qmax} de ori mai mare'),
-    T('$Q(10)$: the Ljung--Box statistic \\refLB\\ (Chapter 1), $\\chi^2(10)$, 5\\% value 18.31; LM(5): the ARCH-LM test (two slides ahead), $\\chi^2(5)$, 5\\% value @{lm.chi}',
-      '$Q(10)$: statistica Ljung--Box \\refLB\\ (Capitolul 1), $\\chi^2(10)$, valoarea de 5\\%: 18,31; LM(5): testul ARCH-LM (peste două slide-uri), $\\chi^2(5)$, valoarea de 5\\%: @{lm.chi}')) + ql('TSA_ch5_stylised_facts'), 'footnotesize')
+    T('$Q(10)$: the statistic of \\refLB\\ (Chapter 1), $\\chi^2(10)$, 5\\% value 18.31; LM(5): the ARCH-LM test (two slides ahead), $\\chi^2(5)$, 5\\% value @{lm.chi}',
+      '$Q(10)$: statistica lui \\refLB\\ (Capitolul 1), $\\chi^2(10)$, valoarea de 5\\%: 18,31; LM(5): testul ARCH-LM (peste două slide-uri), $\\chi^2(5)$, valoarea de 5\\%: @{lm.chi}')) + ql('TSA_ch5_stylised_facts'), 'footnotesize')
 
 chart(T('The sign is unpredictable, the size is not', 'Semnul este imprevizibil, mărimea nu'), 'tsa_ch5_acf_squares', 'TSA_ch5_stylised_facts', [
     T('Sample ACF (autocorrelation function, Chapter 1) of $r_t$ and of $r_t^2$, lags 1--50, with the band $\\pm 1.96/\\sqrt{T}$ of an i.i.d.\\ (independent and identically distributed) series',
       'ACF de selecție (autocorrelation function, funcția de autocorelație, Capitolul 1) a lui $r_t$ și a lui $r_t^2$, lagurile 1--50, cu banda $\\pm 1.96/\\sqrt{T}$ a unei serii i.i.d.\\ (independente și identic distribuite)')],
-    h='0.56\\textheight')
+    h='0.64\\textheight')
 
 interp(('the two ACFs', 'celor două ACF'), [
     (T('Returns: almost all autocorrelations inside the band (BET: $\\hat\\rho_1 = @{sty.bet.rr}$, a thin market; Chapter 2)', 'Randamentele: aproape toate autocorelațiile sînt în bandă (BET: $\\hat\\rho_1 = @{sty.bet.rr}$, o piață mai puțin lichidă; Capitolul 2)'),
@@ -241,8 +241,8 @@ interp(('the two ACFs', 'celor două ACF'), [
 
 D.frame(T('Testing for ARCH effects', 'Testarea efectelor ARCH'), items(
     T('\\textbf{ARCH effects}: the conditional variance depends on the past (the name comes from the ARCH model, Section 3)', '\\textbf{Efecte ARCH}: varianța condiționată depinde de trecut (numele vine de la modelul ARCH, secțiunea 3)'),
-    (T('\\textbf{Ljung--Box on squares} (the McLeod--Li test \\refML): $Q(m) = T(T+2)\\sum_{k=1}^{m}\\hat\\rho_k^2(\\hat\\varepsilon^2)/(T-k)$', '\\textbf{Ljung--Box pe pătrate} (testul McLeod--Li \\refML): $Q(m) = T(T+2)\\sum_{k=1}^{m}\\hat\\rho_k^2(\\hat\\varepsilon^2)/(T-k)$'),
-     [T('$\\hat\\rho_k(\\hat\\varepsilon^2)$: the sample autocorrelation of the squared residuals at lag $k$; $m$: the number of lags', '$\\hat\\rho_k(\\hat\\varepsilon^2)$: autocorelația de selecție a pătratelor reziduurilor la lagul $k$; $m$: numărul de laguri'),
+    (T('\\textbf{Ljung--Box on squares} (the test of \\refML): $Q(m) = T(T+2)\\sum_{k=1}^{m}\\hat\\rho_k^2(\\hat\\varepsilon^2)/(T-k)$', '\\textbf{Ljung--Box pe pătrate} (testul lui \\refML): $Q(m) = T(T+2)\\sum_{k=1}^{m}\\hat\\rho_k^2(\\hat\\varepsilon^2)/(T-k)$'),
+     [T('$\\hat\\rho_k(\\hat\\varepsilon^2)$: the sample autocorrelation of the squared residuals at lag $k$; $m$: the number of lags; $T$: the number of observations', '$\\hat\\rho_k(\\hat\\varepsilon^2)$: autocorelația de selecție a pătratelor reziduurilor la lagul $k$; $m$: numărul de laguri; $T$: numărul de observații'),
       T('$\\hat\\varepsilon_t$: residuals of the mean model (for returns, $r_t - \\bar r$); under $H_0$ (no ARCH effects), $Q(m) \\sim \\chi^2(m)$', '$\\hat\\varepsilon_t$: reziduurile modelului pentru medie (pentru randamente, $r_t - \\bar r$); în ipoteza $H_0$ (fără efecte ARCH), $Q(m) \\sim \\chi^2(m)$')]),
     (T('\\textbf{ARCH-LM test} \\refEngle: LM (Lagrange multiplier) test from the auxiliary regression', '\\textbf{Testul ARCH-LM} \\refEngle: test LM (Lagrange multiplier, multiplicatorul Lagrange) din regresia auxiliară'),
      [T('$\\hat\\varepsilon_t^2 = b_0 + b_1\\hat\\varepsilon_{t-1}^2 + \\dots + b_q\\hat\\varepsilon_{t-q}^2 + u_t$, estimated by OLS (ordinary least squares)', '$\\hat\\varepsilon_t^2 = b_0 + b_1\\hat\\varepsilon_{t-1}^2 + \\dots + b_q\\hat\\varepsilon_{t-q}^2 + u_t$, estimată prin OLS (ordinary least squares, metoda celor mai mici pătrate)'),
@@ -306,7 +306,7 @@ D.frame(T('Worked example: conditional and unconditional variance', 'Exemplu rez
 
 chart(T('The mean model leaves ARCH effects', 'Modelul pentru medie lasă efecte ARCH'), 'tsa_ch5_arma_resid', 'TSA_ch5_mean_model', [
     T('BET: left, an AR(1) for the mean (order chosen by BIC among AR(0)--AR(5): $p = @{ar.p}$), constant variance; right, the same AR(1) with a GARCH(1,1)-t variance (Section 6)',
-      'BET: stînga, un AR(1) pentru medie (ordinul ales după BIC dintre AR(0)--AR(5): $p = @{ar.p}$), cu varianță constantă; dreapta, același AR(1) cu o varianță GARCH(1,1)-t (secțiunea 6)')], h='0.48\\textheight')
+      'BET: stînga, un AR(1) pentru medie (ordinul ales după BIC dintre AR(0)--AR(5): $p = @{ar.p}$), cu varianță constantă; dreapta, același AR(1) cu o varianță GARCH(1,1)-t (secțiunea 6)')], h='0.56\\textheight')
 
 interp(('the residual ACFs', 'ACF ale reziduurilor'), [
     (T('Left: the residuals look almost like white noise, the Box--Jenkins check of Chapter 2 would be nearly passed', 'Stînga: reziduurile arată aproape ca un zgomot alb; verificarea Box--Jenkins din Capitolul 2 ar fi aproape trecută'),
@@ -370,7 +370,7 @@ chart(T('Simulated paths: i.i.d., ARCH(1) and GARCH(1,1)', 'Traiectorii simulate
       'Coeficientul de boltire de selecție: i.i.d.\\ $@{sim.iid.k}$, ARCH $@{sim.arch.k}$, GARCH $@{sim.garch.k}$ (teoretic: 3, $@{ex.a1.k}$, $@{sim.garch.kth}$): momentul de ordinul patru converge lent'),
     T('Interpretation: ARCH(1) gives isolated spikes; GARCH(1,1) gives long calm and long agitated periods, as in real returns',
       'Interpretare: ARCH(1) produce vîrfuri izolate; GARCH(1,1) produce perioade lungi liniștite și perioade lungi agitate, ca randamentele reale')],
-    h='0.46\\textheight')
+    h='0.54\\textheight')
 
 D.frame(T('ARCH($q$) and its limits', 'ARCH($q$) și limitele lui'), items(
     (T('\\textbf{ARCH($q$)}: $\\sigma_t^2 = \\omega + \\alpha_1\\varepsilon_{t-1}^2 + \\dots + \\alpha_q\\varepsilon_{t-q}^2$, $\\alpha_i \\ge 0$; stationary if $\\sum_i \\alpha_i < 1$',
@@ -383,8 +383,8 @@ D.frame(T('ARCH($q$) and its limits', 'ARCH($q$) și limitele lui'), items(
      'ARCH(10) & @{aqt.a10.k} & $@{aqt.a10.ll}$ & @{aqt.a10.aic} & @{aqt.a10.bic} & $@{aqt.a10.pers}$',
      'GARCH(1,1) & @{aqt.g11.k} & $@{aqt.g11.ll}$ & \\textbf{@{aqt.g11.aic}} & \\textbf{@{aqt.g11.bic}} & $@{aqt.g11.pers}$'],
     size='footnotesize') + items(
-    T('AIC (Akaike) and BIC (Bayesian information criterion): $-2\\ell + $ penalty for parameters (Chapter 2), $\\ell$: the maximised log-likelihood; smaller is better',
-      'AIC (Akaike) și BIC (Bayesian information criterion, criteriul informațional bayesian): $-2\\ell$ + o penalizare pentru parametri (Capitolul 2), $\\ell$: log-verosimilitatea maximizată; valoarea mai mică este mai bună'),
+    T('AIC (Akaike) and BIC (Bayesian information criterion): $\\mathrm{AIC} = -2\\ell + 2k$, $\\mathrm{BIC} = -2\\ell + k\\ln T$ (Chapter 2), $\\ell$: the maximised log-likelihood, $k$: parameters; smaller is better',
+      'AIC (Akaike) și BIC (Bayesian information criterion, criteriul informațional bayesian): $\\mathrm{AIC} = -2\\ell + 2k$, $\\mathrm{BIC} = -2\\ell + k\\ln T$ (Capitolul 2), $\\ell$: log-verosimilitatea maximizată, $k$: numărul de parametri; valoarea mai mică este mai bună'),
     T('Interpretation: ARCH needs ten lags and still loses to GARCH(1,1), which has four parameters: the motivation for GARCH',
       'Interpretare: ARCH are nevoie de zece laguri și tot pierde în fața GARCH(1,1), care are patru parametri: motivația pentru GARCH')) + ql('TSA_ch5_garch_estimation'), 'footnotesize')
 
@@ -426,7 +426,7 @@ D.frame(T('GARCH(1,1) as an ARMA(1,1) for the squared shocks', 'GARCH(1,1) ca AR
      [T('\\textbf{covariance stationary} if $\\alpha + \\beta < 1$ (the AR root outside the unit circle)', '\\textbf{staționar în covarianță} dacă $\\alpha + \\beta < 1$ (rădăcina AR în afara cercului unitate)'),
       T('the ACF of $\\varepsilon_t^2$ decays like $(\\alpha + \\beta)^k$: slow when the persistence is close to 1, as in the ACF of real squared returns',
         'ACF a lui $\\varepsilon_t^2$ scade ca $(\\alpha + \\beta)^k$: lent cînd persistența este aproape de 1, ca în ACF a pătratelor randamentelor reale'),
-      T('identification by the ACF and the PACF (partial autocorrelation function) of $\\varepsilon_t^2$ is possible in principle, but in practice we use MLE (Section 5)', 'identificarea prin ACF și PACF (partial autocorrelation function, funcția de autocorelație parțială) a lui $\\varepsilon_t^2$ este posibilă în principiu, dar în practică folosim MLE (secțiunea 5)')])))
+      T('identification by the ACF and the PACF (partial autocorrelation function) of $\\varepsilon_t^2$ is possible in principle, but in practice we use maximum likelihood (Section 5)', 'identificarea prin ACF și PACF (partial autocorrelation function, funcția de autocorelație parțială) a lui $\\varepsilon_t^2$ este posibilă în principiu, dar în practică folosim verosimilitatea maximă (secțiunea 5)')])))
 
 D.frame(T('Long-run variance, kurtosis, persistence and half-life', 'Varianța de lungă durată, boltirea, persistența și timpul de înjumătățire'), items(
     (T('\\textbf{Long-run (unconditional) variance}: $\\bar\\sigma^2 = \\omega/(1 - \\alpha - \\beta)$; annualised volatility $\\sqrt{252\\,\\bar\\sigma^2}$ for 252 trading days',
@@ -469,7 +469,7 @@ D.frame(T('IGARCH and the link with EWMA', 'IGARCH și legătura cu EWMA'), item
 
 chart(T('GARCH, EWMA and a rolling window in 2020', 'GARCH, EWMA și o fereastră mobilă în 2020'), 'tsa_ch5_ewma_garch', 'TSA_ch5_volatility_markets', [
     T('S\\&P 500, annualised volatility: GARCH(1,1)-t estimated on all data, EWMA with $\\lambda = 0.94$, and the standard deviation of the last 63 days (Chapter 0: a moving average)',
-      'S\\&P 500, volatilitatea anualizată: GARCH(1,1)-t estimat pe toate datele, EWMA cu $\\lambda = 0{,}94$ și abaterea standard a ultimelor 63 de zile (Capitolul 0: o medie mobilă)')], h='0.52\\textheight')
+      'S\\&P 500, volatilitatea anualizată: GARCH(1,1)-t estimat pe toate datele, EWMA cu $\\lambda = 0{,}94$ și abaterea standard a ultimelor 63 de zile (Capitolul 0: o medie mobilă)')], h='0.60\\textheight')
 
 interp(('the three estimates', 'celor trei estimări'), [
     T('Peaks: GARCH @{ew.g.peak}\\% (@{ew.g.dpeak}), EWMA @{ew.e.peak}\\% (@{ew.e.dpeak}), 63-day window @{ew.w.peak}\\% (@{ew.w.dpeak})',
@@ -504,14 +504,14 @@ chart(T('The likelihood of ARCH(1)', 'Verosimilitatea modelului ARCH(1)'), 'tsa_
     T('Simulated ARCH(1) with $\\omega = \\alpha = 0.5$; $\\ell(\\alpha)$ with $\\omega = 1 - \\alpha$; each curve minus its maximum', 'ARCH(1) simulat cu $\\omega = \\alpha = 0{,}5$; $\\ell(\\alpha)$ cu $\\omega = 1 - \\alpha$; fiecare curbă minus maximul ei'),
     T('$n = 100$: $\\hat\\alpha = @{la.100}$ (standard error $@{la.100.se}$); $n = 1000$: $\\hat\\alpha = @{la.1000}$ ($@{la.1000.se}$)', '$n = 100$: $\\hat\\alpha = @{la.100}$ (eroarea standard $@{la.100.se}$); $n = 1000$: $\\hat\\alpha = @{la.1000}$ ($@{la.1000.se}$)'),
     T('Interpretation: more data make the curve sharper; its curvature at the maximum gives the standard error', 'Interpretare: mai multe date fac curba mai ascuțită; curbura ei în punctul de maxim dă eroarea standard')],
-    h='0.48\\textheight')
+    h='0.56\\textheight')
 
 chart(T('The likelihood of GARCH(1,1)', 'Verosimilitatea modelului GARCH(1,1)'), 'tsa_ch5_lik_garch', 'TSA_ch5_simulation_likelihood', [
     T('Simulated GARCH(1,1) with $\\omega = 0.1$, $\\alpha = 0.1$, $\\beta = 0.8$; $\\omega$ set so that the unconditional variance equals the sample variance; contours: log-likelihood minus its maximum',
       'GARCH(1,1) simulat cu $\\omega = 0{,}1$, $\\alpha = 0{,}1$, $\\beta = 0{,}8$; $\\omega$ fixat astfel încît varianța necondiționată să fie egală cu varianța de selecție; contururi: log-verosimilitatea minus maximul ei'),
     T('$n = 500$: maximum at $(@{lg.500.a}, @{lg.500.b})$, far from the truth; $n = 2000$: $(@{lg.2000.a}, @{lg.2000.b})$', '$n = 500$: maximul în $(@{lg.500.a}; @{lg.500.b})$, departe de valorile adevărate; $n = 2000$: $(@{lg.2000.a}; @{lg.2000.b})$'),
     T('Interpretation: a long, flat ridge along which $\\alpha$ and $\\beta$ trade off: GARCH needs long samples', 'Interpretare: o creastă lungă și plată, de-a lungul căreia $\\alpha$ și $\\beta$ se compensează: GARCH are nevoie de eșantioane lungi')],
-    h='0.46\\textheight')
+    h='0.54\\textheight')
 
 
 def er(k, lab):
@@ -574,7 +574,7 @@ chart(T('QQ plots of the standardised residuals', 'Graficele QQ ale reziduurilor
       'Stînga, GARCH-N față de distribuția Normală: cuantila de 0,1\\% este $@{qq.n001}$, față de $@{qq.n001th}$ teoretic; dreapta, GARCH-t față de t standardizată ($\\hat\\nu = @{qq.nu}$): $@{qq.t001}$ față de $@{qq.t001th}$'),
     T('Interpretation: the t fits much better, but the largest falls are still deeper: the left tail is the problem (asymmetry, Section 7)',
       'Interpretare: distribuția t se potrivește mult mai bine, dar cele mai mari scăderi sînt tot mai adînci: problema este coada stîngă (asimetria, secțiunea 7)')],
-    h='0.46\\textheight')
+    h='0.54\\textheight')
 
 D.recap(('estimation by maximum likelihood', 'estimarea prin verosimilitate maximă'), [
     T('$\\ell(\\theta)$ = sum of conditional log-densities; $\\sigma_t^2(\\theta)$ computed recursively; numerical maximisation', '$\\ell(\\theta)$ = suma log-densităților condiționate; $\\sigma_t^2(\\theta)$ calculat recursiv; maximizare numerică'),
@@ -617,20 +617,20 @@ chart(T('Conditional volatility: S\\&P 500 and BET', 'Volatilitatea condiționat
     T('GARCH(1,1)-t volatility $\\hat\\sigma_t$, annualised; dashed: the sample volatility', 'Volatilitatea GARCH(1,1)-t $\\hat\\sigma_t$, anualizată; linia întreruptă: volatilitatea de selecție'),
     T('S\\&P 500: peaks @{v.sp500.p2008}\\% (@{v.sp500.d2008}) and @{v.sp500.p2020}\\% (@{v.sp500.d2020}); BET: @{v.bet.p2008}\\% (@{v.bet.d2008}) and @{v.bet.p2020}\\% (@{v.bet.d2020}); medians @{v.sp500.med}\\% and @{v.bet.med}\\%',
       'S\\&P 500: vîrfuri de @{v.sp500.p2008}\\% (@{v.sp500.d2008}) și @{v.sp500.p2020}\\% (@{v.sp500.d2020}); BET: @{v.bet.p2008}\\% (@{v.bet.d2008}) și @{v.bet.p2020}\\% (@{v.bet.d2020}); medianele @{v.sp500.med}\\% și @{v.bet.med}\\%')],
-    h='0.54\\textheight')
+    h='0.62\\textheight')
 
 chart(T('Conditional volatility: EUR/RON and Bitcoin', 'Volatilitatea condiționată: EUR/RON și Bitcoin'), 'tsa_ch5_vol_eurron_btc', 'TSA_ch5_volatility_markets', [
     T('EUR/RON: @{v.eurron.p2008}\\% at the peak of the 2008 crisis (@{v.eurron.d2008}), only @{v.eurron.p2020}\\% in 2020; on @{end}: @{v.eurron.last}\\%',
       'EUR/RON: @{v.eurron.p2008}\\% în vîrful crizei din 2008 (@{v.eurron.d2008}), doar @{v.eurron.p2020}\\% în 2020; la @{end}: @{v.eurron.last}\\%'),
     T('Bitcoin: @{v.btc.p2020}\\% on @{v.btc.d2020}; median @{v.btc.med}\\%, @{v.ratio} times the median of the S\\&P 500', 'Bitcoin: @{v.btc.p2020}\\% pe @{v.btc.d2020}; mediana @{v.btc.med}\\%, de @{v.ratio} ori mai mare decît mediana S\\&P 500'),
     T('Interpretation: the two IGARCH series have volatility levels that wander: no single ``normal\'\' level', 'Interpretare: cele două serii IGARCH au niveluri de volatilitate care se deplasează: nu există un singur nivel „normal”')],
-    h='0.52\\textheight')
+    h='0.60\\textheight')
 
 chart(T('How long does a volatility shock last?', 'Durata unui șoc de volatilitate'), 'tsa_ch5_persistence', 'TSA_ch5_volatility_markets', [
     T('Share of a variance shock left after $h$ days: $(\\alpha + \\beta)^h$; the half-life is where the curve crosses 1/2', 'Ponderea unui șoc de varianță rămasă după $h$ zile: $(\\alpha + \\beta)^h$; timpul de înjumătățire este punctul în care curba trece de 1/2'),
     T('Interpretation: after a crisis the S\\&P 500 needs about half a year to halve the excess variance, the BET about three months; EUR/RON and Bitcoin never',
       'Interpretare: după o criză, S\\&P 500 are nevoie de circa jumătate de an ca să înjumătățească varianța în exces, BET de circa trei luni; EUR/RON și Bitcoin, niciodată')],
-    h='0.50\\textheight')
+    h='0.58\\textheight')
 
 D.frame(T('ARMA-GARCH: one model for the mean and the variance', 'ARMA-GARCH: un model pentru medie și varianță'), items(
     (T('\\textbf{ARMA($p$,$q$)-GARCH(1,1)}: $r_t = c + \\sum_{i=1}^{p}\\phi_i r_{t-i} + \\varepsilon_t + \\sum_{j=1}^{q}\\theta_j\\varepsilon_{t-j}$, \\quad $\\varepsilon_t = \\sigma_t z_t$, \\quad $\\sigma_t^2 = \\omega + \\alpha\\varepsilon_{t-1}^2 + \\beta\\sigma_{t-1}^2$',
@@ -663,7 +663,7 @@ D.frame(T('AR(1)-GARCH(1,1)-t on four series', 'AR(1)-GARCH(1,1)-t pe patru seri
 chart(T('Forecast intervals that breathe', 'Intervale de prognoză variabile în timp'), 'tsa_ch5_bands', 'TSA_ch5_arma_garch', [
     T('BET, one-day-ahead 95\\% intervals: AR(1) with constant variance (width @{bd.wc} points every day) and AR(1)-GARCH(1,1)-t (width from @{bd.wgmin} to @{bd.wgmax} points in this window)',
       'BET, intervale de 95\\% cu o zi înainte: AR(1) cu varianță constantă (lățimea de @{bd.wc} puncte în fiecare zi) și AR(1)-GARCH(1,1)-t (lățimea de la @{bd.wgmin} la @{bd.wgmax} puncte în această fereastră)')],
-    h='0.52\\textheight')
+    h='0.60\\textheight')
 
 interp(('the two intervals', 'celor două intervale'), [
     (T('Over the whole sample both miss about 5\\% of the days: @{bd.out_c}\\% and @{bd.out_g}\\%', 'Pe întregul eșantion ambele ratează circa 5\\% dintre zile: @{bd.out_c}\\% și @{bd.out_g}\\%'),
@@ -706,7 +706,7 @@ chart(T('News impact curves: S\\&P 500 and Bitcoin', 'Curbele de impact ale ști
       'Curbele modelelor: $\\sigma_t^2$ în funcție de $\\varepsilon_{t-1}$, cu $\\sigma_{t-1}^2$ la varianța de selecție; linia întreruptă: o estimare nucleu (Nadaraya--Watson) a lui $E[r_t^2 \\mid r_{t-1}]$, fără model'),
     T('S\\&P 500, GJR: after a fall of 2\\%, tomorrow\'s variance is @{nic.sp500.ratio} times the variance after a rise of 2\\%; Bitcoin: ratio @{nic.btc.ratio}, a symmetric curve',
       'S\\&P 500, GJR: după o scădere de 2\\%, varianța de mîine este de @{nic.sp500.ratio} ori mai mare decît după o creștere de 2\\%; Bitcoin: raportul @{nic.btc.ratio}, o curbă simetrică')],
-    h='0.54\\textheight')
+    h='0.62\\textheight')
 
 
 def arow(k):
@@ -750,7 +750,7 @@ chart(T('What GARCH removes', 'Autocorelațiile eliminate de GARCH'), 'tsa_ch5_a
     T('S\\&P 500: ACF of $r_t^2$: $@{acf.r1}$ at lag 1, still $@{acf.r50}$ at lag 50; ACF of $\\hat z_t^2$ (GARCH(1,1)-t): $@{acf.z1}$ at lag 1, at most $@{acf.zmax}$ in absolute value; band $\\pm@{acf.band}$',
       'S\\&P 500: ACF a lui $r_t^2$: $@{acf.r1}$ la lagul 1, încă $@{acf.r50}$ la lagul 50; ACF a lui $\\hat z_t^2$ (GARCH(1,1)-t): $@{acf.z1}$ la lagul 1, cel mult $@{acf.zmax}$ în valoare absolută; banda $\\pm@{acf.band}$'),
     T('Interpretation: four parameters absorb almost all the volatility clustering of @{yrs} years of daily data', 'Interpretare: patru parametri absorb aproape tot volatility clustering din @{yrs} ani de date zilnice')],
-    h='0.48\\textheight')
+    h='0.56\\textheight')
 
 D.frame(T('Diagnostics on real data', 'Diagnosticare pe date reale'), table(
     'lrrr', T('S\\&P 500 & $Q(10)$ (p) & $Q(10)$ of squares (p) & ARCH-LM(5) (p)', 'S\\&P 500 & $Q(10)$ (p) & $Q(10)$ al pătratelor (p) & ARCH-LM(5) (p)'),
@@ -826,7 +826,7 @@ chart(T('The term structure of volatility', 'Structura la termen a volatilităț
       'Ziua liniștită: @{ts.calm.h1}\\% mîine, în medie @{ts.calm.avg250}\\% pe un an; vîrful COVID-19: @{ts.covid.h1}\\% mîine, încă @{ts.covid.avg250}\\% în medie pe un an'),
     T('Interpretation: all curves move towards the long-run level (@{ts.lr}\\%) at the same slow speed; the slope tells whether we are in a calm period or in a storm',
       'Interpretare: toate curbele se îndreaptă spre nivelul de lungă durată (@{ts.lr}\\%) cu aceeași viteză redusă; panta arată dacă sîntem într-o perioadă liniștită sau într-o furtună')],
-    h='0.46\\textheight')
+    h='0.54\\textheight')
 
 D.frame(T('How to evaluate a volatility forecast', 'Evaluarea unei prognoze de volatilitate'), items(
     (T('The true $\\sigma_t^2$ is never observed: we compare the forecast $h_t$ with a noisy \\textbf{proxy}, here $r_t^2$', 'Adevăratul $\\sigma_t^2$ nu este observat niciodată: comparăm prognoza $h_t$ cu o \\textbf{aproximare} zgomotoasă, aici $r_t^2$'),
@@ -837,13 +837,17 @@ D.frame(T('How to evaluate a volatility forecast', 'Evaluarea unei prognoze de v
      [T('it ranks forecasts correctly even with a noisy proxy; it is minus the Normal log-likelihood; it punishes forecasts that are too low', 'ordonează corect prognozele chiar și cu o aproximare zgomotoasă; este minus log-verosimilitatea Normală; penalizează prognozele prea mici')]),
     (T('\\textbf{Out of sample} (Chapter 0): from 2015, each forecast uses only data up to the day before; the models are re-estimated every 250 days',
        '\\textbf{În afara eșantionului} (Capitolul 0): din 2015, fiecare prognoză folosește doar date pînă în ziua precedentă; modelele se reestimează la fiecare 250 de zile'),
-     [T('\\textbf{DM} (Diebold--Mariano) test \\refDM: is the mean loss difference zero? $t$ statistic with HAC (heteroskedasticity and autocorrelation consistent) standard errors',
-        'testul \\textbf{DM} (Diebold--Mariano) \\refDM: este diferența medie a pierderilor egală cu zero? statistica $t$ cu erori standard HAC (heteroskedasticity and autocorrelation consistent, robuste la heteroscedasticitate și autocorelație)')])))
+     []),
+    (T('\\textbf{DM test} \\refDM: $H_0$: $E[d_t] = 0$, with $d_t = L_t^A - L_t^B$ the loss difference of two models A and B',
+       '\\textbf{Testul DM} \\refDM: $H_0$: $E[d_t] = 0$, cu $d_t = L_t^A - L_t^B$ diferența pierderilor a două modele A și B'),
+     [T('$\\mathrm{DM} = \\bar d/\\widehat{\\mathrm{SE}}(\\bar d)$, approximately $N(0, 1)$ under $H_0$; $\\bar d$: the mean of $d_t$; $\\mathrm{DM} < -1.96$: A is better',
+        '$\\mathrm{DM} = \\bar d/\\widehat{\\mathrm{SE}}(\\bar d)$, aproximativ $N(0, 1)$ în ipoteza $H_0$; $\\bar d$: media lui $d_t$; $\\mathrm{DM} < -1{,}96$: A este mai bun'),
+      T('$\\widehat{\\mathrm{SE}}$: HAC (heteroskedasticity and autocorrelation consistent) standard error', '$\\widehat{\\mathrm{SE}}$: eroare standard HAC (heteroskedasticity and autocorrelation consistent, robustă la heteroscedasticitate și autocorelație)')])))
 
 chart(T('GARCH against EWMA, out of sample', 'GARCH față de EWMA, în afara eșantionului'), 'tsa_ch5_forecast_eval', 'TSA_ch5_forecasts', [
     T('One-day-ahead variance forecasts from 2015 to @{end}: GARCH(1,1)-t (re-estimated every 250 days) against EWMA with $\\lambda = 0.94$; a rising curve means that GARCH-t has the smaller QLIKE',
       'Prognoze ale varianței cu o zi înainte, din 2015 pînă la @{end}: GARCH(1,1)-t (reestimat la fiecare 250 de zile) față de EWMA cu $\\lambda = 0{,}94$; o curbă crescătoare înseamnă că GARCH-t are QLIKE mai mic')],
-    h='0.50\\textheight')
+    h='0.58\\textheight')
 
 
 def frow(k):
@@ -892,7 +896,8 @@ D.frame(T('Conditional VaR', 'VaR condiționat'), items(
       T('the VaR moves every day with $\\sigma_{t+1}$: high in storms, low in calm periods', 'VaR se schimbă în fiecare zi odată cu $\\sigma_{t+1}$: mare în furtuni, mic în perioadele liniștite')]),
     (T('\\textbf{Worked example}: S\\&P 500 on @{end}, GARCH(1,1)-t: $\\hat\\mu = @{var.mu}$, $\\sigma_{t+1} = @{var.sig}$, $\\hat\\nu = @{var.nu}$',
        '\\textbf{Exemplu rezolvat}: S\\&P 500 la @{end}, GARCH(1,1)-t: $\\hat\\mu = @{var.mu}$, $\\sigma_{t+1} = @{var.sig}$, $\\hat\\nu = @{var.nu}$'),
-     [T('$q = @{var.t} \\times @{var.sc} = @{var.qt}$; VaR 1\\% $= -(@{var.mu} + @{var.sig} \\times (@{var.qt})) = @{var.v1}\\%$', '$q = @{var.t} \\times @{var.sc} = @{var.qt}$; VaR 1\\% $= -(@{var.mu} + @{var.sig} \\times (@{var.qt})) = @{var.v1}\\%$'),
+     [T('$t_{\\hat\\nu}^{-1}(0.01) = @{var.t}$, $\\sqrt{(\\hat\\nu - 2)/\\hat\\nu} = @{var.sc}$, so $q_{0.01} = @{var.t} \\times @{var.sc} = @{var.qt}$', '$t_{\\hat\\nu}^{-1}(0{,}01) = @{var.t}$, $\\sqrt{(\\hat\\nu - 2)/\\hat\\nu} = @{var.sc}$, deci $q_{0{,}01} = @{var.t} \\times @{var.sc} = @{var.qt}$'),
+      T('VaR 1\\% $= -(@{var.mu} + @{var.sig} \\times (@{var.qt})) = @{var.v1}\\%$', 'VaR 1\\% $= -(@{var.mu} + @{var.sig} \\times (@{var.qt})) = @{var.v1}\\%$'),
       T('with Normal $z_t$: $@{var.vn}\\%$; over 10 days (sum of the variances, $\\mu$ ignored): $@{var.qa} \\times \\sqrt{@{fc.sum10}} = @{var.v10}\\%$',
         'cu $z_t$ Normale: $@{var.vn}\\%$; pe 10 zile (suma varianțelor, fără $\\mu$): $@{var.qa} \\times \\sqrt{@{fc.sum10}} = @{var.v10}\\%$')])))
 
@@ -901,7 +906,7 @@ chart(T('VaR 1\\% through the COVID-19 crash', 'VaR 1\\% în timpul crahului COV
       'S\\&P 500, iulie 2019 -- iunie 2021 (@{vf.n} zile): VaR 1\\% pe o zi din GARCH(1,1)-t (reestimat la fiecare 250 de zile) și din EWMA cu $z_t$ Normale'),
     T('Exceedances (return below $-$VaR): GARCH-t @{vf.eg}, EWMA-Normal @{vf.ee}, about @{vf.exp} expected; both models react, but only after the first large falls of March 2020',
       'Depășiri (randament sub $-$VaR): GARCH-t @{vf.eg}, EWMA-Normal @{vf.ee}, circa @{vf.exp} așteptate; ambele modele reacționează, dar abia după primele scăderi mari din martie 2020')],
-    h='0.48\\textheight')
+    h='0.56\\textheight')
 
 
 def vrow(k):
@@ -983,4 +988,7 @@ D.frame(T('Self-assessment', 'Autoevaluare'), items(
 D.references(bib())
 
 if __name__ == '__main__':
+    for _k, _v in list(V.items()):   # a true minus sign for negative numbers, in text and in math
+        if isinstance(_v, str) and _v.startswith('⁅-'):
+            V[_k] = '⁅\\ensuremath{-}' + _v[2:]
     finalize(D.write(V))

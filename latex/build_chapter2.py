@@ -1044,4 +1044,7 @@ D.frame(T('Self-assessment', 'Autoevaluare'), items(
 D.references(bib())
 
 if __name__ == '__main__':
+    for _k, _v in list(V.items()):   # a true minus sign for negative numbers, in text and in math
+        if isinstance(_v, str) and _v.startswith('⁅-'):
+            V[_k] = '⁅\\ensuremath{-}' + _v[2:]
     finalize(D.write(V))

@@ -167,6 +167,7 @@ V.put('wx.gap', gap, 0)
 V.put('wx.dy', dy, 0)
 V.put('wx.corr', EC['cons']['gamma'] * gap, 3)
 V.put('wx.short', EC['cons']['delta0'] * dy, 3)
+V.put('wx.d0', EC['cons']['delta0'], 3)
 V.put('wx.dc', EC['cons']['const'] + EC['cons']['delta0'] * dy + EC['cons']['gamma'] * gap, 2)
 V.put('wx.hl', math.log(0.5) / math.log(0.8), 1)
 
@@ -374,7 +375,7 @@ chart(T('The drunk and her dog by simulation', 'Femeia beată și cîinele ei pr
     T('$T = @{dr.T}$, Gaussian shocks; $c = @{dr.c}$, $d = @{dr.d}$; a stray dog $z_t$ is an independent random walk with the same shocks\' variance',
       '$T = @{dr.T}$, șocuri gaussiene; $c = @{dr.c}$, $d = @{dr.d}$; un cîine fără stăpîn $z_t$ este un mers aleator independent, cu aceeași varianță a șocurilor')], h='0.56\\textheight')
 
-interp(('the simulation', 'simulării'), [
+interp(('the simulation: the distances', 'simulării: distanțele'), [
     (T('Each path is $I(1)$: ADF on $x_t$ gives p = @{dr.px}', 'Fiecare traiectorie este $I(1)$: ADF pe $x_t$ dă p = @{dr.px}'),
      [T('the distance $y_t - x_t$ is an AR(1) with $\\rho = 1 - c - d = @{dr.rho}$: ADF p @{dr.pd}, standard deviation @{dr.sdd}', 'distanța $y_t - x_t$ este un AR(1) cu $\\rho = 1 - c - d = @{dr.rho}$: ADF p @{dr.pd}, abaterea standard @{dr.sdd}'),
       T('the distance to the stray dog wanders: ADF p = @{dr.ps}, standard deviation @{dr.sds}', 'distanța față de cîinele fără stăpîn rătăcește: ADF p = @{dr.ps}, abaterea standard @{dr.sds}')]),
@@ -412,8 +413,10 @@ D.frame(T('Where economics predicts cointegration', 'Cointegrarea în teoria eco
     T('\\textbf{Shares of similar firms}: the same sector shocks; the basis of pairs trading (Section 9)', '\\textbf{Acțiunile unor firme similare}: aceleași șocuri sectoriale; baza pairs trading (secțiunea 9)')))
 
 chart(T('Four pairs of trending series', 'Patru perechi de serii cu trend'), 'tsa_ch7_examples', 'TSA_ch7_common_trends', [
-    T('US Treasury yields (FRED, monthly, since 1960); US real GDP and consumption (statsmodels macrodata, 1959--2009); Banca Transilvania and BRD (adjusted daily prices); EUR/RON and EUR/HUF (BNR reference rates, month-end)',
-      'Randamentele titlurilor de stat americane (FRED, lunar, din 1960); PIB-ul și consumul real al SUA (macrodata din statsmodels, 1959--2009); Banca Transilvania și BRD (prețuri zilnice ajustate); EUR/RON și EUR/HUF (cursuri de referință BNR, la sfîrșitul lunii)')], h='0.58\\textheight')
+    T('US Treasury yields (FRED, monthly, since 1960); US real GDP and consumption (statsmodels macrodata, 1959--2009)',
+      'Randamentele titlurilor de stat americane (FRED, lunar, din 1960); PIB-ul și consumul real al SUA (macrodata din statsmodels, 1959--2009)'),
+    T('Banca Transilvania and BRD (adjusted daily prices); EUR/RON and EUR/HUF (BNR reference rates, month-end)',
+      'Banca Transilvania și BRD (prețuri zilnice ajustate); EUR/RON și EUR/HUF (cursuri de referință BNR, la sfîrșitul lunii)')], h='0.55\\textheight')
 
 interp(('the four pairs', 'celor patru perechi'), [
     (T('Each series is $I(1)$ (Chapter 3); the question is whether the two series of a pair move \\textbf{together} in the long run', 'Fiecare serie este $I(1)$ (Capitolul 3); întrebarea este dacă cele două serii ale unei perechi evoluează \\textbf{împreună} pe termen lung'),
@@ -451,7 +454,7 @@ D.frame(T('Two steps', 'Doi pași'), items(
       T('statistic $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, SE: standard error; reject $H_0$ when $\\tau$ is below the critical value', 'statistica $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, SE: eroarea standard; respingem $H_0$ cînd $\\tau$ este sub valoarea critică')]),
     T('Pretest: each series must be $I(1)$; cointegration between an $I(0)$ and an $I(1)$ series is impossible', 'Testare prealabilă: fiecare serie trebuie să fie $I(1)$; o serie $I(0)$ și una $I(1)$ nu pot fi cointegrate')))
 
-D.frame(T('Why the Dickey--Fuller table is wrong here', 'Motivul pentru care tabelul Dickey--Fuller este greșit aici'), items(
+D.frame(T('The reason the Dickey--Fuller table is wrong here', 'Motivul pentru care tabelul Dickey--Fuller este greșit aici'), items(
     (T('OLS chooses $\\hat b$ to make the residual variance as small as possible', 'OLS alege $\\hat b$ astfel încît varianța reziduurilor să fie cît mai mică'),
      [T('so $\\hat u_t$ looks more stationary than the true $u_t$, even when there is no cointegration', 'deci $\\hat u_t$ pare mai staționar decît adevăratul $u_t$, chiar și atunci cînd nu există cointegrare'),
       T('under $H_0$ the statistic $\\tau$ is shifted to the left of the Dickey--Fuller distribution', 'în ipoteza $H_0$, statistica $\\tau$ este deplasată la stînga distribuției Dickey--Fuller')]),
@@ -463,7 +466,7 @@ D.frame(T('Why the Dickey--Fuller table is wrong here', 'Motivul pentru care tab
 chart(T('The null distribution by simulation', 'Distribuția în ipoteza nulă prin simulare'), 'tsa_ch7_eg_dist', 'TSA_ch7_engle_granger', [
     T('@{ed.R} samples of $T = @{ed.T}$ independent Gaussian random walks; step 1 with a constant, step 2 without lags', '@{ed.R} de eșantioane de $T = @{ed.T}$ mersuri aleatoare gaussiene independente; pasul 1 cu constantă, pasul 2 fără laguri')], h='0.55\\textheight')
 
-interp(('the simulation', 'simulării'), [
+interp(('the simulation: the critical values', 'simulării: valorile critice'), [
     (T('5\\% quantiles: $@{ed.1.q05}$ (one series, Dickey--Fuller), $@{ed.2.q05}$ (2 variables), $@{ed.3.q05}$ (3 variables)', 'Cuantilele de 5\\%: $@{ed.1.q05}$ (o serie, Dickey--Fuller), $@{ed.2.q05}$ (2 variabile), $@{ed.3.q05}$ (3 variabile)'),
      [T('MacKinnon\'s values for $T = @{ed.T}$: $@{ed.1.mk5}$; $@{ed.2.mk5}$; $@{ed.3.mk5}$: the simulation reproduces them', 'valorile MacKinnon pentru $T = @{ed.T}$: $@{ed.1.mk5}$; $@{ed.2.mk5}$; $@{ed.3.mk5}$: simularea le reproduce')]),
     (T('Using the Dickey--Fuller value $@{ed.1.mk5}$ for the residuals would reject a true $H_0$ in @{ed.2.size}\\% of samples with 2 variables and @{ed.3.size}\\% with 3', 'Folosind valoarea Dickey--Fuller $@{ed.1.mk5}$ pentru reziduuri, am respinge o ipoteză $H_0$ adevărată în @{ed.2.size}\\% din eșantioane cu 2 variabile și în @{ed.3.size}\\% cu 3'),
@@ -492,7 +495,8 @@ D.frame(T('Worked example: US consumption and income', 'Exemplu rezolvat: consum
     (T('Data: $c_t$, $y_t$ = 100 $\\times$ log of real consumption and real GDP, quarterly, 1959Q1--2009Q3 (@{eg0.n} quarters)', 'Datele: $c_t$, $y_t$ = 100 $\\times$ logaritmul consumului real și al PIB-ului real, trimestrial, T1 1959--T3 2009 (@{eg0.n} de trimestre)'),
      [T('pretest: ADF with trend, p = @{ex.cc.p} for $c_t$ and @{ex.cy.p} for $y_t$: both $I(1)$', 'testare prealabilă: ADF cu trend, p = @{ex.cc.p} pentru $c_t$ și @{ex.cy.p} pentru $y_t$: ambele $I(1)$')]),
     (T('Step 1: $\\hat c_t = @{eg.cons.a} + @{eg.cons.b}\\,y_t$, $R^2 = @{eg.cons.r2}$, DW $= @{eg.cons.dw}$', 'Pasul 1: $\\hat c_t = @{eg.cons.a} + @{eg.cons.b}\\,y_t$, $R^2 = @{eg.cons.r2}$, DW $= @{eg.cons.dw}$'),
-     [T('the slope is close to 1: a stable consumption share; but $R^2$ and DW alone prove nothing', 'panta este apropiată de 1: o pondere stabilă a consumului; dar $R^2$ și DW singure nu dovedesc nimic')]),
+     [T('DW: the Durbin--Watson statistic of the residuals, about 2 without autocorrelation and close to 0 for very persistent residuals', 'DW: statistica Durbin--Watson a reziduurilor, aproximativ 2 fără autocorelație și apropiată de 0 pentru reziduuri foarte persistente'),
+      T('the slope is close to 1: a stable consumption share; but $R^2$ and DW alone prove nothing', 'panta este apropiată de 1: o pondere stabilă a consumului; dar $R^2$ și DW singure nu dovedesc nimic')]),
     (T('Step 2: $\\tau = @{eg0.tau}$ with @{eg0.k} lags; 5\\% critical value for $n = 2$, $T = @{eg0.n}$: $@{eg.cons.cv}$', 'Pasul 2: $\\tau = @{eg0.tau}$ cu @{eg0.k} laguri; valoarea critică de 5\\% pentru $n = 2$, $T = @{eg0.n}$: $@{eg.cons.cv}$'),
      [T('$@{eg0.tau} < @{eg.cons.cv}$: reject ``no cointegration\'\' at 5\\% (p = @{eg0.p}); Phillips--Ouliaris: $Z_t = @{eg0.po}$, p = @{eg0.pop}', '$@{eg0.tau} < @{eg.cons.cv}$: respingem „fără cointegrare” la 5\\% (p = @{eg0.p}); Phillips--Ouliaris: $Z_t = @{eg0.po}$, p = @{eg0.pop}'),
       T('with the Dickey--Fuller value ($@{eg.cons.adfcv}$) the decision would be the same here, but for the wrong reason', 'cu valoarea Dickey--Fuller ($@{eg.cons.adfcv}$) decizia ar fi aceeași aici, dar din motive greșite')])))
@@ -588,7 +592,7 @@ D.frame(T('Worked example: one quarter of consumption', 'Exemplu rezolvat: un tr
        'ECM estimat (termenii principali): $\\Delta c_t = @{ec.cons.c} + @{ec.cons.d0}\\,\\Delta y_t @{ec.cons.g}\\,\\hat u_{t-1} + \\dots$, cu $\\hat u_{t-1} = c_{t-1} - @{ec.cons.b}\\,y_{t-1} - \\hat a$'),
      []),
     (T('Scenario: consumption is $@{wx.gap}\\%$ above its equilibrium ($\\hat u_{t-1} = @{wx.gap}$) and income grows by $@{wx.dy}\\%$ this quarter', 'Scenariu: consumul este cu $@{wx.gap}\\%$ peste echilibru ($\\hat u_{t-1} = @{wx.gap}$), iar venitul crește cu $@{wx.dy}\\%$ în acest trimestru'),
-     [T('short-run effect: $@{ec.cons.d0} \\times @{wx.dy} = @{wx.short}$; error correction: $@{ec.cons.g} \\times @{wx.gap} = @{wx.corr}$', 'efectul pe termen scurt: $@{ec.cons.d0} \\times @{wx.dy} = @{wx.short}$; corecția erorii: $@{ec.cons.g} \\times @{wx.gap} = @{wx.corr}$'),
+     [T('short-run effect: $@{wx.d0} \\times @{wx.dy} = @{wx.short}$; error correction: $@{ec.cons.g} \\times @{wx.gap} = @{wx.corr}$', 'efectul pe termen scurt: $@{wx.d0} \\times @{wx.dy} = @{wx.short}$; corecția erorii: $@{ec.cons.g} \\times @{wx.gap} = @{wx.corr}$'),
       T('predicted growth of consumption: about $@{wx.dc}\\%$ (the lagged differences are set to 0)', 'creșterea prognozată a consumului: circa $@{wx.dc}\\%$ (lagurile diferențelor sînt egale cu 0)')]),
     T('Without the error correction term, the model would ignore that consumption is already too high', 'Fără termenul de corecție a erorii, modelul ar ignora faptul că deja consumul este prea mare')))
 
@@ -789,7 +793,7 @@ D.frame(T('The adjustment coefficients', 'Coeficienții de ajustare'), table(
     size='footnotesize') + items(
     (T('The 1-year yield does not react to either error ($|t| < 1$): it behaves as \\textbf{weakly exogenous}', 'Randamentul la 1 an nu reacționează la niciuna dintre erori ($|t| < 1$): se comportă ca \\textbf{slab exogen}'),
      [T('the short end follows monetary policy; the 5- and 10-year yields do the adjusting ($|t| \\approx 2$)', 'capătul scurt urmează politica monetară; randamentele la 5 și 10 ani fac ajustarea ($|t| \\approx 2$)')]),
-    (T('The equilibrium errors follow $\\mathbf z_t = (I + \\hat\\beta^\\top\\hat\\alpha)\\,\\mathbf z_{t-1} + \\dots$; eigenvalues @{ve.eig0} and @{ve.eig1}', 'Erorile de echilibru urmează $\\mathbf z_t = (I + \\hat\\beta^\\top\\hat\\alpha)\\,\\mathbf z_{t-1} + \\dots$; valorile proprii @{ve.eig0} și @{ve.eig1}'),
+    (T('The equilibrium errors $\\mathbf z_t = \\hat\\beta^\\top\\mathbf y_t$ follow $\\mathbf z_t = (I + \\hat\\beta^\\top\\hat\\alpha)\\,\\mathbf z_{t-1} + \\dots$; eigenvalues @{ve.eig0} and @{ve.eig1}', 'Erorile de echilibru $\\mathbf z_t = \\hat\\beta^\\top\\mathbf y_t$ urmează $\\mathbf z_t = (I + \\hat\\beta^\\top\\hat\\alpha)\\,\\mathbf z_{t-1} + \\dots$; valorile proprii @{ve.eig0} și @{ve.eig1}'),
      [T('half-lives of about @{ve.h0} and @{ve.h1} months: slow error correction, typical of interest rates', 'timpi de înjumătățire de circa @{ve.h0} și @{ve.h1} luni: corecție lentă a erorii, tipică pentru ratele dobînzii')])), 'small')
 
 chart(T('Impulse responses of the VECM', 'Funcțiile de răspuns la impuls ale modelului VECM'), 'tsa_ch7_vecm_irf', 'TSA_ch7_johansen_vecm', [
@@ -811,7 +815,7 @@ D.recap(('$\\beta$ and $\\alpha$', '$\\beta$ și $\\alpha$'), [
 # =============================================================================
 D.section('Forecasting: VECM or VAR in differences?', 'Prognoza: VECM sau VAR în diferențe?')
 
-D.frame(T('What theory says', 'Argumentele teoretice'), items(
+D.frame(T('The theoretical arguments', 'Argumentele teoretice'), items(
     (T('VECM forecasts keep the equilibria: as the horizon grows, $\\hat\\beta^\\top\\hat{\\mathbf y}_{T+h}$ returns to its mean', 'Prognozele VECM păstrează echilibrele: pe măsură ce orizontul crește, $\\hat\\beta^\\top\\hat{\\mathbf y}_{T+h}$ revine la media sa'),
      [T('a VAR in differences forgets the levels: its forecasts of the spreads stay where they are', 'un VAR în diferențe nu folosește informația din niveluri: prognozele lui pentru spread-uri rămîn la valoarea curentă')]),
     (T('\\refEY: imposing cointegration improves long-horizon forecasts in simulated systems', '\\refEY: impunerea cointegrării îmbunătățește prognozele pe orizonturi lungi în sisteme simulate'), []),
@@ -922,7 +926,8 @@ interp(('the bank pair', 'perechii de bănci'), [
     (T('Full sample: $\\hat b = @{pa.b}$; the spread is an AR(1) with $\\hat\\rho = @{pa.rho}$: half-life about @{pa.h} trading days', 'Întregul eșantion: $\\hat b = @{pa.b}$; spread-ul este un AR(1) cu $\\hat\\rho = @{pa.rho}$: timp de înjumătățire de circa @{pa.h} de zile de tranzacționare'),
      [T('only @{pa.out}\\% of the days lie outside $\\pm 2$: few trading opportunities, each lasting months', 'doar @{pa.out}\\% din zile se află în afara benzii $\\pm 2$: puține ocazii de tranzacționare, fiecare durînd luni de zile')]),
     (T('Trading this picture with full-sample parameters gives @{pb.in.m}\\% per year (Sharpe ratio @{pb.in.s}), after costs', 'Aplicarea regulii pe acest grafic, cu parametrii din întregul eșantion, dă @{pb.in.m}\\% pe an (raportul Sharpe @{pb.in.s}), după costuri'),
-     [T('an illusion: $\\hat b$, $\\bar s$ and $\\hat\\sigma_s$ use the future, and the pair was chosen because it looks cointegrated since 2014', 'o iluzie: $\\hat b$, $\\bar s$ și $\\hat\\sigma_s$ folosesc viitorul, iar perechea a fost aleasă pentru că pare cointegrată din 2014')]),
+     [T('Sharpe ratio: the mean annual return divided by the annual standard deviation of the returns', 'raportul Sharpe: randamentul mediu anual împărțit la abaterea standard anuală a randamentelor'),
+      T('an illusion: $\\hat b$, $\\bar s$ and $\\hat\\sigma_s$ use the future, and the pair was chosen because it looks cointegrated since 2014', 'o iluzie: $\\hat b$, $\\bar s$ și $\\hat\\sigma_s$ folosesc viitorul, iar perechea a fost aleasă pentru că pare cointegrată din 2014')]),
     T('With the rolling rule, the pair passes the formation test in none of its @{pb.tb.w} windows: one year of data is too short to detect such slow error correction',
       'Cu regula pe ferestre mobile, perechea nu trece testul de formare în niciuna dintre cele @{pb.tb.w} ferestre: un an de date este prea puțin pentru a detecta o corecție atît de lentă')])
 
@@ -990,7 +995,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      'VECM & $\\Delta\\mathbf y_t = \\alpha\\beta^\\top\\mathbf y_{t-1} + \\sum_{i=1}^{p-1}\\Gamma_i\\Delta\\mathbf y_{t-i} + \\mathbf u_t$, \\quad $\\Pi = \\sum_i A_i - I$, \\quad $\\Gamma_i = -\\sum_{j>i}A_j$',
      'Johansen & $\\lambda_{\\mathrm{trace}}(r) = -T\\sum_{i>r}\\ln(1 - \\hat\\lambda_i)$, \\quad $\\lambda_{\\max}(r) = -T\\ln(1 - \\hat\\lambda_{r+1})$',
      T('Equilibrium errors', 'Erorile de echilibru') + ' & $\\mathbf z_t = \\beta^\\top\\mathbf y_t$: \\quad $\\mathbf z_t = (I + \\beta^\\top\\alpha)\\mathbf z_{t-1} + \\dots$'],
-    size='scriptsize') + '}')
+    size='footnotesize') + '}')
 
 D.frame(T('Self-assessment', 'Autoevaluare'), items(
     (T('\\textbf{Question}: Engle--Granger with two variables gives $\\tau = -3.1$ for $T = 300$. Do you reject ``no cointegration\'\' at 5\\%?', '\\textbf{Întrebare}: Engle--Granger cu două variabile dă $\\tau = -3{,}1$ pentru $T = 300$. Respingeți „fără cointegrare” la 5\\%?'),

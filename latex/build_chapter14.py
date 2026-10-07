@@ -296,8 +296,8 @@ interp(('the diversification curve', 'curbei de diversificare'), [
     T('The question of the chapter: does $\\rho$ stay put in real markets, or does it move with the state of the market?', 'Întrebarea capitolului: rămîne $\\rho$ constant pe piețele reale sau se mișcă odată cu starea pieței?')])
 
 chart(T('Correlations change over time', 'Corelațiile se schimbă în timp'), 'tsa_ch14_rolling_corr', 'TSA_ch14_correlations', [
-    T('Correlation of daily log returns over rolling windows of 250 trading days (about one year), dated at the window end; returns on the days on which both markets trade; shaded: September 2008--March 2009 and February--April 2020',
-      'Corelația randamentelor logaritmice zilnice pe ferestre mobile de 250 de zile de tranzacționare (aproximativ un an), datată la sfîrșitul ferestrei; randamente în zilele în care se tranzacționează ambele piețe; zonele colorate: septembrie 2008--martie 2009 și februarie--aprilie 2020')],
+    (T('Correlation of daily log returns over rolling windows of 250 trading days (about one year), dated at the window end', 'Corelația randamentelor logaritmice zilnice pe ferestre mobile de 250 de zile de tranzacționare (aproximativ un an), datată la sfîrșitul ferestrei'),
+     [T('returns on the days on which both markets trade; shaded: September 2008--March 2009 and February--April 2020', 'randamente în zilele în care se tranzacționează ambele piețe; zonele colorate: septembrie 2008--martie 2009 și februarie--aprilie 2020')])],
     h='0.62\\textheight')
 
 interp(('the rolling correlations', 'corelațiilor pe ferestre mobile'), [
@@ -361,8 +361,8 @@ D.frame(T('Estimation by maximum likelihood', 'Estimarea prin verosimilitate max
      [T('$\\ell(\\theta) = -\\frac12\\sum_{t=1}^{T}\\left(N\\log 2\\pi + \\log|\\mathbf{H}_t| + \\boldsymbol{\\varepsilon}_t^\\top\\mathbf{H}_t^{-1}\\boldsymbol{\\varepsilon}_t\\right)$',
         '$\\ell(\\theta) = -\\frac12\\sum_{t=1}^{T}\\left(N\\log 2\\pi + \\log|\\mathbf{H}_t| + \\boldsymbol{\\varepsilon}_t^\\top\\mathbf{H}_t^{-1}\\boldsymbol{\\varepsilon}_t\\right)$'),
       T('$|\\mathbf{H}_t|$ is the determinant; for $N = 1$ this is the GARCH likelihood of Chapter 5', '$|\\mathbf{H}_t|$ este determinantul; pentru $N = 1$ regăsim verosimilitatea GARCH din Capitolul 5')]),
-    (T('Returns have fat tails, so the Normal likelihood is used as \\textbf{quasi-maximum likelihood} (QML): the estimates stay consistent, the standard errors need a robust (sandwich) correction',
-       'Randamentele au cozi groase, deci verosimilitatea Normală este folosită ca \\textbf{cvasi-verosimilitate maximă} (QML): estimatorii rămîn consistenți, iar erorile standard au nevoie de o corecție robustă (sandwich)'), []),
+    (T('Returns have fat tails, so the Normal likelihood is used as \\textbf{quasi-maximum likelihood} (QML)', 'Randamentele au cozi groase, deci verosimilitatea Normală este folosită ca \\textbf{cvasi-verosimilitate maximă} (QML)'),
+     [T('the estimates stay consistent; the standard errors need a robust (sandwich) correction', 'estimatorii rămîn consistenți; erorile standard au nevoie de o corecție robustă (sandwich)')]),
     (T('Every evaluation of $\\ell(\\theta)$ needs $\\mathbf{H}_t^{-1}$ and $|\\mathbf{H}_t|$ for all $t$: the cost grows fast with $N$ and with the number of parameters',
        'Fiecare evaluare a lui $\\ell(\\theta)$ cere $\\mathbf{H}_t^{-1}$ și $|\\mathbf{H}_t|$ pentru toți $t$: costul crește repede cu $N$ și cu numărul de parametri'), [])))
 
@@ -395,7 +395,8 @@ D.frame(T('The BEKK model', 'Modelul BEKK'), items(
      [T('BEKK: Baba, Engle, Kraft and Kroner; $\\mathbf{C}$ lower triangular, $\\mathbf{A}$ and $\\mathbf{B}$ are $N \\times N$', 'BEKK: Baba, Engle, Kraft și Kroner; $\\mathbf{C}$ inferior triunghiulară, $\\mathbf{A}$ și $\\mathbf{B}$ de dimensiune $N \\times N$'),
       T('$\\mathbf{A}$: the reaction to yesterday\'s shocks; $\\mathbf{B}$: the persistence of $\\mathbf{H}_{t-1}$; $c_{ij}^*$: the elements of $\\mathbf{C}\\mathbf{C}^\\top$', '$\\mathbf{A}$: reacția la șocurile de ieri; $\\mathbf{B}$: persistența lui $\\mathbf{H}_{t-1}$; $c_{ij}^*$: elementele matricei $\\mathbf{C}\\mathbf{C}^\\top$')]),
     (T('\\textbf{Positive definite by construction}', '\\textbf{Pozitiv definită prin construcție}'),
-         [T("each term is a ``square'' $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ of a positive (semi)definite matrix", 'fiecare termen este un „pătrat” $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ al unei matrice pozitiv (semi)definite'),
+         [T("each term is a ``square'' $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ of a positive (semi)definite matrix $\\mathbf{M}$", 'fiecare termen este un „pătrat” $\\mathbf{X}^\\top\\mathbf{M}\\mathbf{X}$ al unei matrice $\\mathbf{M}$ pozitiv (semi)definite'),
+          T('$\\mathbf{M}$: $\\mathbf{I}$, $\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top$ or $\\mathbf{H}_{t-1}$; $\\mathbf{X}$: $\\mathbf{C}^\\top$, $\\mathbf{A}$ or $\\mathbf{B}$', '$\\mathbf{M}$: $\\mathbf{I}$, $\\boldsymbol{\\varepsilon}_{t-1}\\boldsymbol{\\varepsilon}_{t-1}^\\top$ sau $\\mathbf{H}_{t-1}$; $\\mathbf{X}$: $\\mathbf{C}^\\top$, $\\mathbf{A}$ sau $\\mathbf{B}$'),
           T('parameters: $N(N+1)/2 + 2N^2$, i.e. @{np.2.BEKK} for $N = 2$ and @{np.10.BEKK} for $N = 10$', 'parametri: $N(N+1)/2 + 2N^2$, adică @{np.2.BEKK} pentru $N = 2$ și @{np.10.BEKK} pentru $N = 10$')]),
     (T('\\textbf{Diagonal BEKK} ($\\mathbf{A}$, $\\mathbf{B}$ diagonal)', '\\textbf{BEKK diagonal} ($\\mathbf{A}$, $\\mathbf{B}$ diagonale)'),
          [T('$h_{12,t} = c_{12}^* + a_{11}a_{22}\\,\\varepsilon_{1,t-1}\\varepsilon_{2,t-1} + b_{11}b_{22}\\,h_{12,t-1}$', '$h_{12,t} = c_{12}^* + a_{11}a_{22}\\,\\varepsilon_{1,t-1}\\varepsilon_{2,t-1} + b_{11}b_{22}\\,h_{12,t-1}$'),
@@ -650,17 +651,23 @@ D.frame(T('Worked example: VaR 1\\% of two assets', 'Exemplu rezolvat: VaR 1\\% 
      [T('the jump of the correlation alone adds a fifth to the VaR; in a real crisis the volatilities rise too', 'doar saltul corelației adaugă o cincime la VaR; într-o criză reală cresc și volatilitățile')]),
     (T('For a portfolio of 1 million lei: VaR 1\\% of about @{ex.vark3} thousand lei in calm times and @{ex.vark9} thousand lei in the crisis case', 'Pentru un portofoliu de 1 milion de lei: VaR 1\\% de aproximativ @{ex.vark3} mii de lei în perioada calmă și @{ex.vark9} mii de lei în cazul de criză'), [])))
 
-D.frame(T('Backtesting a VaR', 'Backtesting pentru VaR'), items(
+D.frame(T('Backtesting a VaR (1/2): frequency', 'Backtesting pentru VaR (1/2): frecvența'), items(
     (T('A \\textbf{violation} on day $t$', 'O \\textbf{încălcare} în ziua $t$'),
          [T('$r_{p,t} < -\\mathrm{VaR}_{0.01,t}$', '$r_{p,t} < -\\mathrm{VaR}_{0{,}01,t}$'),
           T('a correct VaR 1\\% has violations on 1\\% of the days, at random times', 'un VaR 1\\% corect are încălcări în 1\\% din zile, la momente aleatoare')]),
     (T('\\textbf{Kupiec test} \\refKupiec\\ (frequency)', '\\textbf{Testul Kupiec} \\refKupiec\\ (frecvența)'),
          [T('$x$ violations in $n$ days, $\\hat p = x/n$', '$x$ încălcări în $n$ zile, $\\hat p = x/n$'),
           T('$LR_{uc} = -2\\log\\dfrac{(1-0.01)^{n-x}\\,0.01^{x}}{(1-\\hat p)^{n-x}\\,\\hat p^{x}} \\sim \\chi^2(1)$; reject at 5\\% if $LR_{uc} > 3.84$', '$LR_{uc} = -2\\log\\dfrac{(1-0{,}01)^{n-x}\\,0{,}01^{x}}{(1-\\hat p)^{n-x}\\,\\hat p^{x}} \\sim \\chi^2(1)$; respingem la 5\\% dacă $LR_{uc} > 3{,}84$'),
-          T('$uc$: unconditional coverage; the ratio compares the likelihood of the violations under the rate 1\\% with that under the observed rate $\\hat p$', '$uc$: unconditional coverage (acoperirea necondiționată); raportul compară verosimilitatea încălcărilor la rata de 1\\% cu cea la rata observată $\\hat p$')]),
+          T('$uc$: unconditional coverage; the ratio compares the likelihood of the violations under the rate 1\\% with that under the observed rate $\\hat p$', '$uc$: unconditional coverage (acoperirea necondiționată); raportul compară verosimilitatea încălcărilor la rata de 1\\% cu cea la rata observată $\\hat p$')])), size='footnotesize')
+
+D.frame(T('Backtesting a VaR (2/2): independence', 'Backtesting pentru VaR (2/2): independența'), items(
     (T('\\textbf{Christoffersen test} \\refChr\\ (independence)', '\\textbf{Testul Christoffersen} \\refChr\\ (independența)'),
          [T('is a violation more likely the day after a violation?', 'este o încălcare mai probabilă în ziua de după o încălcare?'),
           T('compares $\\pi_{11} = P(\\text{violation} \\mid \\text{violation yesterday})$ with $\\pi_{01} = P(\\text{violation} \\mid \\text{no violation yesterday})$', 'compară $\\pi_{11} = P(\\text{încălcare} \\mid \\text{încălcare ieri})$ cu $\\pi_{01} = P(\\text{încălcare} \\mid \\text{fără încălcare ieri})$')]),
+    (T('The statistic', 'Statistica'),
+         [T('$LR_{ind} = -2\\log\\dfrac{(1-\\hat\\pi)^{n_{00}+n_{10}}\\,\\hat\\pi^{\\,n_{01}+n_{11}}}{(1-\\hat\\pi_{01})^{n_{00}}\\,\\hat\\pi_{01}^{\\,n_{01}}\\,(1-\\hat\\pi_{11})^{n_{10}}\\,\\hat\\pi_{11}^{\\,n_{11}}} \\sim \\chi^2(1)$', '$LR_{ind} = -2\\log\\dfrac{(1-\\hat\\pi)^{n_{00}+n_{10}}\\,\\hat\\pi^{\\,n_{01}+n_{11}}}{(1-\\hat\\pi_{01})^{n_{00}}\\,\\hat\\pi_{01}^{\\,n_{01}}\\,(1-\\hat\\pi_{11})^{n_{10}}\\,\\hat\\pi_{11}^{\\,n_{11}}} \\sim \\chi^2(1)$'),
+          T('$n_{ij}$: the number of days in state $j$ after a day in state $i$ (1: violation, 0: none); $\\hat\\pi_{01} = n_{01}/(n_{00}+n_{01})$, $\\hat\\pi_{11} = n_{11}/(n_{10}+n_{11})$', '$n_{ij}$: numărul de zile în starea $j$ după o zi în starea $i$ (1: încălcare, 0: fără); $\\hat\\pi_{01} = n_{01}/(n_{00}+n_{01})$, $\\hat\\pi_{11} = n_{11}/(n_{10}+n_{11})$'),
+          T('$\\hat\\pi$: the overall violation rate; the numerator assumes $\\pi_{01} = \\pi_{11}$ (no clustering); a small $p$-value rejects independence', '$\\hat\\pi$: rata totală a încălcărilor; numărătorul presupune $\\pi_{01} = \\pi_{11}$ (fără grupare); un p-value mic respinge independența')]),
     (T('\\textbf{Honest design}', '\\textbf{O schemă de evaluare corectă}'),
          [T('estimate all parameters on 2000--2014 (@{vr.nin} days), then run the filters forward on 2015--2026 (@{vr.n} days) without re-estimating', 'estimați toți parametrii pe 2000--2014 (@{vr.nin} de zile), apoi rulați filtrele mai departe pe 2015--2026 (@{vr.n} de zile), fără reestimare')])), size='footnotesize')
 
@@ -804,7 +811,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      T('Half-life', 'Timpul de înjumătățire') + ' & $\\ln 0.5/\\ln(a + b)$',
      T('Portfolio VaR 1\\%', 'VaR 1\\% al portofoliului') + ' & $-(\\mathbf{w}^\\top\\boldsymbol{\\mu} + q_{0.01}\\sqrt{\\mathbf{w}^\\top\\mathbf{H}_t\\mathbf{w}})$',
      T('Hedge ratio', 'Raportul de acoperire') + ' & $h_t^* = h_{sf,t}/h_{ff,t}$, \\quad $HE = 1 - \\Var(r_s - h r_f)/\\Var(r_s)$'],
-    size='scriptsize') + '}')
+    size='footnotesize') + '}')
 
 D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(
     (T('\\textbf{Question}: how many parameters does a diagonal BEKK(1,1) have for $N = 3$?', '\\textbf{Întrebare}: cîți parametri are un BEKK(1,1) diagonal pentru $N = 3$?'),

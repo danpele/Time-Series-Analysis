@@ -322,15 +322,16 @@ D.frame(T('Four centuries of manias', 'Patru secole de manii'), two(
     size='footnotesize')
 
 D.frame(T('1929 and 1987', '1929 și 1987'), two(
-    ph('nyse', T('Crowd outside the New York Stock Exchange, 29 October 1929', 'Mulțime în fața Bursei din New York, 29 octombrie 1929'), h='0.42\\textheight'),
+    ph('nyse', T('Crowd outside the New York Stock Exchange, 29 October 1929', 'Mulțime în fața Bursei din New York, 29 octombrie 1929'), h='0.25\\textheight')
+    + '\n\\par\\vspace{2mm}\n'
+    + ph('amsterdam', T('Amsterdam Stock Exchange, 21 October 1987', 'Bursa din Amsterdam, 21 octombrie 1987'), h='0.16\\textheight'),
     items((T('\\textbf{October 1929}', '\\textbf{Octombrie 1929}'),
                [T('the end of the boom of the 1920s and the start of the Great Depression', 'sfîrșitul boom-ului anilor 1920 și începutul Marii Crize')]),
           (T('\\textbf{19 October 1987} (Black Monday)', '\\textbf{19 octombrie 1987} (Black Monday)'),
                [T('the largest one-day fall of the Dow Jones index, without any major news that day', 'cea mai mare scădere într-o singură zi a indicelui Dow Jones, fără vreo știre majoră în acea zi'),
                 T('\\refSJB\\ found accelerating, log-periodic oscillations in the years before 1987; this observation started the LPPL literature', '\\refSJB\\ au găsit oscilații log-periodice, tot mai rapide, în anii dinaintea lui 1987; această observație a pornit literatura LPPL'),
                 T('the daily data of this course start in 1990: we study 1987 through the literature and later bubbles with our own data', 'datele zilnice ale cursului încep în 1990: studiem 1987 prin literatură, iar bulele de mai tîrziu cu datele noastre')]),
-          T('A crash without news suggests an \\textbf{endogenous} cause: the market itself became fragile', 'Un crah fără știri sugerează o cauză \\textbf{endogenă}: piața însăși devenise fragilă'))
-    + ph('amsterdam', T('Amsterdam Stock Exchange, 21 October 1987', 'Bursa din Amsterdam, 21 octombrie 1987'), h='0.14\\textheight')),
+          T('A crash without news suggests an \\textbf{endogenous} cause: the market itself became fragile', 'Un crah fără știri sugerează o cauză \\textbf{endogenă}: piața însăși devenise fragilă'))),
     size='footnotesize')
 
 D.frame(T('Fundamental value and bubble', 'Valoarea fundamentală și bula'), items(
@@ -447,8 +448,9 @@ chart(T('Explosive episodes of the Nasdaq 100, 1990--2004', 'Episoadele exploziv
     h='0.62\\textheight')
 
 interp(('the Nasdaq 100 tests', 'testelor pentru Nasdaq 100'), [
-    (T('Whole-sample ADF $@{pn.adf}$ (95\\% critical value $@{pn.adf95}$): no evidence; SADF @{pn.sadf} (@{pn.sadf95}) and GSADF @{pn.gsadf} (@{pn.gsadf95}): explosive behaviour', 'ADF pe tot eșantionul $@{pn.adf}$ (valoarea critică de 95\\%: $@{pn.adf95}$): nicio dovadă; SADF @{pn.sadf} (@{pn.sadf95}) și GSADF @{pn.gsadf} (@{pn.gsadf95}): comportament exploziv'),
-     [T('the crash of 2000--2002 hides the bubble from a single test on the whole sample', 'crahul din 2000--2002 ascunde bula de un test unic pe tot eșantionul')]),
+    (T('Whole-sample ADF $@{pn.adf}$ (95\\% critical value $@{pn.adf95}$): no evidence', 'ADF pe tot eșantionul $@{pn.adf}$ (valoarea critică de 95\\%: $@{pn.adf95}$): nicio dovadă'),
+     [T('SADF @{pn.sadf} (critical value @{pn.sadf95}) and GSADF @{pn.gsadf} (critical value @{pn.gsadf95}): explosive behaviour', 'SADF @{pn.sadf} (valoarea critică @{pn.sadf95}) și GSADF @{pn.gsadf} (valoarea critică @{pn.gsadf95}): comportament exploziv'),
+      T('the crash of 2000--2002 hides the bubble from a single test on the whole sample', 'crahul din 2000--2002 ascunde bula de un test unic pe tot eșantionul')]),
     (T('BSADF dates @{pn.nep} episodes; the longest runs from @{pn.ep.a} to @{pn.ep.b} (@{pn.ep.n} weeks)', 'BSADF datează @{pn.nep} episoade; cel mai lung ține de la @{pn.ep.a} pînă la @{pn.ep.b} (@{pn.ep.n}@{pn.ep.n.de} săptămîni)'),
      [T('short explosive bursts already from @{pn.ep0.a}: the 1990s boom came in waves, as \\refPWY\\ found', 'episoade explozive scurte încă din @{pn.ep0.a}: boom-ul anilor 1990 a venit în valuri, cum au găsit \\refPWY')]),
     T('The end date is late: the statistic stays high for months after the peak; the test dates exuberance, it does not announce the crash', 'Data de sfîrșit este tîrzie: statistica rămîne mare luni de zile după maximum; testul datează exuberanța, nu anunță crahul')])
@@ -514,8 +516,8 @@ D.frame(T('Super-exponential growth', 'Creșterea superexponențială'), items(
     T('Such growth cannot last: it must end at or before $t_c$, a \\textbf{finite-time singularity}', 'O astfel de creștere nu poate dura: trebuie să se încheie la $t_c$ sau înainte, o \\textbf{singularitate în timp finit}')), size='footnotesize')
 
 chart(T('Exponential and super-exponential growth', 'Creștere exponențială și creștere superexponențială'), 'tsa_ch13_growth', 'TSA_ch13_lppl_model', [
-    T('Left: log price; right: its growth rate $d \\ln p/dt$; exponential ($r = 0.8$), power-law singularity ($A = 1$, $B = -1$, $m = 0.5$, $t_c = 1$) and the same with log-periodic oscillations',
-      'Stînga: prețul logaritmic; dreapta: ritmul lui de creștere $d \\ln p/dt$; exponențială ($r = 0{,}8$), singularitate de tip lege de putere ($A = 1$, $B = -1$, $m = 0{,}5$, $t_c = 1$) și aceeași cu oscilații log-periodice')],
+    T('Left: log price; right: its growth rate $d \\ln P/dt$; exponential ($g = 0.8$), power-law singularity ($A = 1$, $B = -1$, $m = 0.5$, $t_c = 1$) and the same with log-periodic oscillations',
+      'Stînga: prețul logaritmic; dreapta: ritmul lui de creștere $d \\ln P/dt$; exponențială ($g = 0{,}8$), singularitate de tip lege de putere ($A = 1$, $B = -1$, $m = 0{,}5$, $t_c = 1$) și aceeași cu oscilații log-periodice')],
     h='0.58\\textheight')
 
 interp(('the growth paths', 'traiectoriilor de creștere'), [
@@ -595,6 +597,7 @@ D.frame(T('Parameter constraints: the filter', 'Restricțiile parametrilor: filt
       T('damping $\\dfrac{m|B|}{\\omega|C|} \\ge 1$: the hazard rate stays positive', 'amortizarea $\\dfrac{m|B|}{\\omega|C|} \\ge 1$: rata de hazard rămîne pozitivă')]),
     (T('Conditions on the residuals', 'Condiții asupra reziduurilor'),
      [T('every fitted price within 15\\% of the observed price; the Lomb periodogram \\refLomb\\ confirms the log-periodic cycle (level 10\\%)', 'fiecare preț ajustat la cel mult 15\\% de prețul observat; periodograma Lomb \\refLomb\\ confirmă ciclul log-periodic (nivel 10\\%)'),
+      T('Lomb periodogram: a periodogram for unevenly spaced points, here of the residuals as a function of $\\ln(t_c - t)$', 'periodograma Lomb: o periodogramă pentru puncte neuniform distanțate, aici a reziduurilor în funcție de $\\ln(t_c - t)$'),
       T('the residuals are stationary: the Dickey--Fuller and Phillips--Perron tests of Chapter 3 reject a unit root (level 10\\%)', 'reziduurile sînt staționare: testele Dickey--Fuller și Phillips--Perron din Capitolul 3 resping rădăcina unitară (nivel 10\\%)')])), size='footnotesize')
 
 D.recap(('The LPPL model', 'modelul LPPL'), [
@@ -630,8 +633,9 @@ D.frame(T('The two-step method of Filimonov and Sornette (2/2)', 'Metoda în doi
      [T('$\\operatorname{atan2}(C_2, C_1)$: the angle of the point $(C_1, C_2)$, in $(-\\pi, \\pi]$', '$\\operatorname{atan2}(C_2, C_1)$: unghiul punctului $(C_1, C_2)$, în $(-\\pi, \\pi]$')])), size='footnotesize')
 
 chart(T('The cost landscape', 'Peisajul funcției de cost'), 'tsa_ch13_cost', 'TSA_ch13_estimation', [
-    T('Nasdaq 100, window from the low of October 1998 to 30 days before the peak; left: $\\log \\mathrm{SSR}$ over $(t_c, m)$, minimised over $\\omega \\in [2, 25]$ (@{cost.n} grid points, with the linear step solved at each point); right: the minimum over $m$ and $\\omega$ as a function of $t_c$',
-      'Nasdaq 100, fereastra de la minimul din octombrie 1998 pînă la 30 de zile înainte de maximum; stînga: $\\log \\mathrm{SSR}$ după $(t_c, m)$, minimizat după $\\omega \\in [2, 25]$ (@{cost.n}@{cost.n.de} puncte de grilă, cu pasul liniar rezolvat în fiecare punct); dreapta: minimul după $m$ și $\\omega$, ca funcție de $t_c$')],
+    (T('Nasdaq 100, window from the low of October 1998 to 30 days before the peak', 'Nasdaq 100, fereastra de la minimul din octombrie 1998 pînă la 30 de zile înainte de maximum'),
+     [T('left: $\\log \\mathrm{SSR}$ over $(t_c, m)$, minimised over $\\omega \\in [2, 25]$ (@{cost.n} grid points, with the linear step solved at each point)', 'stînga: $\\log \\mathrm{SSR}$ după $(t_c, m)$, minimizat după $\\omega \\in [2, 25]$ (@{cost.n}@{cost.n.de} puncte de grilă, cu pasul liniar rezolvat în fiecare punct)'),
+      T('right: the minimum over $m$ and $\\omega$ as a function of $t_c$', 'dreapta: minimul după $m$ și $\\omega$, ca funcție de $t_c$')])],
     h='0.56\\textheight')
 
 interp(('the cost landscape', 'peisajului funcției de cost'), [
@@ -698,8 +702,8 @@ interp(('the windows', 'ferestrelor'), [
     T('Short windows put $t_c$ right after $t_2$; long windows spread it out: the window length is a hidden modelling choice', 'Ferestrele scurte pun $t_c$ imediat după $t_2$; ferestrele lungi îl împrăștie: lungimea ferestrei este o alegere de modelare ascunsă')])
 
 chart(T('The indicator around four peaks', 'Indicatorul în jurul a patru maxime'), 'tsa_ch13_ci', 'TSA_ch13_confidence', [
-    T('Log price (left axis) and the indicator (right axis) every 5 trading days (Bitcoin: 7 days), from 18 months before to 4 months after the peak; green area: parameter conditions; purple line: all conditions',
-      'Prețul logaritmic (axa din stînga) și indicatorul (axa din dreapta) la fiecare 5 zile de tranzacționare (Bitcoin: 7 zile), de la 18 luni înainte pînă la 4 luni după maximum; zona verde: condițiile asupra parametrilor; linia mov: toate condițiile')],
+    (T('Log price (left axis) and the indicator (right axis) every 5 trading days (Bitcoin: 7 days), from 18 months before to 4 months after the peak', 'Prețul logaritmic (axa din stînga) și indicatorul (axa din dreapta) la fiecare 5 zile de tranzacționare (Bitcoin: 7 zile), de la 18 luni înainte pînă la 4 luni după maximum'),
+     [T('green area: parameter conditions; purple line: all conditions', 'zona verde: condițiile asupra parametrilor; linia mov: toate condițiile')])],
     h='0.64\\textheight')
 
 interp(('the indicator', 'indicatorului'), [
@@ -744,8 +748,8 @@ D.frame(T('Traps in evaluating crash predictions', 'Capcane în evaluarea progno
     T('A fair test fixes everything in advance (windows, filter, threshold, the definition of a crash) and runs over the whole sample', 'Un test corect fixează totul dinainte (ferestre, filtru, prag, definiția crahului) și rulează pe tot eșantionul')))
 
 chart(T('Alarms over the whole sample', 'Alarmele pe tot eșantionul'), 'tsa_ch13_eval', 'TSA_ch13_evaluation', [
-    T('Indicator every 5 trading days (S\\&P 500, @{ev.sp500.start} -- @{ev.sp500.end}) and every 7 days (Bitcoin, @{ev.btc.start} -- @{ev.btc.end}); a crash: a fall of at least 20\\% within 182 days after the alarm; right: hit rate by threshold',
-      'Indicatorul la fiecare 5 zile de tranzacționare (S\\&P 500, @{ev.sp500.start} -- @{ev.sp500.end}) și la fiecare 7 zile (Bitcoin, @{ev.btc.start} -- @{ev.btc.end}); un crah: o scădere de cel puțin 20\\% în cele 182 de zile de după alarmă; dreapta: rata de reușită în funcție de prag')],
+    (T('Indicator every 5 trading days (S\\&P 500, @{ev.sp500.start} -- @{ev.sp500.end}) and every 7 days (Bitcoin, @{ev.btc.start} -- @{ev.btc.end})', 'Indicatorul la fiecare 5 zile de tranzacționare (S\\&P 500, @{ev.sp500.start} -- @{ev.sp500.end}) și la fiecare 7 zile (Bitcoin, @{ev.btc.start} -- @{ev.btc.end})'),
+     [T('a crash: a fall of at least 20\\% within 182 days after the alarm; right: hit rate by threshold', 'un crah: o scădere de cel puțin 20\\% în cele 182 de zile de după alarmă; dreapta: rata de reușită în funcție de prag')])],
     h='0.62\\textheight')
 
 interp(('the evaluation', 'evaluării'), [
@@ -770,9 +774,9 @@ D.frame(T('Strengths and limits of LPPL', 'Posibilitățile și limitele modelul
          [T('describe a run-up with accelerating growth and shrinking corrections in a few interpretable parameters', 'descrie o creștere cu ritm accelerat și corecții tot mai scurte prin cîțiva parametri interpretabili'),
           T('measure ``how bubble-like\'\' a market is today, across many windows (the indicator)', 'măsura cît de mult seamănă azi o piață cu o bulă, pe multe ferestre (indicatorul)')]),
     (T('\\textbf{Cannot}', '\\textbf{Nu poate}'),
-         [T('give the date of a crash', 'da data unui crah'),
-          T('$t_c$ is the end of the regime, and the regime may end with a slow decline', '$t_c$ este sfîrșitul regimului, iar regimul se poate încheia cu o scădere lentă'),
-          T('nor tell us whether the price is above the fundamental value: that needs fundamentals', 'nici să ne spună dacă prețul este peste valoarea fundamentală: pentru asta sînt necesare fundamentele')]),
+         [T('give the date of a crash: $t_c$ marks the end of the regime', 'da data unui crah: $t_c$ marchează sfîrșitul regimului'),
+          T('guarantee a crash: the regime may end with a slow decline', 'garanta un crah: regimul se poate încheia și cu o scădere lentă'),
+          T('tell whether the price is above the fundamental value: that needs fundamentals', 'spune dacă prețul este peste valoarea fundamentală: pentru aceasta sînt necesare fundamentele')]),
     T('Use it with the explosive-root tests, with fundamentals (valuation ratios) and with risk measures such as VaR 1\\% (Chapter 5), not alone', 'Folosiți-l împreună cu testele de rădăcini explozive, cu fundamentele (rapoarte de evaluare) și cu măsuri de risc precum VaR 1\\% (Capitolul 5), nu singur')))
 
 D.recap(('An honest evaluation', 'o evaluare riguroasă'), [
@@ -826,7 +830,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      T('Scaling ratio', 'Raportul de scală') + ' & $\\lambda = e^{2\\pi/\\omega}$',
      T('Damping', 'Amortizarea') + ' & $m|B|/(\\omega|C|) \\ge 1$',
      T('Indicator', 'Indicatorul') + ' & ' + T('share of qualified windows ending at $t_2$', 'ponderea ferestrelor calificate care se încheie la $t_2$')],
-    size='scriptsize') + '}')
+    size='footnotesize') + '}')
 
 D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(
     (T('\\textbf{Question}: in a Blanchard--Watson bubble with $r = 1\\%$ and $\\pi = 0.95$, by how much does the bubble grow in a period in which it survives?', '\\textbf{Întrebare}: într-o bulă Blanchard--Watson cu $r = 1\\%$ și $\\pi = 0{,}95$, cu cît crește bula într-o perioadă în care supraviețuiește?'),

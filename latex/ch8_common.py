@@ -12,7 +12,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from tsa_build import ROOT, Values, n   # noqa: E402,F401
-from ch1_common import T, V2, finalize, date, pv, MONTHS_EN, MONTHS_RO   # noqa: E402,F401
+from ch1_common import T, V2, date, pv, MONTHS_EN, MONTHS_RO   # noqa: E402,F401
+from ch6_common import finalize   # noqa: E402,F401
 
 QL = os.path.join(ROOT, 'Quantlets', 'Ch_08')
 QLURL = 'https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_08'

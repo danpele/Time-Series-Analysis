@@ -639,7 +639,7 @@ MSCA Digital Finance}
 \begin{frame}{Recap: The periodogram}
 \itemsize{\small}
 \begin{itemize}
-    \item $I(\nu_j) = |d(\nu_j)|^2$: the squared amplitude of the cycle at each Fourier frequency; it sums to the variance
+    \item $I(\nu_j) = |d(\nu_j)|^2$: proportional to the squared amplitude of the cycle at each Fourier frequency; it sums to the variance
     \item $2I/f \approx \chi^2_2$: unbiased but not consistent; neighbouring ordinates are nearly independent
     \item Sunspots: a peak at 11.0 years; Fisher's $g$ rejects white noise
 \end{itemize}
@@ -727,7 +727,7 @@ MSCA Digital Finance}
     \end{itemize}
     \item The \textbf{Welch} method (\refWelch)
     \begin{itemize}
-        \item an average of the periodograms of $K$ segments
+        \item an average of the periodograms of $K$ segments: $\hat f_W(\nu) = \frac1K\sum_{k=1}^{K} I_k(\nu)$, $I_k$: the tapered periodogram of segment $k$
         \item split the series into $K$ overlapping segments, taper each, average their periodograms
         \item \texttt{scipy.signal.welch}; the segment length sets the resolution
     \end{itemize}
@@ -1070,7 +1070,7 @@ MSCA Digital Finance}
     \begin{itemize}
         \item this is why growth rates look noisier than levels; filtering white noise can even create spurious cycles (the Slutsky effect, \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter0_introduction.pdf}{Chapter 0})
     \end{itemize}
-    \item HP cycle filter: gain 0.998 at 8 quarters, 0.70 at 32 quarters, 0.49 at 40 quarters; half power at about 40 quarters
+    \item HP cycle filter: squared gain 0.998 at 8 quarters, 0.70 at 32 quarters, 0.49 at 40 quarters; half power at about 40 quarters
     \begin{itemize}
         \item it keeps everything faster than 10 years, including noise: not a band-pass filter (\refBK)
     \end{itemize}
@@ -1123,10 +1123,11 @@ MSCA Digital Finance}
 \begin{itemize}
     \item In the business-cycle band (18--96 months) the squared coherence averages 0.87 (maximum 0.95), far above the 5\% threshold 0.35
     \begin{itemize}
+        \item the 5\% threshold for a Welch estimate with $K$ segments: $1 - 0.05^{1/(K-1)}$
         \item at frequencies faster than 6 months it averages only 0.17: the monthly noise of the two series is unrelated
         \item the ordinary correlation, 0.49, mixes the strong link of the cycles with the weak link of the noise
     \end{itemize}
-    \item Phase at the 48-month cycle: -0.23 radians, a lag of about 1.7 months
+    \item Phase at the 48-month cycle: $-0.23$ radians, a lag of about 1.7 months
     \begin{itemize}
         \item the fall in unemployment follows the recovery of production with a short delay (Okun's law, with a lag)
     \end{itemize}
@@ -1139,7 +1140,7 @@ MSCA Digital Finance}
 \section{A pointer: wavelets}
 %=============================================================================
 
-\begin{frame}{Wavelets: frequency that changes over time}
+\begin{frame}{Wavelets (1/2): frequency that changes over time}
 \itemsize{\small}
 \begin{itemize}
     \item The spectrum assumes stationarity: the same cycles at every date
@@ -1152,6 +1153,26 @@ MSCA Digital Finance}
         \item short windows for fast cycles, long windows for slow cycles: good resolution at all scales
     \end{itemize}
     \item Beyond this course; a natural project topic (Python: \texttt{pywt}, or the Morlet code of this chapter)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Wavelets (2/2): the continuous wavelet transform}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item The \textbf{Morlet wavelet}: a complex wave damped by a Gaussian bell
+    \begin{itemize}
+        \item $\psi(u) = \pi^{-1/4}\, e^{i\omega_0 u}\, e^{-u^2/2}$, with $\omega_0 = 6$ (\refTC)
+        \item $u$: time measured in units of the scale; $\omega_0$: the number of oscillations inside the bell
+    \end{itemize}
+    \item The \textbf{transform} at scale $s$ and date $\tau$
+    \begin{itemize}
+        \item $W(s, \tau) = \sum_t x_t\, \frac{1}{\sqrt{s}}\, \psi^*\!\left(\frac{t - \tau}{s}\right)$: a correlation of the series with the wavelet stretched to scale $s$ and centred at $\tau$
+        \item $\psi^*$: the complex conjugate of $\psi$; for $\omega_0 = 6$ the period of the cycle is about $1.03\,s$
+    \end{itemize}
+    \item The \textbf{scalogram}: the wavelet power $|W(s, \tau)|^2$
+    \begin{itemize}
+        \item the analogue of the periodogram, but for each date $\tau$ separately
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -1247,7 +1268,7 @@ MSCA Digital Finance}
 \begin{frame}{Key formulas}
 \itemsize{\small}
 {\renewcommand{\arraystretch}{1.35}\begin{center}
-\scriptsize
+\footnotesize
 \begin{tabular}{ll}
 \toprule
 \textbf{Quantity} & \textbf{Formula} \\

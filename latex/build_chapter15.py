@@ -97,7 +97,7 @@ NOTE = {
         T('$Q^*(m)$: the Ljung--Box statistic on the first $m$ lags; a large value (a small p-value) rejects white noise', '$Q^*(m)$: statistica Ljung--Box pe primele $m$ laguri; o valoare mare (un p-value mic) respinge zgomotul alb'),
         T('$\\sigma^2$: the variance of the random-walk shocks; $\\mathrm{Var}(X_t) = t\\sigma^2$ grows with $t$, so a random walk is not stationary', '$\\sigma^2$: varianța șocurilor mersului aleator; $\\mathrm{Var}(X_t) = t\\sigma^2$ crește cu $t$, deci mersul aleator nu este staționar')],
     2: [T('$L$: the lag operator, $LX_t = X_{t-1}$; $\\phi(L)$, $\\theta(L)$: the AR and MA polynomials of orders $p$ and $q$; $\\varepsilon_t$: white noise', '$L$: operatorul lag, $LX_t = X_{t-1}$; $\\phi(L)$, $\\theta(L)$: polinoamele AR și MA, de ordinele $p$ și $q$; $\\varepsilon_t$: zgomot alb'),
-        T('$\\ln L$: the maximised log-likelihood; $k$: the number of estimated parameters; a smaller AIC or BIC is better', '$\\ln L$: logaritmul verosimilității maxime; $k$: numărul de parametri estimați; un AIC sau un BIC mai mic este mai bun'),
+        T('$\\ln\\hat{\\mathcal{L}}$: the maximised log-likelihood; $k$: the number of estimated parameters; a smaller AIC or BIC is better', '$\\ln\\hat{\\mathcal{L}}$: logaritmul verosimilității maxime; $k$: numărul de parametri estimați; un AIC sau un BIC mai mic este mai bun'),
         T('BIC penalises parameters more than AIC, since $\\ln T > 2$ for $T \\ge 8$', 'BIC penalizează parametrii mai mult decît AIC, deoarece $\\ln T > 2$ pentru $T \\ge 8$')],
     3: [T('$\\Delta y_t = y_t - y_{t-1}$; $c$: the constant; $bt$: the deterministic trend; $\\gamma = 0$ means a unit root', '$\\Delta y_t = y_t - y_{t-1}$; $c$: constanta; $bt$: trendul determinist; $\\gamma = 0$ înseamnă rădăcină unitară'),
         T('$\\delta_j$: the coefficients of the lagged differences, which remove the autocorrelation of the errors', '$\\delta_j$: coeficienții diferențelor cu lag, care elimină autocorelația erorilor'),
@@ -105,9 +105,9 @@ NOTE = {
     4: [T('$s$: the season length (12 for monthly data); $\\Phi(L^s)$, $\\Theta(L^s)$: the seasonal AR and MA polynomials; $D$: the number of seasonal differences $(1 - L^s)$', '$s$: lungimea sezonului (12 pentru date lunare); $\\Phi(L^s)$, $\\Theta(L^s)$: polinoamele AR și MA sezoniere; $D$: numărul de diferențe sezoniere $(1 - L^s)$'),
         T('$e_{1t}$, $e_{2t}$: the errors of the two forecasts; $L(\\cdot)$: the loss, e.g.\\ the square; $d_t$: the loss differential; $\\bar d$: its mean; $\\hat V$: its estimated long-run variance; $n$: the number of forecasts', '$e_{1t}$, $e_{2t}$: erorile celor două prognoze; $L(\\cdot)$: funcția de pierdere, de exemplu pătratul; $d_t$: diferența pierderilor; $\\bar d$: media ei; $\\hat V$: varianța ei pe termen lung, estimată; $n$: numărul de prognoze'),
         T('under equal accuracy DM is approximately $N(0, 1)$: $|\\mathrm{DM}| > 1.96$ rejects at 5\\%', 'sub ipoteza acurateței egale, DM are aproximativ distribuția $N(0, 1)$: $|\\mathrm{DM}| > 1{,}96$ respinge la 5\\%')],
-    5: [T('$\\sigma_t^2$: the conditional variance; $\\varepsilon_{t-1}$: yesterday\'s shock; $\\omega > 0$; $\\alpha \\ge 0$: the reaction to shocks; $\\beta \\ge 0$: the persistence', '$\\sigma_t^2$: varianța condiționată; $\\varepsilon_{t-1}$: șocul de ieri; $\\omega > 0$; $\\alpha \\ge 0$: reacția la șocuri; $\\beta \\ge 0$: persistența'),
+    5: [T('$\\sigma_t^2$: the conditional variance; $\\varepsilon_{t-1}$: yesterday\'s shock; $\\omega > 0$: the constant; $\\alpha \\ge 0$: the reaction to shocks; $\\beta \\ge 0$: the persistence', '$\\sigma_t^2$: varianța condiționată; $\\varepsilon_{t-1}$: șocul de ieri; $\\omega > 0$: constanta; $\\alpha \\ge 0$: reacția la șocuri; $\\beta \\ge 0$: persistența'),
         T('$\\bar\\sigma^2$: the long-run variance, defined only if $\\alpha + \\beta < 1$; $h_{1/2}$: the half-life of a volatility shock', '$\\bar\\sigma^2$: varianța pe termen lung, definită doar dacă $\\alpha + \\beta < 1$; $h_{1/2}$: timpul de înjumătățire al unui șoc de volatilitate'),
-        T('ARCH-LM: $R^2$ of the regression of $\\varepsilon_t^2$ on $q$ of its lags, $n$ observations; $q_{0.01}(z)$: the 1\\% quantile of the standardised innovations $z_t$', 'ARCH-LM: $R^2$ al regresiei lui $\\varepsilon_t^2$ pe $q$ laguri ale sale, $n$ observații; $q_{0,01}(z)$: cuantila de 1\\% a inovațiilor standardizate $z_t$')],
+        T('ARCH-LM: $R^2$ of the regression of $\\varepsilon_t^2$ on $q$ of its lags, $n$ observations; $q_{0.01}(z)$: the 1\\% quantile of the standardised innovations $z_t$; $\\mu$: the conditional mean', 'ARCH-LM: $R^2$ al regresiei lui $\\varepsilon_t^2$ pe $q$ laguri ale sale, $n$ observații; $q_{0,01}(z)$: cuantila de 1\\% a inovațiilor standardizate $z_t$; $\\mu$: media condiționată')],
     6: [T('$\\bY_t$: the vector of the $K$ variables; $\\bc$: the constants; $\\bA_i$: the $K \\times K$ coefficient matrices of lag $i$; $\\bepsilon_t$: the vector of shocks', '$\\bY_t$: vectorul celor $K$ variabile; $\\bc$: constantele; $\\bA_i$: matricele $K \\times K$ ale coeficienților lagului $i$; $\\bepsilon_t$: vectorul șocurilor'),
         T('the companion matrix writes the VAR($p$) as a VAR(1) of dimension $Kp$', 'matricea companion scrie VAR($p$) ca un VAR(1) de dimensiune $Kp$'),
         T('$RSS_R$, $RSS_U$: the residual sums of squares without and with the lags of the tested variable; $p$: the number of restrictions', '$RSS_R$, $RSS_U$: sumele pătratelor reziduurilor fără și cu lagurile variabilei testate; $p$: numărul de restricții')],
@@ -116,7 +116,7 @@ NOTE = {
         T('$\\hat\\lambda_i$: the estimated eigenvalues, in decreasing order; $r$: the tested cointegration rank; a trace above its critical value rejects rank $r$', '$\\hat\\lambda_i$: valorile proprii estimate, în ordine descrescătoare; $r$: rangul de cointegrare testat; o statistică a urmei peste valoarea critică respinge rangul $r$')],
     8: [T('$d$: the order of fractional integration; $\\pi_k$: the weight of lag $k$ in the expansion of $(1 - L)^d$', '$d$: ordinul de integrare fracționară; $\\pi_k$: ponderea lagului $k$ în dezvoltarea lui $(1 - L)^d$'),
         T('$C > 0$: a constant; $\\rho(k) \\sim Ck^{2d-1}$: the ACF decays hyperbolically, not exponentially', '$C > 0$: o constantă; $\\rho(k) \\sim Ck^{2d-1}$: ACF scade hiperbolic, nu exponențial'),
-        T('$H$: the Hurst exponent, above 0.5 for long memory; $m$: the number of low frequencies used by GPH and local Whittle', '$H$: exponentul Hurst, peste 0,5 pentru memorie lungă; $m$: numărul de frecvențe joase folosite de GPH și Whittle local')],
+        T('$H$: the Hurst exponent, above 0.5 for long memory, estimated here by the rescaled-range (R/S) statistic; $m$: the number of low frequencies used by GPH and local Whittle', '$H$: exponentul Hurst, peste 0,5 pentru memorie lungă, estimat aici cu statistica rescaled range (R/S); $m$: numărul de frecvențe joase folosite de GPH și Whittle local')],
     9: [T('$\\hat f_h$: the estimated function for horizon $h$; $p$: the number of lags used; $\\mathbf z_{T+h}$: known regressors, e.g.\\ the calendar', '$\\hat f_h$: funcția estimată pentru orizontul $h$; $p$: numărul de laguri folosite; $\\mathbf z_{T+h}$: regresori cunoscuți, de exemplu calendarul'),
         T('$\\lambda \\ge 0$: the strength of the penalty; $\\beta_j$: the coefficients; ridge shrinks them, lasso sets some exactly to 0', '$\\lambda \\ge 0$: intensitatea penalizării; $\\beta_j$: coeficienții; ridge îi micșorează, lasso îi anulează pe unii'),
         T('$y_0$: a new observation; $\\sigma^2$: the noise variance, which no model can remove', '$y_0$: o observație nouă; $\\sigma^2$: varianța zgomotului, pe care niciun model nu o poate elimina')],
@@ -542,7 +542,7 @@ review(1, ('Stochastic processes and stationarity', 'procese stochastice și sta
 
 review(2, ('ARMA models', 'modele ARMA'),
        [T('$\\phi(L)(X_t - \\mu) = \\theta(L)\\varepsilon_t$; AR(1) $\\rho(h) = \\phi^h$; MA(1) $\\rho(1) = \\theta/(1 + \\theta^2)$', '$\\phi(L)(X_t - \\mu) = \\theta(L)\\varepsilon_t$; AR(1) $\\rho(h) = \\phi^h$; MA(1) $\\rho(1) = \\theta/(1 + \\theta^2)$'),
-        T('AIC $= -2\\ln L + 2k$ \\refAkaike, BIC $= -2\\ln L + k\\ln T$ \\refSchwarz; residual check $Q^*(m) \\sim \\chi^2(m - p - q)$', 'AIC $= -2\\ln L + 2k$ \\refAkaike, BIC $= -2\\ln L + k\\ln T$ \\refSchwarz; verificarea reziduurilor $Q^*(m) \\sim \\chi^2(m - p - q)$')],
+        T('AIC $= -2\\ln\\hat{\\mathcal{L}} + 2k$ \\refAkaike, BIC $= -2\\ln\\hat{\\mathcal{L}} + k\\ln T$ \\refSchwarz; residual check $Q^*(m) \\sim \\chi^2(m - p - q)$', 'AIC $= -2\\ln\\hat{\\mathcal{L}} + 2k$ \\refAkaike, BIC $= -2\\ln\\hat{\\mathcal{L}} + k\\ln T$ \\refSchwarz; verificarea reziduurilor $Q^*(m) \\sim \\chi^2(m - p - q)$')],
        [T('annual growth of Romanian GDP: MA(3) by BIC, a product of overlapping quarters; residual Ljung--Box $p = @{f2.lb}$', 'creșterea anuală a PIB-ului României: MA(3) după BIC, efectul trimestrelor suprapuse; Ljung--Box pe reziduuri $p = @{f2.lb}$'),
         T('Romanian inflation: AR(2) with $\\hat\\phi_1 + \\hat\\phi_2 = @{f2.sumphi}$, close to a unit root; sunspots: an AR(2) cycle of @{f2.period} years', 'inflația din România: AR(2) cu $\\hat\\phi_1 + \\hat\\phi_2 = @{f2.sumphi}$, aproape de o rădăcină unitară; petele solare: un ciclu AR(2) de @{f2.period} ani')],
        [T('reading the AR order from the ACF (it is the PACF that cuts off for an AR)', 'citirea ordinului AR din ACF (la un AR se anulează PACF)'),
@@ -627,7 +627,7 @@ review(9, ('Machine learning for time series', 'învățare automată pentru ser
 review(10, ('State space models, Kalman filter and Markov switching', 'spațiul stărilor, filtrul Kalman și modele Markov switching'),
        [T('$y_t = Z\\alpha_t + \\varepsilon_t$, $\\alpha_{t+1} = T\\alpha_t + R\\eta_t$; $K_t = P_tZ\'F_t^{-1}$, $a_{t|t} = a_t + K_tv_t$ \\refKalman', '$y_t = Z\\alpha_t + \\varepsilon_t$, $\\alpha_{t+1} = T\\alpha_t + R\\eta_t$; $K_t = P_tZ\'F_t^{-1}$, $a_{t|t} = a_t + K_tv_t$ \\refKalman'),
         T('Markov switching: durations $1/(1 - p_{ii})$, ergodic $\\pi_1 = (1 - p_{22})/(2 - p_{11} - p_{22})$ \\refHamMS', 'Markov switching: durate $1/(1 - p_{ii})$, ergodic $\\pi_1 = (1 - p_{22})/(2 - p_{11} - p_{22})$ \\refHamMS')],
-       [T('the Nile: $\\hat q = @{f10.q}$, steady-state gain $\\bar K = @{f10.K}$, the weight of exponential smoothing', 'Nilul: $\\hat q = @{f10.q}$, cîștigul de echilibru $\\bar K = @{f10.K}$, ponderea netezirii exponențiale'),
+       [T('the Nile: $\\hat q = \\hat\\sigma^2_\\eta/\\hat\\sigma^2_\\varepsilon = @{f10.q}$, steady-state gain $\\bar K = @{f10.K}$, the weight of exponential smoothing', 'Nilul: $\\hat q = \\hat\\sigma^2_\\eta/\\hat\\sigma^2_\\varepsilon = @{f10.q}$, cîștigul de echilibru $\\bar K = @{f10.K}$, ponderea netezirii exponențiale'),
         T('US GDP: the regimes match the NBER dates in @{f10.con}\\% of quarters; Romanian GDP: stable regime @{f10.d2} quarters, volatile @{f10.d1}', 'PIB-ul SUA: regimurile coincid cu datările NBER în @{f10.con}\\% din trimestre; PIB-ul României: regimul stabil @{f10.d2} trimestre, cel volatil @{f10.d1}')],
        [T('smoothed probabilities used as if known in real time', 'probabilități netezite folosite ca și cum ar fi fost cunoscute în timp real'),
         T('durations written as $p_{ii}/(1 - p_{ii})$; the last value of the HP gap read as a real-time estimate', 'durate scrise $p_{ii}/(1 - p_{ii})$; ultima valoare a deviației HP interpretată ca estimare în timp real')])
@@ -659,14 +659,14 @@ selfstudy(11, ('Foundation models for time series', 'foundation models pentru se
           [T('a global model of many series (Chapter 9); judged like any forecast (Chapter 4)', 'un model global pe multe serii (Capitolul 9); evaluat ca orice prognoză (Capitolul 4)')])
 
 selfstudy(12, ('Spectral analysis', 'analiză spectrală'),
-          [T('the Fourier transform, the periodogram $I(\\lambda_j)$ and the spectral density', 'transformata Fourier, periodograma $I(\\lambda_j)$ și densitatea spectrală'),
+          [T('the Fourier transform, the periodogram $I(\\nu_j)$ and the spectral density', 'transformata Fourier, periodograma $I(\\nu_j)$ și densitatea spectrală'),
            T('smoothed periodograms (Welch), filters (Hodrick--Prescott) and business cycles', 'periodograme netezite (Welch), filtre (Hodrick--Prescott) și ciclul economic'),
            T('coherence between two series; wavelets as a time--frequency tool', 'coerența dintre două serii; wavelets ca instrument timp--frecvență')],
           [T('the same information as the ACF, by frequency (Chapter 1); the spectral pole of long memory (Chapter 8)', 'aceeași informație ca ACF, pe frecvențe (Capitolul 1); polul spectral al memoriei lungi (Capitolul 8)')])
 
 selfstudy(13, ('Speculative bubbles: LPPL models', 'bule speculative: modele LPPL'),
           [T('bubbles as super-exponential growth of prices', 'bulele ca o creștere superexponențială a prețurilor'),
-           T('the LPPLS model: power law plus log-periodic oscillations; estimation and filter conditions', 'modelul LPPLS: o lege putere plus oscilații log-periodice; estimare și condiții de filtrare'),
+           T('the LPPLS model: power law plus log-periodic oscillations; estimation and filter conditions', 'modelul LPPLS: o lege de putere plus oscilații log-periodice; estimare și condiții de filtrare'),
            T('the LPPLS confidence indicator on historical bubbles and crashes', 'indicatorul de încredere LPPLS pe bule și crahuri istorice')],
           [T('explosive roots, the opposite of unit roots (Chapter 3); volatility before crashes (Chapter 5)', 'rădăcini explozive, opusul rădăcinilor unitare (Capitolul 3); volatilitatea dinaintea crahurilor (Capitolul 5)')])
 
@@ -719,7 +719,7 @@ D.frame(T('Conventions used throughout the course', 'Convențiile folosite în t
          [T('AIC, AICc and BIC only on the same sample and the same $d$, $D$', 'AIC, AICc și BIC doar pe același eșantion și cu aceleași $d$, $D$'),
           T('forecasts are judged out of sample, against the naive and seasonal naive methods', 'prognozele se judecă în afara eșantionului, față de metodele naivă și naivă sezonieră')]),
     (T('\\textbf{Risk}', '\\textbf{Riscul}'),
-         [T('the level is the tail probability: VaR 1\\%, a positive loss, $\\mathrm{VaR}_\\alpha = -q_\\alpha$', 'nivelul este probabilitatea cozii: VaR 1\\%, o pierdere pozitivă, $\\mathrm{VaR}_\\alpha = -q_\\alpha$')])))
+         [T('the level is the tail probability: VaR 1\\%, a positive loss, $\\mathrm{VaR}_\\alpha = -q_\\alpha$, $q_\\alpha$: the $\\alpha$-quantile of the return', 'nivelul este probabilitatea cozii: VaR 1\\%, o pierdere pozitivă, $\\mathrm{VaR}_\\alpha = -q_\\alpha$, $q_\\alpha$: cuantila de nivel $\\alpha$ a randamentului')])))
 
 # =============================================================================
 # 7. BOX-JENKINS PE INFLAȚIA DIN ROMÂNIA
@@ -814,7 +814,8 @@ interp(('the residual checks', 'verificării reziduurilor'), [
     T('Consequence: point forecasts are fine, Normal intervals are too narrow when taxes change; dummies for known tax changes would help', 'Consecința: prognozele punctuale sînt bune, dar intervalele Normale sînt prea înguste cînd se schimbă taxele; variabile dummy pentru modificările de taxe cunoscute ar ajuta')])
 
 chart(T('Step 6: forecasts', 'Pasul 6: prognoze'), 'tsa_ch15_bj_forecast', 'TSA_ch15_box_jenkins', [
-    T('Left: one-step forecasts of monthly inflation on the test sample (@{fc.tf} -- @{fc.tl}), parameters fixed at the training estimates; right: annual inflation forecasts to @{fc.f12d} with 95\\% intervals, model re-estimated on all data', 'Stînga: prognoze pe un pas ale inflației lunare pe eșantionul de test (@{fc.tf} -- @{fc.tl}), cu parametrii estimați pe eșantionul de antrenare; dreapta: prognoze ale inflației anuale pînă în @{fc.f12d}, cu intervale de 95\\%, modelul reestimat pe toate datele')],
+    (T('Left: one-step forecasts of monthly inflation on the test sample (@{fc.tf} -- @{fc.tl}), parameters fixed at the training estimates', 'Stînga: prognoze pe un pas ale inflației lunare pe eșantionul de test (@{fc.tf} -- @{fc.tl}), cu parametrii estimați pe eșantionul de antrenare'),
+     [T('right: annual inflation forecasts to @{fc.f12d} with 95\\% intervals, model re-estimated on all data', 'dreapta: prognoze ale inflației anuale pînă în @{fc.f12d}, cu intervale de 95\\%, modelul reestimat pe toate datele')])],
     h='0.55\\textheight')
 
 D.frame(T('Interpreting the forecasts', 'Interpretarea prognozelor'), table(
@@ -894,9 +895,14 @@ def problem(k, title, context, tasks, size='footnotesize', extra=''):
     D.frame(T(f'Problem {k}: {title[0]}', f'Problema {k}: {title[1]}'), extra + body, size)
 
 
-def solution(k, steps, interpretation, size='footnotesize'):
-    D.frame(T(f'Problem {k}: solution', f'Problema {k}: rezolvare'),
-            enum(*steps) + '\n' + items((T('\\textbf{Interpretation}', '\\textbf{Interpretare}'), interpretation)), size)
+def solution(k, steps, interpretation, size='footnotesize', split=None):
+    """split=n: steps 1..n on a first frame, the remaining steps and the interpretation on a second one."""
+    interp_ = items((T('\\textbf{Interpretation}', '\\textbf{Interpretare}'), interpretation))
+    if split is None:
+        D.frame(T(f'Problem {k}: solution', f'Problema {k}: rezolvare'), enum(*steps) + '\n' + interp_, size)
+        return
+    D.frame(T(f'Problem {k}: solution (1/2)', f'Problema {k}: rezolvare (1/2)'), enum(*steps[:split]), size)
+    D.frame(T(f'Problem {k}: solution (2/2)', f'Problema {k}: rezolvare (2/2)'), enum(*steps[split:], start=split + 1) + '\n' + interp_, size)
 
 
 # ---- Problema 1
@@ -959,7 +965,7 @@ solution(3, [
     T('$\\hat z_{T+1} = @{e3.phi}(@{e3.zT}) + (@{e3.Phi})(@{e3.zT11}) - (@{e3.pP})(@{e3.zT12}) = @{e3.t1} + (@{e3.t2}) + @{e3.t3} = @{e3.znext}$', '$\\hat z_{T+1} = @{e3.phi}(@{e3.zT}) + (@{e3.Phi})(@{e3.zT11}) - (@{e3.pP})(@{e3.zT12}) = @{e3.t1} + (@{e3.t2}) + @{e3.t3} = @{e3.znext}$'),
     T('Annual inflation: $\\Delta_{12}\\ln P_{T+1} = \\Delta_{12}\\ln P_T + z_{T+1} = @{e3.aT} + (@{e3.znext}) = @{e3.anext}\\%$', 'Inflația anuală: $\\Delta_{12}\\ln P_{T+1} = \\Delta_{12}\\ln P_T + z_{T+1} = @{e3.aT} + (@{e3.znext}) = @{e3.anext}\\%$')],
     [T('Inflation is expected to keep falling in @{e3.next} as last year\'s tax shock leaves the 12-month window', 'Se așteaptă ca inflația să scadă în continuare în @{e3.next}, pe măsură ce șocul fiscal de anul trecut iese din fereastra de 12 luni'),
-     T('Residual autocorrelation: a richer model (as in Step 4) would change the forecast slightly; a 95\\% interval needs $\\hat\\sigma$', 'Autocorelația reziduală: un model mai bogat (ca la Pasul 4) ar schimba puțin prognoza; un interval de 95\\% are nevoie de $\\hat\\sigma$')], size='scriptsize')
+     T('Residual autocorrelation: a richer model (as in Step 4) would change the forecast slightly; a 95\\% interval needs $\\hat\\sigma$', 'Autocorelația reziduală: un model mai bogat (ca la Pasul 4) ar schimba puțin prognoza; un interval de 95\\% are nevoie de $\\hat\\sigma$')])
 
 # ---- Problema 4
 P4OUT = (table('lccc', T('\\textbf{ROBOR equation}', '\\textbf{Ecuația ROBOR}') + ' & ' + T('coef. [$t$]', 'coef. [$t$]') + ' & & ' + T('coef. [$t$]', 'coef. [$t$]'),
@@ -976,14 +982,14 @@ problem(4, ('VAR output and Granger causality', 'rezultate VAR și cauzalitate G
         [T('Describe Granger causality and interpret the table.', 'Descrieți cauzalitatea Granger și interpretați tabelul.'),
          T('Write the ROBOR equation and quantify the long-run effect of a permanent 1 pp rise in inflation on ROBOR.', 'Scrieți ecuația ROBOR și cuantificați efectul pe termen lung al unei creșteri permanente a inflației cu 1 pp asupra ROBOR.'),
          T('Recompute the first $F$ from $RSS_R = @{e4.rssr}$ and $RSS_U = @{e4.rssu}$.', 'Recalculați primul $F$ din $RSS_R = @{e4.rssr}$ și $RSS_U = @{e4.rssu}$.')],
-        size='scriptsize', extra=P4OUT)
+        size='footnotesize', extra=P4OUT)
 solution(4, [
-    T('$x$ Granger-causes $y$ if the lags of $x$ improve the forecast of $y$ given the lags of $y$ (joint $F$ test) \\refGranger; growth and inflation help to forecast ROBOR ($p =$ @{e4.p.gi} and @{e4.p.pii}); ROBOR does not help to forecast inflation ($p = @{e4.p.ipi}$)', '$x$ cauzează Granger $y$ dacă lagurile lui $x$ îmbunătățesc prognoza lui $y$, dată fiind istoria lui $y$ (test $F$ comun) \\refGranger; creșterea și inflația ajută la prognoza ROBOR ($p =$ @{e4.p.gi} și @{e4.p.pii}); ROBOR nu ajută la prognoza inflației ($p = @{e4.p.ipi}$)'),
+    T('$x$ Granger-causes $y$ if the lags of $x$ improve the forecast of $y$ given the lags of $y$ (joint $F$ test) \\refGranger\n\\begin{itemize}\n\\item growth and inflation help to forecast ROBOR ($p =$ @{e4.p.gi} and @{e4.p.pii}); ROBOR does not help to forecast inflation ($p = @{e4.p.ipi}$)\n\\end{itemize}', '$x$ cauzează Granger $y$ dacă lagurile lui $x$ îmbunătățesc prognoza lui $y$, dată fiind istoria lui $y$ (test $F$ comun) \\refGranger\n\\begin{itemize}\n\\item creșterea și inflația ajută la prognoza ROBOR ($p =$ @{e4.p.gi} și @{e4.p.pii}); ROBOR nu ajută la prognoza inflației ($p = @{e4.p.ipi}$)\n\\end{itemize}'),
     T('$i_t = @{e4.b.const} + @{e4.b.L1.g}g_{t-1} + @{e4.b.L2.g}g_{t-2} + @{e4.b.L1.pi}\\pi_{t-1} + (@{e4.b.L2.pi})\\pi_{t-2} + @{e4.b.L1.i}i_{t-1} + (@{e4.b.L2.i})i_{t-2} + u_t$', '$i_t = @{e4.b.const} + @{e4.b.L1.g}g_{t-1} + @{e4.b.L2.g}g_{t-2} + @{e4.b.L1.pi}\\pi_{t-1} + (@{e4.b.L2.pi})\\pi_{t-2} + @{e4.b.L1.i}i_{t-1} + (@{e4.b.L2.i})i_{t-2} + u_t$'),
     T('Long run ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b.L1.pi} + (@{e4.b.L2.pi}))/(1 - @{e4.b.L1.i} - (@{e4.b.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp', 'Pe termen lung ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b.L1.pi} + (@{e4.b.L2.pi}))/(1 - @{e4.b.L1.i} - (@{e4.b.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp'),
     T('$F = \\frac{(@{e4.rssr} - @{e4.rssu})/2}{@{e4.rssu}/@{e4.df2}} = @{e4.F} > F_{0.95}(2, @{e4.df2}) = @{e4.crit}$: $H_0$ rejected', '$F = \\frac{(@{e4.rssr} - @{e4.rssu})/2}{@{e4.rssu}/@{e4.df2}} = @{e4.F} > F_{0,95}(2, @{e4.df2}) = @{e4.crit}$: $H_0$ se respinge')],
     [T('The money market rate follows the economy and inflation, as a central bank reaction would imply; the reverse link is not visible in quarterly data', 'Dobînda interbancară urmează economia și inflația, așa cum ar implica reacția unei bănci centrale; legătura inversă nu se vede în datele trimestriale'),
-     T('The long-run effect divides by $@{e4.den}$, a number close to zero: it is imprecise; Granger causality is predictability, not proof of a policy effect', 'Efectul pe termen lung împarte la $@{e4.den}$, un număr apropiat de zero: este imprecis; cauzalitatea Granger înseamnă predictibilitate, nu dovada unui efect de politică')], size='scriptsize')
+     T('The long-run effect divides by $@{e4.den}$, a number close to zero: it is imprecise; Granger causality is predictability, not proof of a policy effect', 'Efectul pe termen lung împarte la $@{e4.den}$, un număr apropiat de zero: este imprecis; cauzalitatea Granger înseamnă predictibilitate, nu dovada unui efect de politică')])
 
 # ---- Problema 5
 P5OUT = (table('lcccc', T('\\textbf{Johansen trace test}', '\\textbf{Testul urmei Johansen}') + ' & $r = 0$ & $r \\le 1$ & $r \\le 2$ &',
@@ -997,13 +1003,13 @@ problem(5, ('cointegration and VECM output', 'rezultate de cointegrare și VECM'
         [T('Define cointegration and decide the rank.', 'Definiți cointegrarea și decideți rangul.'),
          T('Write the error-correction part of the equation for $\\Delta y^{(10)}_t$ and say which yields adjust.', 'Scrieți partea de corecție a erorii din ecuația pentru $\\Delta y^{(10)}_t$ și precizați care randamente se ajustează.'),
          T('Interpret the long-run relations economically.', 'Interpretați economic relațiile pe termen lung.')],
-        size='scriptsize', extra=P5OUT)
+        size='footnotesize', extra=P5OUT)
 solution(5, [
     T('$I(1)$ series are cointegrated if a linear combination is $I(0)$ \\refEG; trace: $@{e5.tr0} > @{e5.cv0}$, $@{e5.tr1} > @{e5.cv1}$, $@{e5.tr2} < @{e5.cv2}$: rank $r = 2$, one common stochastic trend \\refJoh', 'Seriile $I(1)$ sînt cointegrate dacă o combinație liniară a lor este $I(0)$ \\refEG; urma: $@{e5.tr0} > @{e5.cv0}$, $@{e5.tr1} > @{e5.cv1}$, $@{e5.tr2} < @{e5.cv2}$: rangul $r = 2$, un singur trend stochastic comun \\refJoh'),
     T('$\\Delta y^{(10)}_t = @{e5.a101}\\,\\mathrm{EC1}_{t-1} + (@{e5.a102})\\,\\mathrm{EC2}_{t-1} + \\dots$; on EC1 the 5- and 10-year yields have $|t| > 2$, the 1-year yield $|t| < 1$ on both relations: the short rate does not adjust (weakly exogenous)', '$\\Delta y^{(10)}_t = @{e5.a101}\\,\\mathrm{EC1}_{t-1} + (@{e5.a102})\\,\\mathrm{EC2}_{t-1} + \\dots$; pe EC1, randamentele la 5 și 10 ani au $|t| > 2$, iar cel la 1 an are $|t| < 1$ pe ambele relații: dobînda scurtă nu se ajustează (exogenitate slabă)'),
     T('$\\beta \\approx 1$: the spreads $y^{(1)} - y^{(10)}$ and $y^{(5)} - y^{(10)}$ are stationary, as the expectations hypothesis implies; half-lives of the equilibrium errors @{e5.h1} and @{e5.h2} months', '$\\beta \\approx 1$: spread-urile $y^{(1)} - y^{(10)}$ și $y^{(5)} - y^{(10)}$ sînt staționare, cum implică ipoteza așteptărilor; timpii de înjumătățire ai erorilor de echilibru: @{e5.h1} și @{e5.h2} luni')],
     [T('The three yields share one trend (the level of rates); the curve can bend, but spreads return to their means', 'Cele trei randamente au un singur trend comun (nivelul dobînzilor); curba se poate deforma, dar spread-urile revin la mediile lor'),
-     T('The long rates do the adjusting: markets move the long end toward the policy-driven short end', 'Dobînzile lungi se ajustează: piețele mișcă partea lungă a curbei spre partea scurtă, determinată de politica monetară')], size='scriptsize')
+     T('The long rates do the adjusting: markets move the long end toward the policy-driven short end', 'Dobînzile lungi se ajustează: piețele mișcă partea lungă a curbei spre partea scurtă, determinată de politica monetară')])
 
 # ---- Problema 6
 P6OUT = table('lccccc', T('\\textbf{BET}', '\\textbf{BET}') + ' & $\\mu$ & $\\omega$ & $\\alpha$ & $\\beta$ & $\\nu$',
@@ -1022,6 +1028,7 @@ solution(6, [
     T('$q_{0.01}(z) = @{e6.tq} \\times \\sqrt{3/5} = @{e6.tq} \\times @{e6.sc} = @{e6.q}$; VaR 1\\% $= -(@{e6.mu} + @{e6.sn} \\times (@{e6.q})) = @{e6.var}\\%$; Normal: $@{e6.varn}\\%$', '$q_{0,01}(z) = @{e6.tq} \\times \\sqrt{3/5} = @{e6.tq} \\times @{e6.sc} = @{e6.q}$; VaR 1\\% $= -(@{e6.mu} + @{e6.sn} \\times (@{e6.q})) = @{e6.var}\\%$; Normal: $@{e6.varn}\\%$')],
     [T('Persistence close to 1: a shock to volatility halves only after about @{e6.hl} trading days', 'Persistență aproape de 1: un șoc al volatilității se înjumătățește abia după circa @{e6.hl} de zile de tranzacționare'),
      T('The long-run volatility (@{e6.ann}\\%) is far above the sample one (@{e6.vs}\\%): when $\\alpha + \\beta \\approx 1$, $\\omega/(1 - \\alpha - \\beta)$ is very imprecise', 'Volatilitatea pe termen lung (@{e6.ann}\\%) este mult peste cea de selecție (@{e6.vs}\\%): cînd $\\alpha + \\beta \\approx 1$, raportul $\\omega/(1 - \\alpha - \\beta)$ este foarte imprecis'),
+     T('The factor $\\sqrt{3/5} = \\sqrt{(\\nu - 2)/\\nu}$ rescales the $t_5$ quantile to innovations of variance 1', 'Factorul $\\sqrt{3/5} = \\sqrt{(\\nu - 2)/\\nu}$ rescalează cuantila $t_5$ la inovații cu varianța 1'),
      T('Heavy tails raise VaR 1\\% above the Normal value: a loss larger than @{e6.var}\\% is expected on one day in 100', 'Cozile groase ridică VaR 1\\% peste valoarea Normală: o pierdere mai mare de @{e6.var}\\% este așteptată într-o zi din 100')])
 
 # ---- Problema 7
@@ -1037,7 +1044,7 @@ problem(7, ('evaluating forecasts', 'evaluarea prognozelor'),
         extra=P7OUT)
 solution(7, [
     T('SARIMA: RMSE @{e7.rA}, MAE @{e7.mA}, MASE @{e7.qA}; seasonal naive: RMSE @{e7.rB}, MAE @{e7.mB}, MASE @{e7.qB}', 'SARIMA: RMSE @{e7.rA}, MAE @{e7.mA}, MASE @{e7.qA}; naiv sezonier: RMSE @{e7.rB}, MAE @{e7.mB}, MASE @{e7.qB}'),
-    T('$d_t = e_{A,t}^2 - e_{B,t}^2$: $@{e7.d1}$, $@{e7.d2}$, $@{e7.d3}$, $@{e7.d4}$, $@{e7.d5}$, $@{e7.d6}$; $\\bar d = @{e7.db}$, $s_d = @{e7.sd}$; DM $= @{e7.dm}$, $|@{e7.dm}| < @{e7.crit}$: equal accuracy is not rejected', '$d_t = e_{A,t}^2 - e_{B,t}^2$: $@{e7.d1}$; $@{e7.d2}$; $@{e7.d3}$; $@{e7.d4}$; $@{e7.d5}$; $@{e7.d6}$; $\\bar d = @{e7.db}$, $s_d = @{e7.sd}$; DM $= @{e7.dm}$, $|@{e7.dm}| < @{e7.crit}$: acuratețea egală nu se respinge'),
+    T('$d_t = e_{A,t}^2 - e_{B,t}^2$ ($A$: SARIMA, $B$: naive): $@{e7.d1}$, $@{e7.d2}$, $@{e7.d3}$, $@{e7.d4}$, $@{e7.d5}$, $@{e7.d6}$; $\\bar d = @{e7.db}$, $s_d = @{e7.sd}$; DM $= @{e7.dm}$, $|@{e7.dm}| < @{e7.crit}$: equal accuracy is not rejected', '$d_t = e_{A,t}^2 - e_{B,t}^2$ ($A$: SARIMA, $B$: naiv sezonier): $@{e7.d1}$; $@{e7.d2}$; $@{e7.d3}$; $@{e7.d4}$; $@{e7.d5}$; $@{e7.d6}$; $\\bar d = @{e7.db}$, $s_d = @{e7.sd}$; DM $= @{e7.dm}$, $|@{e7.dm}| < @{e7.crit}$: acuratețea egală nu se respinge'),
     T('Random folds put future days in the training set: leakage; walk-forward validation gives $R^2 = @{e7.wf}$ for the same model (Chapter 9)', 'Grupurile aleatoare pun zile din viitor în setul de antrenare: leakage; validarea walk-forward dă $R^2 = @{e7.wf}$ pentru același model (Capitolul 9)')],
     [T('MASE below 1: SARIMA beats the seasonal naive method on average, but six months cannot show that the gain is real', 'MASE sub 1: SARIMA bate în medie metoda naivă sezonieră, dar șase luni nu pot arăta că acest cîștig este real'),
      T('Only out-of-sample, time-ordered evaluation counts as evidence of forecasting skill', 'Doar evaluarea în afara eșantionului, în ordinea timpului, este o dovadă a capacității de prognoză')])
@@ -1052,7 +1059,7 @@ problem(8, ('state space, regimes and long memory', 'spațiul stărilor, regimur
          T('Compute $H$ and $\\rho(1)$ for the ARFIMA model and say whether inflation is stationary and mean-reverting.', 'Calculați $H$ și $\\rho(1)$ pentru modelul ARFIMA și precizați dacă inflația este staționară și cu revenire la medie.')])
 solution(8, [
     T('$F_t = 2 + 4 = @{e8.F}$, $K_t = 2/6 = @{e8.K}$; $a_{t|t} = 10 + @{e8.K} \\times 3 = @{e8.af}$, $P_{t|t} = 2(1 - @{e8.K}) = @{e8.Pf}$; $a_{t+1} = @{e8.af}$, $P_{t+1} = @{e8.Pn}$', '$F_t = 2 + 4 = @{e8.F}$, $K_t = 2/6 = @{e8.K}$; $a_{t|t} = 10 + @{e8.K} \\times 3 = @{e8.af}$, $P_{t|t} = 2(1 - @{e8.K}) = @{e8.Pf}$; $a_{t+1} = @{e8.af}$, $P_{t+1} = @{e8.Pn}$'),
-    T('$q = 0.25$: $\\bar P/\\sigma^2_\\varepsilon = (q + \\sqrt{q^2 + 4q})/2 = @{e8.Pb}$, $\\bar K = @{e8.Pb}/(1 + @{e8.Pb}) = @{e8.Kb} = \\alpha_{SES}$', '$q = 0{,}25$: $\\bar P/\\sigma^2_\\varepsilon = (q + \\sqrt{q^2 + 4q})/2 = @{e8.Pb}$, $\\bar K = @{e8.Pb}/(1 + @{e8.Pb}) = @{e8.Kb} = \\alpha_{SES}$'),
+    T('$q = \\sigma^2_\\eta/\\sigma^2_\\varepsilon = 0.25$: $\\bar P/\\sigma^2_\\varepsilon = (q + \\sqrt{q^2 + 4q})/2 = @{e8.Pb}$, $\\bar K = @{e8.Pb}/(1 + @{e8.Pb}) = @{e8.Kb} = \\alpha_{SES}$', '$q = \\sigma^2_\\eta/\\sigma^2_\\varepsilon = 0{,}25$: $\\bar P/\\sigma^2_\\varepsilon = (q + \\sqrt{q^2 + 4q})/2 = @{e8.Pb}$, $\\bar K = @{e8.Pb}/(1 + @{e8.Pb}) = @{e8.Kb} = \\alpha_{SES}$'),
     T('$E(D_1) = 1/(1 - @{e8.p11}) = @{e8.d1}$ quarters, $E(D_2) = @{e8.d2}$ quarters; $\\pi_1 = (1 - @{e8.p22})/(2 - @{e8.p11} - @{e8.p22}) = @{e8.pi1}$', '$E(D_1) = 1/(1 - @{e8.p11}) = @{e8.d1}$ trimestre, $E(D_2) = @{e8.d2}$ trimestre; $\\pi_1 = (1 - @{e8.p22})/(2 - @{e8.p11} - @{e8.p22}) = @{e8.pi1}$'),
     T('$H = d + 0.5 = @{e8.H}$; $\\rho(1) = d/(1 - d) = @{e8.r1}$; $0 < d < 0.5$: stationary with long memory, mean-reverting', '$H = d + 0{,}5 = @{e8.H}$; $\\rho(1) = d/(1 - d) = @{e8.r1}$; $0 < d < 0{,}5$: staționar cu memorie lungă, cu revenire la medie')],
     [T('The filter moves the level one third of the way to the surprise; in the long run the weight is that of exponential smoothing', 'Filtrul mută nivelul cu o treime din surpriză; pe termen lung, ponderea este cea a netezirii exponențiale'),

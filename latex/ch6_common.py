@@ -12,10 +12,41 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from tsa_build import ROOT, Values, n   # noqa: E402,F401
-from ch1_common import T, V2, finalize, date, quarter, pv, MONTHS_EN, MONTHS_RO   # noqa: E402,F401
+from ch1_common import T, V2, date, quarter, pv, MONTHS_EN, MONTHS_RO   # noqa: E402,F401
+from ch1_common import finalize as _finalize   # noqa: E402
 
 QL = os.path.join(ROOT, 'Quantlets', 'Ch_06')
 QLURL = 'https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_06'
+
+
+def polish(paths):
+    """Typography of the written decks (used by the generators of Chapters 6-10):
+    a negative number in text mode gets a real minus sign ($-$0{,}13 instead of the hyphen -0{,}13);
+    a p-value written as 'p 0.023' becomes 'p = 0.023' ('p $<$ 0.001' stays). Math, comments, DOIs and AI prompts
+    are left as they are."""
+    import re
+    for path in paths:
+        out = []
+        for line in open(path, encoding='utf-8').read().split('\n'):
+            if line.lstrip().startswith('%') or 'aiprompt' in line or 'prompt{' in line or 'doi.org' in line:
+                out.append(line)
+                continue
+            line = re.sub(r'(?<=[( ])p (?=\d)', 'p = ', line)
+            parts = re.split(r'(?<!\\)(\$)', line)
+            inside = False
+            for i, part in enumerate(parts):
+                if part == '$':
+                    inside = not inside
+                elif not inside:
+                    parts[i] = re.sub(r'(?<=[ (;[])-(?=\d)', '$-$', part)
+            out.append(''.join(parts))
+        open(path, 'w', encoding='utf-8').write('\n'.join(out))
+
+
+def finalize(paths):
+    """Resolve the values of the written decks (ch1_common.finalize), then polish the typography."""
+    _finalize(paths)
+    polish(paths)
 
 
 def qtr(s):

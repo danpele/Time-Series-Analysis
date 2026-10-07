@@ -213,7 +213,10 @@ MSCA Digital Finance}
 \end{center}
 \vspace{-0.25cm}
 \begin{itemize}
-    \item Correlation of daily log returns over rolling windows of 250 trading days (about one year), dated at the window end; returns on the days on which both markets trade; shaded: September 2008--March 2009 and February--April 2020
+    \item Correlation of daily log returns over rolling windows of 250 trading days (about one year), dated at the window end
+    \begin{itemize}
+        \item returns on the days on which both markets trade; shaded: September 2008--March 2009 and February--April 2020
+    \end{itemize}
 \end{itemize}
 \quantlet{TSA\_ch14\_correlations}{\qlurl{TSA_ch14_correlations}}
 \end{frame}
@@ -308,7 +311,10 @@ MSCA Digital Finance}
         \item $\ell(\theta) = -\frac12\sum_{t=1}^{T}\left(N\log 2\pi + \log|\mathbf{H}_t| + \boldsymbol{\varepsilon}_t^\top\mathbf{H}_t^{-1}\boldsymbol{\varepsilon}_t\right)$
         \item $|\mathbf{H}_t|$ is the determinant; for $N = 1$ this is the GARCH likelihood of \tsachlink{https://danpele.github.io/Time-Series-Analysis/EN/Courses/chapter5_conditional_volatility_garch.pdf}{Chapter 5}
     \end{itemize}
-    \item Returns have fat tails, so the Normal likelihood is used as \textbf{quasi-maximum likelihood} (QML): the estimates stay consistent, the standard errors need a robust (sandwich) correction
+    \item Returns have fat tails, so the Normal likelihood is used as \textbf{quasi-maximum likelihood} (QML)
+    \begin{itemize}
+        \item the estimates stay consistent; the standard errors need a robust (sandwich) correction
+    \end{itemize}
     \item Every evaluation of $\ell(\theta)$ needs $\mathbf{H}_t^{-1}$ and $|\mathbf{H}_t|$ for all $t$: the cost grows fast with $N$ and with the number of parameters
 \end{itemize}
 \end{frame}
@@ -358,7 +364,8 @@ MSCA Digital Finance}
     \end{itemize}
     \item \textbf{Positive definite by construction}
     \begin{itemize}
-        \item each term is a ``square'' $\mathbf{X}^\top\mathbf{M}\mathbf{X}$ of a positive (semi)definite matrix
+        \item each term is a ``square'' $\mathbf{X}^\top\mathbf{M}\mathbf{X}$ of a positive (semi)definite matrix $\mathbf{M}$
+        \item $\mathbf{M}$: $\mathbf{I}$, $\boldsymbol{\varepsilon}_{t-1}\boldsymbol{\varepsilon}_{t-1}^\top$ or $\mathbf{H}_{t-1}$; $\mathbf{X}$: $\mathbf{C}^\top$, $\mathbf{A}$ or $\mathbf{B}$
         \item parameters: $N(N+1)/2 + 2N^2$, i.e. 11 for $N = 2$ and 255 for $N = 10$
     \end{itemize}
     \item \textbf{Diagonal BEKK} ($\mathbf{A}$, $\mathbf{B}$ diagonal)
@@ -845,7 +852,7 @@ Feb--April 2020 & 0.70 & 58 \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Backtesting a VaR}
+\begin{frame}{Backtesting a VaR (1/2): frequency}
 \itemsize{\footnotesize}
 \begin{itemize}
     \item A \textbf{violation} on day $t$
@@ -859,10 +866,22 @@ Feb--April 2020 & 0.70 & 58 \\
         \item $LR_{uc} = -2\log\dfrac{(1-0.01)^{n-x}\,0.01^{x}}{(1-\hat p)^{n-x}\,\hat p^{x}} \sim \chi^2(1)$; reject at 5\% if $LR_{uc} > 3.84$
         \item $uc$: unconditional coverage; the ratio compares the likelihood of the violations under the rate 1\% with that under the observed rate $\hat p$
     \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Backtesting a VaR (2/2): independence}
+\itemsize{\footnotesize}
+\begin{itemize}
     \item \textbf{Christoffersen test} \refChr\ (independence)
     \begin{itemize}
         \item is a violation more likely the day after a violation?
         \item compares $\pi_{11} = P(\text{violation} \mid \text{violation yesterday})$ with $\pi_{01} = P(\text{violation} \mid \text{no violation yesterday})$
+    \end{itemize}
+    \item The statistic
+    \begin{itemize}
+        \item $LR_{ind} = -2\log\dfrac{(1-\hat\pi)^{n_{00}+n_{10}}\,\hat\pi^{\,n_{01}+n_{11}}}{(1-\hat\pi_{01})^{n_{00}}\,\hat\pi_{01}^{\,n_{01}}\,(1-\hat\pi_{11})^{n_{10}}\,\hat\pi_{11}^{\,n_{11}}} \sim \chi^2(1)$
+        \item $n_{ij}$: the number of days in state $j$ after a day in state $i$ (1: violation, 0: none); $\hat\pi_{01} = n_{01}/(n_{00}+n_{01})$, $\hat\pi_{11} = n_{11}/(n_{10}+n_{11})$
+        \item $\hat\pi$: the overall violation rate; the numerator assumes $\pi_{01} = \pi_{11}$ (no clustering); a small $p$-value rejects independence
     \end{itemize}
     \item \textbf{Honest design}
     \begin{itemize}
@@ -1096,7 +1115,7 @@ Static, Normal & 26 & 0.90\% & 0.3 & 0.577 & 0.001 & 10 \\
 \begin{frame}{Key formulas}
 \itemsize{\small}
 {\renewcommand{\arraystretch}{1.35}\begin{center}
-\scriptsize
+\footnotesize
 \begin{tabular}{ll}
 \toprule
 \textbf{Quantity} & \textbf{Formula} \\

@@ -70,7 +70,6 @@ MSCA Digital Finance}
     \item \textbf{API}: Application Programming Interface
     \item \textbf{AR}: AutoRegressive (model); in event studies: Abnormal Return
     \item \textbf{ARIMA}: AutoRegressive Integrated Moving Average (model)
-    \item \textbf{ARMA}: AutoRegressive Moving Average (model)
     \item \textbf{BNR}: Banca Națională a României (the National Bank of Romania)
     \item \textbf{BY-NC}: Attribution–NonCommercial (Creative Commons licence terms)
     \item \textbf{CDF}: Cumulative Distribution Function
@@ -78,11 +77,11 @@ MSCA Digital Finance}
     \item \textbf{CRPS}: Continuous Ranked Probability Score
     \item \textbf{ENTSO-E}: European Network of Transmission System Operators for Electricity
     \item \textbf{ETS}: Error, Trend, Seasonality (exponential smoothing state space models)
+    \item \textbf{FRED}: Federal Reserve Economic Data
 \end{itemize}
 \end{column}
 \begin{column}{0.49\textwidth}
 \begin{itemize}\setlength{\itemsep}{0pt}
-    \item \textbf{FRED}: Federal Reserve Economic Data
     \item \textbf{GARCH}: Generalised AutoRegressive Conditional Heteroskedasticity
     \item \textbf{GDP}: Gross Domestic Product
     \item \textbf{GIFT}: General Time Series Forecasting Model Evaluation (GIFT-Eval benchmark)
@@ -95,6 +94,7 @@ MSCA Digital Finance}
     \item \textbf{LOTSA}: Large-scale Open Time Series Archive (Moirai pretraining corpus)
     \item \textbf{MAE}: Mean Absolute Error
     \item \textbf{MASE}: Mean Absolute Scaled Error
+    \item \textbf{RMSE}: Root Mean Squared Error
 \end{itemize}
 \end{column}
 \end{columns}
@@ -104,7 +104,6 @@ MSCA Digital Finance}
 \begin{columns}[T]
 \begin{column}{0.49\textwidth}
 \begin{itemize}\setlength{\itemsep}{0pt}
-    \item \textbf{RMSE}: Root Mean Squared Error
     \item \textbf{RSXFSN}: Retail Sales excluding Food Services, Not seasonally adjusted (FRED series code)
     \item \textbf{US}: United States
     \item \textbf{VAR}: Vector AutoRegression
@@ -272,10 +271,10 @@ MSCA Digital Finance}
         \item designed for translation; behind every large language model (LLM)
     \end{itemize}
     \item Input: a sequence of \textbf{tokens}, each turned into a vector (an embedding)
-    \item \textbf{Encoder}
+    \item \textbf{Encoder--decoder} architecture
     \begin{itemize}
-        \item reads the whole input
-        \item \textbf{decoder}: produces the output step by step
+        \item the \textbf{encoder} reads the whole input
+        \item the \textbf{decoder} produces the output step by step
         \item \textbf{decoder-only} models (GPT, TimesFM, Lag-Llama) forecast the next token from all previous ones
     \end{itemize}
     \item Position information is added to each vector, since attention ignores order
@@ -289,7 +288,8 @@ MSCA Digital Finance}
 \begin{itemize}
     \item Each input vector $x_i$ produces three vectors, by three linear maps learnt in training
     \begin{itemize}
-        \item a query $q_i$ (what position $i$ looks for), a key $k_i$ (what position $i$ offers), a value $v_i$ (what position $i$ passes on)
+        \item a query $q_i = W_Q x_i$ (what position $i$ looks for), a key $k_i = W_K x_i$ (what position $i$ offers), a value $v_i = W_V x_i$ (what position $i$ passes on)
+        \item $W_Q$, $W_K$, $W_V$: weight matrices learnt in training, the same for every position
     \end{itemize}
     \item The output at position $i$ is a weighted average of the values of all positions
     \begin{itemize}
@@ -393,7 +393,8 @@ MSCA Digital Finance}
 \begin{itemize}
     \item Training: a language model (T5) learns to predict the next token
     \begin{itemize}
-        \item loss: the cross-entropy, minus the log of the probability given to the true next token; it is 0 when that probability is 1
+        \item loss: the cross-entropy $-\log \hat p(z_{t+1})$, where $z_{t+1}$ is the true next token and $\hat p(z_{t+1})$ the probability the model gave it
+        \item it is 0 when that probability is 1 and grows as the probability falls
     \end{itemize}
     \item Forecast in three steps
     \begin{itemize}
@@ -707,6 +708,7 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
 \vspace{-0.25cm}
 \begin{itemize}
     \item Left: $L_\tau$ against $y - \hat q$ for $\tau$ = 0.1, 0.5, 0.9. Right: the forecast N(0, 1), the outcome $y = 1$
+    \item N($\mu$, $\sigma^2$): the Normal distribution with mean $\mu$ and variance $\sigma^2$
 \end{itemize}
 \quantlet{TSA\_ch11\_tokens\_scores}{\qlurl{TSA_ch11_tokens_scores}}
 \end{frame}
@@ -762,14 +764,14 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
     \item \textbf{Coverage}
     \begin{itemize}
         \item the share of outcomes inside the 80\% interval
-        \item $\text{Cov} = \frac1n\sum_{i=1}^{n} \mathbf{1}\{\hat q_{0.1,i} \le y_i \le \hat q_{0.9,i}\}$; $n$: the number of forecasts; $\mathbf{1}\{\cdot\}$: 1 if the outcome is inside, 0 otherwise
+        \item $\text{Cov} = \frac1n\sum_{i=1}^{n} \mathbf{1}\{\hat q_{0.1}^{(i)} \le y_i \le \hat q_{0.9}^{(i)}\}$; $n$: the number of forecasts; $\hat q_{\tau}^{(i)}$: the quantile of forecast $i$; $\mathbf{1}\{\cdot\}$: 1 if the outcome is inside, 0 otherwise
         \item target 80\%; 7 of 10 inside means 70\%: intervals somewhat too narrow
     \end{itemize}
     \item \textbf{Relative scores}
     \begin{itemize}
         \item a model's MASE or WQL divided by that of the seasonal naive on the same origins
         \item below 1: the model beats the seasonal naive
-        \item averaged over series with the geometric mean, so that 2 and 0.5 cancel out
+        \item averaged over the $S$ series with the geometric mean $(r_1 r_2 \cdots r_S)^{1/S}$, $r_k$: the ratio for series $k$; so 2 and 0.5 cancel out
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -790,14 +792,29 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
 
 \begin{frame}{Seven series for the test}
 \itemsize{\footnotesize}
-\begin{center}
-\includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch11_series.pdf}
-\end{center}
-\vspace{-0.25cm}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{tsa_ch11_series.pdf}
+\end{column}
+\begin{column}{0.38\textwidth}
 \begin{itemize}
-    \item Hourly load of Romania (ENTSO-E); Romanian industrial production, real GDP (not seasonally adjusted), HICP inflation, unemployment (Eurostat); EUR/RON (BNR); US retail sales (FRED RSXFSN)
+    \item Romania (ENTSO-E)
+    \begin{itemize}
+        \item hourly electricity load
+    \end{itemize}
+    \item Romania (Eurostat)
+    \begin{itemize}
+        \item industrial production
+        \item real GDP, not seasonally adjusted
+        \item HICP inflation; unemployment rate
+    \end{itemize}
+    \item EUR/RON (BNR reference rate)
+    \item US retail sales (FRED RSXFSN)
 \end{itemize}
 \quantlet{TSA\_ch11\_tokens\_scores}{\qlurl{TSA_ch11_tokens_scores}}
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Interpreting the seven series}
@@ -916,7 +933,7 @@ TimeGPT (2023) & not disclosed & -- & points, intervals & paid API \\
     \item \textbf{Benchmarks}, re-estimated at every origin
     \begin{itemize}
         \item seasonal naive (the naive forecast for unemployment and EUR/RON)
-        \item ETS with damped trend and additive seasonality; ARIMA with orders chosen once by AIC before the first origin (load: ARMA(2,0,2) on weekly differences)
+        \item ETS with damped trend and additive seasonality; ARIMA with orders chosen once by AIC before the first origin (load: ARIMA(2,0,2) on weekly differences)
     \end{itemize}
     \item \textbf{Foundation models}, zero-shot
     \begin{itemize}
@@ -1263,7 +1280,7 @@ Pinball loss & $L_\tau(y, \hat q_\tau) = \max\{\tau(y - \hat q_\tau),\ (\tau - 1
 CRPS & $\int (F(z) - \mathbf{1}\{z \ge y\})^2\,dz = 2\int_0^1 L_\tau(y, F^{-1}(\tau))\,d\tau$ \\
 WQL & $\frac{1}{9}\sum_{\tau} 2\sum_t L_{\tau}(y_t, \hat q_{\tau,t}) \big/ \sum_t |y_t|$ \\
 MASE & $\frac1h\sum_j |y_{T+j} - \hat y_{T+j}| \Big/ \frac{1}{T-m}\sum_{t>m}|y_t - y_{t-m}|$ \\
-Coverage & $\frac1n\sum_i \mathbf{1}\{\hat q_{0.1,i} \le y_i \le \hat q_{0.9,i}\}$, target 0.8 \\
+Coverage & $\frac1n\sum_i \mathbf{1}\{\hat q_{0.1}^{(i)} \le y_i \le \hat q_{0.9}^{(i)}\}$, target 0.8 \\
 \bottomrule
 \end{tabular}
 \end{center}

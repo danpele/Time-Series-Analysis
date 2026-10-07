@@ -680,9 +680,11 @@ interp(('the revisions', 'revizuirilor'), [
     T('For policy in real time, use the filtered (one-sided) estimate and its standard error, never the last point of a two-sided filter', 'Pentru politica economică în timp real folosiți estimarea filtrată (unilaterală) și eroarea ei standard, niciodată ultimul punct al unui filtru bilateral')])
 
 chart(T('A time-varying beta: the BET and the euro area', 'Un beta variabil în timp: BET și zona euro'), 'tsa_ch10_tvp_beta', 'TSA_ch10_tvp_regression', [
-    T('Weekly log returns of the BET on the Euro Stoxx 50 (EODHD), 2005--2026 ($T = @{tv.n}$ weeks); random-walk beta by maximum likelihood, Kalman smoothed, with a 90\\% band; 52-week rolling OLS; constant OLS',
-      'Randamentele logaritmice săptămînale ale BET pe Euro Stoxx 50 (EODHD), 2005--2026 ($T = @{tv.n}$ de săptămîni); beta de tip mers aleator prin verosimilitate maximă, netezit Kalman, cu bandă de 90\\%; OLS pe ferestre mobile de 52 de săptămîni; OLS constant')],
-    h='0.58\\textheight')
+    T('Weekly log returns of the BET on the Euro Stoxx 50 (EODHD), 2005--2026 ($T = @{tv.n}$ weeks)',
+      'Randamentele logaritmice săptămînale ale BET pe Euro Stoxx 50 (EODHD), 2005--2026 ($T = @{tv.n}$ de săptămîni)'),
+    T('Random-walk beta by maximum likelihood, Kalman smoothed, with a 90\\% band; 52-week rolling OLS; constant OLS',
+      'Beta de tip mers aleator prin verosimilitate maximă, netezit Kalman, cu bandă de 90\\%; OLS pe ferestre mobile de 52 de săptămîni; OLS constant')],
+    h='0.55\\textheight')
 
 interp(('the time-varying beta', 'coeficientului beta variabil'), [
     (T('The constant OLS beta is @{tv.ols}; the smoothed beta peaks at @{tv.max} (@{tv.maxd}) and falls to @{tv.min} (@{tv.mind})', 'Beta OLS constant este @{tv.ols}; beta netezit atinge @{tv.max} (@{tv.maxd}) și coboară la @{tv.min} (@{tv.mind})'),
@@ -702,9 +704,11 @@ D.frame(T('Dynamic factor models and nowcasting', 'Modele cu factori dinamici ș
     T('Central banks use such models to nowcast GDP; \\texttt{statsmodels} has \\texttt{DynamicFactor} and \\texttt{DynamicFactorMQ}', 'Băncile centrale folosesc astfel de modele pentru nowcasting-ul PIB; \\texttt{statsmodels} are \\texttt{DynamicFactor} și \\texttt{DynamicFactorMQ}')))
 
 chart(T('A common factor of US activity', 'Un factor comun al activității din SUA'), 'tsa_ch10_dfm', 'TSA_ch10_dynamic_factor', [
-    T('Monthly growth of industrial production, payroll employment, real income less transfers and real manufacturing and trade sales (FRED), standardised; one AR(2) factor estimated on 1967--2019 and run to @{fm.lastd}, the last two months of income and sales set to missing',
-      'Creșterea lunară a producției industriale, a numărului de salariați, a venitului real fără transferuri și a vînzărilor reale din industrie și comerț (FRED), standardizate; un factor AR(2) estimat pe 1967--2019 și rulat pînă în @{fm.lastd}, ultimele două luni ale venitului și vînzărilor fiind tratate ca lipsă')],
-    h='0.56\\textheight')
+    T('Monthly growth of industrial production, payroll employment, real income less transfers and real manufacturing and trade sales (FRED), standardised',
+      'Creșterea lunară a producției industriale, a numărului de salariați, a venitului real fără transferuri și a vînzărilor reale din industrie și comerț (FRED), standardizate'),
+    T('One AR(2) factor estimated on 1967--2019 and run to @{fm.lastd}; the last two months of income and sales set to missing',
+      'Un factor AR(2) estimat pe 1967--2019 și rulat pînă în @{fm.lastd}; ultimele două luni ale venitului și vînzărilor sînt tratate ca lipsă')],
+    h='0.52\\textheight')
 
 interp(('the common factor', 'factorului comun'), [
     (T('Loadings: employment @{fm.PAYEMS}, industrial production @{fm.INDPRO}, sales @{fm.CMRMTSPL}, income @{fm.W875RX1}; factor AR(2) with $\\hat\\phi_1 = @{fm.phi1}$, $\\hat\\phi_2 = @{fm.phi2}$', 'Încărcări: salariați @{fm.PAYEMS}, producția industrială @{fm.INDPRO}, vînzări @{fm.CMRMTSPL}, venit @{fm.W875RX1}; factorul AR(2) cu $\\hat\\phi_1 = @{fm.phi1}$, $\\hat\\phi_2 = @{fm.phi2}$'),
@@ -752,7 +756,8 @@ D.frame(T('Transition matrix, durations and ergodic probabilities', 'Matricea de
 D.frame(T('The Hamilton filter', 'Filtrul Hamilton'), items(
     (T('Track $\\xi_{t|t} = \\Pr(S_t = j \\mid Y_t)$, the \\textbf{filtered probabilities}, for each regime $j$', 'Urmărim $\\xi_{t|t} = \\Pr(S_t = j \\mid Y_t)$, \\textbf{probabilitățile filtrate}, pentru fiecare regim $j$'),
      [T('\\textbf{prediction}: $\\Pr(S_t = j \\mid Y_{t-1}) = \\sum_i p_{ij}\\Pr(S_{t-1} = i \\mid Y_{t-1})$', '\\textbf{predicția}: $\\Pr(S_t = j \\mid Y_{t-1}) = \\sum_i p_{ij}\\Pr(S_{t-1} = i \\mid Y_{t-1})$'),
-      T('\\textbf{densities}: $f_j(y_t) = \\phi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, the likelihood of $y_t$ in each regime; $\\phi$: the standard Normal density; $\\mu_j$, $\\sigma_j$: the mean and standard deviation of regime $j$', '\\textbf{densitățile}: $f_j(y_t) = \\phi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, verosimilitatea lui $y_t$ în fiecare regim; $\\phi$: densitatea distribuției Normale standard; $\\mu_j$, $\\sigma_j$: media și abaterea standard a regimului $j$'),
+      T('\\textbf{densities}: $f_j(y_t) = \\varphi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, the likelihood of $y_t$ in each regime', '\\textbf{densitățile}: $f_j(y_t) = \\varphi\\bigl((y_t - \\mu_j)/\\sigma_j\\bigr)/\\sigma_j$, verosimilitatea lui $y_t$ în fiecare regim'),
+      T('$\\varphi$: the standard Normal density; $\\mu_j$, $\\sigma_j$: the mean and standard deviation of regime $j$', '$\\varphi$: densitatea distribuției Normale standard; $\\mu_j$, $\\sigma_j$: media și abaterea standard a regimului $j$'),
       T('\\textbf{update} (Bayes): $\\Pr(S_t = j \\mid Y_t) = \\dfrac{\\Pr(S_t = j \\mid Y_{t-1})\\,f_j(y_t)}{\\sum_i\\Pr(S_t = i \\mid Y_{t-1})\\,f_i(y_t)}$', '\\textbf{actualizarea} (Bayes): $\\Pr(S_t = j \\mid Y_t) = \\dfrac{\\Pr(S_t = j \\mid Y_{t-1})\\,f_j(y_t)}{\\sum_i\\Pr(S_t = i \\mid Y_{t-1})\\,f_i(y_t)}$')]),
     (T('The denominator is $p(y_t \\mid Y_{t-1})$: the log-likelihood is $\\sum_t\\log p(y_t \\mid Y_{t-1})$, as for the Kalman filter', 'Numitorul este $p(y_t \\mid Y_{t-1})$: log-verosimilitatea este $\\sum_t\\log p(y_t \\mid Y_{t-1})$, ca la filtrul Kalman'),
      [T('the same predict--update cycle, with probabilities instead of means and variances', 'același ciclu predicție--actualizare, cu probabilități în locul mediilor și varianțelor')]),
@@ -830,7 +835,7 @@ interp(('the volatility regimes', 'regimurilor de volatilitate'), [
      [T('durations: @{vo.d2} weeks calm, @{vo.d1} weeks turbulent; turbulent in @{vo.share}\\% of the weeks (ergodic @{vo.erg}\\%)', 'durate: @{vo.d2} de săptămîni calme, @{vo.d1} săptămîni agitate; agitat în @{vo.share}\\% din săptămîni (ergodic @{vo.erg}\\%)')]),
     (T('Most turbulent years: @{vo.y0} (@{vo.ys0}\\% of the weeks), @{vo.y1} (@{vo.ys1}\\%), @{vo.y2} (@{vo.ys2}\\%)', 'Cei mai agitați ani: @{vo.y0} (@{vo.ys0}\\% din săptămîni), @{vo.y1} (@{vo.ys1}\\%), @{vo.y2} (@{vo.ys2}\\%)'),
      [T('correlation with the GARCH(1,1) volatility: @{vo.corr}; GARCH: $\\hat\\alpha = @{vo.ga}$, $\\hat\\beta = @{vo.gb}$', 'corelația cu volatilitatea GARCH(1,1): @{vo.corr}; GARCH: $\\hat\\alpha = @{vo.ga}$, $\\hat\\beta = @{vo.gb}$')]),
-    T('Two views of the same clustering: GARCH moves volatility continuously, the regime model jumps between two levels', 'Două perspective asupra aceleiași grupări: GARCH modifică volatilitatea continuu, modelul cu regimuri trece brusc de la un nivel la altul')])
+    T('Two views of the same clustering: GARCH moves volatility continuously, the regime model jumps between two levels', 'Două perspective asupra aceluiași volatility clustering: GARCH modifică volatilitatea continuu, modelul cu regimuri trece brusc de la un nivel la altul')])
 
 D.frame(T('Regimes, GARCH persistence and long memory', 'Regimuri, persistența GARCH și memoria lungă'), items(
     (T('\\refLL: shifts in the level of variance make a GARCH look almost integrated ($\\alpha + \\beta \\approx 1$)', '\\refLL: schimbările nivelului varianței fac un GARCH să pară aproape integrat ($\\alpha + \\beta \\approx 1$)'),
@@ -846,7 +851,7 @@ chart(T('Regimes imitate memory', 'Regimurile imită memoria'), 'tsa_ch10_regime
 
 interp(('the simulated regimes', 'regimurilor simulate'), [
     (T('Data: ACF of $|r_t|$ @{me.acf_data_1} at lag 1, @{me.acf_data_26} at 26 weeks; regime model: @{me.acf_sim_1} and @{me.acf_sim_26}; random order: none', 'Datele: ACF a lui $|r_t|$ @{me.acf_data_1} la lagul 1, @{me.acf_data_26} la 26 de săptămîni; modelul cu regimuri: @{me.acf_sim_1} și @{me.acf_sim_26}; ordinea aleatoare: nimic'),
-     [T('the regimes explain most of the short-run clustering, less of the long tail', 'regimurile explică cea mai mare parte a grupării pe termen scurt, mai puțin din coada lungă')]),
+     [T('the regimes explain most of the short-run clustering, less of the long tail', 'regimurile explică cea mai mare parte a volatility clustering-ului pe termen scurt, mai puțin din coada lungă a ACF')]),
     (T('Local Whittle $\\hat d$ of $|r_t|$: @{me.d_data} in the data, @{me.d_sim} (SD @{me.d_sim_sd}) in the simulated regime series, @{me.d_iid} in random order', 'Estimatorul Whittle local $\\hat d$ pentru $|r_t|$: @{me.d_data} în date, @{me.d_sim} (SD @{me.d_sim_sd}) în seriile simulate cu regimuri, @{me.d_iid} în ordine aleatoare'),
      [T('a GARCH(1,1) fitted to the simulated series gives $\\alpha + \\beta = @{me.garch_ab_sim}$ on average (@{me.repsg} series), although there is no GARCH in them', 'un GARCH(1,1) estimat pe seriile simulate dă în medie $\\alpha + \\beta = @{me.garch_ab_sim}$ (@{me.repsg} serii), deși ele nu conțin GARCH')]),
     T('Persistence and long memory in volatility are consistent with regimes: compare models by likelihood and forecasts, not by one statistic', 'Persistența și memoria lungă a volatilității sînt compatibile cu regimurile: comparați modelele după verosimilitate și prognoze, nu după o singură statistică')])
@@ -856,7 +861,7 @@ D.recap(('Markov switching', 'modelele Markov switching'), [
     T('Hamilton filter: predict with $\\mathbf{P}$, update with Bayes; Kim smoother for history', 'Filtrul Hamilton: predicție cu $\\mathbf{P}$, actualizare cu Bayes; netezitorul Kim pentru istorie'),
     T('US GDP: the model recovers the deep NBER recessions; filtered probabilities react later', 'PIB-ul SUA: modelul regăsește recesiunile NBER profunde; probabilitățile filtrate reacționează mai tîrziu'),
     T('Several maxima, outliers and variance breaks can change what a ``regime\'\' means', 'Mai multe maxime, valorile extreme și rupturile de varianță pot schimba înțelesul unui „regim”'),
-    T('Regimes reproduce volatility clustering, GARCH persistence and apparent long memory', 'Regimurile reproduc gruparea volatilității, persistența GARCH și memoria lungă aparentă')])
+    T('Regimes reproduce volatility clustering, GARCH persistence and apparent long memory', 'Regimurile reproduc volatility clustering, persistența GARCH și memoria lungă aparentă')])
 
 # =============================================================================
 # 7. AI
@@ -901,7 +906,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      T('HP filter', 'Filtrul HP') + ' & $\\min\\sum(y_t - \\tau_t)^2 + \\lambda\\sum(\\Delta^2\\tau_t)^2$, \\quad $\\lambda = \\sigma^2_\\varepsilon/\\sigma^2_\\zeta$',
      T('Markov chain', 'Lanțul Markov') + ' & $E(D_i) = 1/(1 - p_{ii})$, \\quad $\\pi_1 = (1 - p_{22})/(2 - p_{11} - p_{22})$',
      T('Hamilton filter', 'Filtrul Hamilton') + ' & $\\Pr(S_t = j \\mid Y_t) \\propto f_j(y_t)\\sum_i p_{ij}\\Pr(S_{t-1} = i \\mid Y_{t-1})$'],
-    size='scriptsize') + '}')
+    size='footnotesize') + '}')
 
 D.frame(T('Self-assessment', 'Autoevaluare'), items(
     (T('\\textbf{Question}: local level with $P_t = 3$, $\\sigma^2_\\varepsilon = 1$. What is the Kalman gain?', '\\textbf{Întrebare}: local level cu $P_t = 3$, $\\sigma^2_\\varepsilon = 1$. Cît este cîștigul Kalman?'),

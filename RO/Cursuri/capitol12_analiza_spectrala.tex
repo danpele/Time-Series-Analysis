@@ -640,7 +640,7 @@ MSCA Digital Finance}
 \begin{frame}{Recapitulare: periodograma}
 \itemsize{\small}
 \begin{itemize}
-    \item $I(\nu_j) = |d(\nu_j)|^2$: pătratul amplitudinii ciclului la fiecare frecvență Fourier; suma dă varianța
+    \item $I(\nu_j) = |d(\nu_j)|^2$: proporțională cu pătratul amplitudinii ciclului la fiecare frecvență Fourier; suma dă varianța
     \item $2I/f \approx \chi^2_2$: nedeplasată, dar neconsistentă; ordonatele vecine sînt aproape independente
     \item Petele solare: un vîrf la 11{,}0 ani; testul $g$ al lui Fisher respinge zgomotul alb
 \end{itemize}
@@ -728,7 +728,7 @@ MSCA Digital Finance}
     \end{itemize}
     \item Metoda \textbf{Welch} (\refWelch)
     \begin{itemize}
-        \item o medie a periodogramelor a $K$ segmente
+        \item o medie a periodogramelor a $K$ segmente: $\hat f_W(\nu) = \frac1K\sum_{k=1}^{K} I_k(\nu)$, $I_k$: periodograma cu fereastră a segmentului $k$
         \item seria se împarte în $K$ segmente care se suprapun, se aplică fereastra pe fiecare și se face media periodogramelor
         \item \texttt{scipy.signal.welch}; lungimea segmentului fixează rezoluția
     \end{itemize}
@@ -1071,7 +1071,7 @@ MSCA Digital Finance}
     \begin{itemize}
         \item de aceea ratele de creștere par mai zgomotoase decît nivelurile; filtrarea unui zgomot alb poate crea chiar cicluri false (efectul Slutsky, \tsachlink{https://danpele.github.io/Time-Series-Analysis/RO/Cursuri/capitol0_introducere.pdf}{Capitolul 0})
     \end{itemize}
-    \item Filtrul HP pentru ciclu: cîștig 0{,}998 la 8 trimestre, 0{,}70 la 32 de trimestre, 0{,}49 la 40 de trimestre; jumătate din putere la aproximativ 40 de trimestre
+    \item Filtrul HP pentru ciclu: cîștigul pătratic 0{,}998 la 8 trimestre, 0{,}70 la 32 de trimestre, 0{,}49 la 40 de trimestre; jumătate din putere la aproximativ 40 de trimestre
     \begin{itemize}
         \item păstrează tot ce este mai rapid de 10 ani, inclusiv zgomotul: nu este un filtru trece-bandă (\refBK)
     \end{itemize}
@@ -1124,10 +1124,11 @@ MSCA Digital Finance}
 \begin{itemize}
     \item În banda ciclului economic (18--96 de luni) coerența pătratică are media 0{,}87 (maximum 0{,}95), mult peste pragul de 5\%, 0{,}35
     \begin{itemize}
+        \item pragul de 5\% pentru o estimare Welch cu $K$ segmente: $1 - 0{,}05^{1/(K-1)}$
         \item la frecvențele mai rapide de 6 luni media este doar 0{,}17: zgomotul lunar al celor două serii nu este legat
         \item corelația obișnuită, 0{,}49, amestecă legătura puternică a ciclurilor cu legătura slabă a zgomotului
     \end{itemize}
-    \item Faza la ciclul de 48 de luni: -0{,}23 radiani, un lag de aproximativ 1{,}7 luni
+    \item Faza la ciclul de 48 de luni: $-0{,}23$ radiani, un lag de aproximativ 1{,}7 luni
     \begin{itemize}
         \item scăderea șomajului urmează revenirea producției cu o mică întîrziere (legea lui Okun, cu un lag)
     \end{itemize}
@@ -1140,7 +1141,7 @@ MSCA Digital Finance}
 \section{O trimitere: wavelets}
 %=============================================================================
 
-\begin{frame}{Wavelets: frecvența care se schimbă în timp}
+\begin{frame}{Wavelets (1/2): frecvența care se schimbă în timp}
 \itemsize{\small}
 \begin{itemize}
     \item Spectrul presupune staționaritate: aceleași cicluri la orice dată
@@ -1153,6 +1154,26 @@ MSCA Digital Finance}
         \item ferestre scurte pentru ciclurile rapide, ferestre lungi pentru ciclurile lente: rezoluție bună la toate scările
     \end{itemize}
     \item Dincolo de acest curs; o temă naturală de proiect (Python: \texttt{pywt} sau codul Morlet al acestui capitol)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Wavelets (2/2): transformata wavelet continuă}
+\itemsize{\footnotesize}
+\begin{itemize}
+    \item \textbf{Wavelet-ul Morlet}: o undă complexă amortizată de un clopot gaussian
+    \begin{itemize}
+        \item $\psi(u) = \pi^{-1/4}\, e^{i\omega_0 u}\, e^{-u^2/2}$, cu $\omega_0 = 6$ (\refTC)
+        \item $u$: timpul măsurat în unități ale scării; $\omega_0$: numărul de oscilații din interiorul clopotului
+    \end{itemize}
+    \item \textbf{Transformata} la scara $s$ și la data $\tau$
+    \begin{itemize}
+        \item $W(s, \tau) = \sum_t x_t\, \frac{1}{\sqrt{s}}\, \psi^*\!\left(\frac{t - \tau}{s}\right)$: corelația seriei cu wavelet-ul întins la scara $s$ și centrat în $\tau$
+        \item $\psi^*$: conjugatul complex al lui $\psi$; pentru $\omega_0 = 6$ perioada ciclului este aproximativ $1{,}03\,s$
+    \end{itemize}
+    \item \textbf{Scalograma}: puterea wavelet $|W(s, \tau)|^2$
+    \begin{itemize}
+        \item analogul periodogramei, dar separat pentru fiecare dată $\tau$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -1248,7 +1269,7 @@ MSCA Digital Finance}
 \begin{frame}{Formule de reținut}
 \itemsize{\small}
 {\renewcommand{\arraystretch}{1.35}\begin{center}
-\scriptsize
+\footnotesize
 \begin{tabular}{ll}
 \toprule
 \textbf{Mărimea} & \textbf{Formula} \\

@@ -271,7 +271,7 @@ D.frame(T('Zero-shot, fine-tuning, in-context', 'Zero-shot, fine-tuning și prog
     (T('\\textbf{Fine-tuning}', '\\textbf{Fine-tuning}'),
          [T('further training of the pretrained weights on the target data', 'antrenarea suplimentară a ponderilor pre-antrenate pe datele-țintă'),
           T('can help on unusual series; needs a validation sample and more computation', 'poate ajuta la serii neobișnuite; cere un eșantion de validare și mai mult calcul')]),
-    (T('The output is usually a set of \\textbf{quantiles} $\\hat q_{0.1}, \\dots, \\hat q_{0.9}$ for each future step, not a single number', 'Rezultatul este de obicei o mulțime de \\textbf{cuantile} $\\hat q_{0,1}, \\dots, \\hat q_{0,9}$ pentru fiecare pas viitor, nu un singur număr'), [])))
+    (T('The output is usually a set of \\textbf{quantiles} $\\hat q_{0.1}, \\dots, \\hat q_{0.9}$ for each future step, not a single number', 'Rezultatul este de obicei o mulțime de \\textbf{cuantile} $\\hat q_{0{,}1}; \\dots; \\hat q_{0{,}9}$ pentru fiecare pas viitor, nu un singur număr'), [])))
 
 D.frame(T('Pretraining at scale', 'Pre-antrenarea la scară mare'), two(
     ph('dalles', T('A Google data centre, The Dalles, Oregon', 'Un centru de date Google, The Dalles, Oregon')),
@@ -299,15 +299,16 @@ D.frame(T('The Transformer (Vaswani et al., 2017)', 'Transformer-ul (Vaswani et 
         (T('\\refVaswani: a network for sequences built on \\textbf{attention}, without recurrence', '\\refVaswani: o rețea pentru secvențe construită pe \\textbf{atenție}, fără recurență'),
          [T('designed for translation; behind every large language model (LLM)', 'creată pentru traducere; stă la baza oricărui model mare de limbaj (LLM)')]),
         (T('Input: a sequence of \\textbf{tokens}, each turned into a vector (an embedding)', 'Intrarea: o secvență de \\textbf{tokeni}, fiecare transformat într-un vector (embedding)'), []),
-        (T('\\textbf{Encoder}', '\\textbf{Encoder-ul}'),
-             [T('reads the whole input', 'citește toată intrarea'),
-              T('\\textbf{decoder}: produces the output step by step', '\\textbf{decoder-ul}: produce ieșirea pas cu pas'),
+        (T('\\textbf{Encoder--decoder} architecture', 'Arhitectura \\textbf{encoder--decoder}'),
+             [T('the \\textbf{encoder} reads the whole input', '\\textbf{encoder-ul} citește toată intrarea'),
+              T('the \\textbf{decoder} produces the output step by step', '\\textbf{decoder-ul} produce ieșirea pas cu pas'),
               T('\\textbf{decoder-only} models (GPT, TimesFM, Lag-Llama) forecast the next token from all previous ones', 'modelele \\textbf{doar cu decoder} (GPT, TimesFM, Lag-Llama) prognozează tokenul următor din toți cei anteriori')]),
         (T('Position information is added to each vector, since attention ignores order', 'Fiecărui vector i se adaugă informația despre poziție, deoarece atenția ignoră ordinea'), [])), wl='0.34', wr='0.64'))
 
 D.frame(T('Self-attention (1/2): the formula', 'Self-attention (1/2): formula'), items(
     (T('Each input vector $x_i$ produces three vectors, by three linear maps learnt in training', 'Fiecare vector de intrare $x_i$ produce trei vectori, prin trei transformări liniare învățate la antrenare'),
-     [T('a query $q_i$ (what position $i$ looks for), a key $k_i$ (what position $i$ offers), a value $v_i$ (what position $i$ passes on)', 'o interogare $q_i$ (ce caută poziția $i$), o cheie $k_i$ (ce oferă poziția $i$), o valoare $v_i$ (ce transmite poziția $i$)')]),
+     [T('a query $q_i = W_Q x_i$ (what position $i$ looks for), a key $k_i = W_K x_i$ (what position $i$ offers), a value $v_i = W_V x_i$ (what position $i$ passes on)', 'o interogare $q_i = W_Q x_i$ (ce caută poziția $i$), o cheie $k_i = W_K x_i$ (ce oferă poziția $i$), o valoare $v_i = W_V x_i$ (ce transmite poziția $i$)'),
+      T('$W_Q$, $W_K$, $W_V$: weight matrices learnt in training, the same for every position', '$W_Q$, $W_K$, $W_V$: matrice de ponderi învățate la antrenare, aceleași pentru toate pozițiile')]),
     (T('The output at position $i$ is a weighted average of the values of all positions', 'Ieșirea în poziția $i$ este o medie ponderată a valorilor tuturor pozițiilor'),
      [T('$\\displaystyle \\text{out}_i = \\sum_j w_{ij} v_j, \\qquad w_{ij} = \\frac{\\exp(q_i^\\top k_j/\\sqrt{d})}{\\sum_l \\exp(q_i^\\top k_l/\\sqrt{d})}$', '$\\displaystyle \\text{out}_i = \\sum_j w_{ij} v_j, \\qquad w_{ij} = \\frac{\\exp(q_i^\\top k_j/\\sqrt{d})}{\\sum_l \\exp(q_i^\\top k_l/\\sqrt{d})}$')]),
     (T('Notation', 'Notațiile'),
@@ -365,7 +366,8 @@ D.frame(T('Mean scaling and quantisation (Chronos) (1/2)', 'Scalarea prin medie 
 
 D.frame(T('Mean scaling and quantisation (Chronos) (2/2)', 'Scalarea prin medie și cuantizarea (Chronos) (2/2)'), items(
     (T('Training: a language model (T5) learns to predict the next token', 'Antrenarea: un model de limbaj (T5) învață să prognozeze tokenul următor'),
-     [T('loss: the cross-entropy, minus the log of the probability given to the true next token; it is 0 when that probability is 1', 'funcția de pierdere: cross-entropy, minus logaritmul probabilității atribuite tokenului următor efectiv; este 0 cînd această probabilitate este 1')]),
+     [T('loss: the cross-entropy $-\\log \\hat p(z_{t+1})$, where $z_{t+1}$ is the true next token and $\\hat p(z_{t+1})$ the probability the model gave it', 'funcția de pierdere: cross-entropy $-\\log \\hat p(z_{t+1})$, unde $z_{t+1}$ este tokenul următor efectiv, iar $\\hat p(z_{t+1})$ probabilitatea atribuită lui de model'),
+      T('it is 0 when that probability is 1 and grows as the probability falls', 'este 0 cînd această probabilitate este 1 și crește cînd probabilitatea scade')]),
     (T('Forecast in three steps', 'Prognoza, în trei pași'),
      [T('sample many token paths from the model', 'se eșantionează din model multe traiectorii de tokeni'),
       T('map each token back to its bin centre and multiply by $s$', 'fiecare token se înlocuiește cu centrul intervalului său și se înmulțește cu $s$'),
@@ -428,7 +430,7 @@ D.frame(T('Chronos, Chronos-Bolt and Chronos-2 (Amazon)', 'Chronos, Chronos-Bolt
              [T('T5 encoder--decoder on scaled and quantised values', 'T5 encoder--decoder pe valori scalate și cuantizate'),
               T('samples token paths', 'eșantionează traiectorii de tokeni')]),
         (T('\\textbf{Chronos-Bolt} (November 2024)', '\\textbf{Chronos-Bolt} (noiembrie 2024)'),
-             [T('patches of 16 values and a direct output of the quantiles 0.1, \\dots, 0.9', 'patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1, \\dots, 0,9'),
+             [T('patches of 16 values and a direct output of the quantiles 0.1, \\dots, 0.9', 'patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1; \\dots; 0,9'),
               T('sizes used here: tiny @{sz.bt} and small @{sz.bs} million parameters; context up to 2048 values', 'dimensiunile folosite aici: tiny, @{sz.bt} @{sz.bt.de}milioane, și small, @{sz.bs} @{sz.bs.de}milioane de parametri; context de pînă la 2048 de valori')]),
         (T('\\textbf{Chronos-2} (\\refAnsariB, October 2025)', '\\textbf{Chronos-2} (\\refAnsariB, octombrie 2025)'),
              [T('@{sz.c2} million parameters, 21 quantile levels, covariates and groups of related series', '@{sz.c2} @{sz.c2.de}milioane de parametri, 21 de niveluri de cuantile, covariate și grupuri de serii înrudite')]),
@@ -484,9 +486,9 @@ D.section('Probabilistic forecasts and their scores', 'Prognozele probabiliste �
 
 D.frame(T('Quantile forecasts', 'Prognozele cuantile'), items(
     (T('A \\textbf{probabilistic forecast} gives the distribution of $y_{T+h}$ given the data up to $T$', 'O \\textbf{prognoză probabilistă} dă distribuția lui $y_{T+h}$, condiționată de datele pînă la $T$'),
-     [T('foundation models report it through quantiles $\\hat q_\\tau$ at levels $\\tau = 0.1, \\dots, 0.9$', 'foundation models o raportează prin cuantile $\\hat q_\\tau$ la nivelurile $\\tau = 0{,}1, \\dots, 0{,}9$')]),
-    (T('Point forecast: the median $\\hat q_{0.5}$', 'Prognoza punctuală: mediana $\\hat q_{0,5}$'), []),
-    (T('Central 80\\% interval: $[\\hat q_{0.1}, \\hat q_{0.9}]$; a \\textbf{fan chart} draws several such bands', 'Intervalul central de 80\\%: $[\\hat q_{0,1}, \\hat q_{0,9}]$; un \\textbf{fan chart} desenează mai multe astfel de benzi'), []),
+     [T('foundation models report it through quantiles $\\hat q_\\tau$ at levels $\\tau = 0.1, \\dots, 0.9$', 'foundation models o raportează prin cuantile $\\hat q_\\tau$ la nivelurile $\\tau = 0{,}1; \\dots; 0{,}9$')]),
+    (T('Point forecast: the median $\\hat q_{0.5}$', 'Prognoza punctuală: mediana $\\hat q_{0{,}5}$'), []),
+    (T('Central 80\\% interval: $[\\hat q_{0.1}, \\hat q_{0.9}]$; a \\textbf{fan chart} draws several such bands', 'Intervalul central de 80\\%: $[\\hat q_{0{,}1}, \\hat q_{0{,}9}]$; un \\textbf{fan chart} desenează mai multe astfel de benzi'), []),
     (T('Two qualities to check', 'Două calități de verificat'),
      [T('\\textbf{calibration}: the 80\\% interval contains about 80\\% of the outcomes', '\\textbf{calibrarea}: intervalul de 80\\% conține circa 80\\% din valorile observate'),
       T('\\textbf{sharpness}: among calibrated forecasts, narrower is better (\\refGR)', '\\textbf{precizia} (sharpness): dintre prognozele calibrate, cea mai îngustă este mai bună (\\refGR)')]),
@@ -516,7 +518,7 @@ D.frame(T('The CRPS', 'Scorul CRPS'), items(
 
 D.frame(T('The weighted quantile loss (WQL)', 'Pierderea cuantilă ponderată (WQL)'), items(
     (T('\\textbf{WQL} (weighted quantile loss)', '\\textbf{WQL} (weighted quantile loss, pierderea cuantilă ponderată)'),
-         [T('the CRPS approximated with the 9 levels 0.1, \\dots, 0.9 and divided by the size of the series', 'CRPS aproximat cu cele 9 niveluri 0,1, \\dots, 0,9 și împărțit la mărimea seriei'),
+         [T('the CRPS approximated with the 9 levels 0.1, \\dots, 0.9 and divided by the size of the series', 'CRPS aproximat cu cele 9 niveluri 0,1; \\dots; 0,9 și împărțit la mărimea seriei'),
           T('$\\text{WQL} = \\frac{1}{9}\\sum_{\\tau}\\frac{2\\sum_t L_\\tau(y_t, \\hat q_{\\tau,t})}{\\sum_t |y_t|}$', '$\\text{WQL} = \\frac{1}{9}\\sum_{\\tau}\\frac{2\\sum_t L_\\tau(y_t, \\hat q_{\\tau,t})}{\\sum_t |y_t|}$')]),
     (T('Notation', 'Notațiile'),
      [T('$\\tau$: runs over the 9 levels; $t$: runs over all forecast steps of all origins', '$\\tau$: parcurge cele 9 niveluri; $t$: parcurge toți pașii de prognoză de la toate originile'),
@@ -526,7 +528,8 @@ D.frame(T('The weighted quantile loss (WQL)', 'Pierderea cuantilă ponderată (W
       T('0 for a perfect forecast; smaller is better; used by Chronos and GIFT-Eval', '0 pentru o prognoză perfectă; mai mic înseamnă mai bine; folosit de Chronos și de GIFT-Eval')])))
 
 chart(T('The pinball loss and the CRPS', 'Pierderea pinball și CRPS'), 'tsa_ch11_scores', 'TSA_ch11_tokens_scores', [
-    T('Left: $L_\\tau$ against $y - \\hat q$ for $\\tau$ = 0.1, 0.5, 0.9. Right: the forecast N(0, 1), the outcome $y = 1$', 'Stînga: $L_\\tau$ în funcție de $y - \\hat q$ pentru $\\tau$ = 0,1; 0,5; 0,9. Dreapta: prognoza N(0, 1), valoarea observată $y = 1$')],
+    T('Left: $L_\\tau$ against $y - \\hat q$ for $\\tau$ = 0.1, 0.5, 0.9. Right: the forecast N(0, 1), the outcome $y = 1$', 'Stînga: $L_\\tau$ în funcție de $y - \\hat q$ pentru $\\tau$ = 0,1; 0,5; 0,9. Dreapta: prognoza N(0, 1), valoarea observată $y = 1$'),
+    T('N($\\mu$, $\\sigma^2$): the Normal distribution with mean $\\mu$ and variance $\\sigma^2$', 'N($\\mu$, $\\sigma^2$): distribuția Normală cu media $\\mu$ și varianța $\\sigma^2$')],
     h='0.58\\textheight')
 
 interp(('the scores', 'scorurilor'), [
@@ -536,7 +539,7 @@ interp(('the scores', 'scorurilor'), [
     T('The CRPS rewards calibration and sharpness at the same time', 'CRPS răsplătește în același timp calibrarea și precizia')])
 
 D.frame(T('Worked example: pinball losses', 'Exemplu rezolvat: pierderile pinball'), items(
-    (T('Forecast of next month\'s unemployment rate: $\\hat q_{0.1}$ = @{pin.q0}, $\\hat q_{0.5}$ = @{pin.q1}, $\\hat q_{0.9}$ = @{pin.q2}; outcome $y$ = @{pin.y}', 'Prognoza ratei șomajului pentru luna viitoare: $\\hat q_{0,1}$ = @{pin.q0}, $\\hat q_{0,5}$ = @{pin.q1}, $\\hat q_{0,9}$ = @{pin.q2}; valoarea observată $y$ = @{pin.y}'), []),
+    (T('Forecast of next month\'s unemployment rate: $\\hat q_{0.1}$ = @{pin.q0}, $\\hat q_{0.5}$ = @{pin.q1}, $\\hat q_{0.9}$ = @{pin.q2}; outcome $y$ = @{pin.y}', 'Prognoza ratei șomajului pentru luna viitoare: $\\hat q_{0{,}1}$ = @{pin.q0}, $\\hat q_{0{,}5}$ = @{pin.q1}, $\\hat q_{0{,}9}$ = @{pin.q2}; valoarea observată $y$ = @{pin.y}'), []),
     (T('$\\tau = 0.1$: $y$ is above, loss $0.1 \\cdot (7.2 - 6.5)$ = @{pin.1}', '$\\tau = 0{,}1$: $y$ este deasupra, pierderea $0{,}1 \\cdot (7{,}2 - 6{,}5)$ = @{pin.1}'), []),
     (T('$\\tau = 0.5$: $y$ is above, loss $0.5 \\cdot (7.2 - 7.0)$ = @{pin.5}', '$\\tau = 0{,}5$: $y$ este deasupra, pierderea $0{,}5 \\cdot (7{,}2 - 7{,}0)$ = @{pin.5}'), []),
     (T('$\\tau = 0.9$: $y$ is below, loss $(1 - 0.9) \\cdot (7.6 - 7.2)$ = @{pin.9}', '$\\tau = 0{,}9$: $y$ este dedesubt, pierderea $(1 - 0{,}9) \\cdot (7{,}6 - 7{,}2)$ = @{pin.9}'), []),
@@ -557,12 +560,12 @@ D.frame(T('Point accuracy: the MASE', 'Precizia punctuală: MASE'), items(
 D.frame(T('Coverage and relative scores', 'Acoperirea și scorurile relative'), items(
     (T('\\textbf{Coverage}', '\\textbf{Acoperirea}'),
          [T('the share of outcomes inside the 80\\% interval', 'proporția valorilor observate din intervalul de 80\\%'),
-          T('$\\text{Cov} = \\frac1n\\sum_{i=1}^{n} \\mathbf{1}\\{\\hat q_{0.1,i} \\le y_i \\le \\hat q_{0.9,i}\\}$; $n$: the number of forecasts; $\\mathbf{1}\\{\\cdot\\}$: 1 if the outcome is inside, 0 otherwise', '$\\text{Cov} = \\frac1n\\sum_{i=1}^{n} \\mathbf{1}\\{\\hat q_{0.1,i} \\le y_i \\le \\hat q_{0.9,i}\\}$; $n$: numărul de prognoze; $\\mathbf{1}\\{\\cdot\\}$: 1 dacă valoarea observată este în interval, 0 altfel'),
+          T('$\\text{Cov} = \\frac1n\\sum_{i=1}^{n} \\mathbf{1}\\{\\hat q_{0.1}^{(i)} \\le y_i \\le \\hat q_{0.9}^{(i)}\\}$; $n$: the number of forecasts; $\\hat q_{\\tau}^{(i)}$: the quantile of forecast $i$; $\\mathbf{1}\\{\\cdot\\}$: 1 if the outcome is inside, 0 otherwise', '$\\text{Cov} = \\frac1n\\sum_{i=1}^{n} \\mathbf{1}\\{\\hat q_{0.1}^{(i)} \\le y_i \\le \\hat q_{0.9}^{(i)}\\}$; $n$: numărul de prognoze; $\\hat q_{\\tau}^{(i)}$: cuantila prognozei $i$; $\\mathbf{1}\\{\\cdot\\}$: 1 dacă valoarea observată este în interval, 0 altfel'),
           T('target 80\\%; 7 of 10 inside means 70\\%: intervals somewhat too narrow', 'ținta este 80\\%; 7 din 10 în interval înseamnă 70\\%: intervale puțin prea înguste')]),
     (T('\\textbf{Relative scores}', '\\textbf{Scorurile relative}'),
          [T("a model's MASE or WQL divided by that of the seasonal naive on the same origins", 'MASE sau WQL al unui model împărțit la cel al prognozei sezoniere naive, pe aceleași origini'),
           T('below 1: the model beats the seasonal naive', 'sub 1: modelul este mai bun decît prognoza sezonieră naivă'),
-          T('averaged over series with the geometric mean, so that 2 and 0.5 cancel out', 'mediate pe serii cu media geometrică, astfel încît 2 și 0,5 se compensează')])))
+          T('averaged over the $S$ series with the geometric mean $(r_1 r_2 \\cdots r_S)^{1/S}$, $r_k$: the ratio for series $k$; so 2 and 0.5 cancel out', 'mediate pe cele $S$ serii cu media geometrică $(r_1 r_2 \\cdots r_S)^{1/S}$, $r_k$: raportul seriei $k$; astfel 2 și 0,5 se compensează')])))
 
 D.recap(('Scores', 'scorurile'), [
     T('Pinball loss for each quantile; CRPS for the whole distribution; WQL as its scaled approximation', 'Pierderea pinball pentru fiecare cuantilă; CRPS pentru întreaga distribuție; WQL ca aproximare scalată'),
@@ -574,9 +577,17 @@ D.recap(('Scores', 'scorurile'), [
 # =============================================================================
 D.section('Zero-shot forecasts on real data', 'Prognoze zero-shot pe date reale')
 
-chart(T('Seven series for the test', 'Șapte serii pentru test'), 'tsa_ch11_series', 'TSA_ch11_tokens_scores', [
-    T('Hourly load of Romania (ENTSO-E); Romanian industrial production, real GDP (not seasonally adjusted), HICP inflation, unemployment (Eurostat); EUR/RON (BNR); US retail sales (FRED RSXFSN)', 'Consumul orar al României (ENTSO-E); producția industrială, PIB-ul real (neajustat sezonier), inflația IAPC, șomajul în România (Eurostat); EUR/RON (BNR); vînzările cu amănuntul din SUA (FRED RSXFSN)')],
-    h='0.62\\textheight')
+D.frame(T('Seven series for the test', 'Șapte serii pentru test'), two(
+    '\\centering\n\\includegraphics[width=\\linewidth,height=0.8\\textheight,keepaspectratio]{tsa_ch11_series.pdf}',
+    items(
+        (T('Romania (ENTSO-E)', 'România (ENTSO-E)'), [T('hourly electricity load', 'consumul orar de energie electrică')]),
+        (T('Romania (Eurostat)', 'România (Eurostat)'),
+         [T('industrial production', 'producția industrială'),
+          T('real GDP, not seasonally adjusted', 'PIB-ul real, neajustat sezonier'),
+          T('HICP inflation; unemployment rate', 'inflația IAPC; rata șomajului')]),
+        (T('EUR/RON (BNR reference rate)', 'EUR/RON (cursul de referință BNR)'), []),
+        (T('US retail sales (FRED RSXFSN)', 'Vînzările cu amănuntul din SUA (FRED RSXFSN)'), [])) + '\n' + ql('TSA_ch11_tokens_scores'),
+    wl='0.6', wr='0.38'), 'footnotesize')
 
 interp(('the seven series', 'celor șapte serii'), [
     T('Strong seasonality: load (daily and weekly cycles), industrial production and US retail sales (yearly), GDP (quarterly)', 'Sezonalitate puternică: consumul (cicluri zilnice și săptămînale), producția industrială și vînzările din SUA (anuale), PIB-ul (trimestrial)'),
@@ -596,10 +607,10 @@ interp(('the load forecast', 'prognozei consumului'), [
     T('One origin proves little: the systematic test follows', 'O singură origine dovedește puțin: urmează testul sistematic')])
 
 D.frame(T('Worked example: scoring one hour', 'Exemplu rezolvat: evaluarea unei ore'), items(
-    (T('Hour 24 of the load forecast (@{fl.origin}, 23:00): $\\hat q_{0.1}$ = @{fl.q0}, $\\hat q_{0.5}$ = @{fl.q1}, $\\hat q_{0.9}$ = @{fl.q2} GW; outcome @{fl.y} GW', 'Ora 24 a prognozei consumului (@{fl.origin}, ora 23:00): $\\hat q_{0,1}$ = @{fl.q0}, $\\hat q_{0,5}$ = @{fl.q1}, $\\hat q_{0,9}$ = @{fl.q2} GW; valoarea observată @{fl.y} GW'), []),
+    (T('Hour 24 of the load forecast (@{fl.origin}, 23:00): $\\hat q_{0.1}$ = @{fl.q0}, $\\hat q_{0.5}$ = @{fl.q1}, $\\hat q_{0.9}$ = @{fl.q2} GW; outcome @{fl.y} GW', 'Ora 24 a prognozei consumului (@{fl.origin}, ora 23:00): $\\hat q_{0{,}1}$ = @{fl.q0}, $\\hat q_{0{,}5}$ = @{fl.q1}, $\\hat q_{0{,}9}$ = @{fl.q2} GW; valoarea observată @{fl.y} GW'), []),
     (T('All three quantiles are below the outcome, so each loss is $\\tau\\,(y - \\hat q_\\tau)$', 'Toate cele trei cuantile sînt sub valoarea observată, deci fiecare pierdere este $\\tau\\,(y - \\hat q_\\tau)$'),
      [T('$\\tau = 0.1$: @{fl.p1}; \\ $\\tau = 0.5$: @{fl.p5}; \\ $\\tau = 0.9$: @{fl.p9} GW', '$\\tau = 0{,}1$: @{fl.p1}; \\ $\\tau = 0{,}5$: @{fl.p5}; \\ $\\tau = 0{,}9$: @{fl.p9} GW')]),
-    (T('The outcome is above $\\hat q_{0.9}$: coverage indicator 0 for this hour', 'Valoarea observată este peste $\\hat q_{0,9}$: indicatorul de acoperire este 0 pentru această oră'), []),
+    (T('The outcome is above $\\hat q_{0.9}$: coverage indicator 0 for this hour', 'Valoarea observată este peste $\\hat q_{0{,}9}$: indicatorul de acoperire este 0 pentru această oră'), []),
     T('Averaged over many hours and origins, these losses give the WQL of the next section', 'Mediate pe multe ore și origini, aceste pierderi dau WQL din secțiunea următoare')))
 
 chart(T('Romanian industrial production, 12 months ahead', 'Producția industrială a României, prognoză pe 12 luni'), 'tsa_ch11_fan_ip', 'TSA_ch11_zero_shot', [
@@ -639,7 +650,7 @@ D.frame(T('The test protocol', 'Protocolul testului'), items(
           T('@{nor} origins in total; context: all the past, at most 2048 observations', '@{nor} @{nor.de}origini în total; contextul: tot trecutul, cel mult 2048 de observații')]),
     (T('\\textbf{Benchmarks}, re-estimated at every origin', '\\textbf{Reperele}, reestimate la fiecare origine'),
      [T('seasonal naive (the naive forecast for unemployment and EUR/RON)', 'prognoza sezonieră naivă (prognoza naivă pentru șomaj și EUR/RON)'),
-      T('ETS with damped trend and additive seasonality; ARIMA with orders chosen once by AIC before the first origin (load: ARMA@{ar.load} on weekly differences)', 'ETS cu trend amortizat și sezonalitate aditivă; ARIMA cu ordinele alese o singură dată după AIC, înainte de prima origine (consumul: ARMA@{ar.load} pe diferențele săptămînale)')]),
+      T('ETS with damped trend and additive seasonality; ARIMA with orders chosen once by AIC before the first origin (load: ARIMA@{ar.load} on weekly differences)', 'ETS cu trend amortizat și sezonalitate aditivă; ARIMA cu ordinele alese o singură dată după AIC, înainte de prima origine (consumul: ARIMA@{ar.load} pe diferențele săptămînale)')]),
     (T('\\textbf{Foundation models}, zero-shot', '\\textbf{Foundation models}, zero-shot'),
          [T('Chronos-Bolt tiny and small, Chronos-2', 'Chronos-Bolt tiny și small, Chronos-2')]),
     T('Same origins, same context, same horizon, same scores: MASE, WQL, coverage', 'Aceleași origini, același context, același orizont, aceleași scoruri: MASE, WQL, acoperirea')), size='footnotesize')
@@ -668,7 +679,7 @@ interp(('the benchmark', 'testului'), [
     T('A well-specified ARIMA is as good as the small foundation models; a single winner on all series does not exist', 'Un ARIMA bine specificat este la fel de bun ca foundation models mici; un cîștigător unic pe toate seriile nu există')], size='footnotesize')
 
 chart(T('Coverage of the 80\\% intervals', 'Acoperirea intervalelor de 80\\%'), 'tsa_ch11_coverage', 'TSA_ch11_benchmark', [
-    T('Share of outcomes inside $[\\hat q_{0.1}, \\hat q_{0.9}]$, all origins and steps; the dashed line is the target 0.8', 'Proporția valorilor observate din $[\\hat q_{0,1}, \\hat q_{0,9}]$, pe toate originile și toți pașii; linia punctată este ținta de 0,8')],
+    T('Share of outcomes inside $[\\hat q_{0.1}, \\hat q_{0.9}]$, all origins and steps; the dashed line is the target 0.8', 'Proporția valorilor observate din $[\\hat q_{0{,}1}, \\hat q_{0{,}9}]$, pe toate originile și toți pașii; linia punctată este ținta de 0,8')],
     h='0.66\\textheight')
 
 interp(('the coverage', 'acoperirii'), [
@@ -826,7 +837,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      'CRPS & $\\int (F(z) - \\mathbf{1}\\{z \\ge y\\})^2\\,dz = 2\\int_0^1 L_\\tau(y, F^{-1}(\\tau))\\,d\\tau$',
      'WQL & $\\frac{1}{9}\\sum_{\\tau} 2\\sum_t L_{\\tau}(y_t, \\hat q_{\\tau,t}) \\big/ \\sum_t |y_t|$',
      'MASE & $\\frac1h\\sum_j |y_{T+j} - \\hat y_{T+j}| \\Big/ \\frac{1}{T-m}\\sum_{t>m}|y_t - y_{t-m}|$',
-     T('Coverage', 'Acoperirea') + ' & $\\frac1n\\sum_i \\mathbf{1}\\{\\hat q_{0.1,i} \\le y_i \\le \\hat q_{0.9,i}\\}$, ' + T('target 0.8', 'ținta 0,8')],
+     T('Coverage', 'Acoperirea') + ' & $\\frac1n\\sum_i \\mathbf{1}\\{\\hat q_{0.1}^{(i)} \\le y_i \\le \\hat q_{0.9}^{(i)}\\}$, ' + T('target 0.8', 'ținta 0,8')],
     size='footnotesize') + '}')
 
 D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(
@@ -834,7 +845,7 @@ D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(
      [T('\\textbf{Answer}: zero-shot keeps the pretrained weights fixed and uses only the context; fine-tuning trains the weights further on the target data', '\\textbf{Răspuns}: zero-shot păstrează fixe ponderile pre-antrenate și folosește doar contextul; fine-tuning-ul antrenează în continuare ponderile pe datele-țintă')]),
     (T('\\textbf{Question}: a context is 10, 20, 30. What are $s$ and the scaled values in Chronos?', '\\textbf{Întrebare}: un context este 10, 20, 30. Cît sînt $s$ și valorile scalate în Chronos?'),
      [T('\\textbf{Answer}: $s = 20$; scaled values 0.5, 1, 1.5', '\\textbf{Răspuns}: $s = 20$; valorile scalate 0,5; 1; 1,5')]),
-    (T('\\textbf{Question}: $\\hat q_{0.9} = 5$ and $y = 6$. What is the pinball loss?', '\\textbf{Întrebare}: $\\hat q_{0,9} = 5$ și $y = 6$. Cît este pierderea pinball?'),
+    (T('\\textbf{Question}: $\\hat q_{0.9} = 5$ and $y = 6$. What is the pinball loss?', '\\textbf{Întrebare}: $\\hat q_{0{,}9} = 5$ și $y = 6$. Cît este pierderea pinball?'),
      [T('\\textbf{Answer}: $0.9 \\cdot (6 - 5) = 0.9$', '\\textbf{Răspuns}: $0{,}9 \\cdot (6 - 5) = 0{,}9$')]),
     (T('\\textbf{Question}: how many patches of 16 does a context of 512 values give?', '\\textbf{Întrebare}: cîte patch-uri de 16 dă un context de 512 valori?'),
      [T('\\textbf{Answer}: 32', '\\textbf{Răspuns}: 32')])))

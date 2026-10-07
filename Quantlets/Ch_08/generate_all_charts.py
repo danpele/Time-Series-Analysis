@@ -556,7 +556,7 @@ def fig_memory_data(save_it=True):
     volatility of the S&P 500 and the BET."""
     fig, ax = plt.subplots(2, 2, figsize=(11, 5.6))
     y = nile()
-    ax[0, 0].plot(y.index, y.values, color=COLORS['nile'], lw=1.2, label='Nile flow at Aswan (10^8 m^3), 1871-1970')
+    ax[0, 0].plot(y.index, y.values, color=COLORS['nile'], lw=1.2, label='Nile flow at Aswan ($10^8$ m$^3$), 1871-1970')
     ax[0, 0].set_title('Nile, annual flow')
     i12, im = ro_inflation12(), ro_inflation()
     ax[0, 1].plot(i12.index, i12.values, color=COLORS['infl12'], lw=1.4, label='RO inflation, 12-month (%)')
@@ -629,12 +629,12 @@ def fig_decay(d=0.4, save_it=True):
     C = special.gamma(1 - d) / special.gamma(d)
     fig, ax = plt.subplots(1, 2, figsize=(11, 3.9))
     ax[0].plot(k[:50], r[:50], 'o-', ms=3, color=st.MainBlue, lw=1.2, label=f'ARFIMA(0,d,0), d = {d}: hyperbolic decay')
-    ax[0].plot(k[:50], phi ** k[:50], 's-', ms=3, color=st.Orange, lw=1.2, label=f'AR(1), phi = {phi:.3f}: exponential decay')
+    ax[0].plot(k[:50], phi ** k[:50], 's-', ms=3, color=st.Orange, lw=1.2, label=f'AR(1), $\\phi$ = {phi:.3f}: exponential decay')
     ax[0].set_xlabel('lag k')
     ax[0].set_ylabel('autocorrelation')
     ax[1].loglog(k, r, color=st.MainBlue, lw=1.6, label='_')
     ax[1].loglog(k, phi ** k, color=st.Orange, lw=1.6, label='_')
-    ax[1].loglog(k, C * k ** (2 * d - 1), color=st.DarkText, ls='--', lw=1.0, label='C k^(2d-1): the power law')
+    ax[1].loglog(k, C * k ** (2 * d - 1), color=st.DarkText, ls='--', lw=1.0, label='$C\\,k^{2d-1}$: the power law')
     ax[1].set_ylim(1e-4, 1)
     ax[1].set_xlabel('lag k (log scale)')
     ax[1].set_ylabel('autocorrelation (log scale)')
@@ -660,7 +660,7 @@ def fig_weights(save_it=True):
         out[str(d)] = {'pi': w[:6].tolist()}
     ax[0].axhline(0, color=st.DarkText, lw=0.5)
     ax[0].set_xlabel('lag k')
-    ax[0].set_ylabel('weight pi_k of (1 - L)^d')
+    ax[0].set_ylabel('weight $\\pi_k$ of $(1-L)^d$')
     ax[0].set_xticks(k[1:])
     K = 200
     kk = np.arange(1, K + 1)
@@ -669,10 +669,10 @@ def fig_weights(save_it=True):
         ax[1].plot(kk, psi, color=c, lw=1.5, label='_')
         out[str(d)]['psi10'] = float(psi[9])
         out[str(d)]['psi100'] = float(psi[99])
-    ax[1].plot(kk, 0.9 ** kk, color=st.Orange, lw=1.5, ls='--', label='AR(1), phi = 0.9')
+    ax[1].plot(kk, 0.9 ** kk, color=st.Orange, lw=1.5, ls='--', label='AR(1), $\\phi$ = 0.9')
     ax[1].set_xscale('log')
     ax[1].set_xlabel('horizon k (log scale)')
-    ax[1].set_ylabel('impulse response psi_k of (1 - L)^(-d)')
+    ax[1].set_ylabel('impulse response $\\psi_k$ of $(1-L)^{-d}$')
     st.fig_legend_bottom(fig, ncol=5, y=0.03)
     fig.tight_layout(rect=(0, 0.03, 1, 1))
     save('tsa_ch8_weights', save_it)
@@ -698,7 +698,7 @@ def fig_ffd(save_it=True, thresh=1e-4):
         width.append(int(K))
     crit = float(adfuller(p, maxlag=1, regression='c', autolag=None)[4]['5%'])
     fig, ax = plt.subplots(1, 2, figsize=(11, 3.9))
-    ax[0].plot(grid, adf, 'o-', color=st.MainBlue, lw=1.4, ms=4, label='ADF statistic of (1 - L)^d log S&P 500')
+    ax[0].plot(grid, adf, 'o-', color=st.MainBlue, lw=1.4, ms=4, label='ADF statistic of $(1-L)^d \\log$ S&P 500')
     ax[0].axhline(crit, color=st.IDAred, ls='--', lw=1.1, label=f'5% critical value ({crit:.2f})')
     ax[0].set_xlabel('d')
     ax[0].set_ylabel('ADF statistic')
@@ -748,7 +748,7 @@ def fig_fbm(n=1000, Hs=(0.3, 0.5, 0.7), save_it=True):
         axes[0].plot(np.arange(n + 1), b, color=c, lw=1.0, label=lab)
         axes[1].plot(np.arange(150), x[:150], color=c, lw=0.9, label='_')
         out[str(H)] = {'acf1': float(acf(x, 1)[0]), 'acf1_th': float(2 ** (2 * H - 1) - 1)}
-    axes[0].set_title('fractional Brownian motion B_H(t)')
+    axes[0].set_title('fractional Brownian motion $B_H(t)$')
     axes[1].set_title('its increments (fractional Gaussian noise), first 150')
     for a in axes:
         a.set_xlabel('time t')
@@ -779,8 +779,8 @@ def fig_rs_dfa(save_it=True):
     for ax in axes:
         ax.loglog(nn, (nn / 10) ** 0.5, color=st.DarkText, ls='--', lw=1.0, label='slope 0.5 (no memory)')
         ax.set_xlabel('block size n (log scale)')
-    axes[0].set_ylabel('(R/S)_n relative to n = 10')
-    axes[1].set_ylabel('F(n) relative to n = 10')
+    axes[0].set_ylabel('$(R/S)_n$ relative to $n = 10$')
+    axes[1].set_ylabel('$F(n)$ relative to $n = 10$')
     axes[0].set_title('R/S analysis')
     axes[1].set_title('DFA')
     handles, labels = axes[0].get_legend_handles_labels()
@@ -802,12 +802,12 @@ def fig_gph(save_it=True):
         g = gph(x)
         m = g['m']
         X = -np.log(4 * np.sin(lam[:m] / 2) ** 2)
-        ax.plot(X, np.log(I[:m]), 'o', ms=4, color=COLORS[k], label=f'{NAME[k]}: log I(lambda_j), j = 1..m')
+        ax.plot(X, np.log(I[:m]), 'o', ms=4, color=COLORS[k], label=f'{NAME[k]}: $\\log I(\\lambda_j)$, $j = 1, \\dots, m$')
         b = np.polyfit(X, np.log(I[:m]), 1)
         xx = np.linspace(X.min(), X.max(), 50)
         ax.plot(xx, np.polyval(b, xx), color=st.DarkText, lw=1.2, label='OLS line, slope = d' if k == 'nile' else '_')
         ax.set_title(f"{NAME[k]}: d = {g['d']:.2f} (SE {g['se']:.2f}), m = {m}")
-        ax.set_xlabel('-log(4 sin^2(lambda_j / 2))')
+        ax.set_xlabel('$-\\log(4\\sin^2(\\lambda_j/2))$')
         ax.set_ylabel('log periodogram')
         out[k] = dict(g, T=int(len(x)), lam_m=float(lam[m - 1]), period_m=float(2 * np.pi / lam[m - 1]),
                       lw=local_whittle(x)['d'], lw_se=local_whittle(x)['se'])
@@ -836,7 +836,7 @@ def fig_bandwidth(save_it=True):
         ax.axhline(0, color=st.DarkText, lw=0.5)
         ax.axhline(0.5, color=st.Purple, lw=0.9, ls=':', label='d = 0.5 (non-stationarity)' if k == 'infl' else '_')
         ax.set_title(f'{NAME[k]}, T = {T}')
-        ax.set_xlabel('bandwidth exponent a, m = [T^a]')
+        ax.set_xlabel('bandwidth exponent $a$, $m = \\lfloor T^a \\rfloor$')
         out[k] = {'T': T, 'a': A.tolist(), 'lw': lw.tolist(), 'gph': [g['d'] for g in G], 'm': [w['m'] for w in W]}
     axes[0].set_ylabel('estimated d')
     st.fig_legend_bottom(fig, ncol=4, y=0.03)
@@ -921,7 +921,7 @@ def fig_arfima_fit(save_it=True, L=36):
     ax.bar(k, r, color=COLORS['infl'], alpha=0.55, width=0.7, label='sample ACF, RO monthly inflation (SA)')
     ax.plot(k, gd[1:] / gd[0], 'o-', ms=3, color=st.MainBlue, lw=1.4, label=f"ARFIMA(0,d,0), d = {fd['d']:.2f}")
     ax.plot(k, ga[1:] / ga[0], 's--', ms=3, color=st.Forest, lw=1.4,
-            label=f"ARMA(1,1), phi = {fa['phi'][0]:.2f}, theta = {fa['theta'][0]:.2f}")
+            label=f"ARMA(1,1), $\\phi$ = {fa['phi'][0]:.2f}, $\\theta$ = {fa['theta'][0]:.2f}")
     band = 1.96 / np.sqrt(len(x))
     ax.axhspan(-band, band, color=st.Teal, alpha=0.15, lw=0, label='95% band for white noise')
     ax.axhline(0, color=st.DarkText, lw=0.5)
@@ -974,7 +974,7 @@ def fig_forecast_path(save_it=True, H=36):
     hist = y.loc['2019-01-01':]
     fig, ax = plt.subplots(figsize=(10, 3.9))
     ax.plot(hist.index, hist.values, color=COLORS['usinfl'], lw=1.0, label='US inflation, monthly, annualised (%)')
-    ax.plot(fut, fa, 'o-', ms=3, color=st.MainBlue, lw=1.4, label=f"ARFIMA(1,d,0): d = {e['d']:.2f}, phi = {e['phi'][0]:.2f}")
+    ax.plot(fut, fa, 'o-', ms=3, color=st.MainBlue, lw=1.4, label=f"ARFIMA(1,d,0): d = {e['d']:.2f}, $\\phi$ = {e['phi'][0]:.2f}")
     ax.plot(fut, fr, 's-', ms=3, color=st.Orange, lw=1.4, label=f'AR({p}), p by AIC')
     ax.axhline(x.mean(), color=st.DarkText, ls='--', lw=1.0, label=f'sample mean since 1947 ({x.mean():.2f}%)')
     ax.set_ylabel('% per year')
@@ -1001,7 +1001,7 @@ def fig_vol_acf(nlags=250, save_it=True):
         out[k] = {'n': int(len(x)), 'band': float(band), 'y0': int(r.index[0].year), 'y1': int(r.index[-1].year)}
         for y, c, nm in [(x, COLORS[k], 'returns r'), (np.abs(x), st.Purple, '|r|'), (x ** 2, st.Orange, 'r^2')]:
             a = acf(y, nlags)
-            ax.plot(lags, a, color=c, lw=1.1, label=(f'{NAME[k]} returns r' if nm == 'returns r' else nm) if (k == 'sp500' or nm == 'returns r') else '_')
+            ax.plot(lags, a, color=c, lw=1.1, label=(f'{NAME[k]} returns $r_t$' if nm == 'returns r' else {'|r|': '$|r_t|$', 'r^2': '$r_t^2$'}.get(nm, nm)) if (k == 'sp500' or nm == 'returns r') else '_')
             out[k][nm.split()[0]] = {'1': float(a[0]), '10': float(a[9]), '100': float(a[99]), '250': float(a[249]),
                                      'npos': int(np.sum(a > band))}
         ax.axhspan(-band, band, color=st.Teal, alpha=0.15, lw=0, label='95% band, i.i.d.' if k == 'sp500' else '_')
@@ -1042,7 +1042,7 @@ def fig_vol_models(save_it=True):
         fd, fphi, fb = f.params['d'], f.params['phi'], f.params['beta']
         kk = np.arange(1, 1000)
         lam = figarch_weights(fd, fphi, fb)
-        axes[0].loglog(kk, a * b ** (kk - 1), color=c, ls='--', lw=1.3, label=f'{NAME[k]}: GARCH(1,1), alpha + beta = {a + b:.3f}')
+        axes[0].loglog(kk, a * b ** (kk - 1), color=c, ls='--', lw=1.3, label=f'{NAME[k]}: GARCH(1,1), $\\alpha + \\beta$ = {a + b:.3f}')
         axes[0].loglog(kk, np.clip(lam, 1e-12, None), color=c, lw=1.6, label=f'{NAME[k]}: FIGARCH(1,d,1), d = {fd:.2f}')
         out[k] = {'garch': {'alpha': float(a), 'beta': float(b), 'll': float(g.loglikelihood), 'bic': float(g.bic),
                             'nu': float(g.params['nu'])},
@@ -1051,8 +1051,8 @@ def fig_vol_models(save_it=True):
                   'w100_g': float(a * b ** 99), 'w100_f': float(lam[99]), 'w20_g': float(a * b ** 19), 'w20_f': float(lam[19])}
     axes[0].set_ylim(1e-8, 0.5)
     axes[0].set_xlabel('lag k (days, log scale)')
-    axes[0].set_ylabel('weight of r^2 at lag k in sigma^2_t')
-    axes[0].set_title('ARCH(infinity) weights')
+    axes[0].set_ylabel('weight of $r^2_{t-k}$ in $\\sigma^2_t$')
+    axes[0].set_title('ARCH($\\infty$) weights')
     y = parkinson_vol('sp500')
     D = pd.DataFrame({'y': y, 'd': y.shift(1), 'w': y.shift(1).rolling(5).mean(), 'm': y.shift(1).rolling(22).mean()}).dropna()
     X = np.column_stack([np.ones(len(D)), D[['d', 'w', 'm']].values])
@@ -1062,8 +1062,8 @@ def fig_vol_models(save_it=True):
     dl = local_whittle(y.values)['d']
     pw = -frac_weights(dl, 23)[1:]
     kk = np.arange(1, 23)
-    axes[1].bar(kk, w, color=st.Teal, alpha=0.6, width=0.7, label=f'HAR, S&P 500 range volatility: b_d = {bd:.2f}, b_w = {bw:.2f}, b_m = {bm:.2f}')
-    axes[1].plot(kk, pw, 'o-', ms=3.5, color=st.Purple, lw=1.4, label=f'(1 - L)^d with d = {dl:.2f} (local Whittle): weights -pi_k')
+    axes[1].bar(kk, w, color=st.Teal, alpha=0.6, width=0.7, label=f'HAR, S&P 500 range volatility: $\\beta_d$ = {bd:.2f}, $\\beta_w$ = {bw:.2f}, $\\beta_m$ = {bm:.2f}')
+    axes[1].plot(kk, pw, 'o-', ms=3.5, color=st.Purple, lw=1.4, label=f'$(1-L)^d$ with d = {dl:.2f} (local Whittle): weights $-\\pi_k$')
     axes[1].set_xlabel('lag k (days)')
     axes[1].set_ylabel('weight of lag k')
     axes[1].set_title('HAR: three steps that mimic a power law')
@@ -1162,7 +1162,7 @@ def fig_nile_break(save_it=True):
     adj = pd.concat([pre - pre.mean(), post - post.mean()])
     sizes = block_sizes(len(y), nmin=6, nmax=len(y) // 2, num=10)
     fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), gridspec_kw={'width_ratios': [1.6, 1]})
-    axes[0].plot(y.index, y.values, color=COLORS['nile'], lw=1.2, label='annual flow at Aswan (10^8 m^3)')
+    axes[0].plot(y.index, y.values, color=COLORS['nile'], lw=1.2, label='annual flow at Aswan ($10^8$ m$^3$)')
     axes[0].hlines(pre.mean(), pre.index[0], pre.index[-1], color=st.IDAred, lw=2, label=f'mean 1871-{NILE_BREAK}: {pre.mean():.0f}')
     axes[0].hlines(post.mean(), post.index[0], post.index[-1], color=st.Forest, lw=2, label=f'mean {NILE_BREAK + 1}-1970: {post.mean():.0f}')
     axes[0].set_xlabel('year')
@@ -1177,7 +1177,7 @@ def fig_nile_break(save_it=True):
                     'r1': float(acf(z, 1)[0])}
     axes[1].loglog(n, (n / n[0]) ** 0.5 * rs[0], color=st.DarkText, ls='--', lw=0.9, label='slope 0.5')
     axes[1].set_xlabel('block size n')
-    axes[1].set_ylabel('(R/S)_n')
+    axes[1].set_ylabel('$(R/S)_n$')
     st.fig_legend_bottom(fig, ncol=3, y=0.03)
     fig.tight_layout(rect=(0, 0.03, 1, 1))
     save('tsa_ch8_nile_break', save_it)

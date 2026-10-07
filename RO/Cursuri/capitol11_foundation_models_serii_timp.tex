@@ -71,7 +71,6 @@ MSCA Digital Finance}
     \item \textbf{API}: Application Programming Interface (interfață de programare a aplicațiilor)
     \item \textbf{AR}: AutoRegressive (model); in event studies: Abnormal Return (model autoregresiv; în studiile de eveniment: randament anormal)
     \item \textbf{ARIMA}: AutoRegressive Integrated Moving Average (model) — model autoregresiv integrat cu medie mobilă
-    \item \textbf{ARMA}: AutoRegressive Moving Average (model) — model autoregresiv cu medie mobilă
     \item \textbf{BNR}: Banca Națională a României
     \item \textbf{BY-NC}: Attribution–NonCommercial (Creative Commons licence terms) — atribuire, utilizare necomercială (condițiile licenței Creative Commons)
     \item \textbf{CPU}: Central Processing Unit (procesorul central)
@@ -79,11 +78,11 @@ MSCA Digital Finance}
     \item \textbf{ENTSO-E}: European Network of Transmission System Operators for Electricity (rețeaua europeană a operatorilor de transport și de sistem pentru energie electrică)
     \item \textbf{ETS}: Error, Trend, Seasonality (exponential smoothing state space models) — eroare, trend, sezonalitate (modele de netezire exponențială)
     \item \textbf{FRED}: Federal Reserve Economic Data (baza de date economice a Rezervei Federale din St. Louis)
+    \item \textbf{GARCH}: Generalised AutoRegressive Conditional Heteroskedasticity (heteroscedasticitate condiționată autoregresivă generalizată)
 \end{itemize}
 \end{column}
 \begin{column}{0.49\textwidth}
 \begin{itemize}\setlength{\itemsep}{0pt}
-    \item \textbf{GARCH}: Generalised AutoRegressive Conditional Heteroskedasticity (heteroscedasticitate condiționată autoregresivă generalizată)
     \item \textbf{GIFT}: General Time Series Forecasting Model Evaluation (GIFT-Eval benchmark) — benchmark-ul general de evaluare a modelelor de prognoză (GIFT-Eval)
     \item \textbf{GPT}: Generative Pre-trained Transformer (Transformer generativ pre-antrenat)
     \item \textbf{GPU}: Graphics Processing Unit (procesorul grafic)
@@ -96,6 +95,7 @@ MSCA Digital Finance}
     \item \textbf{MASE}: Mean Absolute Scaled Error (eroarea absolută medie scalată)
     \item \textbf{PIB}: Produsul intern brut
     \item \textbf{RMSE}: Root Mean Squared Error (rădăcina erorii pătratice medii)
+    \item \textbf{RSXFSN}: Retail Sales excluding Food Services, Not seasonally adjusted (FRED series code) — codul FRED al vînzărilor cu amănuntul din SUA, fără alimentație publică, neajustate sezonier
 \end{itemize}
 \end{column}
 \end{columns}
@@ -105,7 +105,6 @@ MSCA Digital Finance}
 \begin{columns}[T]
 \begin{column}{0.49\textwidth}
 \begin{itemize}\setlength{\itemsep}{0pt}
-    \item \textbf{RSXFSN}: Retail Sales excluding Food Services, Not seasonally adjusted (FRED series code) — codul FRED al vînzărilor cu amănuntul din SUA, fără alimentație publică, neajustate sezonier
     \item \textbf{SUA}: Statele Unite ale Americii
     \item \textbf{VAR}: Vector AutoRegression (model vector autoregresiv)
     \item \textbf{WQL}: Weighted Quantile Loss (pierderea cuantilă ponderată)
@@ -212,7 +211,7 @@ MSCA Digital Finance}
         \item antrenarea suplimentară a ponderilor pre-antrenate pe datele-țintă
         \item poate ajuta la serii neobișnuite; cere un eșantion de validare și mai mult calcul
     \end{itemize}
-    \item Rezultatul este de obicei o mulțime de \textbf{cuantile} $\hat q_{0,1}, \dots, \hat q_{0,9}$ pentru fiecare pas viitor, nu un singur număr
+    \item Rezultatul este de obicei o mulțime de \textbf{cuantile} $\hat q_{0{,}1}; \dots; \hat q_{0{,}9}$ pentru fiecare pas viitor, nu un singur număr
 \end{itemize}
 \end{frame}
 
@@ -272,10 +271,10 @@ MSCA Digital Finance}
         \item creată pentru traducere; stă la baza oricărui model mare de limbaj (LLM)
     \end{itemize}
     \item Intrarea: o secvență de \textbf{tokeni}, fiecare transformat într-un vector (embedding)
-    \item \textbf{Encoder-ul}
+    \item Arhitectura \textbf{encoder--decoder}
     \begin{itemize}
-        \item citește toată intrarea
-        \item \textbf{decoder-ul}: produce ieșirea pas cu pas
+        \item \textbf{encoder-ul} citește toată intrarea
+        \item \textbf{decoder-ul} produce ieșirea pas cu pas
         \item modelele \textbf{doar cu decoder} (GPT, TimesFM, Lag-Llama) prognozează tokenul următor din toți cei anteriori
     \end{itemize}
     \item Fiecărui vector i se adaugă informația despre poziție, deoarece atenția ignoră ordinea
@@ -289,7 +288,8 @@ MSCA Digital Finance}
 \begin{itemize}
     \item Fiecare vector de intrare $x_i$ produce trei vectori, prin trei transformări liniare învățate la antrenare
     \begin{itemize}
-        \item o interogare $q_i$ (ce caută poziția $i$), o cheie $k_i$ (ce oferă poziția $i$), o valoare $v_i$ (ce transmite poziția $i$)
+        \item o interogare $q_i = W_Q x_i$ (ce caută poziția $i$), o cheie $k_i = W_K x_i$ (ce oferă poziția $i$), o valoare $v_i = W_V x_i$ (ce transmite poziția $i$)
+        \item $W_Q$, $W_K$, $W_V$: matrice de ponderi învățate la antrenare, aceleași pentru toate pozițiile
     \end{itemize}
     \item Ieșirea în poziția $i$ este o medie ponderată a valorilor tuturor pozițiilor
     \begin{itemize}
@@ -393,7 +393,8 @@ MSCA Digital Finance}
 \begin{itemize}
     \item Antrenarea: un model de limbaj (T5) învață să prognozeze tokenul următor
     \begin{itemize}
-        \item funcția de pierdere: cross-entropy, minus logaritmul probabilității atribuite tokenului următor efectiv; este 0 cînd această probabilitate este 1
+        \item funcția de pierdere: cross-entropy $-\log \hat p(z_{t+1})$, unde $z_{t+1}$ este tokenul următor efectiv, iar $\hat p(z_{t+1})$ probabilitatea atribuită lui de model
+        \item este 0 cînd această probabilitate este 1 și crește cînd probabilitatea scade
     \end{itemize}
     \item Prognoza, în trei pași
     \begin{itemize}
@@ -518,7 +519,7 @@ MSCA Digital Finance}
     \end{itemize}
     \item \textbf{Chronos-Bolt} (noiembrie 2024)
     \begin{itemize}
-        \item patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1, \dots, 0,9
+        \item patch-uri de 16 valori și ieșirea directă a cuantilelor 0,1; \dots; 0,9
         \item dimensiunile folosite aici: tiny, 9 milioane, și small, 48 de milioane de parametri; context de pînă la 2048 de valori
     \end{itemize}
     \item \textbf{Chronos-2} (\refAnsariB, octombrie 2025)
@@ -621,10 +622,10 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \begin{itemize}
     \item O \textbf{prognoză probabilistă} dă distribuția lui $y_{T+h}$, condiționată de datele pînă la $T$
     \begin{itemize}
-        \item foundation models o raportează prin cuantile $\hat q_\tau$ la nivelurile $\tau = 0{,}1, \dots, 0{,}9$
+        \item foundation models o raportează prin cuantile $\hat q_\tau$ la nivelurile $\tau = 0{,}1; \dots; 0{,}9$
     \end{itemize}
-    \item Prognoza punctuală: mediana $\hat q_{0,5}$
-    \item Intervalul central de 80\%: $[\hat q_{0,1}, \hat q_{0,9}]$; un \textbf{fan chart} desenează mai multe astfel de benzi
+    \item Prognoza punctuală: mediana $\hat q_{0{,}5}$
+    \item Intervalul central de 80\%: $[\hat q_{0{,}1}, \hat q_{0{,}9}]$; un \textbf{fan chart} desenează mai multe astfel de benzi
     \item Două calități de verificat
     \begin{itemize}
         \item \textbf{calibrarea}: intervalul de 80\% conține circa 80\% din valorile observate
@@ -683,7 +684,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \begin{itemize}
     \item \textbf{WQL} (weighted quantile loss, pierderea cuantilă ponderată)
     \begin{itemize}
-        \item CRPS aproximat cu cele 9 niveluri 0,1, \dots, 0,9 și împărțit la mărimea seriei
+        \item CRPS aproximat cu cele 9 niveluri 0,1; \dots; 0,9 și împărțit la mărimea seriei
         \item $\text{WQL} = \frac{1}{9}\sum_{\tau}\frac{2\sum_t L_\tau(y_t, \hat q_{\tau,t})}{\sum_t |y_t|}$
     \end{itemize}
     \item Notațiile
@@ -707,6 +708,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \vspace{-0.25cm}
 \begin{itemize}
     \item Stînga: $L_\tau$ în funcție de $y - \hat q$ pentru $\tau$ = 0,1; 0,5; 0,9. Dreapta: prognoza N(0, 1), valoarea observată $y = 1$
+    \item N($\mu$, $\sigma^2$): distribuția Normală cu media $\mu$ și varianța $\sigma^2$
 \end{itemize}
 \quantlet{TSA\_ch11\_tokens\_scores}{\qlurl{TSA_ch11_tokens_scores}}
 \end{frame}
@@ -724,7 +726,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \begin{frame}{Exemplu rezolvat: pierderile pinball}
 \itemsize{\small}
 \begin{itemize}
-    \item Prognoza ratei șomajului pentru luna viitoare: $\hat q_{0,1}$ = 6{,}5, $\hat q_{0,5}$ = 7{,}0, $\hat q_{0,9}$ = 7{,}6; valoarea observată $y$ = 7{,}2
+    \item Prognoza ratei șomajului pentru luna viitoare: $\hat q_{0{,}1}$ = 6{,}5, $\hat q_{0{,}5}$ = 7{,}0, $\hat q_{0{,}9}$ = 7{,}6; valoarea observată $y$ = 7{,}2
     \item $\tau = 0{,}1$: $y$ este deasupra, pierderea $0{,}1 \cdot (7{,}2 - 6{,}5)$ = 0{,}07
     \item $\tau = 0{,}5$: $y$ este deasupra, pierderea $0{,}5 \cdot (7{,}2 - 7{,}0)$ = 0{,}10
     \item $\tau = 0{,}9$: $y$ este dedesubt, pierderea $(1 - 0{,}9) \cdot (7{,}6 - 7{,}2)$ = 0{,}04
@@ -762,14 +764,14 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
     \item \textbf{Acoperirea}
     \begin{itemize}
         \item proporția valorilor observate din intervalul de 80\%
-        \item $\text{Cov} = \frac1n\sum_{i=1}^{n} \mathbf{1}\{\hat q_{0{,}1,i} \le y_i \le \hat q_{0{,}9,i}\}$; $n$: numărul de prognoze; $\mathbf{1}\{\cdot\}$: 1 dacă valoarea observată este în interval, 0 altfel
+        \item $\text{Cov} = \frac1n\sum_{i=1}^{n} \mathbf{1}\{\hat q_{0{,}1}^{(i)} \le y_i \le \hat q_{0{,}9}^{(i)}\}$; $n$: numărul de prognoze; $\hat q_{\tau}^{(i)}$: cuantila prognozei $i$; $\mathbf{1}\{\cdot\}$: 1 dacă valoarea observată este în interval, 0 altfel
         \item ținta este 80\%; 7 din 10 în interval înseamnă 70\%: intervale puțin prea înguste
     \end{itemize}
     \item \textbf{Scorurile relative}
     \begin{itemize}
         \item MASE sau WQL al unui model împărțit la cel al prognozei sezoniere naive, pe aceleași origini
         \item sub 1: modelul este mai bun decît prognoza sezonieră naivă
-        \item mediate pe serii cu media geometrică, astfel încît 2 și 0,5 se compensează
+        \item mediate pe cele $S$ serii cu media geometrică $(r_1 r_2 \cdots r_S)^{1/S}$, $r_k$: raportul seriei $k$; astfel 2 și 0,5 se compensează
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -790,14 +792,29 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 
 \begin{frame}{Șapte serii pentru test}
 \itemsize{\footnotesize}
-\begin{center}
-\includegraphics[width=0.97\textwidth,height=0.62\textheight,keepaspectratio]{tsa_ch11_series.pdf}
-\end{center}
-\vspace{-0.25cm}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{tsa_ch11_series.pdf}
+\end{column}
+\begin{column}{0.38\textwidth}
 \begin{itemize}
-    \item Consumul orar al României (ENTSO-E); producția industrială, PIB-ul real (neajustat sezonier), inflația IAPC, șomajul în România (Eurostat); EUR/RON (BNR); vînzările cu amănuntul din SUA (FRED RSXFSN)
+    \item România (ENTSO-E)
+    \begin{itemize}
+        \item consumul orar de energie electrică
+    \end{itemize}
+    \item România (Eurostat)
+    \begin{itemize}
+        \item producția industrială
+        \item PIB-ul real, neajustat sezonier
+        \item inflația IAPC; rata șomajului
+    \end{itemize}
+    \item EUR/RON (cursul de referință BNR)
+    \item Vînzările cu amănuntul din SUA (FRED RSXFSN)
 \end{itemize}
 \quantlet{TSA\_ch11\_tokens\_scores}{\qlurl{TSA_ch11_tokens_scores}}
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Interpretarea celor șapte serii}
@@ -836,12 +853,12 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \begin{frame}{Exemplu rezolvat: evaluarea unei ore}
 \itemsize{\small}
 \begin{itemize}
-    \item Ora 24 a prognozei consumului (22 iunie 2026, ora 23:00): $\hat q_{0,1}$ = 5{,}18, $\hat q_{0,5}$ = 5{,}48, $\hat q_{0,9}$ = 5{,}78 GW; valoarea observată 5{,}80 GW
+    \item Ora 24 a prognozei consumului (22 iunie 2026, ora 23:00): $\hat q_{0{,}1}$ = 5{,}18, $\hat q_{0{,}5}$ = 5{,}48, $\hat q_{0{,}9}$ = 5{,}78 GW; valoarea observată 5{,}80 GW
     \item Toate cele trei cuantile sînt sub valoarea observată, deci fiecare pierdere este $\tau\,(y - \hat q_\tau)$
     \begin{itemize}
         \item $\tau = 0{,}1$: 0{,}062; \ $\tau = 0{,}5$: 0{,}163; \ $\tau = 0{,}9$: 0{,}025 GW
     \end{itemize}
-    \item Valoarea observată este peste $\hat q_{0,9}$: indicatorul de acoperire este 0 pentru această oră
+    \item Valoarea observată este peste $\hat q_{0{,}9}$: indicatorul de acoperire este 0 pentru această oră
     \item Mediate pe multe ore și origini, aceste pierderi dau WQL din secțiunea următoare
 \end{itemize}
 \end{frame}
@@ -916,7 +933,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
     \item \textbf{Reperele}, reestimate la fiecare origine
     \begin{itemize}
         \item prognoza sezonieră naivă (prognoza naivă pentru șomaj și EUR/RON)
-        \item ETS cu trend amortizat și sezonalitate aditivă; ARIMA cu ordinele alese o singură dată după AIC, înainte de prima origine (consumul: ARMA(2,0,2) pe diferențele săptămînale)
+        \item ETS cu trend amortizat și sezonalitate aditivă; ARIMA cu ordinele alese o singură dată după AIC, înainte de prima origine (consumul: ARIMA(2,0,2) pe diferențele săptămînale)
     \end{itemize}
     \item \textbf{Foundation models}, zero-shot
     \begin{itemize}
@@ -980,7 +997,7 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \end{center}
 \vspace{-0.25cm}
 \begin{itemize}
-    \item Proporția valorilor observate din $[\hat q_{0,1}, \hat q_{0,9}]$, pe toate originile și toți pașii; linia punctată este ținta de 0,8
+    \item Proporția valorilor observate din $[\hat q_{0{,}1}, \hat q_{0{,}9}]$, pe toate originile și toți pașii; linia punctată este ținta de 0,8
 \end{itemize}
 \quantlet{TSA\_ch11\_benchmark}{\qlurl{TSA_ch11_benchmark}}
 \end{frame}
@@ -1263,7 +1280,7 @@ Pierderea pinball & $L_\tau(y, \hat q_\tau) = \max\{\tau(y - \hat q_\tau),\ (\ta
 CRPS & $\int (F(z) - \mathbf{1}\{z \ge y\})^2\,dz = 2\int_0^1 L_\tau(y, F^{-1}(\tau))\,d\tau$ \\
 WQL & $\frac{1}{9}\sum_{\tau} 2\sum_t L_{\tau}(y_t, \hat q_{\tau,t}) \big/ \sum_t |y_t|$ \\
 MASE & $\frac1h\sum_j |y_{T+j} - \hat y_{T+j}| \Big/ \frac{1}{T-m}\sum_{t>m}|y_t - y_{t-m}|$ \\
-Acoperirea & $\frac1n\sum_i \mathbf{1}\{\hat q_{0{,}1,i} \le y_i \le \hat q_{0{,}9,i}\}$, ținta 0,8 \\
+Acoperirea & $\frac1n\sum_i \mathbf{1}\{\hat q_{0{,}1}^{(i)} \le y_i \le \hat q_{0{,}9}^{(i)}\}$, ținta 0,8 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1281,7 +1298,7 @@ Acoperirea & $\frac1n\sum_i \mathbf{1}\{\hat q_{0{,}1,i} \le y_i \le \hat q_{0{,
     \begin{itemize}
         \item \textbf{Răspuns}: $s = 20$; valorile scalate 0,5; 1; 1,5
     \end{itemize}
-    \item \textbf{Întrebare}: $\hat q_{0,9} = 5$ și $y = 6$. Cît este pierderea pinball?
+    \item \textbf{Întrebare}: $\hat q_{0{,}9} = 5$ și $y = 6$. Cît este pierderea pinball?
     \begin{itemize}
         \item \textbf{Răspuns}: $0{,}9 \cdot (6 - 5) = 0{,}9$
     \end{itemize}

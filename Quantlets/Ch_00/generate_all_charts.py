@@ -49,6 +49,16 @@ SERIES_LABEL = {'gdp': 'GDP (quarterly)', 'hicp': 'HICP (monthly)', 'elec': 'Ele
 VALUES = {}
 
 
+
+def _tidy_dates(fig, maxticks=6):
+    """Date axes: at most `maxticks` ticks with concise labels, so that the dates never overlap."""
+    import matplotlib.dates as _md
+    for _ax in fig.axes:
+        if isinstance(_ax.xaxis.get_major_formatter(), (_md.AutoDateFormatter, _md.ConciseDateFormatter, _md.DateFormatter)):
+            _loc = _md.AutoDateLocator(minticks=3, maxticks=maxticks)
+            _ax.xaxis.set_major_locator(_loc)
+            _ax.xaxis.set_major_formatter(_md.ConciseDateFormatter(_loc))
+
 def gdp_series():
     """Romanian real GDP (million EUR, chain-linked 2010 prices): unadjusted and seasonally adjusted."""
     nsa = read_eurostat(*GDP_NSA).rename('nsa')
@@ -81,20 +91,21 @@ def co2_series():
 
 def fig_gdp(save=True):
     df = gdp_series()
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(7.00, 2.94))
     ax.plot(df.index, df['nsa'] / 1000, color=st.MainBlue, lw=1.2, label='Unadjusted (as measured)')
     ax.plot(df.index, df['sca'] / 1000, color=st.IDAred, lw=1.8, label='Seasonally and calendar adjusted')
     ax.set_ylabel('Billion EUR (2010 prices)')
     st.legend_outside_bottom(ax, ncol=2, y=-0.12)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_gdp')
     return df
 
 
 def fig_hicp(save=True):
     df = hicp_series()
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.0))
+    fig, axes = plt.subplots(1, 2, figsize=(7.70, 2.80))
     axes[0].plot(df.index, df['hicp'], color=st.MainBlue, lw=1.4, label='HICP, 2015 = 100')
     axes[0].set_ylabel('Index (log scale)')
     axes[0].set_yscale('log')
@@ -104,21 +115,23 @@ def fig_hicp(save=True):
     axes[1].axhline(0, color=st.DarkText, lw=0.5)
     axes[1].set_ylabel('%')
     st.fig_legend_bottom(fig, ncol=3, y=0.0)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_hicp')
     return df
 
 
 def fig_eurron(save=True):
     s = load_close('eurron')
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(7.00, 2.80))
     ax.plot(s.index, s, color=st.Forest, lw=1.1, label='EUR/RON, BNR reference rate (lei per euro)')
     ax.set_ylabel('RON per EUR')
     st.legend_outside_bottom(ax, ncol=1, y=-0.12)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_eurron')
     return s
 
@@ -126,7 +139,7 @@ def fig_eurron(save=True):
 def fig_markets(save=True):
     px = pd.concat([load_close('bet', '2000-01-01'), load_close('sp500', '2000-01-01')], axis=1).ffill().dropna()
     idx = 100 * px / px.iloc[0]
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(7.00, 2.94))
     ax.plot(idx.index, idx['bet'], color=st.COL['bet'], lw=1.2, label='BET (Bucharest Stock Exchange)')
     ax.plot(idx.index, idx['sp500'], color=st.COL['sp500'], lw=1.2, label='S&P 500')
     ax.set_yscale('log')
@@ -134,13 +147,14 @@ def fig_markets(save=True):
     st.legend_outside_bottom(ax, ncol=2, y=-0.12)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_markets')
     return idx
 
 
 def fig_electricity(save=True):
     e = electricity_series()
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(7.00, 2.80))
     ax.plot(e.index, e / 1000, color=st.Orange, lw=1.3, marker='o', ms=2.2, label='Net electricity generation, Romania')
     jan = e[e.index.month == 1]
     ax.scatter(jan.index, jan / 1000, color=st.MainBlue, s=18, zorder=3, label='January')
@@ -148,18 +162,20 @@ def fig_electricity(save=True):
     st.legend_outside_bottom(ax, ncol=2, y=-0.12)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_electricity')
     return e
 
 
 def fig_co2(save=True):
     c = co2_series()
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(7.00, 2.80))
     ax.plot(c.index, c, color=st.Purple, lw=1.1, label='CO2 concentration at Mauna Loa, monthly mean (ppm)')
     ax.set_ylabel('ppm')
     st.legend_outside_bottom(ax, ncol=1, y=-0.12)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_co2')
     return c
 
@@ -169,16 +185,17 @@ def fig_slutsky(n=240, k=10, seed=7, save=True):
     rng = np.random.default_rng(seed)
     eps = rng.standard_normal(n + k - 1)
     ma = np.convolve(eps, np.ones(k), mode='valid')            # y_t = eps_t + ... + eps_{t-k+1}
-    fig, axes = plt.subplots(2, 1, figsize=(10, 4.6), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(7.00, 3.22), sharex=True)
     axes[0].plot(np.arange(n), eps[k - 1:], color=st.MainBlue, lw=0.9, label='White noise: independent shocks')
     axes[1].plot(np.arange(n), ma, color=st.IDAred, lw=1.3, label=f'Moving sum of {k} consecutive shocks')
     for a in axes:
         a.axhline(0, color=st.DarkText, lw=0.5)
     axes[1].set_xlabel('t')
     st.fig_legend_bottom(fig, ncol=2, y=0.0)
-    fig.tight_layout(rect=(0, 0.06, 1, 1))
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_slutsky')
     # number of up-crossings of zero: about one wave every 2k periods
     up = int(((ma[:-1] < 0) & (ma[1:] >= 0)).sum())
@@ -209,7 +226,7 @@ def classical_decomposition(y, m, model='multiplicative'):
 def fig_components(save=True):
     y = gdp_series()['nsa'] / 1000
     trend, seas, rem, idx, _ = classical_decomposition(y, 4, 'multiplicative')
-    fig, axes = plt.subplots(4, 1, figsize=(10, 6.4), sharex=True)
+    fig, axes = plt.subplots(4, 1, figsize=(7.00, 4.48), sharex=True)
     axes[0].plot(y.index, y, color=st.MainBlue, lw=1.1, label='Observed $Y_t$ (billion EUR)')
     axes[0].plot(trend.index, trend, color=st.IDAred, lw=1.6, label='Trend-cycle $T_t$ (2x4 moving average)')
     axes[1].plot(trend.index, trend, color=st.IDAred, lw=1.6)
@@ -221,9 +238,10 @@ def fig_components(save=True):
     axes[3].set_ylabel('$R_t$')
     axes[0].set_ylabel('$Y_t$')
     st.fig_legend_bottom(fig, ncol=2, y=0.0)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_components')
     q = {int(y.index[p].quarter): float(idx[p]) for p in range(4)}
     return y, trend, seas, rem, q
@@ -233,7 +251,7 @@ def fig_stl(save=True):
     from statsmodels.tsa.seasonal import STL
     c = co2_series()
     res = STL(c, period=12, robust=True).fit()
-    fig, axes = plt.subplots(4, 1, figsize=(10, 6.4), sharex=True)
+    fig, axes = plt.subplots(4, 1, figsize=(7.00, 4.48), sharex=True)
     axes[0].plot(c.index, c, color=st.Purple, lw=1.0, label='Observed CO2 (ppm)')
     axes[1].plot(c.index, res.trend, color=st.IDAred, lw=1.4, label='Trend (LOESS)')
     axes[2].plot(c.index, res.seasonal, color=st.Forest, lw=0.9, label='Seasonal (changes slowly)')
@@ -241,9 +259,10 @@ def fig_stl(save=True):
     for a, lab in zip(axes, ['$Y_t$', '$T_t$', '$S_t$', '$R_t$']):
         a.set_ylabel(lab)
     st.fig_legend_bottom(fig, ncol=4, y=0.0)
-    fig.tight_layout(rect=(0, 0.06, 1, 1))
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_stl')
     return c, res
 
@@ -251,15 +270,16 @@ def fig_stl(save=True):
 def fig_returns(save=True):
     p = load_close('bet', '2000-01-01')
     r = log_returns('bet', '2000-01-01')
-    fig, axes = plt.subplots(2, 1, figsize=(10, 4.8), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(7.00, 3.36), sharex=True)
     axes[0].plot(p.index, p, color=st.COL['bet'], lw=1.0, label='BET, closing value $P_t$ (points)')
     axes[1].plot(r.index, r, color=st.MainBlue, lw=0.5, label='Daily log return $r_t = 100(\\ln P_t - \\ln P_{t-1})$, %')
     axes[0].set_ylabel('Points')
     axes[1].set_ylabel('%')
     st.fig_legend_bottom(fig, ncol=2, y=0.0)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_returns')
     return p, r
 
@@ -278,7 +298,7 @@ def fig_acf(save=True):
     r = log_returns('bet', '2000-01-01')
     panels = [('CO2 level (monthly)', c, 36, st.Purple), ('Electricity generation (monthly)', e, 36, st.Orange),
               ('BET daily log returns', r, 36, st.MainBlue)]
-    fig, axes = plt.subplots(1, 3, figsize=(12, 3.8), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(8.40, 2.66), sharey=True)
     out = {}
     for ax, (lab, x, L, col) in zip(axes, panels):
         a = sample_acf(x, L)
@@ -289,11 +309,12 @@ def fig_acf(save=True):
         ax.set_xlabel('Lag $k$')
         ax.set_ylim(-0.6, 1.05)
         out[lab] = (a, band, len(x))
-    axes[0].set_ylabel('Sample autocorrelation $r_k$')
+    axes[0].set_ylabel('sample ACF $r_k$')
     st.fig_legend_bottom(fig, ncol=3, y=0.0)
-    fig.tight_layout(rect=(0, 0.08, 1, 1))
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_acf')
     return out
 
@@ -317,7 +338,7 @@ def fig_ses(save=True):
     from statsmodels.tsa.holtwinters import SimpleExpSmoothing
     y = eurron_monthly()
     fit = SimpleExpSmoothing(y, initialization_method='estimated').fit()
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(7.00, 2.94))
     ax.plot(y.index, y, color=st.DarkText, lw=0.0, marker='o', ms=3, label='EUR/RON, monthly average')
     ax.plot(y.index, ses_path(y, 0.1).shift(1), color=st.MainBlue, lw=1.6, label='SES, $\\alpha = 0.1$')
     ax.plot(y.index, ses_path(y, 0.7).shift(1), color=st.IDAred, lw=1.4, label='SES, $\\alpha = 0.7$')
@@ -325,6 +346,7 @@ def fig_ses(save=True):
     st.legend_outside_bottom(ax, ncol=3, y=-0.12)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_ses')
     return y, float(fit.params['smoothing_level'])
 
@@ -356,7 +378,7 @@ def accuracy(train, test, fc, m):
 def fig_forecast(save=True):
     y = electricity_series() / 1000
     train, test, f = method_forecasts(y, 12, TEST_H['elec'])
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(7.00, 2.94))
     tail = train.iloc[-48:]
     ax.plot(tail.index, tail, color=st.MainBlue, lw=1.3, label='Training data')
     ax.plot(test.index, test, color=st.DarkText, lw=1.8, label='Test data (actual)')
@@ -368,6 +390,7 @@ def fig_forecast(save=True):
     st.legend_outside_bottom(ax, ncol=5, y=-0.12)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_forecast')
     acc = {k: accuracy(train, test, v, 12) for k, v in f.items()}
     return train, test, f, acc
@@ -390,7 +413,7 @@ def fig_benchmarks(save=True):
     piv = tab.pivot(index='series', columns='method', values='MASE').loc[list(data)]
     meths = ['Naive', 'Seasonal naive', 'SES', 'Holt-Winters']
     cols = [st.Amber, st.Forest, st.MainBlue, st.IDAred]
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(7.00, 2.94))
     x = np.arange(len(piv))
     for i, (mth, c) in enumerate(zip(meths, cols)):
         ax.bar(x + (i - 1.5) * 0.2, piv[mth], width=0.2, color=c, label=mth)
@@ -398,10 +421,11 @@ def fig_benchmarks(save=True):
     ax.set_xticks(x)
     ax.set_xticklabels([SERIES_LABEL[k] for k in piv.index])
     ax.set_yscale('log')
-    ax.set_ylabel('MASE on the test set (log scale)')
+    ax.set_ylabel('MASE, test set (log)')
     st.legend_outside_bottom(ax, ncol=4, y=-0.14)
     st.check_no_grey(fig)
     if save:
+        _tidy_dates(plt.gcf())
         st.save_fig('tsa_ch0_benchmarks')
     return tab, piv
 

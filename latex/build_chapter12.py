@@ -488,7 +488,7 @@ D.frame(T("Fisher's test of a hidden periodicity (2/2)", 'Testul lui Fisher pent
       T('so compare with a smooth background spectrum', 'de aceea comparați cu un spectru de fond neted')])))
 
 D.recap(('The periodogram', 'periodograma'), [
-    T('$I(\\nu_j) = |d(\\nu_j)|^2$: the squared amplitude of the cycle at each Fourier frequency; it sums to the variance', '$I(\\nu_j) = |d(\\nu_j)|^2$: pătratul amplitudinii ciclului la fiecare frecvență Fourier; suma dă varianța'),
+    T('$I(\\nu_j) = |d(\\nu_j)|^2$: proportional to the squared amplitude of the cycle at each Fourier frequency; it sums to the variance', '$I(\\nu_j) = |d(\\nu_j)|^2$: proporțională cu pătratul amplitudinii ciclului la fiecare frecvență Fourier; suma dă varianța'),
     T('$2I/f \\approx \\chi^2_2$: unbiased but not consistent; neighbouring ordinates are nearly independent', '$2I/f \\approx \\chi^2_2$: nedeplasată, dar neconsistentă; ordonatele vecine sînt aproape independente'),
     T("Sunspots: a peak at @{su.per} years; Fisher's $g$ rejects white noise", 'Petele solare: un vîrf la @{su.per} ani; testul $g$ al lui Fisher respinge zgomotul alb')])
 
@@ -535,7 +535,7 @@ D.frame(T('Smoothing the periodogram (2/2): lag windows and Welch', 'Netezirea p
       T('$M$: the truncation lag; autocovariances beyond lag $M$ are dropped, the others get weights $1 - |h|/M$ that fall linearly', '$M$: lagul de trunchiere; autocovarianțele de dincolo de lagul $M$ se elimină, celelalte primesc ponderile $1 - |h|/M$, care scad liniar'),
       T('a smaller $M$ means more smoothing', 'un $M$ mai mic înseamnă o netezire mai puternică')]),
     (T('The \\textbf{Welch} method (\\refWelch)', 'Metoda \\textbf{Welch} (\\refWelch)'),
-         [T('an average of the periodograms of $K$ segments', 'o medie a periodogramelor a $K$ segmente'),
+         [T('an average of the periodograms of $K$ segments: $\\hat f_W(\\nu) = \\frac1K\\sum_{k=1}^{K} I_k(\\nu)$, $I_k$: the tapered periodogram of segment $k$', 'o medie a periodogramelor a $K$ segmente: $\\hat f_W(\\nu) = \\frac1K\\sum_{k=1}^{K} I_k(\\nu)$, $I_k$: periodograma cu fereastră a segmentului $k$'),
           T('split the series into $K$ overlapping segments, taper each, average their periodograms', 'seria se împarte în $K$ segmente care se suprapun, se aplică fereastra pe fiecare și se face media periodogramelor'),
           T('\\texttt{scipy.signal.welch}; the segment length sets the resolution', '\\texttt{scipy.signal.welch}; lungimea segmentului fixează rezoluția')])))
 
@@ -697,7 +697,7 @@ chart(T('Squared gains of common filters', 'Cîștigurile pătratice ale filtrel
 interp(('the filter gains', 'cîștigurilor filtrelor'), [
     (T('Differencing is not neutral: it weakens business cycles and amplifies the highest frequencies', 'Diferențierea nu este neutră: slăbește ciclurile economice și amplifică frecvențele cele mai înalte'),
      [T('this is why growth rates look noisier than levels; filtering white noise can even create spurious cycles (the Slutsky effect, Chapter 0)', 'de aceea ratele de creștere par mai zgomotoase decît nivelurile; filtrarea unui zgomot alb poate crea chiar cicluri false (efectul Slutsky, Capitolul 0)')]),
-    (T('HP cycle filter: gain @{fi.h8} at 8 quarters, @{fi.h32} at 32 quarters, @{fi.h40} at 40 quarters; half power at about @{fi.hhalf} quarters', 'Filtrul HP pentru ciclu: cîștig @{fi.h8} la 8 trimestre, @{fi.h32} la 32 de trimestre, @{fi.h40} la 40 de trimestre; jumătate din putere la aproximativ @{fi.hhalf} de trimestre'),
+    (T('HP cycle filter: squared gain @{fi.h8} at 8 quarters, @{fi.h32} at 32 quarters, @{fi.h40} at 40 quarters; half power at about @{fi.hhalf} quarters', 'Filtrul HP pentru ciclu: cîștigul pătratic @{fi.h8} la 8 trimestre, @{fi.h32} la 32 de trimestre, @{fi.h40} la 40 de trimestre; jumătate din putere la aproximativ @{fi.hhalf} de trimestre'),
      [T('it keeps everything faster than 10 years, including noise: not a band-pass filter (\\refBK)', 'păstrează tot ce este mai rapid de 10 ani, inclusiv zgomotul: nu este un filtru trece-bandă (\\refBK)')]),
     T('Applied to a random walk, the HP filter produces a cycle with a peak that comes from the filter, not from the data (\\refHamHP)', 'Aplicat unui mers aleator, filtrul HP produce un ciclu cu un vîrf care provine din filtru, nu din date (\\refHamHP)')])
 
@@ -725,9 +725,10 @@ chart(T('Industrial production and unemployment', 'Producția industrială și �
 
 interp(('coherence and phase', 'coerenței și fazei'), [
     (T('In the business-cycle band (18--96 months) the squared coherence averages @{co.bc} (maximum @{co.bcmax}), far above the 5\\% threshold @{co.thr}', 'În banda ciclului economic (18--96 de luni) coerența pătratică are media @{co.bc} (maximum @{co.bcmax}), mult peste pragul de 5\\%, @{co.thr}'),
-     [T('at frequencies faster than 6 months it averages only @{co.hi}: the monthly noise of the two series is unrelated', 'la frecvențele mai rapide de 6 luni media este doar @{co.hi}: zgomotul lunar al celor două serii nu este legat'),
+     [T('the 5\\% threshold for a Welch estimate with $K$ segments: $1 - 0.05^{1/(K-1)}$', 'pragul de 5\\% pentru o estimare Welch cu $K$ segmente: $1 - 0{,}05^{1/(K-1)}$'),
+      T('at frequencies faster than 6 months it averages only @{co.hi}: the monthly noise of the two series is unrelated', 'la frecvențele mai rapide de 6 luni media este doar @{co.hi}: zgomotul lunar al celor două serii nu este legat'),
       T('the ordinary correlation, @{co.r0}, mixes the strong link of the cycles with the weak link of the noise', 'corelația obișnuită, @{co.r0}, amestecă legătura puternică a ciclurilor cu legătura slabă a zgomotului')]),
-    (T('Phase at the 48-month cycle: @{co.ph} radians, a lag of about @{co.lag} months', 'Faza la ciclul de 48 de luni: @{co.ph} radiani, un lag de aproximativ @{co.lag} luni'),
+    (T('Phase at the 48-month cycle: $@{co.ph}$ radians, a lag of about @{co.lag} months', 'Faza la ciclul de 48 de luni: $@{co.ph}$ radiani, un lag de aproximativ @{co.lag} luni'),
      [T('the fall in unemployment follows the recovery of production with a short delay (Okun\'s law, with a lag)', 'scăderea șomajului urmează revenirea producției cu o mică întîrziere (legea lui Okun, cu un lag)')]),
     T('Where the coherence is low, the phase is meaningless: read the phase only in bands with significant coherence', 'Acolo unde coerența este mică, faza nu are sens: citiți faza doar în benzile cu coerență semnificativă')])
 
@@ -736,13 +737,23 @@ interp(('coherence and phase', 'coerenței și fazei'), [
 # =============================================================================
 D.section('A pointer: wavelets', 'O trimitere: wavelets')
 
-D.frame(T('Wavelets: frequency that changes over time', 'Wavelets: frecvența care se schimbă în timp'), items(
+D.frame(T('Wavelets (1/2): frequency that changes over time', 'Wavelets (1/2): frecvența care se schimbă în timp'), items(
     (T('The spectrum assumes stationarity: the same cycles at every date', 'Spectrul presupune staționaritate: aceleași cicluri la orice dată'),
      [T('the \\textbf{short-time Fourier transform} (STFT) computes spectra in moving windows of fixed length', '\\textbf{transformata Fourier pe ferestre scurte} (STFT) calculează spectre în ferestre mobile de lungime fixă')]),
     (T('A \\textbf{wavelet} is a short wave packet; the \\textbf{continuous wavelet transform} (CWT) stretches it to each period and slides it along the series', 'Un \\textbf{wavelet} este un pachet scurt de unde; \\textbf{transformata wavelet continuă} (CWT) îl întinde la fiecare perioadă și îl glisează de-a lungul seriei'),
      [T('the result, the \\textbf{scalogram}, shows the power at each period and each date (\\refTC)', 'rezultatul, \\textbf{scalograma}, arată puterea la fiecare perioadă și la fiecare dată (\\refTC)'),
       T('short windows for fast cycles, long windows for slow cycles: good resolution at all scales', 'ferestre scurte pentru ciclurile rapide, ferestre lungi pentru ciclurile lente: rezoluție bună la toate scările')]),
     T('Beyond this course; a natural project topic (Python: \\texttt{pywt}, or the Morlet code of this chapter)', 'Dincolo de acest curs; o temă naturală de proiect (Python: \\texttt{pywt} sau codul Morlet al acestui capitol)')))
+
+D.frame(T('Wavelets (2/2): the continuous wavelet transform', 'Wavelets (2/2): transformata wavelet continuă'), items(
+    (T('The \\textbf{Morlet wavelet}: a complex wave damped by a Gaussian bell', '\\textbf{Wavelet-ul Morlet}: o undă complexă amortizată de un clopot gaussian'),
+     [T('$\\psi(u) = \\pi^{-1/4}\\, e^{i\\omega_0 u}\\, e^{-u^2/2}$, with $\\omega_0 = 6$ (\\refTC)', '$\\psi(u) = \\pi^{-1/4}\\, e^{i\\omega_0 u}\\, e^{-u^2/2}$, cu $\\omega_0 = 6$ (\\refTC)'),
+      T('$u$: time measured in units of the scale; $\\omega_0$: the number of oscillations inside the bell', '$u$: timpul măsurat în unități ale scării; $\\omega_0$: numărul de oscilații din interiorul clopotului')]),
+    (T('The \\textbf{transform} at scale $s$ and date $\\tau$', '\\textbf{Transformata} la scara $s$ și la data $\\tau$'),
+     [T('$W(s, \\tau) = \\sum_t x_t\\, \\frac{1}{\\sqrt{s}}\\, \\psi^*\\!\\left(\\frac{t - \\tau}{s}\\right)$: a correlation of the series with the wavelet stretched to scale $s$ and centred at $\\tau$', '$W(s, \\tau) = \\sum_t x_t\\, \\frac{1}{\\sqrt{s}}\\, \\psi^*\\!\\left(\\frac{t - \\tau}{s}\\right)$: corelația seriei cu wavelet-ul întins la scara $s$ și centrat în $\\tau$'),
+      T('$\\psi^*$: the complex conjugate of $\\psi$; for $\\omega_0 = 6$ the period of the cycle is about $1.03\\,s$', '$\\psi^*$: conjugatul complex al lui $\\psi$; pentru $\\omega_0 = 6$ perioada ciclului este aproximativ $1{,}03\\,s$')]),
+    (T('The \\textbf{scalogram}: the wavelet power $|W(s, \\tau)|^2$', '\\textbf{Scalograma}: puterea wavelet $|W(s, \\tau)|^2$'),
+     [T('the analogue of the periodogram, but for each date $\\tau$ separately', 'analogul periodogramei, dar separat pentru fiecare dată $\\tau$')])), size='footnotesize')
 
 chart(T('Wavelet power of the sunspots', 'Puterea wavelet a petelor solare'), 'tsa_ch12_wavelet', 'TSA_ch12_wavelet', [
     T('Morlet wavelet power of the standardised yearly sunspot numbers, 1700--2008, periods 2 to 64 years; bright colours mean high power', 'Puterea wavelet Morlet a numerelor anuale standardizate de pete solare, 1700--2008, perioade între 2 și 64 de ani; culorile deschise indică putere mare')],
@@ -806,7 +817,7 @@ D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretc
      T('95\\% band', 'Banda de 95\\%') + ' & $[2L\\hat f/\\chi^2_{2L}(0.975),\\ 2L\\hat f/\\chi^2_{2L}(0.025)]$',
      T('Linear filter', 'Filtru liniar') + ' & $f_y(\\nu) = |A(\\nu)|^2 f_x(\\nu)$, \\quad $|1 - e^{-2\\pi i\\nu}|^2 = 4\\sin^2(\\pi\\nu)$',
      T('Coherence, phase', 'Coerența, faza') + ' & $\\rho^2_{xy} = |f_{xy}|^2/(f_x f_y)$, \\quad $\\varphi = \\arg f_{xy}$, \\quad ' + T('lag', 'lagul') + ' $= |\\varphi|/(2\\pi\\nu)$'],
-    size='scriptsize') + '}')
+    size='footnotesize') + '}')
 
 D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(
     (T('\\textbf{Question}: weekly data show a peak at $\\nu = 0.0192$. What is the period?', '\\textbf{Întrebare}: niște date săptămînale au un vîrf la $\\nu = 0.0192$. Care este perioada?'),
