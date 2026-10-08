@@ -833,7 +833,7 @@ D.frame(T('Worked example: orthogonalised responses', 'Exemplu rezolvat: răspun
 chart(T('Impulse responses of the Romanian VAR(2)', 'Răspunsurile la impuls ale VAR(2) românesc'), 'tsa_ch6_irf_ro', 'TSA_ch6_irf_fevd', [
     T('Row: responding variable; column: shock of one standard deviation; Cholesky order $g, \\pi, i$; 90\\% bands from a residual bootstrap (500 replications) \\refKilian',
       'Rîndul: variabila care răspunde; coloana: șocul de o abatere standard; ordinea Cholesky $g, \\pi, i$; benzi de 90\\% dintr-un bootstrap pe reziduuri (500 de replicări) \\refKilian')],
-    h='0.7\\textheight')
+    h='0.72\\textheight')
 
 interp(('the Romanian responses', 'răspunsurilor românești'), [
     (T('An inflation shock (@{ir.pi0} pp on impact) raises ROBOR by @{ir.ipi0} pp at once and by up to @{ir.ipimax} pp after @{ir.ipih} quarters; still @{ir.ipi12} pp after 3 years', 'Un șoc al inflației (@{ir.pi0} puncte procentuale la impact) crește ROBOR imediat cu @{ir.ipi0} pp și pînă la @{ir.ipimax} pp după @{ir.ipih} trimestre; încă @{ir.ipi12} pp după 3 ani'),
@@ -1027,7 +1027,7 @@ chart(T('The three US series', 'Cele trei serii americane'), 'tsa_ch6_us_data', 
 chart(T('Stock--Watson VAR: impulse responses', 'VAR-ul Stock--Watson: răspunsuri la impuls'), 'tsa_ch6_sw_irf', 'TSA_ch6_stock_watson', [
     T('VAR(4), 1960Q1--2000Q4, @{sw.k} coefficients; Cholesky order inflation, unemployment, fed funds rate; 24 quarters; 90\\% bootstrap bands',
       'VAR(4), T1 1960--T4 2000, @{sw.k} de coeficienți; ordinea Cholesky inflație, șomaj, dobînda federală; 24 de trimestre; benzi bootstrap de 90\\%')],
-    h='0.7\\textheight')
+    h='0.72\\textheight')
 
 interp(('the Stock--Watson VAR', 'VAR-ului Stock--Watson'), [
     (T('A monetary shock ($+@{sw.RR0}$ pp in the fed funds rate) raises unemployment by up to @{sw.uRmax} pp after @{sw.uRh} quarters', 'Un șoc monetar ($+@{sw.RR0}$ pp în dobînda federală) crește șomajul cu pînă la @{sw.uRmax} pp după @{sw.uRh} trimestre'),

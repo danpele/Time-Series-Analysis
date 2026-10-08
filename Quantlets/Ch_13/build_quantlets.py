@@ -82,7 +82,7 @@ QUANTLETS = [
          keywords='LPPLS confidence indicator, multiple windows, critical time, look-ahead bias, bubble diagnosis',
          consts=CONSTS, funcs=CORE + [g.fig_windows, g.fig_tc_path, g.fig_ci],
          run='print(fig_windows())\nprint(fig_tc_path())\nprint(fig_ci())',
-         charts=['tsa_ch13_windows', 'tsa_ch13_tc_path', 'tsa_ch13_ci'],
+         charts=['tsa_ch13_windows', 'tsa_ch13_tc_path', 'tsa_ch13_ci', 'tsa_ch13_ci_b'],
          extra=['ch13_ci_ep_ndx.csv', 'ch13_ci_ep_ssec.csv', 'ch13_ci_ep_bet.csv', 'ch13_ci_ep_btc17.csv']),
     dict(name='TSA_ch13_evaluation',
          desc='An honest evaluation of crash prediction: the LPPLS confidence indicator over the whole S&P 500 sample '
@@ -90,7 +90,7 @@ QUANTLETS = [
               'hit rate by threshold against the base rate, alarm clusters and false alarms.',
          keywords='crash prediction, false alarms, base rate, hit rate, LPPLS confidence indicator, S&P 500, Bitcoin',
          consts=CONSTS, funcs=CORE + [g.fig_eval], run='ev = fig_eval()\nprint({k: v["hit"] for k, v in ev.items()})',
-         charts=['tsa_ch13_eval'], extra=['ch13_ci_eval_sp500.csv', 'ch13_ci_eval_btc.csv']),
+         charts=['tsa_ch13_eval', 'tsa_ch13_eval_btc'], extra=['ch13_ci_eval_sp500.csv', 'ch13_ci_eval_btc.csv']),
 ]
 
 if __name__ == '__main__':

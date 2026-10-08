@@ -701,8 +701,13 @@ interp(('the windows', 'ferestrelor'), [
      [T('the condition on $m$ fails most often: only @{wi.ssec.s.m}\\% of the Shanghai windows have $0.01 \\le m \\le 0.99$', 'condiția asupra lui $m$ cade cel mai des: doar @{wi.ssec.s.m}\\% dintre ferestrele Shanghai au $0{,}01 \\le m \\le 0{,}99$')]),
     T('Short windows put $t_c$ right after $t_2$; long windows spread it out: the window length is a hidden modelling choice', 'Ferestrele scurte pun $t_c$ imediat după $t_2$; ferestrele lungi îl împrăștie: lungimea ferestrei este o alegere de modelare ascunsă')])
 
-chart(T('The indicator around four peaks', 'Indicatorul în jurul a patru maxime'), 'tsa_ch13_ci', 'TSA_ch13_confidence', [
-    (T('Log price (left axis) and the indicator (right axis) every 5 trading days (Bitcoin: 7 days), from 18 months before to 4 months after the peak', 'Prețul logaritmic (axa din stînga) și indicatorul (axa din dreapta) la fiecare 5 zile de tranzacționare (Bitcoin: 7 zile), de la 18 luni înainte pînă la 4 luni după maximum'),
+chart(T('The indicator around four peaks (1/2)', 'Indicatorul în jurul a patru maxime (1/2)'), 'tsa_ch13_ci', 'TSA_ch13_confidence', [
+    (T('Log price (left axis) and the indicator (right axis) every 5 trading days, from 18 months before to 4 months after the peak', 'Prețul logaritmic (axa din stînga) și indicatorul (axa din dreapta) la fiecare 5 zile de tranzacționare, de la 18 luni înainte pînă la 4 luni după maximum'),
+     [T('green area: parameter conditions; purple line: all conditions', 'zona verde: condițiile asupra parametrilor; linia mov: toate condițiile')])],
+    h='0.64\\textheight')
+
+chart(T('The indicator around four peaks (2/2)', 'Indicatorul în jurul a patru maxime (2/2)'), 'tsa_ch13_ci_b', 'TSA_ch13_confidence', [
+    (T('The same layout for the BET (2007) and Bitcoin (2017); Bitcoin: one value every 7 days', 'Aceeași structură pentru BET (2007) și Bitcoin (2017); Bitcoin: o valoare la fiecare 7 zile'),
      [T('green area: parameter conditions; purple line: all conditions', 'zona verde: condițiile asupra parametrilor; linia mov: toate condițiile')])],
     h='0.64\\textheight')
 
@@ -747,9 +752,14 @@ D.frame(T('Traps in evaluating crash predictions', 'Capcane în evaluarea progno
           T('the comparison: $P(\\text{crash} \\mid \\text{alarm})$ against $P(\\text{crash})$, the unconditional frequency', 'comparația: $P(\\text{crah} \\mid \\text{alarmă})$ față de $P(\\text{crah})$, frecvența necondiționată')]),
     T('A fair test fixes everything in advance (windows, filter, threshold, the definition of a crash) and runs over the whole sample', 'Un test corect fixează totul dinainte (ferestre, filtru, prag, definiția crahului) și rulează pe tot eșantionul')))
 
-chart(T('Alarms over the whole sample', 'Alarmele pe tot eșantionul'), 'tsa_ch13_eval', 'TSA_ch13_evaluation', [
-    (T('Indicator every 5 trading days (S\\&P 500, @{ev.sp500.start} -- @{ev.sp500.end}) and every 7 days (Bitcoin, @{ev.btc.start} -- @{ev.btc.end})', 'Indicatorul la fiecare 5 zile de tranzacționare (S\\&P 500, @{ev.sp500.start} -- @{ev.sp500.end}) și la fiecare 7 zile (Bitcoin, @{ev.btc.start} -- @{ev.btc.end})'),
+chart(T('Alarms over the whole sample (1/2)', 'Alarmele pe tot eșantionul (1/2)'), 'tsa_ch13_eval', 'TSA_ch13_evaluation', [
+    (T('S\\&P 500: indicator every 5 trading days, @{ev.sp500.start} -- @{ev.sp500.end}', 'S\\&P 500: indicatorul la fiecare 5 zile de tranzacționare, @{ev.sp500.start} -- @{ev.sp500.end}'),
      [T('a crash: a fall of at least 20\\% within 182 days after the alarm; right: hit rate by threshold', 'un crah: o scădere de cel puțin 20\\% în cele 182 de zile de după alarmă; dreapta: rata de reușită în funcție de prag')])],
+    h='0.62\\textheight')
+
+chart(T('Alarms over the whole sample (2/2)', 'Alarmele pe tot eșantionul (2/2)'), 'tsa_ch13_eval_btc', 'TSA_ch13_evaluation', [
+    (T('Bitcoin: indicator every 7 days, @{ev.btc.start} -- @{ev.btc.end}', 'Bitcoin: indicatorul la fiecare 7 zile, @{ev.btc.start} -- @{ev.btc.end}'),
+     [T('hit rate: the share of the alarm dates followed by a crash; dashed line: the unconditional frequency', 'rata de reușită: ponderea datelor cu alarmă urmate de un crah; linia punctată: frecvența necondiționată')])],
     h='0.62\\textheight')
 
 interp(('the evaluation', 'evaluării'), [

@@ -143,7 +143,7 @@ def stylised_table(names=ASSETS):
 
 def fig_returns(names=ASSETS, save_it=True):
     """Daily log returns of the four series with the 2008 and 2020 episodes shaded."""
-    fig, axes = plt.subplots(2, 2, figsize=(7.70, 3.64))
+    fig, axes = plt.subplots(2, 2, figsize=(9.33, 2.59))
     out = {}
     for ax, k in zip(axes.ravel(), names):
         r = returns(k)
@@ -170,7 +170,7 @@ def fig_returns(names=ASSETS, save_it=True):
 
 def fig_acf_squares(names=ASSETS, lags=50, save_it=True):
     """ACF of returns and of squared returns, lags 1-50, with the i.i.d. 95% band, for the four series."""
-    fig, axes = plt.subplots(2, 2, figsize=(7.70, 3.78), sharex=True)
+    fig, axes = plt.subplots(2, 2, figsize=(9.33, 3.04), sharex=True)
     out = {}
     j = np.arange(1, lags + 1)
     for ax, k in zip(axes.ravel(), names):
@@ -187,7 +187,7 @@ def fig_acf_squares(names=ASSETS, lags=50, save_it=True):
     for ax in axes[1]:
         ax.set_xlabel('lag k (days)')
     for ax in axes[:, 0]:
-        ax.set_ylabel('autocorrelation')
+        ax.set_ylabel('ACF')
     st.fig_legend_bottom(fig, ncol=3, y=0.0)
     fig.tight_layout(rect=(0, 0.02, 1, 1))
     save('tsa_ch5_acf_squares', save_it)
@@ -227,7 +227,7 @@ def fig_arma_resid(k='bet', lags=30, save_it=True):
     z = res.std_resid.dropna().values
     j = np.arange(1, lags + 1)
     band = 1.96 / np.sqrt(len(e))
-    fig, axes = plt.subplots(1, 2, figsize=(7.70, 2.80), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.32, 2.62), sharey=True)
     for ax, (a, b), t in [(axes[0], (e, e ** 2), 'AR(1) with constant variance: residuals e(t)'),
                           (axes[1], (z, z ** 2), 'AR(1)-GARCH(1,1)-t: standardised residuals z(t)')]:
         ax.bar(j - 0.2, acf_vals(a, lags), width=0.4, color=st.MainBlue, label='residuals')
@@ -274,11 +274,10 @@ def fig_simulated(n=1000, save_it=True):
     paths = {'i.i.d. Normal(0, 1)': rng.standard_normal(n),
              'ARCH(1): omega = 0.5, alpha = 0.5': simulate_garch(n, 0.5, 0.5, 0.0, seed=SEED + 1)[0],
              'GARCH(1,1): omega = 0.02, alpha = 0.10, beta = 0.88': simulate_garch(n, 0.02, 0.10, 0.88, seed=SEED + 2)[0]}
-    fig, axes = plt.subplots(3, 1, figsize=(7.70, 3.36), sharex=True, sharey=True)
+    fig, axes = plt.subplots(3, 1, figsize=(9.33, 2.09), sharex=True, sharey=True)
     out = {}
     for ax, (lab, x), c in zip(axes, paths.items(), [st.MainBlue, st.IDAred, st.Forest]):
         ax.plot(np.arange(n), x, color=c, lw=0.7, label=lab)
-        ax.set_ylabel('value')
         out[lab.split(':')[0]] = {'sd': float(np.std(x)), 'kurt': float(stats.kurtosis(x, fisher=False)),
                                   'max_abs': float(np.max(np.abs(x))), 'acf2_1': float(acf_vals(x ** 2, 1)[0])}
     axes[-1].set_xlabel('time t')
@@ -299,7 +298,7 @@ def fig_lik_arch1(ns=(100, 1000), alpha0=0.5, save_it=True):
     """Log-likelihood of a simulated ARCH(1) (omega = alpha = 0.5) as a function of alpha, for two sample sizes;
     each curve minus its maximum; standard errors from the curvature at the maximum."""
     grid = np.linspace(0.05, 0.95, 181)
-    fig, ax = plt.subplots(figsize=(7.00, 2.80))
+    fig, ax = plt.subplots(figsize=(10.17, 1.69))
     out = {}
     for n, c in zip(ns, [st.MainBlue, st.IDAred]):
         x = simulate_garch(n, 1 - alpha0, alpha0, 0.0, seed=SEED + n)[0]
@@ -334,7 +333,7 @@ def fig_lik_garch(ns=(500, 2000), save_it=True):
     (alpha, beta), omega set by variance targeting, for n = 500 and n = 2000."""
     A = np.linspace(0.01, 0.30, 59)
     B = np.linspace(0.50, 0.97, 48)
-    fig, axes = plt.subplots(1, 2, figsize=(7.00, 3.22), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(8.49, 1.84), sharey=True)
     out = {}
     cols = [st.Purple, st.MainBlue, st.Teal, st.Forest, st.Amber, st.Orange, st.IDAred]
     for ax, n in zip(axes, ns):
@@ -348,13 +347,13 @@ def fig_lik_garch(ns=(500, 2000), save_it=True):
         i, j = np.unravel_index(np.nanargmax(L), L.shape)
         lv = np.nanmax(L) - np.array([40, 20, 10, 5, 3, 2, 1])
         cs = ax.contour(A, B, L, levels=lv, colors=cols, linewidths=1.1)
-        ax.clabel(cs, fmt=lambda v, m=np.nanmax(L): f'{v - m:.0f}', fontsize=8)
+        ax.clabel(cs, fmt=lambda v, m=np.nanmax(L): f'{v - m:.0f}', fontsize=10)
         ax.plot(A[j], B[i], 'o', color=st.IDAred, ms=8, label='maximum on the grid')
         ax.plot(0.1, 0.8, 'x', color='black', ms=9, mew=2, label='true values: alpha = 0.1, beta = 0.8')
         ax.plot(A, 1 - A, color=st.Purple, ls='--', lw=1.2, label='alpha + beta = 1 (IGARCH boundary)')
         ax.set_xlim(A[0], A[-1])
         ax.set_ylim(B[0], B[-1])
-        ax.set_title(f'n = {n}\nmaximum: alpha = {A[j]:.2f}, beta = {B[i]:.2f}', loc='left', fontsize=10)
+        ax.set_title(f'n = {n}: maximum at\nalpha = {A[j]:.2f}, beta = {B[i]:.2f}', loc='left', fontsize=10)
         ax.set_xlabel('alpha')
         out[str(n)] = {'a_hat': float(A[j]), 'b_hat': float(B[i])}
     axes[0].set_ylabel('beta')
@@ -505,7 +504,7 @@ def markets_table(names=ASSETS):
 
 def fig_vol(names=('sp500', 'bet'), fname='tsa_ch5_vol_sp500_bet', save_it=True):
     """Annualised GARCH(1,1)-t conditional volatility, with the 2008 and 2020 episodes shaded."""
-    fig, axes = plt.subplots(len(names), 1, figsize=(7.00, 3.78))
+    fig, axes = plt.subplots(len(names), 1, figsize=(9.33, 2.38))
     out = {}
     for ax, k in zip(np.atleast_1d(axes), names):
         r = returns(k)
@@ -543,7 +542,7 @@ def fig_vol(names=('sp500', 'bet'), fname='tsa_ch5_vol_sp500_bet', save_it=True)
 def fig_persistence(T=None, horizon=250, save_it=True):
     """Share of a variance shock left after h days, persistence^h, with the half-lives in the legend."""
     T = T or markets_table()
-    fig, ax = plt.subplots(figsize=(7.00, 2.80))
+    fig, ax = plt.subplots(figsize=(10.17, 1.78))
     h = np.arange(horizon + 1)
     for k, d in T.items():
         lab = (f"{NAME[k]}: alpha + beta = {d['pers']:.3f}, half-life {d['hl']:.0f} days" if d['pers'] < IG
@@ -564,7 +563,7 @@ def fig_qq(k='sp500', save_it=True):
     r = returns(k)
     rn, rt = fit(r, dist='normal'), fit(r, dist='t')
     nu = rt.params['nu']
-    fig, axes = plt.subplots(1, 2, figsize=(7.00, 3.08))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.10))
     out = {}
     for ax, res, lab, ppf, c in [(axes[0], rn, 'GARCH(1,1)-N residuals against the Normal', stats.norm.ppf, st.MainBlue),
                                  (axes[1], rt, f'GARCH(1,1)-t residuals against the standardised t({nu:.1f})',
@@ -658,7 +657,7 @@ def fig_bands(k='bet', a='2019-07-01', b='2021-06-30', save_it=True):
     lo_g, hi_g = m_g - q * sg, m_g + q * sg
     out_c = ((r < lo_c) | (r > hi_c)).iloc[1:]
     out_g = ((r < lo_g) | (r > hi_g)).iloc[1:]
-    fig, ax = plt.subplots(figsize=(7.00, 2.80))
+    fig, ax = plt.subplots(figsize=(10.17, 2.52))
     w = slice(a, b)
     ax.plot(r.loc[w].index, r.loc[w], color=COLORS[k], lw=0.6, label=f'{NAME[k]}: daily log return (%)')
     ax.plot(lo_c.loc[w].index, lo_c.loc[w], color=st.Forest, lw=1.2, ls='--', label='95% interval, AR(1) with constant variance')
@@ -700,7 +699,7 @@ def kernel_nic(r, grid, h=None):
 
 def fig_nic(names=('sp500', 'btc'), save_it=True):
     """News impact curves of GARCH-t, GJR-t and EGARCH-t and a kernel estimate, for two series."""
-    fig, axes = plt.subplots(1, 2, figsize=(7.00, 3.08))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.71))
     out = {}
     for ax, k in zip(axes, names):
         r = returns(k)
@@ -801,7 +800,7 @@ def fig_acf_diag(k='sp500', nlags=50, save_it=True):
     a1, a2 = acf_vals(r ** 2, nlags), acf_vals(z ** 2, nlags)
     lags = np.arange(1, nlags + 1)
     band = 1.96 / np.sqrt(len(r))
-    fig, ax = plt.subplots(figsize=(7.00, 2.73))
+    fig, ax = plt.subplots(figsize=(10.17, 1.97))
     ax.bar(lags - 0.2, a1, width=0.4, color=COLORS[k], label=f'{NAME[k]}: squared returns')
     ax.bar(lags + 0.2, a2, width=0.4, color=st.IDAred, label=f'{NAME[k]}: squared standardised residuals, GARCH(1,1)-t')
     ax.axhline(band, color='black', ls='--', lw=0.9, label='95% band, +/- 1.96/sqrt(T)')
@@ -854,21 +853,23 @@ def fig_term_structure(k='sp500', horizon=250, save_it=True):
     res = fit(r, dist='t')
     ann = periods_per_year(r)
     dates = TERM_DATES + [r.index[-1].date().isoformat()]
-    fig, ax = plt.subplots(figsize=(7.00, 2.80))
+    fig, ax = plt.subplots(figsize=(10.17, 1.84))
     out = {}
     h = np.arange(1, horizon + 1)
     for d, c in zip(dates, [st.Forest, st.IDAred, st.MainBlue]):
         f, s2bar, s2n = garch_path_forecast(res, r, d, horizon)
         avg = np.sqrt(np.cumsum(f) / h * ann)
-        ax.plot(h, np.sqrt(f * ann), color=c, lw=1.6, label=f'{d}: volatility on day t+h')
-        ax.plot(h, avg, color=c, lw=1.2, ls='--', label=f'{d}: average volatility up to day t+h')
+        ax.plot(h, np.sqrt(f * ann), color=c, lw=1.6, label=f'forecast made on {d}')
+        ax.plot(h, avg, color=c, lw=1.2, ls='--')
         out[d] = {'h1': float(np.sqrt(f[0] * ann)), 'h10': float(np.sqrt(f[9] * ann)), 'h22': float(np.sqrt(f[21] * ann)),
                   'h250': float(np.sqrt(f[-1] * ann)), 'avg10': float(avg[9]), 'avg22': float(avg[21]), 'avg250': float(avg[-1]),
                   's2next': float(s2n), 'sum10': float(np.sum(f[:10]))}
     ax.axhline(np.sqrt(s2bar * ann), color='black', ls=':', lw=1.0, label='long-run volatility')
     ax.set_xlabel('horizon h (trading days)')
     ax.set_ylabel('% per year')
-    st.legend_outside_bottom(ax, ncol=2, y=-0.2)
+    ax.plot([], [], color='black', lw=1.6, label='solid: volatility on day t+h')
+    ax.plot([], [], color='black', lw=1.2, ls='--', label='dashed: average volatility up to day t+h')
+    st.legend_outside_bottom(ax, ncol=3, y=-0.2)
     save('tsa_ch5_term_structure', save_it)
     out['lr'] = float(np.sqrt(s2bar * ann))
     out['s2bar'] = float(s2bar)
@@ -961,7 +962,7 @@ def fig_forecast_eval(frames, save_it=True):
 def fig_var(frames, k='sp500', a='2019-07-01', b='2021-06-30', save_it=True):
     """Daily returns with the one-day VaR 1% of GARCH-t and of EWMA-Normal, and the exceedances."""
     df = frames[k].loc[a:b]
-    fig, ax = plt.subplots(figsize=(7.00, 2.80))
+    fig, ax = plt.subplots(figsize=(10.17, 1.92))
     ax.plot(df.index, df['r'], color=COLORS[k], lw=0.7, label=f'{NAME[k]}: daily log return (%)')
     ax.plot(df.index, -df['var_garch'], color=st.IDAred, lw=1.3, label='minus VaR 1%, GARCH(1,1)-t')
     ax.plot(df.index, -df['var_ewma'], color=st.Forest, lw=1.1, ls='--', label='minus VaR 1%, EWMA-Normal')

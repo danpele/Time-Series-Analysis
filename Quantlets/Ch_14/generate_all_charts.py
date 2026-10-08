@@ -29,6 +29,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 from scipy import optimize, stats
 from scipy.signal import lfilter
 
@@ -229,7 +230,7 @@ def fig_rolling_corr(save_it=True):
     pairs = [('sp500', 'dax'), ('bet', 'dax'), ('sp500', 'btc')]
     cols = [st.MainBlue, st.IDAred, st.Amber]
     out = {}
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(10.17, 2.87))
     for (x, y), c in zip(pairs, cols):
         R = common_returns([x, y], PAIR_START if y != 'btc' else '2014-09-17')
         rc = R[x].rolling(ROLL).corr(R[y]).dropna()
@@ -284,7 +285,7 @@ def fig_diversification(save_it=True):
     rho = np.linspace(-1, 1, 201)
     s = EX['s1']
     sp = np.sqrt(0.25 * s ** 2 * 2 + 2 * 0.25 * rho * s * s)
-    fig, ax = plt.subplots(figsize=(9, 3.8))
+    fig, ax = plt.subplots(figsize=(10.17, 2.51))
     ax.plot(rho, sp, color=st.MainBlue, lw=2, label='Portfolio volatility (50/50, each asset 20%)')
     for r0, c in zip(EX['rhos'], (st.Forest, st.IDAred)):
         v = np.sqrt(0.5 * s ** 2 + 0.5 * r0 * s * s)
@@ -310,7 +311,7 @@ def fig_param_count(save_it=True):
     lab = {'VEC': 'VEC(1,1)', 'BEKK': 'BEKK(1,1)', 'DVEC': 'Diagonal VEC', 'DBEKK': 'Diagonal BEKK', 'DCC': 'DCC',
            'CCC': 'CCC'}
     cols = {'VEC': st.IDAred, 'BEKK': st.Orange, 'DVEC': st.Purple, 'DBEKK': st.Amber, 'DCC': st.MainBlue, 'CCC': st.Forest}
-    fig, ax = plt.subplots(figsize=(9, 4))
+    fig, ax = plt.subplots(figsize=(10.17, 2.36))
     for m in lab:
         ax.plot(Ns, [n_params(n)[m] for n in Ns], color=cols[m], lw=1.8, ls='--' if m == 'CCC' else '-', label=lab[m])
     ax.set_yscale('log')
@@ -335,7 +336,7 @@ def dcc_sp_dax():
 
 def fig_step1(save_it=True):
     R, P, S, Z, f, rho = dcc_sp_dax()
-    fig, ax = plt.subplots(figsize=(10, 4))
+    fig, ax = plt.subplots(figsize=(10.17, 2.93))
     for k in ('sp500', 'dax'):
         ax.plot(S.index, S[k] * np.sqrt(252), color=COLORS[k], lw=0.9, label=f'{NAME[k]}: GARCH(1,1) volatility')
     shade(ax)
@@ -355,7 +356,7 @@ def fig_step1(save_it=True):
 def fig_dcc_sp_dax(save_it=True):
     R, P, S, Z, f, rho = dcc_sp_dax()
     roll = R['sp500'].rolling(ROLL).corr(R['dax'])
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(9.50, 2.48))
     ax.plot(rho.index, rho, color=st.IDAred, lw=0.8, label='DCC correlation')
     ax.plot(roll.index, roll, color=st.MainBlue, lw=1.3, label='Rolling correlation (250 days)')
     ax.axhline(f['Qbar'][0, 1], color=st.Forest, lw=1.5, ls='--', label='CCC (constant) correlation')
@@ -376,7 +377,7 @@ def fig_dcc_sp_dax(save_it=True):
 
 def fig_crisis_zoom(save_it=True):
     R, P, S, Z, f, rho = dcc_sp_dax()
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.98))
     win = {'2008': ('2008-06-01', '2009-06-30'), '2020': ('2019-12-01', '2020-08-31')}
     out = {}
     for ax, (k, (a, b)) in zip(axes, win.items()):
@@ -391,6 +392,9 @@ def fig_crisis_zoom(save_it=True):
         ax2.spines['right'].set_visible(True)
         ax.set_title(f'Crisis of {k}')
         ax.tick_params(axis='x', labelrotation=30)
+        loc = mdates.MonthLocator(interval=3 if k == '2008' else 2)
+        ax.xaxis.set_major_locator(loc)
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
         out[k] = dict(rmax=float(r.max()), rdmax=str(r.idxmax().date()), r0=float(r.iloc[0]), vmax=float(v.max()),
                       vdmax=str(v.idxmax().date()))
     h1, l1 = axes[0].get_legend_handles_labels()
@@ -417,7 +421,7 @@ def fig_panel_corr(save_it=True):
     idx = {k: i for i, k in enumerate(PANEL)}
     pairs = [('bet', 'dax'), ('sp500', 'dax'), ('sp500', 'btc'), ('bet', 'eurron')]
     cols = [st.IDAred, st.MainBlue, st.Amber, st.Forest]
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(8.97, 2.34))
     out = dict(a=f['a'], b=f['b'], se_a=f['se_a'], se_b=f['se_b'], ab=f['a'] + f['b'], hl=half_life(f['a'] + f['b']),
                lr=f['lr'], n=len(R), first=str(R.index[0].date()), last=str(R.index[-1].date()),
                garch={k: dict(P[k], pers=P[k]['alpha'] + P[k]['beta']) for k in PANEL})
@@ -444,11 +448,11 @@ def fig_panel_heatmap(save_it=True):
     calm = Rt[T.loc[CALM[0]:CALM[1]].values].mean(axis=0)
     cris = Rt[T.loc[PANEL_CRISIS[0]:PANEL_CRISIS[1]].values].mean(axis=0)
     labs = [NAME[k] for k in PANEL]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.6))
-    for ax, M, t in zip(axes, (calm, cris), ('Calm: 2017-2019', 'COVID-19 crash: Feb-Jun 2020')):
+    fig, axes = plt.subplots(1, 2, figsize=(8.40, 2.47))
+    for ax, M, t in zip(axes, (calm, cris), ('Calm: 2017-2019', 'COVID-19 crash:\nFeb-Jun 2020')):
         im = ax.imshow(M, cmap='RdBu_r', vmin=-1, vmax=1)
         ax.set_xticks(range(5))
-        ax.set_xticklabels(labs, rotation=35)
+        ax.set_xticklabels(labs, rotation=45, ha='right', rotation_mode='anchor')
         ax.set_yticks(range(5))
         ax.set_yticklabels(labs)
         for i in range(5):
@@ -456,7 +460,7 @@ def fig_panel_heatmap(save_it=True):
                 ax.text(j, i, f'{M[i, j]:.2f}', ha='center', va='center', fontsize=10,
                         color='white' if abs(M[i, j]) > 0.6 else st.DarkText)
         ax.set_title(t)
-    fig.colorbar(im, ax=axes, orientation='horizontal', fraction=0.05, pad=0.25, label='Average DCC correlation')
+    fig.colorbar(im, ax=axes, orientation='vertical', fraction=0.03, pad=0.03, label='Average DCC correlation')
     save('tsa_ch14_panel_heatmap', save_it)
     idx = {k: i for i, k in enumerate(PANEL)}
     off = ~np.eye(5, dtype=bool)
@@ -536,7 +540,7 @@ def portfolio_var():
 def fig_var_backtest(save_it=True):
     idx, rp, V, out_idx, res = portfolio_var()
     rp = pd.Series(rp, index=idx).loc[idx[out_idx]]
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(10.17, 2.65))
     ax.plot(rp.index, rp, color=st.MainBlue, lw=0.5, label='Portfolio return (50% S&P 500, 50% DAX), %')
     for k, c in (('DCC-FHS', st.IDAred), ('Static', st.Forest)):
         v = V[k].loc[rp.index]
@@ -577,7 +581,7 @@ def hedge():
 def fig_hedge(save_it=True):
     R, h_dcc, h_rol, h_sta, out = hedge()
     a = '2015-01-01'
-    fig, ax = plt.subplots(figsize=(10, 4.2))
+    fig, ax = plt.subplots(figsize=(10.17, 2.93))
     ax.plot(h_dcc.loc[a:].index, h_dcc.loc[a:], color=st.IDAred, lw=0.7, label='DCC hedge ratio')
     ax.plot(h_rol.loc[a:].index, h_rol.loc[a:], color=st.MainBlue, lw=1.4, label='Rolling OLS (250 days)')
     ax.axhline(h_sta, color=st.Forest, lw=1.5, ls='--', label='Static OLS (2005-2014)')

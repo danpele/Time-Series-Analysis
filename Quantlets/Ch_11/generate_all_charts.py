@@ -419,7 +419,7 @@ def fig_tokens(save_it=True, bins=21):
 def fig_patching(save_it=True, P=16):
     """Patching: 336 hours of Romanian load cut into patches of P = 16 values; each patch becomes one input vector."""
     x = get_series('load').loc['2026-06-01':].iloc[:336]
-    fig, ax = plt.subplots(figsize=(11, 3.6))
+    fig, ax = plt.subplots(figsize=(10.17, 2.66))
     cols = [st.MainBlue, st.IDAred]
     for i in range(0, len(x), P):
         seg = x.iloc[i:i + P]
@@ -437,7 +437,7 @@ def fig_scores(save_it=True):
     """Left: the pinball loss at levels 0.1, 0.5, 0.9 as a function of y - q. Right: the CRPS of N(0, 1) at y = 1 as
     the area of the squared distance between the predictive CDF and the step function of the outcome."""
     u = np.linspace(-3, 3, 400)
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(9.02, 3.05))
     for t, c in ((0.1, st.Teal), (0.5, st.MainBlue), (0.9, st.IDAred)):
         a1.plot(u, pinball(u, 0, t), color=c, label=f'level {t}')
     a1.set_xlabel('y - q (outcome minus quantile forecast)')
@@ -583,11 +583,11 @@ def fig_benchmark(df=None, save_it=True):
     df = load_results() if df is None else df
     R = table_results(df)
     models = [m for m in MODELS if m != 'Seasonal naive' and m in R['_gm']]
-    fig, (a1, a2) = plt.subplots(2, 1, figsize=(11, 6.6), sharex=True)
+    fig, (a1, a2) = plt.subplots(2, 1, figsize=(8.91, 3.08), sharex=True)
     bars(a1, R, 'rel_mase', models)
-    a1.set_ylabel('MASE / seasonal naive')
+    a1.set_ylabel('MASE ratio')
     bars(a2, R, 'rel_wql', models)
-    a2.set_ylabel('WQL / seasonal naive')
+    a2.set_ylabel('WQL ratio')
     st.fig_legend_bottom(fig, ncol=5, y=0.0)
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     save('tsa_ch11_benchmark', save_it)
@@ -599,7 +599,7 @@ def fig_coverage(df=None, save_it=True):
     df = load_results() if df is None else df
     R = table_results(df)
     models = [m for m in MODELS if m in R['_gm']]
-    fig, ax = plt.subplots(figsize=(11, 4))
+    fig, ax = plt.subplots(figsize=(9.75, 2.73))
     bars(ax, R, 'cov80', models, ref=0.8, log=False)
     ax.set_ylim(0, 1.05)
     ax.set_ylabel('share of outcomes inside')
@@ -612,7 +612,7 @@ def fig_horizon(df=None, save_it=True, key='load'):
     """Mean absolute error by forecast step on Romanian load (48 hours ahead)."""
     df = load_results() if df is None else df
     d = df[df.series == key]
-    fig, ax = plt.subplots(figsize=(11, 4))
+    fig, ax = plt.subplots(figsize=(10.17, 2.36))
     out = {}
     for m in [x for x in MODELS if x in set(d.model)]:
         e = np.array(d[d.model == m]['abs_err'].tolist())
@@ -660,7 +660,7 @@ def fig_prepost(df=None, save_it=True):
     series whose test period spans the release date."""
     df = load_results() if df is None else df
     out = {}
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), gridspec_kw={'width_ratios': [3, 1.3]})
+    fig, axes = plt.subplots(1, 2, figsize=(8.49, 2.69), gridspec_kw={'width_ratios': [3, 1.3]})
     for ax, fm in zip(axes, ('Chronos-Bolt small', 'Chronos-2')):
         cut = pd.Timestamp(RELEASE[fm])
         keys = [k for k in EVAL_SERIES if (df[df.series == k].origin < cut).any() and (df[df.series == k].origin >= cut).any()]
@@ -679,9 +679,9 @@ def fig_prepost(df=None, save_it=True):
                    label=f'{m}, origins {part} the release' if fm == 'Chronos-Bolt small' or m != 'ETS' else '_')
         ax.axhline(1, color=st.DarkText, lw=0.8, ls='--')
         ax.set_xticks(x)
-        ax.set_xticklabels([SHORT[k] for k in keys], fontsize=10)
+        ax.set_xticklabels([SHORT[k].replace(' ', '\n', 1) for k in keys], fontsize=10)
         ax.set_title(f'{fm}: weights released {cut.day} {cut.strftime("%b %Y")}', fontsize=11)
-    axes[0].set_ylabel('WQL / seasonal naive')
+    axes[0].set_ylabel('WQL ratio')
     st.fig_legend_bottom(fig, ncol=3, y=0.12)
     fig.tight_layout(rect=(0, 0.13, 1, 1))
     save('tsa_ch11_prepost', save_it)
@@ -693,7 +693,7 @@ def fig_size(df=None, infos=None, save_it=True):
     df = load_results() if df is None else df
     R = table_results(df)
     out = {}
-    fig, ax = plt.subplots(figsize=(11, 4))
+    fig, ax = plt.subplots(figsize=(10.17, 2.31))
     for m in FM:
         npar = n_parameters(m)
         if npar is None or m not in R['_gm']:

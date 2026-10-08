@@ -615,7 +615,7 @@ interp(('the four pairs', 'celor patru perechi'), [
 
 chart(T('Average correlations: calm against crisis', 'Corelațiile medii: perioadă calmă și criză'), 'tsa_ch14_panel_heatmap', 'TSA_ch14_dcc_panel', [
     T('Average one-step-ahead DCC correlation matrix: 2017--2019 and mid-February--June 2020 (@{ht.nc} common trading days)', 'Matricea medie a corelațiilor DCC prognozate cu un pas înainte: 2017--2019 și jumătatea lui februarie--iunie 2020 (@{ht.nc} de zile comune de tranzacționare)')],
-    h='0.6\\textheight')
+    h='0.7\\textheight')
 
 interp(('the two matrices', 'celor două matrice'), [
     (T('The average pairwise correlation rises from @{ht.calm} to @{ht.cris}', 'Corelația medie dintre perechi crește de la @{ht.calm} la @{ht.cris}'),

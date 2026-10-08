@@ -438,7 +438,7 @@ def future_fall(s, horizon=HORIZON):
 # =============================================================================
 def fig_episodes(save_it=True):
     """Six run-ups and crashes: log price from the low before the run-up to 18 months after the peak."""
-    fig, axes = plt.subplots(2, 3, figsize=(13, 6.6))
+    fig, axes = plt.subplots(2, 3, figsize=(9.31, 3.23))
     out = {}
     for ax, (k, e) in zip(axes.ravel(), EPISODES.items()):
         s, low, peak, _ = episode(k)
@@ -468,7 +468,7 @@ def fig_growth(save_it=True):
     expo = 0.8 * t
     sing = 1.0 - 1.0 * (tc - t) ** 0.5
     lppl = sing + 0.06 * (tc - t) ** 0.5 * np.cos(8 * np.log(tc - t))
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.65))
     for yv, lab, c in [(expo, 'exponential: ln p = r t', st.MainBlue), (sing, 'power-law singularity: A + B (tc - t)^m',
                                                                          st.IDAred),
                        (lppl, 'LPPL: singularity with log-periodic oscillations', st.Forest)]:
@@ -517,7 +517,7 @@ def fig_rational(save_it=True):
     rng = np.random.default_rng(SEED)
     fund = 20 + np.cumsum(0.3 * rng.standard_normal(T))
     b = blanchard_watson(T)
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.74))
     axes[0].plot(fund + b, color=st.IDAred, label='price = fundamental + bubble')
     axes[0].plot(fund, color=st.MainBlue, label='fundamental value')
     axes[0].set_xlabel('period')
@@ -540,7 +540,7 @@ def fig_psy_ndx(save_it=True):
     """Nasdaq 100, weekly 1990-2004: log price with the dated episodes, BSADF against its 95% critical values."""
     y, o, cv, ep, min_len = run_psy('ndx')
     idx = y.index[1:]
-    fig, axes = plt.subplots(2, 1, figsize=(11, 6), sharex=True, gridspec_kw=dict(height_ratios=[1.1, 1]))
+    fig, axes = plt.subplots(2, 1, figsize=(9.33, 2.83), sharex=True, gridspec_kw=dict(height_ratios=[1.1, 1]))
     axes[0].plot(y.index, np.exp(y.values), color=st.Teal, label='Nasdaq 100 (weekly close, log scale)')
     axes[0].set_yscale('log')
     for a, b, _ in ep:
@@ -568,7 +568,7 @@ def fig_psy_ndx(save_it=True):
 
 def fig_psy_panel(save_it=True):
     """Bitcoin, BET and the Shanghai Composite (weekly): log price with dated episodes and BSADF."""
-    fig, axes = plt.subplots(2, 3, figsize=(13, 6), sharex='col', gridspec_kw=dict(height_ratios=[1.1, 1]))
+    fig, axes = plt.subplots(2, 3, figsize=(9.33, 2.82), sharex='col', gridspec_kw=dict(height_ratios=[1.1, 1]))
     out = {}
     for j, (k, c) in enumerate([('btc', st.COL['btc']), ('bet', st.COL['bet']), ('ssec', st.Purple)]):
         y, o, cv, ep, min_len = run_psy(k)
@@ -595,7 +595,7 @@ def fig_lppl_components(save_it=True):
     tc = 1.0
     t = np.linspace(0, 0.995, 800)
     dt = tc - t
-    fig, axes = plt.subplots(1, 3, figsize=(13, 4))
+    fig, axes = plt.subplots(1, 3, figsize=(9.33, 2.48))
     for m, c in zip((0.3, 0.5, 0.8), (st.MainBlue, st.IDAred, st.Forest)):
         axes[0].plot(t, 1 - dt ** m, color=c, label=f'm = {m}')
     axes[0].set_title('A + B (tc - t)^m,  A = 1, B = -1')
@@ -629,7 +629,7 @@ def fig_cost(save_it=True):
     ws = np.linspace(2, 25, 47)
     TC, M, W, beta, ssr = _grid(t, y, tcs, ms, ws)
     S = ssr.reshape(len(tcs), len(ms), len(ws)).min(axis=2)
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.3))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.76))
     im = axes[0].pcolormesh([todate(v) for v in tcs], ms, np.log(S.T), cmap='viridis', shading='auto')
     fig.colorbar(im, ax=axes[0], label='log SSR')
     i, j = np.unravel_index(np.argmin(S), S.shape)
@@ -656,7 +656,7 @@ def fig_cost(save_it=True):
 def fig_fits(save_it=True):
     """Ex-ante LPPL fits: window from the low before the run-up to 30 days before the peak; fitted path extrapolated
     to the estimated critical time; actual peak."""
-    fig, axes = plt.subplots(2, 3, figsize=(13, 6.8))
+    fig, axes = plt.subplots(2, 3, figsize=(9.31, 3.13))
     out = {}
     for ax, (k, e) in zip(axes.ravel(), EPISODES.items()):
         s, low, peak, t2 = episode(k)
@@ -708,7 +708,7 @@ def tc_path(key, days_before=240, days_after=30, every=7):
 
 def fig_tc_path(save_it=True):
     """The critical time is unstable: estimated tc against the end of the window, Nasdaq 100 2000 and Bitcoin 2017."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.77))
     out = {}
     for ax, k in zip(axes, ('ndx', 'btc17')):
         d, peak = tc_path(k)
@@ -749,7 +749,7 @@ def windows_at(key):
 
 def fig_windows(save_it=True):
     """Many windows, one end date: estimated tc against the window length (Nasdaq 100 2000, Shanghai 2015)."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.02))
     out = {}
     for ax, k in zip(axes, ('ndx', 'ssec')):
         d, peak, t2 = windows_at(k)
@@ -781,34 +781,37 @@ def episode_ci(key, before=540, after=120):
 
 
 def fig_ci(save_it=True):
-    """LPPLS confidence indicator around four peaks: log price and the share of qualified windows (two filters)."""
-    fig, axes = plt.subplots(2, 2, figsize=(12.5, 6.8))
+    """LPPLS confidence indicator around four peaks: log price and the share of qualified windows (two filters).
+    Two charts of two episodes each (tsa_ch13_ci: Nasdaq 100 and Shanghai; tsa_ch13_ci_b: BET and Bitcoin)."""
     out = {}
-    for ax, k in zip(axes.ravel(), ('ndx', 'ssec', 'bet', 'btc17')):
-        ci, s, peak = episode_ci(k)
-        x = s.loc[ci.index[0]:ci.index[-1]]
-        ax.plot(x.index, np.log(x.values), color=COLORS[k], lw=1.0, label='_')
-        ax.axvline(peak, color=st.IDAred, ls='--', lw=0.9)
-        ax.set_ylabel('log price')
-        ax.set_title(EPISODES[k]['label'])
-        ax.tick_params(axis='x', labelrotation=30)
-        a2 = ax.twinx()
-        a2.fill_between(ci.index, 0, ci['ci_param'], color=st.Forest, alpha=0.35, lw=0, step='mid')
-        a2.plot(ci.index, ci['ci_full'], color=st.Purple, lw=1.3, drawstyle='steps-mid')
-        a2.set_ylim(0, 1)
-        a2.set_ylabel('indicator')
-        a2.spines['right'].set_visible(True)
-        pre = ci.loc[:peak]
-        out[k] = dict(max_param=float(ci['ci_param'].max()), max_param_d=d2s(ci['ci_param'].idxmax()),
-                      max_full=float(ci['ci_full'].max()), max_full_d=d2s(ci['ci_full'].idxmax()),
-                      pre_param=float(pre['ci_param'].iloc[-8:].mean()), first_alarm=d2s(pre.index[pre['ci_param'] >= CI_LEVEL][0])
-                      if (pre['ci_param'] >= CI_LEVEL).any() else None, peak=d2s(peak))
     h = [plt.Line2D([], [], color=st.DarkText, lw=1), plt.Line2D([], [], color=st.IDAred, ls='--', lw=0.9),
          plt.Rectangle((0, 0), 1, 1, color=st.Forest, alpha=0.35), plt.Line2D([], [], color=st.Purple, lw=1.3)]
-    st.fig_legend_bottom(fig, h, ['log price, in the colour of the series (left axis)', 'actual peak', 'indicator, parameter conditions (right axis)',
-                                  'indicator, all conditions (right axis)'], ncol=4, y=0.02)
-    fig.tight_layout(rect=(0, 0.05, 1, 1))
-    save('tsa_ch13_ci', save_it)
+    labels = ['log price, in the colour of the series (left axis)', 'actual peak', 'indicator, parameter conditions (right axis)',
+              'indicator, all conditions (right axis)']
+    for fname, keys in (('tsa_ch13_ci', ('ndx', 'ssec')), ('tsa_ch13_ci_b', ('bet', 'btc17'))):
+        fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.90))
+        for ax, k in zip(axes, keys):
+            ci, s, peak = episode_ci(k)
+            x = s.loc[ci.index[0]:ci.index[-1]]
+            ax.plot(x.index, np.log(x.values), color=COLORS[k], lw=1.0, label='_')
+            ax.axvline(peak, color=st.IDAred, ls='--', lw=0.9)
+            ax.set_ylabel('log price')
+            ax.set_title(EPISODES[k]['label'])
+            ax.tick_params(axis='x', labelrotation=30)
+            a2 = ax.twinx()
+            a2.fill_between(ci.index, 0, ci['ci_param'], color=st.Forest, alpha=0.35, lw=0, step='mid')
+            a2.plot(ci.index, ci['ci_full'], color=st.Purple, lw=1.3, drawstyle='steps-mid')
+            a2.set_ylim(0, 1)
+            a2.set_ylabel('indicator')
+            a2.spines['right'].set_visible(True)
+            pre = ci.loc[:peak]
+            out[k] = dict(max_param=float(ci['ci_param'].max()), max_param_d=d2s(ci['ci_param'].idxmax()),
+                          max_full=float(ci['ci_full'].max()), max_full_d=d2s(ci['ci_full'].idxmax()),
+                          pre_param=float(pre['ci_param'].iloc[-8:].mean()), first_alarm=d2s(pre.index[pre['ci_param'] >= CI_LEVEL][0])
+                          if (pre['ci_param'] >= CI_LEVEL).any() else None, peak=d2s(peak))
+        st.fig_legend_bottom(fig, h, labels, ncol=2, y=0.02)
+        fig.tight_layout(rect=(0, 0.05, 1, 1))
+        save(fname, save_it)
     return out
 
 
@@ -852,34 +855,36 @@ def alarm_episodes(d, level=CI_LEVEL, col='ci_param', gap=90):
 
 
 def fig_eval(save_it=True):
-    """Honest evaluation: alarm days on the whole S&P 500 and Bitcoin samples and the hit rate by threshold."""
-    fig, axes = plt.subplots(2, 2, figsize=(13, 6.8), gridspec_kw=dict(width_ratios=[1.6, 1]))
+    """Honest evaluation: alarm days on the whole S&P 500 and Bitcoin samples and the hit rate by threshold
+    (one chart per market: tsa_ch13_eval for the S&P 500, tsa_ch13_eval_btc for Bitcoin)."""
     out = {}
-    for j, (name, c, lab) in enumerate([('sp500', st.COL['sp500'], 'S&P 500'), ('btc', st.COL['btc'], 'Bitcoin')]):
+    for name, c, lab, fname in [('sp500', st.COL['sp500'], 'S&P 500', 'tsa_ch13_eval'),
+                                ('btc', st.COL['btc'], 'Bitcoin', 'tsa_ch13_eval_btc')]:
+        fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.85), gridspec_kw=dict(width_ratios=[1.6, 1]))
         s, d = eval_ci(name)
         x = s.loc[d.index[0]:]
-        ax = axes[j, 0]
-        ax.plot(x.index, x.values, color=c, lw=0.9, label=f'{lab}' if j == 0 else '_')
+        ax = axes[0]
+        ax.plot(x.index, x.values, color=c, lw=0.9, label=f'{lab}')
         ax.set_yscale('log')
         al = d[d['ci_param'] >= CI_LEVEL]
         ok = al['fall'] <= -CRASH
         ax.scatter(al.index[ok], s.reindex(al.index[ok]), color=st.Forest, s=14, zorder=3,
-                   label='alarm followed by a fall of 20% or more' if j == 0 else '_')
+                   label='alarm followed by a fall of 20% or more')
         ax.scatter(al.index[~ok], s.reindex(al.index[~ok]), color=st.IDAred, s=14, marker='x', zorder=3,
-                   label='false alarm' if j == 0 else '_')
-        ax.set_title(f'{lab}: alarms of the indicator (parameter conditions >= {CI_LEVEL})')
+                   label='false alarm')
+        ax.set_title(f'{lab}: alarms (parameter conditions >= {CI_LEVEL})')
         hr = hit_rates(d)
         hrf = hit_rates(d, col='ci_full')
         lv = [k for k in hr if k not in ('base', 'n')]
-        axes[j, 1].plot([float(v) for v in lv], [hr[v]['hit'] for v in lv], color=st.Forest, marker='o',
-                        label='parameter conditions' if j == 0 else '_')
-        axes[j, 1].plot([float(v) for v in lv], [hrf[v]['hit'] for v in lv], color=st.Purple, marker='s',
-                        label='all conditions' if j == 0 else '_')
-        axes[j, 1].axhline(hr['base'], color=st.IDAred, ls='--', label='unconditional frequency' if j == 0 else '_')
-        axes[j, 1].set_ylim(0, 1)
-        axes[j, 1].set_xlabel('alarm threshold c')
-        axes[j, 1].set_ylabel('P(fall >= 20% in 6 months | alarm)')
-        axes[j, 1].set_title(lab)
+        axes[1].plot([float(v) for v in lv], [hr[v]['hit'] for v in lv], color=st.Forest, marker='o',
+                     label='hit rate, parameter conditions')
+        axes[1].plot([float(v) for v in lv], [hrf[v]['hit'] for v in lv], color=st.Purple, marker='s',
+                     label='hit rate, all conditions')
+        axes[1].axhline(hr['base'], color=st.IDAred, ls='--', label='unconditional frequency')
+        axes[1].set_ylim(0, 1)
+        axes[1].set_xlabel('alarm threshold c')
+        axes[1].set_ylabel('hit rate')
+        axes[1].set_title(f'{lab}: hit rate by threshold')
         ep = alarm_episodes(d)
         out[name] = dict(start=d2s(d.index[0]), end=d2s(d.index[-1]), hit=hr, hit_full=hrf, n_ep=len(ep),
                          n_ep_crash=int(sum(1 for e in ep if e['crash'])), n_ep_known=int(sum(1 for e in ep if e['crash'] is not None)),
@@ -889,9 +894,9 @@ def fig_eval(save_it=True):
         for f in out[name]['falls']:
             pk = pd.Timestamp(f['peak'])
             f['alarm_before'] = bool(((al_dates <= pk) & (al_dates > pk - pd.Timedelta(days=HORIZON))).any())
-    st.fig_legend_bottom(fig, ncol=3, y=0.02)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
-    save('tsa_ch13_eval', save_it)
+        st.fig_legend_bottom(fig, ncol=3, y=0.02)
+        fig.tight_layout(rect=(0, 0.07, 1, 1))
+        save(fname, save_it)
     return out
 
 

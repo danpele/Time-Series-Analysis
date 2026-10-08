@@ -554,7 +554,7 @@ def oos_inflation(series, start, H=24, refit=12, seasonal=False):
 def fig_memory_data(save_it=True):
     """Four persistent series: the Nile, Romanian inflation (12-month and monthly SA), US unemployment, monthly realised
     volatility of the S&P 500 and the BET."""
-    fig, ax = plt.subplots(2, 2, figsize=(11, 5.6))
+    fig, ax = plt.subplots(2, 2, figsize=(9.33, 2.64))
     y = nile()
     ax[0, 0].plot(y.index, y.values, color=COLORS['nile'], lw=1.2, label='Nile flow at Aswan ($10^8$ m$^3$), 1871-1970')
     ax[0, 0].set_title('Nile, annual flow')
@@ -595,7 +595,7 @@ def fig_memory_acf(save_it=True):
          ('usinfl', us_inflation().values, 48), ('sp500', monthly_rv('sp500').values, 48)]
     titles = {'nile': 'Nile flow', 'infl': 'RO inflation, monthly SA', 'usinfl': 'US inflation, monthly, annualised',
               'sp500': 'S&P 500, log monthly realised volatility'}
-    fig, ax = plt.subplots(2, 2, figsize=(11, 5.6))
+    fig, ax = plt.subplots(2, 2, figsize=(9.33, 3.37))
     out = {}
     for a, (k, x, L) in zip(ax.flat, S):
         r = acf(x, L)
@@ -627,7 +627,7 @@ def fig_decay(d=0.4, save_it=True):
     phi = r[0]
     k = np.arange(1, K + 1)
     C = special.gamma(1 - d) / special.gamma(d)
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 3.30))
     ax[0].plot(k[:50], r[:50], 'o-', ms=3, color=st.MainBlue, lw=1.2, label=f'ARFIMA(0,d,0), d = {d}: hyperbolic decay')
     ax[0].plot(k[:50], phi ** k[:50], 's-', ms=3, color=st.Orange, lw=1.2, label=f'AR(1), $\\phi$ = {phi:.3f}: exponential decay')
     ax[0].set_xlabel('lag k')
@@ -650,7 +650,7 @@ def fig_weights(save_it=True):
     """Left: the weights pi_k of (1 - L)^d (fractional differencing); right: the impulse responses psi_k of
     (1 - L)^(-d) (fractional integration) against an AR(1)."""
     ds = [(0.2, st.Forest), (0.4, st.MainBlue), (0.7, st.Purple), (1.0, st.IDAred)]
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 3.33))
     k = np.arange(0, 11)
     off = {0.2: -0.3, 0.4: -0.1, 0.7: 0.1, 1.0: 0.3}
     out = {}
@@ -697,7 +697,7 @@ def fig_ffd(save_it=True, thresh=1e-4):
         cor.append(float(np.corrcoef(y, p[K - 1:])[0, 1]))
         width.append(int(K))
     crit = float(adfuller(p, maxlag=1, regression='c', autolag=None)[4]['5%'])
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 3.30))
     ax[0].plot(grid, adf, 'o-', color=st.MainBlue, lw=1.4, ms=4, label='ADF statistic of $(1-L)^d \\log$ S&P 500')
     ax[0].axhline(crit, color=st.IDAred, ls='--', lw=1.1, label=f'5% critical value ({crit:.2f})')
     ax[0].set_xlabel('d')
@@ -716,7 +716,7 @@ def fig_ffd(save_it=True, thresh=1e-4):
 
 def fig_arfima_paths(n=1000, ds=(0.4, -0.4), nlags=50, save_it=True):
     """ARFIMA(0,d,0) paths and ACF for d = 0.4 and d = -0.4, Gaussian white noise N(0, 1)."""
-    fig, axes = plt.subplots(2, 2, figsize=(11, 5.2), gridspec_kw={'width_ratios': [2.2, 1]})
+    fig, axes = plt.subplots(2, 2, figsize=(8.79, 2.97), gridspec_kw={'width_ratios': [2.2, 1]})
     k = np.arange(1, nlags + 1)
     out = {}
     for row, (d, c) in enumerate(zip(ds, [st.MainBlue, st.IDAred])):
@@ -739,7 +739,7 @@ def fig_arfima_paths(n=1000, ds=(0.4, -0.4), nlags=50, save_it=True):
 
 def fig_fbm(n=1000, Hs=(0.3, 0.5, 0.7), save_it=True):
     """Fractional Brownian motion paths for three Hurst exponents (the same random numbers) and their increments."""
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.38))
     out = {}
     for H, c in zip(Hs, [st.IDAred, st.MainBlue, st.Forest]):
         x = sim_fgn(n, H, np.random.default_rng(SEED))[0]
@@ -766,7 +766,7 @@ def fig_rs_dfa(save_it=True):
     r = returns('sp500').values
     S = [('US inflation, monthly', us_inflation().values, st.Forest, 'o'), ('S&P 500 returns r', r, st.MainBlue, 's'),
          ('S&P 500 |r|', np.abs(r), st.Purple, 'd')]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.0))
+    fig, axes = plt.subplots(1, 2, figsize=(7.88, 2.25))
     out = {}
     for name, x, c, m in S:
         sizes = block_sizes(len(x))
@@ -786,7 +786,7 @@ def fig_rs_dfa(save_it=True):
     handles, labels = axes[0].get_legend_handles_labels()
     h2, l2 = axes[1].get_legend_handles_labels()
     fig.legend(handles + h2[:-1], [l.replace(':', ', R/S:') for l in labels[:-1]] + [labels[-1]] + [l.replace(':', ', DFA:') for l in l2[:-1]],
-               loc='upper center', bbox_to_anchor=(0.5, 0.03), ncol=4, frameon=False, fontsize=9.5)
+               loc='upper center', bbox_to_anchor=(0.5, 0.03), ncol=4, frameon=False, fontsize=10)
     fig.tight_layout(rect=(0, 0.03, 1, 1))
     save('tsa_ch8_rs_dfa', save_it)
     return out
@@ -795,7 +795,7 @@ def fig_rs_dfa(save_it=True):
 def fig_gph(save_it=True):
     """The GPH log-periodogram regression: the Nile and Romanian monthly inflation."""
     S = [('nile', nile().values), ('infl', ro_inflation().values)]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.32))
     out = {}
     for ax, (k, x) in zip(axes, S):
         lam, I = periodogram(x)
@@ -821,7 +821,7 @@ def fig_bandwidth(save_it=True):
     """GPH and local Whittle estimates of d against the bandwidth m = [T^a], a = 0.4..0.8, with 95% intervals of LW."""
     S = [('infl', ro_inflation().values), ('usinfl', us_inflation().values)]
     A = np.round(np.arange(0.40, 0.801, 0.05), 2)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.38), sharey=True)
     out = {}
     for ax, (k, x) in zip(axes, S):
         T = len(x)
@@ -871,7 +871,7 @@ def fig_mc(T=500, reps=MC_REPS, save_it=True):
             est['DFA'].append(hurst_dfa(x, sizes) - 0.5)
         res[lab] = {'d': d, **{n: {'mean': float(np.mean(v)), 'sd': float(np.std(v)),
                                    'rmse': float(np.sqrt(np.mean((np.array(v) - d) ** 2))), 'v': v} for n, v in est.items()}}
-    fig, axes = plt.subplots(1, 3, figsize=(11.5, 3.9), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(9.33, 3.15), sharey=True)
     cols = [st.IDAred, st.MainBlue, st.Forest, st.Amber, st.Purple]
     for ax, (lab, d, phi) in zip(axes, designs):
         b = ax.boxplot([res[lab][n]['v'] for n in names], patch_artist=True, widths=0.6, showfliers=False)
@@ -884,7 +884,7 @@ def fig_mc(T=500, reps=MC_REPS, save_it=True):
         ax.set_xticks(range(1, len(names) + 1))
         ax.set_xticklabels(names)
         ax.set_title(lab)
-    axes[0].set_ylabel(f'estimated d (T = {T}, {reps} samples)')
+    axes[0].set_ylabel('estimated d')
     from matplotlib.patches import Patch
     st.fig_legend_bottom(fig, handles=[Patch(color=c, alpha=0.55) for c in cols] + [plt.Line2D([], [], color=st.DarkText, ls='--')],
                          labels=['GPH', 'local Whittle', 'Whittle ML, ARFIMA(0,d,0)', 'R/S: H - 0.5', 'DFA: H - 0.5', 'true d'],
@@ -917,7 +917,7 @@ def fig_arfima_fit(save_it=True, L=36):
     r = acf(x, L)
     gd = arfima_acvf(fd['d'], [], [], 1, L + 1)
     ga = arfima_acvf(0.0, fa['phi'], fa['theta'], 1, L + 1)
-    fig, ax = plt.subplots(figsize=(10, 3.9))
+    fig, ax = plt.subplots(figsize=(10.17, 2.81))
     ax.bar(k, r, color=COLORS['infl'], alpha=0.55, width=0.7, label='sample ACF, RO monthly inflation (SA)')
     ax.plot(k, gd[1:] / gd[0], 'o-', ms=3, color=st.MainBlue, lw=1.4, label=f"ARFIMA(0,d,0), d = {fd['d']:.2f}")
     ax.plot(k, ga[1:] / ga[0], 's--', ms=3, color=st.Forest, lw=1.4,
@@ -944,7 +944,7 @@ def fig_forecast(save_it=True, H=24):
     raw = (100 * np.log(ro_hicp()).diff()).dropna().loc[INFL_START:]
     ro = oos_inflation(raw, '2014-01-01', H, seasonal=True)
     us = oos_inflation(us_inflation(), '1990-01-01', H)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.38))
     h = np.arange(1, H + 1)
     for ax, (k, R) in zip(axes, [('infl', ro), ('usinfl', us)]):
         base = np.array(R['rmse']['AR'])
@@ -972,7 +972,7 @@ def fig_forecast_path(save_it=True, H=36):
     fr, p = ar_forecast(x, H)
     fut = pd.date_range(y.index[-1], periods=H + 1, freq='MS')[1:]
     hist = y.loc['2019-01-01':]
-    fig, ax = plt.subplots(figsize=(10, 3.9))
+    fig, ax = plt.subplots(figsize=(10.17, 3.10))
     ax.plot(hist.index, hist.values, color=COLORS['usinfl'], lw=1.0, label='US inflation, monthly, annualised (%)')
     ax.plot(fut, fa, 'o-', ms=3, color=st.MainBlue, lw=1.4, label=f"ARFIMA(1,d,0): d = {e['d']:.2f}, $\\phi$ = {e['phi'][0]:.2f}")
     ax.plot(fut, fr, 's-', ms=3, color=st.Orange, lw=1.4, label=f'AR({p}), p by AIC')
@@ -991,7 +991,7 @@ def fig_forecast_path(save_it=True, H=36):
 # =============================================================================
 def fig_vol_acf(nlags=250, save_it=True):
     """ACF of r, |r| and r^2 up to lag 250 for the S&P 500 and the BET (Ding, Granger and Engle 1993)."""
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.29), sharey=True)
     out = {}
     lags = np.arange(1, nlags + 1)
     for ax, k in zip(axes, ('sp500', 'bet')):
@@ -1032,7 +1032,7 @@ def fig_vol_models(save_it=True):
     against the AR(infinity) weights of (1 - L)^d."""
     from arch import arch_model
     out = {}
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.55))
     for k in ('sp500', 'bet'):
         c = COLORS[k]
         r = returns(k)
@@ -1078,7 +1078,7 @@ def fig_vol_models(save_it=True):
 def fig_rv(save_it=True, L=36):
     """Monthly log realised volatility of the S&P 500 and the BET: sample ACF against the ACF of ARFIMA(1,d,0) and of
     ARMA(1,1), both estimated by exact ML; BIC of the two models."""
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.32), sharey=True)
     out = {}
     k_ = np.arange(1, L + 1)
     for ax, k in zip(axes, ('sp500', 'bet')):
@@ -1133,11 +1133,11 @@ def fig_spurious(T=1000, reps=200, save_it=True):
         X = S + rng.standard_normal((reps, T))
         ms[str(p)] = {'gph': float(np.mean([gph(v)['d'] for v in X])), 'lw': float(np.mean([local_whittle(v)['d'] for v in X])),
                       'switches': float(np.mean(np.abs(np.diff(S, axis=1)).sum(axis=1)))}
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.38), sharey=True)
     axes[0].plot(SHIFTS, [br[str(d)]['gph'] for d in SHIFTS], 's--', color=st.IDAred, lw=1.3, ms=4, label='GPH: mean estimate')
     axes[0].plot(SHIFTS, [br[str(d)]['lw'] for d in SHIFTS], 'o-', color=st.MainBlue, lw=1.4, ms=4, label='local Whittle: mean estimate')
     axes[0].set_xlabel('size of one mean shift at T/2 (in standard deviations)')
-    axes[0].set_ylabel(f'estimated d (T = {T}, true d = 0)')
+    axes[0].set_ylabel('estimated d')
     axes[0].set_title('One break')
     axes[1].semilogx(SWITCH, [ms[str(p)]['gph'] for p in SWITCH], 's--', color=st.IDAred, lw=1.3, ms=4, label='_')
     axes[1].semilogx(SWITCH, [ms[str(p)]['lw'] for p in SWITCH], 'o-', color=st.MainBlue, lw=1.4, ms=4, label='_')
@@ -1161,7 +1161,7 @@ def fig_nile_break(save_it=True):
     pre, post = y.loc[:NILE_BREAK], y.loc[NILE_BREAK + 1:]
     adj = pd.concat([pre - pre.mean(), post - post.mean()])
     sizes = block_sizes(len(y), nmin=6, nmax=len(y) // 2, num=10)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), gridspec_kw={'width_ratios': [1.6, 1]})
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.84), gridspec_kw={'width_ratios': [1.6, 1]})
     axes[0].plot(y.index, y.values, color=COLORS['nile'], lw=1.2, label='annual flow at Aswan ($10^8$ m$^3$)')
     axes[0].hlines(pre.mean(), pre.index[0], pre.index[-1], color=st.IDAred, lw=2, label=f'mean 1871-{NILE_BREAK}: {pre.mean():.0f}')
     axes[0].hlines(post.mean(), post.index[0], post.index[-1], color=st.Forest, lw=2, label=f'mean {NILE_BREAK + 1}-1970: {post.mean():.0f}')
@@ -1221,7 +1221,7 @@ def fig_rolling(save_it=True):
     du = rolling_d(u, W, 6)
     bu = mc_band(W, lambda v: local_whittle(v)['d'])
     bh = mc_band(WINDOW, lambda v: hurst_dfa(v, block_sizes(WINDOW)))
-    fig, axes = plt.subplots(2, 1, figsize=(11, 5.4))
+    fig, axes = plt.subplots(2, 1, figsize=(9.33, 2.84))
     axes[0].axhspan(bu['q025'], bu['q975'], color=st.Teal, alpha=0.18, lw=0, label='95% band of i.i.d. series (Monte Carlo)')
     axes[0].plot(du.index, du.values, color=COLORS['usinfl'], lw=1.4, label='US monthly inflation: d (local Whittle), 20-year windows')
     axes[0].axhline(0, color=st.DarkText, lw=0.5)

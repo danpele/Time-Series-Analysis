@@ -697,7 +697,7 @@ D.frame(T('Results: 26 origins, 14 horizons', 'Rezultatele: 26 de origini, 14 or
 
 chart(T('MASE and accuracy by horizon', 'MASE și acuratețea pe orizonturi'), 'tsa_ch9_load_results', 'TSA_ch9_load_forecasting', [
     T('Left: MASE of the eleven models (blue: Chapter 4; red: ML); right: MAE by horizon for six models', 'Stînga: MASE pentru cele unsprezece modele (albastru: Capitolul 4; roșu: ML); dreapta: MAE pe orizonturi pentru șase modele')],
-    h='0.5\\textheight')
+    h='0.76\\textheight')
 
 interp(('the load results', 'rezultatelor pentru consum'), [
     (T('DHR (MASE @{ld.DHR.MASE}) and ridge (@{ld.Ridge.MASE}) are the most accurate; the difference is not significant (p @{dm.Ridge.DHR})', 'DHR (MASE @{ld.DHR.MASE}) și ridge (@{ld.Ridge.MASE}) sînt cele mai precise; diferența nu este semnificativă (p @{dm.Ridge.DHR})'),

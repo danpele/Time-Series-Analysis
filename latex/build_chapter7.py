@@ -416,7 +416,7 @@ chart(T('Four pairs of trending series', 'Patru perechi de serii cu trend'), 'ts
     T('US Treasury yields (FRED, monthly, since 1960); US real GDP and consumption (statsmodels macrodata, 1959--2009)',
       'Randamentele titlurilor de stat americane (FRED, lunar, din 1960); PIB-ul și consumul real al SUA (macrodata din statsmodels, 1959--2009)'),
     T('Banca Transilvania and BRD (adjusted daily prices); EUR/RON and EUR/HUF (BNR reference rates, month-end)',
-      'Banca Transilvania și BRD (prețuri zilnice ajustate); EUR/RON și EUR/HUF (cursuri de referință BNR, la sfîrșitul lunii)')], h='0.55\\textheight')
+      'Banca Transilvania și BRD (prețuri zilnice ajustate); EUR/RON și EUR/HUF (cursuri de referință BNR, la sfîrșitul lunii)')], h='0.66\\textheight')
 
 interp(('the four pairs', 'celor patru perechi'), [
     (T('Each series is $I(1)$ (Chapter 3); the question is whether the two series of a pair move \\textbf{together} in the long run', 'Fiecare serie este $I(1)$ (Capitolul 3); întrebarea este dacă cele două serii ale unei perechi evoluează \\textbf{împreună} pe termen lung'),

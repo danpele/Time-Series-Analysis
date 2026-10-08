@@ -191,7 +191,7 @@ def fig_drunk_dog(T=400, c=0.15, d=0.25, save_it=True):
         x[t] = x[t - 1] + u[t] + c * (y[t - 1] - x[t - 1])
         y[t] = y[t - 1] + w[t] + d * (x[t - 1] - y[t - 1])
         z[t] = z[t - 1] + v[t]
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.4))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.27))
     ax[0].plot(x, color=st.MainBlue, lw=1.2, label='the drunk $x_t$')
     ax[0].plot(y, color=st.IDAred, lw=1.0, label='her dog $y_t$')
     ax[0].plot(z, color=st.Amber, lw=1.0, label='a stray dog $z_t$')
@@ -223,31 +223,31 @@ def fig_examples(save_it=True):
     P = 100 * np.log(stock_panel(PAIR, PAIR_START))
     fx = cee_fx()
     fx = fx - fx.iloc[0]
-    fig, ax = plt.subplots(2, 2, figsize=(10.4, 5.6))
+    fig, ax = plt.subplots(2, 2, figsize=(8.21, 3.38))
     a = ax[0, 0]
     a.plot(f.index, f.TB3MS, color=st.MainBlue, lw=0.9, label='3-month bill')
     a.plot(f.index, f.GS10, color=st.IDAred, lw=0.9, label='10-year yield')
     a.set_title('US Treasury yields (% per year)')
     years_axis(a, 10)
-    a.legend(loc='upper right', fontsize=9)
+    st.legend_outside_bottom(a, ncol=2)
     a = ax[0, 1]
     a.plot(m.index, m.y - m.y.iloc[0], color=st.Forest, lw=1.0, label='real GDP')
     a.plot(m.index, m.c - m.c.iloc[0], color=st.Purple, lw=1.0, label='real consumption')
     a.set_title('US output and consumption (100 ln, 1959Q1 = 0)')
     years_axis(a, 10)
-    a.legend(loc='upper left', fontsize=9)
+    st.legend_outside_bottom(a, ncol=2)
     a = ax[1, 0]
     a.plot(P.index, P.TLV - P.TLV.iloc[0], color=st.IDAred, lw=0.9, label='Banca Transilvania')
     a.plot(P.index, P.BRD - P.BRD.iloc[0], color=st.MainBlue, lw=0.9, label='BRD')
     a.set_title('Two Romanian banks (100 ln adjusted price, 2014 = 0)')
     years_axis(a, 2)
-    a.legend(loc='upper left', fontsize=9)
+    st.legend_outside_bottom(a, ncol=2)
     a = ax[1, 1]
     a.plot(fx.index, fx['EUR/RON'], color=st.Forest, lw=1.0, label='EUR/RON')
     a.plot(fx.index, fx['EUR/HUF'], color=st.Orange, lw=1.0, label='EUR/HUF')
     a.set_title('Two exchange rates (100 ln, July 2005 = 0)')
     years_axis(a, 5)
-    a.legend(loc='upper left', fontsize=9)
+    st.legend_outside_bottom(a, ncol=2)
     plt.tight_layout()
     save('tsa_ch7_examples', save_it)
     out['rates'] = eg_test(f.GS10, f.TB3MS)
@@ -289,7 +289,7 @@ def fig_eg_dist(T=200, R=10000, save_it=True):
     MacKinnon critical values and the rejection rate of the Engle-Granger test when the Dickey-Fuller value is used."""
     rng = np.random.default_rng(SEED)
     taus = {k: eg_tau_batch(k, T, R, rng) for k in (1, 2, 3)}
-    fig, ax = plt.subplots(figsize=(9.6, 3.6))
+    fig, ax = plt.subplots(figsize=(9.33, 2.77))
     grid = np.linspace(-6, 3, 400)
     from scipy.stats import gaussian_kde, norm
     ax.plot(grid, norm.pdf(grid), color=st.DarkText, lw=1.0, ls='--', label='N(0, 1)')
@@ -351,7 +351,7 @@ def fig_eg_steps(save_it=True):
     f = read_fred(['TB3MS', 'GS10']).dropna().loc[YIELD_START:]
     e1 = pd.Series(ols(m.c, m.y)['resid'], index=m.index)
     e2 = pd.Series(ols(f.GS10, f.TB3MS)['resid'], index=f.index)
-    fig, ax = plt.subplots(1, 3, figsize=(10.6, 3.2), gridspec_kw={'width_ratios': [1.2, 1.2, 1]})
+    fig, ax = plt.subplots(1, 3, figsize=(8.56, 2.27), gridspec_kw={'width_ratios': [1.2, 1.2, 1]})
     ax[0].plot(e1.index, e1, color=st.Purple, lw=0.9, label='_nolegend_')
     ax[0].axhline(0, color=st.DarkText, lw=0.6)
     ax[0].set_title('Consumption on income: residuals')
@@ -412,14 +412,14 @@ def fig_ecm(save_it=True):
     ms = sm.OLS(Z.dx, sm.add_constant(Z[['e1', 'dy1', 'dx1']])).fit()
     short = {'gamma': float(ms.params['e1']), 'gamma_se': float(ms.bse['e1']), 'gamma_t': float(ms.tvalues['e1'])}
     h = np.arange(0, 41)
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=(8.49, 2.65))
     for g, c in [(-0.05, st.MainBlue), (-0.2, st.IDAred), (-0.5, st.Forest)]:
         hl = half_life(1 + g)
         ax[0].plot(h, (1 + g) ** h, color=c, lw=1.4, label=f'$\\gamma$ = {g}: half-life {hl:.1f}')
     ax[0].axhline(0.5, color=st.DarkText, lw=0.6, ls=':')
     ax[0].set_title('A unit deviation after h periods: $(1+\\gamma)^h$')
     ax[0].set_xlabel('h')
-    ax[0].legend(loc='upper right', fontsize=9)
+    ax[0].legend(loc='upper right', fontsize=10)
     ax[1].plot(h, (1 + cons['gamma']) ** h, color=st.Purple, lw=1.4,
                label=f"US consumption, quarters ($\\hat\\gamma$ = {cons['gamma']:.3f})")
     ax[1].plot(h, (1 + long_['gamma']) ** h, color=st.Orange, lw=1.4,
@@ -427,7 +427,7 @@ def fig_ecm(save_it=True):
     ax[1].axhline(0.5, color=st.DarkText, lw=0.6, ls=':')
     ax[1].set_title('Estimated adjustment of the equilibrium error')
     ax[1].set_xlabel('h')
-    ax[1].legend(loc='upper right', fontsize=9)
+    ax[1].legend(loc='upper right', fontsize=10)
     plt.tight_layout()
     save('tsa_ch7_ecm', save_it)
     return {'cons': cons, 'long': long_, 'short': short}
@@ -490,7 +490,7 @@ def fig_rates(save_it=True):
     v = vecm_rates(save_it=False)
     B = np.asarray(v['beta'])[:3, :]
     z = pd.DataFrame(y.values @ B + np.asarray(v['const_coint']), index=ts_index(y), columns=['1y - b 10y', '5y - b 10y'])
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.52))
     for c, col in zip(YIELDS, [st.MainBlue, st.Forest, st.IDAred]):
         ax[0].plot(ts_index(y), y[c], color=col, lw=0.9, label={'GS1': '1-year', 'GS5': '5-year', 'GS10': '10-year'}[c])
     ax[0].set_title('US Treasury yields (% per year)')
@@ -514,7 +514,7 @@ def fig_vecm_irf(H=60, save_it=True):
     v = vecm_rates(save_it=False)
     res = VECM(y, k_ar_diff=v['k_ar_diff'], coint_rank=2, deterministic='ci').fit()
     irf = res.irf(H).orth_irfs                        # (H+1, k, k): response of i to shock j
-    fig, ax = plt.subplots(figsize=(9.6, 3.3))
+    fig, ax = plt.subplots(figsize=(9.33, 2.51))
     for i, (c, col) in enumerate(zip(YIELDS, [st.MainBlue, st.Forest, st.IDAred])):
         ax.plot(np.arange(H + 1), irf[:, i, 0], color=col, lw=1.4,
                 label={'GS1': '1-year', 'GS5': '5-year', 'GS10': '10-year'}[c] + ' yield')
@@ -553,7 +553,7 @@ def forecast_compare(start='1990-01', step=3, H=36, save_it=True):
     E = {m: np.array(e) for m, e in E.items()}       # (origins, H, 3)
     rmse = {m: np.sqrt((e ** 2).mean(axis=0)) for m, e in E.items()}
     spread = {m: np.sqrt(((e[:, :, 2] - e[:, :, 0]) ** 2).mean(axis=0)) for m, e in E.items()}
-    fig, ax = plt.subplots(1, 4, figsize=(11.0, 3.2), sharey=False)
+    fig, ax = plt.subplots(1, 4, figsize=(8.54, 2.17), sharey=False)
     for j, c in enumerate(YIELDS):
         ax[j].plot(hs, rmse['vecm'][:, j] / rmse['rw'][:, j], color=st.IDAred, lw=1.4, label='VECM (rank 2)')
         ax[j].plot(hs, rmse['dvar'][:, j] / rmse['rw'][:, j], color=st.MainBlue, lw=1.4, label='VAR in differences')
@@ -589,7 +589,7 @@ def fig_ppp(save_it=True):
     d = pd.concat([s, p, ps], axis=1, keys=['s', 'p', 'ps']).dropna()
     rel = d.p - d.ps
     q = d.s - rel
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.43))
     ax[0].plot(d.index, d.s - d.s.iloc[0], color=st.Forest, lw=1.1, label='EUR/RON, $s_t$')
     ax[0].plot(d.index, rel - rel.iloc[0], color=st.IDAred, lw=1.1, label='relative prices, $p_t - p^*_t$')
     ax[0].set_title('100 ln, July 2005 = 0')
@@ -612,7 +612,7 @@ def fig_ro_ea_rates(save_it=True):
     """ROBOR 3M and Euribor 3M (Eurostat, monthly, % per year): the full sample and the sample since 2010."""
     d = pd.concat([read_eurostat(*ROBOR), read_eurostat(*EURIBOR)], axis=1, keys=['ro', 'ea']).dropna()
     d10 = d.loc['2010-01-01':]
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.3), gridspec_kw={'width_ratios': [1, 1.3]})
+    fig, ax = plt.subplots(1, 2, figsize=(8.56, 2.31), gridspec_kw={'width_ratios': [1, 1.3]})
     ax[0].semilogy(d.index, d.ro, color=st.IDAred, lw=1.0, label='ROBOR 3M (Romania)')
     ax[0].semilogy(d.index, d.ea.clip(lower=0.05), color=st.MainBlue, lw=1.0, label='Euribor 3M (euro area)')
     ax[0].set_title('Since 1995 (log scale; Euribor below 0.05 shown at 0.05)')
@@ -635,7 +635,7 @@ def fig_cee_fx(save_it=True):
     """EUR/RON, EUR/HUF and EUR/PLN (BNR cross rates, month-end, 100 ln, July 2005 = 0) and the Johansen test."""
     fx = cee_fx()
     z = fx - fx.iloc[0]
-    fig, ax = plt.subplots(figsize=(9.6, 3.2))
+    fig, ax = plt.subplots(figsize=(9.33, 2.87))
     for c, col in zip(fx.columns, [st.Forest, st.Orange, st.Purple]):
         ax.plot(z.index, z[c], color=col, lw=1.1, label=c)
     ax.axhline(0, color=st.DarkText, lw=0.6)
@@ -729,7 +729,7 @@ def fig_pair(save_it=True):
     e = pd.Series(r['resid'], index=P.index)
     z = (e - e.mean()) / e.std()
     rho = float(np.polyfit(e.shift(1).dropna().values, e.iloc[1:].values, 1)[0])
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.47))
     ax[0].plot(P.index, P.TLV - P.TLV.iloc[0], color=st.IDAred, lw=1.0, label='Banca Transilvania (TLV)')
     ax[0].plot(P.index, P.BRD - P.BRD.iloc[0], color=st.MainBlue, lw=1.0, label='BRD')
     ax[0].set_title('100 ln adjusted price, start = 0')
@@ -755,7 +755,7 @@ def fig_pairs_backtest(save_it=True):
     us = stock_panel(US_BANKS, '2005-01-01', calendar='sp500')
     rb, ib = pairs_backtest(bvb, cost=COST_BVB)
     ru, iu = pairs_backtest(us, cost=COST_US)
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.52))
     for a, r, t, cst in [(ax[0], rb, 'Bucharest: 8 shares, 28 pairs', COST_BVB), (ax[1], ru, 'US banks: 6 shares, 15 pairs', COST_US)]:
         a.plot(r.index, 100 * np.log1p(r.gross).cumsum(), color=st.MainBlue, lw=1.2, label='gross of costs')
         a.plot(r.index, 100 * np.log1p(r.net).cumsum(), color=st.IDAred, lw=1.2, label='net of costs')

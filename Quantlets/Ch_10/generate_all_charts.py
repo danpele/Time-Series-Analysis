@@ -269,7 +269,7 @@ def fig_ss_examples(save_it=True, n=200):
     """Simulated local level paths for three signal-to-noise ratios (the same shocks) and a local linear trend."""
     rng = np.random.default_rng(SEED)
     eps, eta, zeta = rng.standard_normal(n), rng.standard_normal(n), rng.standard_normal(n)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.07))
     out = {}
     for q, c in [(0.01, st.MainBlue), (0.1, st.Forest), (1.0, st.IDAred)]:
         mu = 10 + np.cumsum(np.sqrt(q) * eta)
@@ -327,7 +327,7 @@ def fig_nile_filter(save_it=True):
     af, Pf = kf['a_filt'][:, 0], kf['P_filt'][:, 0, 0]
     ap = kf['a_pred'][:, 0]
     z = stats.norm.ppf(0.95)
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.17, 2.30))
     ax.plot(yrs, y.values, 'o', ms=3.2, color=st.MainBlue, label='annual flow $y_t$')
     ax.plot(yrs[1:], ap[1:], color=st.Orange, lw=1.2, ls='--', label='prediction $a_t$')
     ax.plot(yrs, af, color=st.IDAred, lw=2.0, label='filtered level $a_{t|t}$')
@@ -362,7 +362,7 @@ def fig_gain_ses(save_it=True):
     kf, yrs = ml['kf'], y.index.values
     ss = steady_state(ml['q'])
     K = kf['K'][:, 0]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.02))
     axes[0].plot(yrs[1:21], K[1:21], 'o-', color=st.MainBlue, ms=4, label='Kalman gain $K_t$')
     axes[0].axhline(ss['K'], color=st.IDAred, ls='--', lw=1.2, label=f'steady state $\\bar K$ = {ss["K"]:.3f}')
     axes[0].set_xlabel('year')
@@ -399,7 +399,7 @@ def fig_nile_smooth(save_it=True):
     af, Pf = kf['a_filt'][:, 0], kf['P_filt'][:, 0, 0]
     a_s, P_s = a_s[:, 0], P_s[:, 0, 0]
     z = stats.norm.ppf(0.95)
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.17, 2.25))
     ax.plot(yrs, y.values, 'o', ms=3, color=st.MainBlue, label='annual flow')
     ax.plot(yrs[1:], af[1:], color=st.Orange, lw=1.3, label='filtered level $a_{t|t}$')
     ax.plot(yrs, a_s, color=st.IDAred, lw=2.2, label='smoothed level $\\hat\\alpha_t$')
@@ -423,7 +423,7 @@ def fig_likelihood(save_it=True):
     ml = local_level_ml(y.values)
     qs = np.logspace(-4, 1, 120)
     ll = np.array([profile_loglik(y.values, q)[0] for q in qs])
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.17))
     axes[0].semilogx(qs, ll, color=st.MainBlue, lw=1.8, label='profile log-likelihood')
     axes[0].axvline(ml['q'], color=st.IDAred, ls='--', lw=1.2, label=f'ML: q = {ml["q"]:.3f}')
     axes[0].set_xlabel('signal-to-noise ratio $q = \\sigma^2_\\eta/\\sigma^2_\\varepsilon$')
@@ -456,7 +456,7 @@ def fig_diagnostics(save_it=True):
     lev = state_std[:, 0]
     lb = sm.stats.acorr_ljungbox(e, lags=[10], return_df=True)
     jb = stats.jarque_bera(e)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.37))
     axes[0].bar(yrs[1:], e, color=st.MainBlue, width=0.8, label='standardised prediction error $e_t$')
     axes[0].axhline(1.96, color=st.IDAred, ls='--', lw=1, label='+/- 1.96')
     axes[0].axhline(-1.96, color=st.IDAred, ls='--', lw=1, label='_')
@@ -490,7 +490,7 @@ def fig_missing(save_it=True, H=30):
     ext = np.r_[y.values, np.full(H, np.nan)]
     yrs_ext = np.r_[yrs, np.arange(yrs[-1] + 1, yrs[-1] + H + 1)]
     kf2 = local_level_filter(ext, ml['s2_eps'], ml['s2_eta'])
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.17))
     axes[0].plot(yrs, ym, 'o', ms=3, color=st.MainBlue, label='observed flow')
     axes[0].plot(yrs, a_s[:, 0], color=st.IDAred, lw=2, label='smoothed level')
     axes[0].fill_between(yrs, a_s[:, 0] - z * np.sqrt(P_s[:, 0, 0]), a_s[:, 0] + z * np.sqrt(P_s[:, 0, 0]),
@@ -561,7 +561,7 @@ def fig_ro_trend(save_it=True):
     y = ro_gdp()
     r = uc_fit(y.values)
     hc, ht = hp(y.values)
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.17, 2.61))
     ax.plot(y.index, y.values, color=st.MainBlue, lw=1.4, label='$100 \\times \\log$ real GDP')
     ax.plot(y.index, r.level.smoothed, color=st.IDAred, lw=2, label='UC smooth trend (smoothed)')
     ax.plot(y.index, ht, color=st.Forest, lw=1.4, ls='--', label='HP trend, $\\lambda$ = 1600')
@@ -586,7 +586,7 @@ def fig_output_gap(save_it=True):
     uc = r.autoregressive.smoothed
     hc, _ = hp(y.values)
     hm, hr = hamilton_filter(y.values)
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.17, 2.61))
     ax.axhline(0, color=st.DarkText, lw=0.6)
     ax.plot(y.index, uc, color=st.IDAred, lw=2, label='UC cycle (smooth trend + AR(2))')
     ax.plot(y.index, hc, color=st.Forest, lw=1.4, ls='--', label='HP gap, $\\lambda$ = 1600')
@@ -615,7 +615,7 @@ def fig_realtime(save_it=True):
     hc, _ = hp(y.values)
     rt = hp_realtime(y.values)
     ucf, ucs = r.autoregressive.filtered, r.autoregressive.smoothed
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.25), sharey=True)
     for ax in axes:
         ax.axhline(0, color=st.DarkText, lw=0.6)
     axes[0].plot(y.index, hc, color=st.Forest, lw=2, label='HP gap, final (two-sided)')
@@ -671,7 +671,7 @@ def fig_tvp_beta(save_it=True):
     const_ll = tvp_filter(y, x, float(np.var(ols.resid)), 0.0)['loglik']
     o0 = optimize.minimize_scalar(lambda s: -tvp_filter(y, x, np.exp(s), 0.0)['loglik'], bounds=(-5, 5), method='bounded')
     ll0 = -o0.fun
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.17, 2.42))
     ax.fill_between(r.index, b_s - z * sd_s, b_s + z * sd_s, color=st.IDAred, alpha=0.15, lw=0, label='90% band')
     ax.plot(r.index, roll.values, color=st.MainBlue, lw=1.0, label=f'rolling OLS, {ROLL} weeks')
     ax.plot(r.index, b_s, color=st.IDAred, lw=2, label='Kalman smoothed $\\beta_t$')
@@ -712,7 +712,7 @@ def fig_dfm(save_it=True):
     sign = 1.0 if p['loading.f1.PAYEMS'] > 0 else -1.0
     f, ff = sign * f, sign * ff
     rec = nber('MS').reindex(z.index)
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.17, 2.21))
     shade(ax, rec)
     ax.plot(f.index, f.values, color=st.MainBlue, lw=1.0, label='common factor (smoothed)')
     ax.axhline(0, color=st.DarkText, lw=0.6)
@@ -792,7 +792,7 @@ def fig_ms_us(save_it=True):
     ra = ma.smooth(r.params)
     sp = pd.Series(ra.smoothed_marginal_probabilities[:, low], index=xa.index)
     fp = pd.Series(ra.filtered_marginal_probabilities[:, low], index=xa.index)
-    fig, axes = plt.subplots(2, 1, figsize=(10, 5.4), sharex=True, gridspec_kw={'height_ratios': [1, 1]})
+    fig, axes = plt.subplots(2, 1, figsize=(9.33, 3.03), sharex=True, gridspec_kw={'height_ratios': [1, 1]})
     shade(axes[0], rec.reindex(xa.index))
     axes[0].plot(xa.index, xa.values, color=st.MainBlue, lw=0.9, label='real GDP growth, % q/q')
     axes[0].axhline(0, color=st.DarkText, lw=0.6)
@@ -828,7 +828,7 @@ def fig_ms_filtered(save_it=True):
     fp = pd.Series(r.filtered_marginal_probabilities[:, low], index=x.index)
     pp = pd.Series(r.predicted_marginal_probabilities[:, low], index=x.index)
     w = slice('2005-01-01', '2012-10-01')
-    fig, ax = plt.subplots(figsize=(10, 3.9))
+    fig, ax = plt.subplots(figsize=(10.17, 2.12))
     shade(ax, rec.reindex(x.index).loc[w])
     ax.plot(pp.loc[w].index, pp.loc[w].values, color=st.Teal, lw=1.2, ls=':', marker='.', label='predicted $\\Pr(S_t = 1 \\mid y_1, \\dots, y_{t-1})$')
     ax.plot(fp.loc[w].index, fp.loc[w].values, color=st.MainBlue, lw=1.5, marker='o', ms=3.5, label='filtered $\\Pr(S_t = 1 \\mid y_1, \\dots, y_t)$')
@@ -872,7 +872,7 @@ def fig_ms_ro(save_it=True):
     r = ms_fit(sm.tsa.MarkovRegression(g.values, k_regimes=2, switching_variance=True))
     hv = int(np.argmax([r.params[r.model.param_names.index(f'sigma2[{k}]')] for k in range(2)]))
     sp = pd.Series(r.smoothed_marginal_probabilities[:, hv], index=g.index)
-    fig, axes = plt.subplots(2, 1, figsize=(10, 5.2), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(9.33, 3.23), sharex=True)
     axes[0].bar(g.index, g.values, width=70, color=st.MainBlue, label='real GDP growth, % q/q')
     axes[0].axhline(0, color=st.DarkText, lw=0.6)
     axes[1].fill_between(sp.index, 0, sp.values, color=st.IDAred, alpha=0.35, lw=0, step='mid', label='_')
@@ -915,7 +915,7 @@ def fig_vol_regimes(save_it=True):
     vol_ms = np.sqrt(r.smoothed_marginal_probabilities @ s2) * np.sqrt(52)
     ga = arch_model(x.values, mean='Constant', vol='GARCH', p=1, q=1, dist='normal').fit(disp='off')
     vol_g = ga.conditional_volatility * np.sqrt(52)
-    fig, axes = plt.subplots(2, 1, figsize=(10, 5.4), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(9.33, 2.80), sharex=True)
     axes[0].plot(x.index, x.values, color=st.MainBlue, lw=0.6, label='weekly log return, %')
     axes0b = axes[0].twinx()
     axes0b.fill_between(sp.index, 0, sp.values, color=st.IDAred, alpha=0.25, lw=0, label='smoothed Pr(turbulent regime), right axis')
@@ -990,7 +990,7 @@ def fig_regimes_memory(save_it=True, reps=40, L=100):
     iid = rng.permutation(x.values)
     acf_iid = sm.tsa.acf(np.abs(iid), nlags=L)[1:]
     lags = np.arange(1, L + 1)
-    fig, ax = plt.subplots(figsize=(10, 3.9))
+    fig, ax = plt.subplots(figsize=(10.17, 2.25))
     ax.plot(lags, acf_data, 'o', ms=3, color=st.MainBlue, label='S&P 500 weekly |r|')
     ax.plot(lags, acf_sim, color=st.IDAred, lw=2, label=f'simulated two-regime model, mean of {reps} paths')
     ax.plot(lags, acf_iid, color=st.Forest, lw=1, label='same returns in random order')

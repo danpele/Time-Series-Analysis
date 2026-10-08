@@ -125,7 +125,7 @@ def fig_bj_data(save_it=True):
     """Step 1: plot the data -- the index and the two inflation rates."""
     h = hicp()
     d = transforms(h)
-    fig, ax = plt.subplots(2, 1, figsize=(10, 5.6), sharex=True, gridspec_kw={'height_ratios': [1, 1.25]})
+    fig, ax = plt.subplots(2, 1, figsize=(9.33, 2.95), sharex=True, gridspec_kw={'height_ratios': [1, 1.25]})
     ax[0].plot(h.index, h, color=st.MainBlue, label='HICP of Romania, 2015 = 100')
     ax[0].set_ylabel('index')
     ax[1].bar(d.index, d['m'], width=25, color=st.Amber, label='monthly inflation, 100 Δln P (%)')
@@ -160,7 +160,7 @@ def fig_bj_acf(save_it=True):
     p = pacf(z, nlags=MAXLAG)[1:]
     band = 1.96 / np.sqrt(len(z))
     lags = np.arange(1, MAXLAG + 1)
-    fig, ax = plt.subplots(1, 2, figsize=(10.5, 3.6), sharey=True)
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.73), sharey=True)
     for a, v, nm in ((ax[0], r, 'ACF'), (ax[1], p, 'PACF')):
         col = [st.IDAred if k % S == 0 else st.MainBlue for k in lags]
         a.bar(lags, v, width=0.55, color=col)
@@ -235,7 +235,7 @@ def fig_bj_diag(grid=None, save_it=True):
     e = m.resid[S + 1:]
     zs = e / np.sqrt(m.params['sigma2'])
     ei = mi.resid[S + 1:]
-    fig, ax = plt.subplots(1, 3, figsize=(11, 3.5))
+    fig, ax = plt.subplots(1, 3, figsize=(9.33, 2.74))
     ax[0].plot(zs.index, zs, color=st.MainBlue, lw=0.9, label=f'standardised residuals, {label(o, so)}')
     ax[0].axhline(1.96, color=st.Forest, ls='--', lw=0.8)
     ax[0].axhline(-1.96, color=st.Forest, ls='--', lw=0.8)
@@ -295,7 +295,7 @@ def fig_bj_forecast(grid=None, save_it=True):
     base.loc[:] = [y.loc[t - pd.DateOffset(months=S)] for t in mean.index]
     a_f = mean - base
     lo, hi = a_f - 1.96 * se, a_f + 1.96 * se
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.8), gridspec_kw={'width_ratios': [1, 1.2]})
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.56), gridspec_kw={'width_ratios': [1, 1.2]})
     ax[0].plot(act.index, act, 'o-', color=st.DarkText, ms=3.5, lw=1, label='actual')
     ax[0].plot(f_sar.index, f_sar, 's-', color=st.MainBlue, ms=3.5, lw=1.2, label=f'SARIMA{label(o, so)}')
     ax[0].plot(f_sn.index, f_sn, '^--', color=st.Amber, ms=3.5, lw=1, label='seasonal naive')

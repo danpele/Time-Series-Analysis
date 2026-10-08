@@ -233,7 +233,7 @@ def fig_fourier(save_it=True):
     c2 = 1.0 * np.cos(2 * np.pi * t / 4 + 1.0)
     x = c1 + c2 + rng.normal(0, 0.7, T)
     nu, I = periodogram(x)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.8), gridspec_kw={'width_ratios': [1.35, 1]})
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 3.05), gridspec_kw={'width_ratios': [1.35, 1]})
     ax = axes[0]
     ax.plot(t, x, color=st.MainBlue, lw=1.2, label='series x_t')
     ax.plot(t, c1, color=st.IDAred, lw=1.1, ls='--', label='2 cos(2 pi t / 12): period 12')
@@ -259,7 +259,7 @@ def fig_aliasing(save_it=True):
     """Aliasing: a 4-month cycle observed once a quarter looks like a 12-month cycle."""
     tm = np.linspace(0, 36, 1000)
     tq = np.arange(0, 37, 3)
-    fig, ax = plt.subplots(figsize=(10, 3.6))
+    fig, ax = plt.subplots(figsize=(9.33, 3.14))
     ax.plot(tm, np.cos(2 * np.pi * tm / 4), color=st.MainBlue, lw=1.1, label='true cycle: period 4 months')
     ax.plot(tm, np.cos(2 * np.pi * tm / 12), color=st.IDAred, lw=1.6, ls='--', label='alias: period 12 months')
     ax.plot(tq, np.cos(2 * np.pi * tq / 4), 'o', ms=7, color=st.Amber, label='quarterly observations')
@@ -282,7 +282,7 @@ SPECTRA = [('white noise', (), ()), ('AR(1), phi = 0.6', (0.6,), ()), ('AR(1), p
 def fig_spectra(save_it=True):
     """Theoretical spectral densities (sigma^2 = 1) of six models, with their variance (area under f)."""
     nu = np.linspace(0, 0.5, 501)
-    fig, axes = plt.subplots(2, 3, figsize=(11, 5.2))
+    fig, axes = plt.subplots(2, 3, figsize=(9.74, 3.59))
     out = {}
     for i, (ax, (lab, phi, theta)) in enumerate(zip(axes.flat, SPECTRA)):
         f = arma_spectrum(nu, phi, theta)
@@ -306,7 +306,7 @@ def fig_sunspots(save_it=True):
     """Yearly sunspot numbers 1700-2008 and their raw periodogram against the period in years."""
     s = sunspots()
     nu, I = periodogram(s.values)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.8), gridspec_kw={'width_ratios': [1.3, 1]})
+    fig, axes = plt.subplots(1, 2, figsize=(9.32, 3.05), gridspec_kw={'width_ratios': [1.3, 1]})
     axes[0].plot(s.index, s.values, color=st.Amber, lw=1.1, label='yearly mean sunspot number')
     axes[0].set_xlabel('year')
     axes[0].set_title(f'Sunspots, {s.index[0]}-{s.index[-1]}')
@@ -331,7 +331,7 @@ def fig_sunspots(save_it=True):
 def fig_inconsistency(save_it=True):
     """Periodogram of Gaussian white noise (sigma^2 = 1) for T = 128 and T = 2048: it does not settle down."""
     rng = np.random.default_rng(SEED)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.7), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.94), sharey=True)
     out = {}
     for ax, T, c in zip(axes, (128, 2048), (st.MainBlue, st.Purple)):
         x = rng.standard_normal(T)
@@ -362,7 +362,7 @@ def fig_leakage(save_it=True):
     x = np.cos(2 * np.pi * nu1 * t) + a2 * np.cos(2 * np.pi * nu2 * t) + rng.normal(0, 0.002, T)
     nu, I = periodogram(x)
     _, It = periodogram(x, taper=True)
-    fig, ax = plt.subplots(figsize=(10, 3.8))
+    fig, ax = plt.subplots(figsize=(9.33, 3.16))
     ax.semilogy(nu, I, color=st.IDAred, lw=1.2, label='raw periodogram (rectangular window)')
     ax.semilogy(nu, It, color=st.MainBlue, lw=1.4, label='Hann-tapered periodogram')
     ax.axvline(nu1, color=st.Amber, lw=1, ls='--', label=f'strong cycle, nu = {nu1:.4f}')
@@ -387,7 +387,7 @@ def fig_smoothing(save_it=True):
     f = arma_spectrum(nu, AR2)
     est = {'Daniell, m = 2 (L = 5)': daniell(I, 2), 'Daniell, m = 10 (L = 21)': daniell(I, 10)}
     nw, fw = welch(x, 128)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.73), sharey=True)
     axes[0].plot(nu, I, color=st.Teal, lw=0.8, label='raw periodogram')
     axes[0].set_title('Raw periodogram')
     axes[1].plot(nu, est['Daniell, m = 2 (L = 5)'], color=st.MainBlue, lw=1.3, label='Daniell, m = 2 (L = 5)')
@@ -422,7 +422,7 @@ def fig_sunspot_ci(save_it=True):
     fh = daniell(I, m)
     df = 2 * (2 * m + 1)
     lo, hi = chi2_band(fh, df)
-    fig, ax = plt.subplots(figsize=(10, 3.9))
+    fig, ax = plt.subplots(figsize=(9.33, 3.16))
     ax.fill_between(nu, lo, hi, color=st.Teal, alpha=0.2, lw=0, label='95% confidence band (chi-square, df = 10)')
     ax.semilogy(nu, I, color=st.Amber, lw=0.7, label='raw periodogram')
     ax.semilogy(nu, fh, color=st.MainBlue, lw=1.8, label='Daniell smoother, m = 2')
@@ -447,7 +447,7 @@ def fig_sunspot_ci(save_it=True):
 def fig_gdp_series(save_it=True):
     """US and Romanian real GDP: quarterly growth and HP cycle (lambda = 1600), up to 2019 Q4."""
     G = gdp_growth()
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.8))
+    fig, axes = plt.subplots(1, 2, figsize=(9.32, 2.95))
     out = {}
     for ax, k, c in zip(axes, ('US', 'RO'), (st.MainBlue, st.IDAred)):
         cyc = hp_cycle(G[k + '_level'])
@@ -467,7 +467,7 @@ def fig_gdp_spectra(save_it=True):
     """Smoothed spectra (Daniell, m = 2) of GDP growth and of the HP cycle, as a share of the variance, with the
     business-cycle band of 6-32 quarters."""
     G = gdp_growth()
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.95))
     out = {}
     lo_nu, hi_nu = 1 / BC_BAND[1], 1 / BC_BAND[0]
     for ax, kind in zip(axes, ('growth', 'HP cycle')):
@@ -496,7 +496,7 @@ def fig_load(save_it=True):
     s = load_hourly()
     x = s.values
     nw, fw = welch(x, 24 * 7 * 8)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), gridspec_kw={'width_ratios': [1, 1.2]})
+    fig, axes = plt.subplots(1, 2, figsize=(8.49, 2.56), gridspec_kw={'width_ratios': [1, 1.2]})
     w = s.loc['2025-03-03':'2025-03-16 23:00']
     axes[0].plot(w.index, w.values / 1000, color=st.MainBlue, lw=1.1, label='load, GW (UTC hours)')
     axes[0].set_title('Two weeks of March 2025')
@@ -545,7 +545,7 @@ def fig_long_memory(save_it=True):
     """Log-log periodogram of daily S&P 500 returns and absolute returns, with the GPH line on the lowest frequencies."""
     r = log_returns('sp500').values
     S = [('returns r_t', r, st.MainBlue), ('absolute returns |r_t|', np.abs(r), st.IDAred)]
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(8.45, 2.75))
     out = {}
     for lab, x, c in S:
         nu, I = periodogram(x)
@@ -584,7 +584,7 @@ def fig_filters(save_it=True):
     g1 = 4 * np.sin(np.pi * nu) ** 2
     g4 = 4 * np.sin(4 * np.pi * nu) ** 2
     gh = hp_gain(nu)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.72))
     axes[0].plot(nu, g1, color=st.MainBlue, lw=1.8, label='first difference 1 - L')
     axes[0].plot(nu, g4, color=st.Orange, lw=1.6, ls='--', label='seasonal difference 1 - L^4')
     axes[0].set_title('Differencing filters')
@@ -621,7 +621,7 @@ def fig_coherence(save_it=True):
     ph = np.angle(Pxy)
     K = len(x) // n
     thr = 1 - 0.05 ** (1 / (K - 1))
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.52))
     band = (nu >= 1 / 96) & (nu <= 1 / 18)
     for ax in axes:
         ax.axvspan(1 / 96, 1 / 18, color=st.Amber, alpha=0.15, lw=0, label='business-cycle band, 18-96 months' if ax is axes[0] else '_')
@@ -654,7 +654,7 @@ def fig_wavelet(save_it=True):
     s = sunspots()
     periods = np.geomspace(2, 64, 60)
     P = morlet_cwt(s.values, periods)
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.57, 3.07))
     cs = ax.contourf(s.index, periods, P, levels=12, cmap='viridis')
     ax.set_yscale('log', base=2)
     ax.set_yticks([2, 4, 8, 11, 16, 32, 64])

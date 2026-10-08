@@ -235,7 +235,7 @@ def fig_ro_macro(save_it=True):
     """Romanian macro series: GDP growth (quarterly), 12-month inflation and ROBOR 3M, unemployment, EUR/RON."""
     q = ro_quarterly('2000-01-01')
     m = ro_monthly().loc['2000-01-01':]
-    fig, ax = plt.subplots(2, 2, figsize=(10.0, 5.4))
+    fig, ax = plt.subplots(2, 2, figsize=(9.33, 2.55))
     a = ax[0, 0]
     a.bar(q.index, q['g'], width=70, color=st.Forest, label='real GDP growth, q/q (%)')
     a.axhline(0, color=st.DarkText, lw=0.6)
@@ -280,7 +280,7 @@ def fig_ccf(save_it=True):
     c_bet = ccf(r['bet'], r['sp500'], kd)
     c_dax = ccf(r['dax'], r['sp500'], kd)
     c_ip = ccf(v['i'], v['pi'], kq)
-    fig, ax = plt.subplots(1, 2, figsize=(10.0, 3.6))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.46))
     k = np.arange(-kd, kd + 1)
     ax[0].bar(k - 0.18, [c_dax[j] for j in k], width=0.36, color=st.COL['dax'], label=r'DAX$_t$ vs S&P 500$_{t-k}$')
     ax[0].bar(k + 0.18, [c_bet[j] for j in k], width=0.36, color=st.COL['bet'], label=r'BET$_t$ vs S&P 500$_{t-k}$')
@@ -345,7 +345,7 @@ def fig_var_sim(T=200, H=10, save_it=True):
     for t in range(1, T + 100):
         y[t] = WX_C + WX_A @ y[t - 1] + P @ rng.standard_normal(2)
     y = y[100:]
-    fig, ax = plt.subplots(1, 2, figsize=(10.0, 3.6), gridspec_kw={'width_ratios': [1.5, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.27), gridspec_kw={'width_ratios': [1.5, 1]})
     ax[0].plot(y[:, 0], color=st.MainBlue, label='$y_{1t}$')
     ax[0].plot(y[:, 1], color=st.IDAred, label='$y_{2t}$')
     ax[0].axhline(mu[0], color=st.MainBlue, ls='--', lw=0.9, label=r'$\mu_1$')
@@ -379,7 +379,7 @@ def fig_ic(pmax=6, save_it=True):
     """AIC, BIC and HQ of the Romanian VAR for p = 0..pmax, on a common sample."""
     ic = ic_romania(pmax)
     p = np.arange(pmax + 1)
-    fig, ax = plt.subplots(figsize=(8.0, 3.6))
+    fig, ax = plt.subplots(figsize=(9.33, 2.96))
     for c, col, mk, lab in [('aic', st.MainBlue, 'o', 'AIC'), ('hq', st.Forest, 's', 'HQ'), ('bic', st.IDAred, '^', 'BIC')]:
         vals = np.array([ic['table'][j][c] for j in p])
         ax.plot(p, vals, marker=mk, color=col, label=f"{lab} (minimum at p = {ic['best'][c]})")
@@ -401,7 +401,7 @@ def fig_roots(save_it=True):
     """Eigenvalues of the companion matrices: Romanian VAR(2), Stock-Watson VAR(4), market VAR(4)."""
     fits = {'Romania VAR(2)': ro_fit(), 'US VAR(4), 1960-2000': fit_var(us_sw(SW_START, SW_END), SW_P),
             'S&P 500, DAX, BET VAR(4)': fit_var(market_returns(), MKT_P)}
-    fig, ax = plt.subplots(figsize=(5.4, 5.0))
+    fig, ax = plt.subplots(figsize=(9.61, 2.98))
     th = np.linspace(0, 2 * np.pi, 400)
     ax.plot(np.cos(th), np.sin(th), color=st.DarkText, lw=0.9, label='unit circle')
     out = {}
@@ -439,7 +439,7 @@ def fig_resid(p=RO_P, save_it=True):
     r = ro_fit(p)
     d = ro_var_data()
     U = pd.DataFrame(np.asarray(r.resid), index=d.index[p:], columns=RO_VARS)
-    fig, ax = plt.subplots(1, 3, figsize=(10.0, 3.2))
+    fig, ax = plt.subplots(1, 3, figsize=(9.33, 2.00))
     out = {'largest': {}}
     for a, c in zip(ax, RO_VARS):
         s = U[c].std()
@@ -529,7 +529,7 @@ def fig_granger_sim(save_it=True):
     sim = omitted_sim()
     Ts = list(sim)
     x = np.arange(len(Ts))
-    fig, ax = plt.subplots(figsize=(8.0, 3.6))
+    fig, ax = plt.subplots(figsize=(9.33, 2.75))
     ax.bar(x - 0.18, [100 * sim[T]['bivariate'] for T in Ts], width=0.36, color=st.IDAred,
            label='bivariate VAR (x, y): z omitted')
     ax.bar(x + 0.18, [100 * sim[T]['trivariate'] for T in Ts], width=0.36, color=st.MainBlue,
@@ -575,7 +575,7 @@ def irf_panel(res, names, H, fname, title, repl=500, signif=0.10, save_it=True, 
     irf = res.irf(H)
     lo, hi = boot_irf(res, H, repl, signif)
     K = len(names)
-    fig, ax = plt.subplots(K, K, figsize=(10.0, 6.0), sharex=True)
+    fig, ax = plt.subplots(K, K, figsize=(8.49, 3.13), sharex=True)
     h = np.arange(H + 1)
     for i in range(K):
         for j in range(K):
@@ -585,12 +585,12 @@ def irf_panel(res, names, H, fname, title, repl=500, signif=0.10, save_it=True, 
             a.plot(h, irf.orth_irfs[:, i, j], color=COLV[names[j]], lw=1.6,
                    label='orthogonalised response' if (i, j) == (0, 0) else '_nolegend_')
             a.axhline(0, color=st.DarkText, lw=0.6)
-            a.set_title(f'{LABEL[names[i]]} <- {LABEL[names[j]]} shock', fontsize=11)
+            a.set_title(f'{LABEL[names[i]]} $\\leftarrow$ {LABEL[names[j]]}', fontsize=11)
             a.tick_params(labelsize=10)
             a.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+            a.yaxis.set_major_locator(plt.MaxNLocator(2))
     for a in ax[-1]:
         a.set_xlabel('quarters' if H < 50 else 'days', fontsize=11)
-    fig.suptitle(title, fontsize=13)
     st.fig_legend_bottom(fig, ncol=2, y=-0.01)
     plt.tight_layout()
     save(fname, save_it)
@@ -621,15 +621,15 @@ def fig_irf_order(H=12, save_it=True):
     oA, oB = rA.irf(H).orth_irfs, rB.irf(H).orth_irfs
     G = girf(rA, H)
     h = np.arange(H + 1)
-    fig, ax = plt.subplots(1, 2, figsize=(10.0, 3.6))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.37))
     ax[0].plot(h, oA[:, 2, 1], 'o-', ms=3.5, color=st.MainBlue, label='order g, inflation, ROBOR')
     ax[0].plot(h, oB[:, 1, 2], 's--', ms=3.5, color=st.IDAred, label='order g, ROBOR, inflation')
     ax[0].plot(h, G[:, 2, 1], '^:', ms=3.5, color=st.Forest, label='generalised (order-free)')
-    ax[0].set_title('ROBOR 3M <- inflation shock')
+    ax[0].set_title('ROBOR 3M $\\leftarrow$ inflation shock')
     ax[1].plot(h, oA[:, 1, 2], 'o-', ms=3.5, color=st.MainBlue, label='_nolegend_')
     ax[1].plot(h, oB[:, 2, 1], 's--', ms=3.5, color=st.IDAred, label='_nolegend_')
     ax[1].plot(h, G[:, 1, 2], '^:', ms=3.5, color=st.Forest, label='_nolegend_')
-    ax[1].set_title('inflation <- ROBOR 3M shock')
+    ax[1].set_title('inflation $\\leftarrow$ ROBOR 3M shock')
     for a in ax:
         a.axhline(0, color=st.DarkText, lw=0.6)
         a.set_xlabel('quarters')
@@ -646,7 +646,7 @@ def fig_fevd_ro(H=12, save_it=True):
     r = ro_fit()
     fe = r.fevd(H).decomp            # [variable, horizon, shock]
     h = np.arange(1, H + 1)
-    fig, ax = plt.subplots(1, 3, figsize=(10.0, 3.4), sharey=True)
+    fig, ax = plt.subplots(1, 3, figsize=(9.33, 2.27), sharey=True)
     for i, (a, c) in enumerate(zip(ax, RO_VARS)):
         bottom = np.zeros(H)
         for j, s in enumerate(RO_VARS):
@@ -656,7 +656,7 @@ def fig_fevd_ro(H=12, save_it=True):
         a.set_title(f'{LABEL[c]}')
         a.set_xlabel('horizon (quarters)')
         a.set_ylim(0, 100)
-    ax[0].set_ylabel('share of forecast error variance (%)')
+    ax[0].set_ylabel('share (%)')
     st.fig_legend_bottom(fig, ncol=3, y=-0.02)
     plt.tight_layout()
     save('tsa_ch6_fevd_ro', save_it)
@@ -671,13 +671,13 @@ def fig_market_irf(H=5, save_it=True):
     rB = fit_var(r[['bet', 'dax', 'sp500']], MKT_P)
     oA, oB, G = rA.irf(H).orth_irfs, rB.irf(H).orth_irfs, girf(rA, H)
     h = np.arange(H + 1)
-    fig, ax = plt.subplots(1, 2, figsize=(10.0, 3.6))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.37))
     for a, (iA, iB, nm) in zip(ax, [(1, 1, 'dax'), (2, 0, 'bet')]):
         a.bar(h - 0.25, G[:, iA, 0], width=0.25, color=st.Forest, label='generalised')
         a.bar(h, oA[:, iA, 0], width=0.25, color=st.MainBlue, label='Cholesky, S&P 500 first')
         a.bar(h + 0.25, oB[:, iB, 2], width=0.25, color=st.IDAred, label='Cholesky, S&P 500 last (closing-time order)')
         a.axhline(0, color=st.DarkText, lw=0.6)
-        a.set_title(f'{LABEL[nm]} <- S&P 500 shock')
+        a.set_title(f'{LABEL[nm]} $\\leftarrow$ S&P 500 shock')
         a.set_xlabel('days')
         a.set_ylabel('% return')
     st.fig_legend_bottom(fig, ncol=3, y=-0.02)
@@ -715,13 +715,13 @@ def fig_spillover(save_it=True):
     r = market_returns()
     th, tab = spillover_table(r, write=save_it)
     s = rolling_spillover(r)
-    fig, ax = plt.subplots(figsize=(10.0, 3.8))
+    fig, ax = plt.subplots(figsize=(8.49, 2.52))
     ax.plot(s.index, s.values, color=st.MainBlue, lw=1.0, label='total spillover index, 200-day windows (%)')
     ax.axhline(spill_index(th), color=st.IDAred, ls='--', lw=1.0, label='full sample (%)')
-    for dte, lab in [('2008-09-15', 'Lehman'), ('2011-08-05', 'US downgrade'), ('2020-03-11', 'COVID-19'),
-                     ('2022-02-24', 'Ukraine')]:
+    for dte, lab, ha in [('2008-09-15', 'Lehman ', 'right'), ('2011-08-05', ' US downgrade', 'left'),
+                         ('2020-03-11', 'COVID-19 ', 'right'), ('2022-02-24', ' Ukraine', 'left')]:
         ax.axvline(pd.Timestamp(dte), color=st.Amber, lw=0.8, ls=':')
-        ax.text(pd.Timestamp(dte), s.max() * 1.02, lab, color=st.DarkText, fontsize=10, ha='center')
+        ax.text(pd.Timestamp(dte), s.max() * 1.02, lab, color=st.DarkText, fontsize=10, ha=ha)
     ax.set_ylim(0, s.max() * 1.12)
     ax.set_xlim(s.index[0] - pd.Timedelta(days=120), s.index[-1] + pd.Timedelta(days=120))
     years_axis(ax, 2)
@@ -746,7 +746,7 @@ def fig_forecast_ro(H=8, save_it=True):
     r = fit_var(d, RO_P)
     pt, lo, hi = r.forecast_interval(d.values[-RO_P:], H, alpha=0.05)
     fidx = pd.date_range(d.index[-1] + pd.offsets.QuarterBegin(startingMonth=1), periods=H, freq='QS')
-    fig, ax = plt.subplots(1, 3, figsize=(10.0, 3.4))
+    fig, ax = plt.subplots(1, 3, figsize=(9.33, 2.27))
     for j, (a, c) in enumerate(zip(ax, RO_VARS)):
         hist = d[c].loc['2019-01-01':]
         a.plot(hist.index, hist, color=COLV[c], label='data' if j == 0 else '_nolegend_')
@@ -793,7 +793,7 @@ def fig_oos(save_it=True):
     rro, ero = oos(dro, RO_P, '2015-01-01', (1, 4))
     dus = us_sw(SW_START, SW_END)
     rus, eus = oos(dus, SW_P, '1985-01-01', (2, 4, 8))
-    fig, ax = plt.subplots(1, 2, figsize=(10.0, 3.8), gridspec_kw={'width_ratios': [1, 1.4]})
+    fig, ax = plt.subplots(1, 2, figsize=(8.49, 2.04), gridspec_kw={'width_ratios': [1, 1.4]})
     for a, rm, cols, hs, ttl in [(ax[0], rro, RO_VARS, (1, 4), 'Romania, forecasts for 2015-2026'),
                                  (ax[1], rus, SW_VARS, (2, 4, 8), 'United States, forecasts for 1985-2000')]:
         groups = [(c, h) for c in cols for h in hs]
@@ -821,7 +821,7 @@ def fig_oos(save_it=True):
 # =============================================================================
 def fig_us_data(save_it=True):
     d = us_sw(SW_START)
-    fig, ax = plt.subplots(figsize=(10.0, 3.6))
+    fig, ax = plt.subplots(figsize=(9.33, 2.75))
     for c, col in [('pi', st.IDAred), ('u', st.Purple), ('R', st.MainBlue)]:
         ax.plot(d.index, d[c], color=col, lw=1.1, label={'pi': 'inflation (GDP price index, annualised %)',
                                                            'u': 'unemployment rate (%)', 'R': 'federal funds rate (%)'}[c])

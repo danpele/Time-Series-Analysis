@@ -172,7 +172,7 @@ def fig_ar1(n=200, nlags=15, save_it=True):
     cols = [st.MainBlue, st.Forest, st.IDAred]
     rng = np.random.default_rng(SEED)
     e = rng.normal(size=n + 300)
-    fig, ax = plt.subplots(2, 3, figsize=(10.4, 4.6))
+    fig, ax = plt.subplots(2, 3, figsize=(9.33, 3.25))
     out = {}
     for j, (ph, c) in enumerate(zip(phis, cols)):
         x = np.zeros(n + 300)
@@ -206,7 +206,7 @@ def fig_ar2(nlags=30, save_it=True, sun_phi=None):
     if sun_phi is not None:
         ex['Sunspots'] = tuple(sun_phi)
     cols = {'A': st.MainBlue, 'B': st.IDAred, 'C': st.Purple, 'Sunspots': st.Amber}
-    fig, ax = plt.subplots(1, 3, figsize=(11.2, 3.7))
+    fig, ax = plt.subplots(1, 3, figsize=(8.49, 2.95))
     f1 = np.linspace(-2, 2, 300)
     ax[0].fill([-2, 0, 2], [-1, 1, -1], color=st.Teal, alpha=0.12, label='stationary region')
     ax[0].plot([-2, 0, 2, -2], [-1, 1, -1, -1], color=st.Teal, lw=1.2, label='_nolegend_')
@@ -259,7 +259,7 @@ def fig_ma1(n=300, nlags=12, save_it=True):
     """MA(1) with theta = 0.8 and -0.8: paths, sample ACF (cuts off after lag 1) and sample PACF (decays)."""
     rng = np.random.default_rng(SEED + 1)
     e = rng.normal(size=n + 1)
-    fig, ax = plt.subplots(2, 3, figsize=(10.4, 4.6))
+    fig, ax = plt.subplots(2, 3, figsize=(9.33, 3.27))
     out = {}
     for i, (th, c) in enumerate([(0.8, st.MainBlue), (-0.8, st.IDAred)]):
         x = e[1:] + th * e[:-1]
@@ -315,7 +315,7 @@ def fig_patterns(n=500, nlags=15, save_it=True):
     """Theoretical (dots) and sample (bars, one simulated path of n = 500) ACF and PACF of AR(2), MA(2), ARMA(1,1)."""
     rng = np.random.default_rng(SEED + 2)
     cols = [st.MainBlue, st.IDAred, st.Forest]
-    fig, ax = plt.subplots(2, 3, figsize=(10.8, 4.8))
+    fig, ax = plt.subplots(2, 3, figsize=(9.33, 3.27))
     out = {}
     for j, ((lab, (ph, th)), c) in enumerate(zip(MODELS.items(), cols)):
         x = simulate_arma(ph, th, n=n, rng=rng)
@@ -345,7 +345,7 @@ def fig_psi(n=16, save_it=True):
     cases = {r'AR(1), $\phi = 0.8$': ([0.8], [], st.MainBlue), r'AR(2), $\phi = (1.0, -0.6)$': ([1.0, -0.6], [], st.IDAred),
              r'MA(2), $\theta = (0.6, 0.3)$': ([], [0.6, 0.3], st.Forest),
              r'ARMA(1,1), $\phi = 0.7, \theta = 0.4$': ([0.7], [0.4], st.Purple)}
-    fig, ax = plt.subplots(1, 4, figsize=(11.2, 2.9), sharey=True)
+    fig, ax = plt.subplots(1, 4, figsize=(8.91, 3.58), sharey=True)
     out = {}
     for a, (lab, (ph, th, c)) in zip(ax, cases.items()):
         psi = psi_weights(ph, th, n)
@@ -397,7 +397,7 @@ def fig_estimators(nrep=400, T=100, phi=0.9, theta=0.5, save_it=True):
         x = simulate_arma([], [theta], n=T, rng=rng)
         M.append((css_ma1(x), float(fit_arma(x, 0, 1).params[1])))
     M = np.array(M)
-    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.4))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 3.36))
     bins = np.linspace(0.55, 1.05, 40)
     for k, (lab, c) in enumerate([('Yule-Walker', st.Orange), ('conditional LS', st.MainBlue), ('Gaussian ML', st.IDAred)]):
         ax[0].hist(A[:, k], bins=bins, histtype='step', lw=1.6, color=c, label=lab)
@@ -445,7 +445,7 @@ def ar_ols_ic(x, pmax=6):
 def fig_ic(nrep=500, phi=(0.5, 0.25), pmax=6, save_it=True):
     """How often AIC and BIC choose each AR order when the truth is AR(2), for T = 100 and T = 1000."""
     rng = np.random.default_rng(SEED + 4)
-    fig, ax = plt.subplots(1, 2, figsize=(10.2, 3.3), sharey=True)
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 3.36), sharey=True)
     out = {}
     for a, T in zip(ax, [100, 1000]):
         ch = np.array([ar_ols_ic(simulate_arma(phi, n=T, rng=rng), pmax) for _ in range(nrep)])
@@ -510,7 +510,7 @@ def fig_forecast_theory(H=20, save_it=True):
     """AR(1) (phi = 0.9 and 0.5) and MA(1) (theta = 0.6) forecasts from X_T = 3 (mu = 0, sigma = 1) with 95%
     intervals: the forecast reverts to the mean, the interval widens to the unconditional band."""
     h = np.arange(0, H + 1)
-    fig, ax = plt.subplots(1, 3, figsize=(11.0, 3.2), sharey=True)
+    fig, ax = plt.subplots(1, 3, figsize=(9.33, 3.31), sharey=True)
     out = {}
     for a, (lab, ph, th, c) in zip(ax, [(r'AR(1), $\phi = 0.9$', [0.9], [], st.MainBlue),
                                         (r'AR(1), $\phi = 0.5$', [0.5], [], st.Forest),
@@ -561,7 +561,7 @@ def fig_gdp_ident(nlags=16, save_it=True):
     """Identification: Romanian annual real GDP growth since 2000, its ACF and PACF."""
     y = ro_gdp_growth('yoy')
     T = len(y)
-    fig = plt.figure(figsize=(10.6, 4.6))
+    fig = plt.figure(figsize=(9.33, 3.27))
     a0 = fig.add_subplot(2, 1, 1)
     a0.plot(y.index, y, color=st.Forest, lw=1.2)
     a0.axhline(y.mean(), color=st.Orange, ls='--', lw=1, label=f'mean {y.mean():.2f}%')
@@ -614,7 +614,7 @@ def fig_gdp_diag(p=0, q=3, save_it=True):
     r = fit_arma(y, p, q)
     e = pd.Series(r.resid, index=y.index).iloc[max(p, q):]
     T = len(e)
-    fig, ax = plt.subplots(2, 2, figsize=(10.4, 4.9))
+    fig, ax = plt.subplots(2, 2, figsize=(9.33, 3.27))
     ax[0, 0].plot(e.index, e, color=st.MainBlue, lw=1)
     ax[0, 0].axhline(0, color=st.DarkText, lw=0.6)
     ax[0, 0].set_title(f'Residuals of ARMA({p},{q})')
@@ -651,7 +651,7 @@ def fig_gdp_forecast(models=((0, 3), (1, 0)), H=8, save_it=True):
     """Forecasts of Romanian annual GDP growth, 8 quarters ahead, from MA(3) and AR(1), with 95% intervals."""
     y = ro_gdp_growth('yoy')
     idx = pd.date_range(y.index[-1] + pd.offsets.QuarterBegin(1, startingMonth=1), periods=H, freq='QS')
-    fig, ax = plt.subplots(figsize=(10.2, 3.6))
+    fig, ax = plt.subplots(figsize=(9.33, 3.75))
     ax.plot(y.index[-40:], y.iloc[-40:], color=st.DarkText, lw=1.2, label='observed')
     out = {}
     for (p, q), c in zip(models, [st.IDAred, st.MainBlue]):
@@ -688,7 +688,7 @@ def fig_inflation(H=24, save_it=True):
     f = r.get_forecast(H)
     m, c95, c80 = f.predicted_mean, f.conf_int(alpha=0.05), f.conf_int(alpha=0.20)
     idx = pd.date_range(y.index[-1] + pd.offsets.MonthBegin(1), periods=H, freq='MS')
-    fig, ax = plt.subplots(figsize=(10.2, 3.6))
+    fig, ax = plt.subplots(figsize=(9.33, 3.75))
     ax.plot(y.index, y, color=st.IDAred, lw=1.2, label='12-month inflation')
     ax.plot(idx, m, color=st.MainBlue, lw=1.6, label=f'AR({p}) forecast')
     ax.fill_between(idx, c95[:, 0], c95[:, 1], color=st.MainBlue, alpha=0.12, label='95% interval')
@@ -739,7 +739,7 @@ def returns_ar(name, start=None):
 
 def fig_returns(nlags=20, save_it=True):
     """BET and EUR/RON daily returns: ACF of the returns, ACF of the squared residuals of an AR(1)."""
-    fig, ax = plt.subplots(2, 2, figsize=(10.4, 4.6))
+    fig, ax = plt.subplots(2, 2, figsize=(9.33, 3.27))
     out = {}
     for i, (k, lab, c) in enumerate([('bet', 'BET', st.IDAred), ('eurron', 'EUR/RON', st.Forest)]):
         r = log_returns(k)
@@ -780,7 +780,7 @@ def fig_sunspots(save_it=True):
         bic.append(f.bic)
     r2 = fit_arma(s.values, 2, 0)
     fitted = s.values - r2.resid
-    fig, ax = plt.subplots(1, 2, figsize=(10.8, 3.4), gridspec_kw={'width_ratios': [2.1, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 3.36), gridspec_kw={'width_ratios': [2.1, 1]})
     ax[0].plot(s.index, s, color=st.Amber, lw=1.1, label='sunspot number')
     ax[0].plot(s.index[2:], fitted[2:], color=st.MainBlue, lw=0.9, label='AR(2): one-step prediction')
     ax[0].axvspan(pd.Timestamp('1749'), pd.Timestamp('1924'), color=st.Teal, alpha=0.08, label="Yule's sample 1749-1924")

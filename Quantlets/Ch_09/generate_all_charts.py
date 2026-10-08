@@ -376,7 +376,7 @@ def fig_features(y=None, save=True):
     """Top: daily load 2022-2026; bottom: the target against three features (y_{t-1}, y_{t-7}, the 7-day mean)."""
     y = load_daily() if y is None else y
     F = direct_frame(y, 1).dropna()
-    fig = plt.figure(figsize=(11, 5.6))
+    fig = plt.figure(figsize=(8.40, 1.86))
     ax0 = fig.add_axes([0.07, 0.6, 0.9, 0.36])
     ax0.plot(y.index, y.values, color=st.MainBlue, lw=0.9, label='daily mean load (GW)')
     hol = calendar(y.index)
@@ -419,7 +419,7 @@ def mini_table(y=None, end='2025-06-29', n=9):
 
 def fig_strategies(save=True):
     """Diagram of the recursive, direct and multi-output (MIMO) strategies for a 3-step forecast."""
-    fig, axes = plt.subplots(1, 3, figsize=(11.5, 3.6))
+    fig, axes = plt.subplots(1, 3, figsize=(8.49, 2.20))
     titles = ['recursive: one model, applied 3 times', 'direct: one model per horizon', 'MIMO: one model, 3 outputs']
     for a, ttl in zip(axes, titles):
         a.set_xlim(0, 10)
@@ -429,7 +429,7 @@ def fig_strategies(save=True):
 
     def box(a, x, y, txt, col, w=1.6, hgt=0.8):
         a.add_patch(Rectangle((x, y), w, hgt, facecolor=col, edgecolor='black', lw=0.6, alpha=0.9))
-        a.text(x + w / 2, y + hgt / 2, txt, ha='center', va='center', fontsize=9.5, color='white')
+        a.text(x + w / 2, y + hgt / 2, txt, ha='center', va='center', fontsize=10, color='white')
 
     def arrow(a, p, q, col=st.DarkText):
         a.add_patch(FancyArrowPatch(p, q, arrowstyle='->', mutation_scale=10, color=col, lw=1))
@@ -438,7 +438,7 @@ def fig_strategies(save=True):
     a = axes[0]
     for i in range(3):
         y0 = 5.2 - 2.0 * i
-        box(a, 0.2, y0, 'inputs' if i == 0 else 'inputs +\nforecasts', st.MainBlue, w=2.2)
+        box(a, 0.0, y0, 'inputs' if i == 0 else 'inputs, $\\hat y$', st.MainBlue, w=2.4)
         box(a, 3.6, y0, '$f$', st.Forest, w=1.4)
         box(a, 6.4, y0, f'$\\hat y_{{T+{i + 1}}}$', st.IDAred, w=1.6)
         arrow(a, (2.4, y0 + 0.4), (3.6, y0 + 0.4))
@@ -447,7 +447,7 @@ def fig_strategies(save=True):
             arrow(a, (7.2, y0), (1.3, y0 - 1.2), st.Orange)
     # direct
     a = axes[1]
-    box(a, 0.2, 2.9, 'inputs\nat $T$', st.MainBlue, w=2.2, hgt=1.2)
+    box(a, 0.2, 3.1, 'inputs', st.MainBlue, w=2.2)
     for i in range(3):
         y0 = 5.2 - 2.0 * i
         box(a, 3.8, y0, f'$f_{i + 1}$', st.Forest, w=1.4)
@@ -456,8 +456,8 @@ def fig_strategies(save=True):
         arrow(a, (5.2, y0 + 0.4), (6.6, y0 + 0.4))
     # MIMO
     a = axes[2]
-    box(a, 0.2, 2.9, 'inputs\nat $T$', st.MainBlue, w=2.2, hgt=1.2)
-    box(a, 3.6, 2.7, '$f$\n(3 outputs)', st.Forest, w=1.8, hgt=1.6)
+    box(a, 0.2, 3.1, 'inputs', st.MainBlue, w=2.2)
+    box(a, 3.6, 3.1, '$f$', st.Forest, w=1.8)
     for i in range(3):
         y0 = 5.2 - 2.0 * i
         box(a, 6.8, y0, f'$\\hat y_{{T+{i + 1}}}$', st.IDAred, w=1.6)
@@ -477,7 +477,7 @@ def fig_strategies(save=True):
 def fig_cv_schemes(n=48, k=4, h=3, save=True):
     """Diagram of four schemes on n ordered observations: random K-fold, walk-forward with an expanding window,
     walk-forward with a rolling window, and walk-forward with a gap of h observations before each test block."""
-    fig, ax = plt.subplots(figsize=(10.5, 4.8))
+    fig, ax = plt.subplots(figsize=(9.33, 2.41))
     rng = np.random.default_rng(3)
     folds = np.array_split(rng.permutation(n), k)
     colors = {'train': st.MainBlue, 'test': st.IDAred, 'gap': st.Amber, 'unused': 'white'}
@@ -504,8 +504,12 @@ def fig_cv_schemes(n=48, k=4, h=3, save=True):
         for t in range(n):
             ax.add_patch(Rectangle((t, yy), 0.92, 0.8, facecolor=colors[lab[t]],
                                    edgecolor=st.MainBlue if lab[t] == 'unused' else 'none', lw=0.3))
-        ax.text(-1, yy + 0.4, name, ha='right', va='center', fontsize=9, color='black')
-    ax.set_xlim(-20, n + 1)
+        group = name.rsplit(', ', 1)[0]
+        if j % k == k // 2 - 1:          # the name of the scheme once, centred on its k rows (one row per fold or step)
+            label = {'random K-fold': 'random\nK-fold', 'walk-forward, expanding': 'walk-forward,\nexpanding',
+                     'walk-forward, rolling': 'walk-forward,\nrolling', 'walk-forward with a gap': 'walk-forward\nwith a gap'}[group]
+            ax.text(-1, yy - 0.1, label, ha='right', va='center', fontsize=10, color='black')
+    ax.set_xlim(-16, n + 1)
     ax.set_ylim(-2.4, len(rows) + 0.2)
     ax.axis('off')
     ax.annotate('', xy=(n, -2.0), xytext=(0, -2.0), arrowprops=dict(arrowstyle='->', color='black'))
@@ -513,7 +517,7 @@ def fig_cv_schemes(n=48, k=4, h=3, save=True):
     handles = [Rectangle((0, 0), 1, 1, facecolor=colors[c], edgecolor=st.MainBlue if c == 'unused' else 'none')
                for c in ['train', 'test', 'gap', 'unused']]
     fig.legend(handles, ['training', 'test', 'gap (target overlaps the test block)', 'not used'],
-               loc='upper center', bbox_to_anchor=(0.5, 0.04), ncol=4, frameon=False, fontsize=9.5)
+               loc='upper center', bbox_to_anchor=(0.5, 0.04), ncol=4, frameon=False, fontsize=10)
     st.check_no_grey(fig)
     if save:
         st.save_fig('tsa_ch9_cv_schemes')
@@ -565,7 +569,7 @@ def leakage_experiment(h=21, n=4000, seed=SEED):
 def fig_leakage(L=None, save=True):
     """Bar chart of the out-of-sample R^2 under the three schemes."""
     L = L or leakage_experiment()
-    fig, ax = plt.subplots(figsize=(9.5, 3.8))
+    fig, ax = plt.subplots(figsize=(9.33, 1.58))
     labs = [('kfold', 'random 5-fold (shuffled)', st.IDAred), ('wf', 'walk-forward', st.MainBlue),
             ('gap', 'walk-forward with a gap of 21 days', st.Forest)]
     xs = np.arange(2)
@@ -622,7 +626,7 @@ def fig_bias_variance(bv=None, n=80, sigma=0.3, seed=SEED, save=True):
     x = rng.uniform(0, 1, n)
     y = true_f(x) + rng.normal(0, sigma, n)
     grid = np.linspace(0, 1, 400)
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.0))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.23))
     ax[0].scatter(x, y, s=14, color=st.MainBlue, alpha=0.6, label='training data')
     ax[0].plot(grid, true_f(grid), color='black', lw=1.6, label='true function')
     for dep, col in [(1, st.Amber), (3, st.Forest), (10, st.IDAred)]:
@@ -682,7 +686,7 @@ def fig_shrinkage(S=None, save=True):
     """Coefficient paths: ridge (left) and lasso (right) against the penalty; dashed: the lasso penalty chosen by
     walk-forward cross-validation."""
     S = S or shrinkage_paths()
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.46))
     for j, f in enumerate(FEATS):
         col = HIGHLIGHT.get(f)
         kw = dict(color=col, lw=1.8, label=f) if col else dict(color=st.MainBlue, lw=0.6, alpha=0.35, label='_nolegend_')
@@ -692,7 +696,7 @@ def fig_shrinkage(S=None, save=True):
     ax[1].set_xscale('log')
     ax[0].set_xlabel('ridge penalty $\\lambda$')
     ax[1].set_xlabel('lasso penalty $\\lambda$')
-    ax[0].set_ylabel('coefficient (GW per s.d. of the feature)')
+    ax[0].set_ylabel('coefficient (GW)')
     ax[1].axvline(S['alpha_cv'], color=st.IDAred, ls='--', lw=1)
     ax[0].set_title('ridge: all coefficients shrink smoothly', fontsize=11)
     ax[1].set_title('lasso: coefficients drop to exactly zero', fontsize=11)
@@ -720,7 +724,7 @@ def fig_tree(y=None, end=CV_FIRST, save=True):
     F = F.assign(weekend=1 - F[['mon', 'tue', 'wed', 'thu', 'fri']].sum(axis=1))
     cols = ['lag0', 'same_dow', 'weekend', 'holiday', 'xmas', 'easter']
     m = DecisionTreeRegressor(max_depth=2, min_samples_leaf=20, random_state=0).fit(F[cols], F['y'])
-    fig, ax = plt.subplots(figsize=(10.5, 4.4))
+    fig, ax = plt.subplots(figsize=(9.33, 2.68))
     plot_tree(m, feature_names=cols, filled=False, impurity=False, precision=2, fontsize=10, ax=ax, rounded=True)
     for t in ax.texts:
         t.set_color('black')
@@ -770,7 +774,7 @@ def ensemble_curves(y=None, split='2024-12-31', end=CV_FIRST, seed=SEED):
 def fig_ensembles(E=None, save=True):
     """Left: validation MSE against depth, single tree and random forest; right: boosting against the number of trees."""
     E = E or ensemble_curves()
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.0))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.30))
     ax[0].plot(E['depth'], E['tree'], color=st.Amber, marker='o', label='single tree')
     ax[0].plot(E['depth'], E['rf'], color=st.Forest, marker='o', label='random forest (200 trees)')
     ax[0].axhline(E['naive'], color=st.Purple, ls=':', label='seasonal naive (same weekday last week)')
@@ -828,7 +832,7 @@ def fig_extrapolation(split='2020-12-01', seed=SEED, save=True):
     te = lv.index[lv.index > split]
     f_l = pd.Series(rf_l.predict(lv.loc[te].drop(columns='y')), index=te)
     f_c = pd.Series(p.shift(1).loc[te].values * np.exp(rf_c.predict(ch.loc[te].drop(columns='y')) / 100), index=te)
-    fig, ax = plt.subplots(figsize=(10, 4.0))
+    fig, ax = plt.subplots(figsize=(10.17, 1.87))
     s = p.loc['2017-01-01':]
     ax.plot(s.index, s.values, color='black', lw=1.6, label='HICP index, Romania (2015 = 100)')
     ax.plot(f_l.index, f_l.values, color=st.IDAred, lw=1.6, ls='--', label='random forest on lagged levels')
@@ -854,7 +858,7 @@ def fig_extrapolation(split='2020-12-01', seed=SEED, save=True):
 # =============================================================================
 def fig_mlp(save=True):
     """Left: a multilayer perceptron with 3 inputs, 5 hidden neurons and one output; right: activation functions."""
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.0), gridspec_kw={'width_ratios': [1.15, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=(8.91, 2.48), gridspec_kw={'width_ratios': [1.15, 1]})
     layers = [['$y_t$', '$y_{t-6}$', 'holiday'], [''] * 5, ['$\\hat y_{t+1}$']]
     xs = [0.1, 0.5, 0.9]
     pos = []
@@ -896,7 +900,7 @@ def fig_mlp(save=True):
 
 def fig_rnn(save=True):
     """A recurrent network unrolled in time (left) and the LSTM cell state with its three gates (right)."""
-    fig, ax = plt.subplots(1, 2, figsize=(11.5, 3.9), gridspec_kw={'width_ratios': [1.2, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=(8.49, 2.33), gridspec_kw={'width_ratios': [1.2, 1]})
     a = ax[0]
     a.set_xlim(0, 10.5)
     a.set_ylim(0, 6)
@@ -943,29 +947,27 @@ def fig_rnn(save=True):
 # =============================================================================
 def fig_load_results(tab, byh, save=True):
     """Left: MASE of every model (bars); right: MAE by horizon of the main models."""
-    fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.3), gridspec_kw={'width_ratios': [1.1, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=(8.49, 3.07), gridspec_kw={'width_ratios': [1.1, 1]})
     names = list(tab.index)
     stat = ['Seasonal naive', 'ETS', 'SARIMA', 'DHR', 'Combination']
     cols = [st.MainBlue if m in stat else st.IDAred for m in names]
     ax[0].barh(range(len(names)), tab['MASE'].values, color=cols)
-    ax[0].barh([0], [0], color=st.MainBlue, label='statistical models of Chapter 4')
-    ax[0].barh([0], [0], color=st.IDAred, label='machine learning')
     for i, v in enumerate(tab['MASE'].values):
-        ax[0].text(v + 0.01, i, f'{v:.2f}', va='center', fontsize=9.5, color='black')
+        ax[0].text(v + 0.01, i, f'{v:.2f}', va='center', fontsize=10, color='black')
     ax[0].set_yticks(range(len(names)))
     ax[0].set_yticklabels(names)
     ax[0].invert_yaxis()
     ax[0].axvline(1, color=st.DarkText, ls=':', lw=1)
     ax[0].set_xlabel('MASE (below 1: better than the in-sample seasonal naive)')
-    ax[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=2, frameon=False)
     for m in ['Seasonal naive', 'DHR', 'Combination', 'GB direct', 'GB recursive', 'LSTM']:
         if m in byh:
             ax[1].plot(byh.index, byh[m].values, marker='o', ms=3.5, color=MCOL[m], label=m,
                        ls='--' if m in ('GB recursive', 'LSTM') else '-')
     ax[1].set_xlabel('horizon (days)')
     ax[1].set_ylabel('MAE (GW)')
-    st.legend_outside_bottom(ax[1], ncol=3, y=-0.2)
-    fig.tight_layout()
+    h, l = ax[1].get_legend_handles_labels()
+    st.fig_legend_bottom(fig, h, l, ncol=6, y=0.0)
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
     if save:
         st.save_fig('tsa_ch9_load_results')
@@ -983,7 +985,7 @@ def fig_load_forecasts(E_ml, E_stat, y=None, origin=None, save=True):
         eas = cal.index[cal['easter'] > 0]
         cand = [o for o in sorted(E['origin'].unique()) if any((eas > o) & (eas <= o + pd.Timedelta(days=CV_H)))]
         origin = pd.Timestamp(cand[-1])
-    fig, ax = plt.subplots(figsize=(10, 3.9))
+    fig, ax = plt.subplots(figsize=(10.17, 1.88))
     s = y.loc[origin - pd.Timedelta(days=28):origin + pd.Timedelta(days=CV_H)]
     ax.plot(s.index, s.values, color='black', lw=1.5, label='actual daily load')
     for m, ls in [('Seasonal naive', ':'), ('DHR', '-'), ('GB direct', '--'), ('GB recursive', '-.'), ('LSTM', ':')]:
@@ -1019,12 +1021,12 @@ def importance(y=None, end=CV_FIRST, seed=SEED):
 
 def fig_importance(I=None, save=True):
     I = I or importance()
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.0))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.65))
     for a, h, col in [(ax[0], 1, st.MainBlue), (ax[1], 14, st.IDAred)]:
         s = 1000 * I[h].iloc[:8][::-1]
         a.barh(s.index, s.values, color=col)
         a.set_title(f'horizon {h} day' + ('s' if h > 1 else ''), fontsize=11)
-        a.set_xlabel('increase in MAE when the feature is shuffled (MW)')
+        a.set_xlabel('increase in MAE (MW)')
     fig.tight_layout()
     st.check_no_grey(fig)
     if save:
@@ -1071,7 +1073,7 @@ def load_intervals(y=None, level=0.9, n_cal=182, seed=SEED, every=1):
 def fig_intervals(R, out, y=None, save=True):
     """The h-step-ahead forecasts at horizon 1 day (all origins joined): actual load and the two 90% intervals."""
     y = load_daily() if y is None else y
-    fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.0), gridspec_kw={'width_ratios': [1.6, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.22), gridspec_kw={'width_ratios': [1.6, 1]})
     r = R.sort_values('date')
     ax[0].fill_between(r['date'], r['q_lo'], r['q_hi'], color=st.Teal, alpha=0.3, label='quantile boosting, 90%')
     ax[0].plot(r['date'], r['c_lo'], color=st.Purple, lw=0.9, ls='--', label='split conformal, 90%')
@@ -1194,7 +1196,7 @@ def inflation_summary(E):
 def fig_inflation(E, pi, S, save=True):
     """Left: Romanian inflation and the 12-month-ahead forecasts (plotted at the target month) of the random walk,
     the AR model and the local and global boosting; right: RMSE relative to the random walk by horizon."""
-    fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.2), gridspec_kw={'width_ratios': [1.6, 1]})
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 1.98), gridspec_kw={'width_ratios': [1.6, 1]})
     s = pi['RO'].loc['2015-01-01':]
     ax[0].plot(s.index, s.values, color='black', lw=1.6, label='inflation, Romania (HICP, 12 months)')
     g = E[E['h'] == 12]
@@ -1207,7 +1209,7 @@ def fig_inflation(E, pi, S, save=True):
     ax[1].axhline(1, color=MCOL['RW'], ls=':', label='random walk = 1')
     ax[1].set_xticks(INF_H)
     ax[1].set_xlabel('horizon (months)')
-    ax[1].set_ylabel('RMSE / RMSE of the random walk')
+    ax[1].set_ylabel('relative RMSE')
     st.fig_legend_bottom(fig, ncol=4, y=0.0)
     fig.tight_layout(rect=(0, 0.02, 1, 1))
     st.check_no_grey(fig)
@@ -1354,7 +1356,7 @@ def rv_metrics(X, P, bench='HAR', h=RV_H):
 
 
 def fig_rv(X, P, k='sp500', periods=(('2020-01-01', '2020-12-31'), ('2025-01-01', '2025-09-10')), save=True):
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.0))
+    fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.58))
     for i, (s, e) in enumerate(periods):
         idx = P['HAR'].loc[s:e].index
         ax[i].plot(idx, np.sqrt(252 * X.loc[idx, 'rv']), color='black', lw=1.4, label='realised, next 5 days')
@@ -1428,7 +1430,7 @@ def sign_metrics(X, prob, base):
 
 
 def fig_sign(S, save=True):
-    fig, ax = plt.subplots(figsize=(9.5, 3.8))
+    fig, ax = plt.subplots(figsize=(9.33, 1.67))
     ks = list(S)
     xs = np.arange(len(ks))
     for i, (m, col) in enumerate([('base', st.Amber), ('Logit', st.MainBlue), ('RF', st.Forest), ('GB', st.IDAred)]):
@@ -1436,7 +1438,7 @@ def fig_sign(S, save=True):
         b = ax.bar(xs + (i - 1.5) * 0.2, vals, width=0.19, color=col,
                    label='baseline: always the majority class' if m == 'base' else m)
         for rect, v in zip(b, vals):
-            ax.text(rect.get_x() + rect.get_width() / 2, v + 0.3, f'{v:.1f}', ha='center', fontsize=9, color='black')
+            ax.text(rect.get_x() + rect.get_width() / 2, v + 0.3, f'{v:.1f}', ha='center', fontsize=10, color='black')
     ax.set_xticks(xs)
     ax.set_xticklabels([f'{NAME[k]}, {S[k]["first"][:4]}-2026' for k in ks])
     ax.set_ylim(45, 60)
@@ -1472,18 +1474,18 @@ def m4_table():
 def fig_m4(save=True):
     """OWA of the 61 methods of M4 (submitted and benchmarks), ranked, coloured by type (official evaluation file)."""
     M = m4_table().sort_values('owa').reset_index(drop=True)
-    fig, ax = plt.subplots(figsize=(10.5, 4.0))
+    fig, ax = plt.subplots(figsize=(9.33, 1.29))
     for t, col in M4_TYPES.items():
         s = M[M['type'] == t]
         ax.scatter(s.index + 1, s['owa'], color=col, s=28, label=t, zorder=3)
     ax.axhline(1, color=st.Amber, ls=':', lw=1.2, label='_nolegend_')
     comb = float(M.loc[M['method'] == 'Comb', 'owa'].iloc[0])
     ax.axhline(comb, color=st.Teal, ls='--', lw=1.0, label='_nolegend_')
-    ax.text(len(M) + 0.5, 1.0, 'Naive2', va='bottom', ha='right', fontsize=9.5, color='black')
-    ax.text(len(M) + 0.5, comb, 'Comb (SES, Holt, damped)', va='top', ha='right', fontsize=9.5, color='black')
+    ax.text(len(M) + 0.5, 1.0, 'Naive2', va='bottom', ha='right', fontsize=10, color='black')
+    ax.text(len(M) + 0.5, comb, 'Comb (SES, Holt, damped)', va='top', ha='right', fontsize=10, color='black')
     ax.set_ylim(0.78, 1.7)
     ax.set_xlabel('rank (by OWA)')
-    ax.set_ylabel('OWA (Naive2 = 1; lower is better)')
+    ax.set_ylabel('OWA (Naive2 = 1)')
     st.legend_outside_bottom(ax, ncol=4, y=-0.18)
     st.check_no_grey(fig)
     if save:
@@ -1510,14 +1512,14 @@ GKX_SR = [0.61, 0.72, 0.88, 0.39, 0.76, 0.98, 0.81, 1.17, 1.16, 1.20, 1.35, 1.15
 def fig_gkx(save=True):
     """Gu, Kelly and Xiu (2020): monthly out-of-sample R^2 (Table 1, all stocks) and the annualised Sharpe ratio of
     the value-weighted long-short decile portfolio (Table 7), published numbers."""
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, ax = plt.subplots(1, 2, figsize=(8.49, 1.66))
     x = np.arange(len(GKX_MODELS))
     cols = [st.MainBlue] * 5 + [st.Forest, st.Forest] + [st.IDAred] * 5
     ax[0].bar(x, GKX_R2, color=cols)
     ax[1].bar(x, GKX_SR, color=cols)
     for a, ttl in zip(ax, ['monthly out-of-sample $R^2$ (%)', 'Sharpe ratio, long-short decile portfolio']):
         a.set_xticks(x)
-        a.set_xticklabels(GKX_MODELS, rotation=60, fontsize=9.5)
+        a.set_xticklabels(GKX_MODELS, rotation=60, fontsize=10)
         a.set_title(ttl, fontsize=11)
     hh = [Rectangle((0, 0), 1, 1, color=c) for c in (st.MainBlue, st.Forest, st.IDAred)]
     fig.legend(hh, ['linear models', 'trees', 'neural networks'], loc='upper center', bbox_to_anchor=(0.5, 0.02),
