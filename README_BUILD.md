@@ -17,6 +17,7 @@ How the materials of *Serii de timp / Time Series Analysis* (bachelor, year 3, s
 | `latex/build_chapterN.py`, `latex/build_seminarN.py` | One bilingual generator per deck (⟦EN‖RO⟧), as in SFM. |
 | `latex/acronyms.py`, `_acr_scan.py`, `acronyms_extra/chN.py` | Acronym glossary, inserted after the title page. |
 | `latex/appendix_links.py` | Appendix buttons and back-buttons; "Chapter N" mentions become links to the PDF on the site. |
+| `latex/exercise_links.py` | Seminars: every exercise code (A1, B3, C2, …) links to its task frame; each task frame gets the buttons „Înapoi”/„Back” and „Lista exercițiilor”/„Exercise list” (to the structure slide 2/3). Run by `Deck.write` after the glossary; codes that cite another seminar stay plain text. |
 | `data/market/*.csv`, `data/manifest.csv` | Daily market data from EODHD, saved once (91 series, copied from SFM/MFM, ending 18.09.2026). |
 | `Quantlets/common/tsa_data.py` | Data loader: local `data/market` or the raw GitHub URL of this repository; BNR reference rate, FRED, Eurostat (online, no key); statsmodels data sets. |
 | `Quantlets/common/tsa_style.py` | Chart style: transparent background, legend below the plot, course palette, no grey; `check_no_grey`. |

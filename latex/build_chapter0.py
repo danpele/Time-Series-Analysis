@@ -304,9 +304,6 @@ D.frame('⟦Materials and tools||Materiale și instrumente⟧', items(
       '⟦daily market data from EODHD (EOD Historical Data), saved in the course repository until 18 September 2026||date zilnice de piață de la EODHD (EOD Historical Data), salvate în repository-ul cursului pînă la 18 septembrie 2026⟧'])))
 
 D.frame('⟦Seminars||Seminarii⟧', items(
-    ('⟦\\textbf{Each seminar comes before its lecture}||\\textbf{Fiecare seminar are loc înaintea cursului său}⟧',
-     ['⟦it starts with a short primer, so it can be followed without the lecture||începe cu noțiunile necesare, deci poate fi urmat fără curs⟧',
-      '⟦the lecture then explains why the tools work and where they fail||cursul explică apoi de ce funcționează instrumentele și unde dau greș⟧']),
     ('⟦\\textbf{Three parts}||\\textbf{Trei părți}⟧',
      ['⟦A: short calculations on paper; B: real data, each task ending with an interpretation question; C: an open idea and the critique of an AI answer||A: calcule scurte pe hîrtie; B: date reale, fiecare cerință încheindu-se cu o întrebare de interpretare; C: o idee deschisă și critica unui răspuns generat de AI⟧']),
     ('⟦\\textbf{Two kinds of exercises}||\\textbf{Două tipuri de exerciții}⟧',
