@@ -631,7 +631,7 @@ D.frame(T('Three estimators', 'Trei estimatori'), items(
 D.frame(T('Yule--Walker for an AR($p$)', 'Yule--Walker pentru un AR($p$)'), cols(items(
     (T('For $h = 1, \\dots, p$: $\\rho(h) = \\phi_1\\rho(h - 1) + \\dots + \\phi_p\\rho(h - p)$', 'Pentru $h = 1, \\dots, p$: $\\rho(h) = \\phi_1\\rho(h - 1) + \\dots + \\phi_p\\rho(h - p)$'),
      [T('in matrix form $R\\,\\phi = \\rho$, $R_{ij} = \\rho(|i - j|)$; $\\phi = (\\phi_1, \\dots, \\phi_p)^\\top$, $\\rho = (\\rho(1), \\dots, \\rho(p))^\\top$', 'matricial, $R\\,\\phi = \\rho$, $R_{ij} = \\rho(|i - j|)$; $\\phi = (\\phi_1, \\dots, \\phi_p)^\\top$, $\\rho = (\\rho(1), \\dots, \\rho(p))^\\top$'),
-      T('$R$: the $p \\times p$ matrix of autocorrelations; the hat marks the sample version', '$R$: matricea $p \\times p$ a autocorelațiilor; căciula marchează varianta de selecție'),
+      T('$R$: the $p \\times p$ matrix of autocorrelations; the hat marks the sample version', '$R$: matricea $p \\times p$ a autocorelațiilor; notația $\\hat{\\ }$ indică varianta de selecție'),
       T('estimator $\\hat\\phi = \\hat R^{-1}\\hat\\rho$; noise variance $\\hat\\sigma^2 = \\hat\\gamma(0)(1 - \\hat\\phi^\\top\\hat\\rho)$', 'estimatorul $\\hat\\phi = \\hat R^{-1}\\hat\\rho$; varianța zgomotului $\\hat\\sigma^2 = \\hat\\gamma(0)(1 - \\hat\\phi^\\top\\hat\\rho)$')]),
     (T('AR(2) by Cramer\'s rule:', 'AR(2) prin regula lui Cramer:'),
      [T('$\\hat\\phi_1 = \\dfrac{\\hat\\rho_1(1 - \\hat\\rho_2)}{1 - \\hat\\rho_1^2}$, \\quad $\\hat\\phi_2 = \\dfrac{\\hat\\rho_2 - \\hat\\rho_1^2}{1 - \\hat\\rho_1^2}$', '$\\hat\\phi_1 = \\dfrac{\\hat\\rho_1(1 - \\hat\\rho_2)}{1 - \\hat\\rho_1^2}$, \\quad $\\hat\\phi_2 = \\dfrac{\\hat\\rho_2 - \\hat\\rho_1^2}{1 - \\hat\\rho_1^2}$'),

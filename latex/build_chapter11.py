@@ -236,7 +236,7 @@ D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
 D.frame(T('Prerequisites for Today', 'Noțiuni necesare azi'), items(
     (T('Forecasting benchmarks and their evaluation (Chapters 0 and 4)', 'Reperele de prognoză și evaluarea lor (capitolele 0 și 4)'),
      [T('seasonal naive $\\hat y_{T+h} = y_{T+h-m}$: the forecast repeats the value of the same season one cycle earlier', 'prognoza sezonieră naivă $\\hat y_{T+h} = y_{T+h-m}$: prognoza repetă valoarea din același sezon al ciclului anterior'),
-      T('$T$: the last observed period; $h$: the horizon; $m$: the season length (12 for monthly data, 168 for hourly data with a weekly cycle); the hat marks a forecast', '$T$: ultima perioadă observată; $h$: orizontul; $m$: lungimea sezonului (12 pentru date lunare, 168 pentru date orare cu ciclu săptămînal); căciula marchează o prognoză'),
+      T('$T$: the last observed period; $h$: the horizon; $m$: the season length (12 for monthly data, 168 for hourly data with a weekly cycle); the hat marks a forecast', '$T$: ultima perioadă observată; $h$: orizontul; $m$: lungimea sezonului (12 pentru date lunare, 168 pentru date orare cu ciclu săptămînal); notația $\hat{\ }$ indică o prognoză'),
       T('ETS; time-series cross-validation with a rolling origin; MAE, RMSE, MASE; the Diebold--Mariano test', 'ETS; validarea încrucișată cu origine mobilă; MAE, RMSE, MASE; testul Diebold--Mariano')]),
     (T('ARIMA and seasonal ARIMA (Chapters 3 and 4); machine learning basics (Chapter 9)', 'ARIMA și ARIMA sezonier (capitolele 3 și 4); noțiuni de bază de învățare automată (Capitolul 9)'),
      [T('training, validation and test samples; a neural network as a flexible function with many parameters', 'eșantioanele de antrenare, validare și test; o rețea neuronală ca funcție flexibilă cu mulți parametri'),
@@ -597,7 +597,7 @@ interp(('the seven series', 'celor șapte serii'), [
 
 chart(T('Romanian electricity load, 48 hours ahead', 'Consumul de energie electrică al României, prognoză pe 48 de ore'), 'tsa_ch11_fan_load', 'TSA_ch11_zero_shot', [
     T('Chronos-Bolt small, zero-shot, context of 2048 hours (85 days); origin @{fl.origin}, 00:00; bands: 50\\% and 80\\% central intervals', 'Chronos-Bolt small, zero-shot, context de 2048 de ore (85 de zile); originea @{fl.origin}, ora 00:00; benzi: intervalele centrale de 50\\% și 80\\%')],
-    h='0.62\\textheight')
+    h='0.72\\textheight')
 
 interp(('the load forecast', 'prognozei consumului'), [
     T('The model reproduces the daily shape (night trough, evening peak) without any estimation on this series', 'Modelul reproduce forma zilnică (minimul de noapte, vîrful de seară) fără nicio estimare pe această serie'),
@@ -615,7 +615,7 @@ D.frame(T('Worked example: scoring one hour', 'Exemplu rezolvat: evaluarea unei 
 
 chart(T('Romanian industrial production, 12 months ahead', 'Producția industrială a României, prognoză pe 12 luni'), 'tsa_ch11_fan_ip', 'TSA_ch11_zero_shot', [
     T('Origin @{fi.origin}, forecasts to @{fi.end}; Chronos-Bolt small (zero-shot) and ETS (estimated on the series), both with 80\\% bands', 'Originea @{fi.origin}, prognoze pînă în @{fi.end}; Chronos-Bolt small (zero-shot) și ETS (estimat pe serie), ambele cu benzi de 80\\%')],
-    h='0.62\\textheight')
+    h='0.72\\textheight')
 
 interp(('the industrial-production forecast', 'prognozei producției industriale'), [
     T('Both models copy the seasonal pattern (the August and December dips) and keep the recent level', 'Ambele modele copiază tiparul sezonier (scăderile din august și decembrie) și păstrează nivelul recent'),
@@ -625,7 +625,7 @@ interp(('the industrial-production forecast', 'prognozei producției industriale
 
 chart(T('EUR/RON, 20 days ahead', 'EUR/RON, prognoză pe 20 de zile'), 'tsa_ch11_fan_eurron', 'TSA_ch11_zero_shot', [
     T('BNR reference rate; origin @{fe.origin}, last value before it @{fe.last}; Chronos-Bolt small against the random walk with Normal bands', 'Cursul de referință BNR; originea @{fe.origin}, ultima valoare dinaintea ei @{fe.last}; Chronos-Bolt small comparat cu mersul aleator cu benzi Normale')],
-    h='0.62\\textheight')
+    h='0.72\\textheight')
 
 interp(('the EUR/RON forecast', 'prognozei EUR/RON'), [
     T('The median after 20 days is @{fe.med}, practically the last value @{fe.last}: the model has learnt to behave like a random walk', 'Mediana după 20 de zile este @{fe.med}, practic ultima valoare, @{fe.last}: modelul a învățat să se comporte ca un mers aleator'),
@@ -700,7 +700,7 @@ interp(('the error by horizon', 'erorii în funcție de orizont'), [
 
 chart(T('How much context is needed?', 'Lungimea necesară a contextului'), 'tsa_ch11_context', 'TSA_ch11_context_contamination', [
     T('MASE on Romanian load for contexts of 96 to 2048 hours; @{cx.n} weekly origins (the last half year); the dashed line is the seasonal naive', 'MASE pentru consumul României cu contexte de 96 pînă la 2048 de ore; @{cx.n} @{cx.de}origini săptămînale (ultima jumătate de an); linia punctată este prognoza sezonieră naivă')],
-    h='0.62\\textheight')
+    h='0.72\\textheight')
 
 interp(('the context length', 'lungimii contextului'), [
     T('With 96 hours (4 days) every model is worse than the seasonal naive: Chronos-Bolt small @{cx.bs.96}, Chronos-2 @{cx.c2.96}, naive @{cx.naive}', 'Cu 96 de ore (4 zile), fiecare model este mai slab decît prognoza sezonieră naivă: Chronos-Bolt small @{cx.bs.96}, Chronos-2 @{cx.c2.96}, naiv @{cx.naive}'),

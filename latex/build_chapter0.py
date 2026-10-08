@@ -675,7 +675,7 @@ D.frame('⟦Additive and multiplicative models||Modelul aditiv și modelul multi
 D.frame('⟦Centred moving averages||Medii mobile centrate⟧', items(
     ('⟦\\textbf{Moving average of order} $k$ (odd): the mean of $k$ neighbouring values||\\textbf{Media mobilă de ordin} $k$ (impar): media a $k$ valori vecine⟧',
      ['⟦$\\hat T_t = \\frac{1}{k} \\sum_{j=-q}^{q} y_{t+j}$, with $k = 2q + 1$; it smooths out the noise||$\\hat T_t = \\frac{1}{k} \\sum_{j=-q}^{q} y_{t+j}$, cu $k = 2q + 1$; netezește zgomotul⟧',
-      '⟦$q$: the number of values on each side of $t$; $j$: the position relative to $t$; the hat marks an estimate||$q$: numărul de valori de fiecare parte a lui $t$; $j$: poziția față de $t$; căciula marchează o estimare⟧']),
+      '⟦$q$: the number of values on each side of $t$; $j$: the position relative to $t$; the hat marks an estimate||$q$: numărul de valori de fiecare parte a lui $t$; $j$: poziția față de $t$; notația $\hat{\ }$ indică o estimare⟧']),
     ('⟦\\textbf{The key property}: a moving average over one full season removes the seasonal pattern||\\textbf{Proprietatea esențială}: o medie mobilă pe un sezon complet elimină tiparul sezonier⟧',
      ['⟦every quarter enters once, so the seasonal effects cancel out||fiecare trimestru intră o singură dată, deci efectele sezoniere se compensează⟧']),
     ('⟦\\textbf{Even period} $m = 4$: a $2 \\times 4$ moving average, to stay centred on a quarter||\\textbf{Perioadă pară} $m = 4$: o medie mobilă $2 \\times 4$, pentru a rămîne centrată pe un trimestru⟧',
@@ -708,7 +708,7 @@ D.frame('⟦Classical decomposition, step by step||Descompunerea clasică, pas c
 
 chart(D, '⟦Decomposition of the Romanian GDP||Descompunerea PIB-ului României⟧', 'tsa_ch0_components', 'TSA_ch0_decomposition', [
     '⟦Classical multiplicative decomposition, $m = 4$: observed series and trend-cycle, trend-cycle, seasonal factors, remainder||Descompunere clasică multiplicativă, $m = 4$: seria observată și trend-ciclul, trend-ciclul, factorii sezonieri, componenta neregulată⟧'],
-    h='0.66\\textheight')
+    h='0.72\\textheight')
 
 D.frame('⟦Interpretation: seasonal factors of GDP||Interpretarea: factorii sezonieri ai PIB⟧', cols(
     table('lrr', '\\textbf{⟦Quarter||Trimestru⟧} & $\\hat S_q$ & ⟦relative to trend||față de trend⟧',
@@ -737,7 +737,7 @@ D.frame('⟦STL: a flexible decomposition||STL: o descompunere flexibilă⟧', i
 
 chart(D, '⟦STL decomposition of CO2||Descompunerea STL a seriei CO2⟧', 'tsa_ch0_stl', 'TSA_ch0_decomposition', [
     '⟦Robust STL with period 12 on the monthly CO2 series: observed, trend, seasonal, remainder (ppm)||STL robustă cu perioada 12, pe seria lunară CO2: seria observată, trendul, sezonalitatea, componenta neregulată (ppm)⟧'],
-    h='0.66\\textheight')
+    h='0.72\\textheight')
 
 D.frame('⟦Interpretation: STL of CO2||Interpretarea: STL pentru CO2⟧', clean(items(
     ('⟦\\textbf{Trend}: smooth, slightly convex: the rise accelerates||\\textbf{Trendul}: neted, ușor convex: creșterea se accelerează⟧', []),
@@ -769,7 +769,7 @@ D.frame('⟦Notation used in the course||Notația folosită în curs⟧', table(
      '$\\hat y_{T+h|T}$ & ⟦the forecast of $y_{T+h}$ made with the data up to $T$; $h$ is the \\textbf{horizon}||prognoza lui $y_{T+h}$ făcută cu datele pînă la $T$; $h$ este \\textbf{orizontul}⟧',
      '$e_t = y_t - \\hat y_t$ & ⟦the forecast error||eroarea de prognoză⟧'],
     size='footnotesize') + items(
-    '⟦Hats ($\\hat{\\ }$) mark estimates and forecasts; Greek letters ($\\phi, \\theta, \\alpha$) mark parameters||Căciula ($\\hat{\\ }$) marchează estimările și prognozele; literele grecești ($\\phi, \\theta, \\alpha$) marchează parametrii⟧'),
+    '⟦Hats ($\\hat{\\ }$) mark estimates and forecasts; Greek letters ($\\phi, \\theta, \\alpha$) mark parameters||Notația $\\hat{\\ }$ indică estimările și prognozele; literele grecești ($\\phi, \\theta, \\alpha$) marchează parametrii⟧'),
     size='footnotesize')
 
 D.frame('⟦Transformations: logs, differences, growth rates||Transformări: logaritmi, diferențe, rate de creștere⟧', clean(items(
