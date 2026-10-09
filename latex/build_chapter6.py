@@ -365,8 +365,8 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
      [T('from one series to several: vector processes and cross-correlations; the VAR$(p)$ model and its stability', 'de la o serie la mai multe: procese vectoriale și corelații încrucișate; modelul VAR$(p)$ și stabilitatea lui'),
       T('estimation, lag selection and diagnostics; Granger causality and its pitfalls', 'estimare, alegerea numărului de laguri și diagnosticare; cauzalitatea Granger și capcanele ei'),
       T('impulse responses, variance decomposition, forecasts; the structural VAR idea of Sims (1980)', 'funcții de răspuns la impuls, descompunerea varianței, prognoze; ideea VAR-ului structural, Sims (1980)')]),
-    T('We build on Chapter 2 (AR models) and Chapter 3 (stationarity tests); Seminar 6 comes before this lecture',
-      'Pornim de la Capitolul 2 (modele AR) și de la Capitolul 3 (teste de staționaritate); Seminarul 6 are loc înaintea acestui curs')))
+    T('We build on Chapter 2 (AR models) and Chapter 3 (stationarity tests)',
+      'Pornim de la Capitolul 2 (modele AR) și de la Capitolul 3 (teste de staționaritate)')))
 
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Write a VAR$(p)$ in matrix form and equation by equation, and count its parameters', 'Scrieți un VAR$(p)$ în formă matriceală și ecuație cu ecuație și numărați-i parametrii'),
@@ -827,8 +827,8 @@ D.frame(T('Worked example: orthogonalised responses', 'Exemplu rezolvat: răspun
      [T('a shock $u_1 = 1$ moves $y_1$ by 1 and $y_2$ by @{wx.p21} at once; $u_2 = 1$ moves only $y_2$, by @{wx.p22}', 'un șoc $u_1 = 1$ mișcă imediat $y_1$ cu 1 și $y_2$ cu @{wx.p21}; $u_2 = 1$ mișcă doar $y_2$, cu @{wx.p22}')]),
     (T('One period later: $\\boldsymbol{\\Theta}_1 = \\bA\\mathbf{P} = @{wx.Th1}$', 'O perioadă mai tîrziu: $\\boldsymbol{\\Theta}_1 = \\bA\\mathbf{P} = @{wx.Th1}$'),
      [T('$y_2$ responds to $u_1$ by @{wx.th21}: $0.3 \\cdot 1 + 0.4 \\cdot 0.5$, the direct effect $a_{21}$ plus its own persistence', '$y_2$ răspunde la $u_1$ cu @{wx.th21}: $0{,}3 \\cdot 1 + 0{,}4 \\cdot 0{,}5$, efectul direct $a_{21}$ plus propria persistență')]),
-    T('In general $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$; the \\textbf{cumulative} response $\\sum_{s \\le h}\\boldsymbol{\\Theta}_s$ gives the effect on the level when the VAR is in growth rates',
-      'În general $\\boldsymbol{\\Theta}_h = \\bPhi_h\\mathbf{P}$; răspunsul \\textbf{cumulat} $\\sum_{s \\le h}\\boldsymbol{\\Theta}_s$ dă efectul asupra nivelului cînd VAR-ul este în rate de creștere')))
+    T('The \\textbf{cumulative} response $\\sum_{s \\le h}\\boldsymbol{\\Theta}_s$ gives the effect on the level when the VAR is in growth rates',
+      'Răspunsul \\textbf{cumulat} $\\sum_{s \\le h}\\boldsymbol{\\Theta}_s$ dă efectul asupra nivelului cînd VAR-ul este în rate de creștere')))
 
 chart(T('Impulse responses of the Romanian VAR(2)', 'Răspunsurile la impuls ale VAR(2) românesc'), 'tsa_ch6_irf_ro', 'TSA_ch6_irf_fevd', [
     T('Row: responding variable; column: shock of one standard deviation; Cholesky order $g, \\pi, i$; 90\\% bands from a residual bootstrap (500 replications) \\refKilian',

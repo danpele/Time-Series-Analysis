@@ -278,8 +278,8 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
       T('the Kalman filter by hand; smoothing; likelihood and estimation; missing values', 'filtrul Kalman de mînă; netezirea; verosimilitatea și estimarea; valorile lipsă'),
       T('trend and cycle: Romanian GDP, the HP filter and its critique; dynamic factors and nowcasting', 'trend și ciclu: PIB-ul României, filtrul HP și critica lui; factori dinamici și nowcasting'),
       T('Markov switching: recessions, Romanian growth regimes, volatility regimes', 'Markov switching: recesiuni, regimuri ale creșterii economice din România, regimuri de volatilitate')]),
-    T('We build on Chapter 0 (exponential smoothing), Chapter 2 (ARMA), Chapter 5 (GARCH) and Chapter 8 (long memory); Seminar 10 comes before this lecture',
-      'Pornim de la Capitolul 0 (netezirea exponențială), Capitolul 2 (ARMA), Capitolul 5 (GARCH) și Capitolul 8 (memoria lungă); Seminarul 10 are loc înaintea acestui curs')))
+    T('We build on Chapter 0 (exponential smoothing), Chapter 2 (ARMA), Chapter 5 (GARCH) and Chapter 8 (long memory)',
+      'Pornim de la Capitolul 0 (netezirea exponențială), Capitolul 2 (ARMA), Capitolul 5 (GARCH) și Capitolul 8 (memoria lungă)')))
 
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Write a model in state space form: local level, local linear trend, AR(2), a regression with a time-varying coefficient', 'Scrieți un model în forma în spațiul stărilor: local level, local linear trend, AR(2), o regresie cu un coeficient variabil în timp'),

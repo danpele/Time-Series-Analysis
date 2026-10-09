@@ -44,15 +44,15 @@ def chart(title, fig, folder, bullets, h='0.6\\textheight', size='footnotesize')
     D.frame(title, body, size)
 
 
-def chart_alone(title, fig, folder, bullets, parts=('',), h='0.88\\textheight', size='small'):
-    """The chart alone on a frame, as wide as the slide allows, so that its text stays legible ((1/n)); its bullets and
-    the Quantlet link on the last frame ((n/n)). `parts`: trim boxes (left bottom right top, in bp) that show one chart
-    file in pieces, one piece per frame."""
+def chart_alone(title, fig, folder, bullets, parts=('',), h='0.88\\textheight', size='small', notes=()):
+    """The chart alone on a frame, as wide as the slide allows, so that its text stays legible ((1/n)); its bullets, its
+    interpretation (`notes`) and the Quantlet link on the last frame ((n/n)). `parts`: trim boxes (left bottom right top,
+    in bp) that show one chart file in pieces, one piece per frame."""
     n = len(parts) + 1
     for i, trim in enumerate(parts, 1):
         g = (f'trim={trim},clip,' if trim else '') + f'width=0.96\\paperwidth,height={h},keepaspectratio'
         D.frame(f'{title} ({i}/{n})', f'\\centering\n\\makebox[\\textwidth][c]{{\\includegraphics[{g}]{{{fig}.pdf}}}}', size)
-    D.frame(f'{title} ({n}/{n})', items(*bullets) + '\n' + ql(folder), size)
+    D.frame(f'{title} ({n}/{n})', items(*bullets, *notes) + '\n' + ql(folder), size)
 
 
 def interp(title, bullets, size='small'):
@@ -396,9 +396,7 @@ D.frame(T('Worked example: scaling and tokens', 'Exemplu rezolvat: scalarea și 
 
 chart_alone(T('Scaling and quantisation on real data', 'Scalarea și cuantizarea pe date reale'), 'tsa_ch11_tokens', 'TSA_ch11_tokens_scores', [
     T('Romanian industrial production (Eurostat, 2021 = 100), the last 96 months; scale $s$ = @{tk.s}', 'Producția industrială a României (Eurostat, 2021 = 100), ultimele 96 de luni; scala $s$ = @{tk.s}'),
-    T('Right: the scaled context and its tokens on a coarse grid of @{tk.bins} bins (Chronos uses 4093)', 'Dreapta: contextul scalat și tokenii lui pe o grilă grosieră de @{tk.bins} de intervale (Chronos folosește 4093)')])
-
-interp(('the tokens', 'tokenilor'), [
+    T('Right: the scaled context and its tokens on a coarse grid of @{tk.bins} bins (Chronos uses 4093)', 'Dreapta: contextul scalat și tokenii lui pe o grilă grosieră de @{tk.bins} de intervale (Chronos folosește 4093)')], notes=[
     T('After scaling, all values lie between @{tk.zmin} and @{tk.zmax}: a few per cent of the range $[-15, 15]$', 'După scalare, toate valorile sînt între @{tk.zmin} și @{tk.zmax}: cîteva procente din intervalul $[-15, 15]$'),
     T('On the coarse grid the 96 months use only @{tk.ntok} tokens: the April 2020 fall (the lockdown) is one separate token', 'Pe grila grosieră, cele 96 de luni folosesc doar @{tk.ntok} tokeni: căderea din aprilie 2020 (carantina) este un token separat'),
     T('With 4093 bins the grid is fine enough to keep the seasonal shape', 'Cu 4093 de intervale, grila este suficient de fină pentru a păstra forma sezonieră'),
@@ -554,7 +552,7 @@ D.frame(T('Worked example: pinball losses', 'Exemplu rezolvat: pierderile pinbal
     (T('$\\tau = 0.5$: $y$ is above, loss $0.5 \\cdot (7.2 - 7.0)$ = @{pin.5}', '$\\tau = 0{,}5$: $y$ este deasupra, pierderea $0{,}5 \\cdot (7{,}2 - 7{,}0)$ = @{pin.5}'), []),
     (T('$\\tau = 0.9$: $y$ is below, loss $(1 - 0.9) \\cdot (7.6 - 7.2)$ = @{pin.9}', '$\\tau = 0{,}9$: $y$ este dedesubt, pierderea $(1 - 0{,}9) \\cdot (7{,}6 - 7{,}2)$ = @{pin.9}'), []),
     (T('Approximate CRPS with these three levels: $\\frac{2}{3}$ (sum of losses) = @{pin.sum} percentage points', 'CRPS aproximat cu aceste trei niveluri: $\\frac{2}{3}$ (suma pierderilor) = @{pin.sum} puncte procentuale'),
-     [T('the outcome lies inside the 80\\% interval [6.5; 7.6]: coverage indicator 1', 'valoarea observată este în intervalul de 80\\% [6,5; 7,6]: indicatorul de acoperire este 1')])))
+     [T('the outcome lies inside the 80\\% interval [6.5; 7.6]: it counts as covered in the coverage score (two slides on)', 'valoarea observată este în intervalul de 80\\% [6,5; 7,6]: în scorul de acoperire (două slide-uri mai departe) contează ca acoperită')])))
 
 D.frame(T('Point accuracy: the MASE', 'Precizia punctuală: MASE'), items(
     (T('\\textbf{MASE} (mean absolute scaled error, \\refHK)', '\\textbf{MASE} (mean absolute scaled error, eroarea absolută medie scalată, \\refHK)'),
@@ -596,18 +594,14 @@ chart_alone(T('Seven series for the test', 'Șapte serii pentru test'), 'tsa_ch1
           T('HICP inflation; unemployment rate', 'inflația IAPC; rata șomajului')]),
         (T('EUR/RON (BNR reference rate)', 'EUR/RON (cursul de referință BNR)'), []),
         (T('US retail sales (FRED RSXFSN)', 'Vînzările cu amănuntul din SUA (FRED RSXFSN)'), [])],
-    parts=('0 305 0 0', '0 0 0 302'))
-
-interp(('the seven series', 'celor șapte serii'), [
+    parts=('0 305 0 0', '0 0 0 302'), notes=[
     T('Strong seasonality: load (daily and weekly cycles), industrial production and US retail sales (yearly), GDP (quarterly)', 'Sezonalitate puternică: consumul (cicluri zilnice și săptămînale), producția industrială și vînzările din SUA (anuale), PIB-ul (trimestrial)'),
     T('Close to a random walk: EUR/RON and the unemployment rate; noisy and short-lived: monthly inflation', 'Aproape de un mers aleator: EUR/RON și rata șomajului; zgomotoasă și cu memorie scurtă: inflația lunară'),
     T('Breaks: the 2020 pandemic (industrial production, GDP, retail); the 2022 inflation surge', 'Rupturi: pandemia din 2020 (producția industrială, PIB-ul, vînzările); creșterea inflației din 2022'),
     T('Lengths from @{se.gdp.n} quarters (GDP) to @{se.load.n} hours (load): very different amounts of context', 'Lungimi de la @{se.gdp.n} @{se.gdp.de}trimestre (PIB) la @{se.load.n} @{se.load.de}ore (consumul): cantități foarte diferite de context')])
 
 chart_alone(T('Romanian electricity load, 48 hours ahead', 'Consumul de energie electrică al României, prognoză pe 48 de ore'), 'tsa_ch11_fan_load', 'TSA_ch11_zero_shot', [
-    T('Chronos-Bolt small, zero-shot, context of 2048 hours (85 days); origin @{fl.origin}, 00:00; bands: 50\\% and 80\\% central intervals', 'Chronos-Bolt small, zero-shot, context de 2048 de ore (85 de zile); originea @{fl.origin}, ora 00:00; benzi: intervalele centrale de 50\\% și 80\\%')])
-
-interp(('the load forecast', 'prognozei consumului'), [
+    T('Chronos-Bolt small, zero-shot, context of 2048 hours (85 days); origin @{fl.origin}, 00:00; bands: 50\\% and 80\\% central intervals', 'Chronos-Bolt small, zero-shot, context de 2048 de ore (85 de zile); originea @{fl.origin}, ora 00:00; benzi: intervalele centrale de 50\\% și 80\\%')], notes=[
     T('The model reproduces the daily shape (night trough, evening peak) without any estimation on this series', 'Modelul reproduce forma zilnică (minimul de noapte, vîrful de seară) fără nicio estimare pe această serie'),
     T('MASE: Chronos-Bolt @{fl.mb}, seasonal naive @{fl.mn}: better than repeating last week', 'MASE: Chronos-Bolt @{fl.mb}, prognoza sezonieră naivă @{fl.mn}: mai bun decît repetarea săptămînii trecute'),
     T('But the actual load stays above the forecast all day: only @{fl.cov}\\% of the 48 hours fall in the 80\\% band', 'Dar consumul efectiv rămîne peste prognoză toată ziua: doar @{fl.cov}\\% din cele 48 de ore cad în banda de 80\\%'),
@@ -622,18 +616,14 @@ D.frame(T('Worked example: scoring one hour', 'Exemplu rezolvat: evaluarea unei 
     T('Averaged over many hours and origins, these losses give the WQL of the next section', 'Mediate pe multe ore și origini, aceste pierderi dau WQL din secțiunea următoare')))
 
 chart_alone(T('Romanian industrial production, 12 months ahead', 'Producția industrială a României, prognoză pe 12 luni'), 'tsa_ch11_fan_ip', 'TSA_ch11_zero_shot', [
-    T('Origin @{fi.origin}, forecasts to @{fi.end}; Chronos-Bolt small (zero-shot) and ETS (estimated on the series), both with 80\\% bands', 'Originea @{fi.origin}, prognoze pînă în @{fi.end}; Chronos-Bolt small (zero-shot) și ETS (estimat pe serie), ambele cu benzi de 80\\%')])
-
-interp(('the industrial-production forecast', 'prognozei producției industriale'), [
+    T('Origin @{fi.origin}, forecasts to @{fi.end}; Chronos-Bolt small (zero-shot) and ETS (estimated on the series), both with 80\\% bands', 'Originea @{fi.origin}, prognoze pînă în @{fi.end}; Chronos-Bolt small (zero-shot) și ETS (estimat pe serie), ambele cu benzi de 80\\%')], notes=[
     T('Both models copy the seasonal pattern (the August and December dips) and keep the recent level', 'Ambele modele copiază tiparul sezonier (scăderile din august și decembrie) și păstrează nivelul recent'),
     T('MASE: Chronos-Bolt @{fi.mb}, ETS @{fi.me}, seasonal naive @{fi.mn}: on this origin the simplest forecast wins', 'MASE: Chronos-Bolt @{fi.mb}, ETS @{fi.me}, prognoza sezonieră naivă @{fi.mn}: pentru această origine cîștigă cea mai simplă prognoză'),
     T('The weak production of 2026 is not announced by the context; the 80\\% bands cover @{fi.cb}\\% (Chronos-Bolt) and @{fi.ce}\\% (ETS) of the months', 'Producția slabă din 2026 nu este anunțată de context; benzile de 80\\% acoperă @{fi.cb}\\% (Chronos-Bolt) și @{fi.ce}\\% (ETS) din luni'),
     T('The bands of Chronos-Bolt are narrower than those of ETS at long horizons', 'Benzile Chronos-Bolt sînt mai înguste decît cele ale ETS la orizonturi lungi')])
 
 chart_alone(T('EUR/RON, 20 days ahead', 'EUR/RON, prognoză pe 20 de zile'), 'tsa_ch11_fan_eurron', 'TSA_ch11_zero_shot', [
-    T('BNR reference rate; origin @{fe.origin}, last value before it @{fe.last}; Chronos-Bolt small against the random walk with Normal bands', 'Cursul de referință BNR; originea @{fe.origin}, ultima valoare dinaintea ei @{fe.last}; Chronos-Bolt small comparat cu mersul aleator cu benzi Normale')])
-
-interp(('the EUR/RON forecast', 'prognozei EUR/RON'), [
+    T('BNR reference rate; origin @{fe.origin}, last value before it @{fe.last}; Chronos-Bolt small against the random walk with Normal bands', 'Cursul de referință BNR; originea @{fe.origin}, ultima valoare dinaintea ei @{fe.last}; Chronos-Bolt small comparat cu mersul aleator cu benzi Normale')], notes=[
     T('The median after 20 days is @{fe.med}, practically the last value @{fe.last}: the model has learnt to behave like a random walk', 'Mediana după 20 de zile este @{fe.med}, practic ultima valoare, @{fe.last}: modelul a învățat să se comporte ca un mers aleator'),
     T('Width of the 80\\% band at 20 days: @{fe.wb} (Chronos-Bolt) and @{fe.wr} (random walk): almost the same uncertainty', 'Lățimea benzii de 80\\% la 20 de zile: @{fe.wb} (Chronos-Bolt) și @{fe.wr} (mersul aleator): aproape aceeași incertitudine'),
     T('MAE over the 20 days: @{fe.mb} against @{fe.mr}: a tie in practice', 'MAE pe cele 20 de zile: @{fe.mb} față de @{fe.mr}: practic egalitate'),
@@ -705,9 +695,7 @@ interp(('the error by horizon', 'erorii în funcție de orizont'), [
     T('ETS is good for a few hours and then the worst: a daily season cannot represent the weekend', 'ETS este bun cîteva ore, apoi cel mai slab: un sezon zilnic nu poate reprezenta weekendul')])
 
 chart_alone(T('How much context is needed?', 'Lungimea necesară a contextului'), 'tsa_ch11_context', 'TSA_ch11_context_contamination', [
-    T('MASE on Romanian load for contexts of 96 to 2048 hours; @{cx.n} weekly origins (the last half year); the dashed line is the seasonal naive', 'MASE pentru consumul României cu contexte de 96 pînă la 2048 de ore; @{cx.n} @{cx.de}origini săptămînale (ultima jumătate de an); linia punctată este prognoza sezonieră naivă')])
-
-interp(('the context length', 'lungimii contextului'), [
+    T('MASE on Romanian load for contexts of 96 to 2048 hours; @{cx.n} weekly origins (the last half year); the dashed line is the seasonal naive', 'MASE pentru consumul României cu contexte de 96 pînă la 2048 de ore; @{cx.n} @{cx.de}origini săptămînale (ultima jumătate de an); linia punctată este prognoza sezonieră naivă')], notes=[
     T('With 96 hours (4 days) every model is worse than the seasonal naive: Chronos-Bolt small @{cx.bs.96}, Chronos-2 @{cx.c2.96}, naive @{cx.naive}', 'Cu 96 de ore (4 zile), fiecare model este mai slab decît prognoza sezonieră naivă: Chronos-Bolt small @{cx.bs.96}, Chronos-2 @{cx.c2.96}, naiv @{cx.naive}'),
     T('From 192 hours (more than one week) on, the weekly cycle is in the context and the error drops', 'De la 192 de ore (peste o săptămînă), ciclul săptămînal intră în context și eroarea scade'),
     T('Chronos-2 keeps improving up to 1344 hours (@{cx.c2.1344}); Chronos-Bolt flattens at 672 hours (@{cx.bs.672})', 'Chronos-2 se îmbunătățește pînă la 1344 de ore (@{cx.c2.1344}); Chronos-Bolt se stabilizează de la 672 de ore (@{cx.bs.672})'),

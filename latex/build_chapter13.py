@@ -707,8 +707,7 @@ chart(T('The indicator around four peaks (1/2)', 'Indicatorul în jurul a patru 
     h='0.64\\textheight')
 
 chart(T('The indicator around four peaks (2/2)', 'Indicatorul în jurul a patru maxime (2/2)'), 'tsa_ch13_ci_b', 'TSA_ch13_confidence', [
-    (T('The same layout for the BET (2007) and Bitcoin (2017); Bitcoin: one value every 7 days', 'Aceeași structură pentru BET (2007) și Bitcoin (2017); Bitcoin: o valoare la fiecare 7 zile'),
-     [T('green area: parameter conditions; purple line: all conditions', 'zona verde: condițiile asupra parametrilor; linia mov: toate condițiile')])],
+    T('The same layout and colours as in (1/2), for the BET (2007) and Bitcoin (2017); Bitcoin: one value every 7 days', 'Aceeași structură și aceleași culori ca în (1/2), pentru BET (2007) și Bitcoin (2017); Bitcoin: o valoare la fiecare 7 zile')],
     h='0.64\\textheight')
 
 interp(('the indicator', 'indicatorului'), [

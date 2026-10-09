@@ -287,8 +287,8 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
         'validarea walk-forward și leakage-ul; ridge și lasso; arbori, random forest, gradient boosting; rețele neuronale mici și LSTM'),
       T('prediction intervals; local and global models; four applications and the M4, M5 competitions',
         'intervale de prognoză; modele locale și globale; patru aplicații și competițiile M4, M5')]),
-    T('We build on Chapter 0 (accuracy measures, benchmarks) and Chapter 4 (time-series cross-validation, Diebold--Mariano); Seminar 9 comes before this lecture',
-      'Pornim de la Capitolul 0 (măsuri de acuratețe, metode de referință) și de la Capitolul 4 (validare încrucișată pentru serii de timp, Diebold--Mariano); Seminarul 9 are loc înaintea acestui curs')))
+    T('We build on Chapter 0 (accuracy measures, benchmarks) and Chapter 4 (time-series cross-validation, Diebold--Mariano)',
+      'Pornim de la Capitolul 0 (măsuri de acuratețe, metode de referință) și de la Capitolul 4 (validare încrucișată pentru serii de timp, Diebold--Mariano)')))
 
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Turn a time series into a supervised-learning table without using future information', 'Transformați o serie de timp într-un tabel de învățare supervizată fără să folosiți informație din viitor'),
@@ -536,7 +536,7 @@ interp(('the tree', 'arborelui'), [
     (T('First question: was the same weekday last week below @{tr.thr} GW? It separates weekends and holidays from working days', 'Prima întrebare: a fost aceeași zi a săptămînii trecute sub @{tr.thr} GW? Separă weekendurile și sărbătorile de zilele lucrătoare'),
      [T('four leaves: @{tr.l0}, @{tr.l1}, @{tr.l2} and @{tr.l3} GW, with @{tr.n0}, @{tr.n1}, @{tr.n2} and @{tr.n3} days', 'patru frunze: @{tr.l0}, @{tr.l1}, @{tr.l2} și @{tr.l3} GW, cu @{tr.n0}, @{tr.n1}, @{tr.n2} și @{tr.n3} zile')]),
     T('Four numbers already explain $R^2$ = @{tr.r2} of the variance in training; deeper trees add detail and variance', 'Patru numere explică deja $R^2$ = @{tr.r2} din varianță la antrenare; arborii mai adînci adaugă detalii și varianță'),
-    T('The forecast for any day is one of these four means: a tree never forecasts outside the range of the training targets', 'Prognoza pentru orice zi este una dintre aceste patru medii: un arbore nu prognozează niciodată în afara intervalului țintelor de antrenare')])
+    T('The forecast for any day is one of these four means', 'Prognoza pentru orice zi este una dintre aceste patru medii')])
 
 D.frame(T('Random forest', 'Random forest'), items(
     (T('\\textbf{Bagging} (bootstrap aggregation): grow $B$ deep trees on bootstrap samples of the rows and average them', '\\textbf{Bagging} (bootstrap aggregation): creștem $B$ arbori adînci pe eșantioane bootstrap ale rîndurilor și facem media lor'),

@@ -831,11 +831,6 @@ D.frame(T('The Box--Jenkins loop', 'Bucla Box--Jenkins'), BJ_TIKZ + items(
     T('The loop ends with the smallest model whose residuals are white noise and whose roots are well inside the admissible region', 'Bucla se încheie cu cel mai mic model ale cărui reziduuri sînt zgomot alb și ale cărui rădăcini sînt bine în interiorul regiunii admise'),
     T('Out-of-sample checks (Chapter 0: training and test samples) complete the method', 'Verificările în afara eșantionului (Capitolul 0: eșantioane de antrenare și de test) completează metoda')), 'footnotesize')
 
-D.recap(('The Box--Jenkins method', 'metoda Box--Jenkins'), [
-    T('Prepare, identify, estimate, check, forecast; loop back if the check fails', 'Pregătire, identificare, estimare, verificare, prognoză; revenim dacă verificarea eșuează'),
-    T('Parsimony: the smallest adequate model', 'Parcimonie: cel mai mic model adecvat'),
-    T('Next: the method on Romanian GDP', 'Urmează: metoda aplicată PIB-ului României')])
-
 # =============================================================================
 # 9. STUDIU DE CAZ: PIB
 # =============================================================================

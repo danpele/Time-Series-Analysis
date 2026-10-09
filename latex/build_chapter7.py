@@ -320,8 +320,8 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
         'modelul VECM și teorema de reprezentare a lui Granger; testele Johansen; estimarea și interpretarea lui $\\beta$ și $\\alpha$; prognoza'),
       T('applications: purchasing power parity, interest rates, three Central European currencies, pairs trading on the Bucharest Stock Exchange',
         'aplicații: paritatea puterii de cumpărare, ratele dobînzii, trei monede central-europene, pairs trading la Bursa de Valori București')]),
-    T('We build on Chapter 3 (unit roots, spurious regression) and Chapter 6 (VAR models); Seminar 7 comes before this lecture',
-      'Pornim de la Capitolul 3 (rădăcini unitare, regresia falsă) și de la Capitolul 6 (modele VAR); Seminarul 7 are loc înaintea acestui curs')))
+    T('We build on Chapter 3 (unit roots, spurious regression) and Chapter 6 (VAR models)',
+      'Pornim de la Capitolul 3 (rădăcini unitare, regresia falsă) și de la Capitolul 6 (modele VAR)')))
 
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Define cointegration and explain it as a common stochastic trend', 'Definiți cointegrarea și explicați-o ca trend stochastic comun'),
@@ -543,8 +543,7 @@ D.frame(T('Case study: Engle and Granger (1987)', 'Studiu de caz: Engle și Gran
           (T('\\textbf{Contribution}', '\\textbf{Contribuția}'),
            [T('the definition of cointegration and the representation theorem (Section 4): cointegration $\\Leftrightarrow$ error correction', 'definiția cointegrării și teorema de reprezentare (secțiunea 4): cointegrare $\\Leftrightarrow$ corecția erorii'),
             T('the two-step estimator and residual-based tests with simulated critical values', 'estimatorul în doi pași și testele pe reziduuri, cu valori critice obținute prin simulare'),
-            T('applications to US series such as consumption and income, prices and wages, short and long interest rates', 'aplicații pe serii din SUA, precum consumul și venitul, prețurile și salariile, ratele dobînzii pe termen scurt și lung')]),
-          T('\\textbf{Recognition}: Nobel Prize 2003, Granger for cointegration, Engle for ARCH (Chapter 5)', '\\textbf{Recunoaștere}: Premiul Nobel 2003, Granger pentru cointegrare, Engle pentru ARCH (Capitolul 5)')),
+            T('applications to US series such as consumption and income, prices and wages, short and long interest rates', 'aplicații pe serii din SUA, precum consumul și venitul, prețurile și salariile, ratele dobînzii pe termen scurt și lung')])),
     wl='0.30', wr='0.66'))
 
 D.recap(('The Engle--Granger method', 'metoda Engle--Granger'), [
@@ -649,7 +648,8 @@ D.frame(T('The Granger representation theorem', 'Teorema de reprezentare a lui G
 D.frame(T('2003: the Nobel Prize for cointegration', '2003: Premiul Nobel pentru cointegrare'), cols(
     ph('granger', T('Clive Granger (1934--2009)', 'Clive Granger (1934--2009)'), h='0.40\\textheight'),
     ph('nottingham', T('The Sir Clive Granger Building, University of Nottingham', 'Clădirea Sir Clive Granger, Universitatea din Nottingham'), h='0.30\\textheight') + '\n' +
-    items(T('Granger studied and began his career at Nottingham; cointegration was developed at UC San Diego', 'Granger a studiat și și-a început cariera la Nottingham; cointegrarea a fost dezvoltată la UC San Diego'),
+    items(T('The 2003 prize: Granger for cointegration, shared with Robert Engle for ARCH (Chapter 5)', 'Premiul din 2003: Granger pentru cointegrare, împreună cu Robert Engle pentru ARCH (Capitolul 5)'),
+          T('Granger studied and began his career at Nottingham', 'Granger a studiat și și-a început cariera la Nottingham'),
           T('Nobel lecture: \\refGrangerN: ``time series analysis, cointegration, and applications\'\'', 'Prelegerea Nobel: \\refGrangerN: „time series analysis, cointegration, and applications”')),
     wl='0.34', wr='0.62'))
 

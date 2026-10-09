@@ -784,7 +784,7 @@ chart(T('Zivot--Andrews on two real series', 'Zivot--Andrews pe două serii real
 interp(('the two breaks', 'celor două rupturi'), [
     (T('Nile: ZA = $@{bn.za}$, break in @{bn.y}, the mean falls from @{bn.m0} to @{bn.m1}', 'Nilul: ZA = $@{bn.za}$, ruptură în @{bn.y}, media scade de la @{bn.m0} la @{bn.m1}'),
      [T('the date matches the history: the first Aswan dam (built 1898--1902) and a drier climate; the ADF--KPSS conflict is explained', 'data corespunde istoriei: primul baraj de la Aswan (construit în 1898--1902) și un climat mai secetos; conflictul ADF--KPSS este explicat')]),
-    (T('EUR/RON: ADF p = @{bf.adfp}, but ZA = $@{bf.za}$, break in @{bf.d}: the 2008 depreciation (mean @{bf.m0} lei before, @{bf.m1} after)', 'EUR/RON: ADF p = @{bf.adfp}, dar ZA = $@{bf.za}$, ruptură în @{bf.d}: deprecierea din 2008 (media @{bf.m0} lei înainte, @{bf.m1} după)'),
+    (T('EUR/RON (month-end): ADF p = @{bf.adfp}, but ZA = $@{bf.za}$, break in @{bf.d}: the 2008 depreciation (mean @{bf.m0} lei before, @{bf.m1} after)', 'EUR/RON (sfîrșit de lună): ADF p = @{bf.adfp}, dar ZA = $@{bf.za}$, ruptură în @{bf.d}: deprecierea din 2008 (media @{bf.m0} lei înainte, @{bf.m1} după)'),
      [T('a managed exchange rate: long calm periods and rare adjustments, not a pure random walk', 'un curs în regim de managed float: perioade lungi de stabilitate și ajustări rare, nu un mers aleator pur'),
       T('but after 2008 the rate still drifts up: ``stationary around one break\'\' is also a simplification', 'dar după 2008 cursul continuă să urce: „staționar în jurul unei rupturi” este și el o simplificare')])])
 

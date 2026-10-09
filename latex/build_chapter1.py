@@ -844,7 +844,7 @@ D.frame(T('Interpreting the Ljung--Box statistics', 'Interpretarea statisticilor
     T('Rejection says only that \\textbf{some} correlation exists; the ACF shows where (GDP: lag 4, the season)', 'Respingerea spune doar că există \\textbf{o anumită} corelație; ACF arată unde (PIB: lagul 4, sezonul)')), 'footnotesize')
 
 D.recap(('Portmanteau tests', 'teste portmanteau'), [
-    T('$Q(m) = T\\sum\\hat\\rho(h)^2$, $Q^*(m) = T(T + 2)\\sum\\hat\\rho(h)^2/(T - h)$; both $\\approx \\chi^2(m)$ under white noise', '$Q(m) = T\\sum\\hat\\rho(h)^2$, $Q^*(m) = T(T + 2)\\sum\\hat\\rho(h)^2/(T - h)$; ambele $\\approx \\chi^2(m)$ pentru zgomot alb'),
+    T('Box--Pierce $Q(m)$ and Ljung--Box $Q^*(m)$ sum the squared sample autocorrelations; both $\\approx \\chi^2(m)$ under white noise', 'Box--Pierce $Q(m)$ și Ljung--Box $Q^*(m)$ însumează pătratele autocorelațiilor de selecție; ambele $\\approx \\chi^2(m)$ pentru zgomot alb'),
     T('Ljung--Box has better size in small samples; keep $m$ well below $T$', 'Ljung--Box are o mărime mai bună în eșantioane mici; păstrăm $m$ mult sub $T$'),
     T('A rejection is a signal to model, not a model; under GARCH effects the test of returns rejects too often', 'O respingere este un semnal pentru modelare, nu un model; în prezența efectelor GARCH, testul randamentelor respinge prea des')])
 
@@ -949,10 +949,6 @@ interp(('the two classic series', 'celor două serii clasice'), [
     (T('Sunspots: a damped wave, minimum $@{sun.min}$ at lag @{sun.minlag}, peak @{sun.peak} at lag @{sun.lag}', 'Petele solare: o undă amortizată, minim $@{sun.min}$ la lagul @{sun.minlag}, vîrf @{sun.peak} la lagul @{sun.lag}'),
      [T('the solar cycle of about 11 years; a stationary series with a cycle, modelled by \\refYule\\ with an AR(2)', 'ciclul solar de circa 11 ani; o serie staționară cu un ciclu, modelată de \\refYule\\ printr-un AR(2)')]),
     T('Read an ACF together with the plot of the series and with what you know about how the data were produced', 'Interpretăm ACF împreună cu graficul seriei și cu ce știm despre modul în care au fost produse datele')])
-
-D.recap(('Two classic series', 'două serii clasice'), [
-    T('Slow ACF decay has several causes: unit root, strong persistence, structural break', 'O ACF care scade lent are mai multe cauze posibile: rădăcina unitară, persistența puternică, ruptura structurală'),
-    T('Cycles appear as damped waves in the ACF', 'Ciclurile apar ca unde amortizate în ACF')])
 
 # =============================================================================
 # 9. AI

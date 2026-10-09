@@ -429,7 +429,7 @@ D.frame(T('The periodogram', 'Periodograma'), items(
           T('equivalently $I(\\nu_j) = \\sum_{|h| < T}\\hat\\gamma(h)e^{-2\\pi i\\nu_j h}$: the spectral formula with the sample autocovariances $\\hat\\gamma(h)$', 'echivalent $I(\\nu_j) = \\sum_{|h| < T}\\hat\\gamma(h)e^{-2\\pi i\\nu_j h}$: formula spectrului cu autocovarianțele de selecție $\\hat\\gamma(h)$')]),
     (T('Regression view: regress $x_t$ on $\\cos(2\\pi\\nu_j t)$ and $\\sin(2\\pi\\nu_j t)$ by OLS, with coefficients $a_j, b_j$', 'Interpretarea prin regresie: regresați $x_t$ pe $\\cos(2\\pi\\nu_j t)$ și $\\sin(2\\pi\\nu_j t)$ prin OLS, cu coeficienții $a_j, b_j$'),
      [T('$I(\\nu_j) = \\frac{T}{4}(a_j^2 + b_j^2)$: the squared amplitude of the best-fitting cycle at $\\nu_j$, scaled by $T/4$', '$I(\\nu_j) = \\frac{T}{4}(a_j^2 + b_j^2)$: pătratul amplitudinii celui mai bun ciclu la $\\nu_j$, înmulțit cu $T/4$')]),
-    (T('Variance decomposition: $\\hat\\gamma(0) = \\frac{1}{T}\\sum_{j=1}^{T-1} I(\\nu_j)$', 'Descompunerea varianței: $\\hat\\gamma(0) = \\frac{1}{T}\\sum_{j=1}^{T-1} I(\\nu_j)$'),
+    (T('Parseval (Section 1) in periodogram form: $\\hat\\gamma(0) = \\frac{1}{T}\\sum_{j=1}^{T-1} I(\\nu_j)$', 'Parseval (secțiunea 1), scris cu periodograma: $\\hat\\gamma(0) = \\frac{1}{T}\\sum_{j=1}^{T-1} I(\\nu_j)$'),
      [T('the share of a band of frequencies is the sum of its ordinates divided by the total', 'ponderea unei benzi de frecvențe este suma ordonatelor ei împărțită la total')]),
     T('In Python: \\texttt{np.abs(np.fft.fft(x - x.mean()))**2 / T}; keep $j = 1, \\ldots, \\lfloor T/2\\rfloor$', 'În Python: \\texttt{np.abs(np.fft.fft(x - x.mean()))**2 / T}; se păstrează $j = 1, \\ldots, \\lfloor T/2\\rfloor$')))
 
@@ -825,9 +825,7 @@ D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(
     (T('\\textbf{Question}: what are $f(0)$ and $f(1/2)$ of an AR(1) with $\\phi = -0.5$, $\\sigma^2 = 1$?', '\\textbf{Întrebare}: cît sînt $f(0)$ și $f(1/2)$ pentru un AR(1) cu $\\phi = -0.5$, $\\sigma^2 = 1$?'),
      [T('\\textbf{Answer}: $f(0) = 1/1.5^2 = 0.44$ and $f(1/2) = 1/0.5^2 = 4$: power at high frequencies', '\\textbf{Răspuns}: $f(0) = 1/1.5^2 = 0.44$ și $f(1/2) = 1/0.5^2 = 4$: puterea este la frecvențele înalte')]),
     (T('\\textbf{Question}: why does a longer sample not make the raw periodogram more precise?', '\\textbf{Întrebare}: de ce un eșantion mai lung nu face periodograma brută mai precisă?'),
-     [T('\\textbf{Answer}: each ordinate still has variance about $f^2$; more data only adds ordinates; precision needs averaging', '\\textbf{Răspuns}: fiecare ordonată are în continuare varianța aproximativ $f^2$; mai multe date adaugă doar ordonate; precizia cere o mediere')]),
-    (T('\\textbf{Question}: with $L = 5$, how wide is the 95\\% band relative to $\\hat f$?', '\\textbf{Întrebare}: pentru $L = 5$, cît de largă este banda de 95\\% în raport cu $\\hat f$?'),
-     [T('\\textbf{Answer}: from @{ex.ci.lo} to @{ex.ci.hi} times $\\hat f$ ($df = 10$)', '\\textbf{Răspuns}: de la @{ex.ci.lo} la @{ex.ci.hi} ori $\\hat f$ ($df = 10$)')])), size='footnotesize')
+     [T('\\textbf{Answer}: each ordinate still has variance about $f^2$; more data only adds ordinates; precision needs averaging', '\\textbf{Răspuns}: fiecare ordonată are în continuare varianța aproximativ $f^2$; mai multe date adaugă doar ordonate; precizia cere o mediere')])), size='footnotesize')
 
 D.frame(T('Self-assessment (2/2)', 'Autoevaluare (2/2)'), items(
     (T('\\textbf{Question}: a monthly series observed only every second month has a 3-month cycle. Where does it appear?', '\\textbf{Întrebare}: o serie lunară observată doar o dată la două luni are un ciclu de 3 luni. Unde apare acesta?'),

@@ -335,8 +335,8 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), items
       T('fractional differencing $(1-L)^d$ and the ARFIMA$(p,d,q)$ model', 'diferențierea fracționară $(1-L)^d$ și modelul ARFIMA$(p,d,q)$'),
       T('estimating $d$: R/S, DFA, GPH, local Whittle, maximum likelihood; forecasting', 'estimarea lui $d$: R/S, DFA, GPH, Whittle local, verosimilitate maximă; prognoza'),
       T('long memory in volatility; spurious long memory from breaks and regimes', 'memoria lungă a volatilității; memoria lungă aparentă, produsă de rupturi și regimuri')]),
-    T('We build on Chapter 1 (ACF, spectrum), Chapter 3 (unit roots) and Chapter 5 (GARCH); Seminar 8 comes before this lecture',
-      'Pornim de la Capitolul 1 (ACF, spectru), Capitolul 3 (rădăcini unitare) și Capitolul 5 (GARCH); Seminarul 8 are loc înaintea acestui curs')))
+    T('We build on Chapter 1 (ACF, spectrum), Chapter 3 (unit roots) and Chapter 5 (GARCH)',
+      'Pornim de la Capitolul 1 (ACF, spectru), Capitolul 3 (rădăcini unitare) și Capitolul 5 (GARCH)')))
 
 D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Distinguish short from long memory by the decay of the ACF and by the spectrum near frequency zero', 'Distingeți memoria scurtă de memoria lungă după descreșterea ACF și după spectrul din apropierea frecvenței zero'),
@@ -550,7 +550,7 @@ chart(T('ARFIMA$(0,d,0)$ with $d = 0.4$ and $d = -0.4$', 'ARFIMA$(0,d,0)$ cu $d 
     h='0.7\\textheight')
 
 interp(('the two ARFIMA paths', 'celor două traiectorii ARFIMA'), [
-    (T('$d = 0.4$: long excursions above and below zero; $\\rho(1) = @{pa.p.r1}$, $\\rho(10) = @{pa.p.r10}$, $\\rho(50) = @{pa.p.r50}$; variance @{pa.p.v}', '$d = 0{,}4$: excursii lungi deasupra și sub zero; $\\rho(1) = @{pa.p.r1}$, $\\rho(10) = @{pa.p.r10}$, $\\rho(50) = @{pa.p.r50}$; varianța @{pa.p.v}'),
+    (T('$d = 0.4$: long excursions above and below zero; the hyperbolic ACF of Section 1; variance @{pa.p.v}', '$d = 0{,}4$: excursii lungi deasupra și sub zero; ACF hiperbolică din secțiunea 1; varianța @{pa.p.v}'),
      [T('the path looks as if it had trends, although the mean is constant: a reason why long memory is mistaken for non-stationarity', 'traiectoria pare să aibă trenduri, deși media este constantă: un motiv pentru care memoria lungă este confundată cu nestaționaritatea')]),
     (T('$d = -0.4$: rapid zig-zag; $\\rho(1) = @{pa.n.r1}$, $\\rho(2) = @{pa.n.r2}$; variance @{pa.n.v}', '$d = -0{,}4$: zig-zag rapid; $\\rho(1) = @{pa.n.r1}$, $\\rho(2) = @{pa.n.r2}$; varianța @{pa.n.v}'),
      [T('anti-persistence: a rise tends to be followed by a fall; typical of over-differenced series, e.g.\\ the difference of a series with $d = 0.6$', 'antipersistență: o creștere tinde să fie urmată de o scădere; tipică seriilor diferențiate excesiv, de exemplu diferența unei serii cu $d = 0{,}6$')])])

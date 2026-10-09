@@ -291,8 +291,8 @@ chart(T('Portfolio volatility against the correlation', 'Volatilitatea portofoli
 interp(('the diversification curve', 'curbei de diversificare'), [
     (T('$\\rho = 1$: no diversification, $\\sigma_p = 20\\%$; $\\rho = 0$: $\\sigma_p = 20/\\sqrt{2} \\approx 14.1\\%$; $\\rho = -1$: the risk disappears',
        '$\\rho = 1$: nicio diversificare, $\\sigma_p = 20\\%$; $\\rho = 0$: $\\sigma_p = 20/\\sqrt{2} \\approx 14{,}1\\%$; $\\rho = -1$: riscul dispare'), []),
-    (T('The curve is concave: a rise of $\\rho$ from 0.2 to 0.8 costs @{ex.div2}\\% $\\to$ @{ex.div8}\\% of volatility',
-       'Curba este concavă: o creștere a lui $\\rho$ de la 0,2 la 0,8 duce volatilitatea de la @{ex.div2}\\% la @{ex.div8}\\%'), []),
+    (T('The curve is concave: the same rise of $\\rho$ adds more volatility at low correlations than at high ones',
+       'Curba este concavă: aceeași creștere a lui $\\rho$ adaugă mai multă volatilitate la corelații mici decît la corelații mari'), []),
     T('The question of the chapter: does $\\rho$ stay put in real markets, or does it move with the state of the market?', 'Întrebarea capitolului: rămîne $\\rho$ constant pe piețele reale sau se mișcă odată cu starea pieței?')])
 
 chart(T('Correlations change over time', 'Corelațiile se schimbă în timp'), 'tsa_ch14_rolling_corr', 'TSA_ch14_correlations', [
@@ -436,8 +436,7 @@ interp(('the parameter counts', 'numărului de parametri'), [
     (T('VEC grows like $N^4/2$, full BEKK like $2N^2$: both become impossible to estimate beyond a handful of assets', 'VEC crește ca $N^4/2$, BEKK complet ca $2N^2$: ambele devin imposibil de estimat dincolo de cîteva active'), []),
     (T('CCC and DCC grow like $N^2/2$, but the correlations are \\textbf{not} found by numerical optimisation: they are sample correlations (Section 4)',
        'CCC și DCC cresc ca $N^2/2$, dar corelațiile \\textbf{nu} se obțin prin optimizare numerică: ele sînt corelații de selecție (secțiunea 4)'),
-     [T('the DCC optimiser works on only 2 parameters, $a$ and $b$, whatever $N$', 'optimizarea DCC lucrează doar cu 2 parametri, $a$ și $b$, oricare ar fi $N$')]),
-    T('The price of parsimony: all pairs share the same correlation dynamics', 'Prețul parcimoniei: toate perechile au aceeași dinamică a corelației')])
+     [T('the DCC optimiser works on only 2 parameters, $a$ and $b$, whatever $N$', 'optimizarea DCC lucrează doar cu 2 parametri, $a$ și $b$, oricare ar fi $N$')])])
 
 D.recap(('VEC and BEKK', 'VEC și BEKK'), [
     T('VEC: the most general linear model; $k + 2k^2$ parameters, no positive-definiteness guarantee', 'VEC: cel mai general model liniar; $k + 2k^2$ parametri, fără garanția caracterului pozitiv definit'),

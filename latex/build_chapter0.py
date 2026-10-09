@@ -324,7 +324,7 @@ D.frame('⟦The team project||Proiectul de echipă⟧', items(
       '⟦\\textbf{oral defence}: each member explains the code and the results||\\textbf{susținere orală}: fiecare membru explică codul și rezultatele⟧'])))
 
 D.frame('⟦AI policy||Politica privind AI⟧', items(
-    ('⟦\\textbf{AI tools are allowed and must be declared}||\\textbf{Instrumentele AI sînt permise și trebuie declarate}⟧',
+    ('\\hypertarget{ch0-ai-policy}{}⟦\\textbf{AI tools are allowed and must be declared}||\\textbf{Instrumentele AI sînt permise și trebuie declarate}⟧',
      ['⟦AI: artificial intelligence; here, assistants based on an LLM (large language model) that write text and code||AI (artificial intelligence, inteligență artificială): aici, asistenți construiți pe un LLM (model lingvistic de mari dimensiuni), care scriu text și cod⟧',
       '⟦every use goes into \\texttt{AI\\_USE.md}: the tool, the prompt, what was kept, what was corrected||fiecare utilizare se consemnează în \\texttt{AI\\_USE.md}: instrumentul, promptul, ce s-a păstrat, ce s-a corectat⟧']),
     ('⟦\\textbf{You are responsible for every number and every reference}||\\textbf{Răspundeți pentru fiecare rezultat numeric și pentru fiecare referință}⟧',
@@ -333,13 +333,6 @@ D.frame('⟦AI policy||Politica privind AI⟧', items(
       '⟦every number: recompute it with your own code||fiecare rezultat numeric: recalculați-l cu propriul cod⟧']),
     ('⟦\\textbf{Oral defence}||\\textbf{Susținerea orală}⟧',
      ['⟦a line of code you cannot explain does not count as your work||o linie de cod pe care nu o puteți explica nu este considerată muncă proprie⟧'])))
-
-D.recap(('Organisation', 'organizarea cursului'), [
-    '⟦Grade: 70\\% written exam, 20\\% team project, 10\\% attendance||Nota: 70\\% examen scris, 20\\% proiect de echipă, 10\\% prezență⟧',
-    '⟦Textbook: \\refHP; free companion: \\refFPP||Manual: \\refHP; manual însoțitor gratuit: \\refFPP⟧',
-    '⟦Chapters 0--15; Chapters 11--14 are self-study||Capitolele 0--15; Capitolele 11--14 sînt de studiu individual⟧',
-    '⟦Seminars come before lectures; nothing is handed in||Seminariile preced cursurile și nu se notează⟧',
-    '⟦AI is allowed, declared in \\texttt{AI\\_USE.md}, and checked at the oral defence||AI este permis, declarat în \\texttt{AI\\_USE.md} și verificat la susținerea orală⟧'])
 
 # ===============================================================================================================
 D.section('What a time series is', 'Seria de timp')
@@ -535,13 +528,6 @@ D.frame('⟦Patterns in six series||Tipare în șase serii⟧', table(
     f'\\textbf{{{ANSWER}}}: ⟦CO2: a smooth trend and a stable season, little noise; the BET is the hardest: no season and large noise||CO2: un trend neted și o sezonalitate stabilă, puțin zgomot; BET este cea mai grea: fără sezonalitate și cu zgomot mare⟧'),
     size='footnotesize')
 
-D.recap(('Time series on real data', 'serii de timp pe date reale'), [
-    '⟦GDP and electricity: trend plus a strong seasonal pattern; GDP also shows recessions||PIB și electricitate: trend și un tipar sezonier puternic; PIB arată și recesiunile⟧',
-    '⟦Inflation: the 12-month rate removes the season but reacts late||Inflația: rata pe 12 luni elimină sezonalitatea, dar reacționează tîrziu⟧',
-    '⟦EUR/RON and the BET: trends built from shocks, no seasonality, hard to forecast||EUR/RON și BET: trenduri formate din șocuri, fără sezonalitate, greu de prognozat⟧',
-    '⟦CO2: a smooth trend and an additive yearly wave||CO2: un trend neted și o undă anuală aditivă⟧',
-    '⟦Look at the chart first: it decides the model||Priviți întîi graficul: el orientează alegerea modelului⟧'])
-
 # ===============================================================================================================
 D.section('A short history', 'O scurtă istorie')
 # ===============================================================================================================
@@ -627,13 +613,6 @@ D.frame('⟦A century in one line||Un secol pe o singură axă⟧', TIMELINE + '
     '⟦2000 and 2020: the M3 and M4 forecasting competitions compare methods on thousands of real series (\\refMthree; \\refMfour)||2000 și 2020: competițiile de prognoză M3 și M4 compară metodele pe mii de serii reale (\\refMthree; \\refMfour)⟧'),
     size='scriptsize')
 
-D.recap(('a short history', 'o scurtă istorie'), [
-    '⟦Sunspots (Wolf, 1848) posed the first question: hidden periods or random dependence?||Petele solare (Wolf, 1848) au ridicat prima întrebare: perioade ascunse sau dependență aleatoare?⟧',
-    '⟦Yule: a series explained by its own past (AR); Slutsky: sums of shocks look like cycles (MA)||Yule: o serie explicată prin propriul trecut (AR); Slutsky: sumele de șocuri seamănă cu ciclurile (MA)⟧',
-    '⟦Kolmogorov and Wiener: the optimal linear forecast||Kolmogorov și Wiener: prognoza liniară optimă⟧',
-    '⟦Box and Jenkins: identify, estimate, check, forecast||Box și Jenkins: identificare, estimare, verificare, prognoză⟧',
-    '⟦Forecasting competitions: simple methods are hard to beat||Competițiile de prognoză: metodele simple sînt greu de depășit⟧'])
-
 # ===============================================================================================================
 D.section('Components and decomposition', 'Componente și descompunere')
 # ===============================================================================================================
@@ -672,7 +651,7 @@ D.frame('⟦Additive and multiplicative models||Modelul aditiv și modelul multi
 D.frame('⟦Centred moving averages||Medii mobile centrate⟧', items(
     ('⟦\\textbf{Moving average of order} $k$ (odd): the mean of $k$ neighbouring values||\\textbf{Media mobilă de ordin} $k$ (impar): media a $k$ valori vecine⟧',
      ['⟦$\\hat T_t = \\frac{1}{k} \\sum_{j=-q}^{q} y_{t+j}$, with $k = 2q + 1$; it smooths out the noise||$\\hat T_t = \\frac{1}{k} \\sum_{j=-q}^{q} y_{t+j}$, cu $k = 2q + 1$; netezește zgomotul⟧',
-      '⟦$q$: the number of values on each side of $t$; $j$: the position relative to $t$; the hat marks an estimate||$q$: numărul de valori de fiecare parte a lui $t$; $j$: poziția față de $t$; notația $\hat{\ }$ indică o estimare⟧']),
+      '⟦$q$: the number of values on each side of $t$; $j$: the position relative to $t$; the hat marks an estimate||$q$: numărul de valori de fiecare parte a lui $t$; $j$: poziția față de $t$; notația $\\hat{\\ }$ indică o estimare⟧']),
     ('⟦\\textbf{The key property}: a moving average over one full season removes the seasonal pattern||\\textbf{Proprietatea esențială}: o medie mobilă pe un sezon complet elimină tiparul sezonier⟧',
      ['⟦every quarter enters once, so the seasonal effects cancel out||fiecare trimestru intră o singură dată, deci efectele sezoniere se compensează⟧']),
     ('⟦\\textbf{Even period} $m = 4$: a $2 \\times 4$ moving average, to stay centred on a quarter||\\textbf{Perioadă pară} $m = 4$: o medie mobilă $2 \\times 4$, pentru a rămîne centrată pe un trimestru⟧',
@@ -1087,15 +1066,12 @@ D.frame('⟦Checks before trusting a result||Verificări necesare⟧', items(
     ('⟦\\textbf{The evaluation}||\\textbf{Evaluarea}⟧',
      ['⟦the test set comes after the training set; it is used once, at the end||setul de test urmează după setul de antrenare; se folosește o singură dată, la final⟧',
       '⟦compare with the naive and seasonal naive forecasts before claiming success||comparați cu prognozele naivă și naivă sezonieră înainte de a declara un succes⟧']),
-    ('⟦\\textbf{The claims}||\\textbf{Afirmațiile}⟧',
-     ['⟦every reference: open the DOI; every number: recompute it||fiecare referință: deschideți DOI-ul; fiecare rezultat numeric: recalculați-l⟧',
-      '⟦declare the use of AI in \\texttt{AI\\_USE.md}||declarați utilizarea AI în \\texttt{AI\\_USE.md}⟧'])))
+    '⟦\\textbf{The claims}: the checks of the \\hyperlink{ch0-ai-policy}{AI policy} (references, numbers, \\texttt{AI\\_USE.md})||\\textbf{Afirmațiile}: verificările din \\hyperlink{ch0-ai-policy}{politica privind AI} (referințe, rezultate numerice, \\texttt{AI\\_USE.md})⟧'))
 
 # ===============================================================================================================
 D.section('Conclusions', 'Concluzii')
 # ===============================================================================================================
 D.frame('⟦Key takeaways||Idei de reținut⟧', items(
-    '⟦Grade: 70\\% exam, 20\\% project, 10\\% attendance; AI allowed and declared; seminars before lectures||Nota: 70\\% examen, 20\\% proiect, 10\\% prezență; AI permis și declarat; seminariile înaintea cursurilor⟧',
     '⟦A time series is ordered in time; its dependence on the past is what makes forecasting possible||O serie de timp este ordonată în timp; dependența de trecut face posibilă prognoza⟧',
     '⟦Components: trend, seasonality (fixed period), cycle (no fixed period), remainder; additive or multiplicative||Componente: trend, sezonalitate (perioadă fixă), ciclu (fără perioadă fixă), componenta neregulată; aditiv sau multiplicativ⟧',
     '⟦Yule and Slutsky: dependence and sums of shocks, the roots of AR and MA models||Yule și Slutsky: dependența și sumele de șocuri, originile modelelor AR și MA⟧',

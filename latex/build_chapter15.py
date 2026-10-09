@@ -516,8 +516,7 @@ D.frame(T('The series of the course', 'Seriile cursului'), table(
      T('BET, S\\&P 500, DAX (daily)', 'BET, S\\&P 500, DAX (zilnic)') + ' & EODHD & ' + T('volatility clustering, spillovers', 'volatility clustering, spillover') + ' & 1, 5, 6',
      T('electricity load (daily, hourly)', 'consumul de electricitate (zilnic, orar)') + ' & ENTSO-E & ' + T('multiple seasonality, machine learning', 'sezonalitate multiplă, învățare automată') + ' & 4, 9',
      T('Nile, sunspots, US yields and GDP', 'Nilul, petele solare, randamentele și PIB-ul SUA') + ' & statsmodels, FRED & ' + T('the classic examples of the textbooks', 'exemplele clasice ale manualelor') + ' & 1, 2, 7, 8, 10'],
-    size='footnotesize') + items(
-    T('Every number on the recap slides is the number of its chapter: same data, same window, same code', 'Fiecare cifră de pe slide-urile de recapitulare este cifra din capitolul ei: aceleași date, aceeași fereastră, același cod')))
+    size='footnotesize'))
 
 # =============================================================================
 # 2. CAPITOLELE 0--3
@@ -556,11 +555,6 @@ review(3, ('Unit roots and ARIMA models', 'rădăcini unitare și modele ARIMA')
        [T('Student or Normal critical values for the ADF statistic', 'valori critice Student sau Normale pentru statistica ADF'),
         T('reading a non-rejection as proof of a unit root; a regression in levels of $I(1)$ series without a cointegration test', 'interpretarea nerespingerii ca dovadă a rădăcinii unitare; o regresie în niveluri între serii $I(1)$ fără test de cointegrare')])
 
-D.recap(('Chapters 0--3', 'Capitolele 0--3'), [
-    T('Plot first, then transform: logarithm for a growing swing, differences for a stochastic trend', 'Întîi graficul, apoi transformarea: logaritm pentru o oscilație care crește, diferențe pentru un trend stochastic'),
-    T('ACF and PACF identify an ARMA; AIC and BIC choose; Ljung--Box on residuals checks', 'ACF și PACF identifică un ARMA; AIC și BIC aleg; Ljung--Box pe reziduuri verifică'),
-    T('ADF and KPSS together decide $d$; Dickey--Fuller critical values, never Student ones', 'ADF și KPSS împreună decid $d$; valori critice Dickey--Fuller, niciodată Student')])
-
 # =============================================================================
 # 3. CAPITOLELE 4--7
 # =============================================================================
@@ -598,11 +592,6 @@ review(7, ('Cointegration and VECM', 'cointegrare și VECM'),
        [T('Dickey--Fuller critical values for Engle--Granger residuals (they must be more negative)', 'valorile critice Dickey--Fuller pentru reziduurile Engle--Granger (trebuie să fie mai negative)'),
         T('a VAR in differences for cointegrated series (it omits the error correction term)', 'un VAR în diferențe pentru serii cointegrate (omite termenul de corecție a erorii)')])
 
-D.recap(('Chapters 4--7', 'Capitolele 4--7'), [
-    T('Seasonality: $\\Delta_s$ or Fourier terms; calendar effects as regressors; evaluation with rolling origins, MASE and DM', 'Sezonalitatea: $\\Delta_s$ sau termeni Fourier; efectele de calendar ca regresori; evaluare cu origini mobile, MASE și DM'),
-    T('Volatility: ARCH-LM, then GARCH(1,1)-$t$; persistence close to 1; VaR 1\\% with the right quantile', 'Volatilitatea: ARCH-LM, apoi GARCH(1,1)-$t$; persistență aproape de 1; VaR 1\\% cu cuantila potrivită'),
-    T('Several series: VAR for stationary data, VECM for cointegrated $I(1)$ data; Granger is predictability', 'Mai multe serii: VAR pentru date staționare, VECM pentru date $I(1)$ cointegrate; Granger înseamnă predictibilitate')])
-
 # =============================================================================
 # 4. CAPITOLELE 8--10
 # =============================================================================
@@ -631,11 +620,6 @@ review(10, ('State space models, Kalman filter and Markov switching', 'spațiul 
         T('US GDP: the regimes match the NBER dates in @{f10.con}\\% of quarters; Romanian GDP: stable regime @{f10.d2} quarters, volatile @{f10.d1}', 'PIB-ul SUA: regimurile coincid cu datările NBER în @{f10.con}\\% din trimestre; PIB-ul României: regimul stabil @{f10.d2} trimestre, cel volatil @{f10.d1}')],
        [T('smoothed probabilities used as if known in real time', 'probabilități netezite folosite ca și cum ar fi fost cunoscute în timp real'),
         T('durations written as $p_{ii}/(1 - p_{ii})$; the last value of the HP gap read as a real-time estimate', 'durate scrise $p_{ii}/(1 - p_{ii})$; ultima valoare a deviației HP interpretată ca estimare în timp real')])
-
-D.recap(('Chapters 8--10', 'Capitolele 8--10'), [
-    T('Long memory: hyperbolic ACF, $d$ between 0 and 1/2; check breaks and regimes before believing it', 'Memoria lungă: ACF hiperbolică, $d$ între 0 și 1/2; verificați rupturile și regimurile înainte de a o accepta'),
-    T('Machine learning: the same supervised table, walk-forward validation, simple benchmarks', 'Învățarea automată: același tabel supervizat, validare walk-forward, repere simple'),
-    T('State space: the Kalman filter for hidden levels and trends; Markov switching for regimes', 'Spațiul stărilor: filtrul Kalman pentru niveluri și trenduri ascunse; Markov switching pentru regimuri')])
 
 # =============================================================================
 # 5. CAPITOLELE 11--14 (STUDIU INDIVIDUAL)
@@ -885,7 +869,9 @@ D.frame(T('Typical problem types', 'Tipuri de probleme'), table(
      T('GARCH output and VaR 1\\%', 'rezultate GARCH și VaR 1\\%') + ' & 5 & ' + T('Problem 6: the BET', 'Problema 6: BET'),
      T('forecast evaluation; state space and regimes', 'evaluarea prognozelor; spațiul stărilor și regimuri') + ' & 4, 8--10 & ' + T('Problems 7 and 8', 'Problemele 7 și 8')],
     size='footnotesize') + items(
-    T('The eight problems below are review examples with full solutions; the exam has its own subjects', 'Cele opt probleme de mai jos sînt exemple de recapitulare, cu rezolvări complete; examenul are subiecte proprii')))
+    T('The eight problems below are review examples with full solutions; the exam has its own subjects', 'Cele opt probleme de mai jos sînt exemple de recapitulare, cu rezolvări complete; examenul are subiecte proprii'),
+    T('More practice: Part A of every seminar, Seminar 15 and the \\href{' + SITE + 'exam/practice/exam_problems_en.pdf}{practice set} (25 problems with numerical answers)',
+      'Exerciții suplimentare: Partea A a fiecărui seminar, Seminarul 15 și \\href{' + SITE + 'exam/practice/probleme_examen_ro.pdf}{setul de probleme de exercițiu} (25 de probleme cu rezultatele numerice)')))
 
 
 def problem(k, title, context, tasks, size='footnotesize', extra=''):
@@ -1066,12 +1052,6 @@ solution(8, [
      T('In the long run Romanian growth is in the volatile regime about @{e8.pi1p}\\% of the time: transition, 2009 and 2020', 'Pe termen lung, creșterea din România se află în regimul volatil aproximativ @{e8.pi1p}\\% din timp: tranziția, 2009 și 2020'),
      T('Inflation shocks fade slowly, hyperbolically: forecasts return to the mean more slowly than those of an AR model', 'Șocurile inflației se sting lent, hiperbolic: prognozele revin la medie mai încet decît cele ale unui model AR')])
 
-D.recap(('The exam', 'examenul'), [
-    T('Written, 2 hours, five subjects, 70\\% of the grade; Chapters 0--10', 'Scris, 2 ore, cinci subiecte, 70\\% din notă; Capitolele 0--10'),
-    T('Points for the method, the result with its unit and sign, and the interpretation', 'Punctajul se acordă pentru metodă, pentru rezultat (cu unitate și semn) și pentru interpretare'),
-    T('Practise with Part A of every seminar, with Seminar 15 and with the \\href{' + SITE + 'exam/practice/exam_problems_en.pdf}{practice set} (25 problems with numerical answers)',
-      'Exersați cu Partea A a fiecărui seminar, cu Seminarul 15 și cu \\href{' + SITE + 'exam/practice/probleme_examen_ro.pdf}{setul de probleme de exercițiu} (25 de probleme cu rezultatele numerice)')])
-
 # =============================================================================
 # 9. PROIECTUL DE ECHIPĂ ȘI PREZENȚA
 # =============================================================================
@@ -1107,8 +1087,7 @@ D.frame(T('The file AI\\_USE.md', 'Fișierul AI\\_USE.md'), items(
     (T('\\textbf{You are responsible for every number and every reference}', '\\textbf{Răspundeți pentru fiecare cifră și pentru fiecare referință}'),
      [T('every number: recomputed with your own code from the data', 'fiecare cifră: recalculată cu propriul cod, din date'),
       T('every reference: its DOI opened and its title checked', 'fiecare referință: DOI-ul deschis și titlul verificat')]),
-    (T('\\textbf{Typical AI errors in this course}', '\\textbf{Erori AI tipice în acest curs}'),
-     [T('the wrong null hypothesis of ADF or KPSS, Ljung--Box with $m$ degrees of freedom on residuals, AIC compared across different $d$, ``VaR 99\\%\'\', invented references', 'ipoteza nulă greșită pentru ADF sau KPSS, Ljung--Box cu $m$ grade de libertate pe reziduuri, AIC comparat între $d$ diferite, „VaR 99\\%”, referințe inventate')])))
+    T('The typical AI errors of this course: the slide ``Checks you must run\'\' of the section on AI', 'Erorile AI tipice din acest curs: slide-ul „Verificări necesare” din secțiunea despre AI')))
 
 D.frame(T('The final grade', 'Nota finală'), table(
     TB + 'p{3.2cm}cc' + TB + 'p{5.6cm}',
@@ -1140,6 +1119,7 @@ D.frame(T('Checks you must run', 'Verificări necesare'), items(
     T('The null hypotheses: ADF has a unit root under $H_0$, KPSS has stationarity; an answer that swaps them is wrong', 'Ipotezele nule: la ADF, $H_0$ este rădăcina unitară, la KPSS staționaritatea; un răspuns care le inversează este greșit'),
     T('The degrees of freedom: Ljung--Box on residuals uses $m - k$; Granger $F$ uses $(p, T - Kp - 1)$', 'Gradele de libertate: Ljung--Box pe reziduuri folosește $m - k$; testul Granger $F$ folosește $(p, T - Kp - 1)$'),
     T('The signs: the EViews and Python conventions for MA terms and for the error-correction coefficient', 'Semnele: convențiile EViews și Python pentru termenii MA și pentru coeficientul de corecție a erorii'),
+    T('The conventions: AIC and BIC only for the same $d$ and $D$; VaR 1\\%, never ``VaR 99\\%\'\'', 'Convențiile: AIC și BIC doar pentru aceleași $d$ și $D$; VaR 1\\%, niciodată „VaR 99\\%”'),
     T('The time order: no information from the test sample in the estimation, the scaling or the model choice', 'Ordinea timpului: nicio informație din eșantionul de test în estimare, în scalare sau în alegerea modelului'),
     T('Every number recomputed with your own code; every reference checked by its DOI', 'Fiecare cifră recalculată cu propriul cod; fiecare referință verificată prin DOI')))
 

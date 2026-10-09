@@ -383,7 +383,7 @@ D.frame(T('ARCH($q$) and its limits', 'ARCH($q$) și limitele lui'), items(
      'ARCH(10) & @{aqt.a10.k} & $@{aqt.a10.ll}$ & @{aqt.a10.aic} & @{aqt.a10.bic} & $@{aqt.a10.pers}$',
      'GARCH(1,1) & @{aqt.g11.k} & $@{aqt.g11.ll}$ & \\textbf{@{aqt.g11.aic}} & \\textbf{@{aqt.g11.bic}} & $@{aqt.g11.pers}$'],
     size='footnotesize') + items(
-    T('AIC (Akaike) and BIC (Bayesian information criterion): $\\mathrm{AIC} = -2\\ell + 2k$, $\\mathrm{BIC} = -2\\ell + k\\ln T$ (Chapter 2), $\\ell$: the maximised log-likelihood, $k$: parameters; smaller is better',
+    '\\hypertarget{ch5-aicbic}{}' + T('AIC (Akaike) and BIC (Bayesian information criterion): $\\mathrm{AIC} = -2\\ell + 2k$, $\\mathrm{BIC} = -2\\ell + k\\ln T$ (Chapter 2), $\\ell$: the maximised log-likelihood, $k$: parameters; smaller is better',
       'AIC (Akaike) și BIC (Bayesian information criterion, criteriul informațional bayesian): $\\mathrm{AIC} = -2\\ell + 2k$, $\\mathrm{BIC} = -2\\ell + k\\ln T$ (Capitolul 2), $\\ell$: log-verosimilitatea maximizată, $k$: numărul de parametri; valoarea mai mică este mai bună'),
     T('Interpretation: ARCH needs ten lags and still loses to GARCH(1,1), which has four parameters: the motivation for GARCH',
       'Interpretare: ARCH are nevoie de zece laguri și tot pierde în fața GARCH(1,1), care are patru parametri: motivația pentru GARCH')) + ql('TSA_ch5_garch_estimation'), 'footnotesize')
@@ -779,7 +779,7 @@ def msrow(m, lab):
 
 
 D.frame(T('Nine models for the S\\&P 500', 'Nouă modele pentru S\\&P 500'), items(
-    T('AIC $= -2\\ell + 2k$ \\refAkaike; BIC $= -2\\ell + k\\ln T$ \\refSchwarz; $k$ parameters; compare models fitted on the same data', 'AIC $= -2\\ell + 2k$ \\refAkaike; BIC $= -2\\ell + k\\ln T$ \\refSchwarz; $k$ parametri; comparăm modele estimate pe aceleași date')) + table(
+    T('AIC \\refAkaike\\ and BIC \\refSchwarz\\ as defined on \\hyperlink{ch5-aicbic}{ARCH($q$) and its limits}; compare models fitted on the same data', 'AIC \\refAkaike\\ și BIC \\refSchwarz, definite pe slide-ul \\hyperlink{ch5-aicbic}{ARCH($q$) și limitele lui}; comparăm modele estimate pe aceleași date')) + table(
     'lrrrrrr', T('& \\multicolumn{2}{c}{Normal} & \\multicolumn{2}{c}{Student-t} & \\multicolumn{2}{c}{skewed t} \\\\ & log-lik. & $\\Delta$BIC & log-lik. & $\\Delta$BIC & log-lik. & $\\Delta$BIC',
                  '& \\multicolumn{2}{c}{Normală} & \\multicolumn{2}{c}{Student-t} & \\multicolumn{2}{c}{t asimetrică} \\\\ & log-verosim. & $\\Delta$BIC & log-verosim. & $\\Delta$BIC & log-verosim. & $\\Delta$BIC'),
     [msrow('GARCH', 'GARCH(1,1)'), msrow('GJR', 'GJR-GARCH(1,1)'), msrow('EGARCH', 'EGARCH(1,1)')], size='scriptsize') + items(
