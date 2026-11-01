@@ -626,7 +626,7 @@ review(10, ('State space models, Kalman filter and Markov switching', 'spațiul 
 # =============================================================================
 D.section('Chapters 11--14: self-study', 'Capitolele 11--14: studiu individual')
 
-SELF = T('Chapters 11--14 are for self-study (not examined unless the instructor decides otherwise)', 'Capitolele 11--14 sînt pentru studiu individual (nu se examinează, dacă titularul nu decide altfel)')
+SELF = T('Chapters 11--14 are for self-study', 'Capitolele 11--14 sînt pentru studiu individual')
 
 
 def selfstudy(k, title, ideas, links_to):
