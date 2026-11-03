@@ -529,9 +529,366 @@ function blkSun() {
   out('ss-out', lines);
 }
 
+// ================================================================= tables and worked examples (blocks of their own frames)
+const X = () => T.x;
+function table(id, head, rows, o) {
+  const el = $(id); if (!el) return;
+  const cell = (c, tag) => { const v = typeof c === 'object' && c !== null ? c : { v: c }; return `<${tag}${v.cls ? ` class="${v.cls}"` : ''}>${v.v}</${tag}>`; };
+  el.innerHTML = (o && o.cap ? `<p class="c2cap">${o.cap}</p>` : '') + '<table><thead><tr>' + head.map(c => cell(c, 'th')).join('') + '</tr></thead><tbody>'
+    + rows.map(r => `<tr${r.hi ? ' class="hi"' : ''}>` + r.map(c => cell(c, 'td')).join('') + '</tr>').join('') + '</tbody></table>' + (o && o.note ? `<p class="c2cap">${o.note}</p>` : '');
+}
+const nz = (v, d = 2) => nf(Math.abs(v) < 0.5 * 10 ** -d ? 0 : v, d);                // no '−0.00'
+const num = (x, d, bold) => ({ v: x === null || !isFinite(x) ? '—' : bold ? `<b>${nz(x, d)}</b>` : nz(x, d), cls: 'r' });
+const txt = (v, bold) => ({ v: bold ? `<b>${v}</b>` : v, cls: 'r' });
+const steps = (id, items) => { const el = $(id); if (el) el.innerHTML = items.map(s => `<li>${s}</li>`).join(''); };
+const pn = (x, d) => (x < 0 ? `(${nz(x, d)})` : nz(x, d));                       // a factor in a product: negative numbers in parentheses
+const sg = (x, d) => (x < 0 ? ' − ' + nz(-x, d) : ' + ' + nz(x, d));            // a term of a sum
+const hiRow = (r, on) => { if (on) r.hi = true; return r; };
+const ns = v => nz(v, 4).replace(/([.,]\d*?)0+$/, '$1').replace(/[.,]$/, '');          // up to 4 decimals, no trailing zeros
+const yn = b => (b ? X().yes : X().no);
+const cpx = (re, im, d) => (Math.abs(im) < 1e-12 ? nz(re, d) : `${nz(re, d)} ${im < 0 ? '−' : '+'} ${nz(Math.abs(im), d)}i`);
+function chi2ppf(p, k) { let lo = 0, hi = 10 * k + 100; for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; if (1 - chi2sf(m, k) < p) lo = m; else hi = m; } return (lo + hi) / 2; }
+const modLab = k => `ARMA(${k[0]},${k[1]})`;
+const GKEYS = () => Object.keys(D.gdpfit).sort();
+const gfit = k => { const F = D.gdpfit[k], n = F.nobs, aic = -2 * F.llf + 2 * F.k;
+  return Object.assign({ p: +k[0], q: +k[1], aic, bic: -2 * F.llf + F.k * Math.log(n), aicc: aic + 2 * F.k * (F.k + 1) / (n - F.k - 1), sig2: F.b[F.b.length - 1] }, F); };
+
+// ---------------------------------------------------------------- Worked example: an AR(1)
+function blkXAR1() {
+  const c = +$('xa-c').value, phi = +$('xa-phi').value, s2 = +$('xa-s2').value, h = +$('xa-h').value;
+  set('xa-c', nf(c, 1)); set('xa-phi', nf(phi, 2)); set('xa-s2', nf(s2, 2)); set('xa-h', h);
+  const mu = c / (1 - phi), g0 = s2 / (1 - phi * phi), a = Math.abs(phi), hlf = a > 0 ? Math.log(0.5) / Math.log(a) : 0, ps = range(0, 10, 1).map(j => phi ** j);
+  steps('xa-ws', [X().xa1(nf(a, 2)), X().xa2(nf(c, 1), pn(phi, 2), nz(mu, 2)), X().xa3(ns(s2), ns(phi * phi), nz(g0, 2)),
+    X().xa4(h, pn(phi, 2), nz(phi ** h, 3)), a > 0 ? X().xa5(nf(a, 2), nf(hlf, 2), phi < 0) : X().xa5z(),
+    X().xa6(ps.slice(0, 4).map(v => nz(v, 3)).join(X().sep), nz(ps[2], 2))]);
+  table('xa-tb', ['j', 'ψ<sub>j</sub> = φ<sup>j</sup>', 'ρ(j) = φ<sup>j</sup>', 'γ(j) = φ<sup>j</sup>γ(0)'],
+    ps.map((v, j) => hiRow([txt(j), num(v, 3), num(v, 3), num(v * g0, 3)], j === h)), { cap: X().xaCap(nz(mu, 2), nz(g0, 2)) });
+  const G = grid('xa-chart', [{ r: 0, c: 0, t: `AR(1), φ = ${phi}: ρ(h) = φ<sup>h</sup> and the half-life`, xt: 'lag h', y: { range: [-1, 1] }, x: { range: [-0.5, 20.5] } }], { cols: 1, h: 300 });
+  const ax = G.ax[0], hh = range(0, 20, 1);
+  G.lay.shapes.push(hl(ax, 0, K.navy, 'solid', 0.8), hl(ax, 0.5, K.orange, 'dot', 1), hl(ax, -0.5, K.orange, 'dot', 1));
+  if (a > 0) G.lay.shapes.push(vl(ax, hlf, K.green, 'dash', 1.3));
+  plot('xa-chart', [{ x: hh, y: hh.map(k => phi ** k), type: 'bar', width: 0.55, marker: { color: hh.map(k => (k === h ? K.red : K.blue)) }, xaxis: ax.xa, yaxis: ax.ya, showlegend: false, hovertemplate: 'ρ(%{x}) = %{y:.3f}<extra></extra>' },
+    leg(`half-life ${a > 0 ? hlf.toFixed(2) : 0}`, { color: K.green, dash: 'dash', width: 1.3 }), leg('±0.5', { color: K.orange, dash: 'dot', width: 1 })], G.lay);
+  out('xa-out', [X().xa(nf(phi, 2), nz(mu, 2), nz(g0, 2), h, nz(phi ** h, 3), a > 0 ? nf(hlf, 2) : '0')]);
+}
+
+// ---------------------------------------------------------------- The AR(p) model and its characteristic polynomial: roots of 1 - phi1 z - phi2 z^2
+function rootsZ(a, b) {           // roots of 1 - a z - b z^2: [[re, im], ...]
+  if (Math.abs(b) < 1e-12) return Math.abs(a) < 1e-12 ? [] : [[1 / a, 0]];
+  const d = a * a + 4 * b;
+  if (d >= 0) return [(-a + Math.sqrt(d)) / (2 * b), (-a - Math.sqrt(d)) / (2 * b)].map(v => [v, 0]);
+  return [[-a / (2 * b), Math.sqrt(-d) / (2 * b)], [-a / (2 * b), -Math.sqrt(-d) / (2 * b)]];
+}
+function blkXRoots() {
+  const a = +$('xr-f1').value, b = +$('xr-f2').value; set('xr-f1', nf(a, 3)); set('xr-f2', nf(b, 3));
+  const z = rootsZ(a, b), md = z.map(r => Math.hypot(r[0], r[1])), d = a * a + 4 * b, st = z.every((r, i) => md[i] > 1), ex = AR2();
+  const zs = z.length === 2 && Math.abs(z[0][1]) > 1e-12 ? `${nz(z[0][0], 3)} ± ${nz(Math.abs(z[0][1]), 3)}i` : z.map(r => nz(r[0], 3)).join(T.and);
+  const S = [];
+  S.push(X().xr1(`1${sg(-a, 3)}z${sg(-b, 3)}z²`));
+  if (Math.abs(b) > 1e-12) S.push(X().xr2(pn(a, 3), pn(b, 3), nz(d, 3), d < 0), X().xr3(zs, md.map(m => nz(m, 3)).join(T.and)));
+  else S.push(X().xr3b(nf(a, 3), z.length ? nz(z[0][0], 3) : '∞'));
+  S.push(X().xr4(md.map(m => nz(1 / m, 3)).join(T.and)));
+  S.push(X().xr5(nz(a + b, 3), yn(a + b < 1), nz(b - a, 3), yn(b - a < 1), nz(Math.abs(b), 3), yn(Math.abs(b) < 1)), X().xr6(st));
+  steps('xr-ws', S);
+  const rows = ['A', 'B', 'C', 'Sunspots'].map(k => [k, ex[k].phi]).concat([[X().yours, [a, b]]]);
+  table('xr-tb', [X().model, 'φ<sub>1</sub>', 'φ<sub>2</sub>', 'φ<sub>1</sub>² + 4φ<sub>2</sub>', X().roots, 'min |z|', 'max |λ|', 'φ<sub>1</sub> + φ<sub>2</sub>', X().stat],
+    rows.map(([k, [p1, p2]], i) => { const zz = rootsZ(p1, p2), mm = zz.map(r => Math.hypot(r[0], r[1])), s = mm.every(m => m > 1);
+      const zl = zz.length === 2 && Math.abs(zz[0][1]) > 1e-12 ? `${nz(zz[0][0], 2)} ± ${nz(Math.abs(zz[0][1]), 2)}i` : zz.map(r => nz(r[0], 2)).join('; ');
+      return hiRow([k, num(p1, 3), num(p2, 3), num(p1 * p1 + 4 * p2, 3), txt(zl), num(Math.min(...mm), 3), num(1 / Math.min(...mm), 3), num(p1 + p2, 3), txt(yn(s), !s)], i === 4); }));
+  const G = grid('xr-chart', [{ r: 0, c: 0, t: 'Roots z of φ(z) = 1 − φ<sub>1</sub>z − φ<sub>2</sub>z² and the unit circle', xt: 'real part', yt: 'imaginary part', x: { range: [-3, 3] }, y: { range: [-2.2, 2.2] } }], { cols: 1, h: 380, legendRows: 2 });
+  const ax = G.ax[0], th = range(0, 2 * Math.PI, 0.02); G.lay['yaxis'].scaleanchor = 'x';
+  const tr = [{ x: th.map(Math.cos), y: th.map(Math.sin), fill: 'toself', fillcolor: 'rgba(205,0,0,0.07)', mode: 'lines', line: { color: K.navy, width: 1.2 }, name: 'unit circle: roots inside → not stationary', xaxis: ax.xa, yaxis: ax.ya, hoverinfo: 'skip' }];
+  ['A', 'B', 'C', 'Sunspots'].forEach(k => { const zz = rootsZ(...ex[k].phi);
+    tr.push({ x: zz.map(r => r[0]), y: zz.map(r => r[1]), mode: 'markers', marker: { color: AR2COL[k], size: 10 }, name: k, xaxis: ax.xa, yaxis: ax.ya, hovertemplate: `${k}: z = %{x:.3f} %{y:+.3f}i<extra></extra>` }); });
+  tr.push({ x: z.map(r => r[0]), y: z.map(r => r[1]), mode: 'markers', marker: { color: K.navy, size: 13, symbol: 'x-thin', line: { color: K.navy, width: 3 } }, name: 'your model', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'z = %{x:.3f} %{y:+.3f}i<extra></extra>' });
+  G.lay.shapes.push(hl(ax, 0, K.navy, 'solid', 0.5), vl(ax, 0, K.navy, 'solid', 0.5));
+  plot('xr-chart', tr, G.lay);
+  out('xr-out', [X().xr(nf(a, 3), nf(b, 3), zs, nz(Math.min(...md), 3), st)]);
+}
+
+// ---------------------------------------------------------------- Worked example: theta = 2 or theta = 0.5?
+function blkXTheta() {
+  const th = +$('xt-th').value, s2 = +$('xt-s2').value; set('xt-th', nf(th, 2)); set('xt-s2', nf(s2, 2));
+  const g0 = s2 * (1 + th * th), g1 = th * s2, S = [X().xt1(nf(th, 2), nf(s2, 2), nz(g0, 2), nz(g1, 2))];
+  if (Math.abs(th) < 1e-9) { steps('xt-ws', S.concat([X().xt0()])); }
+  else {
+    const t2 = 1 / th, v2 = th * th * s2;
+    S.push(X().xt2(nz(t2, 3), nz(v2, 3), nz(v2 * (1 + t2 * t2), 2), nz(t2 * v2, 2)), X().xt3(nz(th / (1 + th * th), 3)));
+    const inv = Math.abs(th) < 1 ? th : t2;
+    S.push(Math.abs(Math.abs(th) - 1) < 1e-9 ? X().xt4u() : X().xt4(nz(inv, 3), range(0, 2, 1).map(j => nz((-inv) ** j, 3)).join('; '), nz(Math.abs(th) < 1 ? t2 : th, 3), range(0, 2, 1).map(j => nz((-(Math.abs(th) < 1 ? t2 : th)) ** j, 2)).join('; ')));
+    if (Math.abs(Math.abs(th) - 1) > 1e-9) S.push(X().xt5(nz(inv, 3), nz(Math.abs(th) < 1 ? s2 : v2, 3)));
+    steps('xt-ws', S);
+  }
+  const jj = range(0, 8, 1), t2 = Math.abs(th) > 1e-9 ? 1 / th : null;
+  table('xt-tb', ['j', `(−θ)<sup>j</sup>, θ = ${nz(th, 2)}`, t2 === null ? '—' : `(−θ)<sup>j</sup>, θ = ${nz(t2, 3)}`],
+    jj.map(j => [txt(j), num((-th) ** j, 3), t2 === null ? txt('—') : num((-t2) ** j, 3)]), { cap: X().xtCap });
+  const G = grid('xt-chart', [{ r: 0, c: 0, t: 'AR(∞) weights |(−θ)<sup>j</sup>| of the two representations, log scale', xt: 'j', y: { type: 'log' } }], { cols: 1, h: 300 });
+  const ax = G.ax[0], tr = [];
+  if (Math.abs(th) > 1e-9) [[th, K.red], [t2, K.blue]].forEach(([t, c]) => tr.push({ x: jj, y: jj.map(j => Math.abs(t) ** j), mode: 'lines+markers', marker: { size: 6, color: c }, line: { color: c, width: 1.6 }, name: `θ = ${+t.toFixed(3)}${Math.abs(t) < 1 ? ' (invertible)' : ''}`, xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'j = %{x}: %{y:.3g}<extra></extra>' }));
+  G.lay.shapes.push(hl(ax, 1, K.navy, 'dot', 1));
+  plot('xt-chart', tr, G.lay);
+  out('xt-out', [Math.abs(th) < 1e-9 ? X().xt0() : X().xt(nf(th, 2), nz(1 / th, 3), nz(th / (1 + th * th), 3), nz(g0, 2), nz(g1, 2))]);
+}
+
+// ---------------------------------------------------------------- The psi weights of an ARMA(1,1)
+function blkXPsi() {
+  const phi = +$('xp-phi').value, th = +$('xp-th').value; set('xp-phi', nf(phi, 2)); set('xp-th', nf(th, 2));
+  const ps = psiW([phi], [th], 13), tot = 1 + (phi + th) ** 2 / (1 - phi * phi);
+  steps('xp-ws', [X().xp1(nf(phi, 2), pn(th, 2), nz(phi + th, 2)), X().xp2(nf(phi, 2), pn(ps[1], 2), nz(ps[2], 2), nz(ps[3], 2)),
+    X().xp3(pn(phi + th, 2), nf(phi * phi, 2), nz(tot, 2)), Math.abs(phi + th) < 1e-9 ? X().xpCF() : X().xp4(nz(ps[1] ** 2 / tot * 100, 1))]);
+  let cs = 0;
+  table('xp-tb', ['j', X().rec, 'ψ<sub>j</sub>', 'ψ<sub>j</sub>²', 'Σ<sub>i≤j</sub> ψ<sub>i</sub>²', X().share], ps.map((v, j) => { cs += v * v;
+    const r = j === 0 ? '1' : j === 1 ? `φ + θ = ${nf(phi, 2)}${sg(th, 2)}` : `φψ<sub>${j - 1}</sub> = ${nf(phi, 2)} · ${pn(ps[j - 1], 3)}`;
+    return [txt(j), txt(r), num(v, 3), num(v * v, 3), num(cs, 3), txt(nz(100 * cs / tot, 1) + '%')]; }), { cap: X().xpCap(nz(tot, 3)) });
+  const jj = range(0, 30, 1), P = psiW([phi], [th], 31); let c2 = 0; const cum = P.map(v => (c2 += v * v));
+  const G = grid('xp-chart', [{ r: 0, c: 0, t: `ARMA(1,1), φ = ${phi}, θ = ${th}: cumulative sum of ψ<sub>j</sub>²`, xt: 'j', y: { rangemode: 'tozero' } }], { cols: 1, h: 300 });
+  const ax = G.ax[0]; G.lay.shapes.push(hl(ax, tot, K.red, 'dash', 1.2));
+  plot('xp-chart', [{ x: jj, y: cum, mode: 'lines+markers', marker: { size: 5, color: K.purple }, line: { color: K.purple, width: 1.6 }, name: 'Σ ψ<sub>i</sub>², i ≤ j', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'j = %{x}: %{y:.3f}<extra></extra>' },
+    leg(`γ(0)/σ² = ${tot.toFixed(2)}`, { color: K.red, dash: 'dash', width: 1.2 })], G.lay);
+  out('xp-out', [X().xp(nf(phi, 2), nf(th, 2), ps.slice(1, 5).map(v => nz(v, 2)).join('; '), nz(tot, 2))]);
+}
+
+// ---------------------------------------------------------------- Moments of the ARMA(1,1)
+function blkXArma11() {
+  const phi = +$('xm-phi').value, th = +$('xm-th').value; set('xm-phi', nf(phi, 2)); set('xm-th', nf(th, 2));
+  const den = 1 + 2 * phi * th + th * th, g0 = den / (1 - phi * phi), r1 = Math.abs(phi + th) < 1e-12 ? 0 : (1 + phi * th) * (phi + th) / den, hh = range(1, 10, 1), r = hh.map(h => r1 * phi ** (h - 1));
+  steps('xm-ws', [X().xm1(nf(phi, 2), pn(th, 2), nz(den, 2), nz(1 - phi * phi, 2), nz(g0, 2)), X().xm2(nz(1 + phi * th, 2), pn(phi + th, 2), nz(den, 2), nz(r1, 3)),
+    X().xm3(nf(phi, 2), nz(r[1], 3), nz(r[2], 3)), Math.abs(phi + th) < 1e-9 ? X().xmCF(nf(phi, 2), nf(th, 2)) : X().xm4(nz(r1, 3), nf(phi, 2), th > 1e-9 ? 1 : th < -1e-9 ? -1 : 0, nz(th, 2))]);
+  table('xm-tb', ['h', 'ρ(h), ARMA(1,1)', 'φ<sup>h</sup>, AR(1)', 'ρ(h)/φ<sup>h</sup>'], hh.slice(0, 8).map((h, i) => [txt(h), num(r[i], 3), num(phi ** h, 3), Math.abs(phi) > 1e-9 ? num(r[i] / phi ** h, 3) : txt('—')]), { cap: X().xmCap });
+  const G = grid('xm-chart', [{ r: 0, c: 0, t: `ACF of ARMA(1,1), φ = ${phi}, θ = ${th}, and of AR(1) with the same φ`, xt: 'lag h', y: { range: [-1, 1] } }], { cols: 1, h: 300 });
+  const ax = G.ax[0]; G.lay.shapes.push(hl(ax, 0, K.navy, 'solid', 0.8));
+  plot('xm-chart', [{ x: hh, y: r, type: 'bar', width: 0.55, marker: { color: K.purple }, name: 'ARMA(1,1)', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'ρ(%{x}) = %{y:.3f}<extra></extra>' },
+    { x: hh, y: hh.map(h => phi ** h), mode: 'markers', marker: { color: K.orange, size: 8 }, name: 'AR(1): φ<sup>h</sup>', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'φ^%{x} = %{y:.3f}<extra></extra>' }], G.lay);
+  out('xm-out', [X().xm(nf(phi, 2), nf(th, 2), nz(g0, 2), nz(r1, 3), nz(r[1], 3))]);
+}
+
+// ---------------------------------------------------------------- Identification: the ACF-PACF table
+function blkXIdent() {
+  const name = $('it-m').value, Tn = +$('it-T').value; set('it-T', Tn);
+  const { phi, theta } = D.models[name], rt = acfTheo(phi, theta, 10), pt = pacf(rt), x = ptPath(name, Tn), r = acf(x, 10), pc = pacf(r), b = 1.96 / Math.sqrt(Tn);
+  const fam = phi.length && theta.length ? 3 : phi.length ? 1 : 2;
+  table('it-tb1', [X().model, 'ACF', 'PACF'], X().idRows.map((rw, i) => hiRow(rw.map(v => ({ v })), i === fam)), { cap: X().itCap1(name) });
+  const big = (v, k) => (Math.abs(v) > b ? `<b>${nz(v, 2)}</b>` : nz(v, 2));
+  table('it-tb2', ['h', 'ρ(h)', 'φ<sub>hh</sub>', 'ρ̂(h)', 'φ̂<sub>hh</sub>'], range(1, 10, 1).map(h => [txt(h), num(rt[h - 1], 3), num(pt[h - 1], 3), txt(big(r[h - 1])), txt(big(pc[h - 1]))]),
+    { cap: X().itCap2(name, Tn, nz(b, 3)) });
+  const outA = range(1, 10, 1).filter(h => Math.abs(r[h - 1]) > b), outP = range(1, 10, 1).filter(h => Math.abs(pc[h - 1]) > b);
+  out('it-out', [X().it(name, X().idRows[fam][0], outA.length ? outA.join(', ') : '—', outP.length ? outP.join(', ') : '—', nz(b, 3))]);
+}
+
+// ---------------------------------------------------------------- Worked example: Yule-Walker on Romanian GDP growth
+function olsAR(y, p) {             // conditional least squares: OLS of y_t on 1, y_{t-1}, ..., y_{t-p}
+  const n = y.length - p, Xm = range(p, y.length - 1, 1).map(t => [1].concat(range(1, p, 1).map(i => y[t - i]))), yy = y.slice(p);
+  const XX = Xm[0].map((_, i) => Xm[0].map((__, j) => sum(Xm.map(r => r[i] * r[j])))), Xy = Xm[0].map((_, i) => sum(Xm.map((r, t) => r[i] * yy[t])));
+  const bh = solve(XX, Xy), e = yy.map((v, t) => v - sum(Xm[t].map((x, i) => x * bh[i]))), s2 = sum(e.map(v => v * v)) / (n - p - 1);
+  const se = bh.map((_, i) => Math.sqrt(s2 * solve(XX, XX.map((__, j) => (j === i ? 1 : 0)))[i]));
+  return { b: bh.slice(1), se: se.slice(1), s2: sum(e.map(v => v * v)) / n };
+}
+function ywAR(y, p) {
+  const n = y.length, r = acf(y, p), m = mean(y), g0 = sum(y.map(v => (v - m) ** 2)) / (n - 1);
+  const R = range(0, p - 1, 1).map(i => range(0, p - 1, 1).map(j => (i === j ? 1 : r[Math.abs(i - j) - 1]))), ph = solve(R, r.slice(0, p));
+  const s2 = g0 * (1 - sum(ph.map((v, i) => v * r[i]))), se = ph.map((_, i) => Math.sqrt(s2 / (g0 * n) * solve(R, R.map((__, j) => (j === i ? 1 : 0)))[i]));
+  return { r, g0, b: ph, se, s2 };
+}
+function blkXYW() {
+  const k = +$('xy-end').value, p = +$('xy-p').value, g = D.gdp, y = g.y.slice(0, k + 1), n = y.length, full = n === g.y.length; set('xy-end', T.q(g.dates[k]));
+  const W = ywAR(y, 2), [r1, r2] = W.r, det = 1 - r1 * r1, W1 = ywAR(y, 1);
+  const S = [X().xy1(T.q(g.dates[0]), T.q(g.dates[k]), n, nf(r1, 4), nf(r2, 4), nf(W.g0, 2)), X().xy2(nf(r1, 4), nf(det, 3), nf(1 - Math.round(r1 * 100) ** 2 / 1e4, 3))];
+  if (p === 2) S.push(X().xy3(nf(r1, 4), nf(1 - r2, 4), nf(det, 3), nz(W.b[0], 3)), X().xy4(nf(r2, 4), nf(r1 * r1, 4), nf(det, 3), nz(W.b[1], 3)),
+    X().xy5(nf(W.g0, 2), nz(1 - W.b[0] * r1 - W.b[1] * r2, 4), nz(W.s2, 2)));
+  else S.push(X().xy3a(nf(r1, 4)), X().xy5a(nf(W.g0, 2), nf(det, 4), nz(W1.s2, 2)));
+  steps('xy-ws', S);
+  const o1 = olsAR(y, 1), o2 = olsAR(y, 2), M = k2 => { const F = D.gdpfit[k2]; return { b: F.b.slice(1, 1 + +k2[0]), se: F.se.slice(1, 1 + +k2[0]), s2: F.b[F.b.length - 1] }; };
+  const est = (lab, e, pp) => hiRow([lab, txt(`AR(${pp})`), num(e.b[0], 3), num(e.se[0], 3), pp > 1 ? num(e.b[1], 3) : txt('—'), pp > 1 ? num(e.se[1], 3) : txt('—'), num(e.s2, 2)], pp === p);
+  const rows = [est(X().yw, W1, 1), est(X().yw, W, 2), est(X().cls, o1, 1), est(X().cls, o2, 2)];
+  if (full) rows.push(est(X().ml, M('10'), 1), est(X().ml, M('20'), 2));
+  table('xy-tb', [X().estim, X().model, 'φ̂<sub>1</sub>', 'se', 'φ̂<sub>2</sub>', 'se', 'σ̂²'], rows, { cap: X().xyCap(n), note: full ? X().xyNote : X().xyNote2 });
+  out('xy-out', [X().xy(p, T.q(g.dates[k]), p === 2 ? `φ̂₁ = ${nz(W.b[0], 3)}, φ̂₂ = ${nz(W.b[1], 3)}` : `φ̂ = ${nz(W1.b[0], 3)}`, nz(p === 2 ? W.s2 : W1.s2, 2))]);
+}
+
+// ---------------------------------------------------------------- Maximum likelihood: AR(1) on GDP growth by hand
+function ar1Lik(x) {               // exact profile log-likelihood of phi (mu by GLS, sigma^2 concentrated) and the conditional one (OLS)
+  const n = x.length;
+  const ex = phi => { const a = 1 - phi * phi; let s1 = 0; for (let t = 1; t < n; t++) s1 += x[t] - phi * x[t - 1];
+    const mu = (a * x[0] + (1 - phi) * s1) / (a + (n - 1) * (1 - phi) ** 2); let S = a * (x[0] - mu) ** 2;
+    for (let t = 1; t < n; t++) S += (x[t] - mu - phi * (x[t - 1] - mu)) ** 2;
+    return { ll: -n / 2 * (Math.log(2 * Math.PI * S / n) + 1) + 0.5 * Math.log(a), mu, s2: S / n }; };
+  const co = phi => { let my = 0, mz = 0; for (let t = 1; t < n; t++) { my += x[t]; mz += x[t - 1]; } my /= n - 1; mz /= n - 1; const c = my - phi * mz; let S = 0;
+    for (let t = 1; t < n; t++) S += (x[t] - c - phi * x[t - 1]) ** 2; return { ll: -(n - 1) / 2 * (Math.log(2 * Math.PI * S / (n - 1)) + 1), c, s2: S / (n - 1) }; };
+  return { ex, co };
+}
+function blkXML() {
+  const k = +$('xl-end').value, g = D.gdp, y = g.y.slice(0, k + 1), n = y.length, full = n === g.y.length; set('xl-end', T.q(g.dates[k]));
+  const L = ar1Lik(y), ph = golden(f => L.ex(f).ll, -0.99, 0.99, 1e-9), pc = golden(f => L.co(f).ll, -0.99, 0.99, 1e-9), E = L.ex(ph), C = L.co(pc), h = 1e-4;
+  const d2 = (L.ex(ph + h).ll - 2 * E.ll + L.ex(ph - h).ll) / (h * h), se = 1 / Math.sqrt(-d2), sa = Math.sqrt((1 - ph * ph) / n);
+  const S = [X().xl1(), X().xl2(n, nz(ph, 3), nz(E.mu, 2), nz(E.s2, 2), nz(E.ll, 2)), X().xl3(n - 1, nz(pc, 3), nz(C.s2, 2), nz(C.ll, 2)),
+    X().xl4(nz(-d2, 1), nz(se, 3), nz(ph, 3), nz(sa, 3)), X().xl5(nz(ph, 3), nz(se, 3), nz(ph / se, 1), nz(ph - 1.96 * se, 3), nz(ph + 1.96 * se, 3))];
+  if (full) S.push(X().xl6(nz(D.gdpfit['10'].se[1], 3)));
+  steps('xl-ws', S);
+  const grd = range(Math.max(-0.5, ph - 0.45), Math.min(0.99, ph + 0.35), 0.005);
+  const G = grid('xl-chart', [{ r: 0, c: 0, t: `AR(1) on GDP growth up to ${g.dates[k]}: log-likelihood of φ, relative to its maximum`, xt: 'φ', yt: 'ln L(φ) − ln L(φ̂)', y: { range: [-8, 0.5] } }], { cols: 1, h: 340, legendRows: 2 });
+  const ax = G.ax[0];
+  G.lay.shapes.push(hl(ax, -1.92, K.orange, 'dot', 1.2), vl(ax, ph, K.blue, 'dash', 1));
+  plot('xl-chart', [{ x: grd, y: grd.map(f => L.ex(f).ll - E.ll), mode: 'lines', line: { color: K.blue, width: 2 }, name: 'exact (Gaussian MLE)', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'φ = %{x:.3f}: %{y:.2f}<extra></extra>' },
+    { x: grd, y: grd.map(f => L.co(f).ll - C.ll), mode: 'lines', line: { color: K.green, width: 1.5, dash: 'dash' }, name: 'conditional (first factor dropped)', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'φ = %{x:.3f}: %{y:.2f}<extra></extra>' },
+    { x: grd, y: grd.map(f => -((f - ph) ** 2) / (2 * se * se)), mode: 'lines', line: { color: K.red, width: 1.2, dash: 'dot' }, name: 'quadratic: −(φ − φ̂)²/(2 se²)', xaxis: ax.xa, yaxis: ax.ya, hoverinfo: 'skip' },
+    leg('−1.92 = −χ²<sub>0.95</sub>(1)/2', { color: K.orange, dash: 'dot', width: 1.2 })], G.lay);
+  out('xl-out', [X().xl(T.q(g.dates[k]), nz(ph, 3), nz(se, 3), nz(sa, 3), nz(pc, 3))]);
+}
+
+// ---------------------------------------------------------------- Information criteria: AIC and BIC from the log-likelihood
+function blkXIC() {
+  const key = $('xi-m').value, F = gfit(key), n = F.nobs, ks = GKEYS().map(gfit);
+  const ba = ks.reduce((a, b) => (b.aic < a.aic ? b : a)), bb = ks.reduce((a, b) => (b.bic < a.bic ? b : a)), lnT = Math.log(n);
+  const nm = f => modLab(f.p + '' + f.q);
+  const S = [X().xi1(nm(F), F.p, F.q, F.k, nz(F.llf, 2)), X().xi2(nz(-2 * F.llf, 2), F.k, nz(F.aic, 2)), X().xi3(nz(-2 * F.llf, 2), F.k, nz(lnT, 3), nz(F.bic, 2)),
+    X().xi4(nz(F.aic, 2), F.k, n, nz(F.aicc, 2))];
+  const other = [ba, bb].find(f => f !== F && !(f.p === F.p && f.q === F.q));
+  if (other) S.push(X().xi5(nm(other), nz(other.llf - F.llf, 2), other.k - F.k, nz(other.aic - F.aic, 2), nz(other.bic - F.bic, 2)));
+  steps('xi-ws', S);
+  const cols = [F].concat([ba, bb].filter((f, i, a) => !(f.p === F.p && f.q === F.q) && a.findIndex(g2 => g2.p === f.p && g2.q === f.q) === i));
+  const row = (lab, fn, d) => [lab].concat(cols.map(f => num(fn(f), d)));
+  table('xi-tb', [''].concat(cols.map(f => nm(f) + (f === ba || (f.p === ba.p && f.q === ba.q) ? ' · AIC' : '') + (f.p === bb.p && f.q === bb.q ? ' · BIC' : ''))),
+    [row('k', f => f.k, 0), row('ln L', f => f.llf, 2), row('−2 ln L', f => -2 * f.llf, 2), row(X().penA, f => 2 * f.k, 2), row(X().penB, f => f.k * lnT, 2),
+      hiRow(row('AIC', f => f.aic, 2), true), hiRow(row('BIC', f => f.bic, 2), true), row('AICc', f => f.aicc, 2)], { cap: X().xiCap(n) });
+  out('xi-out', [X().xi(nm(F), nz(F.aic, 2), nz(F.bic, 2), nm(ba), nz(ba.aic, 2), nm(bb), nz(bb.bic, 2))]);
+}
+
+// ---------------------------------------------------------------- Residual diagnostics: Ljung-Box with m - p - q df and Jarque-Bera
+function blkXDiag() {
+  const key = $('dt-mod').value, p = +key[0], q = +key[1], e = D.gdp.models[key].resid, n = e.length, fit = p + q;
+  const mEl = $('dt-m'); mEl.min = fit + 1; if (+mEl.value <= fit) mEl.value = fit + 1; const m = +mEl.value; set('dt-m', m);
+  const rows = range(fit + 1, 16, 1).map(mm => { const Q = ljungBox(e, mm).q, df = mm - fit;
+    return hiRow([txt(mm), num(Q, 2), txt(df), txt(fp(chi2sf(Q, df))), num(chi2ppf(0.95, df), 2), txt(fp(chi2sf(Q, mm))), txt(chi2sf(Q, df) < 0.05 ? X().rej : X().norej)], mm === m); });
+  table('dt-tb', ['m', 'Q*(m)', 'df = m − p − q', 'p', 'χ²<sub>0.95</sub>(df)', X().pWrong, X().at5], rows, { cap: X().dtCap(modLab(key), n) });
+  const mu = mean(e), s2 = pvar(e), sk = sum(e.map(v => (v - mu) ** 3)) / n / s2 ** 1.5, ku = sum(e.map(v => (v - mu) ** 4)) / n / s2 ** 2, jb = n / 6 * (sk * sk + (ku - 3) ** 2 / 4);
+  const Q = ljungBox(e, m).q, Qs = ljungBox(e.map(v => v * v), 8).q;
+  steps('dt-ws', [X().dt1(m, nz(Q, 2), m, fit, m - fit, fp(chi2sf(Q, m - fit)), fp(chi2sf(Q, m))), X().dt2(nz(sk, 2), nz(ku, 2)),
+    X().dt3(n, nz(sk * sk, 3), nz((ku - 3) ** 2 / 4, 3), nz(jb, 1), jb > 5.991, pe(Math.exp(-jb / 2))), X().dt4(nz(Qs, 2), pe(chi2sf(Qs, 8)))]);
+  out('dt-out', [X().dt(modLab(key), m, nz(Q, 2), m - fit, pe(chi2sf(Q, m - fit)), nz(jb, 1), pe(Math.exp(-jb / 2)))]);
+}
+
+// ---------------------------------------------------------------- Worked example: forecasting an AR(1)
+function blkXFc() {
+  const c = +$('xf-c').value, phi = +$('xf-phi').value, s2 = +$('xf-s2').value, xT = +$('xf-x').value, H = 10;
+  set('xf-c', nf(c, 1)); set('xf-phi', nf(phi, 2)); set('xf-s2', nf(s2, 2)); set('xf-x', nf(xT, 1));
+  const mu = c / (1 - phi), hs = range(1, H, 1), f = hs.map(h => mu + phi ** h * (xT - mu)), v = hs.map(h => s2 * (1 - phi ** (2 * h)) / (1 - phi * phi)), g0 = s2 / (1 - phi * phi), z = 1.96;
+  const ci = h => `[${nz(f[h - 1] - z * Math.sqrt(v[h - 1]), 2)}; ${nz(f[h - 1] + z * Math.sqrt(v[h - 1]), 2)}]`;
+  steps('xf-ws', [X().xf1(nf(c, 1), pn(phi, 2), nz(mu, 2), nf(xT, 1), pn(xT - mu, 2)), X().xf2(nz(mu, 2), pn(phi, 2), pn(xT - mu, 2), nz(f[0], 2), ns(phi * phi), nz(f[1], 2), nz(f[9], 2)),
+    X().xf3(nf(s2, 2), nz(v[0], 2), nf(phi, 2), nz(v[1], 2)), X().xf4(ci(1), ci(2)), X().xf5(nz(mu, 2), nz(Math.sqrt(g0), 2))]);
+  table('xf-tb', ['h', 'X̂<sub>T+h|T</sub>', 'σ<sub>h</sub>²', 'σ<sub>h</sub>', X().lo95, X().hi95, X().width], hs.map((h, i) => [txt(h), num(f[i], 2), num(v[i], 3), num(Math.sqrt(v[i]), 3),
+    num(f[i] - z * Math.sqrt(v[i]), 2), num(f[i] + z * Math.sqrt(v[i]), 2), num(2 * z * Math.sqrt(v[i]), 2)]).concat([[txt('∞'), num(mu, 2), num(g0, 3), num(Math.sqrt(g0), 3), num(mu - z * Math.sqrt(g0), 2), num(mu + z * Math.sqrt(g0), 2), num(2 * z * Math.sqrt(g0), 2)]]));
+  const hh = range(1, 30, 1), w = hh.map(h => 2 * z * Math.sqrt(s2 * (1 - phi ** (2 * h)) / (1 - phi * phi)));
+  const G = grid('xf-chart', [{ r: 0, c: 0, t: `AR(1), φ = ${phi}, σ² = ${s2}: width of the 95% forecast interval`, xt: 'horizon h', yt: '2 × 1.96 σ<sub>h</sub>', y: { rangemode: 'tozero' } }], { cols: 1, h: 300 });
+  const ax = G.ax[0]; G.lay.shapes.push(hl(ax, 2 * z * Math.sqrt(g0), K.red, 'dash', 1.2));
+  plot('xf-chart', [{ x: hh, y: w, mode: 'lines+markers', marker: { size: 5, color: K.blue }, line: { color: K.blue, width: 1.6 }, name: 'interval width', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'h = %{x}: %{y:.2f}<extra></extra>' },
+    leg(`long run: 2 × 1.96 √γ(0) = ${(2 * z * Math.sqrt(g0)).toFixed(2)}`, { color: K.red, dash: 'dash', width: 1.2 })], G.lay);
+  out('xf-out', [X().xf(nz(f[0], 2), ci(1), nz(f[1], 2), ci(2), nz(f[9], 2), nz(mu, 2))]);
+}
+
+// ---------------------------------------------------------------- Step 2: estimation and information criteria (full grid p, q <= 3)
+function blkXGrid() {
+  const cr = $('gg-c').value, srt = $('gg-s').value, ks = GKEYS().map(k => Object.assign(gfit(k), { key: k }));
+  const ba = ks.reduce((a, b) => (b.aic < a.aic ? b : a)), bb = ks.reduce((a, b) => (b.bic < a.bic ? b : a)), mn = Math.min(...ks.map(f => f[cr]));
+  const L = srt === 'pq' ? ks : [...ks].sort((a, b) => a[cr] - b[cr]);
+  table('gg-tb', [X().model, 'k', 'ln L', 'AIC', 'BIC', 'AICc', 'σ̂', 'LB Q*(8)', 'df', 'p', 'Δ' + cr.toUpperCase()], L.map(f => { const e = D.gdp.models[f.key].resid, Q = ljungBox(e, 8).q, df = 8 - f.p - f.q;
+    return hiRow([modLab(f.key) + (f === ba ? ' · AIC' : '') + (f === bb ? ' · BIC' : ''), txt(f.k), num(f.llf, 2), num(f.aic, 2, f === ba), num(f.bic, 2, f === bb), num(f.aicc, 2), num(Math.sqrt(f.sig2), 2), num(Q, 2), txt(df), txt(fp(chi2sf(Q, df))), num(f[cr] - mn, 2)], f[cr] === mn); }),
+    { cap: X().ggCap(ks[0].nobs) });
+  const z = range(0, 3, 1).map(p => range(0, 3, 1).map(q => ks.find(f => f.p === p && f.q === q)[cr] - mn));
+  const G = grid('gg-chart', [{ r: 0, c: 0, t: `${cr.toUpperCase()} − min ${cr.toUpperCase()} over the (p, q) grid`, xt: 'MA order q', yt: 'AR order p', x: { dtick: 1 }, y: { dtick: 1 } }], { cols: 1, h: 340, legend: false });
+  const ax = G.ax[0];
+  G.lay.annotations.push(...z.flatMap((r, p) => r.map((v, q) => ({ xref: ax.xa, yref: ax.ya, x: q, y: p, text: v.toFixed(1), showarrow: false, font: { size: 12, color: v < 12 ? '#ffffff' : K.navy } }))));
+  plot('gg-chart', [{ z, x: [0, 1, 2, 3], y: [0, 1, 2, 3], type: 'heatmap', colorscale: [[0, '#1A3A6E'], [0.15, '#17A2B8'], [1, '#F2F5FA']], zmin: 0, zmax: 70, xaxis: ax.xa, yaxis: ax.ya,
+    colorbar: { thickness: 10, len: 0.8, tickfont: { size: 10, color: K.navy } }, hovertemplate: 'ARMA(%{y},%{x}): Δ = %{z:.2f}<extra></extra>' }], G.lay);
+  out('gg-out', [X().gg(modLab(ba.key), nz(ba.aic, 2), modLab(bb.key), nz(bb.bic, 2), nz(gfit('03').aic - ba.aic, 2), cr.toUpperCase())]);
+}
+
+// ---------------------------------------------------------------- Interpreting the estimated MA(3): coefficients, standard errors, roots
+function blkXMA3() {
+  const key = $('mq-m').value, F = gfit(key), nm = X().pname, z = normPpf(0.975);
+  const rows = F.names.map((p, i) => { const t = F.b[i] / F.se[i];
+    return [nm(p), num(F.b[i], 3), num(F.se[i], 3), num(t, 2), txt(p === 'sigma2' ? '—' : `[${nz(F.b[i] - z * F.se[i], 2)}; ${nz(F.b[i] + z * F.se[i], 2)}]`), txt(p === 'sigma2' ? '—' : yn(Math.abs(t) > z))]; });
+  table('mq-tb', [X().param, X().est, 'se (OPG)', 't', X().ci95, '|t| > 1.96'], rows, { cap: X().mqCap(modLab(key)),
+    note: X().mqNote(F.ma_mod.length ? F.ma_mod.map(v => nz(v, 3)).join('; ') : '—', F.ma_mod.length ? yn(Math.min(...F.ma_mod) > 1) : '—', F.ar_mod.length ? F.ar_mod.map(v => nz(v, 3)).join('; ') : '—', F.ar_mod.length ? yn(Math.min(...F.ar_mod) > 1) : '—') });
+  const ths = F.names.map((p, i) => (p.startsWith('ma.') ? F.b[i] : null)).filter(v => v !== null);
+  const S = [X().mq1(modLab(key), nz(F.b[0], 2), nz(F.se[0], 2), nz(F.b[0] - z * F.se[0], 2), nz(F.b[0] + z * F.se[0], 2)), X().mq2(nz(Math.sqrt(F.sig2), 2), nz(F.sig2, 3))];
+  if (ths.length) S.push(X().mq3(ths.map(v => nz(v, 3)).join('; '), nz(Math.min(...F.ma_mod), 3), Math.min(...F.ma_mod) > 1, ths.some(v => Math.abs(v) > 1)));
+  steps('mq-ws', S);
+  out('mq-out', [X().mq(modLab(key), F.names.filter(p => p !== 'const' && p !== 'sigma2').map((p, i) => `${nm(p)} ${nz(F.b[F.names.indexOf(p)], 3)} (${nz(F.se[F.names.indexOf(p)], 3)})`).join(', ') || '—')]);
+}
+
+// ---------------------------------------------------------------- Interpreting the GDP forecasts: table and interval width
+function blkXGdpFc() {
+  const g = D.gdp, O = Object.keys(g.origins), k = +$('ft-o').value, o = O[k], lv = +$('ft-lv').value, z = normPpf(1 - (1 - lv) / 2), last = k === O.length - 1;
+  set('ft-o', T.q(o));
+  const fq = range(1, 8, 1).map(h => addQ(o, h)), real = fq.map(q => { const j = g.dates.indexOf(q); return j < 0 ? null : g.y[j]; });
+  const A = g.origins[o]['03'], B = g.origins[o]['10'];
+  table('ft-tb', ['h', X().quarter, 'MA(3)', 'se', `${Math.round(100 * lv)}%`, 'AR(1)', 'se', `${Math.round(100 * lv)}%`, X().obs],
+    fq.map((q, h) => [txt(h + 1), txt(T.q(q)), num(A.f[h], 2), num(A.se[h], 2), txt(`[${nz(A.f[h] - z * A.se[h], 1)}; ${nz(A.f[h] + z * A.se[h], 1)}]`),
+      num(B.f[h], 2), num(B.se[h], 2), txt(`[${nz(B.f[h] - z * B.se[h], 1)}; ${nz(B.f[h] + z * B.se[h], 1)}]`), real[h] === null ? txt('—') : num(real[h], 2)]), { cap: X().ftCap(T.q(o)) });
+  const S = [X().ft1(nz(A.se[0], 2), nz(z, 2), `[${nz(A.f[0] - z * A.se[0], 1)}; ${nz(A.f[0] + z * A.se[0], 1)}]`), X().ft2(nz(A.f[3], 2), nz(A.se[3], 2), nz(A.se[7], 2))];
+  if (last) { const F = gfit('03'), th = F.b.slice(1, 4), s = 1 + sum(th.map(v => v * v));
+    S.push(X().ft3(nz(F.sig2, 3), th.map(v => nz(v * v, 3)).join(' + '), nz(s, 3), nz(Math.sqrt(F.sig2 * s), 2), nz(F.b[0], 2), nz(z, 2), `[${nz(F.b[0] - z * Math.sqrt(F.sig2 * s), 1)}; ${nz(F.b[0] + z * Math.sqrt(F.sig2 * s), 1)}]`)); }
+  S.push(X().ft4(nz(B.se[0], 2), nz(B.se[7], 2)));
+  steps('ft-ws', S);
+  const hs = range(1, 8, 1), G = grid('ft-chart', [{ r: 0, c: 0, t: `Width of the ${Math.round(100 * lv)}% interval, forecasts from ${o}`, xt: 'horizon h (quarters)', yt: 'percentage points', y: { rangemode: 'tozero' } }], { cols: 1, h: 300 });
+  const ax = G.ax[0];
+  plot('ft-chart', [['MA(3)', A, K.red], ['AR(1)', B, K.blue]].map(([lab, F, c]) => ({ x: hs, y: F.se.map(v => 2 * z * v), mode: 'lines+markers', marker: { size: 6, color: c }, line: { color: c, width: 1.6 }, name: lab, xaxis: ax.xa, yaxis: ax.ya, hovertemplate: lab + ', h = %{x}: %{y:.2f}<extra></extra>' })), G.lay);
+  const er = (F) => { const e = real.map((v, h) => (v === null ? null : v - F.f[h])).filter(v => v !== null); return e.length ? nz(Math.sqrt(mean(e.map(v => v * v))), 2) : null; };
+  out('ft-out', [X().ft(T.q(o), Math.round(100 * lv), nz(2 * z * A.se[0], 1), nz(2 * z * A.se[7], 1), nz(2 * z * B.se[0], 1), nz(2 * z * B.se[7], 1), er(A), er(B), real.filter(v => v !== null).length)]);
+}
+
+// ---------------------------------------------------------------- Interpreting the AR(1) for daily returns: table
+function ar1Fit(r) {               // conditional LS with the classical and the OPG (outer product of gradients) standard errors
+  const n = r.length - 1, x = r.slice(0, -1), y = r.slice(1), mx = mean(x), my = mean(y);
+  let sxy = 0, sxx = 0; for (let t = 0; t < n; t++) { sxy += (x[t] - mx) * (y[t] - my); sxx += (x[t] - mx) ** 2; }
+  const phi = sxy / sxx, c = my - phi * mx, e = y.map((v, t) => v - c - phi * x[t]), s2 = sum(e.map(v => v * v)) / n;
+  const O = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  e.forEach((v, t) => { const s = [v / s2, v * x[t] / s2, -0.5 / s2 + v * v / (2 * s2 * s2)]; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) O[i][j] += s[i] * s[j]; });
+  return { phi, e, n, seC: Math.sqrt(sum(e.map(v => v * v)) / (n - 2) / sxx), seO: Math.sqrt(solve(O, [0, 1, 0])[1]), r2: 1 - pvar(e) / pvar(y) };
+}
+function blkXRet() {
+  let y0 = +$('rx-y0').value, y1 = +$('rx-y1').value; if (y1 < y0 + 2) { y1 = y0 + 2; $('rx-y1').value = y1; } set('rx-y0', y0); set('rx-y1', y1);
+  const C = [['bet', 'BET'], ['eurron', 'EUR/RON']].map(([k, lab]) => {
+    const R = D.ret[k], r = R.r.filter((_, j) => +R.dates[j].slice(0, 4) >= y0 && +R.dates[j].slice(0, 4) <= y1), full = r.length === R.r.length, F = ar1Fit(r);
+    const e = full ? r.slice(1).map((v, t) => v - R.mu - R.phi * (r[t] - R.mu)) : F.e, phi = full ? R.phi : F.phi, seO = full ? D.retse[k].opg : F.seO, seI = full ? D.retse[k].oim : F.seC;
+    const m = mean(e), s2 = pvar(e), ku = sum(e.map(v => (v - m) ** 4)) / e.length / (s2 * s2), lb = ljungBox(e, 10).q, lbs = ljungBox(e.map(v => v * v), 10).q;
+    return { k, lab, n: r.length, phi, seO, seI, r2: 1 - pvar(e) / pvar(r.slice(1)), lb, lbs, ku, full, d0: R.dates.find(d => +d.slice(0, 4) >= y0) };
+  });
+  const row = (lab, f) => [lab].concat(C.map(f));
+  table('rx-tb', ['', 'BET', 'EUR/RON'], [row(X().nobs, c => txt(c.n)), row('φ̂', c => num(c.phi, 3)), hiRow(row(X().seOPG, c => num(c.seO, 4)), true), hiRow(row(X().tOPG, c => num(c.phi / c.seO, 1)), true),
+    row(X().seCl, c => num(c.seI, 4)), row(X().tCl, c => num(c.phi / c.seI, 1)), row('√((1 − φ̂²)/T)', c => num(Math.sqrt((1 - c.phi ** 2) / c.n), 4)), row('R² (%)', c => num(100 * c.r2, 1)),
+    row(X().lbRes, c => txt(`${nz(c.lb, 1)} (${fp(chi2sf(c.lb, 9))})`)), row(X().lbSq, c => num(c.lbs, 0)), row(X().kurt, c => num(c.ku, 1))], { cap: X().rxCap(y0, y1), note: X().rxNote(C[0].full) });
+  steps('rx-ws', C.map(c => X().rx1(c.lab, nz(c.phi, 3), nz(c.seO, 4), nz(c.phi / c.seO, 1), nz(c.seI, 4), nz(c.phi / c.seI, 1), c.n, nz(Math.sqrt((1 - c.phi ** 2) / c.n), 4))));
+  out('rx-out', C.map(c => X().rx(c.lab, c.n, nz(c.phi, 3), nz(c.phi / c.seI, 1), nz(100 * c.r2, 1))));
+}
+
 // ================================================================= wiring
 const ALL = [blkAR1, blkAR2, blkMA1, blkMArho, blkPsi, blkPatterns, blkEst, blkIC, blkLB, blkFct, blkGdpId, blkGdpDiag, blkGdpFc, blkInfl, blkRet, blkSun];
+// blocks of the worked examples and result tables (own frames): [anchor, prefix, function, controls, player parameter, values, ms]
+const XB = [['wx-ar1', 'xa', blkXAR1, ['xa-c', 'xa-phi', 'xa-s2', 'xa-h'], 'xa-phi', range(-0.9, 0.99, 0.03), 300],
+  ['ar-roots', 'xr', blkXRoots, ['xr-f1', 'xr-f2'], 'xr-f2', range(-0.95, 0.95, 0.05), 380],
+  ['wx-theta', 'xt', blkXTheta, ['xt-th', 'xt-s2'], 'xt-th', range(-3, 3, 0.1), 260],
+  ['wx-psi', 'xp', blkXPsi, ['xp-phi', 'xp-th'], 'xp-th', range(-0.95, 0.95, 0.05), 380],
+  ['wx-arma11', 'xm', blkXArma11, ['xm-phi', 'xm-th'], 'xm-th', range(-0.95, 0.95, 0.05), 380],
+  ['ident-table', 'it', blkXIdent, ['it-m', 'it-T'], 'it-T', range(50, 500, 25), 450],
+  ['wx-yw', 'xy', blkXYW, ['xy-end', 'xy-p'], 'xy-end', range(39, 105, 2), 300],
+  ['ml-lik', 'xl', blkXML, ['xl-end'], 'xl-end', range(39, 105, 2), 300],
+  ['wx-ic', 'xi', blkXIC, ['xi-m'], 'xi-m', ['00', '10', '20', '30', '01', '11', '02', '03', '13', '23', '33'], 1000],
+  ['diag-table', 'dt', blkXDiag, ['dt-mod', 'dt-m'], 'dt-m', range(1, 16, 1), 500],
+  ['wx-fc', 'xf', blkXFc, ['xf-c', 'xf-phi', 'xf-s2', 'xf-x'], 'xf-phi', range(0, 0.99, 0.03), 280],
+  ['gdp-grid', 'gg', blkXGrid, ['gg-c', 'gg-s'], 'gg-c', ['aic', 'bic', 'aicc'], 1300],
+  ['ma3-table', 'mq', blkXMA3, ['mq-m'], 'mq-m', ['03', '13', '23', '33', '10', '20', '11'], 1100],
+  ['gdp-fc-table', 'ft', blkXGdpFc, ['ft-o', 'ft-lv'], 'ft-o', range(0, 48, 1), 350],
+  ['ret-table', 'rx', blkXRet, ['rx-y0', 'rx-y1'], 'rx-y0', range(2000, 2023, 1), 600]];
+function placeExtras() {                // web lecture: the extra blocks travel inside a chart block; move each to its own frame
+  document.querySelectorAll('.xhold > section.xblk').forEach(sec => {
+    const art = document.getElementById('s' + sec.dataset.frame), head = art && art.querySelector('.fhead');
+    if (head) head.after(sec); else sec.closest('section.blk').after(sec);
+  });
+  document.querySelectorAll('.xhold').forEach(h => { if (!h.children.length) h.remove(); });
+}
 function init() {
+  placeExtras();
   const has = id => !!$(id), on = (ids, f) => ids.forEach(id => $(id).addEventListener('input', f));
   const players = {}, P = (btn, id, vals, ms) => (players[btn] = new Player(btn, $(id), vals, ms));
   on(['a1-p1', 'a1-p2', 'a1-p3'], blkAR1); P('a1-play', 'a1-p1', range(0, 0.99, 0.03), 260);
@@ -557,11 +914,18 @@ function init() {
   const PFX = { 'ar1': 'a1', 'ar2': 'a2', 'ma1': 'm1', 'ma1-rho': 'mr', 'psi': 'ps', 'patterns': 'pt', 'estimators': 'es', 'ic': 'ic', 'lb-df': 'lb',
     'forecast-mean': 'fc', 'gdp-ident': 'gi', 'gdp-diag': 'gd', 'gdp-forecast': 'gf', 'inflation': 'in', 'returns': 'rt', 'sunspots': 'ss' };
   if (T.predict && predict) Object.entries(T.predict).forEach(([b, sp]) => { if (has(b)) predict(b, Object.assign({ player: players[PFX[b] + '-play'], veil: { out: true } }, sp)); });
+  const live = XB.filter(([, x]) => has(x + '-out'));
+  live.forEach(([, x, f, ids, pid, vals, ms]) => { on(ids, f); P(x + '-play', pid, vals, ms); });
+  if (has('xr-m')) $('xr-m').addEventListener('input', () => { const m = AR2()[$('xr-m').value]; $('xr-f1').value = m.phi[0]; $('xr-f2').value = m.phi[1]; blkXRoots(); });
+  if (has('xy-end')) { $('xy-end').max = D.gdp.y.length - 1; $('xy-end').value = D.gdp.y.length - 1; }
+  if (has('xl-end')) { $('xl-end').max = D.gdp.y.length - 1; $('xl-end').value = D.gdp.y.length - 1; }
+  if (has('ft-o')) { const nO = Object.keys(D.gdp.origins).length; $('ft-o').max = nO - 1; $('ft-o').value = nO - 1; }
   if (T.ticket && exitTicket) exitTicket(T.ticket);
   ALL.forEach(f => f());
+  live.forEach(b => b[2]());
   let w = window.innerWidth, tm = null;
-  window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); } }, 250); });
+  window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); live.forEach(b => b[2]()); } }, 250); });
 }
-window.CH2 = { chi2sf, psiW, acfTheo, ar2Roots, ar1Est, ma1Est, arOlsIC, lbRate, probplot, ar1Path, ptPath, esSim, icFreq, ar1Ols };
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+window.CH2 = { chi2sf, chi2ppf, psiW, acfTheo, ar2Roots, rootsZ, ar1Est, ma1Est, arOlsIC, lbRate, probplot, ar1Path, ptPath, esSim, icFreq, ar1Ols, olsAR, ywAR, ar1Lik, ar1Fit, gfit, ALL, XB };
+if (!window.CH2_NO_INIT) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init(); }
 })();
