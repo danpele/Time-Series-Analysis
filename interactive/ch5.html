@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 5 · Conditional Volatility: ARCH and GARCH Models</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch5.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch5_data.js?v=20261101a", "ch5_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch5.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Time Series Analysis</h1><p>Chapter 5 · Conditional Volatility: ARCH and GARCH Models</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_05" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch5.html" class="lang-btn active">EN</a><a href="ch5_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step.</p>
+<p class="toc"><a href="#s-sty">Stylised facts of financial returns</a> · <a href="#s-cm">Conditional mean and conditional variance</a> · <a href="#s-arch">The ARCH model</a> · <a href="#s-garch">The GARCH(1,1) model</a> · <a href="#s-ml">Estimation by maximum likelihood</a> · <a href="#s-mk">GARCH in four markets and ARMA-GARCH models</a> · <a href="#s-asym">Asymmetry and the leverage effect</a> · <a href="#s-diag">Diagnostics and model choice</a> · <a href="#s-fc">Variance forecasts and their evaluation</a> · <a href="#s-var">An application: VaR 1% from a GARCH model</a></p>
+<h2 class="sec" id="s-sty">Stylised facts of financial returns</h2>
+<section class="blk" id="returns">
+  <h3>Four markets, one pattern</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=7" target="_blank" rel="noopener"><img src="slides/tsa_ch5_returns_en.jpg" alt="Slide 6: Four markets, one pattern" loading="lazy"></a>
+      <figcaption>Slide 6</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="re-y">Highlighted year: <b id="re-y-v"></b></label><input type="range" id="re-y" min="2000" max="2026" step="1" value="2017"></div><button class="btn play" id="re-play" type="button"></button></div><div class="charts "><div class="chart" id="re-chart"></div></div><ul class="out" id="re-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> In which year was the daily standard deviation of the S&P 500 returns lowest?</div>
+  <details><summary>Answer</summary><p>In 2017: 0.42%, followed by 2006 (0.63%) and 2005 (0.65%). From September 2008 to March 2009 the standard deviation was 3.52%, 8.3 times larger, and in February–May 2020 3.70% (8.8 times). For the EUR/RON the calmest year was 2024 (0.025%) and the most agitated 2008 (0.72%): the BNR kept the leu almost fixed in 2020, when equities went through their largest storm.</p></details>
+</section>
+<section class="blk" id="acf-squares">
+  <h3>The sign is unpredictable, the size is not</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=11" target="_blank" rel="noopener"><img src="slides/tsa_ch5_acf_squares_en.jpg" alt="Slide 10: The sign is unpredictable, the size is not" loading="lazy"></a>
+      <figcaption>Slide 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="aq-f">Second series</label><select id="aq-f"><option value="sq" selected>r² (lecture)</option><option value="abs">|r|</option></select></div><div class="ctl"><label for="aq-y">Sample starts in: <b id="aq-y-v"></b></label><input type="range" id="aq-y" min="2000" max="2020" step="1" value="2000"></div><button class="btn play" id="aq-play" type="button"></button></div><div class="charts "><div class="chart" id="aq-chart"></div></div><ul class="out" id="aq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Replace r² by |r|. How many of the 50 autocorrelations of |r| for the S&P 500 lie outside the band, and what is the autocorrelation at lag 50?</div>
+  <details><summary>Answer</summary><p>All 50 lie outside the band, and at lag 50 the autocorrelation is 0.127, against 0.053 for r²; at lag 1: 0.289 against 0.313. The absolute value is less dominated by a few extreme days than the square, so the memory of the size of returns shows even more clearly. The sign (r) stays almost unpredictable: 15 of 50 autocorrelations are outside the band, most of them small.</p></details>
+</section><h2 class="sec" id="s-cm">Conditional mean and conditional variance</h2>
+<section class="blk" id="arma-resid">
+  <h3>The mean model leaves ARCH effects</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=19" target="_blank" rel="noopener"><img src="slides/tsa_ch5_arma_resid_en.jpg" alt="Slide 18: The mean model leaves ARCH effects" loading="lazy"></a>
+      <figcaption>Slide 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ar-p">Order p of the AR for the mean (left): <b id="ar-p-v"></b></label><input type="range" id="ar-p" min="0" max="5" step="1" value="1"></div><button class="btn play" id="ar-play" type="button"></button></div><div class="charts "><div class="chart" id="ar-chart"></div></div><ul class="out" id="ar-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise the AR order of the mean from 1 to 5. Do the ARCH effects of the residuals disappear?</div>
+  <details><summary>Answer</summary><p>No. Q(10) of the residuals falls from 29.7 to 15.4 (p = 0.009), but Q(10) of the squares rises from 2496 to 2562, and ARCH-LM(5) stays around 1020 (for AR(1): n R² = 6664 × 0.1526 = 1017). A richer model for the mean removes the autocorrelation of the level, not that of the squares: the conditional variance needs a model of its own.</p></details>
+</section><h2 class="sec" id="s-arch">The ARCH model</h2>
+<section class="blk" id="simulated">
+  <h3>Simulated paths: i.i.d., ARCH(1) and GARCH(1,1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=25" target="_blank" rel="noopener"><img src="slides/tsa_ch5_simulated_en.jpg" alt="Slide 24: Simulated paths: i.i.d., ARCH(1) and GARCH(1,1)" loading="lazy"></a>
+      <figcaption>Slide 24</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="si-a1">α of ARCH(1), ω = 1 − α: <b id="si-a1-v"></b></label><input type="range" id="si-a1" min="0.05" max="0.9" step="0.05" value="0.5"></div><div class="ctl"><label for="si-a">α of GARCH(1,1): <b id="si-a-v"></b></label><input type="range" id="si-a" min="0.02" max="0.3" step="0.02" value="0.1"></div><div class="ctl"><label for="si-b">β of GARCH(1,1), ω = 1 − α − β: <b id="si-b-v"></b></label><input type="range" id="si-b" min="0" max="0.96" step="0.04" value="0.88"></div><button class="btn play" id="si-play" type="button"></button></div><div class="charts "><div class="chart" id="si-chart"></div></div><ul class="out" id="si-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move α of ARCH(1) to 0.7 (ω = 0.3). What are the theoretical and the sample kurtosis?</div>
+  <details><summary>Answer</summary><p>In theory the fourth moment does not exist (3α² = 1.47 ≥ 1, the threshold is α = 1/√3 = 0.577), so the kurtosis is infinite. The kurtosis of the 1000 simulated values is 11.24, and 34.9 at α = 0.9: a finite sample always has a finite kurtosis, so the sample value cannot show that the moment does not exist. At α = 0.5 theory gives 9.0 and the sample 4.91: the fourth moment converges slowly.</p></details>
+</section><h2 class="sec" id="s-garch">The GARCH(1,1) model</h2>
+<section class="blk" id="ewma-garch">
+  <h3>GARCH, EWMA and a rolling window in 2020</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=34" target="_blank" rel="noopener"><img src="slides/tsa_ch5_ewma_garch_en.jpg" alt="Slide 33: GARCH, EWMA and a rolling window in 2020" loading="lazy"></a>
+      <figcaption>Slide 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ew-l">λ of EWMA: <b id="ew-l-v"></b></label><input type="range" id="ew-l" min="0.8" max="0.99" step="0.01" value="0.94"></div><div class="ctl"><label for="ew-w">Rolling window (days): <b id="ew-w-v"></b></label><input type="range" id="ew-w" min="21" max="252" step="21" value="63"></div><button class="btn play" id="ew-play" type="button"></button></div><div class="charts "><div class="chart" id="ew-chart"></div></div><ul class="out" id="ew-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise λ to 0.97. Is the EWMA peak of March 2020 higher or lower than 85%?</div>
+  <details><summary>Answer</summary><p>Lower: 67%, on 27 March 2020, against 85% on 25 March for λ = 0.94. With a larger λ the weight of yesterday’s return, 1 − λ, falls from 0.06 to 0.03, and the half-life of the weights rises from 11.2 to 22.8 days: the estimate reacts more slowly and comes down more slowly (37% on 30 June 2020, against 30%). With λ = 0.90 the peak is 103%, close to that of GARCH (111%), whose α = 0.123 is larger than 1 − λ = 0.06.</p></details>
+</section><h2 class="sec" id="s-ml">Estimation by maximum likelihood</h2>
+<section class="blk" id="lik-arch1">
+  <h3>The likelihood of ARCH(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=38" target="_blank" rel="noopener"><img src="slides/tsa_ch5_lik_arch1_en.jpg" alt="Slide 37: The likelihood of ARCH(1)" loading="lazy"></a>
+      <figcaption>Slide 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="l1-a">True α (ω = 1 − α): <b id="l1-a-v"></b></label><input type="range" id="l1-a" min="0.1" max="0.9" step="0.05" value="0.5"></div><div class="ctl"><label for="l1-n">Second sample</label><select id="l1-n"><option value="250">n = 250</option><option value="500">n = 500</option><option value="1000" selected>n = 1000 (lecture)</option><option value="2000">n = 2000</option><option value="5000">n = 5000</option></select></div><button class="btn play" id="l1-play" type="button"></button></div><div class="charts "><div class="chart" id="l1-chart"></div></div><ul class="out" id="l1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the second sample to n = 5000. What does the standard error of α̂ become?</div>
+  <details><summary>Answer</summary><p>0.015 (α̂ = 0.516), against 0.035 for n = 1000: 2.3 times smaller, close to √5 = 2.24. The standard error falls with √n, because the log-likelihood is a sum of n terms and its curvature at the maximum grows in proportion to n.</p></details>
+</section>
+<section class="blk" id="lik-garch">
+  <h3>The likelihood of GARCH(1,1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=39" target="_blank" rel="noopener"><img src="slides/tsa_ch5_lik_garch_en.jpg" alt="Slide 38: The likelihood of GARCH(1,1)" loading="lazy"></a>
+      <figcaption>Slide 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lg-n">n in the right panel: <b id="lg-n-v"></b></label><input type="range" id="lg-n" min="250" max="5000" step="250" value="2000"></div><button class="btn play" id="lg-play" type="button"></button></div><div class="charts "><div class="chart" id="lg-chart"></div></div><ul class="out" id="lg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With n = 1000 in the right panel, where is the maximum on the grid?</div>
+  <details><summary>Answer</summary><p>At (0.045, 0.90): α is still underestimated and β overestimated, along the same ridge on which α + β changes little. With n = 1500 the maximum is at (0.075, 0.82), with n = 3000 at (0.10, 0.81), with n = 5000 at (0.10, 0.82). α and β trade off: different pairs with the same persistence give almost the same likelihood, which is why GARCH needs long samples.</p></details>
+</section>
+<section class="blk" id="qq">
+  <h3>QQ plots of the standardised residuals</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch5_qq_en.jpg" alt="Slide 43: QQ plots of the standardised residuals" loading="lazy"></a>
+      <figcaption>Slide 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="qq-nu">ν of the reference t distribution (right): <b id="qq-nu-v"></b></label><input type="range" id="qq-nu" min="3" max="30" step="0.01" value="6.26"></div><button class="btn play" id="qq-play" type="button"></button></div><div class="charts "><div class="chart" id="qq-chart"></div></div><ul class="out" id="qq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For which ν does the theoretical 0.1% quantile of the standardised t equal the sample one, −4.79?</div>
+  <details><summary>Answer</summary><p>For ν ≈ 4.5 (−4.79), smaller than ν̂ = 6.26. But the t distribution is symmetric: with ν = 4.5 its 99.9% quantile is +4.79, while the sample one is only 2.93. The left tail of the residuals is heavier than the right one; a single ν cannot fit both, which is why the lecture also compares the skewed t distribution.</p></details>
+</section><h2 class="sec" id="s-mk">GARCH in four markets and ARMA-GARCH models</h2>
+<section class="blk" id="vol-sp500-bet">
+  <h3>Conditional volatility: S&P 500 and BET</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=48" target="_blank" rel="noopener"><img src="slides/tsa_ch5_vol_sp500_bet_en.jpg" alt="Slide 47: Conditional volatility: S&P 500 and BET" loading="lazy"></a>
+      <figcaption>Slide 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="v1-c">α = c·α̂ and β = α̂ + β̂ − α; c: <b id="v1-c-v"></b></label><input type="range" id="v1-c" min="0.25" max="2" step="0.05" value="1"></div><button class="btn play" id="v1-play" type="button"></button></div><div class="charts "><div class="chart" id="v1-chart"></div></div><ul class="out" id="v1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Double α (c = 2) keeping α + β. What happens to the S&P 500 peak of March 2020 and to the median volatility?</div>
+  <details><summary>Answer</summary><p>The peak rises from 111% to 140% and the median falls from 14.3% to 13.3%: with α = 0.245 and β = 0.750 the volatility reacts more strongly to every shock and comes back faster. For the BET the 2008 peak rises from 117% to 138%. The persistence, and so the long-run level, stays the same; the shape of the path changes. The estimated values (c = 1) are those that maximise the likelihood.</p></details>
+</section>
+<section class="blk" id="vol-eurron-btc">
+  <h3>Conditional volatility: EUR/RON and Bitcoin</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch5_vol_eurron_btc_en.jpg" alt="Slide 48: Conditional volatility: EUR/RON and Bitcoin" loading="lazy"></a>
+      <figcaption>Slide 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="v2-c">α = c·α̂ and β = α̂ + β̂ − α; c: <b id="v2-c-v"></b></label><input type="range" id="v2-c" min="0.25" max="2" step="0.05" value="1"></div><button class="btn play" id="v2-play" type="button"></button></div><div class="charts "><div class="chart" id="v2-chart"></div></div><ul class="out" id="v2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Halve α for Bitcoin (c = 0.5). Does the peak of 13 March 2020 fall below 250%?</div>
+  <details><summary>Answer</summary><p>Yes: 218%, against 301% with the estimated α; the median rises from 58.7% to 66.6%. In an IGARCH too, α decides how far volatility jumps after a shock; α + β = 1 only decides that the shock does not die out. For the EUR/RON, with c = 0.5, the 2008 peak falls from 22% to 19%.</p></details>
+</section>
+<section class="blk" id="persistence">
+  <h3>How long does a volatility shock last?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=50" target="_blank" rel="noopener"><img src="slides/tsa_ch5_persistence_en.jpg" alt="Slide 49: How long does a volatility shock last?" loading="lazy"></a>
+      <figcaption>Slide 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pe-d">α + β in the half-life</label><select id="pe-d"><option value="x" selected>not rounded (lecture)</option><option value="3">rounded to 3 decimals</option><option value="2">rounded to 2 decimals</option></select></div><div class="ctl"><label for="pe-p">α + β of the dashed curve: <b id="pe-p-v"></b></label><input type="range" id="pe-p" min="0.9" max="0.999" step="0.001" value="0.98"></div><button class="btn play" id="pe-play" type="button"></button></div><div class="charts "><div class="chart" id="pe-chart"></div></div><ul class="out" id="pe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With α + β rounded to 0.995, the half-life of the S&P 500 comes out at 138 days. The table of the lecture gives 131. Which is right?</div>
+  <details><summary>Answer</summary><p>131: the estimated persistence is 0.9947, and ln 0.5 / ln 0.9947 = 130.7 days. Rounding to three decimals adds 7 days; for the BET, 0.9907 gives 74.3 days, rounded to 0.991 it gives 76.7. Rounded to 0.99, both give 69.0 days. Close to 1 the half-life depends strongly on the third decimal: compute it from the unrounded value.</p></details>
+</section>
+<section class="blk" id="bands">
+  <h3>Forecast intervals that breathe</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=53" target="_blank" rel="noopener"><img src="slides/tsa_ch5_bands_en.jpg" alt="Slide 52: Forecast intervals that breathe" loading="lazy"></a>
+      <figcaption>Slide 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bd-c">Coverage of the intervals: <b id="bd-c-v"></b></label><input type="range" id="bd-c" min="80" max="99" step="1" value="95"></div><button class="btn play" id="bd-play" type="button"></button></div><div class="charts "><div class="chart" id="bd-chart"></div></div><ul class="out" id="bd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With 99% coverage, what share of the days of March–April 2020 does the constant interval miss, and what share does the GARCH interval miss?</div>
+  <details><summary>Answer</summary><p>The constant interval misses 28.6% of the days, the GARCH interval 2.4%. Over the whole sample: 2.9% and 1.0%, and in 2017: 0.4% and 0.4%. The width of the constant interval is 7.2 points every day; that of the GARCH interval varies between 3.4 and 35.1 points in the window of the chart. The constant interval fails precisely in crises, when it matters most.</p></details>
+</section><h2 class="sec" id="s-asym">Asymmetry and the leverage effect</h2>
+<section class="blk" id="nic">
+  <h3>News impact curves: S&P 500 and Bitcoin</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=58" target="_blank" rel="noopener"><img src="slides/tsa_ch5_nic_en.jpg" alt="Slide 57: News impact curves: S&P 500 and Bitcoin" loading="lazy"></a>
+      <figcaption>Slide 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ni-k">Right panel</label><select id="ni-k"><option value="btc" selected>Bitcoin (lecture)</option><option value="bet">BET</option></select></div><div class="ctl"><label for="ni-x">Size of the shock |ε|: <b id="ni-x-v"></b></label><input type="range" id="ni-x" min="1" max="4" step="0.5" value="2"></div><div class="ctl"><label for="ni-h">Kernel bandwidth, in standard deviations: <b id="ni-h-v"></b></label><input type="range" id="ni-h" min="0.25" max="1.5" step="0.05" value="0.5"></div><button class="btn play" id="ni-play" type="button"></button></div><div class="charts "><div class="chart" id="ni-chart"></div></div><ul class="out" id="ni-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For a shock of 4%, how many times larger is tomorrow’s variance of the S&P 500 after a fall than after a rise, in GJR?</div>
+  <details><summary>Answer</summary><p>3.50 times, against 1.62 for a shock of 2%. The ratio grows with the size of the shock: the term γε² grows with the square of the shock, while βσ² does not depend on it. EGARCH gives 2.97; the kernel estimate only 1.41, because there are few days with falls of 4%. For Bitcoin the GJR ratio stays close to 1 (0.98).</p></details>
+</section><h2 class="sec" id="s-diag">Diagnostics and model choice</h2>
+<section class="blk" id="acf-diag">
+  <h3>What GARCH removes</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch5_acf_diag_en.jpg" alt="Slide 61: What GARCH removes" loading="lazy"></a>
+      <figcaption>Slide 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dg-k">Series</label><select id="dg-k"><option value="sp500" selected>S&P 500 (lecture)</option><option value="bet">BET</option><option value="eurron">EUR/RON</option><option value="btc">Bitcoin</option></select></div><div class="ctl"><label for="dg-o">The day with the largest |ẑ|</label><select id="dg-o"><option value="keep" selected>included (lecture)</option><option value="drop">excluded</option></select></div><button class="btn play" id="dg-play" type="button"></button></div><div class="charts "><div class="chart" id="dg-chart"></div></div><ul class="out" id="dg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For the EUR/RON, Q(10) of ẑ² is 0.004 (p = 1.000). Is the GARCH-t model perfect?</div>
+  <details><summary>Answer</summary><p>No. The value comes from a single day, 6 May 2025, with ẑ = 153.7, whose square dominates all autocorrelations. Without that day, Q(10) = 19.2 (p = 0.038): ARCH effects remain, which the test with all days does not separate from noise. For the S&P 500, excluding the largest |ẑ| (27 February 2007) changes the result little (13.6 → 14.2).</p></details>
+</section><h2 class="sec" id="s-fc">Variance forecasts and their evaluation</h2>
+<section class="blk" id="term-structure">
+  <h3>The term structure of volatility</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=69" target="_blank" rel="noopener"><img src="slides/tsa_ch5_term_structure_en.jpg" alt="Slide 68: The term structure of volatility" loading="lazy"></a>
+      <figcaption>Slide 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ts-o">Origin of the third forecast: <b id="ts-o-v"></b></label><input type="range" id="ts-o" min="0" max="1" step="1" value="1"></div><button class="btn play" id="ts-play" type="button"></button></div><div class="charts "><div class="chart" id="ts-chart"></div></div><ul class="out" id="ts-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the origin to 16 March 2020. Is the 10-day volatility of the square-root-of-time rule larger or smaller than the one from the sum of the forecasts?</div>
+  <details><summary>Answer</summary><p>Larger: √(10 × 49.03) = 22.14% against √479.49 = 21.90%. On 18 September 2026 it was the other way round: 2.26% against 2.38%. In a crisis the forecast variance comes down towards the long-run level, so the square-root-of-time rule overstates; in a calm period it understates.</p></details>
+</section>
+<section class="blk" id="forecast-eval">
+  <h3>GARCH against EWMA, out of sample</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch5_forecast_eval_en.jpg" alt="Slide 70: GARCH against EWMA, out of sample" loading="lazy"></a>
+      <figcaption>Slide 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fe-m">Comparison</label><select id="fe-m"><option value="ge" selected>EWMA − GARCH-t (lecture)</option><option value="je">EWMA − GJR-t</option><option value="gj">GARCH-t − GJR-t</option></select></div><div class="ctl"><label for="fe-x">The day with the largest difference</label><select id="fe-x"><option value="keep" selected>included (lecture)</option><option value="drop">excluded</option></select></div><button class="btn play" id="fe-play" type="button"></button></div><div class="charts "><div class="chart" id="fe-chart"></div></div><ul class="out" id="fe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Remove the day with the largest loss difference. Does the difference between GARCH-t and EWMA for the EUR/RON become significant at 5%?</div>
+  <details><summary>Answer</summary><p>No: t = −1.32 (p = 0.187), against −1.02 (p = 0.310) with all days. The day of 6 May 2025 brought 98% of the total difference, and without it the mean QLIKE of the two models are close. For the BET, without 19 December 2018 the advantage of GARCH-t becomes clearer (t = −2.79, p = 0.005).</p></details>
+</section><h2 class="sec" id="s-var">An application: VaR 1% from a GARCH model</h2>
+<section class="blk" id="var">
+  <h3>VaR 1% through the COVID-19 crash</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter5_conditional_volatility_garch.pdf#page=76" target="_blank" rel="noopener"><img src="slides/tsa_ch5_var_en.jpg" alt="Slide 75: VaR 1% through the COVID-19 crash" loading="lazy"></a>
+      <figcaption>Slide 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="va-k">Series</label><select id="va-k"><option value="sp500" selected>S&P 500 (lecture)</option><option value="bet">BET</option><option value="eurron">EUR/RON</option><option value="btc">Bitcoin</option></select></div><div class="ctl"><label for="va-a">VaR level</label><select id="va-a"><option value="0.5">0.5%</option><option value="1" selected>1% (lecture)</option><option value="2.5">2.5%</option><option value="5">5%</option></select></div><div class="ctl"><label for="va-w">Period</label><select id="va-w"><option value="covid" selected>July 2019 – June 2021 (lecture)</option><option value="all">2015–2026</option></select></div><button class="btn play" id="va-play" type="button"></button></div><div class="charts "><div class="chart" id="va-chart"></div></div><ul class="out" id="va-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> At VaR 5%, in the window July 2019 – June 2021, does EWMA-Normal still have more exceedances than GARCH-t?</div>
+  <details><summary>Answer</summary><p>No: EWMA-Normal has 28, GARCH-t 32, against 25.3 expected. The 5% quantile of the standardised t with ν = 6.26 is −1.59, closer to zero than the −1.645 of the Normal distribution: heavy tails require larger quantiles only far in the tail. At VaR 1%: 13 GARCH-t and 17 EWMA-Normal exceedances (5 expected); at 0.5%: 7 and 16.</p></details>
+</section>
+<p class="src foot">Daily log returns in %, up to 18 September 2026: S&P 500, BET and Bitcoin from the market data of the course (EODHD), EUR/RON from the BNR reference rate. The GARCH, GJR and EGARCH estimates are those of the lecture; the conditional volatilities are recomputed in the browser from the estimated parameters. Variants with parameters other than the estimates (α, β, λ, the VaR level, the interval coverage) use fixed parameters, not re-estimated. The simulated series use the Normal draws of the chapter’s seed; variants that do not appear in the lecture (other values of α, β or n) are extra runs of the chapter code with the same seed.</p>
+</main>
+</body>
+</html>

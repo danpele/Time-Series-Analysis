@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 5 · Volatilitate condiționată: modelele ARCH și GARCH</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch5.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch5_data.js?v=20261101a", "ch5_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch5.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Serii de timp</h1><p>Capitolul 5 · Volatilitate condiționată: modelele ARCH și GARCH</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_05" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch5.html" class="lang-btn">EN</a><a href="ch5_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură, calculată în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas.</p>
+<p class="toc"><a href="#s-sty">Faptele stilizate ale randamentelor financiare</a> · <a href="#s-cm">Media condiționată și varianța condiționată</a> · <a href="#s-arch">Modelul ARCH</a> · <a href="#s-garch">Modelul GARCH(1,1)</a> · <a href="#s-ml">Estimarea prin verosimilitate maximă</a> · <a href="#s-mk">GARCH pe patru piețe și modele ARMA-GARCH</a> · <a href="#s-asym">Asimetria și efectul de levier</a> · <a href="#s-diag">Diagnosticare și alegerea modelului</a> · <a href="#s-fc">Prognoza varianței și evaluarea ei</a> · <a href="#s-var">O aplicație: VaR 1% dintr-un model GARCH</a></p>
+<h2 class="sec" id="s-sty">Faptele stilizate ale randamentelor financiare</h2>
+<section class="blk" id="returns">
+  <h3>Patru piețe, același tipar</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=7" target="_blank" rel="noopener"><img src="slides/tsa_ch5_returns_ro.jpg" alt="Slide-ul 6: Patru piețe, același tipar" loading="lazy"></a>
+      <figcaption>Slide-ul 6</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="re-y">Anul evidențiat: <b id="re-y-v"></b></label><input type="range" id="re-y" min="2000" max="2026" step="1" value="2017"></div><button class="btn play" id="re-play" type="button"></button></div><div class="charts "><div class="chart" id="re-chart"></div></div><ul class="out" id="re-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În ce an a fost cea mai mică abaterea standard zilnică a randamentelor S&P 500?</div>
+  <details><summary>Răspuns</summary><p>În 2017: 0,42%, urmat de 2006 (0,63%) și 2005 (0,65%). Între septembrie 2008 și martie 2009 abaterea standard a fost 3,52%, de 8,3 ori mai mare, iar în februarie–mai 2020, 3,70% (de 8,8 ori). La EUR/RON cel mai calm an a fost 2024 (0,025%), cel mai agitat 2008 (0,72%): BNR a ținut leul aproape fix în 2020, cînd acțiunile treceau prin cea mai mare furtună.</p></details>
+</section>
+<section class="blk" id="acf-squares">
+  <h3>Semnul este imprevizibil, mărimea nu</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=11" target="_blank" rel="noopener"><img src="slides/tsa_ch5_acf_squares_ro.jpg" alt="Slide-ul 10: Semnul este imprevizibil, mărimea nu" loading="lazy"></a>
+      <figcaption>Slide-ul 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="aq-f">A doua serie</label><select id="aq-f"><option value="sq" selected>r² (curs)</option><option value="abs">|r|</option></select></div><div class="ctl"><label for="aq-y">Eșantionul începe în: <b id="aq-y-v"></b></label><input type="range" id="aq-y" min="2000" max="2020" step="1" value="2000"></div><button class="btn play" id="aq-play" type="button"></button></div><div class="charts "><div class="chart" id="aq-chart"></div></div><ul class="out" id="aq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Înlocuiți r² cu |r|. Cîte dintre cele 50 de autocorelații ale lui |r| pentru S&P 500 ies din bandă, și cît este autocorelația la lagul 50?</div>
+  <details><summary>Răspuns</summary><p>Toate 50 ies din bandă, iar la lagul 50 autocorelația este 0,127, față de 0,053 pentru r²; la lagul 1: 0,289 față de 0,313. Valoarea absolută este mai puțin dominată de cîteva zile extreme decît pătratul, deci memoria mărimii randamentelor apare și mai clar. Semnul (r) rămîne aproape imprevizibil: 15 autocorelații din 50 ies din bandă, cele mai multe mici.</p></details>
+</section><h2 class="sec" id="s-cm">Media condiționată și varianța condiționată</h2>
+<section class="blk" id="arma-resid">
+  <h3>Modelul pentru medie lasă efecte ARCH</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=19" target="_blank" rel="noopener"><img src="slides/tsa_ch5_arma_resid_ro.jpg" alt="Slide-ul 18: Modelul pentru medie lasă efecte ARCH" loading="lazy"></a>
+      <figcaption>Slide-ul 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ar-p">Ordinul p al AR pentru medie (stînga): <b id="ar-p-v"></b></label><input type="range" id="ar-p" min="0" max="5" step="1" value="1"></div><button class="btn play" id="ar-play" type="button"></button></div><div class="charts "><div class="chart" id="ar-chart"></div></div><ul class="out" id="ar-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Creșteți ordinul AR al mediei de la 1 la 5. Dispar efectele ARCH din reziduuri?</div>
+  <details><summary>Răspuns</summary><p>Nu. Q(10) al reziduurilor scade de la 29,7 la 15,4 (p = 0,009), dar Q(10) al pătratelor crește de la 2496 la 2562, iar ARCH-LM(5) rămîne în jur de 1020 (pentru AR(1): n R² = 6664 × 0,1526 = 1017). Un model mai bogat pentru medie elimină autocorelația nivelului, nu pe cea a pătratelor: varianța condiționată cere un model separat.</p></details>
+</section><h2 class="sec" id="s-arch">Modelul ARCH</h2>
+<section class="blk" id="simulated">
+  <h3>Traiectorii simulate: i.i.d., ARCH(1) și GARCH(1,1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=25" target="_blank" rel="noopener"><img src="slides/tsa_ch5_simulated_ro.jpg" alt="Slide-ul 24: Traiectorii simulate: i.i.d., ARCH(1) și GARCH(1,1)" loading="lazy"></a>
+      <figcaption>Slide-ul 24</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="si-a1">α al ARCH(1), ω = 1 − α: <b id="si-a1-v"></b></label><input type="range" id="si-a1" min="0.05" max="0.9" step="0.05" value="0.5"></div><div class="ctl"><label for="si-a">α al GARCH(1,1): <b id="si-a-v"></b></label><input type="range" id="si-a" min="0.02" max="0.3" step="0.02" value="0.1"></div><div class="ctl"><label for="si-b">β al GARCH(1,1), ω = 1 − α − β: <b id="si-b-v"></b></label><input type="range" id="si-b" min="0" max="0.96" step="0.04" value="0.88"></div><button class="btn play" id="si-play" type="button"></button></div><div class="charts "><div class="chart" id="si-chart"></div></div><ul class="out" id="si-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți α al ARCH(1) la 0,7 (ω = 0,3). Cît este kurtosisul teoretic și cît cel de selecție?</div>
+  <details><summary>Răspuns</summary><p>Teoretic, momentul de ordinul patru nu există (3α² = 1,47 ≥ 1, pragul este α = 1/√3 = 0,577), deci kurtosisul este infinit. Kurtosisul celor 1000 de valori simulate este 11,24, iar la α = 0,9 este 34,9: o selecție finită are mereu un kurtosis finit, deci valoarea de selecție nu poate arăta că momentul nu există. La α = 0,5 teoria dă 9,0, selecția 4,91: momentul de ordinul patru converge încet.</p></details>
+</section><h2 class="sec" id="s-garch">Modelul GARCH(1,1)</h2>
+<section class="blk" id="ewma-garch">
+  <h3>GARCH, EWMA și o fereastră mobilă în 2020</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=34" target="_blank" rel="noopener"><img src="slides/tsa_ch5_ewma_garch_ro.jpg" alt="Slide-ul 33: GARCH, EWMA și o fereastră mobilă în 2020" loading="lazy"></a>
+      <figcaption>Slide-ul 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ew-l">λ al EWMA: <b id="ew-l-v"></b></label><input type="range" id="ew-l" min="0.8" max="0.99" step="0.01" value="0.94"></div><div class="ctl"><label for="ew-w">Fereastra mobilă (zile): <b id="ew-w-v"></b></label><input type="range" id="ew-w" min="21" max="252" step="21" value="63"></div><button class="btn play" id="ew-play" type="button"></button></div><div class="charts "><div class="chart" id="ew-chart"></div></div><ul class="out" id="ew-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Creșteți λ la 0,97. Este vîrful EWMA din martie 2020 mai mare sau mai mic decît 85%?</div>
+  <details><summary>Răspuns</summary><p>Mai mic: 67%, pe 27 martie 2020, față de 85% pe 25 martie pentru λ = 0,94. Cu λ mai mare, ponderea randamentului de ieri, 1 − λ, scade de la 0,06 la 0,03, iar timpul de înjumătățire al ponderilor crește de la 11,2 la 22,8 zile: estimarea reacționează mai încet și coboară mai încet (37% pe 30 iunie 2020, față de 30%). Cu λ = 0,90 vîrful este 103%, aproape de cel al GARCH (111%), al cărui α = 0,123 este mai mare decît 1 − λ = 0,06.</p></details>
+</section><h2 class="sec" id="s-ml">Estimarea prin verosimilitate maximă</h2>
+<section class="blk" id="lik-arch1">
+  <h3>Verosimilitatea modelului ARCH(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=38" target="_blank" rel="noopener"><img src="slides/tsa_ch5_lik_arch1_ro.jpg" alt="Slide-ul 37: Verosimilitatea modelului ARCH(1)" loading="lazy"></a>
+      <figcaption>Slide-ul 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="l1-a">α adevărat (ω = 1 − α): <b id="l1-a-v"></b></label><input type="range" id="l1-a" min="0.1" max="0.9" step="0.05" value="0.5"></div><div class="ctl"><label for="l1-n">A doua selecție</label><select id="l1-n"><option value="250">n = 250</option><option value="500">n = 500</option><option value="1000" selected>n = 1000 (curs)</option><option value="2000">n = 2000</option><option value="5000">n = 5000</option></select></div><button class="btn play" id="l1-play" type="button"></button></div><div class="charts "><div class="chart" id="l1-chart"></div></div><ul class="out" id="l1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți a doua selecție la n = 5000. Cît devine eroarea standard a lui α̂?</div>
+  <details><summary>Răspuns</summary><p>0,015 (α̂ = 0,516), față de 0,035 pentru n = 1000: de 2,3 ori mai mică, aproape de √5 = 2,24. Eroarea standard scade cu √n, pentru că log-verosimilitatea este o sumă de n termeni și curbura ei la maxim crește proporțional cu n.</p></details>
+</section>
+<section class="blk" id="lik-garch">
+  <h3>Verosimilitatea modelului GARCH(1,1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=39" target="_blank" rel="noopener"><img src="slides/tsa_ch5_lik_garch_ro.jpg" alt="Slide-ul 38: Verosimilitatea modelului GARCH(1,1)" loading="lazy"></a>
+      <figcaption>Slide-ul 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lg-n">n în panoul din dreapta: <b id="lg-n-v"></b></label><input type="range" id="lg-n" min="250" max="5000" step="250" value="2000"></div><button class="btn play" id="lg-play" type="button"></button></div><div class="charts "><div class="chart" id="lg-chart"></div></div><ul class="out" id="lg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu n = 1000 în panoul din dreapta, unde este maximul pe grilă?</div>
+  <details><summary>Răspuns</summary><p>În (0,045; 0,90): α este tot subestimat și β supraestimat, de-a lungul aceleiași creste pe care α + β se schimbă puțin. Cu n = 1500 maximul este în (0,075; 0,82), cu n = 3000 în (0,10; 0,81), cu n = 5000 în (0,10; 0,82). Între α și β există un compromis: date diferite cu aceeași persistență dau aproape aceeași verosimilitate, de aceea GARCH cere eșantioane lungi.</p></details>
+</section>
+<section class="blk" id="qq">
+  <h3>Graficele QQ ale reziduurilor standardizate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch5_qq_ro.jpg" alt="Slide-ul 43: Graficele QQ ale reziduurilor standardizate" loading="lazy"></a>
+      <figcaption>Slide-ul 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="qq-nu">ν al distribuției t de referință (dreapta): <b id="qq-nu-v"></b></label><input type="range" id="qq-nu" min="3" max="30" step="0.01" value="6.26"></div><button class="btn play" id="qq-play" type="button"></button></div><div class="charts "><div class="chart" id="qq-chart"></div></div><ul class="out" id="qq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru ce ν cuantila teoretică de 0,1% a distribuției t standardizate devine egală cu cea de selecție, −4,79?</div>
+  <details><summary>Răspuns</summary><p>Pentru ν ≈ 4,5 (−4,79), mai mic decît ν̂ = 6,26. Dar distribuția t este simetrică: cu ν = 4,5 cuantila de 99,9% este +4,79, în timp ce cea de selecție este doar 2,93. Coada stîngă a reziduurilor este mai groasă decît cea dreaptă; o singură valoare ν nu le potrivește pe amîndouă, de aceea cursul compară și distribuția t asimetrică (skewed t).</p></details>
+</section><h2 class="sec" id="s-mk">GARCH pe patru piețe și modele ARMA-GARCH</h2>
+<section class="blk" id="vol-sp500-bet">
+  <h3>Volatilitatea condiționată: S&P 500 și BET</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=48" target="_blank" rel="noopener"><img src="slides/tsa_ch5_vol_sp500_bet_ro.jpg" alt="Slide-ul 47: Volatilitatea condiționată: S&P 500 și BET" loading="lazy"></a>
+      <figcaption>Slide-ul 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="v1-c">α = c·α̂ și β = α̂ + β̂ − α; c: <b id="v1-c-v"></b></label><input type="range" id="v1-c" min="0.25" max="2" step="0.05" value="1"></div><button class="btn play" id="v1-play" type="button"></button></div><div class="charts "><div class="chart" id="v1-chart"></div></div><ul class="out" id="v1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Dublați α (c = 2) păstrînd α + β. Ce se întîmplă cu vîrful S&P 500 din martie 2020 și cu mediana volatilității?</div>
+  <details><summary>Răspuns</summary><p>Vîrful crește de la 111% la 140%, iar mediana scade de la 14,3% la 13,3%: cu α = 0,245 și β = 0,750, volatilitatea reacționează mai puternic la fiecare șoc și revine mai repede. Pentru BET vîrful din 2008 crește de la 117% la 138%. Persistența, deci și nivelul pe termen lung, rămîne aceeași; se schimbă forma traiectoriei. Valorile estimate (c = 1) sînt cele care maximizează verosimilitatea.</p></details>
+</section>
+<section class="blk" id="vol-eurron-btc">
+  <h3>Volatilitatea condiționată: EUR/RON și Bitcoin</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch5_vol_eurron_btc_ro.jpg" alt="Slide-ul 48: Volatilitatea condiționată: EUR/RON și Bitcoin" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="v2-c">α = c·α̂ și β = α̂ + β̂ − α; c: <b id="v2-c-v"></b></label><input type="range" id="v2-c" min="0.25" max="2" step="0.05" value="1"></div><button class="btn play" id="v2-play" type="button"></button></div><div class="charts "><div class="chart" id="v2-chart"></div></div><ul class="out" id="v2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Înjumătățiți α pentru Bitcoin (c = 0,5). Scade vîrful din 13 martie 2020 sub 250%?</div>
+  <details><summary>Răspuns</summary><p>Da: 218%, față de 301% cu α estimat; mediana crește de la 58,7% la 66,6%. Și la un IGARCH, α decide cît de mult urcă volatilitatea după un șoc; α + β = 1 decide doar că șocul nu se stinge. Pentru EUR/RON, cu c = 0,5, vîrful din 2008 scade de la 22% la 19%.</p></details>
+</section>
+<section class="blk" id="persistence">
+  <h3>Durata unui șoc de volatilitate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=50" target="_blank" rel="noopener"><img src="slides/tsa_ch5_persistence_ro.jpg" alt="Slide-ul 49: Durata unui șoc de volatilitate" loading="lazy"></a>
+      <figcaption>Slide-ul 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pe-d">α + β în timpul de înjumătățire</label><select id="pe-d"><option value="x" selected>nerotunjit (curs)</option><option value="3">rotunjit la 3 zecimale</option><option value="2">rotunjit la 2 zecimale</option></select></div><div class="ctl"><label for="pe-p">α + β al curbei întrerupte: <b id="pe-p-v"></b></label><input type="range" id="pe-p" min="0.9" max="0.999" step="0.001" value="0.98"></div><button class="btn play" id="pe-play" type="button"></button></div><div class="charts "><div class="chart" id="pe-chart"></div></div><ul class="out" id="pe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu α + β rotunjit la 0,995, timpul de înjumătățire al S&P 500 iese 138 de zile. Tabelul din curs dă 131. Care este corect?</div>
+  <details><summary>Răspuns</summary><p>131: persistența estimată este 0,9947, iar ln 0,5 / ln 0,9947 = 130,7 zile. Rotunjirea la trei zecimale adaugă 7 zile; pentru BET, 0,9907 dă 74,3 zile, rotunjit la 0,991 dă 76,7. Rotunjit la 0,99, ambele dau 69,0 zile. Aproape de 1, timpul de înjumătățire depinde puternic de a treia zecimală: se calculează din valoarea nerotunjită.</p></details>
+</section>
+<section class="blk" id="bands">
+  <h3>Intervale de prognoză variabile în timp</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=53" target="_blank" rel="noopener"><img src="slides/tsa_ch5_bands_ro.jpg" alt="Slide-ul 52: Intervale de prognoză variabile în timp" loading="lazy"></a>
+      <figcaption>Slide-ul 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bd-c">Acoperirea intervalelor: <b id="bd-c-v"></b></label><input type="range" id="bd-c" min="80" max="99" step="1" value="95"></div><button class="btn play" id="bd-play" type="button"></button></div><div class="charts "><div class="chart" id="bd-chart"></div></div><ul class="out" id="bd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu acoperire 99%, ce proporție din zilele din martie–aprilie 2020 ratează intervalul constant și ce proporție ratează intervalul GARCH?</div>
+  <details><summary>Răspuns</summary><p>Intervalul constant ratează 28,6% din zile, intervalul GARCH 2,4%. Pe tot eșantionul: 2,9% și 1,0%, iar în 2017: 0,4% și 0,4%. Lățimea intervalului constant este 7,2 puncte în fiecare zi; a celui GARCH variază între 3,4 și 35,1 puncte în fereastra din grafic. Intervalul constant greșește tocmai în crize, cînd contează cel mai mult.</p></details>
+</section><h2 class="sec" id="s-asym">Asimetria și efectul de levier</h2>
+<section class="blk" id="nic">
+  <h3>Curbele de impact ale știrilor: S&P 500 și Bitcoin</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=58" target="_blank" rel="noopener"><img src="slides/tsa_ch5_nic_ro.jpg" alt="Slide-ul 57: Curbele de impact ale știrilor: S&P 500 și Bitcoin" loading="lazy"></a>
+      <figcaption>Slide-ul 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ni-k">Panoul din dreapta</label><select id="ni-k"><option value="btc" selected>Bitcoin (curs)</option><option value="bet">BET</option></select></div><div class="ctl"><label for="ni-x">Mărimea șocului |ε|: <b id="ni-x-v"></b></label><input type="range" id="ni-x" min="1" max="4" step="0.5" value="2"></div><div class="ctl"><label for="ni-h">Banda kernel, în abateri standard: <b id="ni-h-v"></b></label><input type="range" id="ni-h" min="0.25" max="1.5" step="0.05" value="0.5"></div><button class="btn play" id="ni-play" type="button"></button></div><div class="charts "><div class="chart" id="ni-chart"></div></div><ul class="out" id="ni-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru un șoc de 4%, de cîte ori este mai mare varianța de mîine a S&P 500 după o scădere decît după o creștere, în GJR?</div>
+  <details><summary>Răspuns</summary><p>De 3,50 ori, față de 1,62 pentru un șoc de 2%. Raportul crește cu mărimea șocului: termenul γε² crește cu pătratul șocului, iar βσ² nu depinde de el. EGARCH dă 2,97; estimarea kernel doar 1,41, pentru că există puține zile cu scăderi de 4%. La Bitcoin raportul GJR rămîne aproape 1 (0,98).</p></details>
+</section><h2 class="sec" id="s-diag">Diagnosticare și alegerea modelului</h2>
+<section class="blk" id="acf-diag">
+  <h3>Autocorelațiile eliminate de GARCH</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch5_acf_diag_ro.jpg" alt="Slide-ul 61: Autocorelațiile eliminate de GARCH" loading="lazy"></a>
+      <figcaption>Slide-ul 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dg-k">Seria</label><select id="dg-k"><option value="sp500" selected>S&P 500 (curs)</option><option value="bet">BET</option><option value="eurron">EUR/RON</option><option value="btc">Bitcoin</option></select></div><div class="ctl"><label for="dg-o">Ziua cu cel mai mare |ẑ|</label><select id="dg-o"><option value="keep" selected>inclusă (curs)</option><option value="drop">exclusă</option></select></div><button class="btn play" id="dg-play" type="button"></button></div><div class="charts "><div class="chart" id="dg-chart"></div></div><ul class="out" id="dg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru EUR/RON, Q(10) al lui ẑ² este 0,004 (p = 1,000). Este modelul GARCH-t perfect?</div>
+  <details><summary>Răspuns</summary><p>Nu. Valoarea vine dintr-o singură zi, 6 mai 2025, cu ẑ = 153,7, al cărei pătrat domină toate autocorelațiile. Fără această zi, Q(10) = 19,2 (p = 0,038): rămîn efecte ARCH, pe care testul cu toate zilele nu le separă de zgomot. Pentru S&P 500 excluderea celei mai mari |ẑ| (27 februarie 2007) schimbă puțin rezultatul (13,6 → 14,2).</p></details>
+</section><h2 class="sec" id="s-fc">Prognoza varianței și evaluarea ei</h2>
+<section class="blk" id="term-structure">
+  <h3>Structura la termen a volatilității</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=69" target="_blank" rel="noopener"><img src="slides/tsa_ch5_term_structure_ro.jpg" alt="Slide-ul 68: Structura la termen a volatilității" loading="lazy"></a>
+      <figcaption>Slide-ul 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ts-o">Originea celei de-a treia prognoze: <b id="ts-o-v"></b></label><input type="range" id="ts-o" min="0" max="1" step="1" value="1"></div><button class="btn play" id="ts-play" type="button"></button></div><div class="charts "><div class="chart" id="ts-chart"></div></div><ul class="out" id="ts-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați originea pe 16 martie 2020. Este volatilitatea pe 10 zile din regula rădăcinii pătrate mai mare sau mai mică decît cea din suma prognozelor?</div>
+  <details><summary>Răspuns</summary><p>Mai mare: √(10 × 49,03) = 22,14% față de √479,49 = 21,90%. Pe 18 septembrie 2026 era invers: 2,26% față de 2,38%. Într-o criză varianța prognozată coboară spre nivelul pe termen lung, deci regula rădăcinii pătrate supraestimează; într-o perioadă calmă o subestimează.</p></details>
+</section>
+<section class="blk" id="forecast-eval">
+  <h3>GARCH față de EWMA, în afara eșantionului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch5_forecast_eval_ro.jpg" alt="Slide-ul 70: GARCH față de EWMA, în afara eșantionului" loading="lazy"></a>
+      <figcaption>Slide-ul 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fe-m">Comparația</label><select id="fe-m"><option value="ge" selected>EWMA − GARCH-t (curs)</option><option value="je">EWMA − GJR-t</option><option value="gj">GARCH-t − GJR-t</option></select></div><div class="ctl"><label for="fe-x">Ziua cu cea mai mare diferență</label><select id="fe-x"><option value="keep" selected>inclusă (curs)</option><option value="drop">exclusă</option></select></div><button class="btn play" id="fe-play" type="button"></button></div><div class="charts "><div class="chart" id="fe-chart"></div></div><ul class="out" id="fe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați ziua cu cea mai mare diferență de pierdere. Devine semnificativă la 5% diferența dintre GARCH-t și EWMA pentru EUR/RON?</div>
+  <details><summary>Răspuns</summary><p>Nu: t = −1,32 (p = 0,187), față de −1,02 (p = 0,310) cu toate zilele. Ziua de 6 mai 2025 aducea 98% din diferența totală, iar fără ea mediile QLIKE ale celor două modele sînt apropiate. Pentru BET, fără 19 decembrie 2018 avantajul GARCH-t devine mai clar (t = −2,79, p = 0,005).</p></details>
+</section><h2 class="sec" id="s-var">O aplicație: VaR 1% dintr-un model GARCH</h2>
+<section class="blk" id="var">
+  <h3>VaR 1% în timpul crahului COVID-19</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf#page=76" target="_blank" rel="noopener"><img src="slides/tsa_ch5_var_ro.jpg" alt="Slide-ul 75: VaR 1% în timpul crahului COVID-19" loading="lazy"></a>
+      <figcaption>Slide-ul 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="va-k">Seria</label><select id="va-k"><option value="sp500" selected>S&P 500 (curs)</option><option value="bet">BET</option><option value="eurron">EUR/RON</option><option value="btc">Bitcoin</option></select></div><div class="ctl"><label for="va-a">Nivelul VaR</label><select id="va-a"><option value="0.5">0,5%</option><option value="1" selected>1% (curs)</option><option value="2.5">2,5%</option><option value="5">5%</option></select></div><div class="ctl"><label for="va-w">Perioada</label><select id="va-w"><option value="covid" selected>iulie 2019 – iunie 2021 (curs)</option><option value="all">2015–2026</option></select></div><button class="btn play" id="va-play" type="button"></button></div><div class="charts "><div class="chart" id="va-chart"></div></div><ul class="out" id="va-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> La VaR 5%, în fereastra iulie 2019 – iunie 2021, are EWMA-Normal tot mai multe depășiri decît GARCH-t?</div>
+  <details><summary>Răspuns</summary><p>Nu: EWMA-Normal are 28, GARCH-t 32, față de 25,3 așteptate. Cuantila de 5% a distribuției t standardizate cu ν = 6,26 este −1,59, mai aproape de zero decît −1,645 a distribuției Normale: cozile groase cer cuantile mai mari doar departe în coadă. La VaR 1%: 13 depășiri GARCH-t și 17 EWMA-Normal (5 așteptate); la 0,5%: 7 și 16.</p></details>
+</section>
+<p class="src foot">Randamente logaritmice zilnice, în %, pînă la 18 septembrie 2026: S&P 500, BET și Bitcoin din datele de piață ale cursului (EODHD), EUR/RON din cursul de referință al BNR. Estimările GARCH, GJR și EGARCH sînt cele din curs; volatilitățile condiționate se recalculează în browser din parametrii estimați. Variantele cu alți parametri decît cei estimați (α, β, λ, nivelul VaR, acoperirea intervalelor) folosesc parametri fixați, fără reestimare. Seriile simulate folosesc extragerile Normale ale seminței capitolului; variantele care nu apar în curs (alte valori ale lui α, β sau n) sînt rulări suplimentare ale codului capitolului, cu aceeași sămînță.</p>
+</main>
+</body>
+</html>
