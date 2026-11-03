@@ -107,6 +107,12 @@ const band = (x, lo, hi, a, col, al, name, o) => Object.assign({ x: x.concat([..
 const GQ = D.gdp.q, GY = D.gdp.y;                       // 100 ln real GDP, 2000Q1-2026Q2 (slide vintage)
 let FX = null;
 const fxDays = () => (FX || (FX = { d: days(D.fx), v: D.fx.v }));
+function dateLine(d, v, cut) {   // OLS line of v on calendar time, fitted on the dates before cut; two end points (a line on a date axis)
+  const tm = d.map(s => Date.parse(s.length > 7 ? s : s + '-01')), ix = tm.map((t, i) => (t < cut ? i : -1)).filter(i => i >= 0);
+  if (ix.length < 8) return { x: [], y: [] };
+  const tx = ix.map(i => tm[i]), mx = mean(tx), my = mean(ix.map(i => v[i])), b = sum(ix.map((i, j) => (tx[j] - mx) * (v[i] - my))) / sum(tx.map(t => (t - mx) ** 2));
+  return { x: [d[0], d[d.length - 1]], y: [my + b * (tm[0] - mx), my + b * (tm[tm.length - 1] - mx)] };
+}
 function blkFour() {
   const k = +$('fs-end').value, n = GY.length; set('fs-end', T.q(GQ[k]));
   const t = range(0, n - 1, 1), f = ols([ones(k + 1), t.slice(0, k + 1)], GY.slice(0, k + 1).map(v => v / 100)), line = t.map(i => f.b[0] + f.b[1] * i);
@@ -115,12 +121,15 @@ function blkFour() {
     { r: 1, c: 0, t: 'EUR/RON, BNR reference rate (daily)', x: { type: 'date' } }, { r: 1, c: 1, t: 'Log price minus its 2000 value', x: { type: 'date' } }], { cols: 2, h: 470, legendRows: 2 });
   const [a, b, c, d] = G.ax, x = GQ.map(q2d), F = { d: days(D.four.fx), v: D.four.fx.v }, B = days(D.four.bet), S = days(D.four.sp);
   const tr = [ln(x, GY.map(v => v / 100), a, K.green, 'Romania: log real GDP', { customdata: GQ, hovertemplate: '%{customdata}: %{y:.4f}<extra></extra>' }),
-    ln(x, line, a, K.navy, 'fitted straight line', { line: { color: K.navy, dash: 'dash', width: 1 }, hoverinfo: 'skip' }),
+    ln(x, line, a, K.navy, 'straight line fitted up to the dotted date', { line: { color: K.navy, dash: 'dash', width: 1 }, hoverinfo: 'skip' }),
     ln(D.four.hicp_m.map(m2d), D.four.hicp, b, K.red, 'Romania: log HICP', { hovertemplate: '%{x|%Y-%m}: %{y:.3f}<extra></extra>' }),
     ln(F.d, F.v, c, K.blue, 'EUR/RON', { line: { color: K.blue, width: 1 }, hovertemplate: '%{x}: %{y:.4f}<extra></extra>' }),
     ln(B, D.four.bet.v, d, K.red, 'BET', { line: { color: K.red, width: 0.9 }, hovertemplate: '%{x}: %{y:.3f}<extra>BET</extra>' }),
     ln(S, D.four.sp.v, d, K.blue, 'S&P 500', { line: { color: K.blue, width: 0.9 }, hovertemplate: '%{x}: %{y:.3f}<extra>S&P 500</extra>' })];
-  if (k < n - 1) G.lay.shapes.push(vl(a, x[k], K.navy, 'dot', 1));
+  const cut = Date.parse(q2d(addQ(GQ[k], 1))), dash = { color: K.navy, dash: 'dash', width: 1 };
+  [[D.four.hicp_m.map(m2d), D.four.hicp, b], [F.d, F.v, c], [B, D.four.bet.v, d], [S, D.four.sp.v, d]].forEach(([dd, v, ax]) => {
+    const L = dateLine(dd, v, cut); tr.push(ln(L.x, L.y, ax, K.navy, '', { line: dash, hoverinfo: 'skip' })); });
+  if (k < n - 1) G.ax.forEach(ax => G.lay.shapes.push(vl(ax, x[k], K.navy, 'dot', 1)));
   plot('fs-chart', tr, G.lay);
   const N4 = NB.four;
   out('fs-out', [T.fs1(T.q(GQ[0]), T.q(GQ[k]), nf(100 * f.b[1], 2), nf(400 * f.b[1], 1)),
@@ -144,6 +153,7 @@ function blkTsDs() {
   const [a, b, c] = G.ax, tl = t.map(v => 0.2 * v);
   const tr = [ln(t, ts0, a, K.blue, 'without the shock', { legendgroup: 'a' }), ln(t, ts1, a, K.red, `with a shock of +${sh} at t = 100`, { legendgroup: 'b' }),
     ln(t, tl, a, K.navy, 'trend line 0.2 t', { line: { color: K.navy, dash: 'dash', width: 0.9 }, legendgroup: 'c', hoverinfo: 'skip' }),
+    ln(t, ts1, b, '#9AA0A6', `middle panel: trend-stationary path with the shock, φ = ${phi.toFixed(2)}`, { line: { color: '#9AA0A6', width: 2.2 }, hovertemplate: 't = %{x}: %{y:.2f}<extra>trend-stationary</extra>' }),
     ln(t, ds0, b, K.blue, '', { legendgroup: 'a' }), ln(t, ds1, b, K.red, '', { legendgroup: 'b' }),
     ln(t, tl, b, K.navy, '', { line: { color: K.navy, dash: 'dash', width: 0.9 }, hoverinfo: 'skip' }),
     ln(h, h.map(k => phi ** k), c, K.green, `trend-stationary: φ<sup>h</sup>, φ = ${phi.toFixed(2)}`, { mode: 'lines+markers', marker: { size: 4 } }),
@@ -189,7 +199,9 @@ function blkSpurMC() {
     { x: hL.x, y: hL.y, type: 'bar', width: bw, marker: { color: 'rgba(205,0,0,0.55)' }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: 't ≈ %{x:.2f}: %{y:.3f}<extra>levels</extra>' },
     { x: hD.x, y: hD.y, type: 'bar', width: bw, marker: { color: 'rgba(26,58,110,0.65)' }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: 't ≈ %{x:.2f}: %{y:.3f}<extra>differences</extra>' },
     ln(xx, xx.map(v => Math.exp(-v * v / 2) / Math.sqrt(2 * Math.PI)), b, K.green, 'N(0, 1)', { line: { color: K.green, width: 1.2 }, hoverinfo: 'skip' }),
-    leg('nominal size 5%', { color: K.navy, dash: 'dash', width: 1 })];
+    leg('nominal size 5%', { color: K.navy, dash: 'dash', width: 1 }),
+    { x: [+Tn, +Tn], y: [100 * S[Tn].levels.reject, 100 * S[Tn].differences.reject], mode: 'markers', marker: { color: [K.red, K.blue], size: 13, symbol: 'circle-open', line: { width: 2.5 } },
+      name: `T = ${Tn} (histogram on the right)`, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'T = %{x}: %{y:.1f}%<extra></extra>' }];
   G.lay.barmode = 'overlay';
   G.lay.shapes.push(hl(a, 5, K.navy, 'dash', 0.9), vl(a, +Tn, K.navy, 'dot', 1));
   plot('sm-chart', tr, G.lay);
@@ -321,7 +333,8 @@ function blkBrkReal() {
     const S = BR[k], z = S.za[reg], a = G.ax[j], x = S.d.map(m2d), bx = m2d(z.brk);
     tr.push(ln(x, S.v, a, col, j ? '' : 'series', { hovertemplate: '%{x|%Y-%m}: %{y:.1f}<extra></extra>' }));
     tr.push(ln(x, x.map(v => (v < bx ? z.m0 : z.m1)), a, K.red, j ? '' : 'mean before and after the break', { line: { color: K.red, dash: 'dash', width: 1.3 }, hoverinfo: 'skip' }));
-    G.lay.shapes.push(vl(a, bx, K.navy, 'dot', 1));
+    const lo = Math.min(...S.v), hi = Math.max(...S.v);
+    tr.push(ln([bx, bx], [lo, hi], a, K.navy, j ? '' : 'estimated break date', { line: { color: K.navy, dash: 'dot', width: 1.2 }, hovertemplate: `break: ${z.brk}<extra></extra>` }));
   });
   tr.push(leg('series (EUR/RON)', { color: K.green, width: 1.3 }));
   plot('br-chart', tr, G.lay);
@@ -420,7 +433,9 @@ function blkGdpFc() {
 // ================================================================= 15. over-differencing
 function dif(x, d) { let y = x; for (let k = 0; k < d; k++) y = y.slice(1).map((v, i) => v - y[i]); return y; }
 const svar = x => sdev(x) ** 2;
-function blkOverdiff() {
+const ODK = [['ro', '2'], ['ro', '3'], ['us', '2'], ['us', '3']];
+function blkOverdiff(ev) {
+  if (ev && ev.target && ev.target.id === 'od-k') { const [s0, d0] = ODK[+ev.target.value]; $('od-s').value = s0; $('od-d').value = d0; }
   const sr = $('od-s').value, d = +$('od-d').value, y = sr === 'ro' ? GY : D.overdiff.us, x1 = dif(y, 1), x2 = dif(y, d), th = D.overdiff.theta[sr][d];
   const lab = sr === 'ro' ? 'Romania' : 'US', r1 = acf(x1, 12), r2 = acf(x2, 12), lo = Math.min(-0.65, ...r2.map(v => v - 0.05));
   const G = grid('od-chart', [{ r: 0, c: 0, t: `${lab}: Δ 100 ln Y<sub>t</sub> (d = 1)`, xt: 'lag (quarters)', y: { range: [lo, 0.35] } },
@@ -585,6 +600,8 @@ function blkXCv() {
   const a = G.ax[0], tr = regs.map(r => ln(tt, tt.map(t => mkc(r, t)[1]), a, DFC[r], DFN[r], { hovertemplate: `${DFN[r]}, T = %{x}: %{y:.3f}<extra></extra>` }));
   tr.push({ x: [250, 250, 250], y: regs.map(r => NB.dfdist[r].q05_sim), mode: 'markers', marker: { color: regs.map(r => DFC[r]), size: 9, symbol: 'diamond' }, name: 'simulated 5% quantile, T = 250', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{y:.3f}<extra></extra>' },
     ln([20, 1000], [-1.645, -1.645], a, K.navy, 'Normal 5% value −1.645', { line: { color: K.navy, dash: 'dot', width: 1.2 } }));
+  tr.push({ x: regs.map(() => Tn), y: regs.map(r => mkc(r, Tn)[1]), mode: 'markers', marker: { color: regs.map(r => DFC[r]), size: 10, symbol: 'circle-open', line: { width: 2.5 } },
+    name: `5% critical values at T = ${Tn}`, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'T = %{x}: %{y:.3f}<extra></extra>' });
   G.lay.shapes.push(vl(a, Tn, K.navy, 'dot', 0.8));
   plot('cv-chart', tr, G.lay);
   const c = regs.map(r => nz(mkc(r, Tn)[1], 2));
@@ -645,10 +662,14 @@ function blkXKpss() {
     .concat([[{ v: `<b>λ̂²</b>` }, '', '', num(K0.lr, 3, true)]]), { cap: X().xkCap(K0.L) });
   const x = xdate(s), G = grid('xk-chart', [{ r: 0, c: 0, t: `Residuals e<sub>t</sub> (${reg === 'c' ? 'deviations from the mean' : 'deviations from a linear trend'})`, x: { type: 'date' } },
     { r: 0, c: 1, t: 'Partial sums S<sub>t</sub> = e<sub>1</sub> + … + e<sub>t</sub>', x: { type: 'date' } }], { cols: 2, h: 340 });
-  const [a, b] = G.ax;
+  const [a, b] = G.ax, ends = [x[0], x[x.length - 1]], lam = Math.sqrt(Math.max(K0.lr, 0)), sd = Math.sqrt(K0.g[0]), thr = Math.sqrt(K0.crit5 * n * Math.max(K0.lr, 0)), rms = Math.sqrt(K0.ss / n);
+  const two = (y, ax, col, name, dash, g) => [ln(ends, [y, y], ax, col, name, { line: { color: col, dash, width: 1.3 }, legendgroup: g, hovertemplate: `${nf(y, 2)}<extra></extra>` }),
+    ln(ends, [-y, -y], ax, col, '', { line: { color: col, dash, width: 1.3 }, legendgroup: g, hovertemplate: `${nf(-y, 2)}<extra></extra>` })];
   G.lay.shapes.push(hl(a, 0, K.navy, 'solid', 0.6), hl(b, 0, K.navy, 'solid', 0.6));
   plot('xk-chart', [ln(x, K0.e, a, K.blue, SEN[key], { line: { color: K.blue, width: 1 }, customdata: s.d, hovertemplate: '%{customdata}: %{y:.2f}<extra></extra>' }),
-    ln(x, K0.S, b, K.red, 'partial sums', { line: { color: K.red, width: 1.4 }, customdata: s.d, hovertemplate: '%{customdata}: %{y:.1f}<extra></extra>' })], G.lay);
+    ...two(sd, a, '#9AA0A6', '± σ̂ = √γ̂<sub>0</sub>', 'dot', 's'), ...two(lam, a, K.green, `± λ̂ (long-run, L = ${K0.L})`, 'dash', 'l'),
+    ln(x, K0.S, b, K.red, 'partial sums', { line: { color: K.red, width: 1.4 }, customdata: s.d, hovertemplate: '%{customdata}: %{y:.1f}<extra></extra>' }),
+    ...two(rms, b, K.red, 'root mean square of S<sub>t</sub>', 'dot', 'r'), ...two(thr, b, K.navy, `5% threshold λ̂√(${nf(K0.crit5, 3)}·T): reject if the RMS is outside`, 'dash', 't')], G.lay);
   out('xk-out', [X().xk(X().ser[key], reg, nz(K0.eta, 3), K0.L, nf(K0.crit5, 3), K0.eta > K0.crit5)]);
   return K0;
 }
@@ -718,7 +739,10 @@ function blkXZa() {
   const G = grid('zt-chart', [{ r: 0, c: 0, t: 'Zivot-Andrews statistic and its 5% critical value', yt: 'ZA statistic', y: { range: [-8, 0] } }], { cols: 1, h: 320, legendRows: 2 });
   const a = G.ax[0], cat = br.map(b => `${b.lab}<br>${{ c: 'level', t: 'trend', ct: 'both' }[b.r]}`);
   plot('zt-chart', [{ x: cat, y: br.map(b => b.z.stat), type: 'bar', marker: { color: br.map(b => (b.r === reg ? K.red : b.k === 'nile' ? K.blue : K.green)) }, name: 'ZA statistic', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' },
-    { x: cat, y: br.map(b => b.z.crit5), mode: 'markers', marker: { color: K.navy, size: 18, symbol: 'line-ew', line: { width: 2.5, color: K.navy } }, name: '5% critical value', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' }], G.lay);
+    { x: cat, y: br.map(b => b.z.crit5), mode: 'markers', marker: { color: K.navy, size: 18, symbol: 'line-ew', line: { width: 2.5, color: K.navy } }, name: '5% critical value', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' },
+    (() => { const sel = br.map((b, i) => (b.r === reg ? i : -1)).filter(i => i >= 0);
+      return { x: sel.map(i => cat[i]), y: sel.map(i => br[i].z.stat), text: sel.map(i => nz(br[i].z.stat, 2) + (br[i].z.stat < br[i].z.crit5 ? ' ✓' : ' ✗')), mode: 'markers+text', textposition: 'bottom center',
+        marker: { color: K.red, size: 11, symbol: 'diamond' }, textfont: { color: K.red, size: 12 }, name: 'selected variant (✓ rejects at 5%)', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' }; })()], G.lay);
   const N0 = BR.nile.za[reg], E = BR.eurron.za[reg];
   out('zt-out', [X().zt1(reg, nz(N0.stat, 2), nz(N0.crit5, 2), N0.brk.slice(0, 4), nz(N0.m0, 0), nz(N0.m1, 0)), X().zt2(nz(E.stat, 2), nz(E.crit5, 2), T.m(E.brk), nz(Math.exp(E.m0 / 100), 2), nz(Math.exp(E.m1 / 100), 2))]);
 }
@@ -877,7 +901,8 @@ function init() {
   on(['gd-mod'], blkGdpDiag); P('gd-play', 'gd-mod', keysSorted(D.gdp.models), 1000);
   on(['iw-f0', 'iw-f1', 'iw-th'], blkWidth); P('iw-play', 'iw-th', range(-0.95, 0.95, 0.05), 250);
   const nO = Object.keys(D.gdp_fc).length; $('gf-o').max = nO - 1; $('gf-o').value = nO - 1; on(['gf-o'], blkGdpFc); P('gf-play', 'gf-o', range(0, nO - 1, 1), 350);
-  on(['od-s', 'od-d'], blkOverdiff); P('od-play', 'od-d', ['2', '3'], 1300);
+  const odk = Object.assign(document.createElement('input'), { type: 'range', id: 'od-k', min: 0, max: 3, step: 1, value: 3, hidden: true }); $('od-play').after(odk);
+  on(['od-s', 'od-d', 'od-k'], blkOverdiff); P('od-play', 'od-k', range(0, 3, 1), 1300);     // ▶: Romania d = 2, 3, then the US d = 2, 3
   on(['in-m0', 'in-m1'], blkInfl); P('in-play', 'in-m1', ['00', '01', '02', '10', '11', '12', '20', '21', '22', '30', '31', '32'], 900);
   on(['fx-y'], blkFx); P('fx-play', 'fx-y', range(2010, 2025, 1), 700);
   on(['us-y'], blkUs); P('us-play', 'us-y', range(1990, 2019, 1), 450);
