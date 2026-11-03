@@ -95,7 +95,10 @@ const set = (id, v) => { const e = $(id + '-v'); if (e) e.textContent = v; };
 
 // ================================================================= AR(1) for three values of phi
 function ar1Path(phi) { const e = D.ar1_e, x = new Array(e.length).fill(0); for (let t = 1; t < e.length; t++) x[t] = phi * x[t - 1] + e[t]; return x.slice(300); }
-function blkAR1() {
+const A1S = [0.9, 0.3, -0.7];       // slide values; during ▶ the middle and right phi move in proportion to the left one
+function blkAR1(ev) {
+  if (ev && !ev.isTrusted && ev.target && ev.target.id === 'a1-p1') { const v = +ev.target.value;
+    $('a1-p2').value = +(v * A1S[1] / A1S[0]).toFixed(2); $('a1-p3').value = +(v * A1S[2] / A1S[0]).toFixed(2); }
   const ph = ['a1-p1', 'a1-p2', 'a1-p3'].map(id => +$(id).value), cols = [K.blue, K.green, K.red];
   ph.forEach((p, i) => set(['a1-p1', 'a1-p2', 'a1-p3'][i], nf(p, 2)));
   const X = ph.map(ar1Path), big = Math.max(...X.flat().map(Math.abs)) > 7;
@@ -206,7 +209,8 @@ function psiSync() {             // the sliders show the parameters of the selec
 }
 function blkPsi(ev) {
   const k = $('ps-m').value, m = PSI[k], ids = ['ps-a', 'ps-b', 'ps-c', 'ps-d'];
-  if (ev && ev.target && ids.includes(ev.target.id)) { const i = ids.indexOf(ev.target.id), v = +ev.target.value; (i < 2 ? m.phi : m.th)[i % 2] = v; set(ev.target.id, nf(v, 2)); }
+  if (ev && ev.target && ids.includes(ev.target.id)) { const i = ids.indexOf(ev.target.id), v = +ev.target.value; (i < 2 ? m.phi : m.th)[i % 2] = v; set(ev.target.id, nf(v, 2));
+    if (!ev.isTrusted && i === 0) { PSI['AR(1)'].phi[0] = v; PSI['AR(2)'].phi[0] = v; PSI['MA(2)'].th[0] = v; PSI['ARMA(1,1)'].phi[0] = v; } }
   const names = Object.keys(PSI), n = 16;
   const G = grid('ps-chart', names.map((nm, j) => ({ r: 0, c: j, t: psiLab(nm), xt: 'j', yt: j ? '' : 'ψ<sub>j</sub>', y: { range: [-1.2, 2.2] } })), { cols: 4, h: 340, legend: false, gx: 0.05 });
   const tr = [], ys = [];
@@ -352,16 +356,16 @@ function blkLB() {
   const m = +$('lb-m').value, al = +$('lb-a').value; set('lb-m', m);
   const S = [['AR(1) residuals', D.lb.ar, 1], ['ARMA(1,1) residuals', D.lb.arma, 2]];
   const R = S.map(([, s, pq]) => [lbRate(s, m, m, al), lbRate(s, m, m - pq, al)]);
-  const ms = range(3, 20, 1), curves = S.map(([, s, pq]) => [ms.map(v => lbRate(s, v, v, al)), ms.map(v => lbRate(s, v, v - pq, al))]);
+  const ms = range(3, m, 1), curves = S.map(([, s, pq]) => [ms.map(v => lbRate(s, v, v, al)), ms.map(v => lbRate(s, v, v - pq, al))]);
   const A = 100 * al, G = grid('lb-chart', [{ r: 0, c: 0, t: `Ljung-Box on residuals of the true model, T = ${D.lb.T}, m = ${m}`, yt: 'rejection rate (%)', y: { range: [0, Math.max(12, 2.2 * A)] } },
-    { r: 0, c: 1, t: 'Rejection rate for every m', xt: 'm', y: { range: [0, Math.max(12, 2.2 * A)] } }], { cols: 2, h: 370, legendRows: 2 });
+    { r: 0, c: 1, t: `Rejection rate for m = 3, …, ${m}`, xt: 'm', x: { range: [2.5, 20.5] }, y: { range: [0, Math.max(12, 2.2 * A)] } }], { cols: 2, h: 370, legendRows: 2 });
   const [a, b] = G.ax, tr = [];
   [['df = m', K.orange], ['df = m − p − q', K.blue]].forEach(([nm, c], i) => tr.push({ x: S.map(s => s[0]), y: R.map(r => r[i]), type: 'bar', name: nm, marker: { color: c }, offsetgroup: i, xaxis: a.xa, yaxis: a.ya, hovertemplate: nm + ': %{y:.1f}%<extra></extra>' }));
-  curves.forEach((cv, j) => cv.forEach((y, i) => tr.push({ x: ms, y, mode: 'lines+markers', marker: { size: 5, symbol: j ? 'square' : 'circle' }, line: { color: i ? K.blue : K.orange, width: 1.5, dash: j ? 'dot' : 'solid' },
+  curves.forEach((cv, j) => cv.forEach((y, i) => tr.push({ x: ms, y, mode: 'lines+markers', marker: { size: ms.map(v => (v === m ? 9 : 5)), symbol: j ? 'square' : 'circle' }, line: { color: i ? K.blue : K.orange, width: 1.5, dash: j ? 'dot' : 'solid' },
     name: (j ? 'ARMA(1,1)' : 'AR(1)') + (i ? ', df = m − p − q' : ', df = m'), showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: (j ? 'ARMA(1,1)' : 'AR(1)') + (i ? ', df = m − p − q' : ', df = m') + ', m = %{x}: %{y:.1f}%<extra></extra>' })));
   G.lay.barmode = 'group';
   tr.push(leg(`nominal level ${A}%`, { color: K.red, dash: 'dash', width: 1.2 }), leg('AR(1): solid, ARMA(1,1): dotted', { color: K.navy, width: 1.2 }));
-  G.lay.shapes.push(hl(a, A, K.red, 'dash'), hl(b, A, K.red, 'dash'), vl(b, m, K.navy, 'dot', 1));
+  G.lay.shapes.push(hl(a, A, K.red, 'dash'), hl(b, A, K.red, 'dash'));
   plot('lb-chart', tr, G.lay);
   out('lb-out', [T.lb(m, nf(A, 0), nf(R[0][0], 1), nf(R[0][1], 1), nf(R[1][0], 1), nf(R[1][1], 1))]);
 }
@@ -521,7 +525,9 @@ function blkSun() {
     { x: S.years.slice(p), y: F.pred.slice(p), mode: 'lines', line: { color: K.blue, width: 1.1 }, name: `AR(${p}): one-step prediction`, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.1f}<extra></extra>' },
     leg("Yule's sample 1749-1924", null, { color: 'rgba(23,162,184,0.3)', symbol: 'square', size: 14 }),
     { x: ps, y: aic, mode: 'lines+markers', marker: { color: K.blue, size: 6 }, line: { color: K.blue }, name: 'AIC', xaxis: b.xa, yaxis: b.ya, hovertemplate: 'p = %{x}: AIC %{y:.1f}<extra></extra>' },
-    { x: ps, y: bic, mode: 'lines+markers', marker: { color: K.red, size: 6, symbol: 'square' }, line: { color: K.red }, name: 'BIC', xaxis: b.xa, yaxis: b.ya, hovertemplate: 'p = %{x}: BIC %{y:.1f}<extra></extra>' }];
+    { x: ps, y: bic, mode: 'lines+markers', marker: { color: K.red, size: 6, symbol: 'square' }, line: { color: K.red }, name: 'BIC', xaxis: b.xa, yaxis: b.ya, hovertemplate: 'p = %{x}: BIC %{y:.1f}<extra></extra>' },
+    { x: [p, p], y: [F.aic, F.bic], mode: 'markers+text', marker: { color: 'rgba(0,0,0,0)', size: 15, line: { color: K.navy, width: 2 } }, text: [`AIC ${F.aic.toFixed(1)}`, `BIC ${F.bic.toFixed(1)}`],
+      textposition: p > 6 ? ['bottom left', 'top left'] : ['bottom right', 'top right'], textfont: { size: 11, color: K.navy }, cliponaxis: false, name: `AR(${p})`, xaxis: b.xa, yaxis: b.ya, hoverinfo: 'skip' }];
   plot('ss-chart', tr, G.lay);
   const ba = ps[aic.indexOf(Math.min(...aic))], bb = ps[bic.indexOf(Math.min(...bic))], lines = [T.ss1(p, F.phi.map(v => nf(v, 3)).join('; '), nf(100 * F.r2, 1), nf(F.aic, 1), nf(F.bic, 1), ba, bb)];
   if (p === 2) { const [f1, f2] = F.phi; if (f1 * f1 + 4 * f2 < 0) lines.push(T.ss2(nf(2 * Math.PI / Math.acos(f1 / (2 * Math.sqrt(-f2))), 1), nf(Math.sqrt(-f2), 3))); }
@@ -892,19 +898,21 @@ function init() {
   const has = id => !!$(id), on = (ids, f) => ids.forEach(id => $(id).addEventListener('input', f));
   const players = {}, P = (btn, id, vals, ms) => (players[btn] = new Player(btn, $(id), vals, ms));
   on(['a1-p1', 'a1-p2', 'a1-p3'], blkAR1); P('a1-play', 'a1-p1', range(0, 0.99, 0.03), 260);
+  const from0 = (btn, id, v0, v) => $(btn).addEventListener('click', () => { if (!players[btn].timer && +$(id).value === v0) $(id).value = v; }, true);   // ▶ from the slide state: start the sweep at its first value
+  from0('a1-play', 'a1-p1', 0.9, 0.99);
   $('a2-m').addEventListener('input', () => { const m = AR2()[$('a2-m').value]; $('a2-f1').value = m.phi[0]; $('a2-f2').value = m.phi[1]; blkAR2(); });
   on(['a2-f1', 'a2-f2'], blkAR2); P('a2-play', 'a2-f2', range(-0.95, 0.3, 0.05), 380);
   on(['m1-th'], blkMA1); P('m1-play', 'm1-th', range(0, 2, 0.1), 380);
   on(['mr-th'], blkMArho); P('mr-play', 'mr-th', range(-4, 4, 0.1), 110);
   $('ps-m').addEventListener('input', () => { psiSync(); blkPsi(); }); on(['ps-a', 'ps-b', 'ps-c', 'ps-d'], blkPsi); psiSync();
-  P('ps-play', 'ps-a', range(0, 0.95, 0.05), 380);
-  $('ps-play').addEventListener('click', () => { if ($('ps-m').value === 'MA(2)') { $('ps-m').value = 'ARMA(1,1)'; psiSync(); } }, true);
+  P('ps-play', 'ps-a', range(0, 0.95, 0.05).concat(range(0.9, 0.7, -0.05)), 380);     // ▶: the first coefficient of all four models, 0 -> 0.95 -> 0.7
+  $('ps-play').addEventListener('click', () => { if ($('ps-m').value === 'MA(2)') { $('ps-m').value = 'ARMA(1,1)'; psiSync(); } }, true); from0('ps-play', 'ps-a', 0.7, 2);
   on(['pt-T'], blkPatterns); P('pt-play', 'pt-T', range(50, 500, 25), 450);
   $('pt-new').addEventListener('click', () => { ptSeed++; blkPatterns(); });
   on(['es-phi', 'es-th', 'es-T'], blkEst); P('es-play', 'es-phi', range(0.5, 0.98, 0.04), 900);
   on(['ic-f2', 'ic-T'], blkIC); P('ic-play', 'ic-f2', range(0.05, 0.45, 0.05), 1100);
-  on(['lb-m', 'lb-a'], blkLB); P('lb-play', 'lb-m', range(3, 20, 1), 450);
-  on(['fc-x', 'fc-p1', 'fc-p2', 'fc-th'], blkFct); P('fc-play', 'fc-p1', range(0, 0.99, 0.03), 250);
+  on(['lb-m', 'lb-a'], blkLB); P('lb-play', 'lb-m', range(3, 20, 1), 450); from0('lb-play', 'lb-m', 10, 20);
+  on(['fc-x', 'fc-p1', 'fc-p2', 'fc-th'], blkFct); P('fc-play', 'fc-x', range(3, -4, -0.5).concat(range(-3.5, 3, 0.5)), 300);
   $('gi-end').max = D.gdp.y.length - 1; $('gi-end').value = D.gdp.y.length - 1; on(['gi-end'], blkGdpId); P('gi-play', 'gi-end', range(39, D.gdp.y.length - 1, 1), 180);
   on(['gd-mod', 'gd-df'], blkGdpDiag); P('gd-play', 'gd-mod', Object.keys(D.gdp.models).sort(), 1000);
   const nO = Object.keys(D.gdp.origins).length; $('gf-o').max = nO - 1; $('gf-o').value = nO - 1; on(['gf-o', 'gf-lv'], blkGdpFc); P('gf-play', 'gf-o', range(0, nO - 1, 1), 350);
