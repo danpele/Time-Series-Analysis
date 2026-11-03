@@ -257,6 +257,25 @@
             { ch: 'state-space', en: 'State space form', ro: 'Forma în spațiul stărilor', tex: '$$y_t = Z\\alpha_t + \\varepsilon_t, \\qquad \\alpha_{t+1} = T\\alpha_t + \\eta_t$$' }
         ],
 
+        chapterCharts: {
+            intro: { src: 'charts/tsa_ch0_co2.png', en: 'Atmospheric CO2 at Mauna Loa, monthly mean, March 1958 – December 2001', ro: 'CO2 atmosferic la Mauna Loa, medie lunară, martie 1958 – decembrie 2001' },
+            stationarity: { src: 'charts/tsa_ch1_sp500_diff.png', en: 'S&P 500: the log level and its difference, the daily log return', ro: 'S&P 500: logaritmul nivelului și diferența lui, randamentul logaritmic zilnic' },
+            arma: { src: 'charts/tsa_ch2_gdp_forecast.png', en: 'Romania: annual real GDP growth with MA(3) and AR(1) forecasts for the next 8 quarters', ro: 'România: creșterea anuală a PIB real, cu prognozele MA(3) și AR(1) pentru următoarele 8 trimestre' },
+            arima: { src: 'charts/tsa_ch3_gdp_forecast.png', en: 'Romanian real GDP: ARIMA(0,1,0) with drift vs linear trend with AR(1) errors, 12-quarter forecasts', ro: 'PIB-ul real al României: ARIMA(0,1,0) cu derivă și trend liniar cu erori AR(1), prognoze pe 12 trimestre' },
+            seasonal: { src: 'charts/tsa_ch4_airline_fc.png', en: 'Airline model: 24 monthly forecasts out of sample, with 95% interval', ro: 'Modelul airline: 24 de prognoze lunare în afara eșantionului, cu interval de 95%' },
+            garch: { src: 'charts/tsa_ch5_vol_sp500_bet.png', en: 'GARCH(1,1)-t conditional volatility of the S&P 500 and BET, annualised', ro: 'Volatilitatea condiționată GARCH(1,1)-t pentru S&P 500 și BET, anualizată' },
+            var: { src: 'charts/tsa_ch6_spillover.png', en: 'Diebold–Yilmaz spillover index of S&P 500, DAX and BET returns, 200-day windows', ro: 'Indicele de spillover Diebold–Yilmaz pentru randamentele S&P 500, DAX și BET, ferestre de 200 de zile' },
+            cointegration: { src: 'charts/tsa_ch7_pair.png', en: 'Banca Transilvania and BRD: adjusted prices and the standardised spread', ro: 'Banca Transilvania și BRD: prețurile ajustate și spread-ul standardizat' },
+            'long-memory': { src: 'charts/tsa_ch8_vol_acf.png', en: 'ACF of returns, absolute and squared returns: S&P 500 and BET, up to lag 250', ro: 'ACF a randamentelor, a randamentelor absolute și a pătratelor lor: S&P 500 și BET, pînă la lagul 250' },
+            ml: { src: 'charts/tsa_ch9_load_forecasts.png', en: 'Daily electricity load: 14-day forecasts around Orthodox Easter 2026', ro: 'Consumul zilnic de energie electrică: prognoze pe 14 zile în jurul Paștelui ortodox din 2026' },
+            'state-space': { src: 'charts/tsa_ch10_nile_filter.png', en: 'The Nile: Kalman-filtered level of the annual flow at Aswan, 1871–1970', ro: 'Nilul: nivelul filtrat Kalman al debitului anual la Aswan, 1871–1970' },
+            'foundation-models': { src: 'charts/tsa_ch11_fan_load.png', en: 'Romanian electricity load, 48 hours ahead: Chronos-Bolt small vs seasonal naive', ro: 'Consumul de energie electrică al României, prognoză pe 48 de ore: Chronos-Bolt small și seasonal naive' },
+            spectral: { src: 'charts/tsa_ch12_sunspots.png', en: 'Yearly mean sunspot number, 1700–2008, and its raw periodogram', ro: 'Numărul mediu anual de pete solare, 1700–2008, și periodograma brută' },
+            lppl: { src: 'charts/tsa_ch13_psy_ndx.png', en: 'Explosive episodes of the Nasdaq 100, 1990–2004, dated with the BSADF statistic', ro: 'Episoadele explozive ale Nasdaq 100, 1990–2004, datate cu statistica BSADF' },
+            mgarch: { src: 'charts/tsa_ch14_dcc_sp_dax.png', en: 'DCC, rolling and constant correlation of the S&P 500 and the DAX', ro: 'Corelația DCC, pe ferestre mobile și constantă, dintre S&P 500 și DAX' },
+            review: { src: 'charts/tsa_ch15_bj_forecast.png', en: 'Box–Jenkins case, Romanian inflation: one-step forecasts and annual forecast to August 2027', ro: 'Studiul de caz Box–Jenkins, inflația din România: prognoze pe un pas și prognoza anuală pînă în august 2027' }
+        },
+
         // ---------------------------------------------------------------
         // Chapters 0-15. `id` is the stable key (quizzes, anchors, tabs);
         // `num` is only the display order. RO page -> RO files, EN page -> EN files.
