@@ -554,8 +554,13 @@ function blkFe() {
   AS.forEach(k => {
     const s = feStats(k, m, drop), a = G.ax[k === 'eurron' ? 1 : 0];
     tr.push(ln(s.d, s.cum, a, COL[k], NAME[k], { line: { color: COL[k], width: 1.5 }, hovertemplate: '%{x}: %{y:.1f}<extra>' + NAME[k] + '</extra>' }));
+    // the day with the largest loss difference: a filled circle where it adds its jump, an open cross where it was removed
+    const yi = drop ? (s.im ? s.cum[s.im - 1] : 0) : s.cum[s.im];
+    tr.push({ x: [s.dmax], y: [yi], mode: 'markers', marker: { color: COL[k], size: drop ? 11 : 9, symbol: drop ? 'x-open' : 'circle', line: { color: K.navy, width: 1 } }, showlegend: false, xaxis: a.xa, yaxis: a.ya,
+      text: [`${NAME[k]}, ${s.dmax}: largest difference ${s.vmax.toFixed(1)}${drop ? ' (excluded)' : ''}`], hovertemplate: '%{text}<extra></extra>' });
     rows.push(T.fe1(NAME[k], s.n, M[4], nf(s.qb, 3), M[3], nf(s.qa, 3), nf(s.t.t, 2), pe(s.t.p), T.dmy(s.dmax), nf(s.vmax, 1), drop || s.total <= 0 ? null : nf(100 * s.share, 0)));
   });
+  tr.push(leg(drop ? 'day with the largest difference (excluded)' : 'day with the largest difference', null, { color: K.navy, symbol: drop ? 'x-open' : 'circle', size: 9 }));
   G.ax.forEach(a => G.lay.shapes.push(hl(a, 0, K.navy, 'dash', 0.8)));
   plot('fe-chart', tr, G.lay);
   out('fe-out', rows);

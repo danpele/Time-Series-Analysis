@@ -645,7 +645,7 @@ function blkXPow() {
     PHIS.map(f => hiRow([nz(f, f === 0.925 || f === 0.975 ? 3 : 2)].concat(Ts.map(t => num(100 * powerAt(t, reg, f), 1, f === 1))), f === phi)), { cap: X().pwCap(X().case[reg]), note: X().pwNote });
   const G = grid('pw-chart', [{ r: 0, c: 0, t: `Rejections of the unit root at φ = ${phi} by sample size`, xt: 'T (log scale)', yt: '% rejections', x: { type: 'log' }, y: { range: [0, 105] } }], { cols: 1, h: 330, legendRows: 2 });
   const a = G.ax[0], tr = [['c', K.blue, 'circle', 'solid'], ['ct', K.purple, 'square', 'dash']].map(([r, c, sym, dash]) => ln(Ts, Ts.map(t => 100 * powerAt(t, r, phi)), a, c, DFN[r],
-    { mode: 'lines+markers', marker: { size: 7, symbol: sym }, line: { color: c, width: r === reg ? 2.2 : 1.3, dash }, hovertemplate: `${DFN[r]}, T = %{x}: %{y:.1f}%<extra></extra>` }));
+    { mode: 'lines+markers', marker: { size: r === reg ? 9 : 6, symbol: sym, color: r === reg ? c : c + '66' }, opacity: r === reg ? 1 : 0.5, line: { color: c, width: r === reg ? 2.4 : 1.2, dash }, hovertemplate: `${DFN[r]}, T = %{x}: %{y:.1f}%<extra></extra>` }));
   G.lay.shapes.push(hl(a, 5, K.navy, 'dot', 0.9));
   plot('pw-chart', tr, G.lay);
   const v = t => nz(100 * powerAt(t, reg, phi), 1);

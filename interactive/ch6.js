@@ -792,13 +792,16 @@ function blkSp() {
 function blkFc() {
   const p = +$('fc-p').value, o = $('fc-o'), oi = +o.value, j = +$('fc-v').value; set('fc-p', p); set('fc-o', T.q(RO.d[oi]));
   const Y = roY(oi), f = varFit(Y, p), H = 8, F = forecast(f, Y, H), mu = meanOf(f), fd = range(1, H, 1).map(h => RO.d[oi + h] || qiso(2000, oi + h));
-  const h0 = Math.max(RO0, oi - 29), G = grid('fc-chart', RV.map((v, i) => ({ r: 0, c: i, t: LAB[v], x: { type: 'date' } })), { cols: 3, h: 330, gx: 0.05, legendRows: 2 }), tr_ = [];
+  const h0 = Math.max(RO0, oi - 29), G = grid('fc-chart', RV.map((v, i) => ({ r: 0, c: i, t: i === j ? `<b>${LAB[v]}</b>: calculation of h = 1` : LAB[v], x: { type: 'date' } })), { cols: 3, h: 330, gx: 0.05, legendRows: 2 }), tr_ = [];
   RV.forEach((v, i) => { const a = G.ax[i], hd = RO.d.slice(h0, oi + 1), hv = RO[v].slice(h0, oi + 1);
     tr_.push(band(fd, F.pt.map((x, h) => x[i] - Z975 * F.sd[h][i]), F.pt.map((x, h) => x[i] + Z975 * F.sd[h][i]), a, K.teal, 0.25, i ? '' : '95% interval'),
       ln(hd, hv, a, COLV[v], i ? null : 'data', { hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' }),
       ln([RO.d[oi], ...fd], [RO[v][oi], ...F.pt.map(x => x[i])], a, K.navy, i ? null : `VAR(${p}) forecast`, { line: { color: K.navy, dash: 'dash', width: 1.5 }, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' }));
     if (oi < ROE) tr_.push(ln(RO.d.slice(oi, Math.min(ROE, oi + H) + 1), RO[v].slice(oi, Math.min(ROE, oi + H) + 1), a, K.amber, i ? null : 'realised (after the origin)', { line: { color: K.amber, width: 2 }, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra>realised</extra>' }));
   });
+  { const a = G.ax[j], e1 = Z975 * F.sd[0][j];
+    tr_.push({ x: [fd[0]], y: [F.pt[0][j]], mode: 'markers', marker: { color: K.red, size: 10, symbol: 'diamond' }, error_y: { type: 'data', array: [e1], color: K.red, thickness: 1.6, width: 6 },
+      name: 'one-step forecast of the calculation ± 1.96 σ', xaxis: a.xa, yaxis: a.ya, hovertemplate: `${LAB[RV[j]]}, h = 1: %{y:.2f} ± ${e1.toFixed(2)}<extra></extra>` }); }
   plot('fc-chart', tr_, G.lay);
   const k4 = 3, k8 = 7, lab = h => T.q(fd[h]);
   out('fc-out', [T.fc1(T.q(RO.d[oi]), p, nf(RO.pi[oi], 1), nf(F.pt[k4][1], 1), nf(F.pt[k8][1], 1), nf(F.pt[k8][1] - Z975 * F.sd[k8][1], 1), nf(F.pt[k8][1] + Z975 * F.sd[k8][1], 1)),
@@ -830,8 +833,10 @@ function blkOos() {
   const G = grid('oo-chart', [{ r: 0, c: 0, t: `Romania, targets ${yr}-2026`, yt: 'relative RMSE', x: { type: 'category' } }, { r: 0, c: 1, t: `United States, targets ${yu}-2000`, x: { type: 'category' } }], { cols: 2, h: 350, legendRows: 2 });
   const tr_ = [];
   [[ro, [1, 4], G.ax[0]], [us, [2, 4, 8], G.ax[1]]].forEach(([S, hs, a], k) => {
-    const xs = [], ra = [], rv = []; S[0].forEach((_, vi) => hs.forEach((hh, hi) => { const s = S[hi][vi]; xs.push(`${s.v === 'pi' ? 'π' : s.v} h=${hh}`); ra.push(s.ar / s.rw); rv.push(s.var / s.rw); }));
-    tr_.push(bar(xs, ra, a, K.amber, k ? null : 'AR / random walk', { offsetgroup: 1, hovertemplate: '%{x}: %{y:.2f}<extra>AR</extra>' }), bar(xs, rv, a, K.blue, k ? null : 'VAR / random walk', { offsetgroup: 2, hovertemplate: '%{x}: %{y:.2f}<extra>VAR</extra>' }));
+    const xs = [], ra = [], rv = [], on = []; S[0].forEach((_, vi) => hs.forEach((hh, hi) => { const s = S[hi][vi]; xs.push(`${s.v === 'pi' ? 'π' : s.v} h=${hh}`); ra.push(s.ar / s.rw); rv.push(s.var / s.rw); on.push((k ? 'us' : 'ro') === cty && String(hh) === h); }));
+    const fade = (c, al) => on.map(o => (o ? c : `rgba(${RGB[c]},${al})`));
+    tr_.push(bar(xs, ra, a, K.amber, k ? null : 'AR / random walk', { offsetgroup: 1, marker: { color: fade(K.amber, 0.35), line: { color: on.map(o => (o ? K.navy : 'rgba(0,0,0,0)')), width: 1.2 } }, hovertemplate: '%{x}: %{y:.2f}<extra>AR</extra>' }),
+      bar(xs, rv, a, K.blue, k ? null : 'VAR / random walk', { offsetgroup: 2, marker: { color: fade(K.blue, 0.35), line: { color: on.map(o => (o ? K.navy : 'rgba(0,0,0,0)')), width: 1.2 } }, hovertemplate: '%{x}: %{y:.2f}<extra>VAR</extra>' }));
     G.lay.shapes.push(hl(a, 1, K.red, 'dash', 1.2)); });
   tr_.push(leg('random walk = 1', { color: K.red, dash: 'dash', width: 1.2 }));
   G.lay.barmode = 'group';

@@ -870,8 +870,8 @@ function blkXGdpm() {
   steps('gm-ws', [X().g1(sub4(m), s.M.k, k, nE), X().g2(pn(s.ll, 3), k, nz(aic, 3)), X().g3(nz(aic, 3), k, k + 1, nE - k - 1, nz(corr, 3), nz(aic + corr, 3)),
     X().g4(pn(s.ll, 3), k, nz(Math.log(nE), 4), nz(bic, 3))]);
   table('gm-tb2', [X().coef, X().est, 'SE', 't'], Object.entries(s.M.par).map(([nm, v]) => [PARN[nm] || nm, num(v[0], 3), num(v[1], 3), num(v[0] / v[1], 2)]), { cap: X().gmCap2(sub4(m)) });
-  const G = grid('gm-chart', [{ r: 0, c: 0, t: 'AICc and BIC (lower is better)', xt: 'criterion', y: { autorange: 'reversed', automargin: true } }], { cols: 1, h: 430, legendRows: 1, ml: 130 });
-  const a = G.ax[0], lab = S.map(z => sub4(z.mm));
+  const G = grid('gm-chart', [{ r: 0, c: 0, t: `AICc and BIC (lower is better); ✗: Ljung–Box(${lm}) p < 0.05`, xt: 'criterion', y: { autorange: 'reversed', automargin: true } }], { cols: 1, h: 430, legendRows: 1, ml: 130 });
+  const a = G.ax[0], lab = S.map(z => sub4(z.mm) + (z.p < 0.05 ? ' ✗' : ''));   // ✗: Ljung-Box with m lags rejects white-noise residuals at 5%
   G.lay.xaxis.range = [510, Math.max(...S.map(z => z.M.bic)) + 9];
   const tl = k => S.map(z => (z.mm === m ? z.M[k].toFixed(1) : '')), tp = { textposition: 'outside', cliponaxis: false, textfont: { size: 10, color: K.red } };
   plot('gm-chart', [{ y: lab, x: S.map(z => z.M.aicc), type: 'bar', orientation: 'h', name: 'AICc', marker: { color: S.map(z => (z.mm === m ? K.red : K.blue)) }, xaxis: a.xa, yaxis: a.ya, text: tl('aicc'), ...tp, hovertemplate: '%{y}: AICc %{x:.1f}<extra></extra>' },
@@ -1007,8 +1007,8 @@ function blkXDhr() {
     X().d4(nz(z.wk, 3), pn(z.fo, 3), pn(z.sp, 3), nz(z.wk + z.fo + z.sp, 3))]);
   const days = range(0, 364, 1).map(i => addD('2025-01-01', i)), G = grid('dr-chart', [{ r: 0, c: 0, t: 'Annual Fourier component of the DHR, 2025 (GW)', x: { type: 'date', tickformat: '%b' } }], { cols: 1, h: 340, legendRows: 2 });
   const a = G.ax[0], cols = [K.blue, K.green, K.orange, K.red];
-  plot('dr-chart', range(1, 4, 1).map(k => ln(days, days.map(x => dhrDet(x, k).fo), a, cols[k - 1], `K = ${k}`, { line: { color: cols[k - 1], width: k === K0 ? 2.8 : 1.1 }, hovertemplate: `K = ${k}, %{x|%d %b}: %{y:.3f}<extra></extra>` }))
-    .concat([{ x: [d, d, d, d], y: range(1, 4, 1).map(k => dhrDet(d, k).fo), mode: 'markers', marker: { size: 9, color: cols, line: { color: K.navy, width: 1 } }, xaxis: a.xa, yaxis: a.ya, name: T.dmyEn(d), hovertemplate: '%{y:.3f}<extra></extra>' }]),
+  plot('dr-chart', range(1, 4, 1).map(k => ln(days, days.map(x => dhrDet(x, k).fo), a, cols[k - 1], `K = ${k}`, { line: { color: cols[k - 1], width: k === K0 ? 2.8 : 1.1 }, opacity: k === K0 ? 1 : 0.45, hovertemplate: `K = ${k}, %{x|%d %b}: %{y:.3f}<extra></extra>` }))
+    .concat([{ x: [d, d, d, d], y: range(1, 4, 1).map(k => dhrDet(d, k).fo), mode: 'markers', marker: { size: range(1, 4, 1).map(k => (k === K0 ? 12 : 7)), color: cols.map((c, i) => (i + 1 === K0 ? c : c + '66')), line: { color: K.navy, width: 1 } }, xaxis: a.xa, yaxis: a.ya, name: T.dmyEn(d), hovertemplate: '%{y:.3f}<extra></extra>' }]),
     Object.assign(G.lay, { shapes: [hl(a, 0, K.navy, 'solid', 0.5), vl(a, d, K.amber, 'dash', 1.2)] }));
   const f4 = days.map(x => dhrDet(x, 4).fo), imx = f4.indexOf(Math.max(...f4)), imn = f4.indexOf(Math.min(...f4));
   out('dr-out', [X().dr0(nf(C.wed, 2), nf(C.mon, 2), nf(C.sat, 2), nf(C.holiday, 2), nf(C.easter, 2), nf(C.xmas, 2)), X().dr1(T.dmy(days[imx]), nf(f4[imx], 2), T.dmy(days[imn]), nf(f4[imn], 2), nf(z4.wk + z4.fo + z4.sp, 2), T.dmy(d))]);

@@ -205,17 +205,17 @@ const psiLab = k => { const { phi, th } = psiPar(k), f = v => +v.toFixed(2); ret
   : k === 'MA(2)' ? `MA(2), θ = (${f(th[0])}, ${f(th[1])})` : `ARMA(1,1), φ = ${f(phi[0])}, θ = ${f(th[0])}`; };
 function psiSync() {             // the sliders show the parameters of the selected model
   const m = PSI[$('ps-m').value], ids = ['ps-a', 'ps-b', 'ps-c', 'ps-d'], v = m.phi.concat(m.th);
-  ids.forEach((id, i) => { $(id).disabled = !m.use[i]; $(id).value = v[i]; set(id, m.use[i] ? nf(v[i], 2) : '—'); });
+  ids.forEach((id, i) => { $(id).disabled = !m.use[i]; $(id).value = v[i]; set(id, m.use[i] ? nf(v[i], 2) : '—'); $(id).closest('.ctl').style.display = m.use[i] ? '' : 'none'; });   // only the parameters of the selected model are shown
 }
 function blkPsi(ev) {
   const k = $('ps-m').value, m = PSI[k], ids = ['ps-a', 'ps-b', 'ps-c', 'ps-d'];
   if (ev && ev.target && ids.includes(ev.target.id)) { const i = ids.indexOf(ev.target.id), v = +ev.target.value; (i < 2 ? m.phi : m.th)[i % 2] = v; set(ev.target.id, nf(v, 2));
     if (!ev.isTrusted && i === 0) { PSI['AR(1)'].phi[0] = v; PSI['AR(2)'].phi[0] = v; PSI['MA(2)'].th[0] = v; PSI['ARMA(1,1)'].phi[0] = v; } }
   const names = Object.keys(PSI), n = 16;
-  const G = grid('ps-chart', names.map((nm, j) => ({ r: 0, c: j, t: psiLab(nm), xt: 'j', yt: j ? '' : 'ψ<sub>j</sub>', y: { range: [-1.2, 2.2] } })), { cols: 4, h: 340, legend: false, gx: 0.05 });
+  const G = grid('ps-chart', names.map((nm, j) => ({ r: 0, c: j, t: nm === k ? `<b>${psiLab(nm)}</b>` : psiLab(nm), xt: 'j', yt: j ? '' : 'ψ<sub>j</sub>', y: { range: [-1.2, 2.2] } })), { cols: 4, h: 340, legend: false, gx: 0.05 });
   const tr = [], ys = [];
   names.forEach((nm, j) => { const { phi, th } = psiPar(nm), p = psiW(phi, th, n); ys.push(...p);
-    tr.push({ x: range(0, n - 1, 1), y: p, type: 'bar', width: 0.6, marker: { color: PSI[nm].col }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: 'ψ<sub>%{x}</sub> = %{y:.3f}<extra></extra>' });
+    tr.push({ x: range(0, n - 1, 1), y: p, type: 'bar', width: 0.6, marker: { color: PSI[nm].col }, opacity: nm === k ? 1 : 0.35, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: 'ψ<sub>%{x}</sub> = %{y:.3f}<extra></extra>' });
     G.lay.shapes.push(hl(G.ax[j], 0, K.navy, 'solid', 0.8)); });
   const lo = Math.min(-1.2, ...ys), hi = Math.max(2.2, ...ys);
   G.ax.forEach((a, j) => { G.lay['yaxis' + (j ? j + 1 : '')].range = [Math.max(lo, -6), Math.min(hi, 6)]; });
@@ -569,12 +569,17 @@ function blkXAR1() {
     X().xa6(ps.slice(0, 4).map(v => nz(v, 3)).join(X().sep), nz(ps[2], 2))]);
   table('xa-tb', ['j', 'ψ<sub>j</sub> = φ<sup>j</sup>', 'ρ(j) = φ<sup>j</sup>', 'γ(j) = φ<sup>j</sup>γ(0)'],
     ps.map((v, j) => hiRow([txt(j), num(v, 3), num(v, 3), num(v * g0, 3)], j === h)), { cap: X().xaCap(nz(mu, 2), nz(g0, 2)) });
-  const G = grid('xa-chart', [{ r: 0, c: 0, t: `AR(1), φ = ${phi}: ρ(h) = φ<sup>h</sup> and the half-life`, xt: 'lag h', y: { range: [-1, 1] }, x: { range: [-0.5, 20.5] } }], { cols: 1, h: 300 });
-  const ax = G.ax[0], hh = range(0, 20, 1);
+  const G = grid('xa-chart', [{ r: 0, c: 0, t: `AR(1), φ = ${phi}: ρ(h) = φ<sup>h</sup> and the half-life`, xt: 'lag h', y: { range: [-1, 1] }, x: { range: [-0.5, 20.5] } },
+    { r: 0, c: 1, t: `A path of X<sub>t</sub> = ${c} + ${phi}X<sub>t−1</sub> + ε<sub>t</sub>, σ² = ${s2}`, xt: 't' }], { cols: 2, h: 320, legendRows: 2 });
+  const [ax, bx] = G.ax, hh = range(0, 20, 1), z = rng(20250), tt = range(0, 100, 1), xp = [mu];      // the same shocks for every (c, φ, σ²)
+  for (let t = 1; t <= 100; t++) xp.push(c + phi * xp[t - 1] + Math.sqrt(s2) * z());
+  G.lay.shapes.push(hl(bx, mu, K.red, 'solid', 1.2), hl(bx, mu + 2 * Math.sqrt(g0), K.red, 'dot', 1), hl(bx, mu - 2 * Math.sqrt(g0), K.red, 'dot', 1), hl(bx, c, K.navy, 'dash', 1));
   G.lay.shapes.push(hl(ax, 0, K.navy, 'solid', 0.8), hl(ax, 0.5, K.orange, 'dot', 1), hl(ax, -0.5, K.orange, 'dot', 1));
   if (a > 0) G.lay.shapes.push(vl(ax, hlf, K.green, 'dash', 1.3));
   plot('xa-chart', [{ x: hh, y: hh.map(k => phi ** k), type: 'bar', width: 0.55, marker: { color: hh.map(k => (k === h ? K.red : K.blue)) }, xaxis: ax.xa, yaxis: ax.ya, showlegend: false, hovertemplate: 'ρ(%{x}) = %{y:.3f}<extra></extra>' },
-    leg(`half-life ${a > 0 ? hlf.toFixed(2) : 0}`, { color: K.green, dash: 'dash', width: 1.3 }), leg('±0.5', { color: K.orange, dash: 'dot', width: 1 })], G.lay);
+    leg(`half-life ${a > 0 ? hlf.toFixed(2) : 0}`, { color: K.green, dash: 'dash', width: 1.3 }), leg('±0.5', { color: K.orange, dash: 'dot', width: 1 }),
+    { x: tt, y: xp, mode: 'lines', line: { color: K.blue, width: 1.2 }, name: 'X<sub>t</sub>', xaxis: bx.xa, yaxis: bx.ya, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' },
+    leg(`mean μ = c/(1 − φ) = ${+mu.toFixed(2)}`, { color: K.red, width: 1.2 }), leg('μ ± 2√γ(0)', { color: K.red, dash: 'dot', width: 1 }), leg(`intercept c = ${c}`, { color: K.navy, dash: 'dash', width: 1 })], G.lay);
   out('xa-out', [X().xa(nf(phi, 2), nz(mu, 2), nz(g0, 2), h, nz(phi ** h, 3), a > 0 ? nf(hlf, 2) : '0')]);
 }
 
@@ -784,9 +789,14 @@ function blkXFc() {
   table('xf-tb', ['h', 'X̂<sub>T+h|T</sub>', 'σ<sub>h</sub>²', 'σ<sub>h</sub>', X().lo95, X().hi95, X().width], hs.map((h, i) => [txt(h), num(f[i], 2), num(v[i], 3), num(Math.sqrt(v[i]), 3),
     num(f[i] - z * Math.sqrt(v[i]), 2), num(f[i] + z * Math.sqrt(v[i]), 2), num(2 * z * Math.sqrt(v[i]), 2)]).concat([[txt('∞'), num(mu, 2), num(g0, 3), num(Math.sqrt(g0), 3), num(mu - z * Math.sqrt(g0), 2), num(mu + z * Math.sqrt(g0), 2), num(2 * z * Math.sqrt(g0), 2)]]));
   const hh = range(1, 30, 1), w = hh.map(h => 2 * z * Math.sqrt(s2 * (1 - phi ** (2 * h)) / (1 - phi * phi)));
-  const G = grid('xf-chart', [{ r: 0, c: 0, t: `AR(1), φ = ${phi}, σ² = ${s2}: width of the 95% forecast interval`, xt: 'horizon h', yt: '2 × 1.96 σ<sub>h</sub>', y: { rangemode: 'tozero' } }], { cols: 1, h: 300 });
-  const ax = G.ax[0]; G.lay.shapes.push(hl(ax, 2 * z * Math.sqrt(g0), K.red, 'dash', 1.2));
-  plot('xf-chart', [{ x: hh, y: w, mode: 'lines+markers', marker: { size: 5, color: K.blue }, line: { color: K.blue, width: 1.6 }, name: 'interval width', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'h = %{x}: %{y:.2f}<extra></extra>' },
+  const G = grid('xf-chart', [{ r: 0, c: 0, t: `Forecast from X<sub>T</sub> = ${xT}: X̂<sub>T+h|T</sub> ± 1.96 σ<sub>h</sub>`, xt: 'horizon h' },
+    { r: 0, c: 1, t: `AR(1), φ = ${phi}, σ² = ${s2}: width of the 95% forecast interval`, xt: 'horizon h', yt: '2 × 1.96 σ<sub>h</sub>', y: { rangemode: 'tozero' } }], { cols: 2, h: 320, legendRows: 2 });
+  const [fx, ax] = G.ax, h0 = range(0, 30, 1), fh = h0.map(h => mu + phi ** h * (xT - mu)), sh = h0.map(h => Math.sqrt(s2 * (1 - phi ** (2 * h)) / (1 - phi * phi)));
+  G.lay.shapes.push(hl(ax, 2 * z * Math.sqrt(g0), K.red, 'dash', 1.2), hl(fx, mu, K.navy, 'dot', 1.2));
+  plot('xf-chart', [{ x: [...h0, ...[...h0].reverse()], y: [...h0.map((h, i) => fh[i] + z * sh[i]), ...h0.map((h, i) => fh[i] - z * sh[i]).reverse()], fill: 'toself', fillcolor: 'rgba(23,162,184,0.18)', line: { width: 0 }, mode: 'lines', name: '95% interval', xaxis: fx.xa, yaxis: fx.ya, hoverinfo: 'skip' },
+    { x: h0, y: fh, mode: 'lines+markers', marker: { size: 4, color: K.green }, line: { color: K.green, width: 1.6 }, name: 'X̂<sub>T+h|T</sub>', xaxis: fx.xa, yaxis: fx.ya, hovertemplate: 'h = %{x}: %{y:.2f}<extra></extra>' },
+    leg(`mean μ = ${+mu.toFixed(2)}`, { color: K.navy, dash: 'dot', width: 1.2 }),
+    { x: hh, y: w, mode: 'lines+markers', marker: { size: 5, color: K.blue }, line: { color: K.blue, width: 1.6 }, name: 'interval width', xaxis: ax.xa, yaxis: ax.ya, hovertemplate: 'h = %{x}: %{y:.2f}<extra></extra>' },
     leg(`long run: 2 × 1.96 √γ(0) = ${(2 * z * Math.sqrt(g0)).toFixed(2)}`, { color: K.red, dash: 'dash', width: 1.2 })], G.lay);
   out('xf-out', [X().xf(nz(f[0], 2), ci(1), nz(f[1], 2), ci(2), nz(f[9], 2), nz(mu, 2))]);
 }

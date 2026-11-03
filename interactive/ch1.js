@@ -631,9 +631,12 @@ function blkAcov() {
     v < -1e-12 ? T.cps3n(nf(v, 2)) : T.cps3p(nf(v, 2)),
     T.cps4(nf(lmin, 2), nf(bnd, 2), ok)]);
   const G = grid('cp-chart', [{ r: 0, c: 0, t: 'Admissible pairs (ρ(1), ρ(2)) of a stationary process', xt: 'ρ(1)', yt: 'ρ(2)', x: { range: [-1.05, 1.05] }, y: { range: [-1.05, 1.05] } }], { cols: 1, h: 380, legendRows: 2 });
-  const a = G.ax[0], xs = range(-1, 1, 0.02);
+  const a = G.ax[0], xs = range(-1, 1, 0.02), c1 = 2 * (a2 + a2 * a3);
+  // the weights a = (1, a₂, a₃) rule out the half-plane where Var(Σ a_i X_i) < 0: its border is t0 + c1 ρ(1) + 2a₃ ρ(2) = 0
+  const zl = Math.abs(a3) > 1e-12 ? { x: [-1.05, 1.05], y: [-1.05, 1.05].map(r => -(t0 + c1 * r) / (2 * a3)) } : Math.abs(c1) > 1e-12 ? { x: [-t0 / c1, -t0 / c1], y: [-1.05, 1.05] } : { x: [null], y: [null] };
   plot('cp-chart', [{ x: [...xs, ...[...xs].reverse()], y: [...xs.map(x => 2 * x * x - 1), ...xs.map(() => 1)], fill: 'toself', fillcolor: rgba(K.green, 0.15), line: { color: K.green, width: 1.2 }, mode: 'lines', name: 'ρ(2) ≥ 2ρ(1)² − 1', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
     { x: xs, y: xs.map(x => x * x), mode: 'lines', line: { color: K.blue, dash: 'dot', width: 1.4 }, name: 'AR(1): ρ(2) = ρ(1)²', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
+    { x: zl.x, y: zl.y, mode: 'lines', line: { color: K.red, dash: 'dash', width: 1.4 }, name: `Var(X<sub>1</sub>${sg(a2, a2 % 1 ? 1 : 0)}X<sub>2</sub>${sg(a3, a3 % 1 ? 1 : 0)}X<sub>3</sub>) = 0`, xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
     { x: [r1], y: [r2], mode: 'markers', marker: { color: ok ? K.green : K.red, size: 12, symbol: ok ? 'circle' : 'x' }, name: ok ? 'admissible' : 'not an ACF', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'ρ(1) = %{x:.2f}, ρ(2) = %{y:.2f}<extra></extra>' }], G.lay);
   out('cp-out', [T.cp(nf(r1, 2), nf(r2, 2), nf(v, 2), ok)]);
 }
@@ -665,19 +668,19 @@ function blkAR1() {
   table('xa-tb', ['j', 'ψ<sub>j</sub> = ρ(j)', 'ψ<sub>j</sub><sup>2</sup>', 'Σ<sub>i≤j</sub> ψ<sub>i</sub><sup>2</sup>', T.x.share, 'γ(j)'],
     range(0, J, 1).map(j => hiRow([j, num(ph ** j, 4), num(ph ** (2 * j), 4), num(cum[j], 4), txt(nf(100 * cum[j] / S, 1) + '%'), num(g0 * ph ** j, 4)], j === h)));
   const G = grid('xa-chart', [{ r: 0, c: 0, t: `Wold weights ψ<sub>j</sub> = φ<sup>j</sup>, φ = ${ph.toFixed(2)}`, xt: 'j', y: { range: [-1, 1.05] } },
-    { r: 0, c: 1, t: 'Cumulative Σψ<sub>j</sub><sup>2</sup> and its limit 1/(1 − φ²)', xt: 'j' }], { cols: 2, h: 340 });
+    { r: 0, c: 1, t: 'Cumulative σ²Σψ<sub>j</sub><sup>2</sup> and its limit γ(0) = σ²/(1 − φ²)', xt: 'j' }], { cols: 2, h: 340 });
   const [a, b] = G.ax, js = range(0, 20, 1);
-  G.lay.shapes.push(hl(a, 0, K.navy, 'solid', 0.8), hl(b, S, K.red, 'dash', 1.2), vl(a, h, K.navy, 'dot', 1));
+  G.lay.shapes.push(hl(a, 0, K.navy, 'solid', 0.8), hl(b, g0, K.red, 'dash', 1.2), vl(a, h, K.navy, 'dot', 1));
   plot('xa-chart', [{ x: js, y: js.map(j => ph ** j), type: 'bar', width: 0.55, marker: { color: K.blue }, name: 'ψ<sub>j</sub>', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'j = %{x}: %{y:.3f}<extra></extra>' },
-    { x: js, y: cum, mode: 'lines+markers', line: { color: K.green, width: 1.6 }, marker: { size: 5 }, name: 'Σ<sub>i≤j</sub> ψ<sub>i</sub><sup>2</sup>', xaxis: b.xa, yaxis: b.ya, hovertemplate: 'j = %{x}: %{y:.3f}<extra></extra>' },
-    leg('1/(1 − φ²)', { color: K.red, dash: 'dash', width: 1.2 })], G.lay);
+    { x: js, y: cum.map(v => s2 * v), mode: 'lines+markers', line: { color: K.green, width: 1.6 }, marker: { size: 5 }, name: 'σ²Σ<sub>i≤j</sub> ψ<sub>i</sub><sup>2</sup>', xaxis: b.xa, yaxis: b.ya, hovertemplate: 'j = %{x}: %{y:.3f}<extra></extra>' },
+    leg('γ(0) = σ²/(1 − φ²)', { color: K.red, dash: 'dash', width: 1.2 })], G.lay);
   out('xa-out', [T.xa(nf(ph, 2), nf(g0, 2), h, nf(ph ** h, 3))]);
 }
 
 // ---------------------------------------------------------------- worked example: differencing
 const XD = [10, 12, 15, 14, 18];
 function blkDiff() {
-  const src = $('xd-s').value, gd = src === 'gdp'; $('xd-e').disabled = !gd;
+  const src = $('xd-s').value, gd = src === 'gdp'; $('xd-e').disabled = !gd; $('xd-e').closest('.ctl').style.display = gd ? '' : 'none';
   const e = +$('xd-e').value, Y = R.gdp.y, d = R.gdp.d; set('xd-e', gd ? qlab(d[e]) : '—');
   if (!gd) {
     const d1 = XD.slice(1).map((v, i) => v - XD[i]), d2 = d1.slice(1).map((v, i) => v - d1[i]);
@@ -716,7 +719,7 @@ function xsData(src, n) {
   return { x: [3, 5, 4, 6, 7], lab: ['1', '2', '3', '4', '5'] };
 }
 function blkSACF() {
-  const src = $('xs-s').value, sl = src === 'slide'; $('xs-T').disabled = sl;
+  const src = $('xs-s').value, sl = src === 'slide'; $('xs-T').disabled = sl; $('xs-T').closest('.ctl').style.display = sl ? 'none' : '';
   const { x, lab } = xsData(src, +$('xs-T').value), n = x.length; set('xs-T', n);
   $('xs-k').max = n - 1; const k = Math.min(+$('xs-k').value, n - 1); set('xs-k', k);
   const dx = src === 'gdp' ? 2 : 0, m = mean(x), dv = x.map(v => v - m), pr = range(0, n - 1 - k, 1).map(t => dv[t] * dv[t + k]);
@@ -893,7 +896,7 @@ function init() {
   on(['tb-y'], blkTextbook); P('tb-play', 'tb-y', range(1875, 1965, 1), 150);
   const live = XB.filter(([, x]) => has(x + '-out'));
   live.forEach(([, x, f, ids, pid, vals, ms]) => { on(ids, f); P(x + '-play', pid, vals, ms); });
-  if (has('xd-play')) $('xd-play').addEventListener('click', () => { if ($('xd-s').value !== 'gdp') { $('xd-s').value = 'gdp'; $('xd-e').disabled = false; } }, true);
+  if (has('xd-play')) $('xd-play').addEventListener('click', () => { if ($('xd-s').value !== 'gdp') { $('xd-s').value = 'gdp'; $('xd-e').disabled = false; $('xd-e').closest('.ctl').style.display = ''; } }, true);
   if (has('xl-play')) $('xl-play').addEventListener('click', () => { if ($('xl-s').value === 'slide') { $('xl-s').value = 'bet'; $('xl-m').max = 30; } }, true);
   if (has('xs-play')) $('xs-play').addEventListener('click', () => { if (+$('xs-k').max < 4) $('xs-k').max = 4; }, true);
   const PFX = { 'four-series': 'fs', 'ensemble': 'en', 'counterexample': 'ce', 'nonstationary': 'ns', 'white-noise': 'wn', 'random-walk': 'rw',
