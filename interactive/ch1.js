@@ -111,6 +111,11 @@ function blkFour() {
     if (!full) G.lay.shapes.push({ type: 'rect', xref: a.xa, yref: a.yd, x0: `${y0}-01-01`, x1: `${y1}-01-01`, y0: 0, y1: 1, fillcolor: rgba(K.orange, 0.15), line: { width: 0 }, layer: 'below' });
     const ix = d.map((_, i) => i).filter(i => d[i] >= `${y0}` && d[i] < `${y1}`), v = ix.map(i => y[i]);
     res.push(v.length > 2 ? T.fs(j, nf(mean(v), 2), nf(sdev(v), 2), v.length) : T.fsNone(j));
+    if (!full && v.length > 2) {          // the window's mean and mean ± one standard deviation, drawn over the window
+      const xw = [d[ix[0]], d[ix[ix.length - 1]]], m = mean(v), sv = sdev(v);
+      tr.push({ x: xw, y: [m, m], mode: 'lines', line: { color: K.navy, width: 2.2 }, xaxis: a.xa, yaxis: a.ya, showlegend: false, hovertemplate: `window mean: ${m.toFixed(2)}<extra></extra>` });
+      [m - sv, m + sv].forEach(u => tr.push({ x: xw, y: [u, u], mode: 'lines', line: { color: K.navy, width: 1.2, dash: 'dot' }, xaxis: a.xa, yaxis: a.ya, showlegend: false, hovertemplate: `window mean ± sd: ${u.toFixed(2)}<extra></extra>` }));
+    }
     if (v.length > 2) { const dg = j === 2 ? 4 : 2, dl = j < 2 ? 7 : 10, lo = ix[v.indexOf(Math.min(...v))], hi = ix[v.indexOf(Math.max(...v))];
       rows.push([T.x.fsN[j], txt(v.length), num(v[0], dg), num(v[v.length - 1], dg), num(mean(v), dg), num(sdev(v), dg), txt(`${nf(y[lo], dg)} (${d[lo].slice(0, dl)})`), txt(`${nf(y[hi], dg)} (${d[hi].slice(0, dl)})`)]); }
   });
@@ -145,7 +150,9 @@ function blkEns() {
   // the AR(1) panel keeps one scale for every φ, so the band visibly widens as ▶ raises φ
   G.lay[axKey(a.ya)].range = [-15, 15]; G.lay[axKey(b.ya)].range = [-LW, LW];
   G.lay.shapes.push(vl(a, t0, K.navy, 'dot', 1), vl(b, t0, K.navy, 'dot', 1));
-  tr.push(leg(`cross-section at t = ${t0}`, { color: K.navy, dash: 'dot', width: 1.2 }));
+  // the 40 values at t0 on the paths: the points the histograms below are made of
+  tr.push({ x: xsA.map(() => t0), y: xsA, mode: 'markers', marker: { color: K.navy, size: 5 }, name: `the 40 values at t = ${t0}`, xaxis: a.xa, yaxis: a.ya, hovertemplate: `t = ${t0}: %{y:.2f}<extra></extra>` },
+    { x: xsW.map(() => t0), y: xsW, mode: 'markers', marker: { color: K.navy, size: 5 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: `t = ${t0}: %{y:.2f}<extra></extra>` });
   plot('en-chart', tr, G.lay);
   const va = pvar(A.map(x => x[t0 - 1])), vw = pvar(W.map(x => x[t0 - 1]));
   const res = [T.en1(nf(phi, 2), nf(sd * sd, 2), nf(1.96 * sd, 2), t0, nf(va, 2)), T.en2(t0, nf(1.96 * Math.sqrt(t0), 2), nf(vw, 1))];
@@ -180,14 +187,24 @@ function blkCounter() {
 
 // ================================================================= which series are stationary?
 function blkNonstat() {
-  const b = +$('ns-b').value, s1 = +$('ns-s').value, sh = +$('ns-d').value; set('ns-b', nf(b, 3)); set('ns-s', nf(s1, 1)); set('ns-d', nf(sh, 1));
+  const b = +$('ns-b').value, s1 = +$('ns-s').value, sh = +$('ns-d').value, te = +$('ns-t').value; set('ns-b', nf(b, 3)); set('ns-s', nf(s1, 1)); set('ns-d', nf(sh, 1)); set('ns-t', te);
   const n = 300, t = range(0, n - 1, 1), N0 = D.ns;
   const X = [N0.a, N0.b.map((v, i) => b * i + v), N0.c.map((v, i) => v * (0.4 + (s1 - 0.4) * i / (n - 1))), N0.d.map((v, i) => v + (i >= n / 2 ? sh : 0))];
   const names = ['Series A', 'Series B', 'Series C', 'Series D'], cols = [K.blue, K.red, K.green, K.purple];
   const G = grid('ns-chart', names.map((nm, j) => ({ r: j >> 1, c: j & 1, t: nm })), { cols: 2, h: 440, legend: false });
   const tr = X.map((x, j) => ({ x: t, y: x, mode: 'lines', line: { color: cols[j], width: 1 }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' }));
+  // rolling window of W observations, drawn up to the window that ends at te: mean (solid) and mean ± 2 sd (dotted)
+  const W = 50, tw = range(W - 1, te - 1, 1), last = [];
+  X.forEach((x, j) => {
+    const mu = [], lo = [], hi = [];
+    tw.forEach(e => { const w = x.slice(e - W + 1, e + 1), m = mean(w), sv = sdev(w); mu.push(m); lo.push(m - 2 * sv); hi.push(m + 2 * sv); });
+    last.push([mu[mu.length - 1], (hi[hi.length - 1] - lo[lo.length - 1]) / 4]);
+    tr.push({ x: tw, y: mu, mode: 'lines', line: { color: K.navy, width: 2 }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: `t = %{x}: rolling mean (${W} obs.) %{y:.2f}<extra></extra>` });
+    [lo, hi].forEach(y => tr.push({ x: tw, y, mode: 'lines', line: { color: K.navy, width: 1, dash: 'dot' }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: `t = %{x}: rolling mean ± 2 sd %{y:.2f}<extra></extra>` }));
+  });
   plot('ns-chart', tr, G.lay);
-  out('ns-out', X.map((x, j) => { const h1 = x.slice(0, n / 2), h2 = x.slice(n / 2); return T.ns(names[j].slice(-1), nf(mean(h1), 2), nf(mean(h2), 2), nf(sdev(h1), 2), nf(sdev(h2), 2)); }));
+  out('ns-out', X.map((x, j) => { const h1 = x.slice(0, n / 2), h2 = x.slice(n / 2); return T.ns(names[j].slice(-1), nf(mean(h1), 2), nf(mean(h2), 2), nf(sdev(h1), 2), nf(sdev(h2), 2)); })
+    .concat([T.ns2(te - W, te - 1, last.map(([m]) => nf(m, 2)), last.map(([, sv]) => nf(sv, 2)))]));
   const cond = [null, b > 0 ? T.x.nsB(nf(b, 3)) : null, s1 > 0.4 + 1e-9 ? T.x.nsC(nf(s1 / 0.4, 1)) : null, sh ? T.x.nsD(nf(sh, 1)) : null];
   table('ns-tb', T.x.nsH, X.map((x, j) => { const h1 = x.slice(0, n / 2), h2 = x.slice(n / 2);
     return [names[j].slice(-1), num(mean(h1), 2), num(mean(h2), 2), num(sdev(h1), 2), num(sdev(h2), 2), num(sdev(h2) / sdev(h1), 2), cond[j] || T.x.nsOK]; }), { cap: T.x.nsCap });
@@ -200,21 +217,23 @@ function garch1(z, alpha, beta, n) {   // generate_all_charts.simulate_garch wit
   return e.slice(z.length - n);
 }
 function blkWN() {
-  const al = +$('wn-a').value, be = 0.85; set('wn-a', nf(al, 2));
-  const n = 1000, S = [['Gaussian i.i.d.', D.wn.ga, K.blue], ['Laplace i.i.d.', D.wn.la, K.green],
-    [Math.abs(al - 0.1) < 1e-9 ? 'GARCH(1,1): weak WN' : `GARCH(1,1), α = ${al}`, garch1(D.wn.z, al, be, n), K.red]];
+  const al = +$('wn-a').value, be = 0.85, n = +$('wn-n').value; set('wn-a', nf(al, 2)); set('wn-n', n);
+  // the first n of the 1000 observations of the lecture
+  const S = [['Gaussian i.i.d.', D.wn.ga.slice(0, n), K.blue], ['Laplace i.i.d.', D.wn.la.slice(0, n), K.green],
+    [Math.abs(al - 0.1) < 1e-9 ? 'GARCH(1,1): weak WN' : `GARCH(1,1), α = ${al}`, garch1(D.wn.z, al, be, 1000).slice(0, n), K.red]];
   const A2 = S.map(([, x]) => acf(x.map(v => v * v), 20)), top = Math.max(0.35, ...A2.flat()) + 0.03;
-  const cells = S.map(([nm], j) => ({ r: 0, c: j, t: nm, y: { range: [-7, 7] } })).concat(S.map((_, j) => ({ r: 1, c: j, t: 'ACF of X<sub>t</sub><sup>2</sup>', y: { range: [-0.12, top] } })));
+  const cells = S.map(([nm], j) => ({ r: 0, c: j, t: nm + (n < 1000 ? `, first ${n} obs.` : ''), y: { range: [-7, 7] }, x: { range: [0, 1000] } })).concat(S.map((_, j) => ({ r: 1, c: j, t: 'ACF of X<sub>t</sub><sup>2</sup>', y: { range: [-0.12, top] } })));
   const G = grid('wn-chart', cells, { cols: 3, h: 440 }), tr = [], res = [], rows = [];
   S.forEach(([nm, x, c], j) => {
-    tr.push({ x: range(0, 499, 1), y: x.slice(0, 500), mode: 'lines', line: { color: c, width: 0.6 }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' });
+    tr.push({ x: range(0, n - 1, 1), y: x, mode: 'lines', line: { color: c, width: 0.6 }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' });
     const x2 = x.map(v => v * v);
     acfPanel(tr, G.lay, G.ax[3 + j], A2[j], n, c);
     const l1 = lbq(x, 10), l2 = lbq(x2, 10);
     res.push(T.wn(j, nf(al, 2), pe(l1.p), nf(l2.q, 1), pe(l2.p), nf(kurt(x), 2)));
     rows.push([nm, num(kurt(x), 2), num(l1.q, 2), txt(pv(l1.p)), l1.p < 0.05 ? T.x.rej : T.x.norej, num(l2.q, 1), txt(pv(l2.p)), l2.p < 0.05 ? T.x.rej : T.x.norej]);
   });
-  table('wn-tb', T.x.wnH, rows, { cap: T.x.wnCap });
+  table('wn-tb', T.x.wnH, rows, { cap: T.x.wnCap(n) });
+  res.unshift(T.wn0(n, nf(1.96 / Math.sqrt(n), 3)));
   tr.push(leg('ACF of squares', null, { color: K.blue, symbol: 'square', size: 10 }), BAND);
   plot('wn-chart', tr, G.lay);
   out('wn-out', res);
@@ -229,6 +248,7 @@ function blkRW() {
   [0, 1, 2].forEach(k => { const pp = joinPaths(P.filter((_, i) => i % 3 === k), t); tr.push({ x: pp.x, y: pp.y, mode: 'lines', line: { color: rgba(PAL[k], 0.5), width: 0.6 }, xaxis: a.xa, yaxis: a.ya, showlegend: false, hoverinfo: 'skip' }); });
   tr.push({ x: t, y: t.map(v => c * v + 1.96 * Math.sqrt(v)), mode: 'lines', line: { color: K.red, dash: 'dash', width: 1.4 }, name: (c ? 'ct ' : '') + '±1.96√t', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
     { x: t, y: t.map(v => c * v - 1.96 * Math.sqrt(v)), mode: 'lines', line: { color: K.red, dash: 'dash', width: 1.4 }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' });
+  tr.push({ x: P.map(() => t0), y: P.map(p => p[t0 - 1]), mode: 'markers', marker: { color: K.navy, size: 5 }, name: `the ${P.length} values at t = ${t0}`, xaxis: a.xa, yaxis: a.ya, hovertemplate: `t = ${t0}: %{y:.2f}<extra></extra>` });
   tr.push({ x: t, y: D.rw.var, mode: 'lines', line: { color: K.blue, width: 1.8 }, name: `variance across ${D.rw.nsim} paths`, xaxis: b.xa, yaxis: b.ya, hovertemplate: 't = %{x}: %{y:.1f}<extra></extra>' },
     { x: t, y: t, mode: 'lines', line: { color: K.orange, dash: 'dash', width: 1.6 }, name: 'theory: tσ²', xaxis: b.xa, yaxis: b.ya, hoverinfo: 'skip' },
     { x: [t0], y: [D.rw.var[t0 - 1]], mode: 'markers', marker: { color: K.navy, size: 9 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hoverinfo: 'skip' });
@@ -290,10 +310,12 @@ function blkWold() {
   const cases = [[`AR(1), φ = ${f(a)}: ψ<sub>j</sub> = ${a < 0 ? `(${f(a)})` : f(a)}<sup>j</sup>`, j.map(k => a ** k), K.blue, 'ar', a],
     [`AR(1), φ = ${f(b)}: ψ<sub>j</sub> = ${b < 0 ? `(${f(b)})` : f(b)}<sup>j</sup>`, j.map(k => b ** k), K.green, 'ar', b],
     [`MA(1), θ = ${f(th)}: ψ<sub>1</sub> = ${f(th)}, then 0`, j.map(k => (k === 0 ? 1 : k === 1 ? th : 0)), K.purple, 'ma', th],
-    ['Random walk: ψ<sub>j</sub> = 1', j.map(() => 1), K.red, 'rw', 1]];
+    ['Random walk: ψ<sub>j</sub> = 1 (•: φ<sup>j</sup>)', j.map(() => 1), K.red, 'rw', 1]];
   const all = cases.flatMap(c => c[1]), lo = Math.min(-0.7, ...all) * 1.08, hi = Math.max(1.05, ...all) * 1.05;
   const G = grid('wd-chart', cases.map((c, k) => ({ r: 0, c: k, t: c[0], xt: 'j', y: { range: [lo, hi] } })), { cols: 4, h: 320, legend: false, gx: 0.05 });
   const tr = cases.map((c, k) => ({ x: j, y: c[1], type: 'bar', width: 0.6, marker: { color: c[2] }, xaxis: G.ax[k].xa, yaxis: G.ax[k].ya, showlegend: false, hovertemplate: 'ψ<sub>%{x}</sub> = %{y:.3f}<extra></extra>' }));
+  // the random walk is the AR(1) at φ = 1: the weights of the first panel, for comparison
+  tr.push({ x: j, y: cases[0][1], mode: 'markers', marker: { color: K.navy, size: 6 }, xaxis: G.ax[3].xa, yaxis: G.ax[3].ya, showlegend: false, hovertemplate: `φ = ${f(a)}: φ<sup>%{x}</sup> = %{y:.3f}<extra></extra>` });
   G.ax.forEach(x => G.lay.shapes.push(hl(x, 0, K.navy, 'solid', 0.6)));
   plot('wd-chart', tr, G.lay);
   out('wd-out', cases.slice(0, 3).map(([, ps, , kind, v]) => {
@@ -304,22 +326,25 @@ function blkWold() {
 
 // ================================================================= time averages: ergodic and non-ergodic
 function blkErgo() {
-  const phi = +$('eg-phi').value, sz = +$('eg-z').value; set('eg-phi', nf(phi, 2)); set('eg-z', nf(sz, 1));
-  const E = D.ergo, n = 2000, t = lags(n);
+  const phi = +$('eg-phi').value, sz = +$('eg-z').value, Tn = +$('eg-T').value; set('eg-phi', nf(phi, 2)); set('eg-z', nf(sz, 1)); set('eg-T', Tn);
+  const E = D.ergo, n = 2000, t = lags(Tn);
   const A = E.e.map(e => ar1(e, phi).slice(E.burn)), B = E.u.map((u, i) => u.map(v => sz * E.z[i] + v));
   const run = x => { let s = 0; return x.map((v, i) => (s += v) / (i + 1)); };
   const G = grid('eg-chart', [{ r: 0, c: 0, t: `AR(1), φ = ${phi}: X̄<sub>T</sub> → μ = 0 on every path`, xt: 'T (log scale)', yt: 'X̄<sub>T</sub>', x: { type: 'log' } },
     { r: 0, c: 1, t: `X<sub>t</sub> = Z + ε<sub>t</sub>` + (sz === 1 ? '' : `, sd(Z) = ${sz}`) + ': X̄<sub>T</sub> → Z, not μ = 0', xt: 'T (log scale)', x: { type: 'log' } }], { cols: 2, h: 360, legend: false });
   const [a, b] = G.ax, tr = [], ea = [], eb = [];
-  A.forEach((x, i) => { const m = run(x); ea.push(m[n - 1]); tr.push({ x: t, y: m, mode: 'lines', line: { color: PAL[i % 8], width: 1 }, xaxis: a.xa, yaxis: a.ya, showlegend: false, hovertemplate: 'T = %{x}: %{y:.3f}<extra></extra>' }); });
-  B.forEach((x, i) => { const m = run(x); eb.push(m[n - 1]); tr.push({ x: t, y: m, mode: 'lines', line: { color: PAL[i % 8], width: 1 }, xaxis: b.xa, yaxis: b.ya, showlegend: false, hovertemplate: 'T = %{x}: %{y:.3f}<extra></extra>' }); });
-  const all = tr.flatMap(s => s.y), lim = Math.max(...all.map(Math.abs)) * 1.05;
-  G.lay.yaxis.range = [-lim, lim]; G.lay.yaxis2.range = [-lim, lim];
+  // the running means are drawn up to T = Tn on a fixed scale (that of the full 2000 observations)
+  let lim = 0;
+  A.forEach((x, i) => { const m = run(x); lim = Math.max(lim, ...m.map(Math.abs)); ea.push(m[Tn - 1]); tr.push({ x: t, y: m.slice(0, Tn), mode: 'lines', line: { color: PAL[i % 8], width: 1 }, xaxis: a.xa, yaxis: a.ya, showlegend: false, hovertemplate: 'T = %{x}: %{y:.3f}<extra></extra>' }); });
+  B.forEach((x, i) => { const m = run(x); lim = Math.max(lim, ...m.map(Math.abs)); eb.push(m[Tn - 1]); tr.push({ x: t, y: m.slice(0, Tn), mode: 'lines', line: { color: PAL[i % 8], width: 1 }, xaxis: b.xa, yaxis: b.ya, showlegend: false, hovertemplate: 'T = %{x}: %{y:.3f}<extra></extra>' }); });
+  [a, b].forEach(u => tr.push({ x: ea.map(() => Tn), y: u === a ? ea : eb, mode: 'markers', marker: { color: K.navy, size: 6 }, xaxis: u.xa, yaxis: u.ya, showlegend: false, hovertemplate: `X̄<sub>${Tn}</sub> = %{y:.3f}<extra></extra>` }));
+  lim *= 1.05;
+  G.lay.yaxis.range = [-lim, lim]; G.lay.yaxis2.range = [-lim, lim]; G.lay.xaxis.range = G.lay.xaxis2.range = [0, Math.log10(n)];
   G.lay.shapes.push(hl(a, 0, K.navy, 'dash', 0.8), hl(b, 0, K.navy, 'dash', 0.8));
   plot('eg-chart', tr, G.lay);
   const zs = E.z.map(z => sz * z);
-  out('eg-out', [T.eg1(nf(phi, 2), nf(Math.min(...ea), 2), nf(Math.max(...ea), 2), nf(1 / ((1 - phi) * Math.sqrt(n)), 3)),
-    T.eg2(nf(sz, 1), nf(Math.min(...eb), 2), nf(Math.max(...eb), 2), nf(Math.min(...zs), 2), nf(Math.max(...zs), 2))]);
+  out('eg-out', [T.eg1(nf(phi, 2), Tn, nf(Math.min(...ea), 2), nf(Math.max(...ea), 2), nf(1 / ((1 - phi) * Math.sqrt(Tn)), 3)),
+    T.eg2(nf(sz, 1), Tn, nf(Math.min(...eb), 2), nf(Math.max(...eb), 2), nf(Math.min(...zs), 2), nf(Math.max(...zs), 2))]);
 }
 
 // ================================================================= sampling distribution of the sample ACF
@@ -340,13 +365,17 @@ function blkBart() {
   const G = grid('bt-chart', [{ r: 0, c: 0, t: 'White noise: ρ̂(1) ≈ N(0, 1/T)' }, { r: 0, c: 1, t: `Number of lags (of ${m}) outside the bands`, xt: 'lags outside', x: { dtick: 1 } }], { cols: 2, h: 370, legendRows: 2 });
   const [a, c] = G.ax, gx = range(-0.45, 0.45, 0.005), k = range(0, 7, 1), nsim = S.r1.length;
   const emp = k.map(v => cnt.filter(u => u === v).length / nsim);
-  const tr = [{ x: S.r1, type: 'histogram', histnorm: 'probability density', nbinsx: 60, marker: { color: rgba(K.blue, 0.6) }, name: `ρ̂(1), ${nsim} samples of T = ${Tn}`, xaxis: a.xa, yaxis: a.ya },
+  // histogram of ρ̂(1) (density), split into the samples with no lag of the first m outside the band and those with at least one
+  const lim = Math.max(0.45, 4.5 / Math.sqrt(Tn)), bw = 2 * lim / 60, mid = range(0, 59, 1).map(i => -lim + (i + 0.5) * bw), h0 = mid.map(() => 0), h1 = mid.map(() => 0);
+  S.r1.forEach((v, i) => { const q = Math.floor((v + lim) / bw); if (q >= 0 && q < 60) (cnt[i] ? h1 : h0)[q] += 1 / (nsim * bw); });
+  const tr = [{ x: mid, y: h0, type: 'bar', width: bw, marker: { color: rgba(K.blue, 0.6) }, name: `ρ̂(1), ${nsim} samples of T = ${Tn}: no lag of ${m} outside`, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x:.3f}: %{y:.2f}<extra></extra>' },
+    { x: mid, y: h1, type: 'bar', width: bw, marker: { color: rgba(K.red, 0.55) }, name: `at least one lag of ${m} outside`, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x:.3f}: %{y:.2f}<extra></extra>' },
     { x: gx, y: gx.map(v => Math.sqrt(Tn / (2 * Math.PI)) * Math.exp(-Tn * v * v / 2)), mode: 'lines', line: { color: K.orange, width: 2 }, name: 'N(0, 1/T)', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
     leg('±1.96/√T', { color: K.red, dash: 'dash', width: 1.2 }),
     { x: k.map(v => v - 0.18), y: emp, type: 'bar', width: 0.36, marker: { color: K.blue }, name: 'simulated share', xaxis: c.xa, yaxis: c.ya, customdata: k, hovertemplate: '%{customdata} outside: %{y:.3f}<extra></extra>' },
     { x: k.map(v => v + 0.18), y: k.map(v => binom(m, v, 0.05)), type: 'bar', width: 0.36, marker: { color: K.orange }, name: `Binomial(${m}, 0.05)`, xaxis: c.xa, yaxis: c.ya, customdata: k, hovertemplate: '%{customdata} outside: %{y:.3f}<extra></extra>' }];
   G.lay.shapes.push(vl(a, b, K.red, 'dash', 1), vl(a, -b, K.red, 'dash', 1));
-  G.lay.xaxis.range = [-Math.max(0.45, 4.5 / Math.sqrt(Tn)), Math.max(0.45, 4.5 / Math.sqrt(Tn))];
+  G.lay.xaxis.range = [-lim, lim]; G.lay.barmode = 'stack';
   plot('bt-chart', tr, G.lay);
   const sd = Math.sqrt(pvar(S.r1));
   out('bt-out', [T.bt1(Tn, nsim, S.lecture, nf(mean(S.r1), 3), nf(-1 / Tn, 3), nf(sd, 3), nf(1 / Math.sqrt(Tn), 3), nf(b, 3)),
@@ -408,14 +437,17 @@ function blkBetACF() {
 // ================================================================= size of Box-Pierce and Ljung-Box
 function blkLBsize() {
   const m = +$('ls-m').value, Tn = $('ls-T').value, al = $('ls-a').value; set('ls-m', m);
-  const Rr = D.lbs.rates, cases = [[50, 10], [50, 20], [100, 10], [100, 20], [500, 10], [500, 20]], A = 100 * +al;
+  // the (T, m) pairs of the slide, plus the current m for every T
+  const Rr = D.lbs.rates, A = 100 * +al, cases = [50, 100, 500].flatMap(t => [...new Set([10, 20, m])].sort((x, y) => x - y).map(mm => [t, mm]));
   const G = grid('ls-chart', [{ r: 0, c: 0, t: `Gaussian white noise, ${D.lbs.nsim} samples each`, yt: 'rejections of a true H<sub>0</sub> (%)', xt: 'T, m', x: { type: 'category' } },
     { r: 0, c: 1, t: `T = ${Tn}: rejections for every m`, xt: 'number of lags m', x: { dtick: 2 } }], { cols: 2, h: 380 });
   const [a, b] = G.ax, labs = cases.map(([t, mm]) => `${t}, ${mm}`), ms = lags(20);
   const tr = [{ x: labs, y: cases.map(([t, mm]) => 100 * Rr[t][al].bp[mm - 1]), type: 'bar', name: 'Box-Pierce Q', marker: { color: K.blue }, offsetgroup: 0, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'T, m = %{x}: %{y:.1f}%<extra></extra>' },
     { x: labs, y: cases.map(([t, mm]) => 100 * Rr[t][al].lb[mm - 1]), type: 'bar', name: 'Ljung-Box Q*', marker: { color: K.orange }, offsetgroup: 1, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'T, m = %{x}: %{y:.1f}%<extra></extra>' },
-    { x: ms, y: Rr[Tn][al].bp.map(v => 100 * v), mode: 'lines+markers', marker: { size: 5, color: K.blue }, line: { color: K.blue, width: 1.5 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: 'Box-Pierce, m = %{x}: %{y:.1f}%<extra></extra>' },
-    { x: ms, y: Rr[Tn][al].lb.map(v => 100 * v), mode: 'lines+markers', marker: { size: 5, color: K.orange, symbol: 'square' }, line: { color: K.orange, width: 1.5 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: 'Ljung-Box, m = %{x}: %{y:.1f}%<extra></extra>' },
+    // right: the rejection rates for m = 1, …, current m drawn solid, the larger m faded
+    ...[['bp', K.blue, 'circle', 'Box-Pierce'], ['lb', K.orange, 'square', 'Ljung-Box']].flatMap(([k, c, sy, nm]) => [
+      { x: ms.slice(0, m), y: Rr[Tn][al][k].slice(0, m).map(v => 100 * v), mode: 'lines+markers', marker: { size: 6, color: c, symbol: sy }, line: { color: c, width: 1.8 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: nm + ', m = %{x}: %{y:.1f}%<extra></extra>' },
+      { x: ms.slice(m - 1), y: Rr[Tn][al][k].slice(m - 1).map(v => 100 * v), mode: 'lines+markers', opacity: 0.3, marker: { size: 4, color: c, symbol: sy }, line: { color: c, width: 1.2 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: nm + ', m = %{x}: %{y:.1f}%<extra></extra>' }]),
     leg(`nominal ${A}%`, { color: K.red, dash: 'dash', width: 1.2 })];
   G.lay.barmode = 'group';
   const top = Math.max(2.2 * A, ...[...Object.values(Rr).flatMap(o => o[al].lb), ...Rr[Tn][al].bp].map(v => 100 * v)) * 1.1;
@@ -457,10 +489,19 @@ function blkGDP() {
   const d = R.gdp.d, l = R.gdp.y.map(Math.log), d1 = l.slice(1).map((v, i) => 100 * (v - l[i])), dk = l.slice(k).map((v, i) => 100 * (v - l[i]));
   const S = [['ln Y<sub>t</sub>', d, l, K.blue], ['100 Δ ln Y<sub>t</sub> (q/q, %)', d.slice(1), d1, K.green],
     [k === 4 ? '100 Δ<sub>4</sub> ln Y<sub>t</sub> (y/y, %)' : `100 Δ<sub>${k}</sub> ln Y<sub>t</sub> (%)`, d.slice(k), dk, K.red]];
-  const cells = S.map(([t], j) => ({ r: 0, c: j, t, x: { type: 'date', dtick: 'M120', tickformat: '%Y' } })).concat(S.map((_, j) => ({ r: 1, c: j, t: 'ACF', xt: 'lag (quarters)', y: { range: [-0.6, 1] } })));
-  const G = grid('gt-chart', cells, { cols: 3, h: 440, legend: false }), tr = [], A = [];
-  S.forEach(([, dd, x, c], j) => { tr.push({ x: dd, y: x, mode: 'lines', line: { color: c, width: 1.2 }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: '%{x|%Y-%m}: %{y:.3f}<extra></extra>' });
-    const a = acf(x, 16); A.push(a); acfPanel(tr, G.lay, G.ax[3 + j], a, x.length, c); });
+  // three panels: ln Y with ln Y lagged by k (Δ_k ln Y is the gap); Δ_k ln Y with the quarterly growth as reference; the ACF of the three series
+  const dx = { type: 'date', dtick: 'M120', tickformat: '%Y' }, kl = k === 4 ? '100 Δ<sub>4</sub> ln Y<sub>t</sub> (y/y, %)' : `100 Δ<sub>${k}</sub> ln Y<sub>t</sub> (%)`;
+  const G = grid('gt-chart', [{ r: 0, c: 0, t: `ln Y<sub>t</sub> and ln Y<sub>t−${k}</sub>`, x: dx }, { r: 0, c: 1, t: `${kl} and 100 Δ ln Y<sub>t</sub> (q/q, %)`, x: dx },
+    { r: 1, c: 0, cs: 2, t: `ACF: bars 100 Δ<sub>${k}</sub> ln Y<sub>t</sub>; dots ln Y<sub>t</sub> and 100 Δ ln Y<sub>t</sub>`, xt: 'lag (quarters)', y: { range: [-0.6, 1] }, x: { dtick: 1 } }], { cols: 2, h: 470, legendRows: 2 });
+  const [pa, pb, pc] = G.ax, tr = [], A = S.map(([, , x]) => acf(x, 16)), L16 = lags(16);
+  tr.push({ x: d, y: l, mode: 'lines', line: { color: K.blue, width: 1.4 }, name: 'ln Y<sub>t</sub>', xaxis: pa.xa, yaxis: pa.ya, hovertemplate: '%{x|%Y-%m}: %{y:.3f}<extra></extra>' },
+    { x: d.slice(k), y: l.slice(0, l.length - k), mode: 'lines', line: { color: K.navy, width: 1.1, dash: 'dash' }, name: `ln Y<sub>t−${k}</sub>`, xaxis: pa.xa, yaxis: pa.ya, hovertemplate: '%{x|%Y-%m}: %{y:.3f}<extra></extra>' },
+    { x: d.slice(1), y: d1, mode: 'lines', line: { color: K.green, width: 0.9 }, name: '100 Δ ln Y<sub>t</sub> (q/q)', xaxis: pb.xa, yaxis: pb.ya, hovertemplate: 'q/q %{x|%Y-%m}: %{y:.2f}<extra></extra>' },
+    { x: d.slice(k), y: dk, mode: 'lines', line: { color: K.red, width: 1.6 }, name: `100 Δ<sub>${k}</sub> ln Y<sub>t</sub>`, xaxis: pb.xa, yaxis: pb.ya, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' });
+  acfPanel(tr, G.lay, pc, A[2], dk.length, K.red);
+  tr.push({ x: L16, y: A[0], mode: 'markers', marker: { color: K.blue, size: 7 }, name: 'ACF of ln Y<sub>t</sub>', xaxis: pc.xa, yaxis: pc.ya, hovertemplate: 'ln Y, lag %{x}: %{y:.3f}<extra></extra>' },
+    { x: L16, y: A[1], mode: 'markers', marker: { color: K.green, size: 7, symbol: 'diamond' }, name: 'ACF of 100 Δ ln Y<sub>t</sub>', xaxis: pc.xa, yaxis: pc.ya, hovertemplate: 'q/q, lag %{x}: %{y:.3f}<extra></extra>' }, BAND);
+  G.lay.shapes.push(hl(pb, 0, K.navy, 'solid', 0.6));
   plot('gt-chart', tr, G.lay);
   const res = [T.gt1(nf(A[0][0], 2), nf(A[0][7], 2)), T.gt2(nf(A[1][3], 2), nf(A[1][1], 2), nf(sdev(d1), 1)),
     T.gt3(k, nf(mean(dk), 2), nf(sdev(dk), 2), nf(A[2][0], 2), nf(A[2][3], 2), nf(dk[dk.length - 1], 1))];
@@ -482,15 +523,18 @@ function blkBoxCox() {
   const l = +$('bc-l').value, y = R.nom.y, d = R.nom.d; set('bc-l', nf(l, 2));
   if (!bcGrid) { const g = range(-1, 2, 0.01); bcGrid = { g, cv: g.map(v => guerrero(y, v)) }; }
   const i = bcGrid.cv.indexOf(Math.min(...bcGrid.cv)), lh = bcGrid.g[i], w = boxcox(y, l);
-  const G = grid('bc-chart', [{ r: 0, c: 0, t: 'Nominal GDP (bn EUR): Y<sub>t</sub>', x: { type: 'date' } }, { r: 0, c: 1, t: `Box-Cox, λ = ${l.toFixed(2)}`, x: { type: 'date' } },
-    { r: 0, c: 2, t: "Guerrero's criterion against λ", xt: 'λ' }], { cols: 3, h: 340, legend: false });
+  // seasonal amplitude of each complete year (maximum minus minimum of its four quarters), relative to the mean of the first five years
+  const ampY = z => { const yrs = {}; d.forEach((s, j) => { const k = s.slice(0, 4); (yrs[k] = yrs[k] || []).push(z[j]); });
+    return Object.entries(yrs).filter(([, v]) => v.length === 4).map(([k, v]) => [+k, Math.max(...v) - Math.min(...v)]); };
+  const Aw = ampY(w), Ay = ampY(y), amp = Aw.map(([, v]) => v), a0 = mean(amp.slice(0, 5)), a1 = mean(amp.slice(-5)), ay0 = mean(Ay.slice(0, 5).map(([, v]) => v));
+  const G = grid('bc-chart', [{ r: 0, c: 0, t: 'Seasonal amplitude / first 5 years', xt: 'year' }, { r: 0, c: 1, t: `Box-Cox, λ = ${l.toFixed(2)}`, x: { type: 'date' } },
+    { r: 0, c: 2, t: "Guerrero's criterion against λ", xt: 'λ' }], { cols: 3, h: 360 });
   const [a, b, c] = G.ax;
-  plot('bc-chart', [{ x: d, y: y.map(v => v / 1000), mode: 'lines', line: { color: K.blue, width: 1.3 }, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' },
-    { x: d, y: w, mode: 'lines', line: { color: K.green, width: 1.3 }, xaxis: b.xa, yaxis: b.ya, hovertemplate: '%{x|%Y-%m}: %{y:.4g}<extra></extra>' },
-    { x: bcGrid.g, y: bcGrid.cv, mode: 'lines', line: { color: K.red, width: 1.6 }, xaxis: c.xa, yaxis: c.ya, hovertemplate: 'λ = %{x:.2f}: %{y:.3f}<extra></extra>' },
-    { x: [l], y: [guerrero(y, l)], mode: 'markers', marker: { color: K.orange, size: 10 }, xaxis: c.xa, yaxis: c.ya, hoverinfo: 'skip' }], Object.assign(G.lay, { shapes: [vl(c, lh, K.navy, 'dash', 1)] }));
-  const yrs = {}; d.forEach((s, j) => { const k = s.slice(0, 4); (yrs[k] = yrs[k] || []).push(w[j]); });
-  const amp = Object.values(yrs).filter(v => v.length === 4).map(v => Math.max(...v) - Math.min(...v)), a0 = mean(amp.slice(0, 5)), a1 = mean(amp.slice(-5));
+  plot('bc-chart', [{ x: Ay.map(([k]) => k), y: Ay.map(([, v]) => v / ay0), mode: 'lines+markers', marker: { size: 4 }, line: { color: K.navy, width: 1.2, dash: 'dash' }, name: 'nominal GDP Y<sub>t</sub> (λ = 1)', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' },
+    { x: Aw.map(([k]) => k), y: amp.map(v => v / a0), mode: 'lines+markers', marker: { size: 4 }, line: { color: K.green, width: 1.8 }, name: `Box-Cox, λ = ${l.toFixed(2)}`, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' },
+    { x: d, y: w, mode: 'lines', line: { color: K.green, width: 1.3 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: '%{x|%Y-%m}: %{y:.4g}<extra></extra>' },
+    { x: bcGrid.g, y: bcGrid.cv, mode: 'lines', line: { color: K.red, width: 1.6 }, showlegend: false, xaxis: c.xa, yaxis: c.ya, hovertemplate: 'λ = %{x:.2f}: %{y:.3f}<extra></extra>' },
+    { x: [l], y: [guerrero(y, l)], mode: 'markers', marker: { color: K.orange, size: 10 }, showlegend: false, xaxis: c.xa, yaxis: c.ya, hoverinfo: 'skip' }], Object.assign(G.lay, { shapes: [vl(c, lh, K.navy, 'dash', 1), hl(a, 1, K.navy, 'solid', 0.6)] }));
   out('bc-out', [T.bc1(nf(l, 2), nf(guerrero(y, l), 3), nf(lh, 2), nf(bcGrid.cv[i], 3), nf(guerrero(y, 0), 3), nf(guerrero(y, 1), 2)), T.bc2(sig(a0), sig(a1), nf(a1 / a0, 2))]);
 }
 
@@ -516,6 +560,8 @@ function blkTextbook() {
   const N_ = R.nile, pre = N_.y.filter((_, i) => N_.yr[i] <= B), post = N_.y.filter((_, i) => N_.yr[i] > B), m0 = mean(pre), m1 = mean(post);
   const mu = N_.yr.map(v => (v <= B ? m0 : m1)), res = N_.y.map((v, i) => v - mu[i]);
   const rn = acf(N_.y, 20), rr = acf(res, 20), rs = acf(R.sun.y, 40), yd = v => `${v}-01-01`;
+  // the same two means, before and after B, removed from the sunspots: a series without a break
+  const S_ = R.sun, sm0 = mean(S_.y.filter((_, i) => S_.yr[i] <= B)), sm1 = mean(S_.y.filter((_, i) => S_.yr[i] > B)), smu = S_.yr.map(v => (v <= B ? sm0 : sm1)), rsr = acf(S_.y.map((v, i) => v - smu[i]), 40);
   const G = grid('tb-chart', [{ r: 0, c: 0, t: 'Nile at Aswan: yearly flow (10<sup>8</sup> m<sup>3</sup>)', x: { type: 'date' } }, { r: 0, c: 1, t: 'Yearly sunspot numbers', x: { type: 'date' } },
     { r: 1, c: 0, xt: 'lag (years)' }, { r: 1, c: 1, xt: 'lag (years)' }], { cols: 2, h: 470, legendRows: 2 });
   const [a, b, c, d] = G.ax, l20 = lags(20);
@@ -527,6 +573,8 @@ function blkTextbook() {
   const bn = 1.96 / Math.sqrt(N_.y.length);
   G.lay.shapes.push(hl(c, bn, K.red, 'dash', 1), hl(c, -bn, K.red, 'dash', 1), hl(c, 0, K.navy, 'solid', 0.8));
   acfPanel(tr, G.lay, d, rs, R.sun.y.length, K.amber);
+  tr.push({ x: S_.yr.map(yd), y: smu, mode: 'lines', line: { color: K.red, dash: 'dash', width: 1.4, shape: 'hv' }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hoverinfo: 'skip' },
+    { x: lags(40), y: rsr, mode: 'markers', marker: { color: K.orange, size: 6 }, showlegend: false, xaxis: d.xa, yaxis: d.ya, hovertemplate: 'after removing the two means, lag %{x}: %{y:.3f}<extra></extra>' });
   plot('tb-chart', tr, G.lay);
   const q0 = lbq(N_.y, 10), q1 = lbq(res, 10);
   let pk = 6; for (let h = 6; h <= 15; h++) if (rs[h - 1] > rs[pk - 1]) pk = h;
@@ -535,7 +583,7 @@ function blkTextbook() {
     const a = j === 0 ? rn : j === 1 ? rr : rs, q = j === 0 ? q0 : j === 1 ? q1 : lbq(x, 10);
     return [lb, txt(x.length), num(a[0], 2), num(a[1], 2), num(a[4], 2), num(a[9], 2), num(q.q, 1), txt(pv(q.p))]; }));
   out('tb-out', [T.tb1(B, nf(m0, 0), nf(m1, 0)), T.tb2(nf(rn[0], 2), nf(q0.q, 1), pe(q0.p)), T.tb3(nf(rr[0], 2), nf(q1.q, 1), pe(q1.p)),
-    T.tb4(nf(rs[mn - 1], 2), mn, nf(rs[pk - 1], 2), pk)]);
+    T.tb4(nf(rs[mn - 1], 2), mn, nf(rs[pk - 1], 2), pk), T.tb5(B, nf(sm0, 1), nf(sm1, 1), nf(rs[0], 2), nf(rsr[0], 2), nf(rs[pk - 1], 2), nf(rsr[pk - 1], 2), pk)]);
 }
 
 // ================================================================= tables and worked examples
@@ -680,9 +728,13 @@ function blkSACF() {
   table('xs-tb', ['t', T.x.obs, 'x<sub>t</sub>', 'x<sub>t</sub> − x̄', `x<sub>t+${k}</sub> − x̄`, `(x<sub>t</sub> − x̄)(x<sub>t+${k}</sub> − x̄)`],
     x.map((v, t) => [t + 1, lab[t], num(v, dx), num(dv[t], sl ? 0 : 2), t + k < n ? num(dv[t + k], sl ? 0 : 2) : '', t + k < n ? num(pr[t], sl ? 0 : 1) : '']));
   const r = range(1, n - 1, 1).map(h => sum(range(0, n - 1 - h, 1).map(t => dv[t] * dv[t + h])) / n / g0);
-  const G = grid('xs-chart', [{ r: 0, c: 0, t: `Sample ACF, T = ${n}`, xt: 'lag h', y: { range: [-1.05, 1.05] }, x: { dtick: 1 } }], { cols: 1, h: 300 }), a = G.ax[0];
-  G.lay.shapes.push(hl(a, b, K.red, 'dash', 1), hl(a, -b, K.red, 'dash', 1), hl(a, 0, K.navy, 'solid', 0.8));
-  plot('xs-chart', [{ x: range(1, n - 1, 1), y: r, type: 'bar', width: 0.5, marker: { color: range(1, n - 1, 1).map(h => (h === k ? K.orange : K.blue)) }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'lag %{x}: %{y:.3f}<extra></extra>' }, BAND], G.lay);
+  const G = grid('xs-chart', [{ r: 0, c: 0, t: `Sample ACF, T = ${n}`, xt: 'lag h', y: { range: [-1.05, 1.05] }, x: { dtick: 1 } },
+    { r: 0, c: 1, t: `Products (x<sub>t</sub> − x̄)(x<sub>t+${k}</sub> − x̄), t = 1, …, ${n - k}: their sum / T = γ̂(${k})`, xt: 't', x: { dtick: n > 8 ? 2 : 1, range: [0.4, n - 0.4] } }], { cols: 2, h: 320 }), [a, a2] = G.ax;
+  G.lay.shapes.push(hl(a, b, K.red, 'dash', 1), hl(a, -b, K.red, 'dash', 1), hl(a, 0, K.navy, 'solid', 0.8), hl(a2, 0, K.navy, 'solid', 0.8));
+  // lags 1, …, k (computed so far, lag k in orange) solid; the larger lags faded
+  plot('xs-chart', [{ x: range(1, k, 1), y: r.slice(0, k), type: 'bar', width: 0.5, marker: { color: range(1, k, 1).map(h => (h === k ? K.orange : K.blue)) }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'lag %{x}: %{y:.3f}<extra></extra>' },
+    { x: range(k + 1, n - 1, 1), y: r.slice(k), type: 'bar', width: 0.5, opacity: 0.3, marker: { color: K.blue }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'lag %{x}: %{y:.3f}<extra></extra>' }, BAND,
+    { x: range(1, n - k, 1), y: pr, type: 'bar', width: 0.5, marker: { color: pr.map(v => (v < 0 ? K.red : K.green)) }, showlegend: false, xaxis: a2.xa, yaxis: a2.ya, hovertemplate: `t = %{x}: (x<sub>t</sub> − x̄)(x<sub>t+${k}</sub> − x̄) = %{y:.2f}<extra></extra>` }], G.lay);
   out('xs-out', [T.xs(T.x.xsSrc[src], n, k, nf(gk, sl ? 1 : 1), nf(rk, sl ? 2 : 3), nf(b, 2))]);
 }
 
@@ -779,11 +831,13 @@ function blkXBC() {
   table('xc-tb2', [T.x.block, T.x.meanI, T.x.sdI, `sd<sub>i</sub>/mean<sub>i</sub><sup>${nf(1 - l, 2)}</sup>`],
     sel.map((i, j) => (j === 4 ? [[{ v: '…' }, '', '', ''], [blab(B[i]), num(B[i].mu, 1), num(B[i].s, 1), num(B[i].q, 4)]] : [[blab(B[i]), num(B[i].mu, 1), num(B[i].s, 1), num(B[i].q, 4)]])).flat(),
     { cap: T.x.xcCap2(T.x.xcName[s.k], B.length), note: T.x.xcNote(nf(mean(B.map(b => b.q)), 4), nf(sdev(B.map(b => b.q)), 4), nf(gq.cv, 3)) });
-  const G = grid('xc-chart', [{ r: 0, c: 0, t: "Guerrero's criterion against λ", xt: 'λ', yt: 'coefficient of variation' }], { cols: 1, h: 340 });
-  const a = G.ax[0], cols = { nom: K.blue, gdp: K.green, hicp: K.red }, nm = { nom: 'Nominal GDP (quarterly)', gdp: 'Real GDP (quarterly)', hicp: 'HICP index (monthly)' };
+  const G = grid('xc-chart', [{ r: 0, c: 0, t: "Guerrero's criterion against λ", xt: 'λ', yt: 'coefficient of variation' }, { r: 0, c: 1, t: `${{ nom: 'Nominal GDP', gdp: 'Real GDP', hicp: 'HICP index' }[s.k]}: Box-Cox, λ = ${l.toFixed(2)}`, x: { type: 'date' } }], { cols: 2, h: 360, legendRows: 2 });
+  const [a, a2] = G.ax, cols = { nom: K.blue, gdp: K.green, hicp: K.red }, nm = { nom: 'Nominal GDP (quarterly)', gdp: 'Real GDP (quarterly)', hicp: 'HICP index (monthly)' };
   G.lay.shapes.push(vl(a, l, K.navy, 'dot', 1.2));
   plot('xc-chart', XC.map(o => ({ x: xcGrid[o.k].g, y: xcGrid[o.k].cv, mode: 'lines', line: { color: cols[o.k], width: o.k === s.k ? 2.4 : 1.3 }, name: nm[o.k], xaxis: a.xa, yaxis: a.ya, hovertemplate: nm[o.k] + ', λ = %{x:.2f}: %{y:.3f}<extra></extra>' }))
-    .concat(XC.map(o => ({ x: [xcGrid[o.k].lh], y: [xcGrid[o.k].cmin], mode: 'markers', marker: { color: cols[o.k], size: 9 }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'λ̂ = %{x:.2f}<extra></extra>' }))), G.lay);
+    .concat(XC.map(o => ({ x: [xcGrid[o.k].lh], y: [xcGrid[o.k].cmin], mode: 'markers', marker: { color: cols[o.k], size: 9 }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'λ̂ = %{x:.2f}<extra></extra>' })))
+    .concat(XC.map(o => ({ x: [l], y: [guerreroP(o.y, l, o.p).cv], mode: 'markers', marker: { color: '#FFFFFF', size: 8, line: { color: cols[o.k], width: 2 } }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: `λ = ${nf(l, 2)}: %{y:.3f}<extra></extra>` })))
+    .concat([{ x: s.d, y: s.y.map(bc), mode: 'lines', line: { color: cols[s.k], width: 1.3 }, showlegend: false, xaxis: a2.xa, yaxis: a2.ya, hovertemplate: '%{x|%Y-%m}: %{y:.4g}<extra></extra>' }]), G.lay);
   out('xc-out', [T.xc(nf(l, 2), y2, f3(w1), f3(w2), T.x.xcName[s.k], nf(gq.cv, 3), nf(Gs.lh, 2))]);
 }
 
@@ -794,7 +848,7 @@ const ALL = [blkFour, blkEns, blkCounter, blkNonstat, blkWN, blkRW, blkSpot, blk
 const XB = [['acov-props', 'cp', blkAcov, ['cp-r1', 'cp-r2', 'cp-a2', 'cp-a3'], 'cp-r2', range(-1, 1, 0.05), 350],
   ['wx-ma1', 'xm', blkMA1, ['xm-th', 'xm-s2'], 'xm-th', range(-2, 2, 0.1), 300], ['wx-ar1', 'xa', blkAR1, ['xa-phi', 'xa-s2', 'xa-h'], 'xa-phi', range(0, 0.99, 0.03), 300],
   ['wx-diff', 'xd', blkDiff, ['xd-s', 'xd-e'], 'xd-e', range(8, 125, 3), 300], ['wx-sacf', 'xs', blkSACF, ['xs-s', 'xs-T', 'xs-k'], 'xs-k', range(1, 4, 1), 900],
-  ['bands', 'xb', blkBands, ['xb-s', 'xb-m', 'xb-h'], 'xb-h', range(1, 20, 1), 450], ['wx-lb', 'xl', blkWxLB, ['xl-s', 'xl-m'], 'xl-m', range(1, 30, 1), 350],
+  ['bands', 'xb', blkBands, ['xb-s', 'xb-m', 'xb-h'], 'xb-m', range(5, 30, 1), 350], ['wx-lb', 'xl', blkWxLB, ['xl-s', 'xl-m'], 'xl-m', range(1, 30, 1), 350],
   ['lb-table', 'lt', blkLBtab, ['lt-m', 'lt-q'], 'lt-m', range(1, 30, 1), 450], ['wx-boxcox', 'xc', blkXBC, ['xc-l', 'xc-y', 'xc-s'], 'xc-l', range(-1, 2, 0.1), 350]];
 function veilTables(b, x) {          // the live tables and worked examples of a prediction block stay blurred as long as its readout
   const blk = $(b), o = $(x + '-out'); if (!blk || !o) return;
@@ -814,17 +868,21 @@ function init() {
   const players = {}, P = (btn, id, vals, ms) => (players[btn] = new Player(btn, $(id), vals, ms));
   on(['fs-y0', 'fs-len'], blkFour); P('fs-play', 'fs-y0', range(1995, 2021, 1), 450);
   $('fs-play').addEventListener('click', () => { if (+$('fs-len').value >= 32) $('fs-len').value = '5'; }, true);
-  on(['en-phi', 'en-t'], blkEns); P('en-play', 'en-phi', range(0, 0.99, 0.03), 300);
+  on(['en-phi', 'en-t'], blkEns); P('en-play', 'en-t', range(2, 100, 2), 220);
   on(['ce-k'], blkCounter); P('ce-play', 'ce-k', range(1, 60, 1), 200);
-  on(['ns-b', 'ns-s', 'ns-d'], blkNonstat); P('ns-play', 'ns-b', range(0, 0.1, 0.005), 300);
-  on(['wn-a'], blkWN); P('wn-play', 'wn-a', range(0, 0.14, 0.01), 600);
+  on(['ns-b', 'ns-s', 'ns-d', 'ns-t'], blkNonstat); P('ns-play', 'ns-t', range(50, 300, 10), 300);
+  on(['wn-a', 'wn-n'], blkWN); P('wn-play', 'wn-n', range(100, 1000, 50), 500);
   on(['rw-t', 'rw-c'], blkRW); P('rw-play', 'rw-t', range(10, 250, 10), 250);
   on(['sr-n', 'sr-v'], blkSpot); P('sr-play', 'sr-n', range(100, 500, 50), 600);
   on(['sp-y0', 'sp-d'], blkSP); P('sp-play', 'sp-y0', range(2000, 2024, 1), 500);
+  // ▶ of a block that compares several processes moves one coefficient and gives the same value to the other panels
+  const link = (src, btn, f) => $(src).addEventListener('input', () => { const p = players[btn]; if (p && p.timer) f(+$(src).value); });
+  link('wd-a', 'wd-play', v => { $('wd-b').value = -v; $('wd-th').value = v; });
   on(['wd-a', 'wd-b', 'wd-th'], blkWold); P('wd-play', 'wd-a', range(0, 1, 0.05), 350);
-  on(['eg-phi', 'eg-z'], blkErgo); P('eg-play', 'eg-phi', range(0, 0.99, 0.03), 350);
+  on(['eg-phi', 'eg-z', 'eg-T'], blkErgo); P('eg-play', 'eg-T', [10, 20, 30, 50, 80, 100, 150, 200, 300, 500, 800, 1000, 1500, 2000], 450);
   on(['bt-m', 'bt-T'], blkBart); P('bt-play', 'bt-m', range(1, 20, 1), 450);
   on(['am-phi', 'am-th', 'am-T'], blkACFm); P('am-play', 'am-T', range(50, 500, 25), 350);
+  link('ap-b', 'ap-play', v => { $('ap-a').value = v; $('ap-c').value = v; });
   on(['ap-a', 'ap-b', 'ap-c'], blkACFP); P('ap-play', 'ap-b', range(-0.4, 0.45, 0.05), 450);
   on(['ba-s', 'ba-y0'], blkBetACF); P('ba-play', 'ba-y0', range(2000, 2024, 1), 500);
   on(['ls-m', 'ls-T', 'ls-a'], blkLBsize); P('ls-play', 'ls-m', range(1, 20, 1), 400);
