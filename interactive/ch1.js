@@ -103,17 +103,20 @@ function blkFour() {
   const G = grid('fs-chart', [{ r: 0, c: 0, t: 'Romania: real GDP, quarterly (bn EUR, 2010 prices)', x: { type: 'date' } }, { r: 0, c: 1, t: 'Romania: HICP inflation, 12-month (%)', x: { type: 'date' } },
     { r: 1, c: 0, t: 'EUR/RON, BNR reference rate (daily)', x: { type: 'date' } }, { r: 1, c: 1, t: 'BET: daily log returns (%)', x: { type: 'date' } }], { cols: 2, h: 460, legend: false });
   const S = [[R.gdp.d, R.gdp.y.map(v => v / 1000), K.green, 1.5, 'bn EUR'], [R.infl.d, R.infl.y, K.red, 1.5, '%'], [R.fx.d, R.fx.y, K.blue, 1.5, 'RON'], [RET.bet.d, RET.bet.r, K.amber, 0.5, '%']];
-  const tr = [], res = [T.fs0(y0, y1 - 1, full)];
+  const tr = [], res = [T.fs0(y0, y1 - 1, full)], rows = [];
   S.forEach(([d, y, c, w], j) => {
     const a = G.ax[j];
     tr.push({ x: d, y, mode: 'lines', line: { color: c, width: w }, xaxis: a.xa, yaxis: a.ya, showlegend: false, hovertemplate: '%{x|%Y-%m-%d}: %{y:.2f}<extra></extra>' });
     if (j === 1) G.lay.shapes.push(hl(a, 0, K.navy, 'solid', 0.6));
     if (!full) G.lay.shapes.push({ type: 'rect', xref: a.xa, yref: a.yd, x0: `${y0}-01-01`, x1: `${y1}-01-01`, y0: 0, y1: 1, fillcolor: rgba(K.orange, 0.15), line: { width: 0 }, layer: 'below' });
-    const v = y.filter((_, i) => d[i] >= `${y0}` && d[i] < `${y1}`);
+    const ix = d.map((_, i) => i).filter(i => d[i] >= `${y0}` && d[i] < `${y1}`), v = ix.map(i => y[i]);
     res.push(v.length > 2 ? T.fs(j, nf(mean(v), 2), nf(sdev(v), 2), v.length) : T.fsNone(j));
+    if (v.length > 2) { const dg = j === 2 ? 4 : 2, dl = j < 2 ? 7 : 10, lo = ix[v.indexOf(Math.min(...v))], hi = ix[v.indexOf(Math.max(...v))];
+      rows.push([T.x.fsN[j], txt(v.length), num(v[0], dg), num(v[v.length - 1], dg), num(mean(v), dg), num(sdev(v), dg), txt(`${nf(y[lo], dg)} (${d[lo].slice(0, dl)})`), txt(`${nf(y[hi], dg)} (${d[hi].slice(0, dl)})`)]); }
   });
   plot('fs-chart', tr, G.lay);
   out('fs-out', res);
+  table('fs-tb', T.x.fsH, rows, { cap: T.fs0(y0, y1 - 1, full) });
 }
 
 // ================================================================= ensemble of paths
@@ -173,6 +176,9 @@ function blkNonstat() {
   const tr = X.map((x, j) => ({ x: t, y: x, mode: 'lines', line: { color: cols[j], width: 1 }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' }));
   plot('ns-chart', tr, G.lay);
   out('ns-out', X.map((x, j) => { const h1 = x.slice(0, n / 2), h2 = x.slice(n / 2); return T.ns(names[j].slice(-1), nf(mean(h1), 2), nf(mean(h2), 2), nf(sdev(h1), 2), nf(sdev(h2), 2)); }));
+  const cond = [null, b > 0 ? T.x.nsB(nf(b, 3)) : null, s1 > 0.4 + 1e-9 ? T.x.nsC(nf(s1 / 0.4, 1)) : null, sh ? T.x.nsD(nf(sh, 1)) : null];
+  table('ns-tb', T.x.nsH, X.map((x, j) => { const h1 = x.slice(0, n / 2), h2 = x.slice(n / 2);
+    return [names[j].slice(-1), num(mean(h1), 2), num(mean(h2), 2), num(sdev(h1), 2), num(sdev(h2), 2), num(sdev(h2) / sdev(h1), 2), cond[j] || T.x.nsOK]; }), { cap: T.x.nsCap });
 }
 
 // ================================================================= three kinds of white noise
@@ -187,14 +193,16 @@ function blkWN() {
     [Math.abs(al - 0.1) < 1e-9 ? 'GARCH(1,1): weak WN' : `GARCH(1,1), α = ${al}`, garch1(D.wn.z, al, be, n), K.red]];
   const A2 = S.map(([, x]) => acf(x.map(v => v * v), 20)), top = Math.max(0.35, ...A2.flat()) + 0.03;
   const cells = S.map(([nm], j) => ({ r: 0, c: j, t: nm, y: { range: [-7, 7] } })).concat(S.map((_, j) => ({ r: 1, c: j, t: 'ACF of X<sub>t</sub><sup>2</sup>', y: { range: [-0.12, top] } })));
-  const G = grid('wn-chart', cells, { cols: 3, h: 440 }), tr = [], res = [];
+  const G = grid('wn-chart', cells, { cols: 3, h: 440 }), tr = [], res = [], rows = [];
   S.forEach(([nm, x, c], j) => {
     tr.push({ x: range(0, 499, 1), y: x.slice(0, 500), mode: 'lines', line: { color: c, width: 0.6 }, xaxis: G.ax[j].xa, yaxis: G.ax[j].ya, showlegend: false, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' });
     const x2 = x.map(v => v * v);
     acfPanel(tr, G.lay, G.ax[3 + j], A2[j], n, c);
     const l1 = lbq(x, 10), l2 = lbq(x2, 10);
     res.push(T.wn(j, nf(al, 2), pe(l1.p), nf(l2.q, 1), pe(l2.p), nf(kurt(x), 2)));
+    rows.push([nm, num(kurt(x), 2), num(l1.q, 2), txt(pv(l1.p)), l1.p < 0.05 ? T.x.rej : T.x.norej, num(l2.q, 1), txt(pv(l2.p)), l2.p < 0.05 ? T.x.rej : T.x.norej]);
   });
+  table('wn-tb', T.x.wnH, rows, { cap: T.x.wnCap });
   tr.push(leg('ACF of squares', null, { color: K.blue, symbol: 'square', size: 10 }), BAND);
   plot('wn-chart', tr, G.lay);
   out('wn-out', res);
@@ -218,6 +226,12 @@ function blkRW() {
   if (t0 <= n - 10) res.push(T.rw2(t0, t0 + 10, nf(D.rw.c10[t0 - 1], 3), nf(Math.sqrt(t0 / (t0 + 10)), 3)));
   if (c) res.push(T.rw3(nf(c, 2), t0, nf(c * t0, 1)));
   out('rw-out', res);
+  const s0 = Math.min(t0 + 10, n);
+  steps('rw-ws', [T.rws1(t0, nf(D.rw.var[t0 - 1], 1)), t0 <= n - 10 ? T.rws2(t0, s0, nf(Math.sqrt(t0 / s0), 3), nf(D.rw.c10[t0 - 1], 3)) : T.rws2n(t0),
+    T.rws3(t0, nf(1.96 * Math.sqrt(t0), 2), pct(D.rw.out[t0 - 1], 1)), c ? T.rws4(nf(c, 2), t0, nf(c * t0, 1)) : T.rws4n()]);
+  const ts = [...new Set([1, 10, 50, 100, 150, 200, 240, 250, t0])].sort((x, y) => x - y);
+  table('rw-tb', T.x.rwH, ts.map(u => hiRow([u, num(u, 0), num(D.rw.var[u - 1], 1), num(1.96 * Math.sqrt(u), 2), txt(pct(D.rw.out[u - 1], 1)),
+    u <= n - 10 ? num(Math.sqrt(u / (u + 10)), 3) : '', u <= n - 10 ? num(D.rw.c10[u - 1], 3) : ''], u === t0)), { cap: T.x.rwCap(D.rw.nsim) });
 }
 
 // ================================================================= which one is real?
@@ -373,6 +387,8 @@ function blkBetACF() {
   tr.push(BAND);
   plot('ba-chart', tr, G.lay);
   const l1 = lbq(r, 10), l2 = lbq(X[2][1], 10);
+  table('ba-tb', [T.x.series, ...[1, 2, 5, 10, 20, 50].map(h => `ρ̂(${h})`), 'Q*(10)', 'p'], X.map(([lb, x], j) => { const q = j === 0 ? l1 : j === 2 ? l2 : lbq(x, 10);
+    return [`${s.name}: ${lb}`, ...[1, 2, 5, 10, 20, 50].map(h => num(A[j][h - 1], 3, Math.abs(A[j][h - 1]) > 1.96 / Math.sqrt(n))), num(q.q, 1), txt(pv(q.p))]; }), { cap: T.x.baCap(n, nf(1.96 / Math.sqrt(n), 3)) });
   out('ba-out', [T.ba1(s.name, s.d[Math.max(0, i0)], n, nf(1.96 / Math.sqrt(n), 3)), T.ba2(nf(A[0][0], 3), nf(l1.q, 1), pe(l1.p)),
     T.ba3(nf(A[1][0], 2), nf(A[1][49], 2), nf(A[2][0], 2), nf(l2.q, 0))]);
 }
@@ -437,6 +453,8 @@ function blkGDP() {
   const res = [T.gt1(nf(A[0][0], 2), nf(A[0][7], 2)), T.gt2(nf(A[1][3], 2), nf(A[1][1], 2), nf(sdev(d1), 1)),
     T.gt3(k, nf(mean(dk), 2), nf(sdev(dk), 2), nf(A[2][0], 2), nf(A[2][3], 2), nf(dk[dk.length - 1], 1))];
   if (k === 4) res.push(T.gt4(nf(dk[d.slice(k).indexOf('2020-04-01')], 1)));
+  table('gt-tb', [T.x.series, 'T', T.x.mean, T.x.sd, 'ρ̂(1)', 'ρ̂(2)', 'ρ̂(4)', 'ρ̂(8)', 'Q*(8)', 'p'], S.map(([lb, , x], j) => { const q = lbq(x, 8);
+    return [lb.replace(/ \(.*\)$/, ''), txt(x.length), num(mean(x), j ? 2 : 3), num(sdev(x), j ? 2 : 3), num(A[j][0], 2), num(A[j][1], 2), num(A[j][3], 2), num(A[j][7], 2), num(q.q, 1), txt(pv(q.p))]; }), { cap: T.x.gtCap });
   out('gt-out', res);
 }
 
@@ -501,14 +519,285 @@ function blkTextbook() {
   const q0 = lbq(N_.y, 10), q1 = lbq(res, 10);
   let pk = 6; for (let h = 6; h <= 15; h++) if (rs[h - 1] > rs[pk - 1]) pk = h;
   let mn = 1; for (let h = 1; h <= 10; h++) if (rs[h - 1] < rs[mn - 1]) mn = h;
+  table('tb-tb', [T.x.series, 'T', 'ρ̂(1)', 'ρ̂(2)', 'ρ̂(5)', 'ρ̂(10)', 'Q*(10)', 'p'], [[T.x.tbN[0], R.nile.y], [T.x.tbN[1](B), res], [T.x.tbN[2], R.sun.y]].map(([lb, x], j) => {
+    const a = j === 0 ? rn : j === 1 ? rr : rs, q = j === 0 ? q0 : j === 1 ? q1 : lbq(x, 10);
+    return [lb, txt(x.length), num(a[0], 2), num(a[1], 2), num(a[4], 2), num(a[9], 2), num(q.q, 1), txt(pv(q.p))]; }));
   out('tb-out', [T.tb1(B, nf(m0, 0), nf(m1, 0)), T.tb2(nf(rn[0], 2), nf(q0.q, 1), pe(q0.p)), T.tb3(nf(rr[0], 2), nf(q1.q, 1), pe(q1.p)),
     T.tb4(nf(rs[mn - 1], 2), mn, nf(rs[pk - 1], 2), pk)]);
+}
+
+// ================================================================= tables and worked examples
+function table(id, head, rows, o) {
+  const el = $(id); if (!el) return;
+  const cell = (c, tag) => { const v = typeof c === 'object' && c !== null ? c : { v: c }; return `<${tag}${v.cls ? ` class="${v.cls}"` : ''}>${v.v}</${tag}>`; };
+  el.innerHTML = (o && o.cap ? `<p class="c1cap">${o.cap}</p>` : '') + '<table><thead><tr>' + head.map(c => cell(c, 'th')).join('') + '</tr></thead><tbody>'
+    + rows.map(r => `<tr${r.hi ? ' class="hi"' : ''}>` + r.map(c => cell(c, 'td')).join('') + '</tr>').join('') + '</tbody></table>' + (o && o.note ? `<p class="c1cap">${o.note}</p>` : '');
+}
+const num = (x, d, bold) => ({ v: bold ? `<b>${nf(x, d)}</b>` : nf(x, d), cls: 'r' });
+const txt = (v, bold) => ({ v: bold ? `<b>${v}</b>` : v, cls: 'r' });
+const steps = (id, items) => { const el = $(id); if (el) el.innerHTML = items.map(s => `<li>${s}</li>`).join(''); };
+const pn = (x, d) => (x < 0 ? `(${nf(x, d)})` : nf(x, d));                      // a factor in a product: negative numbers in parentheses
+const sg = (x, d) => (x < 0 ? ' − ' + nf(-x, d) : ' + ' + nf(x, d));           // a term of a sum
+const pv = p => (p < 0.001 ? '&lt; ' + nf(0.001, 3) : nf(p, 3));
+const hiRow = (r, on) => { if (on) r.hi = true; return r; };
+const qlab = d => T.q(+d.slice(0, 4), Math.floor((+d.slice(5, 7) - 1) / 3) + 1);
+
+const LBK = ['S&P 500 returns', 'S&P 500 squared returns', 'BET returns', 'BET squared returns', 'EUR/RON returns', 'GDP growth, q/q', 'GDP growth, y/y', 'HICP inflation, m/m', 'Nile flow', 'Sunspots'];
+// the ten series of the Ljung-Box table (slide „Interpreting the Ljung-Box statistics”), in the order of the slide
+const S10 = (() => {
+  const lg = R.gdp.y.map(Math.log), lh = D.real.hicp.y.map(Math.log), hd = D.real.hicp.d.map(m2d);
+  const hm = [], hmd = []; for (let i = 1; i < lh.length; i++) if (hd[i] >= '2005') { hm.push(100 * (lh[i] - lh[i - 1])); hmd.push(hd[i]); }
+  return [['sp', RET.sp.r, RET.sp.d], ['sp2', RET.sp.r.map(v => v * v), RET.sp.d], ['bet', RET.bet.r, RET.bet.d], ['bet2', RET.bet.r.map(v => v * v), RET.bet.d],
+    ['fx', RET.fx.r, RET.fx.d], ['gq', lg.slice(1).map((v, i) => 100 * (v - lg[i])), R.gdp.d.slice(1)], ['gy', lg.slice(4).map((v, i) => 100 * (v - lg[i])), R.gdp.d.slice(4)],
+    ['hm', hm, hmd], ['nile', R.nile.y, R.nile.yr.map(String)], ['sun', R.sun.y, R.sun.yr.map(String)]].map(([k, x, d], j) => {
+    const lr = D.lbr[LBK[j]];                          // the sample ACF of the chapter code (lags 1..30), from the unrounded data
+    return { k, x, d, name: T.x.s10[k], r: lr && lr.n === x.length ? lr.r : acf(x, 30) }; });
+})();
+const s10 = k => S10.find(s => s.k === k);
+function lbPath(x, m, r0) {        // Box-Pierce Q(h) and Ljung-Box Q*(h), h = 1..m, with p-values
+  const n = x.length, r = r0 ? r0.slice(0, m) : acf(x, m); let a = 0, b = 0;
+  return r.map((v, i) => { const h = i + 1; a += v * v; b += v * v / (n - h); const q = n * a, qs = n * (n + 2) * b; return { h, r: v, q, qs, pq: chi2sf(q, h), pqs: chi2sf(qs, h), cr: chi2ppf(0.95, h) }; });
+}
+
+// ---------------------------------------------------------------- properties of the autocovariance function
+function blkAcov() {
+  const r1 = +$('cp-r1').value, r2 = +$('cp-r2').value, a2 = +$('cp-a2').value, a3 = +$('cp-a3').value;
+  set('cp-r1', nf(r1, 2)); set('cp-r2', nf(r2, 2)); set('cp-a2', nf(a2, a2 % 1 ? 1 : 0)); set('cp-a3', nf(a3, a3 % 1 ? 1 : 0));
+  const t0 = 1 + a2 * a2 + a3 * a3, t1 = 2 * (a2 + a2 * a3) * r1, t2 = 2 * a3 * r2, v = t0 + t1 + t2;
+  const lmin = Math.min(1 - r2, (2 + r2 - Math.sqrt(r2 * r2 + 8 * r1 * r1)) / 2), bnd = 2 * r1 * r1 - 1, ok = r2 >= bnd - 1e-12;
+  const fa = v => nf(v, v % 1 ? 1 : 0);
+  steps('cp-ws', [T.cps1(fa(a2), fa(a3), nf(r1, 2), nf(r2, 2), a2 < 0 ? `(${fa(a2)})` : fa(a2), a3 < 0 ? `(${fa(a3)})` : fa(a3), pn(r2, 2)),
+    T.cps2(nf(t0, 2) + sg(t1, 2) + sg(t2, 2), nf(v, 2)),
+    v < -1e-12 ? T.cps3n(nf(v, 2)) : T.cps3p(nf(v, 2)),
+    T.cps4(nf(lmin, 2), nf(bnd, 2), ok)]);
+  const G = grid('cp-chart', [{ r: 0, c: 0, t: 'Admissible pairs (ρ(1), ρ(2)) of a stationary process', xt: 'ρ(1)', yt: 'ρ(2)', x: { range: [-1.05, 1.05] }, y: { range: [-1.05, 1.05] } }], { cols: 1, h: 380, legendRows: 2 });
+  const a = G.ax[0], xs = range(-1, 1, 0.02);
+  plot('cp-chart', [{ x: [...xs, ...[...xs].reverse()], y: [...xs.map(x => 2 * x * x - 1), ...xs.map(() => 1)], fill: 'toself', fillcolor: rgba(K.green, 0.15), line: { color: K.green, width: 1.2 }, mode: 'lines', name: 'ρ(2) ≥ 2ρ(1)² − 1', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
+    { x: xs, y: xs.map(x => x * x), mode: 'lines', line: { color: K.blue, dash: 'dot', width: 1.4 }, name: 'AR(1): ρ(2) = ρ(1)²', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
+    { x: [r1], y: [r2], mode: 'markers', marker: { color: ok ? K.green : K.red, size: 12, symbol: ok ? 'circle' : 'x' }, name: ok ? 'admissible' : 'not an ACF', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'ρ(1) = %{x:.2f}, ρ(2) = %{y:.2f}<extra></extra>' }], G.lay);
+  out('cp-out', [T.cp(nf(r1, 2), nf(r2, 2), nf(v, 2), ok)]);
+}
+
+// ---------------------------------------------------------------- worked example: MA(1)
+function blkMA1() {
+  const th = +$('xm-th').value, s2 = +$('xm-s2').value; set('xm-th', nf(th, 2)); set('xm-s2', nf(s2, 2));
+  const g0 = s2 * (1 + th * th), g1 = th * s2, r1 = g1 / g0;
+  steps('xm-ws', [T.xms1(nf(s2, 2), pn(th, 2), nf(g0, 3)), T.xms2(pn(th, 2), nf(s2, 2), nf(g1, 3)), T.xms3(nf(g1, 3), nf(g0, 3), nf(r1, 3)), T.xms4(nf(Math.abs(r1), 3))]);
+  table('xm-tb', ['h', 'γ(h)', 'ρ(h)'], [0, 1, 2, 3].map(h => [h, num(h === 0 ? g0 : h === 1 ? g1 : 0, 4), num(h === 0 ? 1 : h === 1 ? r1 : 0, 3)]));
+  const G = grid('xm-chart', [{ r: 0, c: 0, t: 'ρ(1) = θ/(1 + θ²) against θ', xt: 'θ', y: { range: [-0.6, 0.6] } }, { r: 0, c: 1, t: `ACF of the MA(1), θ = ${th.toFixed(2)}`, xt: 'lag h', y: { range: [-1, 1.05] } }], { cols: 2, h: 330, legend: false });
+  const [a, b] = G.ax, xs = range(-2, 2, 0.02);
+  G.lay.shapes.push(hl(a, 0.5, K.navy, 'dot', 1), hl(a, -0.5, K.navy, 'dot', 1), hl(b, 0, K.navy, 'solid', 0.8));
+  plot('xm-chart', [{ x: xs, y: xs.map(x => x / (1 + x * x)), mode: 'lines', line: { color: K.blue, width: 1.8 }, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'θ = %{x:.2f}: %{y:.3f}<extra></extra>' },
+    { x: [th], y: [r1], mode: 'markers', marker: { color: K.orange, size: 11 }, xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
+    { x: [0, 1, 2, 3, 4, 5], y: [1, r1, 0, 0, 0, 0], type: 'bar', width: 0.5, marker: { color: K.green }, xaxis: b.xa, yaxis: b.ya, hovertemplate: 'lag %{x}: %{y:.3f}<extra></extra>' }], G.lay);
+  out('xm-out', [T.xm(nf(th, 2), nf(g0, 2), nf(r1, 3))]);
+}
+
+// ---------------------------------------------------------------- worked example: AR(1) and its Wold weights
+function blkAR1() {
+  const ph = +$('xa-phi').value, s2 = +$('xa-s2').value, h = +$('xa-h').value; set('xa-phi', nf(ph, 2)); set('xa-s2', nf(s2, 2)); set('xa-h', h);
+  const g0 = s2 / (1 - ph * ph), S = 1 / (1 - ph * ph), J = 10, cum = [];
+  let c = 0; for (let j = 0; j <= 20; j++) { c += ph ** (2 * j); cum.push(c); }
+  steps('xa-ws', [T.xas1(nf(s2, 2), pn(ph, 2), nf(1 - ph * ph, 4), nf(g0, 2)),
+    T.xas2(pn(ph, 2), h, nf(ph, 3), nf(ph ** h, 3), nf(ph ** 10, 3), nf(g0 * ph ** h, 3)),
+    T.xas3(pn(ph, 2), nf(S, 2), J, nf(cum[J], 2), nf(100 * cum[J] / S, 1)),
+    ph > 0 ? T.xas4(nf(Math.log(0.5) / Math.log(ph), 1)) : T.xas4n()]);
+  table('xa-tb', ['j', 'ψ<sub>j</sub> = ρ(j)', 'ψ<sub>j</sub><sup>2</sup>', 'Σ<sub>i≤j</sub> ψ<sub>i</sub><sup>2</sup>', T.x.share, 'γ(j)'],
+    range(0, J, 1).map(j => hiRow([j, num(ph ** j, 4), num(ph ** (2 * j), 4), num(cum[j], 4), txt(nf(100 * cum[j] / S, 1) + '%'), num(g0 * ph ** j, 4)], j === h)));
+  const G = grid('xa-chart', [{ r: 0, c: 0, t: `Wold weights ψ<sub>j</sub> = φ<sup>j</sup>, φ = ${ph.toFixed(2)}`, xt: 'j', y: { range: [-1, 1.05] } },
+    { r: 0, c: 1, t: 'Cumulative Σψ<sub>j</sub><sup>2</sup> and its limit 1/(1 − φ²)', xt: 'j' }], { cols: 2, h: 340 });
+  const [a, b] = G.ax, js = range(0, 20, 1);
+  G.lay.shapes.push(hl(a, 0, K.navy, 'solid', 0.8), hl(b, S, K.red, 'dash', 1.2), vl(a, h, K.navy, 'dot', 1));
+  plot('xa-chart', [{ x: js, y: js.map(j => ph ** j), type: 'bar', width: 0.55, marker: { color: K.blue }, name: 'ψ<sub>j</sub>', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'j = %{x}: %{y:.3f}<extra></extra>' },
+    { x: js, y: cum, mode: 'lines+markers', line: { color: K.green, width: 1.6 }, marker: { size: 5 }, name: 'Σ<sub>i≤j</sub> ψ<sub>i</sub><sup>2</sup>', xaxis: b.xa, yaxis: b.ya, hovertemplate: 'j = %{x}: %{y:.3f}<extra></extra>' },
+    leg('1/(1 − φ²)', { color: K.red, dash: 'dash', width: 1.2 })], G.lay);
+  out('xa-out', [T.xa(nf(ph, 2), nf(g0, 2), h, nf(ph ** h, 3))]);
+}
+
+// ---------------------------------------------------------------- worked example: differencing
+const XD = [10, 12, 15, 14, 18];
+function blkDiff() {
+  const src = $('xd-s').value, gd = src === 'gdp'; $('xd-e').disabled = !gd;
+  const e = +$('xd-e').value, Y = R.gdp.y, d = R.gdp.d; set('xd-e', gd ? qlab(d[e]) : '—');
+  if (!gd) {
+    const d1 = XD.slice(1).map((v, i) => v - XD[i]), d2 = d1.slice(1).map((v, i) => v - d1[i]);
+    steps('xd-ws', [T.xds1(XD.slice(1).map((v, i) => `${v} − ${XD[i]} = ${nf(d1[i], 0)}`).join(', ')),
+      T.xds2(d1.slice(1).map((v, i) => `${nf(v, 0)} − ${pn(d1[i], 0)} = ${nf(d2[i], 0)}`).join(', '), `${XD[2]} − 2 × ${XD[1]} + ${XD[0]} = ${nf(d2[0], 0)}`),
+      T.xds3(XD.length, d1.length, d2.length)]);
+    table('xd-tb', ['t', 'x<sub>t</sub>', 'Δx<sub>t</sub>', 'Δ<sup>2</sup>x<sub>t</sub>'], XD.map((v, t) => [t + 1, num(v, 0), t >= 1 ? num(d1[t - 1], 0) : '', t >= 2 ? num(d2[t - 2], 0) : '']));
+    const G = grid('xd-chart', [{ r: 0, c: 0, t: 'x<sub>t</sub>, Δx<sub>t</sub> and Δ<sup>2</sup>x<sub>t</sub>', xt: 't', x: { dtick: 1 } }], { cols: 1, h: 300 }), a = G.ax[0], ts = [1, 2, 3, 4, 5];
+    G.lay.shapes.push(hl(a, 0, K.navy, 'solid', 0.8));
+    plot('xd-chart', [{ x: ts, y: XD, mode: 'lines+markers', line: { color: K.blue, width: 1.8 }, name: 'x<sub>t</sub>', xaxis: a.xa, yaxis: a.ya },
+      { x: ts.slice(1), y: d1, mode: 'lines+markers', line: { color: K.green, width: 1.8 }, name: 'Δx<sub>t</sub>', xaxis: a.xa, yaxis: a.ya },
+      { x: ts.slice(2), y: d2, mode: 'lines+markers', line: { color: K.red, width: 1.8 }, name: 'Δ<sup>2</sup>x<sub>t</sub>', xaxis: a.xa, yaxis: a.ya }], G.lay);
+    out('xd-out', [T.xd0(d1.map(v => nf(v, 0)).join('; '), d2.map(v => nf(v, 0)).join('; '))]);
+    return;
+  }
+  const l = Y.map(Math.log), g1 = i => 100 * (l[i] - l[i - 1]), g4 = i => 100 * (l[i] - l[i - 4]);
+  steps('xd-ws', [T.xdg1(qlab(d[e]), nf(Y[e], 1), nf(Y[e - 1], 1), nf(Y[e] - Y[e - 1], 1)),
+    T.xdg2(nf(l[e], 4), nf(l[e - 1], 4), nf(g1(e), 2), nf(100 * (Y[e] / Y[e - 1] - 1), 2)),
+    T.xdg3(qlab(d[e - 4]), nf(Y[e - 4], 1), nf(l[e - 4], 4), nf(g4(e), 2)),
+    T.xdg4(nf(g1(e), 2), pn(g1(e - 1), 2), nf(g1(e) - g1(e - 1), 2))]);
+  table('xd-tb', [T.x.quarter, 'Y<sub>t</sub>', 'ln Y<sub>t</sub>', 'ΔY<sub>t</sub>', '100 Δ ln Y<sub>t</sub>', '100 (Y<sub>t</sub>/Y<sub>t−1</sub> − 1)', '100 Δ<sub>4</sub> ln Y<sub>t</sub>'],
+    range(e - 7, e, 1).map(i => hiRow([qlab(d[i]), num(Y[i], 1), num(l[i], 4), num(Y[i] - Y[i - 1], 1), num(g1(i), 2), num(100 * (Y[i] / Y[i - 1] - 1), 2), num(g4(i), 2)], i === e)), { cap: T.x.xdCap });
+  const G = grid('xd-chart', [{ r: 0, c: 0, t: 'Romania: real GDP (bn EUR, 2010 prices)', x: { type: 'date' } }, { r: 0, c: 1, t: 'Growth rates (%)', x: { type: 'date' } }], { cols: 2, h: 330 });
+  const [a, b] = G.ax, i1 = range(1, Y.length - 1, 1), i4 = range(4, Y.length - 1, 1);
+  G.lay.shapes.push({ type: 'rect', xref: a.xa, yref: a.yd, x0: d[e - 7], x1: d[e], y0: 0, y1: 1, fillcolor: rgba(K.orange, 0.2), line: { width: 0 }, layer: 'below' }, vl(b, d[e], K.navy, 'dot', 1), hl(b, 0, K.navy, 'solid', 0.6));
+  plot('xd-chart', [{ x: d, y: Y.map(v => v / 1000), mode: 'lines', line: { color: K.blue, width: 1.4 }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' },
+    { x: i1.map(i => d[i]), y: i1.map(g1), mode: 'lines', line: { color: K.green, width: 1 }, name: '100 Δ ln Y<sub>t</sub> (q/q)', xaxis: b.xa, yaxis: b.ya, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' },
+    { x: i4.map(i => d[i]), y: i4.map(g4), mode: 'lines', line: { color: K.red, width: 1.6 }, name: '100 Δ<sub>4</sub> ln Y<sub>t</sub> (y/y)', xaxis: b.xa, yaxis: b.ya, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' }], G.lay);
+  out('xd-out', [T.xd1(qlab(d[e]), nf(g1(e), 2), nf(100 * (Y[e] / Y[e - 1] - 1), 2), nf(g4(e), 2))]);
+}
+
+// ---------------------------------------------------------------- worked example: sample autocovariance and autocorrelation
+function xsData(src, n) {
+  if (src === 'nile') return { x: R.nile.y.slice(0, n), lab: R.nile.yr.slice(0, n).map(String) };
+  if (src === 'gdp') { const s = s10('gy'); return { x: s.x.slice(-n), lab: s.d.slice(-n).map(qlab) }; }
+  return { x: [3, 5, 4, 6, 7], lab: ['1', '2', '3', '4', '5'] };
+}
+function blkSACF() {
+  const src = $('xs-s').value, sl = src === 'slide'; $('xs-T').disabled = sl;
+  const { x, lab } = xsData(src, +$('xs-T').value), n = x.length; set('xs-T', n);
+  $('xs-k').max = n - 1; const k = Math.min(+$('xs-k').value, n - 1); set('xs-k', k);
+  const dx = src === 'gdp' ? 2 : 0, m = mean(x), dv = x.map(v => v - m), pr = range(0, n - 1 - k, 1).map(t => dv[t] * dv[t + k]);
+  const g0 = sum(dv.map(v => v * v)) / n, gk = sum(pr) / n, rk = gk / g0, b = 1.96 / Math.sqrt(n);
+  steps('xs-ws', [T.xss1(x.map(v => nf(v, dx)).join(' + '), n, nf(sum(x), dx), nf(m, sl ? 0 : 2), dv.map(v => nf(v, sl ? 0 : 2)).join('; ')),
+    T.xss2(nf(sum(dv.map(v => v * v)), sl ? 0 : 1), n, nf(g0, sl ? 1 : 1)),
+    T.xss3(k, pr.map((v, t) => `${pn(dv[t], sl ? 0 : 1)} × ${pn(dv[t + k], sl ? 0 : 1)}`).join(' + '), nf(sum(pr), sl ? 0 : 1), n, nf(gk, sl ? 1 : 1)),
+    T.xss4(k, nf(gk, 1), nf(g0, 1), nf(rk, sl ? 2 : 3), n, nf(b, 2), Math.abs(rk) > b)]);
+  table('xs-tb', ['t', T.x.obs, 'x<sub>t</sub>', 'x<sub>t</sub> − x̄', `x<sub>t+${k}</sub> − x̄`, `(x<sub>t</sub> − x̄)(x<sub>t+${k}</sub> − x̄)`],
+    x.map((v, t) => [t + 1, lab[t], num(v, dx), num(dv[t], sl ? 0 : 2), t + k < n ? num(dv[t + k], sl ? 0 : 2) : '', t + k < n ? num(pr[t], sl ? 0 : 1) : '']));
+  const r = range(1, n - 1, 1).map(h => sum(range(0, n - 1 - h, 1).map(t => dv[t] * dv[t + h])) / n / g0);
+  const G = grid('xs-chart', [{ r: 0, c: 0, t: `Sample ACF, T = ${n}`, xt: 'lag h', y: { range: [-1.05, 1.05] }, x: { dtick: 1 } }], { cols: 1, h: 300 }), a = G.ax[0];
+  G.lay.shapes.push(hl(a, b, K.red, 'dash', 1), hl(a, -b, K.red, 'dash', 1), hl(a, 0, K.navy, 'solid', 0.8));
+  plot('xs-chart', [{ x: range(1, n - 1, 1), y: r, type: 'bar', width: 0.5, marker: { color: range(1, n - 1, 1).map(h => (h === k ? K.orange : K.blue)) }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'lag %{x}: %{y:.3f}<extra></extra>' }, BAND], G.lay);
+  out('xs-out', [T.xs(T.x.xsSrc[src], n, k, nf(gk, sl ? 1 : 1), nf(rk, sl ? 2 : 3), nf(b, 2))]);
+}
+
+// ---------------------------------------------------------------- confidence bands for the sample ACF
+function blkBands() {
+  const s = s10($('xb-s').value), m = +$('xb-m').value; $('xb-h').max = m; const h = Math.min(+$('xb-h').value, m); set('xb-m', m); set('xb-h', h);
+  const x = s.x, n = x.length, r = s.r.slice(0, m), p = pacf(r), b = 1.96 / Math.sqrt(n);
+  const bb = r.map((_, i) => 1.96 * Math.sqrt((1 + 2 * sum(r.slice(0, i).map(v => v * v))) / n));
+  const nOut = r.filter(v => Math.abs(v) > b).length, nOutB = r.filter((v, i) => Math.abs(v) > bb[i]).length, pOut = p.filter(v => Math.abs(v) > b).length;
+  const S2 = sum(r.slice(0, h - 1).map(v => v * v));
+  steps('xb-ws', [T.xbs1(n, nf(Math.sqrt(n), 2), nf(b, 4)), T.xbs2(h, nf(r[h - 1], 4), Math.abs(r[h - 1]) > b),
+    T.xbs3(h, h - 1, nf(S2, 4), n, nf(bb[h - 1], 4), Math.abs(r[h - 1]) > bb[h - 1]), T.xbs4(m, nOut, nf(0.05 * m, 1), nOutB, pOut)]);
+  const st = on => txt(on ? '<b>*</b>' : '');
+  table('xb-tb', ['h', 'ρ̂(h)', `±${nf(1.96, 2)}/√T`, T.x.bartlett, 'φ̂<sub>hh</sub>', T.x.outA, T.x.outB, T.x.outP],
+    r.map((v, i) => hiRow([i + 1, num(v, 4, Math.abs(v) > b), num(b, 4), num(bb[i], 4), num(p[i], 4, Math.abs(p[i]) > b), st(Math.abs(v) > b), st(Math.abs(v) > bb[i]), st(Math.abs(p[i]) > b)], i + 1 === h)),
+    { cap: T.x.xbCap(s.name, n) });
+  const G = grid('xb-chart', [{ r: 0, c: 0, t: `${T.x.s10en[s.k]}: sample ACF`, xt: 'lag h' }, { r: 0, c: 1, t: `${T.x.s10en[s.k]}: sample PACF`, xt: 'lag h' }], { cols: 2, h: 340 });
+  const [a, c] = G.ax, L = lags(m);
+  G.lay.shapes.push(hl(a, b, K.red, 'dash', 1), hl(a, -b, K.red, 'dash', 1), hl(a, 0, K.navy, 'solid', 0.8), hl(c, b, K.red, 'dash', 1), hl(c, -b, K.red, 'dash', 1), hl(c, 0, K.navy, 'solid', 0.8), vl(a, h, K.navy, 'dot', 1));
+  plot('xb-chart', [{ x: [...L, ...[...L].reverse()], y: [...bb, ...[...bb].reverse().map(v => -v)], fill: 'toself', fillcolor: rgba(K.teal, 0.18), line: { width: 0 }, mode: 'lines', name: 'Bartlett band, MA(h − 1)', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
+    { x: L, y: r, type: 'bar', width: 0.55, marker: { color: K.blue }, name: 'ACF', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'lag %{x}: %{y:.4f}<extra></extra>' },
+    { x: L, y: p, type: 'bar', width: 0.55, marker: { color: K.green }, name: 'PACF', xaxis: c.xa, yaxis: c.ya, hovertemplate: 'lag %{x}: %{y:.4f}<extra></extra>' }, BAND], G.lay);
+  out('xb-out', [T.xb(s.name, n, nf(b, 3), m, nOut, nf(0.05 * m, 1), nOutB)]);
+}
+
+// ---------------------------------------------------------------- worked example: the Ljung-Box statistic
+const XL = { n: 100, r: [0.25, 0.12, -0.08] };
+function blkWxLB() {
+  const src = $('xl-s').value, sl = src === 'slide', mmax = sl ? 3 : 30; $('xl-m').max = mmax;
+  const m = Math.min(+$('xl-m').value, mmax); set('xl-m', m);
+  let n, P;
+  if (sl) { n = XL.n; let a = 0, b = 0; P = XL.r.map((v, i) => { const h = i + 1; a += v * v; b += v * v / (n - h); const q = n * a, qs = n * (n + 2) * b; return { h, r: v, q, qs, pq: chi2sf(q, h), pqs: chi2sf(qs, h), cr: chi2ppf(0.95, h) }; }); }
+  else { const s = s10(src); n = s.x.length; P = lbPath(s.x, 30, s.r); }
+  const Pm = P.slice(0, m), last = Pm[m - 1], dr = sl ? 4 : 5, more = m > 4 ? ' + …' : '';
+  const sq = Pm.slice(0, 4).map(o => nf(o.r * o.r, dr)), fr = Pm.slice(0, 4).map(o => `${nf(o.r * o.r, dr)}/${n - o.h}`);
+  steps('xl-ws', [T.xls1(n, m, Pm.slice(0, 4).map(o => nf(o.r, sl ? 2 : 4)).join('; ') + (m > 4 ? '; …' : ''), nf(1.96 / Math.sqrt(n), 3), Pm.filter(o => Math.abs(o.r) > 1.96 / Math.sqrt(n)).length),
+    T.xls2(m, n, sq.join(' + ') + more, nf(last.q / n, dr), nf(last.q, 2)),
+    T.xls3(m, n, n + 2, fr.join(' + ') + more, nf(last.qs / (n * (n + 2)), 6), nf(last.qs, 2)),
+    T.xls4(m, nf(last.cr, 2), nf(last.qs, 2), last.qs > last.cr, pv(last.pqs), pv(last.pq))]);
+  table('xl-tb', ['h', 'ρ̂(h)', 'ρ̂(h)<sup>2</sup>', 'ρ̂(h)<sup>2</sup>/(T − h)', 'Q(h)', 'Q*(h)', `χ²<sub>${nf(0.95, 2)}</sub>(h)`, 'p (Q*)'],
+    Pm.map(o => [o.h, num(o.r, 4), num(o.r * o.r, 5), num(o.r * o.r / (n - o.h), 7), num(o.q, 2), num(o.qs, 2, o.qs > o.cr), num(o.cr, 2), txt(pv(o.pqs))]));
+  const G = grid('xl-chart', [{ r: 0, c: 0, t: 'Q(m), Q*(m) and the 5% critical value', xt: 'number of lags m', x: { dtick: sl ? 1 : 5 } }, { r: 0, c: 1, t: 'p-values (log scale; below 10<sup>−16</sup> drawn at 10<sup>−16</sup>)', xt: 'number of lags m', y: { type: 'log', exponentformat: 'power' }, x: { dtick: sl ? 1 : 5 } }], { cols: 2, h: 360, legendRows: 2 });
+  const [a, b] = G.ax, H = P.map(o => o.h), fl = v => Math.max(v, 1e-16);
+  G.lay.shapes.push(vl(a, m, K.navy, 'dot', 1), vl(b, m, K.navy, 'dot', 1), hl(b, 0.05, K.red, 'dash', 1.2));
+  plot('xl-chart', [{ x: H, y: P.map(o => o.q), mode: 'lines+markers', line: { color: K.amber, width: 1.6 }, marker: { size: 5 }, name: 'Box-Pierce Q(m)', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'm = %{x}: %{y:.2f}<extra></extra>' },
+    { x: H, y: P.map(o => o.qs), mode: 'lines+markers', line: { color: K.blue, width: 1.8 }, marker: { size: 5 }, name: 'Ljung-Box Q*(m)', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'm = %{x}: %{y:.2f}<extra></extra>' },
+    { x: H, y: P.map(o => o.cr), mode: 'lines', line: { color: K.navy, dash: 'dash', width: 1.4 }, name: 'χ²<sub>0.95</sub>(m)', xaxis: a.xa, yaxis: a.ya, hovertemplate: 'm = %{x}: %{y:.2f}<extra></extra>' },
+    { x: H, y: P.map(o => fl(o.pq)), mode: 'lines+markers', line: { color: K.amber, width: 1.4 }, marker: { size: 5 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: 'Q, m = %{x}: %{y:.3g}<extra></extra>' },
+    { x: H, y: P.map(o => fl(o.pqs)), mode: 'lines+markers', line: { color: K.blue, width: 1.6 }, marker: { size: 5 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hovertemplate: 'Q*, m = %{x}: %{y:.3g}<extra></extra>' },
+    leg('5% level', { color: K.red, dash: 'dash', width: 1.2 })], G.lay);
+  out('xl-out', [T.xl(sl ? T.x.slideEx : s10(src).name, m, nf(last.q, 2), nf(last.qs, 2), pe(last.pqs), last.qs > last.cr)]);
+}
+
+// ---------------------------------------------------------------- Ljung-Box statistics of real series: the table of the slide
+function blkLBtab() {
+  const m = +$('lt-m').value, bp = $('lt-q').value === 'bp'; set('lt-m', m);
+  const cr = chi2ppf(0.95, m), rows = [], rat = [];
+  S10.forEach(s => {
+    const P = lbPath(s.x, Math.max(m, 4), s.r), o = P[m - 1], q = bp ? o.q : o.qs, p = bp ? o.pq : o.pqs;
+    rat.push(q / cr);
+    rows.push([s.name, txt(nf(s.x.length, 0)), num(P[0].r, 2), num(P[3].r, 2), num(q, 1), num(cr, 2), txt(p < 0.001 ? '&lt; ' + nf(0.001, 3) : p < 0.05 ? nf(p, 3) : `<b>${nf(p, 3)}</b>`), num(q / cr, 1)]);
+  });
+  const st = bp ? 'Q(m)' : 'Q*(m)';
+  table('lt-tb', [T.x.series, 'T', 'ρ̂(1)', 'ρ̂(4)', st.replace('m', m), `χ²<sub>${nf(0.95, 2)}</sub>(${m})`, 'p', `${st.replace('m', m)}/χ²<sub>${nf(0.95, 2)}</sub>`], rows);
+  const G = grid('lt-chart', [{ r: 0, c: 0, t: `${bp ? 'Q(m)' : 'Q*(m)'} / 5% critical value, m = ${m}`, xt: 'log scale', x: { type: 'log' }, y: { autorange: 'reversed' } }], { cols: 1, h: 380, legend: false });
+  const a = G.ax[0], SH = ['S&P 500 returns', 'S&P 500 squared', 'BET returns', 'BET squared', 'EUR/RON returns', 'GDP q/q', 'GDP y/y', 'HICP m/m', 'Nile', 'Sunspots'];
+  G.lay.margin.l = 118; G.lay.shapes.push(vl(a, 1, K.red, 'dash', 1.2));
+  plot('lt-chart', [{ y: SH, x: rat, type: 'bar', orientation: 'h', marker: { color: S10.map((_, j) => PAL[j % PAL.length]) }, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{y}: %{x:.1f}<extra></extra>' }], G.lay);
+  const nrej = rat.filter(v => v > 1).length, jm = rat.indexOf(Math.min(...rat));
+  out('lt-out', [T.lt(bp ? 'Box–Pierce' : 'Ljung–Box', m, nf(cr, 2), nrej, S10[jm].name, nf(rat[jm], 1))]);
+}
+
+// ---------------------------------------------------------------- worked example: the Box-Cox transformation
+function guerreroP(y, l, p) {
+  const nb = Math.floor(y.length / p), z = y.slice(y.length - nb * p), ratio = [], bl = [];
+  for (let i = 0; i < nb; i++) { const b = z.slice(p * i, p * i + p), mu = mean(b), s = sdev(b); ratio.push(s / mu ** (1 - l)); bl.push({ i0: y.length - nb * p + p * i, mu, s, q: s / mu ** (1 - l) }); }
+  return { cv: sdev(ratio) / mean(ratio), bl };
+}
+const XC = (() => [['nom', R.nom.y, R.nom.d, 4], ['gdp', R.gdp.y, R.gdp.d, 4], ['hicp', D.real.hicp.y, D.real.hicp.d.map(m2d), 12]].map(([k, y, d, p]) => ({ k, y, d, p })))();
+const xcGrid = {};
+function blkXBC() {
+  const l = +$('xc-l').value, y2 = +$('xc-y').value, s = XC.find(o => o.k === $('xc-s').value), y1 = 100; set('xc-l', nf(l, 2)); set('xc-y', y2);
+  const bc = v => (Math.abs(l) < 1e-8 ? Math.log(v) : (v ** l - 1) / l), w1 = bc(y1), w2 = bc(y2), f3 = v => nf(v, Math.abs(v - Math.round(v)) < 5e-4 ? 0 : 3);
+  XC.forEach(o => { if (!xcGrid[o.k]) { const g = range(-1, 2, 0.01), cv = g.map(v => guerreroP(o.y, v, o.p).cv), i = cv.indexOf(Math.min(...cv)); xcGrid[o.k] = { g, cv, lh: g[i], cmin: cv[i] }; } });
+  const Gs = xcGrid[s.k], gq = guerreroP(s.y, l, s.p), B = gq.bl;
+  const blab = b => (s.p === 4 ? `${qlab(s.d[b.i0])}–${qlab(s.d[b.i0 + 3])}` : `${s.d[b.i0].slice(0, 7)} – ${s.d[b.i0 + 11].slice(0, 7)}`);
+  steps('xc-ws', [Math.abs(l) < 1e-8 ? T.xcs1L(y1, y2, f3(w1), f3(w2)) : T.xcs1(nf(l, 2), y1, y2, f3(y1 ** l), f3(y2 ** l), f3(w1), f3(w2)),
+    T.xcs2(y2 - y1, f3(w2 - w1), nf(y2 / y1, 2), nf(w2 / w1, 2)),
+    Math.abs(l) < 1e-8 ? T.xcs3L(f3(w2), nf(Math.exp(w2), 1)) : T.xcs3(nf(l, 2), (w2 < 0 ? `(${f3(w2)})` : f3(w2)), nf((l * w2 + 1) ** (1 / l), 1)),
+    T.xcs4(T.x.xcName[s.k], B.length, s.p, blab(B[0]), nf(B[0].s, 1), nf(B[0].mu, 1), nf(1 - l, 2), nf(B[0].q, 4), blab(B[B.length - 1]), nf(B[B.length - 1].q, 4), nf(gq.cv, 3), nf(Gs.lh, 2), nf(Gs.cmin, 3))]);
+  table('xc-tb', [T.x.series, T.x.blocks, 'λ̂', T.x.critAt('λ̂'), T.x.critAt('λ = 0'), T.x.critAt('λ = 1'), T.x.critAt(`λ = ${nf(l, 2)}`)],
+    XC.map(o => hiRow([T.x.xcName[o.k], txt(`${Math.floor(o.y.length / o.p)} × ${o.p}`), num(xcGrid[o.k].lh, 2, true), num(xcGrid[o.k].cmin, 3), num(guerreroP(o.y, 0, o.p).cv, 3), num(guerreroP(o.y, 1, o.p).cv, 3), num(guerreroP(o.y, l, o.p).cv, 3)], o.k === s.k)), { cap: T.x.xcCap });
+  const sel = [0, 1, 2, 3, B.length - 4, B.length - 3, B.length - 2, B.length - 1];
+  table('xc-tb2', [T.x.block, T.x.meanI, T.x.sdI, `sd<sub>i</sub>/mean<sub>i</sub><sup>${nf(1 - l, 2)}</sup>`],
+    sel.map((i, j) => (j === 4 ? [[{ v: '…' }, '', '', ''], [blab(B[i]), num(B[i].mu, 1), num(B[i].s, 1), num(B[i].q, 4)]] : [[blab(B[i]), num(B[i].mu, 1), num(B[i].s, 1), num(B[i].q, 4)]])).flat(),
+    { cap: T.x.xcCap2(T.x.xcName[s.k], B.length), note: T.x.xcNote(nf(mean(B.map(b => b.q)), 4), nf(sdev(B.map(b => b.q)), 4), nf(gq.cv, 3)) });
+  const G = grid('xc-chart', [{ r: 0, c: 0, t: "Guerrero's criterion against λ", xt: 'λ', yt: 'coefficient of variation' }], { cols: 1, h: 340 });
+  const a = G.ax[0], cols = { nom: K.blue, gdp: K.green, hicp: K.red }, nm = { nom: 'Nominal GDP (quarterly)', gdp: 'Real GDP (quarterly)', hicp: 'HICP index (monthly)' };
+  G.lay.shapes.push(vl(a, l, K.navy, 'dot', 1.2));
+  plot('xc-chart', XC.map(o => ({ x: xcGrid[o.k].g, y: xcGrid[o.k].cv, mode: 'lines', line: { color: cols[o.k], width: o.k === s.k ? 2.4 : 1.3 }, name: nm[o.k], xaxis: a.xa, yaxis: a.ya, hovertemplate: nm[o.k] + ', λ = %{x:.2f}: %{y:.3f}<extra></extra>' }))
+    .concat(XC.map(o => ({ x: [xcGrid[o.k].lh], y: [xcGrid[o.k].cmin], mode: 'markers', marker: { color: cols[o.k], size: 9 }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'λ̂ = %{x:.2f}<extra></extra>' }))), G.lay);
+  out('xc-out', [T.xc(nf(l, 2), y2, f3(w1), f3(w2), T.x.xcName[s.k], nf(gq.cv, 3), nf(Gs.lh, 2))]);
 }
 
 // ================================================================= wiring
 const ALL = [blkFour, blkEns, blkCounter, blkNonstat, blkWN, blkRW, blkSpot, blkSP, blkWold, blkErgo, blkBart, blkACFm, blkACFP, blkBetACF,
   blkLBsize, blkLBstats, blkGDP, blkBoxCox, blkOverdiff, blkTextbook];
+// blocks of the worked examples and result tables (own frames): [anchor, prefix, function, controls, player parameter, values, ms]
+const XB = [['acov-props', 'cp', blkAcov, ['cp-r1', 'cp-r2', 'cp-a2', 'cp-a3'], 'cp-r2', range(-1, 1, 0.05), 350],
+  ['wx-ma1', 'xm', blkMA1, ['xm-th', 'xm-s2'], 'xm-th', range(-2, 2, 0.1), 300], ['wx-ar1', 'xa', blkAR1, ['xa-phi', 'xa-s2', 'xa-h'], 'xa-phi', range(0, 0.99, 0.03), 300],
+  ['wx-diff', 'xd', blkDiff, ['xd-s', 'xd-e'], 'xd-e', range(8, 125, 3), 300], ['wx-sacf', 'xs', blkSACF, ['xs-s', 'xs-T', 'xs-k'], 'xs-k', range(1, 4, 1), 900],
+  ['bands', 'xb', blkBands, ['xb-s', 'xb-m', 'xb-h'], 'xb-h', range(1, 20, 1), 450], ['wx-lb', 'xl', blkWxLB, ['xl-s', 'xl-m'], 'xl-m', range(1, 30, 1), 350],
+  ['lb-table', 'lt', blkLBtab, ['lt-m', 'lt-q'], 'lt-m', range(1, 30, 1), 450], ['wx-boxcox', 'xc', blkXBC, ['xc-l', 'xc-y', 'xc-s'], 'xc-l', range(-1, 2, 0.1), 350]];
+function veilTables(b, x) {          // the live tables and worked examples of a prediction block stay blurred as long as its readout
+  const blk = $(b), o = $(x + '-out'); if (!blk || !o) return;
+  const xs = [...blk.querySelectorAll('.c1t, .c1x')], f = () => xs.forEach(e => e.classList.toggle('c1veil', o.classList.contains('veiled-out')));
+  f(); new MutationObserver(f).observe(o, { attributes: true, attributeFilter: ['class'] });
+}
+function placeExtras() {                // web lecture: the extra blocks travel inside a chart block; move each to its own frame
+  document.querySelectorAll('.xhold > section.xblk').forEach(sec => {
+    const art = document.getElementById('s' + sec.dataset.frame), head = art && art.querySelector('.fhead');
+    if (head) head.after(sec); else sec.closest('section.blk').after(sec);
+  });
+  document.querySelectorAll('.xhold').forEach(h => { if (!h.children.length) h.remove(); });
+}
 function init() {
+  placeExtras();
   const has = id => !!$(id), on = (ids, f) => ids.forEach(id => $(id).addEventListener('input', f));
   const players = {}, P = (btn, id, vals, ms) => (players[btn] = new Player(btn, $(id), vals, ms));
   on(['fs-y0', 'fs-len'], blkFour); P('fs-play', 'fs-y0', range(1995, 2021, 1), 450);
@@ -532,15 +821,21 @@ function init() {
   on(['bc-l'], blkBoxCox); P('bc-play', 'bc-l', range(-1, 2, 0.1), 300);
   on(['od-phi'], blkOverdiff); P('od-play', 'od-phi', range(0, 1, 0.05), 400);
   on(['tb-y'], blkTextbook); P('tb-play', 'tb-y', range(1875, 1965, 1), 150);
+  const live = XB.filter(([, x]) => has(x + '-out'));
+  live.forEach(([, x, f, ids, pid, vals, ms]) => { on(ids, f); P(x + '-play', pid, vals, ms); });
+  if (has('xd-play')) $('xd-play').addEventListener('click', () => { if ($('xd-s').value !== 'gdp') { $('xd-s').value = 'gdp'; $('xd-e').disabled = false; } }, true);
+  if (has('xl-play')) $('xl-play').addEventListener('click', () => { if ($('xl-s').value === 'slide') { $('xl-s').value = 'bet'; $('xl-m').max = 30; } }, true);
+  if (has('xs-play')) $('xs-play').addEventListener('click', () => { if (+$('xs-k').max < 4) $('xs-k').max = 4; }, true);
   const PFX = { 'four-series': 'fs', 'ensemble': 'en', 'counterexample': 'ce', 'nonstationary': 'ns', 'white-noise': 'wn', 'random-walk': 'rw',
     'spot-real': 'sr', 'sp500-diff': 'sp', 'wold': 'wd', 'ergodicity': 'eg', 'bartlett': 'bt', 'acf-models': 'am', 'acf-pacf': 'ap',
     'bet-acf': 'ba', 'lb-size': 'ls', 'lb-stats': 'lq', 'gdp-transform': 'gt', 'boxcox': 'bc', 'overdiff': 'od', 'textbook': 'tb' };
-  if (T.predict && predict) Object.entries(T.predict).forEach(([b, sp]) => { if (has(b)) predict(b, Object.assign({ player: players[PFX[b] + '-play'], veil: { out: true } }, sp)); });
+  if (T.predict && predict) Object.entries(T.predict).forEach(([b, sp]) => { if (has(b)) { predict(b, Object.assign({ player: players[PFX[b] + '-play'], veil: { out: true } }, sp)); veilTables(b, PFX[b]); } });
   if (T.ticket && exitTicket) exitTicket(T.ticket);
   ALL.forEach(f => f());
+  live.forEach(b => b[2]());
   let w = window.innerWidth, tm = null;
-  window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); } }, 250); });
+  window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); live.forEach(b => b[2]()); } }, 250); });
 }
-window.CH1 = { chi2sf, chi2ppf, lbq, garch1, ar1, guerrero, boxcox, ceOdd, btSim, R, RET, LQ, days };
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+window.CH1 = { chi2sf, chi2ppf, lbq, lbPath, garch1, ar1, guerrero, guerreroP, boxcox, ceOdd, btSim, R, RET, LQ, S10, XC, days, ALL, XB };
+if (!window.CH1_NO_INIT) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init(); }
 })();
