@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 2 · ARMA Models</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch2.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch2_data.js?v=20261101a", "ch2_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch2.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Time Series Analysis</h1><p>Chapter 2 · ARMA Models</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_02" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch2.html" class="lang-btn active">EN</a><a href="ch2_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step.</p>
+<p class="toc"><a href="#s-ar">Autoregressive models</a> · <a href="#s-ma">Moving-average models</a> · <a href="#s-arma">ARMA(p,q) models</a> · <a href="#s-est">Estimation</a> · <a href="#s-sel">Model selection and diagnostics</a> · <a href="#s-fc">Forecasting with ARMA models</a> · <a href="#s-gdp">Case study: Romanian GDP growth</a> · <a href="#s-real">More real series</a></p>
+<h2 class="sec" id="s-ar">Autoregressive models</h2>
+<section class="blk" id="ar1">
+  <h3>AR(1) for three values of φ</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=12" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ar1_en.jpg" alt="Slide 11: AR(1) for three values of φ" loading="lazy"></a>
+      <figcaption>Slide 11</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="a1-p1">φ, left panel: <b id="a1-p1-v"></b></label><input type="range" id="a1-p1" min="-0.99" max="0.99" step="0.01" value="0.9"></div><div class="ctl"><label for="a1-p2">φ, middle panel: <b id="a1-p2-v"></b></label><input type="range" id="a1-p2" min="-0.99" max="0.99" step="0.01" value="0.3"></div><div class="ctl"><label for="a1-p3">φ, right panel: <b id="a1-p3-v"></b></label><input type="range" id="a1-p3" min="-0.99" max="0.99" step="0.01" value="-0.7"></div><button class="btn play" id="a1-play" type="button"></button></div><div class="charts "><div class="chart" id="a1-chart"></div></div><ul class="out" id="a1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With the same 200 shocks, the ▶ button raises φ in the left panel from 0 to 0.99. What happens to ρ̂(1) and to the sample variance?</div>
+  <details><summary>Answer</summary><p>Both rise: ρ̂(1) goes from 0.10 to 0.95, and the sample variance from 1.04 to 14.5. The theoretical variance, 1/(1 − φ²), rises faster: 5.26 at φ = 0.9 and 50.3 at φ = 0.99. At φ = 0.9 the sample gives 4.98, below the theoretical value: a short path of a persistent process does not cover all its variation. With φ = −0.7 the sign of the autocorrelations alternates: ρ̂(1) = −0.58, ρ̂(2) = 0.34.</p></details>
+</section>
+<section class="blk" id="ar2">
+  <h3>Three AR(2) processes and the sunspots</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=16" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ar2_en.jpg" alt="Slide 15: Three AR(2) processes and the sunspots" loading="lazy"></a>
+      <figcaption>Slide 15</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="a2-m">Example</label><select id="a2-m"><option value="A">A: φ = (0.5, 0.3)</option><option value="B" selected>B: φ = (1.0, −0.6)</option><option value="C">C: φ = (0.6, 0.5)</option><option value="Sunspots">Sunspots: Yule's AR(2)</option></select></div><div class="ctl"><label for="a2-f1">φ₁: <b id="a2-f1-v"></b></label><input type="range" id="a2-f1" min="-2" max="2" step="0.001" value="1.0"></div><div class="ctl"><label for="a2-f2">φ₂: <b id="a2-f2-v"></b></label><input type="range" id="a2-f2" min="-1.1" max="1.1" step="0.001" value="-0.6"></div><button class="btn play" id="a2-play" type="button"></button></div><div class="charts "><div class="chart" id="a2-chart"></div></div><ul class="out" id="a2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> In example C, φ₁ = 0.6 and φ₂ = 0.5 are both below 1. Is the process stationary?</div>
+  <details><summary>Answer</summary><p>No. φ₁ + φ₂ = 1.1 > 1, so the point lies outside the triangle. The roots of 1 − 0.6z − 0.5z² are −2.14 and 0.936; the second lies inside the unit circle (its inverse root has modulus 1.068). Stationarity is read from the roots, not from the coefficients one at a time. B has complex roots, 0.833 ± 0.986i, with modulus 1.291: its ACF is a wave with a period of 7.2 lags, damped by 0.775 per lag.</p></details>
+</section><h2 class="sec" id="s-ma">Moving-average models</h2>
+<section class="blk" id="ma1">
+  <h3>MA(1): θ = 0.8 and θ = -0.8</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=21" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ma1_en.jpg" alt="Slide 20: MA(1): θ = 0.8 and θ = -0.8" loading="lazy"></a>
+      <figcaption>Slide 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="m1-th">θ (top row; bottom row: −θ): <b id="m1-th-v"></b></label><input type="range" id="m1-th" min="-2" max="2" step="0.05" value="0.8"></div><button class="btn play" id="m1-play" type="button"></button></div><div class="charts "><div class="chart" id="m1-chart"></div></div><ul class="out" id="m1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises θ from 0 to 2. Can an MA(1) have ρ(1) above 0.5?</div>
+  <details><summary>Answer</summary><p>No. ρ(1) = θ/(1 + θ²) reaches its maximum of 0.5 at θ = 1 and then falls: at θ = 2 it is 0.4, the same as at θ = 0.5. At θ = ±0.8 the theoretical values are ±0.488, and the sample values, with T = 300, are 0.56 and −0.51. The ACF has a single non-zero value, while the PACF decays: φ̂₂₂ = −0.23 for θ = 0.8.</p></details>
+</section>
+<section class="blk" id="ma1-rho">
+  <h3>The largest autocorrelation of an MA(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=23" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ma1_rho_en.jpg" alt="Slide 22: The largest autocorrelation of an MA(1)" loading="lazy"></a>
+      <figcaption>Slide 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mr-th">θ: <b id="mr-th-v"></b></label><input type="range" id="mr-th" min="-4" max="4" step="0.05" value="0.5"></div><button class="btn play" id="mr-play" type="button"></button></div><div class="charts "><div class="chart" id="mr-chart"></div></div><ul class="out" id="mr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Which other value of θ gives the same ρ(1) = 0.4 as θ = 0.5, and which one do we keep?</div>
+  <details><summary>Answer</summary><p>θ = 2 = 1/0.5. The two models have the same ACF (with σ² multiplied by θ²), so the data cannot tell them apart: an identification problem. The invertibility convention, |θ| < 1, keeps θ = 0.5.</p></details>
+</section><h2 class="sec" id="s-arma">ARMA(p,q) models</h2>
+<section class="blk" id="psi">
+  <h3>Impulse responses of four models</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=30" target="_blank" rel="noopener"><img src="slides/tsa_ch2_psi_en.jpg" alt="Slide 29: Impulse responses of four models" loading="lazy"></a>
+      <figcaption>Slide 29</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ps-m">Model to change</label><select id="ps-m"><option value="AR(1)">AR(1)</option><option value="AR(2)">AR(2)</option><option value="MA(2)">MA(2)</option><option value="ARMA(1,1)" selected>ARMA(1,1)</option></select></div><div class="ctl"><label for="ps-a">φ₁: <b id="ps-a-v"></b></label><input type="range" id="ps-a" min="-2" max="2" step="0.05" value="0.7"></div><div class="ctl"><label for="ps-b">φ₂: <b id="ps-b-v"></b></label><input type="range" id="ps-b" min="-1" max="1" step="0.05" value="0"></div><div class="ctl"><label for="ps-c">θ₁: <b id="ps-c-v"></b></label><input type="range" id="ps-c" min="-2" max="2" step="0.05" value="0.4"></div><div class="ctl"><label for="ps-d">θ₂: <b id="ps-d-v"></b></label><input type="range" id="ps-d" min="-2" max="2" step="0.05" value="0"></div><button class="btn play" id="ps-play" type="button"></button></div><div class="charts "><div class="chart" id="ps-chart"></div></div><ul class="out" id="ps-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> In the ARMA(1,1) with φ = 0.7 and θ = 0.4, why is the first impulse response, ψ₁ = 1.10, above 1?</div>
+  <details><summary>Answer</summary><p>ψ₁ = φ + θ = 0.7 + 0.4 = 1.1: yesterday’s shock enters once through the MA term and once through the AR part. From j = 2 on, ψⱼ = φψⱼ₋₁: 0.77, 0.54, 0.38. The sum Σψⱼ² = 3.37 is the variance of the process in units of σ². For the MA(2) the response is exactly zero after two periods, and for the AR(2) with complex roots it changes sign: ψ₃ = −0.20, ψ₄ = −0.44.</p></details>
+</section>
+<section class="blk" id="patterns">
+  <h3>Theoretical and sample ACF and PACF</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=35" target="_blank" rel="noopener"><img src="slides/tsa_ch2_patterns_en.jpg" alt="Slide 34: Theoretical and sample ACF and PACF" loading="lazy"></a>
+      <figcaption>Slide 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pt-T">Sample length T: <b id="pt-T-v"></b></label><input type="range" id="pt-T" min="50" max="500" step="10" value="500"></div><button class="btn play" id="pt-play" type="button"></button><button class="btn" id="pt-new" type="button">New path</button></div><div class="charts "><div class="chart" id="pt-chart"></div></div><ul class="out" id="pt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises T from 50 to 500. What happens to the ±1.96/√T band and to the sample values?</div>
+  <details><summary>Answer</summary><p>The band narrows from ±0.28 to ±0.09, and the sample values move towards the theoretical ones. At T = 500, for the AR(2), φ̂₂₂ = −0.56 against φ₂₂ = −0.60; for the MA(2), ρ̂(1) = 0.51 and ρ̂(2) = 0.15 against 0.54 and 0.21. With short samples, the correlograms of different models can be confused.</p></details>
+</section><h2 class="sec" id="s-est">Estimation</h2>
+<section class="blk" id="estimators">
+  <h3>Sampling distributions of the estimators</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=42" target="_blank" rel="noopener"><img src="slides/tsa_ch2_estimators_en.jpg" alt="Slide 41: Sampling distributions of the estimators" loading="lazy"></a>
+      <figcaption>Slide 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="es-phi">True φ (AR(1)): <b id="es-phi-v"></b></label><input type="range" id="es-phi" min="0" max="0.98" step="0.02" value="0.9"></div><div class="ctl"><label for="es-th">True θ (MA(1)): <b id="es-th-v"></b></label><input type="range" id="es-th" min="-0.9" max="0.9" step="0.1" value="0.5"></div><div class="ctl"><label for="es-T">Sample length T</label><select id="es-T"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="400">400</option></select></div><button class="btn play" id="es-play" type="button"></button></div><div class="charts "><div class="chart" id="es-chart"></div></div><ul class="out" id="es-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With φ = 0.9 and T = 100, are the estimators of the AR(1) coefficient unbiased?</div>
+  <details><summary>Answer</summary><p>No. The means of the 400 estimates are 0.853 (Yule–Walker), 0.864 (conditional least squares) and 0.866 (MLE), all below 0.9; the approximation −(1 + 3φ)/T gives −0.037. The standard deviations, 0.054–0.056, exceed the asymptotic value 0.044. In the browser simulation with T = 400, the means rise to 0.889–0.891. For the MA(1) with θ = 0.5, the means are 0.504 and 0.506.</p></details>
+</section><h2 class="sec" id="s-sel">Model selection and diagnostics</h2>
+<section class="blk" id="ic">
+  <h3>How often AIC and BIC find the true order</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=47" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ic_en.jpg" alt="Slide 46: How often AIC and BIC find the true order" loading="lazy"></a>
+      <figcaption>Slide 46</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ic-f2">True φ₂ (φ₁ = 0.5): <b id="ic-f2-v"></b></label><input type="range" id="ic-f2" min="0.05" max="0.45" step="0.05" value="0.25"></div><div class="ctl"><label for="ic-T">T in the left panel</label><select id="ic-T"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="400">400</option></select></div><button class="btn play" id="ic-play" type="button"></button></div><div class="charts "><div class="chart" id="ic-chart"></div></div><ul class="out" id="ic-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With T = 1000, which criterion finds the true order p = 2 more often?</div>
+  <details><summary>Answer</summary><p>BIC, in 98.6% of the samples, against 74.4% for AIC, which picks an order that is too large in 25.6% of the cases. With T = 100 the ranking reverses: AIC 54.4%, BIC 47.4%, and BIC picks a model that is too small in 50.4% of the cases, because φ₂ = 0.25 is hard to detect in 100 observations.</p></details>
+</section>
+<section class="blk" id="lb-df">
+  <h3>Why m - p - q degrees of freedom</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=50" target="_blank" rel="noopener"><img src="slides/tsa_ch2_lb_df_en.jpg" alt="Slide 49: Why m - p - q degrees of freedom" loading="lazy"></a>
+      <figcaption>Slide 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lb-m">Number of lags m: <b id="lb-m-v"></b></label><input type="range" id="lb-m" min="3" max="20" step="1" value="10"></div><div class="ctl"><label for="lb-a">Significance level</label><select id="lb-a"><option value="0.01">1%</option><option value="0.05" selected>5%</option><option value="0.1">10%</option></select></div><button class="btn play" id="lb-play" type="button"></button></div><div class="charts "><div class="chart" id="lb-chart"></div></div><ul class="out" id="lb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The residuals of the true ARMA(1,1) are tested with Ljung–Box, m = 10, at 5%. How often does the test reject with 10 degrees of freedom?</div>
+  <details><summary>Answer</summary><p>In 1.4% of the samples, not in 5%: the estimated residuals are less correlated than true white noise at the first lags. With m − p − q = 8 degrees of freedom the rate is 3.4%; for the AR(1), 3.2% with 10 and 4.8% with 9. At m = 3 the gap widens: for the ARMA(1,1), 0.2% with 3 degrees of freedom and 4.8% with 1.</p></details>
+</section><h2 class="sec" id="s-fc">Forecasting with ARMA models</h2>
+<section class="blk" id="forecast-mean">
+  <h3>Mean reversion in forecasts</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=56" target="_blank" rel="noopener"><img src="slides/tsa_ch2_forecast_theory_en.jpg" alt="Slide 55: Mean reversion in forecasts" loading="lazy"></a>
+      <figcaption>Slide 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fc-x">Last value X<sub>T</sub>: <b id="fc-x-v"></b></label><input type="range" id="fc-x" min="-4" max="4" step="0.5" value="3"></div><div class="ctl"><label for="fc-p1">φ, left panel: <b id="fc-p1-v"></b></label><input type="range" id="fc-p1" min="-0.95" max="0.99" step="0.01" value="0.9"></div><div class="ctl"><label for="fc-p2">φ, middle panel: <b id="fc-p2-v"></b></label><input type="range" id="fc-p2" min="-0.95" max="0.99" step="0.01" value="0.5"></div><div class="ctl"><label for="fc-th">θ, right panel: <b id="fc-th-v"></b></label><input type="range" id="fc-th" min="-0.95" max="0.95" step="0.05" value="0.6"></div><button class="btn play" id="fc-play" type="button"></button></div><div class="charts "><div class="chart" id="fc-chart"></div></div><ul class="out" id="fc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Starting from X<sub>T</sub> = 3, what is the forecast 5 periods ahead for the AR(1) with φ = 0.9 and with φ = 0.5?</div>
+  <details><summary>Answer</summary><p>1.77 for φ = 0.9 (standard error 1.85) and 0.094 for φ = 0.5, practically the mean. The interval approaches the unconditional band μ ± 1.96σ<sub>X</sub>, with σ<sub>X</sub> = 2.29 for φ = 0.9 and 1.15 for φ = 0.5. For the MA(1) only the first step is informative, θε<sub>T</sub> = 1.2; from h = 2 on, the forecast is the mean and the interval has its long-run width.</p></details>
+</section><h2 class="sec" id="s-gdp">Case study: Romanian GDP growth</h2>
+<section class="blk" id="gdp-ident">
+  <h3>Step 1: identification</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch2_gdp_ident_en.jpg" alt="Slide 61: Step 1: identification" loading="lazy"></a>
+      <figcaption>Slide 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gi-end">Sample ends in: <b id="gi-end-v"></b></label><input type="range" id="gi-end" min="39" max="105" step="1" value="105"></div><button class="btn play" id="gi-play" type="button"></button></div><div class="charts "><div class="chart" id="gi-chart"></div></div><ul class="out" id="gi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ACF of annual GDP growth cuts off after lag 3. Does the pattern remain if the sample stops in 2019Q4, before the pandemic?</div>
+  <details><summary>Answer</summary><p>Yes. With 80 quarters, the first autocorrelations are 0.62, 0.45 and 0.24, then 0.04 at lag 4, inside the ±0.22 band. On the full sample of 106 quarters: 0.62, 0.40, 0.21 and −0.01. The pattern comes from the construction of the series: the annual rate is the sum of four quarterly rates, and consecutive annual rates share three quarters. Ljung–Box Q*(8) = 64.9 on the full sample.</p></details>
+</section>
+<section class="blk" id="gdp-diag">
+  <h3>Step 3: diagnostics of the MA(3)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=66" target="_blank" rel="noopener"><img src="slides/tsa_ch2_gdp_diag_en.jpg" alt="Slide 65: Step 3: diagnostics of the MA(3)" loading="lazy"></a>
+      <figcaption>Slide 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gd-mod">Model</label><select id="gd-mod"><option value="00">ARMA(0,0)</option><option value="01">ARMA(0,1)</option><option value="02">ARMA(0,2)</option><option value="03" selected>ARMA(0,3) · BIC</option><option value="10">ARMA(1,0)</option><option value="11">ARMA(1,1)</option><option value="12">ARMA(1,2)</option><option value="13">ARMA(1,3) · AIC</option><option value="20">ARMA(2,0)</option><option value="21">ARMA(2,1)</option><option value="22">ARMA(2,2)</option><option value="23">ARMA(2,3)</option><option value="30">ARMA(3,0)</option><option value="31">ARMA(3,1)</option><option value="32">ARMA(3,2)</option><option value="33">ARMA(3,3)</option></select></div><div class="ctl"><label for="gd-df">Degrees of freedom of the Ljung–Box test</label><select id="gd-df"><option value="right" selected>m − p − q</option><option value="wrong">m</option></select></div><button class="btn play" id="gd-play" type="button"></button></div><div class="charts "><div class="chart" id="gd-chart"></div></div><ul class="out" id="gd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For the MA(3), the Ljung–Box test with m = 8 gives p = 0.375 with 5 degrees of freedom. Which p-value would it give with 8 degrees of freedom?</div>
+  <details><summary>Answer</summary><p>0.720, a conclusion that is too reassuring: the degrees of freedom must be reduced by the number of estimated ARMA parameters. The residuals are not Normal: Jarque–Bera 39.0, p < 0.001, skewness −0.75, kurtosis 5.61; the largest residual, −11.4 in 2020Q2, is −3.89 standard deviations. The AR(1) leaves correlation in the residuals: Q*(8) = 16.2 with 7 degrees of freedom, p = 0.023.</p></details>
+</section>
+<section class="blk" id="gdp-forecast">
+  <h3>Step 4: forecasts</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=68" target="_blank" rel="noopener"><img src="slides/tsa_ch2_gdp_forecast_en.jpg" alt="Slide 67: Step 4: forecasts" loading="lazy"></a>
+      <figcaption>Slide 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gf-o">Forecast origin: <b id="gf-o-v"></b></label><input type="range" id="gf-o" min="0" max="48" step="1" value="48"></div><div class="ctl"><label for="gf-lv">Interval level</label><select id="gf-lv"><option value="0.8">80%</option><option value="0.9">90%</option><option value="0.95" selected>95%</option><option value="0.99">99%</option></select></div><button class="btn play" id="gf-play" type="button"></button></div><div class="charts "><div class="chart" id="gf-chart"></div></div><ul class="out" id="gf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> From which horizon on is the MA(3) forecast constant?</div>
+  <details><summary>Answer</summary><p>From the fourth quarter: −0.14, 1.81, 2.77, then the mean of 3.17%. After q = 3 steps the model only knows the mean. The AR(1) returns gradually: 2.99% after 8 quarters, with a mean of 3.12%. The 95% intervals are [−6.1, 5.9] for one quarter and [−6.3, 12.7] from four quarters on. With the origin in 2019Q4, both models forecast more than 3.8% for 2020, while the series falls to −9.9% in 2020Q2.</p></details>
+</section><h2 class="sec" id="s-real">More real series</h2>
+<section class="blk" id="inflation">
+  <h3>Romanian inflation: an AR(2) forecast</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch2_inflation_en.jpg" alt="Slide 70: Romanian inflation: an AR(2) forecast" loading="lazy"></a>
+      <figcaption>Slide 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="in-p">AR order p</label><select id="in-p"><option value="1">AR(1)</option><option value="2" selected>AR(2) · BIC</option><option value="3">AR(3)</option><option value="4">AR(4)</option><option value="5">AR(5)</option><option value="6">AR(6)</option></select></div><button class="btn play" id="in-play" type="button"></button></div><div class="charts "><div class="chart" id="in-chart"></div></div><ul class="out" id="in-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Towards which value does the AR(2) forecast return: the BNR target or the estimated mean?</div>
+  <details><summary>Answer</summary><p>Towards the estimated mean, 5.16%, the average of 2005–2026, not towards the 2.5% target: from 6.09% in August 2026 to 5.44% in September and 5.13% in August 2028. φ̂₁ + φ̂₂ = 0.976 and the largest inverse root has modulus 0.963, so the return is slow. The Ljung–Box test on the residuals rejects: Q*(12) = 71.6 with 10 degrees of freedom, p < 0.001.</p></details>
+</section>
+<section class="blk" id="returns">
+  <h3>Daily returns: BET and EUR/RON</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch2_returns_en.jpg" alt="Slide 72: Daily returns: BET and EUR/RON" loading="lazy"></a>
+      <figcaption>Slide 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-y0">From year: <b id="rt-y0-v"></b></label><input type="range" id="rt-y0" min="2000" max="2023" step="1" value="2000"></div><div class="ctl"><label for="rt-y1">To year: <b id="rt-y1-v"></b></label><input type="range" id="rt-y1" min="2003" max="2026" step="1" value="2026"></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For the BET, φ̂ = 0.109 is highly significant. Does the AR(1) explain a large part of the variation of daily returns?</div>
+  <details><summary>Answer</summary><p>No: R² is 1.2% for the BET and 2.9% for EUR/RON. The effect is real statistically but small economically. The squared residuals are strongly autocorrelated (Ljung–Box Q*(10) = 2496 for the BET and 2351 for EUR/RON), and the kurtosis of the residuals is 14.0 and 17.0: the model describes the mean, not the variance.</p></details>
+</section>
+<section class="blk" id="sunspots">
+  <h3>The sunspots: AR(2) and the information criteria</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter2_arma_models.pdf#page=76" target="_blank" rel="noopener"><img src="slides/tsa_ch2_sunspots_en.jpg" alt="Slide 75: The sunspots: AR(2) and the information criteria" loading="lazy"></a>
+      <figcaption>Slide 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ss-p">AR order p</label><select id="ss-p"><option value="1">AR(1)</option><option value="2" selected>AR(2)</option><option value="3">AR(3)</option><option value="4">AR(4)</option><option value="5">AR(5)</option><option value="6">AR(6)</option><option value="7">AR(7)</option><option value="8">AR(8)</option><option value="9">AR(9)</option><option value="10">AR(10)</option></select></div><button class="btn play" id="ss-play" type="button"></button></div><div class="charts "><div class="chart" id="ss-chart"></div></div><ul class="out" id="ss-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> What period of the solar cycle does Yule's AR(2), estimated on 1749–1924, imply?</div>
+  <details><summary>Answer</summary><p>10.6 years. The estimated coefficients, φ̂₁ = 1.336 and φ̂₂ = −0.650, give complex roots; the period is 2π/arccos(φ̂₁/(2√−φ̂₂)) = 10.6, and the modulus of the inverse root is 0.806. On the full sample, the AR(2) explains 83% of the variance one year ahead, and AIC and BIC both pick p = 9 among p ≤ 10.</p></details>
+</section>
+<p class="src foot">Simulations: shocks from the Normal distribution, drawn with the seeds of the chapter code; when the parameters differ from those of the lecture, the simulation is redone in the browser. GDP: Eurostat, chain-linked volumes (2010), not seasonally adjusted, in the version used in the lecture. HICP: Eurostat, up to August 2026. BET: EODHD; EUR/RON: BNR reference rate. Sunspots: the statsmodels data set, 1700–2008.</p>
+</main>
+</body>
+</html>

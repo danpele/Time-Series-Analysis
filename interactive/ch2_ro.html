@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 2 · Modele ARMA</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch2.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch2_data.js?v=20261101a", "ch2_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch2.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Serii de timp</h1><p>Capitolul 2 · Modele ARMA</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_02" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch2.html" class="lang-btn">EN</a><a href="ch2_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură, calculată în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas.</p>
+<p class="toc"><a href="#s-ar">Modele autoregresive</a> · <a href="#s-ma">Modele de medie mobilă</a> · <a href="#s-arma">Modele ARMA(p,q)</a> · <a href="#s-est">Estimarea</a> · <a href="#s-sel">Selecția modelului și diagnosticarea</a> · <a href="#s-fc">Prognoza cu modele ARMA</a> · <a href="#s-gdp">Studiu de caz: creșterea PIB-ului României</a> · <a href="#s-real">Alte serii reale</a></p>
+<h2 class="sec" id="s-ar">Modele autoregresive</h2>
+<section class="blk" id="ar1">
+  <h3>AR(1) pentru trei valori ale lui φ</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=12" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ar1_ro.jpg" alt="Slide-ul 11: AR(1) pentru trei valori ale lui φ" loading="lazy"></a>
+      <figcaption>Slide-ul 11</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="a1-p1">φ, panoul din stînga: <b id="a1-p1-v"></b></label><input type="range" id="a1-p1" min="-0.99" max="0.99" step="0.01" value="0.9"></div><div class="ctl"><label for="a1-p2">φ, panoul din mijloc: <b id="a1-p2-v"></b></label><input type="range" id="a1-p2" min="-0.99" max="0.99" step="0.01" value="0.3"></div><div class="ctl"><label for="a1-p3">φ, panoul din dreapta: <b id="a1-p3-v"></b></label><input type="range" id="a1-p3" min="-0.99" max="0.99" step="0.01" value="-0.7"></div><button class="btn play" id="a1-play" type="button"></button></div><div class="charts "><div class="chart" id="a1-chart"></div></div><ul class="out" id="a1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu aceleași 200 de șocuri, butonul ▶ crește φ din panoul din stînga de la 0 la 0,99. Ce se întîmplă cu ρ̂(1) și cu varianța de selecție?</div>
+  <details><summary>Răspuns</summary><p>Cresc amîndouă: ρ̂(1) urcă de la 0,10 la 0,95, iar varianța de selecție de la 1,04 la 14,5. Varianța teoretică, 1/(1 − φ²), crește mai repede: 5,26 la φ = 0,9 și 50,3 la φ = 0,99. La φ = 0,9, eșantionul dă 4,98, sub valoarea teoretică: o traiectorie scurtă a unui proces persistent nu acoperă toată variația lui. Cu φ = −0,7 semnul autocorelațiilor alternează: ρ̂(1) = −0,58, ρ̂(2) = 0,34.</p></details>
+</section>
+<section class="blk" id="ar2">
+  <h3>Trei procese AR(2) și petele solare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=16" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ar2_ro.jpg" alt="Slide-ul 15: Trei procese AR(2) și petele solare" loading="lazy"></a>
+      <figcaption>Slide-ul 15</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="a2-m">Exemplul</label><select id="a2-m"><option value="A">A: φ = (0,5; 0,3)</option><option value="B" selected>B: φ = (1,0; −0,6)</option><option value="C">C: φ = (0,6; 0,5)</option><option value="Sunspots">Sunspots: AR(2)-ul lui Yule</option></select></div><div class="ctl"><label for="a2-f1">φ₁: <b id="a2-f1-v"></b></label><input type="range" id="a2-f1" min="-2" max="2" step="0.001" value="1.0"></div><div class="ctl"><label for="a2-f2">φ₂: <b id="a2-f2-v"></b></label><input type="range" id="a2-f2" min="-1.1" max="1.1" step="0.001" value="-0.6"></div><button class="btn play" id="a2-play" type="button"></button></div><div class="charts "><div class="chart" id="a2-chart"></div></div><ul class="out" id="a2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În exemplul C, φ₁ = 0,6 și φ₂ = 0,5 sînt amîndoi sub 1. Este procesul staționar?</div>
+  <details><summary>Răspuns</summary><p>Nu. φ₁ + φ₂ = 1,1 > 1, deci punctul este în afara triunghiului. Rădăcinile polinomului 1 − 0,6z − 0,5z² sînt −2,14 și 0,936; a doua este în interiorul cercului unitate (rădăcina inversă are modulul 1,068). Staționaritatea se citește din rădăcini, nu din coeficienți luați separat. B are rădăcini complexe, 0,833 ± 0,986i, cu modulul 1,291: ACF este o undă cu perioada 7,2 laguri, amortizată cu 0,775 pe lag.</p></details>
+</section><h2 class="sec" id="s-ma">Modele de medie mobilă</h2>
+<section class="blk" id="ma1">
+  <h3>MA(1): θ = 0,8 și θ = -0,8</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=21" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ma1_ro.jpg" alt="Slide-ul 20: MA(1): θ = 0,8 și θ = -0,8" loading="lazy"></a>
+      <figcaption>Slide-ul 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="m1-th">θ (rîndul de sus; jos: −θ): <b id="m1-th-v"></b></label><input type="range" id="m1-th" min="-2" max="2" step="0.05" value="0.8"></div><button class="btn play" id="m1-play" type="button"></button></div><div class="charts "><div class="chart" id="m1-chart"></div></div><ul class="out" id="m1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește θ de la 0 la 2. Poate un MA(1) să aibă ρ(1) mai mare decît 0,5?</div>
+  <details><summary>Răspuns</summary><p>Nu. ρ(1) = θ/(1 + θ²) are maximul 0,5 la θ = 1 și scade apoi: la θ = 2 este 0,4, la fel ca la θ = 0,5. La θ = ±0,8, valorile teoretice sînt ±0,488, iar cele de selecție, cu T = 300, sînt 0,56 și −0,51. ACF are o singură valoare nenulă, iar PACF descrește: φ̂₂₂ = −0,23 pentru θ = 0,8.</p></details>
+</section>
+<section class="blk" id="ma1-rho">
+  <h3>Cea mai mare autocorelație a unui MA(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=23" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ma1_rho_ro.jpg" alt="Slide-ul 22: Cea mai mare autocorelație a unui MA(1)" loading="lazy"></a>
+      <figcaption>Slide-ul 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mr-th">θ: <b id="mr-th-v"></b></label><input type="range" id="mr-th" min="-4" max="4" step="0.05" value="0.5"></div><button class="btn play" id="mr-play" type="button"></button></div><div class="charts "><div class="chart" id="mr-chart"></div></div><ul class="out" id="mr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ce altă valoare a lui θ dă același ρ(1) = 0,4 ca θ = 0,5 și pe care o păstrăm?</div>
+  <details><summary>Răspuns</summary><p>θ = 2 = 1/0,5. Cele două modele au aceeași ACF (cu σ² înmulțit cu θ²), deci datele nu le pot deosebi: o problemă de identificare. Convenția de invertibilitate, |θ| < 1, păstrează θ = 0,5.</p></details>
+</section><h2 class="sec" id="s-arma">Modele ARMA(p,q)</h2>
+<section class="blk" id="psi">
+  <h3>Răspunsurile la impuls ale a patru modele</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=30" target="_blank" rel="noopener"><img src="slides/tsa_ch2_psi_ro.jpg" alt="Slide-ul 29: Răspunsurile la impuls ale a patru modele" loading="lazy"></a>
+      <figcaption>Slide-ul 29</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ps-m">Modelul modificat</label><select id="ps-m"><option value="AR(1)">AR(1)</option><option value="AR(2)">AR(2)</option><option value="MA(2)">MA(2)</option><option value="ARMA(1,1)" selected>ARMA(1,1)</option></select></div><div class="ctl"><label for="ps-a">φ₁: <b id="ps-a-v"></b></label><input type="range" id="ps-a" min="-2" max="2" step="0.05" value="0.7"></div><div class="ctl"><label for="ps-b">φ₂: <b id="ps-b-v"></b></label><input type="range" id="ps-b" min="-1" max="1" step="0.05" value="0"></div><div class="ctl"><label for="ps-c">θ₁: <b id="ps-c-v"></b></label><input type="range" id="ps-c" min="-2" max="2" step="0.05" value="0.4"></div><div class="ctl"><label for="ps-d">θ₂: <b id="ps-d-v"></b></label><input type="range" id="ps-d" min="-2" max="2" step="0.05" value="0"></div><button class="btn play" id="ps-play" type="button"></button></div><div class="charts "><div class="chart" id="ps-chart"></div></div><ul class="out" id="ps-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În ARMA(1,1) cu φ = 0,7 și θ = 0,4, de ce este primul răspuns la impuls, ψ₁ = 1,10, mai mare decît 1?</div>
+  <details><summary>Răspuns</summary><p>ψ₁ = φ + θ = 0,7 + 0,4 = 1,1: șocul de ieri intră o dată prin termenul MA și o dată prin partea AR. De la j = 2, ψⱼ = φψⱼ₋₁: 0,77; 0,54; 0,38. Suma Σψⱼ² = 3,37 este varianța procesului în unități σ². La MA(2) răspunsul este exact zero după două perioade, iar la AR(2) cu rădăcini complexe își schimbă semnul: ψ₃ = −0,20, ψ₄ = −0,44.</p></details>
+</section>
+<section class="blk" id="patterns">
+  <h3>ACF și PACF teoretice și de selecție</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=35" target="_blank" rel="noopener"><img src="slides/tsa_ch2_patterns_ro.jpg" alt="Slide-ul 34: ACF și PACF teoretice și de selecție" loading="lazy"></a>
+      <figcaption>Slide-ul 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pt-T">Lungimea eșantionului T: <b id="pt-T-v"></b></label><input type="range" id="pt-T" min="50" max="500" step="10" value="500"></div><button class="btn play" id="pt-play" type="button"></button><button class="btn" id="pt-new" type="button">Altă traiectorie</button></div><div class="charts "><div class="chart" id="pt-chart"></div></div><ul class="out" id="pt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește T de la 50 la 500. Ce se întîmplă cu banda ±1,96/√T și cu valorile de selecție?</div>
+  <details><summary>Răspuns</summary><p>Banda se îngustează de la ±0,28 la ±0,09, iar valorile de selecție se apropie de cele teoretice. La T = 500, pentru AR(2), φ̂₂₂ = −0,56 față de φ₂₂ = −0,60; pentru MA(2), ρ̂(1) = 0,51 și ρ̂(2) = 0,15 față de 0,54 și 0,21. Cu eșantioane scurte, corelogramele unor modele diferite se pot confunda.</p></details>
+</section><h2 class="sec" id="s-est">Estimarea</h2>
+<section class="blk" id="estimators">
+  <h3>Distribuțiile de selecție ale estimatorilor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=42" target="_blank" rel="noopener"><img src="slides/tsa_ch2_estimators_ro.jpg" alt="Slide-ul 41: Distribuțiile de selecție ale estimatorilor" loading="lazy"></a>
+      <figcaption>Slide-ul 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="es-phi">φ adevărat (AR(1)): <b id="es-phi-v"></b></label><input type="range" id="es-phi" min="0" max="0.98" step="0.02" value="0.9"></div><div class="ctl"><label for="es-th">θ adevărat (MA(1)): <b id="es-th-v"></b></label><input type="range" id="es-th" min="-0.9" max="0.9" step="0.1" value="0.5"></div><div class="ctl"><label for="es-T">Lungimea eșantionului T</label><select id="es-T"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="400">400</option></select></div><button class="btn play" id="es-play" type="button"></button></div><div class="charts "><div class="chart" id="es-chart"></div></div><ul class="out" id="es-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu φ = 0,9 și T = 100, sînt estimatorii coeficientului AR(1) nedeplasați?</div>
+  <details><summary>Răspuns</summary><p>Nu. Mediile celor 400 de estimări sînt 0,853 (Yule–Walker), 0,864 (cele mai mici pătrate condiționate) și 0,866 (MLE), toate sub 0,9; aproximarea −(1 + 3φ)/T dă −0,037. Abaterile standard, 0,054–0,056, depășesc valoarea asimptotică 0,044. În simularea din browser cu T = 400, mediile urcă la 0,889–0,891. Pentru MA(1) cu θ = 0,5, mediile sînt 0,504 și 0,506.</p></details>
+</section><h2 class="sec" id="s-sel">Selecția modelului și diagnosticarea</h2>
+<section class="blk" id="ic">
+  <h3>Cît de des găsesc AIC și BIC ordinul adevărat</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=47" target="_blank" rel="noopener"><img src="slides/tsa_ch2_ic_ro.jpg" alt="Slide-ul 46: Cît de des găsesc AIC și BIC ordinul adevărat" loading="lazy"></a>
+      <figcaption>Slide-ul 46</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ic-f2">φ₂ adevărat (φ₁ = 0,5): <b id="ic-f2-v"></b></label><input type="range" id="ic-f2" min="0.05" max="0.45" step="0.05" value="0.25"></div><div class="ctl"><label for="ic-T">T în panoul din stînga</label><select id="ic-T"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="400">400</option></select></div><button class="btn play" id="ic-play" type="button"></button></div><div class="charts "><div class="chart" id="ic-chart"></div></div><ul class="out" id="ic-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu T = 1000, care criteriu găsește mai des ordinul adevărat p = 2?</div>
+  <details><summary>Răspuns</summary><p>BIC, în 98,6% dintre eșantioane, față de 74,4% pentru AIC, care alege un ordin prea mare în 25,6% din cazuri. Cu T = 100 ordinea se inversează: AIC 54,4%, BIC 47,4%, iar BIC alege un model prea mic în 50,4% din cazuri, pentru că φ₂ = 0,25 este greu de detectat în 100 de observații.</p></details>
+</section>
+<section class="blk" id="lb-df">
+  <h3>Justificarea celor m - p - q grade de libertate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=50" target="_blank" rel="noopener"><img src="slides/tsa_ch2_lb_df_ro.jpg" alt="Slide-ul 49: Justificarea celor m - p - q grade de libertate" loading="lazy"></a>
+      <figcaption>Slide-ul 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lb-m">Numărul de laguri m: <b id="lb-m-v"></b></label><input type="range" id="lb-m" min="3" max="20" step="1" value="10"></div><div class="ctl"><label for="lb-a">Nivelul de semnificație</label><select id="lb-a"><option value="0.01">1%</option><option value="0.05" selected>5%</option><option value="0.1">10%</option></select></div><button class="btn play" id="lb-play" type="button"></button></div><div class="charts "><div class="chart" id="lb-chart"></div></div><ul class="out" id="lb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Reziduurile modelului adevărat ARMA(1,1) sînt testate cu Ljung–Box, m = 10, la 5%. Cît de des respinge testul cu 10 grade de libertate?</div>
+  <details><summary>Răspuns</summary><p>În 1,4% dintre eșantioane, nu în 5%: reziduurile estimate sînt mai puțin corelate decît un zgomot alb adevărat la primele laguri. Cu m − p − q = 8 grade de libertate, rata este 3,4%; pentru AR(1), 3,2% cu 10 și 4,8% cu 9. La m = 3 diferența crește: pentru ARMA(1,1), 0,2% cu 3 grade de libertate și 4,8% cu 1.</p></details>
+</section><h2 class="sec" id="s-fc">Prognoza cu modele ARMA</h2>
+<section class="blk" id="forecast-mean">
+  <h3>Revenirea la medie în prognoze</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=56" target="_blank" rel="noopener"><img src="slides/tsa_ch2_forecast_theory_ro.jpg" alt="Slide-ul 55: Revenirea la medie în prognoze" loading="lazy"></a>
+      <figcaption>Slide-ul 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fc-x">Ultima valoare X<sub>T</sub>: <b id="fc-x-v"></b></label><input type="range" id="fc-x" min="-4" max="4" step="0.5" value="3"></div><div class="ctl"><label for="fc-p1">φ, panoul din stînga: <b id="fc-p1-v"></b></label><input type="range" id="fc-p1" min="-0.95" max="0.99" step="0.01" value="0.9"></div><div class="ctl"><label for="fc-p2">φ, panoul din mijloc: <b id="fc-p2-v"></b></label><input type="range" id="fc-p2" min="-0.95" max="0.99" step="0.01" value="0.5"></div><div class="ctl"><label for="fc-th">θ, panoul din dreapta: <b id="fc-th-v"></b></label><input type="range" id="fc-th" min="-0.95" max="0.95" step="0.05" value="0.6"></div><button class="btn play" id="fc-play" type="button"></button></div><div class="charts "><div class="chart" id="fc-chart"></div></div><ul class="out" id="fc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pornind din X<sub>T</sub> = 3, ce valoare are prognoza după 5 perioade pentru AR(1) cu φ = 0,9 și pentru φ = 0,5?</div>
+  <details><summary>Răspuns</summary><p>1,77 pentru φ = 0,9 (eroarea standard 1,85) și 0,094 pentru φ = 0,5, practic media. Intervalul tinde spre banda necondiționată μ ± 1,96σ<sub>X</sub>, cu σ<sub>X</sub> = 2,29 pentru φ = 0,9 și 1,15 pentru φ = 0,5. La MA(1), numai primul pas este informativ, θε<sub>T</sub> = 1,2; de la h = 2 prognoza este media și intervalul are lățimea de lungă durată.</p></details>
+</section><h2 class="sec" id="s-gdp">Studiu de caz: creșterea PIB-ului României</h2>
+<section class="blk" id="gdp-ident">
+  <h3>Pasul 1: identificarea</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch2_gdp_ident_ro.jpg" alt="Slide-ul 61: Pasul 1: identificarea" loading="lazy"></a>
+      <figcaption>Slide-ul 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gi-end">Eșantionul se termină în: <b id="gi-end-v"></b></label><input type="range" id="gi-end" min="39" max="105" step="1" value="105"></div><button class="btn play" id="gi-play" type="button"></button></div><div class="charts "><div class="chart" id="gi-chart"></div></div><ul class="out" id="gi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ACF a creșterii anuale a PIB se anulează după lagul 3. Rămîne tiparul dacă eșantionul se oprește în T4 2019, înainte de pandemie?</div>
+  <details><summary>Răspuns</summary><p>Da. Cu 80 de trimestre, primele autocorelații sînt 0,62; 0,45; 0,24, apoi 0,04 la lagul 4, sub banda de ±0,22. Pe tot eșantionul, cu 106 trimestre: 0,62; 0,40; 0,21 și −0,01. Tiparul vine din construcția seriei: rata anuală este suma a patru rate trimestriale, iar ratele consecutive au trei trimestre comune. Ljung–Box Q*(8) = 64,9 pe tot eșantionul.</p></details>
+</section>
+<section class="blk" id="gdp-diag">
+  <h3>Pasul 3: diagnosticarea modelului MA(3)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=66" target="_blank" rel="noopener"><img src="slides/tsa_ch2_gdp_diag_ro.jpg" alt="Slide-ul 65: Pasul 3: diagnosticarea modelului MA(3)" loading="lazy"></a>
+      <figcaption>Slide-ul 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gd-mod">Modelul</label><select id="gd-mod"><option value="00">ARMA(0,0)</option><option value="01">ARMA(0,1)</option><option value="02">ARMA(0,2)</option><option value="03" selected>ARMA(0,3) · BIC</option><option value="10">ARMA(1,0)</option><option value="11">ARMA(1,1)</option><option value="12">ARMA(1,2)</option><option value="13">ARMA(1,3) · AIC</option><option value="20">ARMA(2,0)</option><option value="21">ARMA(2,1)</option><option value="22">ARMA(2,2)</option><option value="23">ARMA(2,3)</option><option value="30">ARMA(3,0)</option><option value="31">ARMA(3,1)</option><option value="32">ARMA(3,2)</option><option value="33">ARMA(3,3)</option></select></div><div class="ctl"><label for="gd-df">Gradele de libertate ale testului Ljung–Box</label><select id="gd-df"><option value="right" selected>m − p − q</option><option value="wrong">m</option></select></div><button class="btn play" id="gd-play" type="button"></button></div><div class="charts "><div class="chart" id="gd-chart"></div></div><ul class="out" id="gd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru MA(3), testul Ljung–Box cu m = 8 dă p = 0,375 cu 5 grade de libertate. Ce p-value ar da cu 8 grade de libertate?</div>
+  <details><summary>Răspuns</summary><p>0,720, o concluzie prea liniștitoare: gradele de libertate trebuie reduse cu numărul parametrilor ARMA estimați. Reziduurile nu sînt Normale: Jarque–Bera 39,0, p < 0,001, asimetria −0,75, kurtosis-ul 5,61; cel mai mare reziduu, −11,4 în T2 2020, are −3,89 abateri standard. AR(1) lasă corelație în reziduuri: Q*(8) = 16,2 cu 7 grade de libertate, p = 0,023.</p></details>
+</section>
+<section class="blk" id="gdp-forecast">
+  <h3>Pasul 4: prognozele</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=68" target="_blank" rel="noopener"><img src="slides/tsa_ch2_gdp_forecast_ro.jpg" alt="Slide-ul 67: Pasul 4: prognozele" loading="lazy"></a>
+      <figcaption>Slide-ul 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gf-o">Originea prognozei: <b id="gf-o-v"></b></label><input type="range" id="gf-o" min="0" max="48" step="1" value="48"></div><div class="ctl"><label for="gf-lv">Nivelul intervalului</label><select id="gf-lv"><option value="0.8">80%</option><option value="0.9">90%</option><option value="0.95" selected>95%</option><option value="0.99">99%</option></select></div><button class="btn play" id="gf-play" type="button"></button></div><div class="charts "><div class="chart" id="gf-chart"></div></div><ul class="out" id="gf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> De la ce orizont devine constantă prognoza MA(3)?</div>
+  <details><summary>Răspuns</summary><p>De la al patrulea trimestru: −0,14; 1,81; 2,77, apoi media de 3,17%. După q = 3 pași modelul cunoaște doar media. AR(1) revine treptat: 2,99% după 8 trimestre, cu media 3,12%. Intervalele de 95% sînt [−6,1; 5,9] pentru un trimestru și [−6,3; 12,7] de la patru trimestre. Cu originea în T4 2019, ambele modele prognozează peste 3,8% pentru 2020, iar seria scade la −9,9% în T2 2020.</p></details>
+</section><h2 class="sec" id="s-real">Alte serii reale</h2>
+<section class="blk" id="inflation">
+  <h3>Inflația în România: o prognoză AR(2)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch2_inflation_ro.jpg" alt="Slide-ul 70: Inflația în România: o prognoză AR(2)" loading="lazy"></a>
+      <figcaption>Slide-ul 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="in-p">Ordinul AR p</label><select id="in-p"><option value="1">AR(1)</option><option value="2" selected>AR(2) · BIC</option><option value="3">AR(3)</option><option value="4">AR(4)</option><option value="5">AR(5)</option><option value="6">AR(6)</option></select></div><button class="btn play" id="in-play" type="button"></button></div><div class="charts "><div class="chart" id="in-chart"></div></div><ul class="out" id="in-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Spre ce valoare revine prognoza AR(2): spre ținta BNR sau spre media estimată?</div>
+  <details><summary>Răspuns</summary><p>Spre media estimată, 5,16%, care este media perioadei 2005–2026, nu spre ținta de 2,5%: de la 6,09% în august 2026 la 5,44% în septembrie și 5,13% în august 2028. φ̂₁ + φ̂₂ = 0,976, iar cea mai mare rădăcină inversă are modulul 0,963, deci revenirea este lentă. Testul Ljung–Box pe reziduuri respinge: Q*(12) = 71,6 cu 10 grade de libertate, p < 0,001.</p></details>
+</section>
+<section class="blk" id="returns">
+  <h3>Randamente zilnice: BET și EUR/RON</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch2_returns_ro.jpg" alt="Slide-ul 72: Randamente zilnice: BET și EUR/RON" loading="lazy"></a>
+      <figcaption>Slide-ul 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-y0">De la anul: <b id="rt-y0-v"></b></label><input type="range" id="rt-y0" min="2000" max="2023" step="1" value="2000"></div><div class="ctl"><label for="rt-y1">Pînă în anul: <b id="rt-y1-v"></b></label><input type="range" id="rt-y1" min="2003" max="2026" step="1" value="2026"></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru BET, φ̂ = 0,109 este foarte semnificativ. Explică AR(1) o parte importantă din variația randamentelor zilnice?</div>
+  <details><summary>Răspuns</summary><p>Nu: R² este 1,2% pentru BET și 2,9% pentru EUR/RON. Rezultatul este real din punct de vedere statistic, dar mic din punct de vedere economic. Pătratele reziduurilor sînt puternic autocorelate (Ljung–Box Q*(10) = 2496 pentru BET și 2351 pentru EUR/RON), iar kurtosis-ul reziduurilor este 14,0 și 17,0: modelul descrie media, nu varianța.</p></details>
+</section>
+<section class="blk" id="sunspots">
+  <h3>Petele solare: AR(2) și criteriile informaționale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol2_modele_arma.pdf#page=76" target="_blank" rel="noopener"><img src="slides/tsa_ch2_sunspots_ro.jpg" alt="Slide-ul 75: Petele solare: AR(2) și criteriile informaționale" loading="lazy"></a>
+      <figcaption>Slide-ul 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ss-p">Ordinul AR p</label><select id="ss-p"><option value="1">AR(1)</option><option value="2" selected>AR(2)</option><option value="3">AR(3)</option><option value="4">AR(4)</option><option value="5">AR(5)</option><option value="6">AR(6)</option><option value="7">AR(7)</option><option value="8">AR(8)</option><option value="9">AR(9)</option><option value="10">AR(10)</option></select></div><button class="btn play" id="ss-play" type="button"></button></div><div class="charts "><div class="chart" id="ss-chart"></div></div><ul class="out" id="ss-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ce perioadă a ciclului solar implică AR(2)-ul lui Yule estimat pe 1749–1924?</div>
+  <details><summary>Răspuns</summary><p>10,6 ani. Coeficienții estimați, φ̂₁ = 1,336 și φ̂₂ = −0,650, dau rădăcini complexe; perioada este 2π/arccos(φ̂₁/(2√−φ̂₂)) = 10,6, iar modulul rădăcinii inverse 0,806. Pe întregul eșantion, AR(2) explică 83% din varianță cu un an înainte, iar AIC și BIC aleg amîndouă p = 9 dintre p ≤ 10.</p></details>
+</section>
+<p class="src foot">Simulări: șocuri din distribuția Normală, generate cu seed-urile codului capitolului; cînd parametrii diferă de cei din curs, simularea se reface în browser. PIB: Eurostat, volume înlănțuite (2010), serie nesezonalizată, în versiunea folosită în curs. IAPC: Eurostat, pînă în august 2026. BET: EODHD; EUR/RON: cursul de referință BNR. Petele solare: setul de date din statsmodels, 1700–2008.</p>
+</main>
+</body>
+</html>
