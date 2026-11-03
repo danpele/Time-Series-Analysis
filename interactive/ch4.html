@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4 · Seasonality and Forecasting</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch4.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch4_data.js?v=20261101a", "ch4_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch4.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Time Series Analysis</h1><p>Chapter 4 · Seasonality and Forecasting</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_04" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch4.html" class="lang-btn active">EN</a><a href="ch4_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step.</p>
+<p class="toc"><a href="#s-seas">Seasonality in economic data</a> · <a href="#s-roots">Seasonal differencing and seasonal unit roots</a> · <a href="#s-sarima">SARIMA models</a> · <a href="#s-air">Case study: the airline model</a> · <a href="#s-gdp">Case study: Romanian GDP, not adjusted</a> · <a href="#s-sa">Seasonal adjustment in practice</a> · <a href="#s-cal">Fourier terms and calendar effects</a> · <a href="#s-mult">Multiple seasonality: electricity load</a> · <a href="#s-tp">TBATS and Prophet</a> · <a href="#s-ev">Forecast evaluation</a> · <a href="#s-comb">Forecast combination</a></p>
+<h2 class="sec" id="s-seas">Seasonality in economic data</h2>
+<section class="blk" id="series">
+  <h3>Seasonality in six Romanian series</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=8" target="_blank" rel="noopener"><img src="slides/tsa_ch4_series_en.jpg" alt="Slide 7: Seasonality in six Romanian series" loading="lazy"></a>
+      <figcaption>Slide 7</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="se-s">Seasonal pattern of the series</label><select id="se-s"><option value="gdp" selected>GDP (quarter means)</option><option value="tour">Tourism nights (month means)</option><option value="infl">HICP inflation (month means)</option></select></div><div class="ctl"><label for="se-y0">From year: <b id="se-y0-v"></b></label><input type="range" id="se-y0" min="2000" max="2026" step="1" value="2000"></div><div class="ctl"><label for="se-y1">To year: <b id="se-y1-v"></b></label><input type="range" id="se-y1" min="2000" max="2026" step="1" value="2026"></div><button class="btn play" id="se-play" type="button"></button></div><div class="charts "><div class="chart" id="se-chart"></div></div><ul class="out" id="se-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> On 2010–2019, in which month is the mean monthly HICP inflation highest?</div>
+  <details><summary>Answer</summary><p>In January: 0.575% on average, followed by October, 0.487%; the lowest is in June, −0.368% (fresh food). The ranking depends on the period: on 2015–2019 October has 0.575% and May 0.457%. For GDP, the mean of quarter 4 is 57% above the mean of quarter 1 (27.8 and 43.6 bn EUR, 2000–2026); for tourism, August has 3.7 times as many nights as January (2015–2019).</p></details>
+</section>
+<section class="blk" id="seasonal-plot">
+  <h3>Seasonal plot and subseries plot</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=10" target="_blank" rel="noopener"><img src="slides/tsa_ch4_seasonal_plot_en.jpg" alt="Slide 9: Seasonal plot and subseries plot" loading="lazy"></a>
+      <figcaption>Slide 9</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-y">Highlighted year: <b id="sp-y-v"></b></label><input type="range" id="sp-y" min="2012" max="2025" step="1" value="2019"></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button goes through the years 2012–2025. In which year is the ratio of August to January tourism nights largest?</div>
+  <details><summary>Answer</summary><p>In 2021: 5.3, against 3.4 in 2019 and 2.2 in 2020. In January 2021 restrictions still kept tourism low, and the summer recovered; in 2020 the summer was hit as well, and April 2020 had only 0.045 million nights. The shape of the year stays the same: August is the peak month in every year. For GDP, the four subseries keep the order Q1 < Q2 < Q3 < Q4 in all 21 years of 2005–2025.</p></details>
+</section><h2 class="sec" id="s-roots">Seasonal differencing and seasonal unit roots</h2>
+<section class="blk" id="unit-circle">
+  <h3>The roots of 1 - z^s: seasonal unit roots</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=15" target="_blank" rel="noopener"><img src="slides/tsa_ch4_unit_circle_en.jpg" alt="Slide 14: The roots of 1 - z^s: seasonal unit roots" loading="lazy"></a>
+      <figcaption>Slide 14</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="uc-s">Period s on the right</label><select id="uc-s"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="6">6</option><option value="7">7</option><option value="12" selected>12</option><option value="24">24</option></select></div><button class="btn play" id="uc-play" type="button"></button></div><div class="charts "><div class="chart" id="uc-chart"></div></div><ul class="out" id="uc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For daily data with a weekly pattern, s = 7. How many real roots does 1 − z⁷ have?</div>
+  <details><summary>Answer</summary><p>Only one, z = 1. The root z = −1 (period 2) exists only when s is even; for s = 7 the other six roots form three complex-conjugate pairs, with periods 7, 3.5 and 2.33 days. For s = 4: 1, −1 and ±i; for s = 12: 1, −1 and five pairs.</p></details>
+</section>
+<section class="blk" id="gdp-diff">
+  <h3>Romanian GDP: regular and seasonal differences</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=17" target="_blank" rel="noopener"><img src="slides/tsa_ch4_gdp_diff_en.jpg" alt="Slide 16: Romanian GDP: regular and seasonal differences" loading="lazy"></a>
+      <figcaption>Slide 16</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="df-end">Sample ends in: <b id="df-end-v"></b></label><input type="range" id="df-end" min="19" max="105" step="1" value="105"></div><button class="btn play" id="df-play" type="button"></button></div><div class="charts "><div class="chart" id="df-chart"></div></div><ul class="out" id="df-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> On the full sample, the ACF of ΔΔ₄ ln Y is −0.40 at lag 4. Is it still significant if the sample stops in 2019Q4, before the pandemic?</div>
+  <details><summary>Answer</summary><p>Yes: −0.34, outside the ±0.23 band (T = 75). The negative value at the seasonal lag does not come from 2020 but from a seasonal pattern that changes slowly: the signature of a seasonal MA. For Δ ln Y the ACF stays at 0.94 at lag 4 on the short sample as well; for Δ₄ ln Y the ACF at lag 1 is 0.68.</p></details>
+</section><h2 class="sec" id="s-sarima">SARIMA models</h2>
+<section class="blk" id="theory-acf">
+  <h3>Theoretical ACF and PACF of three seasonal models</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=25" target="_blank" rel="noopener"><img src="slides/tsa_ch4_theory_acf_en.jpg" alt="Slide 24: Theoretical ACF and PACF of three seasonal models" loading="lazy"></a>
+      <figcaption>Slide 24</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="th-Phi">Φ (SAR): <b id="th-Phi-v"></b></label><input type="range" id="th-Phi" min="-0.95" max="0.95" step="0.05" value="0.8"></div><div class="ctl"><label for="th-Th">Θ (SMA, airline): <b id="th-Th-v"></b></label><input type="range" id="th-Th" min="-0.95" max="0.95" step="0.05" value="-0.6"></div><div class="ctl"><label for="th-th">θ (airline): <b id="th-th-v"></b></label><input type="range" id="th-th" min="-0.9" max="0.9" step="0.05" value="-0.4"></div><button class="btn play" id="th-play" type="button"></button></div><div class="charts "><div class="chart" id="th-chart"></div></div><ul class="out" id="th-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With θ = −0.4 and Θ = −0.6, the satellites at lags 11 and 13 are 0.152. What happens to them if θ becomes +0.4?</div>
+  <details><summary>Answer</summary><p>They change sign: −0.152. The satellites are the product ρ₁ρ₁₂, and ρ₁ = θ/(1 + θ²) goes from −0.345 to 0.345, while ρ₁₂ = −0.441 stays. For SAR(1)₁₂ with Φ = 0.8 the ACF decays 0.8, 0.64, 0.512 at lags 12, 24, 36; for SMA(1)₁₂ with Θ = −0.6 the PACF is −0.242 at lag 24.</p></details>
+</section><h2 class="sec" id="s-air">Case study: the airline model</h2>
+<section class="blk" id="airline">
+  <h3>Identification of the airline model</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=33" target="_blank" rel="noopener"><img src="slides/tsa_ch4_airline_en.jpg" alt="Slide 32: Identification of the airline model" loading="lazy"></a>
+      <figcaption>Slide 32</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ai-tr">Transformation</label><select id="ai-tr"><option value="ddl" selected>ΔΔ₁₂ ln y (lecture)</option><option value="d12l">Δ₁₂ ln y</option><option value="d1l">Δ ln y</option><option value="ddy">ΔΔ₁₂ y, no log</option></select></div><button class="btn play" id="ai-play" type="button"></button></div><div class="charts "><div class="chart" id="ai-chart"></div></div><ul class="out" id="ai-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Without the regular difference, with Δ₁₂ ln y only, what does the ACF look like?</div>
+  <details><summary>Answer</summary><p>Positive autocorrelations that decay slowly: 0.71 at lag 1, 0.48 at lag 3, still 0.19 at lag 8. The trend is not removed, and the series stays non-stationary. With ΔΔ₁₂ ln y, non-zero values remain at lags 1 (−0.34) and 12 (−0.39); lags 3, 9, 23 and 32 also leave the ±0.17 band. The PACF is −0.341, −0.013 and −0.193 at lags 1, 2 and 3: the value at lag 2 is practically zero.</p></details>
+</section>
+<section class="blk" id="airline-fc">
+  <h3>Airline model: forecasts out of sample</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=35" target="_blank" rel="noopener"><img src="slides/tsa_ch4_airline_fc_en.jpg" alt="Slide 34: Airline model: forecasts out of sample" loading="lazy"></a>
+      <figcaption>Slide 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="af-o">Forecast origin: <b id="af-o-v"></b></label><input type="range" id="af-o" min="1952" max="1958" step="1" value="1958"></div><button class="btn play" id="af-play" type="button"></button></div><div class="charts "><div class="chart" id="af-chart"></div></div><ul class="out" id="af-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With the origin in December 1958, the 95% interval for December 1960 has a width of 239. What width does it have if the origin is December 1954, 72 months ahead?</div>
+  <details><summary>Answer</summary><p>Much larger: 852 (the interval [201, 1053]), because the two unit roots make the forecast-error variance grow with the horizon. The actual value, 432, stays inside the interval from every origin. From 1958: forecast 388, interval [286, 526], MAPE 8.5% against 15.5% for the seasonal naive method.</p></details>
+</section><h2 class="sec" id="s-gdp">Case study: Romanian GDP, not adjusted</h2>
+<section class="blk" id="gdp-diag">
+  <h3>Diagnostics of the GDP model</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=39" target="_blank" rel="noopener"><img src="slides/tsa_ch4_gdp_diag_en.jpg" alt="Slide 38: Diagnostics of the GDP model" loading="lazy"></a>
+      <figcaption>Slide 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dg-m">SARIMA model</label><select id="dg-m"><option value="(0,1,1)(0,1,1)4">(0,1,1)(0,1,1)₄</option><option value="(1,1,0)(0,1,1)4">(1,1,0)(0,1,1)₄</option><option value="(1,1,1)(0,1,1)4">(1,1,1)(0,1,1)₄</option><option value="(0,1,2)(0,1,1)4">(0,1,2)(0,1,1)₄</option><option value="(2,1,0)(0,1,1)4">(2,1,0)(0,1,1)₄</option><option value="(0,1,1)(1,1,0)4">(0,1,1)(1,1,0)₄</option><option value="(1,1,0)(1,1,0)4">(1,1,0)(1,1,0)₄</option><option value="(0,1,1)(1,1,1)4">(0,1,1)(1,1,1)₄</option><option value="(0,1,0)(0,1,1)4" selected>(0,1,0)(0,1,1)₄</option><option value="(0,1,1)(0,1,0)4">(0,1,1)(0,1,0)₄</option></select></div><button class="btn play" id="dg-play" type="button"></button></div><div class="charts "><div class="chart" id="dg-chart"></div></div><ul class="out" id="dg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> SARIMA(0,1,1)(1,1,0)₄ replaces the seasonal MA by a seasonal AR. Are its residuals uncorrelated by the Ljung–Box test?</div>
+  <details><summary>Answer</summary><p>No: Q*(8) = 19.5 with 6 degrees of freedom, p = 0.003, and the AICc rises to 529.9, against 519.7. For SARIMA(0,1,0)(0,1,1)₄: Q*(8) = 8.55 with 7 degrees of freedom, p = 0.286, and Q*(12) has p = 0.526. In every model the residuals do not follow the Normal distribution: for the BIC model, Jarque–Bera 22.0 and the residual of −11.4% in 2020Q2.</p></details>
+</section>
+<section class="blk" id="gdp-fc">
+  <h3>Forecasts of Romanian GDP</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=41" target="_blank" rel="noopener"><img src="slides/tsa_ch4_gdp_fc_en.jpg" alt="Slide 40: Forecasts of Romanian GDP" loading="lazy"></a>
+      <figcaption>Slide 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gf-Th">Θ of the seasonal MA (fixed): <b id="gf-Th-v"></b></label><input type="range" id="gf-Th" min="-0.99" max="0" step="0.0001" value="-0.5765"></div><button class="btn play" id="gf-play" type="button"></button></div><div class="charts "><div class="chart" id="gf-chart"></div></div><ul class="out" id="gf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button moves Θ from −0.95 to 0. What does the forecast year-on-year growth become when Θ = 0?</div>
+  <details><summary>Answer</summary><p>The same in every quarter: −1.96%, the year-on-year growth of 2026Q2. With Θ = 0 the model is Δ₄y_t = Δ₄y_{t−1} + ε_t, and the forecast repeats the last year-on-year growth. With Θ̂ = −0.577 the pattern gives weight 1 + Θ̂ = 0.42 to the most recent year: implied growth −0.81%, 0.53%, 0.83%, 0.55%, then 0.55%. With Θ = −0.95 the pattern is almost fixed, and the implied growth rises to 3.99%.</p></details>
+</section><h2 class="sec" id="s-sa">Seasonal adjustment in practice</h2>
+<section class="blk" id="sa-nsa">
+  <h3>Unadjusted and adjusted series</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=47" target="_blank" rel="noopener"><img src="slides/tsa_ch4_sa_nsa_en.jpg" alt="Slide 46: Unadjusted and adjusted series" loading="lazy"></a>
+      <figcaption>Slide 46</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sa-q">Quarter: <b id="sa-q-v"></b></label><input type="range" id="sa-q" min="41" max="105" step="1" value="104"></div><button class="btn play" id="sa-play" type="button"></button></div><div class="charts "><div class="chart" id="sa-chart"></div></div><ul class="out" id="sa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> In 2026Q1, unadjusted GDP falls by 42.1% (log points) from the previous quarter. How much did the SCA series change?</div>
+  <details><summary>Answer</summary><p>By −0.06%: practically not at all. The fall of the unadjusted series is the seasonal pattern, with an NSA/SCA factor of 0.786 in Q1 and 1.197 in 2025Q4. Year-on-year growth says the same in both series: −1.50% (NSA) and −1.14% (SCA). The annual totals coincide: 196.4 bn EUR in 2024.</p></details>
+</section><h2 class="sec" id="s-cal">Fourier terms and calendar effects</h2>
+<section class="blk" id="fourier">
+  <h3>Fourier approximation of a seasonal pattern</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=51" target="_blank" rel="noopener"><img src="slides/tsa_ch4_fourier_en.jpg" alt="Slide 50: Fourier approximation of a seasonal pattern" loading="lazy"></a>
+      <figcaption>Slide 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fo-K">Number of harmonics K: <b id="fo-K-v"></b></label><input type="range" id="fo-K" min="1" max="6" step="1" value="3"></div><button class="btn play" id="fo-play" type="button"></button></div><div class="charts "><div class="chart" id="fo-chart"></div></div><ul class="out" id="fo-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> How many harmonics are needed for R² ≥ 0.98?</div>
+  <details><summary>Answer</summary><p>Three: K = 3, six coefficients, R² = 0.989. K = 1 gives 0.925, K = 2 gives 0.966. For K = 6, sin(2π6t/12) is zero in every month: the fit in the chart has 10 effective coefficients and R² = 0.999; with cos(2π6t/12), the 11 coefficients pass through all 12 points (R² = 1), like 11 dummy variables.</p></details>
+</section>
+<section class="blk" id="easter">
+  <h3>Easter and Romanian retail trade</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=55" target="_blank" rel="noopener"><img src="slides/tsa_ch4_easter_en.jpg" alt="Slide 54: Easter and Romanian retail trade" loading="lazy"></a>
+      <figcaption>Slide 54</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ea-w">Window w (days before Easter): <b id="ea-w-v"></b></label><input type="range" id="ea-w" min="1" max="20" step="1" value="10"></div><button class="btn play" id="ea-play" type="button"></button></div><div class="charts "><div class="chart" id="ea-chart"></div></div><ul class="out" id="ea-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With the window w = 3 (only the three days before Easter), does the estimated Easter effect on food sales rise or fall?</div>
+  <details><summary>Answer</summary><p>It falls to 1.6% (standard error 1.6, t = 1.0) and is no longer separated from noise. With w = 10 (lecture): 5.9% (2.3; t = 2.6); with w = 12: 6.1% (t = 2.9). Easter shopping spreads over several days; a regressor that is too narrow puts part of it in the wrong month. Working days stay around +0.6% for food and +1.0% for the total, for every w.</p></details>
+</section><h2 class="sec" id="s-mult">Multiple seasonality: electricity load</h2>
+<section class="blk" id="load-hourly">
+  <h3>Hourly load: the day and the week</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=59" target="_blank" rel="noopener"><img src="slides/tsa_ch4_load_hourly_en.jpg" alt="Slide 58: Hourly load: the day and the week" loading="lazy"></a>
+      <figcaption>Slide 58</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lh-wk">The three-week window starts on Monday: <b id="lh-wk-v"></b></label><input type="range" id="lh-wk" min="0" max="230" step="1" value="158"></div><div class="ctl"><label for="lh-yr">Year of the ACF</label><select id="lh-yr"><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option></select></div><button class="btn play" id="lh-play" type="button"></button></div><div class="charts "><div class="chart" id="lh-chart"></div></div><ul class="out" id="lh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For 2025, which autocorrelation is larger: at lag 24 (the same hour yesterday) or at lag 168 (the same hour a week ago)?</div>
+  <details><summary>Answer</summary><p>At lag 168: 0.817 against 0.811. The gap is larger in 2023 (0.841 and 0.800) and 2024 (0.846 and 0.804). At lag 84 (half a week) the ACF is only 0.22. Daily cycle: the minimum at 3:00 (5.3 GW), the maximum at 19:00 (7.3 GW).</p></details>
+</section>
+<section class="blk" id="mstl">
+  <h3>MSTL: one seasonal component per period</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=61" target="_blank" rel="noopener"><img src="slides/tsa_ch4_mstl_en.jpg" alt="Slide 60: MSTL: one seasonal component per period" loading="lazy"></a>
+      <figcaption>Slide 60</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ms-w">Four-week window</label><select id="ms-w"><option value="2025-02-03" selected>2025-02-03</option></select></div><button class="btn play" id="ms-play" type="button"></button></div><div class="charts "><div class="chart" id="ms-chart"></div></div><ul class="out" id="ms-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> In the February 2025 window, the remainder has 2% of the variance around the trend. How much does it have in the window 7 April – 4 May 2025, which contains Easter?</div>
+  <details><summary>Answer</summary><p>13%: Easter (20 April) and 1 May follow neither the daily nor the weekly pattern, so they end up in the remainder. In February: 70% the daily component, 29% the weekly one. The share of the weekly component ranges from 20% (August) to 43% (June).</p></details>
+</section>
+<section class="blk" id="load-daily">
+  <h3>Daily load and public holidays</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=63" target="_blank" rel="noopener"><img src="slides/tsa_ch4_load_daily_en.jpg" alt="Slide 62: Daily load and public holidays" loading="lazy"></a>
+      <figcaption>Slide 62</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ld-yr">Means by day, for</label><select id="ld-yr"><option value="all" selected>2022–2026</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><button class="btn play" id="ld-play" type="button"></button></div><div class="charts "><div class="chart" id="ld-chart"></div></div><ul class="out" id="ld-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Which is the day with the lowest load in 2023?</div>
+  <details><summary>Answer</summary><p>Pentecost Sunday, 4 June 2023: 4.37 GW, below Easter Sunday, 16 April 2023 (4.48 GW). In 2022, 2024 and 2025 the lowest day is Easter Sunday; over the whole sample, 20 April 2025 (3.79 GW, mean 6.18 GW). Saturday is 9% and Sunday 17% below Wednesday, and January is 25% above May.</p></details>
+</section><h2 class="sec" id="s-tp">TBATS and Prophet</h2>
+<section class="blk" id="prophet">
+  <h3>Prophet components for daily load</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=69" target="_blank" rel="noopener"><img src="slides/tsa_ch4_prophet_en.jpg" alt="Slide 68: Prophet components for daily load" loading="lazy"></a>
+      <figcaption>Slide 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pr-K">Yearly harmonics K</label><select id="pr-K"><option value="3">3</option><option value="5">5</option><option value="10" selected>10 (default, lecture)</option><option value="20">20</option></select></div><div class="ctl"><label for="pr-h">Public holidays</label><select id="pr-h"><option value="1" selected>included (lecture)</option><option value="0">not included</option></select></div><button class="btn play" id="pr-play" type="button"></button></div><div class="charts "><div class="chart" id="pr-chart"></div></div><ul class="out" id="pr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> If Prophet is estimated without the list of holidays, what happens to the in-sample mean absolute error?</div>
+  <details><summary>Answer</summary><p>It rises from 197 to 226 MW. Without holidays, the Christmas and Easter days stay in the residuals and the yearly component is distorted: its maximum moves from 7 December to 24 January 2024. With the holidays, the effects are −1.24 GW (Christmas), −1.10 GW (New Year) and −1.04 GW (Easter).</p></details>
+</section><h2 class="sec" id="s-ev">Forecast evaluation</h2>
+<section class="blk" id="cv-scheme">
+  <h3>Time-series cross-validation</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=72" target="_blank" rel="noopener"><img src="slides/tsa_ch4_cv_scheme_en.jpg" alt="Slide 71: Time-series cross-validation" loading="lazy"></a>
+      <figcaption>Slide 71</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cs-h">Horizon h: <b id="cs-h-v"></b></label><input type="range" id="cs-h" min="1" max="6" step="1" value="3"></div><div class="ctl"><label for="cs-st">Step between origins: <b id="cs-st-v"></b></label><input type="range" id="cs-st" min="1" max="4" step="1" value="2"></div><button class="btn play" id="cs-play" type="button"></button></div><div class="charts "><div class="chart" id="cs-chart"></div></div><ul class="out" id="cs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With a step of 1 between origins and horizon h = 3, in how many forecast windows does the same date appear?</div>
+  <details><summary>Answer</summary><p>In three: consecutive windows overlap by h − 1 = 2 periods, so the errors are correlated up to lag h − 1, and the Diebold–Mariano test uses h − 1 autocovariances. In the design of the lecture the origins are 14 days apart and h = 14: the windows do not overlap, so the test has one value per window and h = 1 in the formula.</p></details>
+</section>
+<section class="blk" id="load-fc">
+  <h3>Forecasts from one origin, across Easter 2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=76" target="_blank" rel="noopener"><img src="slides/tsa_ch4_load_fc_en.jpg" alt="Slide 75: Forecasts from one origin, across Easter 2026" loading="lazy"></a>
+      <figcaption>Slide 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lf-o">Forecast origin</label><select id="lf-o"><option value="2026-04-06" selected>2026-04-06</option></select></div><button class="btn play" id="lf-play" type="button"></button></div><div class="charts "><div class="chart" id="lf-chart"></div></div><ul class="out" id="lf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> In the Easter window (origin 6 April 2026), which model has the lowest MAE?</div>
+  <details><summary>Answer</summary><p>ETS, with 299 MW, followed by TBATS (309) and DHR (344); the seasonal naive method has 686, Prophet 616. ETS has no line in the chart of the slide, although it has the lowest error in this window. After Easter the load stays below all forecasts, and ETS and TBATS follow the level of the last days.</p></details>
+</section>
+<section class="blk" id="cv-results">
+  <h3>Cross-validation results for daily load</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=78" target="_blank" rel="noopener"><img src="slides/tsa_ch4_cv_results_en.jpg" alt="Slide 77: Cross-validation results for daily load" loading="lazy"></a>
+      <figcaption>Slide 77</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cr-m">Measure</label><select id="cr-m"><option value="MAE" selected>MAE</option><option value="RMSE">RMSE</option></select></div><div class="ctl"><label for="cr-w">Windows</label><select id="cr-w"><option value="all" selected>all 26</option><option value="hol">with holidays</option><option value="nohol">without holidays</option></select></div><button class="btn play" id="cr-play" type="button"></button></div><div class="charts "><div class="chart" id="cr-chart"></div></div><ul class="out" id="cr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> In the 8 windows that contain a holiday, does DHR still have the lowest MAE?</div>
+  <details><summary>Answer</summary><p>No: TBATS 317 MW and DHR 318 MW are level, and the DM test does not separate them (HLN 0.83, p = 0.431). In the 18 windows without holidays, DHR has 258 MW, ahead of the combination (290). Over all 26 windows: DHR 276, the combination 305, Prophet 328 MW; ETS, SARIMA and TBATS are not separated from the seasonal naive method (p = 0.431, 0.231, 0.145).</p></details>
+</section><h2 class="sec" id="s-comb">Forecast combination</h2>
+<section class="blk" id="combination">
+  <h3>Combining DHR and Prophet</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter4_seasonality_forecasting.pdf#page=83" target="_blank" rel="noopener"><img src="slides/tsa_ch4_combination_en.jpg" alt="Slide 82: Combining DHR and Prophet" loading="lazy"></a>
+      <figcaption>Slide 82</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cb-1">Forecast 1 (weight w)</label><select id="cb-1"><option value="Seasonal naive">Seasonal naive</option><option value="ETS">ETS</option><option value="SARIMA">SARIMA</option><option value="DHR" selected>DHR</option><option value="TBATS">TBATS</option><option value="Prophet">Prophet</option></select></div><div class="ctl"><label for="cb-2">Forecast 2 (weight 1 − w)</label><select id="cb-2"><option value="Seasonal naive">Seasonal naive</option><option value="ETS">ETS</option><option value="SARIMA">SARIMA</option><option value="DHR">DHR</option><option value="TBATS">TBATS</option><option value="Prophet" selected>Prophet</option></select></div><button class="btn play" id="cb-play" type="button"></button></div><div class="charts "><div class="chart" id="cb-chart"></div></div><ul class="out" id="cb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Combine ETS (MAE 381 MW) and Prophet (328 MW), whose errors have a correlation of 0.36. What MAE does the equal-weight average have?</div>
+  <details><summary>Answer</summary><p>295 MW: below both components. With weakly correlated errors the mistakes partly offset each other; the best weight in hindsight is w = 0.37 (MAE 286). For DHR and Prophet (ρ = 0.75): 283 MW with equal weights, against 276 for DHR alone; for ETS and TBATS (ρ = 0.98) the equal-weight average (370) is worse than TBATS alone (363).</p></details>
+</section>
+<p class="src foot">Romanian GDP: Eurostat, chain-linked volumes (2010 prices), not adjusted (NSA) and seasonally and calendar adjusted (SCA), in the version used in the lecture. Retail trade, industrial production and tourism nights: Eurostat, up to July 2026; HICP: Eurostat, up to August 2026. Electricity load: ENTSO-E, “monthly hourly load values”, Romania, 1 January 2022 – 30 June 2026, Romanian winter time. Airline passengers: the AirPassengers data set (Box and Jenkins), 1949–1960. The cross-validation forecasts are those of the lecture; variants that do not appear in the lecture are extra runs of the chapter code, on the same data.</p>
+</main>
+</body>
+</html>

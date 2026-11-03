@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 4 · Sezonalitate și prognoză</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch4.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch4_data.js?v=20261101a", "ch4_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch4.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Serii de timp</h1><p>Capitolul 4 · Sezonalitate și prognoză</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_04" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch4.html" class="lang-btn">EN</a><a href="ch4_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură, calculată în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas.</p>
+<p class="toc"><a href="#s-seas">Sezonalitatea în datele economice</a> · <a href="#s-roots">Diferențierea sezonieră și rădăcinile unitare sezoniere</a> · <a href="#s-sarima">Modele SARIMA</a> · <a href="#s-air">Studiu de caz: modelul airline</a> · <a href="#s-gdp">Studiu de caz: PIB-ul neajustat al României</a> · <a href="#s-sa">Ajustarea sezonieră în practică</a> · <a href="#s-cal">Termeni Fourier și efecte de calendar</a> · <a href="#s-mult">Sezonalitate multiplă: consumul de electricitate</a> · <a href="#s-tp">TBATS și Prophet</a> · <a href="#s-ev">Evaluarea prognozelor</a> · <a href="#s-comb">Combinarea prognozelor</a></p>
+<h2 class="sec" id="s-seas">Sezonalitatea în datele economice</h2>
+<section class="blk" id="series">
+  <h3>Sezonalitatea în șase serii din România</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=9" target="_blank" rel="noopener"><img src="slides/tsa_ch4_series_ro.jpg" alt="Slide-ul 8: Sezonalitatea în șase serii din România" loading="lazy"></a>
+      <figcaption>Slide-ul 8</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="se-s">Tiparul sezonier al seriei</label><select id="se-s"><option value="gdp" selected>PIB (mediile trimestriale)</option><option value="tour">Înnoptări turistice (mediile lunare)</option><option value="infl">Inflația IAPC (mediile lunare)</option></select></div><div class="ctl"><label for="se-y0">De la anul: <b id="se-y0-v"></b></label><input type="range" id="se-y0" min="2000" max="2026" step="1" value="2000"></div><div class="ctl"><label for="se-y1">Pînă în anul: <b id="se-y1-v"></b></label><input type="range" id="se-y1" min="2000" max="2026" step="1" value="2026"></div><button class="btn play" id="se-play" type="button"></button></div><div class="charts "><div class="chart" id="se-chart"></div></div><ul class="out" id="se-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În 2010–2019, în ce lună este cea mai mare inflația lunară medie a IAPC?</div>
+  <details><summary>Răspuns</summary><p>În ianuarie: 0,575% în medie, urmată de octombrie, 0,487%; cea mai mică este în iunie, −0,368% (alimentele proaspete). Ordinea depinde de perioadă: pe 2015–2019, octombrie are 0,575% și mai 0,457%. Pentru PIB, media trimestrului 4 este cu 57% peste media trimestrului 1 (27,8 și 43,6 mld. EUR, 2000–2026); pentru turism, august are de 3,7 ori mai multe înnoptări decît ianuarie (2015–2019).</p></details>
+</section>
+<section class="blk" id="seasonal-plot">
+  <h3>Graficul sezonier și graficul pe subserii</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=11" target="_blank" rel="noopener"><img src="slides/tsa_ch4_seasonal_plot_ro.jpg" alt="Slide-ul 10: Graficul sezonier și graficul pe subserii" loading="lazy"></a>
+      <figcaption>Slide-ul 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-y">Anul evidențiat: <b id="sp-y-v"></b></label><input type="range" id="sp-y" min="2012" max="2025" step="1" value="2019"></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ trece prin anii 2012–2025. În ce an este cel mai mare raportul dintre înnoptările din august și cele din ianuarie?</div>
+  <details><summary>Răspuns</summary><p>În 2021: 5,3, față de 3,4 în 2019 și 2,2 în 2020. În ianuarie 2021 restricțiile țineau încă turismul jos, iar vara a revenit; în 2020 a fost afectată și vara, iar aprilie 2020 a avut doar 0,045 milioane de înnoptări. Forma anului rămîne aceeași: august este luna de vîrf în fiecare an. La PIB, cele patru subserii păstrează ordinea T1 < T2 < T3 < T4 în toți cei 21 de ani din 2005–2025.</p></details>
+</section><h2 class="sec" id="s-roots">Diferențierea sezonieră și rădăcinile unitare sezoniere</h2>
+<section class="blk" id="unit-circle">
+  <h3>Rădăcinile lui 1 - z^s: rădăcini unitare sezoniere</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=16" target="_blank" rel="noopener"><img src="slides/tsa_ch4_unit_circle_ro.jpg" alt="Slide-ul 15: Rădăcinile lui 1 - z^s: rădăcini unitare sezoniere" loading="lazy"></a>
+      <figcaption>Slide-ul 15</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="uc-s">Perioada s din dreapta</label><select id="uc-s"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="6">6</option><option value="7">7</option><option value="12" selected>12</option><option value="24">24</option></select></div><button class="btn play" id="uc-play" type="button"></button></div><div class="charts "><div class="chart" id="uc-chart"></div></div><ul class="out" id="uc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru date zilnice cu tipar săptămînal, s = 7. Cîte rădăcini reale are 1 − z⁷?</div>
+  <details><summary>Răspuns</summary><p>Una singură, z = 1. Rădăcina z = −1 (perioada de 2) există doar cînd s este par; pentru s = 7 celelalte șase rădăcini formează trei perechi complex conjugate, cu perioadele 7, 3,5 și 2,33 zile. Pentru s = 4: 1, −1 și ±i; pentru s = 12: 1, −1 și cinci perechi.</p></details>
+</section>
+<section class="blk" id="gdp-diff">
+  <h3>PIB-ul României: diferențe obișnuite și sezoniere</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=18" target="_blank" rel="noopener"><img src="slides/tsa_ch4_gdp_diff_ro.jpg" alt="Slide-ul 17: PIB-ul României: diferențe obișnuite și sezoniere" loading="lazy"></a>
+      <figcaption>Slide-ul 17</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="df-end">Eșantionul se termină în: <b id="df-end-v"></b></label><input type="range" id="df-end" min="19" max="105" step="1" value="105"></div><button class="btn play" id="df-play" type="button"></button></div><div class="charts "><div class="chart" id="df-chart"></div></div><ul class="out" id="df-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pe tot eșantionul, ACF pentru ΔΔ₄ ln Y este −0,40 la lagul 4. Rămîne semnificativă dacă eșantionul se oprește în T4 2019, înainte de pandemie?</div>
+  <details><summary>Răspuns</summary><p>Da: −0,34, în afara benzii ±0,23 (T = 75). Valoarea negativă la lagul sezonier nu vine din 2020, ci din tiparul sezonier care se modifică lent: semnătura unui MA sezonier. La Δ ln Y, ACF rămîne 0,94 la lagul 4 și pe eșantionul scurt; la Δ₄ ln Y, ACF la lagul 1 este 0,68.</p></details>
+</section><h2 class="sec" id="s-sarima">Modele SARIMA</h2>
+<section class="blk" id="theory-acf">
+  <h3>ACF și PACF teoretice pentru trei modele sezoniere</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=26" target="_blank" rel="noopener"><img src="slides/tsa_ch4_theory_acf_ro.jpg" alt="Slide-ul 25: ACF și PACF teoretice pentru trei modele sezoniere" loading="lazy"></a>
+      <figcaption>Slide-ul 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="th-Phi">Φ (SAR): <b id="th-Phi-v"></b></label><input type="range" id="th-Phi" min="-0.95" max="0.95" step="0.05" value="0.8"></div><div class="ctl"><label for="th-Th">Θ (SMA, airline): <b id="th-Th-v"></b></label><input type="range" id="th-Th" min="-0.95" max="0.95" step="0.05" value="-0.6"></div><div class="ctl"><label for="th-th">θ (airline): <b id="th-th-v"></b></label><input type="range" id="th-th" min="-0.9" max="0.9" step="0.05" value="-0.4"></div><button class="btn play" id="th-play" type="button"></button></div><div class="charts "><div class="chart" id="th-chart"></div></div><ul class="out" id="th-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu θ = −0,4 și Θ = −0,6, sateliții de la lagurile 11 și 13 au 0,152. Ce se întîmplă cu ei dacă θ devine +0,4?</div>
+  <details><summary>Răspuns</summary><p>Își schimbă semnul: −0,152. Sateliții sînt produsul ρ₁ρ₁₂, iar ρ₁ = θ/(1 + θ²) trece de la −0,345 la 0,345, în timp ce ρ₁₂ = −0,441 rămîne. La SAR(1)₁₂ cu Φ = 0,8, ACF descrește 0,8; 0,64; 0,512 la lagurile 12, 24, 36; la SMA(1)₁₂ cu Θ = −0,6, PACF este −0,242 la lagul 24.</p></details>
+</section><h2 class="sec" id="s-air">Studiu de caz: modelul airline</h2>
+<section class="blk" id="airline">
+  <h3>Identificarea modelului airline</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=34" target="_blank" rel="noopener"><img src="slides/tsa_ch4_airline_ro.jpg" alt="Slide-ul 33: Identificarea modelului airline" loading="lazy"></a>
+      <figcaption>Slide-ul 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ai-tr">Transformarea</label><select id="ai-tr"><option value="ddl" selected>ΔΔ₁₂ ln y (curs)</option><option value="d12l">Δ₁₂ ln y</option><option value="d1l">Δ ln y</option><option value="ddy">ΔΔ₁₂ y, fără logaritm</option></select></div><button class="btn play" id="ai-play" type="button"></button></div><div class="charts "><div class="chart" id="ai-chart"></div></div><ul class="out" id="ai-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fără diferența obișnuită, doar cu Δ₁₂ ln y, cum arată ACF?</div>
+  <details><summary>Răspuns</summary><p>Autocorelații pozitive care scad încet: 0,71 la lagul 1, 0,48 la lagul 3, încă 0,19 la lagul 8. Trendul nu este eliminat, iar seria rămîne nestaționară. Cu ΔΔ₁₂ ln y rămîn valori nenule la lagurile 1 (−0,34) și 12 (−0,39); în afara benzii ±0,17 mai ies lagurile 3, 9, 23 și 32. PACF are −0,341, −0,013 și −0,193 la lagurile 1, 2 și 3: valoarea de la lagul 2 este practic zero.</p></details>
+</section>
+<section class="blk" id="airline-fc">
+  <h3>Modelul airline: prognoze în afara eșantionului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=36" target="_blank" rel="noopener"><img src="slides/tsa_ch4_airline_fc_ro.jpg" alt="Slide-ul 35: Modelul airline: prognoze în afara eșantionului" loading="lazy"></a>
+      <figcaption>Slide-ul 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="af-o">Originea prognozei: <b id="af-o-v"></b></label><input type="range" id="af-o" min="1952" max="1958" step="1" value="1958"></div><button class="btn play" id="af-play" type="button"></button></div><div class="charts "><div class="chart" id="af-chart"></div></div><ul class="out" id="af-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu originea în decembrie 1958, intervalul de 95% pentru decembrie 1960 are lățimea 239. Ce lățime are dacă originea este decembrie 1954, cu 72 de luni înainte?</div>
+  <details><summary>Răspuns</summary><p>Mult mai mare: 852 (intervalul [201; 1053]), deoarece cele două rădăcini unitare fac varianța erorii să crească cu orizontul. Valoarea reală, 432, rămîne în interval de la orice origine. Din 1958: prognoza 388, intervalul [286; 526], MAPE 8,5% față de 15,5% pentru metoda sezonieră naivă.</p></details>
+</section><h2 class="sec" id="s-gdp">Studiu de caz: PIB-ul neajustat al României</h2>
+<section class="blk" id="gdp-diag">
+  <h3>Diagnosticarea modelului pentru PIB</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=40" target="_blank" rel="noopener"><img src="slides/tsa_ch4_gdp_diag_ro.jpg" alt="Slide-ul 39: Diagnosticarea modelului pentru PIB" loading="lazy"></a>
+      <figcaption>Slide-ul 39</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dg-m">Modelul SARIMA</label><select id="dg-m"><option value="(0,1,1)(0,1,1)4">(0,1,1)(0,1,1)₄</option><option value="(1,1,0)(0,1,1)4">(1,1,0)(0,1,1)₄</option><option value="(1,1,1)(0,1,1)4">(1,1,1)(0,1,1)₄</option><option value="(0,1,2)(0,1,1)4">(0,1,2)(0,1,1)₄</option><option value="(2,1,0)(0,1,1)4">(2,1,0)(0,1,1)₄</option><option value="(0,1,1)(1,1,0)4">(0,1,1)(1,1,0)₄</option><option value="(1,1,0)(1,1,0)4">(1,1,0)(1,1,0)₄</option><option value="(0,1,1)(1,1,1)4">(0,1,1)(1,1,1)₄</option><option value="(0,1,0)(0,1,1)4" selected>(0,1,0)(0,1,1)₄</option><option value="(0,1,1)(0,1,0)4">(0,1,1)(0,1,0)₄</option></select></div><button class="btn play" id="dg-play" type="button"></button></div><div class="charts "><div class="chart" id="dg-chart"></div></div><ul class="out" id="dg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> SARIMA(0,1,1)(1,1,0)₄ înlocuiește MA-ul sezonier cu un AR sezonier. Sînt reziduurile lui necorelate după testul Ljung–Box?</div>
+  <details><summary>Răspuns</summary><p>Nu: Q*(8) = 19,5 cu 6 grade de libertate, p = 0,003, iar AICc crește la 529,9, față de 519,7. Pentru SARIMA(0,1,0)(0,1,1)₄: Q*(8) = 8,55 cu 7 grade de libertate, p = 0,286, și Q*(12) cu p = 0,526. În toate modelele reziduurile nu urmează distribuția Normală: pentru modelul BIC, Jarque–Bera 22,0 și reziduul −11,4% în T2 2020.</p></details>
+</section>
+<section class="blk" id="gdp-fc">
+  <h3>Prognozele PIB-ului României</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=42" target="_blank" rel="noopener"><img src="slides/tsa_ch4_gdp_fc_ro.jpg" alt="Slide-ul 41: Prognozele PIB-ului României" loading="lazy"></a>
+      <figcaption>Slide-ul 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gf-Th">Θ al MA sezonier (fixat): <b id="gf-Th-v"></b></label><input type="range" id="gf-Th" min="-0.99" max="0" step="0.0001" value="-0.5765"></div><button class="btn play" id="gf-play" type="button"></button></div><div class="charts "><div class="chart" id="gf-chart"></div></div><ul class="out" id="gf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ mișcă Θ de la −0,95 la 0. Ce devine creșterea anuală prognozată cînd Θ = 0?</div>
+  <details><summary>Răspuns</summary><p>Aceeași în fiecare trimestru: −1,96%, creșterea anuală din T2 2026. Cu Θ = 0, modelul este Δ₄y_t = Δ₄y_{t−1} + ε_t, iar prognoza repetă ultima creștere anuală. Cu Θ̂ = −0,577, tiparul are ponderea 1 + Θ̂ = 0,42 pentru anul cel mai recent: creșterea implicată −0,81%; 0,53%; 0,83%; 0,55%, apoi 0,55%. Cu Θ = −0,95, tiparul este aproape fix, iar creșterea implicată urcă la 3,99%.</p></details>
+</section><h2 class="sec" id="s-sa">Ajustarea sezonieră în practică</h2>
+<section class="blk" id="sa-nsa">
+  <h3>Serii neajustate și ajustate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=48" target="_blank" rel="noopener"><img src="slides/tsa_ch4_sa_nsa_ro.jpg" alt="Slide-ul 47: Serii neajustate și ajustate" loading="lazy"></a>
+      <figcaption>Slide-ul 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sa-q">Trimestrul: <b id="sa-q-v"></b></label><input type="range" id="sa-q" min="41" max="105" step="1" value="104"></div><button class="btn play" id="sa-play" type="button"></button></div><div class="charts "><div class="chart" id="sa-chart"></div></div><ul class="out" id="sa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În T1 2026, PIB-ul neajustat scade cu 42,1% (puncte logaritmice) față de trimestrul anterior. Cît s-a modificat seria SCA?</div>
+  <details><summary>Răspuns</summary><p>Cu −0,06%: practic deloc. Scăderea seriei neajustate este tiparul sezonier, cu factorul NSA/SCA 0,786 în T1 și 1,197 în T4 2025. Creșterea anuală spune același lucru în ambele serii: −1,50% (NSA) și −1,14% (SCA). Totalurile anuale coincid: 196,4 mld. EUR în 2024.</p></details>
+</section><h2 class="sec" id="s-cal">Termeni Fourier și efecte de calendar</h2>
+<section class="blk" id="fourier">
+  <h3>Aproximarea Fourier a unui tipar sezonier</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=52" target="_blank" rel="noopener"><img src="slides/tsa_ch4_fourier_ro.jpg" alt="Slide-ul 51: Aproximarea Fourier a unui tipar sezonier" loading="lazy"></a>
+      <figcaption>Slide-ul 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fo-K">Numărul de armonici K: <b id="fo-K-v"></b></label><input type="range" id="fo-K" min="1" max="6" step="1" value="3"></div><button class="btn play" id="fo-play" type="button"></button></div><div class="charts "><div class="chart" id="fo-chart"></div></div><ul class="out" id="fo-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cîte armonici sînt necesare pentru R² ≥ 0,98?</div>
+  <details><summary>Răspuns</summary><p>Trei: K = 3, șase coeficienți, R² = 0,989. K = 1 dă 0,925, K = 2 dă 0,966. Pentru K = 6, sin(2π6t/12) este zero în fiecare lună: ajustarea din grafic are 10 coeficienți efectivi și R² = 0,999; cu cos(2π6t/12), cei 11 coeficienți trec prin toate cele 12 puncte (R² = 1), ca 11 variabile dummy.</p></details>
+</section>
+<section class="blk" id="easter">
+  <h3>Paștele și comerțul cu amănuntul din România</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=56" target="_blank" rel="noopener"><img src="slides/tsa_ch4_easter_ro.jpg" alt="Slide-ul 55: Paștele și comerțul cu amănuntul din România" loading="lazy"></a>
+      <figcaption>Slide-ul 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ea-w">Fereastra w (zile înainte de Paște): <b id="ea-w-v"></b></label><input type="range" id="ea-w" min="1" max="20" step="1" value="10"></div><button class="btn play" id="ea-play" type="button"></button></div><div class="charts "><div class="chart" id="ea-chart"></div></div><ul class="out" id="ea-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu fereastra w = 3 (doar cele trei zile dinaintea Paștelui), efectul estimat al Paștelui asupra vînzărilor de alimente crește sau scade?</div>
+  <details><summary>Răspuns</summary><p>Scade la 1,6% (eroarea standard 1,6, t = 1,0) și nu se mai separă de zgomot. Cu w = 10 (curs): 5,9% (2,3; t = 2,6); cu w = 12: 6,1% (t = 2,9). Cumpărăturile de Paște se întind pe mai multe zile; un regresor prea îngust pune o parte din ele în luna greșită. Zilele lucrătoare rămîn în jur de +0,6% pentru alimente și +1,0% pentru total, pentru orice w.</p></details>
+</section><h2 class="sec" id="s-mult">Sezonalitate multiplă: consumul de electricitate</h2>
+<section class="blk" id="load-hourly">
+  <h3>Consumul orar: ziua și săptămîna</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=60" target="_blank" rel="noopener"><img src="slides/tsa_ch4_load_hourly_ro.jpg" alt="Slide-ul 59: Consumul orar: ziua și săptămîna" loading="lazy"></a>
+      <figcaption>Slide-ul 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lh-wk">Fereastra de trei săptămîni începe luni: <b id="lh-wk-v"></b></label><input type="range" id="lh-wk" min="0" max="230" step="1" value="158"></div><div class="ctl"><label for="lh-yr">Anul pentru ACF</label><select id="lh-yr"><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option></select></div><button class="btn play" id="lh-play" type="button"></button></div><div class="charts "><div class="chart" id="lh-chart"></div></div><ul class="out" id="lh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru 2025, care autocorelație este mai mare: la lagul 24 (aceeași oră ieri) sau la lagul 168 (aceeași oră acum o săptămînă)?</div>
+  <details><summary>Răspuns</summary><p>La lagul 168: 0,817 față de 0,811. Diferența este mai mare în 2023 (0,841 și 0,800) și 2024 (0,846 și 0,804). La lagul 84 (o jumătate de săptămînă) ACF este doar 0,22. Ciclul zilnic: minimul la ora 3:00 (5,3 GW), maximul la ora 19:00 (7,3 GW).</p></details>
+</section>
+<section class="blk" id="mstl">
+  <h3>MSTL: cîte o componentă sezonieră pentru fiecare perioadă</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch4_mstl_ro.jpg" alt="Slide-ul 61: MSTL: cîte o componentă sezonieră pentru fiecare perioadă" loading="lazy"></a>
+      <figcaption>Slide-ul 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ms-w">Fereastra de patru săptămîni</label><select id="ms-w"><option value="2025-02-03" selected>2025-02-03</option></select></div><button class="btn play" id="ms-play" type="button"></button></div><div class="charts "><div class="chart" id="ms-chart"></div></div><ul class="out" id="ms-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În fereastra din februarie 2025, componenta neregulată are 2% din varianța din jurul trendului. Cît are în fereastra 7 aprilie – 4 mai 2025, care cuprinde Paștele?</div>
+  <details><summary>Răspuns</summary><p>13%: Paștele (20 aprilie) și 1 Mai nu urmează tiparul zilnic sau săptămînal, deci ajung în componenta neregulată. În februarie: 70% componenta zilnică, 29% cea săptămînală. Ponderea componentei săptămînale variază între 20% (august) și 43% (iunie).</p></details>
+</section>
+<section class="blk" id="load-daily">
+  <h3>Consumul zilnic și sărbătorile legale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=64" target="_blank" rel="noopener"><img src="slides/tsa_ch4_load_daily_ro.jpg" alt="Slide-ul 63: Consumul zilnic și sărbătorile legale" loading="lazy"></a>
+      <figcaption>Slide-ul 63</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ld-yr">Mediile pe zile, pentru</label><select id="ld-yr"><option value="all" selected>2022–2026</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><button class="btn play" id="ld-play" type="button"></button></div><div class="charts "><div class="chart" id="ld-chart"></div></div><ul class="out" id="ld-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Care este ziua cu cel mai mic consum din 2023?</div>
+  <details><summary>Răspuns</summary><p>Duminica Rusaliilor, 4 iunie 2023: 4,37 GW, sub Duminica Paștelui, 16 aprilie 2023 (4,48 GW). În 2022, 2024 și 2025 cea mai joasă zi este Duminica Paștelui; pe tot eșantionul, 20 aprilie 2025 (3,79 GW, media 6,18 GW). Sîmbăta este cu 9%, duminica cu 17% sub miercuri, iar ianuarie cu 25% peste mai.</p></details>
+</section><h2 class="sec" id="s-tp">TBATS și Prophet</h2>
+<section class="blk" id="prophet">
+  <h3>Componentele Prophet pentru consumul zilnic</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=70" target="_blank" rel="noopener"><img src="slides/tsa_ch4_prophet_ro.jpg" alt="Slide-ul 69: Componentele Prophet pentru consumul zilnic" loading="lazy"></a>
+      <figcaption>Slide-ul 69</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pr-K">Armonici anuale K</label><select id="pr-K"><option value="3">3</option><option value="5">5</option><option value="10" selected>10 (implicit, curs)</option><option value="20">20</option></select></div><div class="ctl"><label for="pr-h">Sărbătorile legale</label><select id="pr-h"><option value="1" selected>incluse (curs)</option><option value="0">neincluse</option></select></div><button class="btn play" id="pr-play" type="button"></button></div><div class="charts "><div class="chart" id="pr-chart"></div></div><ul class="out" id="pr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Dacă Prophet este estimat fără lista sărbătorilor, ce se întîmplă cu eroarea medie absolută în eșantion?</div>
+  <details><summary>Răspuns</summary><p>Crește de la 197 la 226 MW. Fără sărbători, zilele de Crăciun și Paște rămîn în reziduuri, iar componenta anuală se deformează: maximul ei trece de la 7 decembrie la 24 ianuarie 2024. Cu sărbătorile, efectele sînt −1,24 GW (Crăciunul), −1,10 GW (Anul Nou) și −1,04 GW (Paștele).</p></details>
+</section><h2 class="sec" id="s-ev">Evaluarea prognozelor</h2>
+<section class="blk" id="cv-scheme">
+  <h3>Validarea încrucișată pentru serii de timp</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch4_cv_scheme_ro.jpg" alt="Slide-ul 72: Validarea încrucișată pentru serii de timp" loading="lazy"></a>
+      <figcaption>Slide-ul 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cs-h">Orizontul h: <b id="cs-h-v"></b></label><input type="range" id="cs-h" min="1" max="6" step="1" value="3"></div><div class="ctl"><label for="cs-st">Pasul dintre origini: <b id="cs-st-v"></b></label><input type="range" id="cs-st" min="1" max="4" step="1" value="2"></div><button class="btn play" id="cs-play" type="button"></button></div><div class="charts "><div class="chart" id="cs-chart"></div></div><ul class="out" id="cs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu pasul 1 între origini și orizontul h = 3, în cîte ferestre de prognoză apare aceeași dată?</div>
+  <details><summary>Răspuns</summary><p>În trei: ferestrele consecutive se suprapun pe h − 1 = 2 perioade, deci erorile sînt corelate pînă la lagul h − 1, iar testul Diebold–Mariano folosește h − 1 autocovarianțe. În schema cursului originile sînt la 14 zile, iar h = 14: ferestrele nu se suprapun, deci testul are o valoare pe fereastră și h = 1 în formulă.</p></details>
+</section>
+<section class="blk" id="load-fc">
+  <h3>Prognoze dintr-o singură origine, peste Paștele din 2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=77" target="_blank" rel="noopener"><img src="slides/tsa_ch4_load_fc_ro.jpg" alt="Slide-ul 76: Prognoze dintr-o singură origine, peste Paștele din 2026" loading="lazy"></a>
+      <figcaption>Slide-ul 76</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lf-o">Originea prognozei</label><select id="lf-o"><option value="2026-04-06" selected>2026-04-06</option></select></div><button class="btn play" id="lf-play" type="button"></button></div><div class="charts "><div class="chart" id="lf-chart"></div></div><ul class="out" id="lf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În fereastra Paștelui (originea 6 aprilie 2026), care model are cea mai mică MAE?</div>
+  <details><summary>Răspuns</summary><p>ETS, cu 299 MW, urmat de TBATS (309) și DHR (344); metoda sezonieră naivă are 686, Prophet 616. ETS nu are o linie în graficul din slide, deși are cea mai mică eroare în această fereastră. După Paște consumul rămîne sub toate prognozele, iar ETS și TBATS urmează nivelul ultimelor zile.</p></details>
+</section>
+<section class="blk" id="cv-results">
+  <h3>Rezultatele validării încrucișate pentru consumul zilnic</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=79" target="_blank" rel="noopener"><img src="slides/tsa_ch4_cv_results_ro.jpg" alt="Slide-ul 78: Rezultatele validării încrucișate pentru consumul zilnic" loading="lazy"></a>
+      <figcaption>Slide-ul 78</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cr-m">Măsura</label><select id="cr-m"><option value="MAE" selected>MAE</option><option value="RMSE">RMSE</option></select></div><div class="ctl"><label for="cr-w">Ferestrele</label><select id="cr-w"><option value="all" selected>toate cele 26</option><option value="hol">cu sărbători</option><option value="nohol">fără sărbători</option></select></div><button class="btn play" id="cr-play" type="button"></button></div><div class="charts "><div class="chart" id="cr-chart"></div></div><ul class="out" id="cr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În cele 8 ferestre care cuprind o sărbătoare, mai are DHR cea mai mică MAE?</div>
+  <details><summary>Răspuns</summary><p>Nu: TBATS 317 MW și DHR 318 MW sînt la egalitate, iar testul DM nu le separă (HLN 0,83, p = 0,431). În cele 18 ferestre fără sărbători, DHR are 258 MW, înaintea combinării (290). Pe toate cele 26 de ferestre: DHR 276, combinarea 305, Prophet 328 MW; ETS, SARIMA și TBATS nu sînt separate de metoda sezonieră naivă (p = 0,431; 0,231; 0,145).</p></details>
+</section><h2 class="sec" id="s-comb">Combinarea prognozelor</h2>
+<section class="blk" id="combination">
+  <h3>Combinarea DHR și Prophet</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf#page=84" target="_blank" rel="noopener"><img src="slides/tsa_ch4_combination_ro.jpg" alt="Slide-ul 83: Combinarea DHR și Prophet" loading="lazy"></a>
+      <figcaption>Slide-ul 83</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cb-1">Prognoza 1 (ponderea w)</label><select id="cb-1"><option value="Seasonal naive">Seasonal naive</option><option value="ETS">ETS</option><option value="SARIMA">SARIMA</option><option value="DHR" selected>DHR</option><option value="TBATS">TBATS</option><option value="Prophet">Prophet</option></select></div><div class="ctl"><label for="cb-2">Prognoza 2 (ponderea 1 − w)</label><select id="cb-2"><option value="Seasonal naive">Seasonal naive</option><option value="ETS">ETS</option><option value="SARIMA">SARIMA</option><option value="DHR">DHR</option><option value="TBATS">TBATS</option><option value="Prophet" selected>Prophet</option></select></div><button class="btn play" id="cb-play" type="button"></button></div><div class="charts "><div class="chart" id="cb-chart"></div></div><ul class="out" id="cb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Combinați ETS (MAE 381 MW) și Prophet (328 MW), ale căror erori au corelația 0,36. Ce MAE are media cu ponderi egale?</div>
+  <details><summary>Răspuns</summary><p>295 MW: sub ambele componente. Cu erori slab corelate, greșelile se compensează parțial; ponderea cea mai bună retrospectiv este w = 0,37 (MAE 286). Pentru DHR și Prophet (ρ = 0,75): 283 MW cu ponderi egale, față de 276 pentru DHR singur; pentru ETS și TBATS (ρ = 0,98), media cu ponderi egale (370) este mai slabă decît TBATS singur (363).</p></details>
+</section>
+<p class="src foot">PIB-ul României: Eurostat, volume înlănțuite (prețuri 2010), serie neajustată (NSA) și ajustată sezonier și pentru efectele de calendar (SCA), în versiunea folosită în curs. Comerțul cu amănuntul, producția industrială și înnoptările turistice: Eurostat, pînă în iulie 2026; IAPC: Eurostat, pînă în august 2026. Consumul de electricitate: ENTSO-E, „monthly hourly load values”, România, 1 ianuarie 2022 – 30 iunie 2026, ora de iarnă a României. Pasagerii aerieni: setul de date AirPassengers (Box și Jenkins), 1949–1960. Prognozele validării încrucișate sînt cele din curs; variantele care nu apar în curs sînt rulări suplimentare ale codului capitolului, cu aceleași date.</p>
+</main>
+</body>
+</html>
