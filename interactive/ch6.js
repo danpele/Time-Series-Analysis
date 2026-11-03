@@ -297,14 +297,19 @@ function blkRoMacro() {
   const G = grid('rm-chart', [{ r: 0, c: 0, t: 'Real GDP growth (quarterly, SA)', x: { type: 'date' } }, { r: 0, c: 1, t: 'Inflation and the 3-month interest rate', x: { type: 'date' }, y: { range: [-3, 32] } },
     { r: 1, c: 0, t: 'Unemployment rate (monthly, SA)', x: { type: 'date' } }, { r: 1, c: 1, t: 'EUR/RON, BNR reference rate', x: { type: 'date' } }], { cols: 2, h: 470, gyPx: 56, legendRows: 2 });
   const A = G.ax;
-  const tr_ = [bar(RO.d, RO.g, A[0], K.green, 'real GDP growth, q/q (%)', { hovertemplate: '%{x|%Y-%m}: %{y:.2f}%<extra></extra>' }),
-    ln(RO.dm, D.ro.pim, A[1], K.red, '12-month HICP inflation (%)', { hovertemplate: '%{x|%Y-%m}: %{y:.2f}%<extra></extra>' }),
-    ln(RO.dm, D.ro.im, A[1], K.blue, 'ROBOR 3M (% p.a.)', { hovertemplate: '%{x|%Y-%m}: %{y:.2f}%<extra></extra>' }),
-    ln(RO.dm, D.ro.um, A[2], K.purple, 'unemployment rate (%, SA)', { hovertemplate: '%{x|%Y-%m}: %{y:.1f}%<extra></extra>' }),
-    ln(RO.dfx, D.ro.fxm, A[3], K.amber, 'EUR/RON (monthly mean)', { hovertemplate: '%{x|%Y-%m}: %{y:.4f}<extra></extra>' }),
+  // the full series faded, the selected window (the sample of the table) in full colour: ▶ moves the coloured segment in every panel
+  const W_ = (d, v) => { const k = d.map((x, i) => i).filter(i => d[i] >= a && d[i] <= b); return [k.map(i => d[i]), k.map(i => v[i])]; };
+  const two = (d, v, ax, col, name, o) => [ln(d, v, ax, `rgba(${RGB[col]},0.3)`, null, Object.assign({}, o, { line: { color: `rgba(${RGB[col]},0.3)`, width: 1.2 } })),
+    ln(...W_(d, v), ax, col, name, o)];
+  const tr_ = [bar(RO.d, RO.g, A[0], `rgba(${RGB[K.green]},0.3)`, null, { hovertemplate: '%{x|%Y-%m}: %{y:.2f}%<extra></extra>' }),
+    bar(...W_(RO.d, RO.g), A[0], K.green, 'real GDP growth, q/q (%)', { hovertemplate: '%{x|%Y-%m}: %{y:.2f}%<extra></extra>' }),
+    ...two(RO.dm, D.ro.pim, A[1], K.red, '12-month HICP inflation (%)', { hovertemplate: '%{x|%Y-%m}: %{y:.2f}%<extra></extra>' }),
+    ...two(RO.dm, D.ro.im, A[1], K.blue, 'ROBOR 3M (% p.a.)', { hovertemplate: '%{x|%Y-%m}: %{y:.2f}%<extra></extra>' }),
+    ...two(RO.dm, D.ro.um, A[2], K.purple, 'unemployment rate (%, SA)', { hovertemplate: '%{x|%Y-%m}: %{y:.1f}%<extra></extra>' }),
+    ...two(RO.dfx, D.ro.fxm, A[3], K.amber, 'EUR/RON (monthly mean)', { hovertemplate: '%{x|%Y-%m}: %{y:.4f}<extra></extra>' }),
     leg(`selected window ${y0}-${Math.min(y1, 2026)}`, null, { fill: `rgba(${RGB[K.teal]},0.35)` })];
   A.forEach(ax => G.lay.shapes.push(rect(ax, a, b > '2026-09-30' ? '2026-09-30' : b, K.teal, 0.14)));
-  G.lay.shapes.push(hl(A[0], 0, K.navy, 'solid', 0.6));
+  G.lay.shapes.push(hl(A[0], 0, K.navy, 'solid', 0.6)); G.lay.barmode = 'overlay';
   plot('rm-chart', tr_, G.lay);
   const ix = RO.d.map((d, k) => k).filter(k => RO.d[k] >= a && RO.d[k] <= b), pick = v => ix.map(k => RO[v][k]);
   const X = RV.map(pick), C = RV.map((_, i) => RV.map((_, j) => corr(X[i], X[j])));
@@ -323,15 +328,16 @@ function ccfOf(y, x, kmax) { const n = y.length, out_ = {};
 function ccfStats(y0, tq) {
   const i0 = mIdx(`${y0}-01-01`), r = MKT.r.map(v => v.slice(i0));
   const dax = ccfOf(r[1], r[0], 5), bet = ccfOf(r[2], r[0], 5), band_ = 1.96 / Math.sqrt(r[0].length);
-  let pi = RO.pi.slice(RO0), ii = RO.i.slice(RO0);
+  const q0 = Math.max(RO0, roIdx(`${Math.max(y0, 2005)}-01-01`));     // Romania: the same start year, 2005Q1 at the earliest
+  let pi = RO.pi.slice(q0), ii = RO.i.slice(q0);
   if (tq === 'd1') { pi = pi.slice(1).map((v, k) => v - pi[k]); ii = ii.slice(1).map((v, k) => v - ii[k]); }
   const ip = ccfOf(ii, pi, 8), kmax = Object.keys(ip).map(Number).reduce((m, k) => (ip[k] > ip[m] ? k : m), -8);
-  return { dax, bet, band: band_, n: r[0].length, d0: MKT.d[i0], ip, kmax, bq: 1.96 / Math.sqrt(ii.length) };
+  return { dax, bet, band: band_, n: r[0].length, d0: MKT.d[i0], ip, kmax, bq: 1.96 / Math.sqrt(ii.length), q0: RO.d[q0] };
 }
 function blkCcf() {
   const y0 = +$('cc-y0').value, tq = $('cc-t').value; set('cc-y0', y0);
   const s = ccfStats(y0, tq), k5 = range(-5, 5, 1), k8 = range(-8, 8, 1);
-  const G = grid('cc-chart', [{ r: 0, c: 0, t: `Daily returns, ${y0}-2026`, xt: 'lag k (days)' }, { r: 0, c: 1, t: `Romania, quarterly, 2005-2026${tq === 'd1' ? ', first differences' : ''}`, xt: 'lag k (quarters)' }], { cols: 2, h: 380, legendRows: 2 });
+  const G = grid('cc-chart', [{ r: 0, c: 0, t: `Daily returns, ${y0}-2026`, xt: 'lag k (days)' }, { r: 0, c: 1, t: `Romania, quarterly, ${s.q0.slice(0, 4)}-2026${tq === 'd1' ? ', first differences' : ''}`, xt: 'lag k (quarters)' }], { cols: 2, h: 380, legendRows: 2 });
   const [a0, a1] = G.ax;
   plot('cc-chart', [bar(k5.map(k => k - 0.18), k5.map(k => s.dax[k]), a0, K.teal, 'DAX(t) vs S&P 500(t-k)', { width: 0.36, hovertemplate: 'k = %{text}: %{y:.3f}<extra>DAX</extra>', text: k5, textposition: 'none' }),
     bar(k5.map(k => k + 0.18), k5.map(k => s.bet[k]), a0, K.red, 'BET(t) vs S&P 500(t-k)', { width: 0.36, hovertemplate: 'k = %{text}: %{y:.3f}<extra>BET</extra>', text: k5, textposition: 'none' }),
@@ -341,7 +347,7 @@ function blkCcf() {
     hl(a1, s.bq, K.teal, 'dash', 1), hl(a1, -s.bq, K.teal, 'dash', 1)] }));
   const outB = c => k5.filter(k => Math.abs(c[k]) > s.band).map(k => String(k).replace('-', '−'));
   out('cc-out', [T.cc1(s.d0, s.n, nf(s.band, 3)), T.cc2('DAX', nf(s.dax[0], 2), nf(s.dax[1], 3), nf(s.dax[-1], 3), outB(s.dax)), T.cc2('BET', nf(s.bet[0], 2), nf(s.bet[1], 3), nf(s.bet[-1], 3), outB(s.bet)),
-    T.cc3(tq, s.kmax, nf(s.ip[s.kmax], 2), nf(s.ip[-4], 2), nf(s.ip[4], 2), nf(s.bq, 2))]);
+    T.cc3(tq, T.q(s.q0), s.kmax, nf(s.ip[s.kmax], 2), nf(s.ip[-4], 2), nf(s.ip[4], 2), nf(s.bq, 2))]);
   table('cc-tb', ['k', ...[-3, -2, -1, 0, 1, 2, 3].map(k => ({ v: String(k).replace('-', '−'), cls: 'r' }))],
     [['DAX', s.dax], ['BET', s.bet]].map(([n, c]) => [n, ...[-3, -2, -1, 0, 1, 2, 3].map(k => num(c[k], 3, Math.abs(c[k]) > s.band))]), { cap: T.ccCap(nf(s.band, 3)) });
 }
@@ -555,7 +561,7 @@ function blkGr() {
   table('gr-tb', [L.cause, L.effect, { v: 'F', cls: 'r' }, { v: L.df, cls: 'r' }, { v: 'p', cls: 'r' }], PAIRS.map(([c, e], k) => [T.v[RV[c]], T.v[RV[e]], num(R[k].F, 2, R[k].p < 0.05),
     { v: `(${R[k].df1}, ${R[k].df2})`, cls: 'r' }, { v: (R[k].p < 0.05 ? '<b>' : '') + pv(R[k].p) + (R[k].p < 0.05 ? '</b>' : ''), cls: 'r' }]), { cap: T.grCap(sys, p, T.q(RO.d[end]), nf(R[0].crit, 2)) });
   const ps = range(1, 6, 1), byp = ps.map(q => grRo(q, sys, end));
-  const G = grid('gr-chart', [{ r: 0, c: 0, xt: 'lag order p', yt: 'p-value (log scale)', y: { type: 'log', tickvals: [0.001, 0.01, 0.05, 0.1, 0.5, 1], ticktext: ['0.001', '0.01', '0.05', '0.1', '0.5', '1'] }, t: 'Granger F tests by lag order' }], { cols: 1, h: 380, legendRows: 3 });
+  const G = grid('gr-chart', [{ r: 0, c: 0, xt: 'lag order p', yt: 'p-value (log scale)', y: { type: 'log', tickvals: [0.001, 0.01, 0.05, 0.1, 0.5, 1], ticktext: ['0.001', '0.01', '0.05', '0.1', '0.5', '1'] }, t: `Granger F tests by lag order, 2005Q1-${T.q(RO.d[end]).replace(/^T(\d) (\d{4})$/, '$2Q$1')}` }], { cols: 1, h: 380, legendRows: 3 });
   const a = G.ax[0], cols = [K.green, K.blue, K.red, K.amber, K.purple, K.teal];
   plot('gr-chart', PAIRS.map(([c, e], k) => ln(ps, byp.map(r => Math.max(r[k].p, 1e-4)), a, cols[k], `${LAB[RV[c]]} -> ${LAB[RV[e]]}`, { mode: 'lines+markers', marker: { size: 6 }, hovertemplate: 'p = %{x}: %{y:.3f}<extra></extra>' })),
     Object.assign(G.lay, { shapes: [hl(a, 0.05, K.navy, 'dash', 1), vl(a, p, K.teal, 'dot', 1.2)] }));
@@ -571,7 +577,7 @@ function blkGm() {
   table('gm-tb', [L.cause, L.effect, { v: 'F', cls: 'r' }, { v: L.df, cls: 'r' }, { v: 'p', cls: 'r' }], PAIRS.map(([c, e], k) => [LAB[MK[c]], LAB[MK[e]], num(R[k].F, 1, R[k].p < 0.05),
     { v: `(${R[k].df1}, ${R[k].df2})`, cls: 'r' }, { v: (R[k].p < 0.05 ? '<b>' : '') + pv(R[k].p) + (R[k].p < 0.05 ? '</b>' : ''), cls: 'r' }]), { cap: T.gmCap(p, f.n, y0) });
   const ps = range(1, 10, 1), Fs = ps.map(q => grMkt(q, i0).R);
-  const G = grid('gm-chart', [{ r: 0, c: 0, xt: 'lag order p', yt: 'F statistic (log scale)', y: { type: 'log' }, t: 'Granger F tests by lag order, daily returns' }], { cols: 1, h: 380, legendRows: 3 });
+  const G = grid('gm-chart', [{ r: 0, c: 0, xt: 'lag order p', yt: 'F statistic (log scale)', y: { type: 'log' }, t: `Granger F tests by lag order, daily returns from ${y0}` }], { cols: 1, h: 380, legendRows: 3 });
   const a = G.ax[0], cols = [K.teal, K.red, K.blue, K.amber, K.purple, K.green];
   plot('gm-chart', [...PAIRS.map(([c, e], k) => ln(ps, Fs.map(r => Math.max(r[k].F, 0.05)), a, cols[k], `${LAB[MK[c]]} -> ${LAB[MK[e]]}`, { mode: 'lines+markers', marker: { size: 6 }, hovertemplate: 'p = %{x}: F = %{y:.2f}<extra></extra>' })),
     ln(ps, Fs.map(r => r[0].crit), a, K.navy, '5% critical value', { line: { color: K.navy, dash: 'dash', width: 1.2 }, hovertemplate: 'p = %{x}: %{y:.2f}<extra>5% critical value</extra>' })],
@@ -817,10 +823,11 @@ function oosStats(cty, h, y0) {
 }
 function blkOos() {
   const sel = $('oo-c').value, [cty, h] = sel.split('-'), ys = $('oo-y'), lo = cty === 'ro' ? 2015 : 1985, hiY = cty === 'ro' ? 2022 : 1996;
-  if (+ys.min !== lo) { ys.min = lo; ys.max = hiY; ys.value = lo; }
+  if (+ys.min !== lo) { const d0 = +ys.value - +ys.min; ys.min = lo; ys.max = hiY; ys.value = Math.min(lo + d0, hiY); }   // keep the shift when the country changes
   const y0 = +ys.value; set('oo-y', y0);
-  const ro = [1, 4].map(x => oosStats('ro', String(x), cty === 'ro' ? y0 : 2015)), us = [2, 4, 8].map(x => oosStats('us', String(x), cty === 'us' ? y0 : 1985));
-  const G = grid('oo-chart', [{ r: 0, c: 0, t: 'Romania, forecasts for 2015-2026', yt: 'relative RMSE', x: { type: 'category' } }, { r: 0, c: 1, t: 'United States, forecasts for 1985-2000', x: { type: 'category' } }], { cols: 2, h: 350, legendRows: 2 });
+  const dy = y0 - lo, yr = Math.min(2015 + dy, 2022), yu = Math.min(1985 + dy, 1996);      // the other country starts as many years later
+  const ro = [1, 4].map(x => oosStats('ro', String(x), yr)), us = [2, 4, 8].map(x => oosStats('us', String(x), yu));
+  const G = grid('oo-chart', [{ r: 0, c: 0, t: `Romania, targets ${yr}-2026`, yt: 'relative RMSE', x: { type: 'category' } }, { r: 0, c: 1, t: `United States, targets ${yu}-2000`, x: { type: 'category' } }], { cols: 2, h: 350, legendRows: 2 });
   const tr_ = [];
   [[ro, [1, 4], G.ax[0]], [us, [2, 4, 8], G.ax[1]]].forEach(([S, hs, a], k) => {
     const xs = [], ra = [], rv = []; S[0].forEach((_, vi) => hs.forEach((hh, hi) => { const s = S[hi][vi]; xs.push(`${s.v === 'pi' ? 'π' : s.v} h=${hh}`); ra.push(s.ar / s.rw); rv.push(s.var / s.rw); }));
@@ -844,9 +851,10 @@ function blkUs() {
   const a = `${y0}-01-01`, b = `${y1}-12-31`;
   const G = grid('us-chart', [{ r: 0, c: 0, t: 'United States, quarterly, FRED', x: { type: 'date' } }], { cols: 1, h: 380, legendRows: 2 }), ax = G.ax[0];
   G.lay.shapes = [rect(ax, a, b > '2026-06-30' ? '2026-06-30' : b, K.teal, 0.1), hl(ax, 0, K.navy, 'solid', 0.6)];
-  plot('us-chart', [ln(US.d, US.pi, ax, K.red, 'inflation (GDP price index, annualised %)', { line: { color: K.red, width: 1.1 }, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' }),
-    ln(US.d, US.u, ax, K.purple, 'unemployment rate (%)', { line: { color: K.purple, width: 1.1 }, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' }),
-    ln(US.d, US.R, ax, K.blue, 'federal funds rate (%)', { line: { color: K.blue, width: 1.1 }, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' }),
+  const wi = US.d.map((_, k) => k).filter(k => US.d[k] >= a && US.d[k] <= b);
+  const two = (v, col, name) => [ln(US.d, v, ax, col, null, { line: { color: `rgba(${RGB[col]},0.28)`, width: 1 }, hoverinfo: 'skip' }),
+    ln(wi.map(k => US.d[k]), wi.map(k => v[k]), ax, col, name, { line: { color: col, width: 1.4 }, hovertemplate: '%{x|%Y-%m}: %{y:.2f}<extra></extra>' })];
+  plot('us-chart', [...two(US.pi, K.red, 'inflation (GDP price index, annualised %)'), ...two(US.u, K.purple, 'unemployment rate (%)'), ...two(US.R, K.blue, 'federal funds rate (%)'),
     leg(`selected window ${y0}-${Math.min(y1, 2026)}`, null, { fill: `rgba(${RGB[K.teal]},0.3)` })], G.lay);
   const ix = US.d.map((_, k) => k).filter(k => US.d[k] >= a && US.d[k] <= b), V = ['pi', 'u', 'R'], X = V.map(v => ix.map(k => US[v][k]));
   out('us-out', [T.us1(T.q(US.d[ix[0]]), T.q(US.d[ix[ix.length - 1]]), ix.length, nf(mean(X[0]), 2), nf(mean(X[1]), 2), nf(mean(X[2]), 2), nf(corr(X[0], X[2]), 2), nf(corr(X[1], X[2]), 2))]);
@@ -879,9 +887,9 @@ const BLK = { 'ro-macro': ['rm', blkRoMacro], ccf: ['cc', blkCcf], 'wx-var1': ['
   oos: ['oo', blkOos], 'us-data': ['us', blkUs], 'sw-irf': ['sw', blkSw] };
 const PLAY = { rm: ['rm-y0', range(2000, 2020, 1), 600], cc: ['cc-y0', range(2000, 2020, 2), 900], w1: ['w1-a21', range(0, 1.2, 0.1), 700], vs: ['vs-a', range(0, 1.2, 0.1), 700],
   ro: ['ro-p', range(1, 6, 1), 1000], ic: ['ic-e', range(2012, 2026, 1), 700], vt: ['vt-p', range(1, 4, 1), 1200], re: ['re-p', range(1, 4, 1), 1100], gw: ['gw-p', range(1, 4, 1), 1100],
-  gr: ['gr-p', range(1, 6, 1), 1000], gm: ['gm-p', range(1, 10, 1), 900], gs: ['gs-c', ['0.0', '0.4', '0.8'], 1300], wo: ['wo-r', range(-0.9, 0.9, 0.1), 500], ir: ['ir-o', ['gip', 'gpi', 'igp', 'ipg', 'pgi', 'pig'], 1500],
-  io: ['io-p', range(1, 4, 1), 1200], mi: ['mi-y', range(2000, 2020, 2), 1000], wf: ['wf-h', range(1, 10, 1), 700], fv: ['fv-o', ['gip', 'gpi', 'igp', 'ipg', 'pgi', 'pig'], 1400], st: ['st-h', range(1, 20, 1), 600],
-  sp: ['sp-w', range(100, 500, 50), 1500], fc: ['fc-o', null, 500], oo: ['oo-c', ['ro-1', 'ro-4', 'us-2', 'us-4', 'us-8'], 1400], us: ['us-y1', range(1980, 2026, 2), 500], sw: ['sw-e', ['2000-10-01', '2007-10-01', '2019-10-01', '2026-04-01'], 1600] };
+  gr: ['gr-e', ['2014-10-01', '2019-10-01', '2026-04-01'], 1500], gm: ['gm-y', range(2000, 2020, 2), 1000], gs: ['gs-c', ['0.0', '0.4', '0.8'], 1300], wo: ['wo-r', range(-0.9, 0.9, 0.1), 500], ir: ['ir-o', ['gip', 'gpi', 'igp', 'ipg', 'pgi', 'pig'], 1500],
+  io: ['io-p', range(1, 4, 1), 1200], mi: ['mi-y', range(2000, 2020, 2), 1000], wf: ['wf-r', range(-0.9, 0.9, 0.1), 450], fv: ['fv-o', ['gip', 'gpi', 'igp', 'ipg', 'pgi', 'pig'], 1400], st: ['st-h', range(1, 20, 1), 600],
+  sp: ['sp-w', range(100, 500, 50), 1500], fc: ['fc-o', null, 500], oo: ['oo-y', range(2015, 2022, 1), 900], us: ['us-y1', range(1980, 2026, 2), 500], sw: ['sw-e', ['2000-10-01', '2007-10-01', '2019-10-01', '2026-04-01'], 1600] };
 function init() {
   const live = Object.keys(BLK).filter(b => has(BLK[b][0] + '-out'));
   const players = {};
@@ -892,6 +900,8 @@ function init() {
     if (x === 'fc') vals = range(+$('fc-o').min, ROE, 1);
     players[b] = new Player(x + '-play', $(pl[0]), vals, pl[2]);
   });
+  // ▶ of the out-of-sample block runs over the start years of the country in the table
+  if (players.oos) $('oo-play').addEventListener('click', () => { const ys = $('oo-y'); players.oos.values = range(+ys.min, +ys.max, 1); }, true);
   if (T.predict && predict) Object.entries(T.predict).forEach(([b, sp]) => { if (has(b) && live.includes(b)) predict(b, Object.assign({ player: players[b], veil: { out: true } }, sp)); });
   if (T.ticket && exitTicket) exitTicket(T.ticket);
   live.forEach(b => BLK[b][1]());

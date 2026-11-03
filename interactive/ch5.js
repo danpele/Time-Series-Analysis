@@ -149,8 +149,12 @@ function blkReturns() {
     tr.push(ln(S[k].d, S[k].r, a, COL[k], null, { line: { color: COL[k], width: 0.6 }, hovertemplate: '%{x}: %{y:.2f}%<extra>' + NAME[k] + '</extra>' }));
     G.lay.shapes.push(...episodes(a, S[k].d[0], 0.18));
     if (`${y}-12-31` >= S[k].d[0]) G.lay.shapes.push(rect(a, `${y}-01-01` < S[k].d[0] ? S[k].d[0] : `${y}-01-01`, `${y}-12-31`, K.teal, 0.28));
+    // +/- 2 daily standard deviations of the selected year, drawn over the whole sample: how far the other years leave that band
+    const s = sdYear(k, y), x2 = [S[k].d[0], S[k].d[S[k].d.length - 1]], b2 = isNaN(s) ? [null, null] : [2 * s, 2 * s];
+    [1, -1].forEach(sg => tr.push(ln(x2, b2.map(v => (v === null ? null : sg * v)), a, K.navy, null,
+      { line: { color: K.navy, width: 1.2, dash: 'dash' }, hovertemplate: (sg > 0 ? '+' : '-') + '2 sd of ' + y + ': %{y:.2f}%<extra>' + NAME[k] + '</extra>' })));
   });
-  tr.push(...EPI_LEG(), leg(`selected year: ${y}`, null, { fill: `rgba(${RGB[K.teal]},0.4)` }));
+  tr.push(...EPI_LEG(), leg(`selected year: ${y}`, null, { fill: `rgba(${RGB[K.teal]},0.4)` }), leg(`+/- 2 daily standard deviations of ${y}`, { color: K.navy, dash: 'dash', width: 1.2 }));
   plot('re-chart', tr, G.lay);
   const rows = AS.map(k => {
     const s = sdYear(k, y), e8 = sdEpi(k, '2008'), e0 = sdEpi(k, '2020');
@@ -195,15 +199,22 @@ function zArGarch() {             // standardised residuals of AR(1)-GARCH(1,1)-
   const r = S.bet.r, g = D.ag, e = r.slice(1).map((v, i) => v - g.c - g.phi * r[i]), s = s2rec(e, g.omega, g.alpha, g.beta, g.s1);
   return (ZAG = { e, s, z: e.map((v, i) => v / Math.sqrt(s[i])) });
 }
+const ZP = {};
+function zArP(p) {                // AR(p) mean residuals standardised by the GARCH(1,1) variance with the lecture's parameters (re-estimated only for p = 1)
+  if (p === 1) return zArGarch();
+  if (ZP[p]) return ZP[p];
+  const g = D.ag, e = arOls(S.bet.r, p).res, s = s2rec(e, g.omega, g.alpha, g.beta, g.s1);
+  return (ZP[p] = { e, s, z: e.map((v, i) => v / Math.sqrt(s[i])) });
+}
 function arStats(p) {
   const { res } = arOls(S.bet.r, p), e2 = res.map(v => v * v);
   return { n: res.length, lbe: lb(res, 10, p), lbe2: lb(e2), r1: acf(e2, 1)[0], lm: archLm(res), a: acf(res, 30), a2: acf(e2, 30) };
 }
 function blkArma() {
   const p = +$('ar-p').value; set('ar-p', p);
-  const L = arStats(p), z = zArGarch().z, z2 = z.map(v => v * v), b = 1.96 / Math.sqrt(L.n), j = lags(30);
+  const L = arStats(p), z = zArP(p).z, z2 = z.map(v => v * v), b = 1.96 / Math.sqrt(L.n), j = lags(30);
   const G = grid('ar-chart', [{ r: 0, c: 0, t: p ? `AR(${p}) with constant variance: residuals e(t)` : 'Constant mean with constant variance: residuals e(t)', xt: 'lag k (days)', yt: 'autocorrelation' },
-    { r: 0, c: 1, t: 'AR(1)-GARCH(1,1)-t: standardised residuals z(t)', xt: 'lag k (days)', y: { matches: 'y' } }], { cols: 2, h: 360 });
+    { r: 0, c: 1, t: `${p ? `AR(${p})` : 'Constant mean'}-GARCH(1,1)-t: standardised residuals z(t)`, xt: 'lag k (days)', y: { matches: 'y' } }], { cols: 2, h: 360 });
   const tr = [];
   [[L.a, L.a2], [acf(z, 30), acf(z2, 30)]].forEach(([u, v], i) => {
     const a = G.ax[i];
@@ -214,9 +225,9 @@ function blkArma() {
   tr.push(leg('95% band, +/- 1.96/sqrt(T)', null, { fill: `rgba(${RGB[K.teal]},0.35)` }));
   G.lay.barmode = 'overlay';
   plot('ar-chart', tr, G.lay);
-  const lz = lb(z, 10, 1), lz2 = lb(z2), mz = archLm(z);
+  const lz = lb(z, 10, p), lz2 = lb(z2), mz = archLm(z);
   out('ar-out', [T.ar1(p, nf(L.lbe.q, 1), 10 - p, pe(L.lbe.p), nf(L.r1, 2), nf(L.lbe2.q, 0), pe(L.lbe2.p), nf(L.lm.r2, 4), L.lm.n, nf(L.lm.lm, 1), pe(L.lm.p)),
-    T.ar2(nf(acf(z2, 1)[0], 3), nf(lz2.q, 1), pe(lz2.p), nf(mz.lm, 1), pe(mz.p), nf(lz.q, 1), pe(lz.p))]);
+    T.ar2(p, nf(acf(z2, 1)[0], 3), nf(lz2.q, 1), pe(lz2.p), nf(mz.lm, 1), pe(mz.p), nf(lz.q, 1), pe(lz.p))]);
 }
 
 // ================================================================= 4. simulated paths
@@ -233,13 +244,15 @@ function blkSim() {
   const a1 = +$('si-a1').value, a = +$('si-a').value; let b = +$('si-b').value;
   if (a + b > 0.99) { b = Math.round((0.99 - a) * 100) / 100; $('si-b').value = b; }
   set('si-a1', nf(a1, 2)); set('si-a', nf(a, 2)); set('si-b', nf(b, 2));
-  const S0 = D.sim, P = [['i.i.d. Normal(0, 1)', S0.iid, K.blue], [`ARCH(1): omega = ${+(1 - a1).toFixed(2)}, alpha = ${a1}`, simPath(S0.z1, 1 - a1, a1, 0, S0.burn), K.red],
+  const S0 = D.sim, P = [[`ARCH(1): omega = ${+(1 - a1).toFixed(2)}, alpha = ${a1}`, simPath(S0.z1, 1 - a1, a1, 0, S0.burn), K.red],
     [`GARCH(1,1): omega = ${+(1 - a - b).toFixed(2)}, alpha = ${a.toFixed(2)}, beta = ${b.toFixed(2)}`, simPath(S0.z2, 1 - a - b, a, b, S0.burn), K.green]];
-  const lim = Math.max(...P.map(p => Math.max(...p[1].map(Math.abs)))) * 1.05;
-  const G = grid('si-chart', P.map((p, i) => ({ r: i, c: 0, xt: i === 2 ? 'time t' : '', y: { range: [-lim, lim] }, x: { showticklabels: i === 2 } })), { cols: 1, h: 560, gyPx: 22, rowPx: 150, legendRows: 2 });
-  const tr = P.map((p, i) => ln(lags(1000).map(v => v - 1), p[1], G.ax[i], p[2], p[0], { line: { color: p[2], width: 0.8 }, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' }));
+  const lim = Math.max(...S0.iid.map(Math.abs), ...P.map(p => Math.max(...p[1].map(Math.abs)))) * 1.05, t = lags(1000).map(v => v - 1);
+  const G = grid('si-chart', P.map((p, i) => ({ r: i, c: 0, xt: i === 1 ? 'time t' : '', y: { range: [-lim, lim] }, x: { showticklabels: i === 1 } })), { cols: 1, h: 470, gyPx: 22, rowPx: 170, legendRows: 3 });
+  const tr = [];
+  P.forEach((p, i) => tr.push(ln(t, S0.iid, G.ax[i], '#9AA0A6', i ? null : 'i.i.d. Normal(0, 1), same variance (grey, both panels)', { line: { color: '#9AA0A6', width: 0.8 }, hovertemplate: 't = %{x}: %{y:.2f}<extra>i.i.d.</extra>' }),
+    ln(t, p[1], G.ax[i], p[2], p[0], { line: { color: p[2], width: 0.8 }, hovertemplate: 't = %{x}: %{y:.2f}<extra></extra>' })));
   plot('si-chart', tr, G.lay);
-  const st = P.map(p => simStats(p[1]));
+  const st = [S0.iid].concat(P.map(p => p[1])).map(simStats);
   const kt = v => (isFinite(v) ? nf(v, 2) : '∞');
   out('si-out', [T.si1(nf(st[0].k, 2), nf(st[0].r1, 3)), T.si2(nf(a1, 2), nf(st[1].k, 2), kt(kArch(a1)), nf(st[1].r1, 3), nf(st[1].mx, 2)),
     T.si3(nf(a, 2), nf(b, 2), nf(st[2].k, 2), kt(kGarch(a, b)), nf(st[2].r1, 3), b > 0 ? nf(Math.log(0.5) / Math.log(a + b), 1) : null)]);
@@ -310,10 +323,11 @@ function likG(n) {
   }));
   return { Z: L.map(r => r.map(v => (v === null ? null : v - best))), a: LG_A[bj], b: LG_B[bi] };
 }
-let LG500 = null;
+const LGC = {};
+const likGc = n => LGC[n] || (LGC[n] = likG(n));
 function blkLikG() {
   const n = +$('lg-n').value; set('lg-n', n);
-  const P = [[500, LG500 || (LG500 = likG(500))], [n, likG(n)]];
+  const P = [[500, likGc(500)], [n, likGc(n)]], path = range(250, n, 250).map(m => [m, likGc(m)]);
   const G = grid('lg-chart', P.map(([m, s], i) => ({ r: 0, c: i, t: `n = ${m}: maximum at alpha = ${s.a.toFixed(3)}, beta = ${s.b.toFixed(2)}`, xt: 'alpha', yt: i ? '' : 'beta',
     x: { range: [0.01, 0.30] }, y: { range: [0.50, 0.97] } })), { cols: 2, h: 420, legendRows: 2 });
   const tr = [];
@@ -325,6 +339,10 @@ function blkLikG() {
       { x: [0.1], y: [0.8], mode: 'markers', marker: { color: K.navy, size: 10, symbol: 'x' }, name: 'true values: alpha = 0.1, beta = 0.8', showlegend: i === 0, xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' },
       ln(LG_A, LG_A.map(v => 1 - v), a, K.purple, 'alpha + beta = 1 (IGARCH boundary)', { line: { color: K.purple, dash: 'dash', width: 1.3 }, showlegend: i === 0, hoverinfo: 'skip' }));
   });
+  // left panel: the path of the grid maximum as n grows from 250 to the n of the right panel, over the n = 500 contours
+  tr.push({ x: path.map(([, s]) => s.a), y: path.map(([, s]) => s.b), text: path.map(([m]) => m), mode: 'lines+markers', line: { color: K.navy, width: 1.2 },
+    marker: { color: K.navy, size: 6, symbol: 'diamond' }, name: `maximum on the grid for n = 250, 500, …, ${n} (left)`, xaxis: G.ax[0].xa, yaxis: G.ax[0].ya,
+    hovertemplate: 'n = %{text}: alpha = %{x:.3f}, beta = %{y:.2f}<extra></extra>' });
   plot('lg-chart', tr, G.lay);
   out('lg-out', P.map(([m, s]) => T.lg1(m, nf(s.a, 3), nf(s.b, 2), nf(s.a + s.b, 3))));
 }
@@ -341,11 +359,13 @@ function qqZ() {
 function blkQQ() {
   const nu = +$('qq-nu').value; set('qq-nu', nf(nu, 2));
   const Q = qqZ(), thN = Q.u.map(normPpf), thT = Q.u.map(u => stdT(u, nu));
-  const G = grid('qq-chart', [{ r: 0, c: 0, xt: 'theoretical quantile', yt: 'sample quantile' }, { r: 0, c: 1, xt: 'theoretical quantile' }], { cols: 2, h: 400, legendRows: 3 });
+  const G = grid('qq-chart', [{ r: 0, c: 0, t: 'GARCH(1,1)-N residuals', xt: 'theoretical quantile', yt: 'sample quantile' }, { r: 0, c: 1, t: 'GARCH(1,1)-t residuals', xt: 'theoretical quantile' }], { cols: 2, h: 420, legendRows: 3 });
   const tr = [];
-  [[thN, Q.zn, K.blue, 'GARCH(1,1)-N residuals against the Normal'], [thT, Q.zt, K.red, `GARCH(1,1)-t residuals against the standardised t(${nu.toFixed(1)})`]].forEach(([th, z, c, nm], i) => {
-    const a = G.ax[i], zs = Q.keep.map(k => z[k]), lo = Math.min(th[0], zs[0]), hi = Math.max(th[th.length - 1], zs[zs.length - 1]);
-    tr.push({ x: th, y: zs, mode: 'markers', marker: { color: c, size: 4, opacity: 0.6 }, name: nm, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'theory %{x:.2f}, sample %{y:.2f}<extra></extra>' },
+  // each panel: the residuals against the Normal (grey, fixed) and against the standardised t(nu) of the slider (colour, moves with nu)
+  [[Q.zn, K.blue, 'GARCH(1,1)-N'], [Q.zt, K.red, 'GARCH(1,1)-t']].forEach(([z, c, nm], i) => {
+    const a = G.ax[i], zs = Q.keep.map(k => z[k]), lo = Math.min(thN[0], thT[0], zs[0]), hi = Math.max(thN[thN.length - 1], thT[thT.length - 1], zs[zs.length - 1]);
+    tr.push({ x: thN, y: zs, mode: 'markers', marker: { color: '#9AA0A6', size: 4, opacity: 0.5 }, name: 'residuals against the Normal (grey, both panels)', showlegend: i === 0, xaxis: a.xa, yaxis: a.ya, hovertemplate: 'Normal %{x:.2f}, sample %{y:.2f}<extra>' + nm + '</extra>' },
+      { x: thT, y: zs, mode: 'markers', marker: { color: c, size: 4, opacity: 0.65 }, name: `${nm} residuals against the standardised t(${nu.toFixed(1)})`, xaxis: a.xa, yaxis: a.ya, hovertemplate: 't %{x:.2f}, sample %{y:.2f}<extra>' + nm + '</extra>' },
       ln([lo, hi], [lo, hi], a, K.navy, i ? null : '45-degree line', { line: { color: K.navy, dash: 'dash', width: 1 }, hoverinfo: 'skip', showlegend: i === 0 }));
   });
   plot('qq-chart', tr, G.lay);
@@ -449,7 +469,7 @@ function kernelNic(k, gr, c) {
 function blkNic() {
   const k2 = $('ni-k').value, xs = +$('ni-x').value, c = +$('ni-h').value; set('ni-x', nf(xs, 1) + '%'); set('ni-h', nf(c, 2));
   const ks = ['sp500', k2];
-  const G = grid('ni-chart', ks.map((k, i) => ({ r: 0, c: i, t: NAME[k], xt: 'shock yesterday, eps(t-1) (%)', yt: i ? '' : 'variance today (%^2)' })), { cols: 2, h: 420, legendRows: 2 });
+  const G = grid('ni-chart', ks.map((k, i) => ({ r: 0, c: i, t: NAME[k], xt: 'shock yesterday, eps(t-1) (%)', yt: i ? '' : 'variance today (%^2)' })), { cols: 2, h: 440, legendRows: 3 });
   const tr = [], rows = [];
   ks.forEach((k, i) => {
     const a = G.ax[i], r = S[k].r, gr = range(quantile(r, 0.01), quantile(r, 0.99), (quantile(r, 0.99) - quantile(r, 0.01)) / 200);
@@ -459,8 +479,14 @@ function blkNic() {
     tr.push(ln(gr, kn.v, a, K.amber, 'kernel estimate of E[r(t)^2 | r(t-1)]', { line: { color: K.amber, width: 1.5, dash: 'dash' }, showlegend: i === 0, hovertemplate: 'r(t-1) = %{x:.2f}: %{y:.2f}<extra>kernel</extra>' }));
     G.lay.shapes.push(vl(a, -xs, K.navy, 'dot', 1), vl(a, xs, K.navy, 'dot', 1));
     const rg = nic(k, 'gjr', [-xs, xs]), re = nic(k, 'egarch', [-xs, xs]), kk = kernelNic(k, [-xs, xs], c);
+    // the variance after a fall and after a rise of the selected size: one pair of points per curve
+    [[nic(k, 'garch', [-xs, xs]), K.blue, 'GARCH'], [rg, K.red, 'GJR'], [re, K.green, 'EGARCH'], [kk.v, K.amber, 'kernel']].forEach(([v, col, nm], j) =>
+      tr.push({ x: [-xs, xs], y: v, mode: 'markers', marker: { color: col, size: 8, line: { color: '#fff', width: 1 } },
+        showlegend: false, xaxis: a.xa, yaxis: a.ya,
+        hovertemplate: 'eps = %{x:.1f}: %{y:.2f}<extra>' + nm + '</extra>' }));
     rows.push(T.ni1(NAME[k], nf(xs, 1), nf(rg[0] / rg[1], 2), nf(re[0] / re[1], 2), nf(kk.v[0] / kk.v[1], 2), nf(D.asym[k].gjr['alpha[1]'], 3), nf(D.asym[k].gjr['gamma[1]'], 3)));
   });
+  tr.push(leg(`points: variance after a shock of -${nf(xs, 1)}% and +${nf(xs, 1)}%`, null, { color: K.navy, size: 8 }));
   rows.push(T.ni2(nf(c, 2), nf(kernelNic('sp500', [0], c).h, 2), NAME[k2], nf(kernelNic(k2, [0], c).h, 2)));
   plot('ni-chart', tr, G.lay);
   out('ni-out', rows);
@@ -566,6 +592,8 @@ function init() {
   on(['re-y'], blkReturns); P('re-play', 're-y', range(2000, 2026, 1), 600);
   on(['aq-f', 'aq-y'], blkAcfSq); P('aq-play', 'aq-y', range(2000, 2020, 2), 700);
   on(['ar-p'], blkArma); P('ar-play', 'ar-p', range(0, 5, 1), 900);
+  // ▶ raises beta of GARCH(1,1) and gives ARCH(1) the same persistence, alpha = alpha + beta of GARCH (on the slider's grid, at most 0.9)
+  $('si-b').addEventListener('input', () => { const p = players['si-play']; if (p && p.timer) $('si-a1').value = Math.min(0.9, Math.max(0.05, Math.round((+$('si-a').value + +$('si-b').value) * 20) / 20)); });
   on(['si-a1', 'si-a', 'si-b'], blkSim); P('si-play', 'si-b', range(0, 0.88, 0.04), 450);
   on(['ew-l', 'ew-w'], blkEwma); P('ew-play', 'ew-l', range(0.80, 0.99, 0.01), 450);
   on(['l1-a', 'l1-n'], blkLik1); P('l1-play', 'l1-n', ['250', '500', '1000', '2000', '5000'], 1100);
@@ -589,7 +617,7 @@ function init() {
   let w = window.innerWidth, tm = null;
   window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); } }, 250); });
 }
-window.CH5 = { S, garch, zt, ewma, sdYear, sdEpi, acfSq, arStats, zArGarch, simPath, simStats, kArch, kGarch, ewStats, lik1, likG, qqZ, stdT, volStats, persRows,
+window.CH5 = { S, garch, zt, ewma, sdYear, sdEpi, acfSq, arStats, zArGarch, zArP, simPath, simStats, kArch, kGarch, ewStats, lik1, likG, qqZ, stdT, volStats, persRows,
   bandStats, nic, kernelNic, diagStats, termFc, feStats, varStats, archLm, lb, dm, idx, chi2sf };
 if (!window.CH5_NO_INIT) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init(); }
 })();

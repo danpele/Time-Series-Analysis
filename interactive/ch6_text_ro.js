@@ -20,7 +20,7 @@ window.CH6_TEXT = {
  rmCap: (a, b, n) => `Medii trimestriale, ${a} – ${b}, ${n}${de(n)} trimestre; în dreapta, matricea corelațiilor (cu aldine: |r| ≥ 0,5).`,
  cc1: (d, n, b) => `Randamente zilnice de la ${dmy(d)}: T = ${n}${de(n)} zile, banda ±1,96/√T = ±${b}.`,
  cc2: (m, r0, r1, rm, o) => `${m}: ${r0} în aceeași zi, ${r1} la k = 1 (S&P 500 de ieri), ${rm} la k = −1 (${m} de ieri cu S&P 500 de azi); în afara benzii la k = ${list(o)}.`,
- cc3: (t, k, r, r4m, r4, b) => `ROBOR cu inflația${t === 'd1' ? ' (diferențe)' : ''}: maximul ${r} la k = ${k}; ${r4m} la k = −4 și ${r4} la k = 4 (banda pentru seriile trimestriale: ±${b}).`,
+ cc3: (t, y, k, r, r4m, r4, b) => `ROBOR cu inflația${t === 'd1' ? ' (diferențe)' : ''}, de la ${y}: maximul ${r} la k = ${k}; ${r4m} la k = −4 și ${r4} la k = 4 (banda pentru seriile trimestriale: ±${b}).`,
  ccCap: b => `Corelațiile încrucișate pentru k = −3, …, 3; cu aldine: în afara benzii ±${b}.`,
  w1s1: (a12, a21, f1, f2) => `Ŷ<sub>T+1</sub> = c + A Y<sub>T</sub>: y<sub>1</sub>: 1,2 + 0,5·5 + ${a12}·2 = <b>${f1}</b>; y<sub>2</sub>: 0,6 + ${a21}·5 + 0,4·2 = <b>${f2}</b>.`,
  w1s2: (f1, f2, a12, a21, g1, g2) => `Ŷ<sub>T+2</sub> = c + A Ŷ<sub>T+1</sub>: 1,2 + 0,5·${f1} + ${a12}·${f2} = <b>${g1}</b>; 0,6 + ${a21}·${f1} + 0,4·${f2} = <b>${g2}</b>.`,

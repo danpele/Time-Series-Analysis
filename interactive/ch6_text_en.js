@@ -18,7 +18,7 @@ window.CH6_TEXT = {
  rmCap: (a, b, n) => `Quarterly means, ${a} – ${b}, ${n} quarters; on the right, the correlation matrix (bold: |r| ≥ 0.5).`,
  cc1: (d, n, b) => `Daily returns from ${dmy(d)}: T = ${n} days, band ±1.96/√T = ±${b}.`,
  cc2: (m, r0, r1, rm, o) => `${m}: ${r0} on the same day, ${r1} at k = 1 (yesterday’s S&P 500), ${rm} at k = −1 (yesterday’s ${m} with today’s S&P 500); outside the band at k = ${list(o)}.`,
- cc3: (t, k, r, r4m, r4, b) => `ROBOR with inflation${t === 'd1' ? ' (differences)' : ''}: largest ${r} at k = ${k}; ${r4m} at k = −4 and ${r4} at k = 4 (band for the quarterly series: ±${b}).`,
+ cc3: (t, y, k, r, r4m, r4, b) => `ROBOR with inflation${t === 'd1' ? ' (differences)' : ''} from ${y}: largest ${r} at k = ${k}; ${r4m} at k = −4 and ${r4} at k = 4 (band for the quarterly series: ±${b}).`,
  ccCap: b => `Cross-correlations for k = −3, …, 3; bold: outside the band ±${b}.`,
  w1s1: (a12, a21, f1, f2) => `Ŷ<sub>T+1</sub> = c + A Y<sub>T</sub>: y<sub>1</sub>: 1.2 + 0.5·5 + ${a12}·2 = <b>${f1}</b>; y<sub>2</sub>: 0.6 + ${a21}·5 + 0.4·2 = <b>${f2}</b>.`,
  w1s2: (f1, f2, a12, a21, g1, g2) => `Ŷ<sub>T+2</sub> = c + A Ŷ<sub>T+1</sub>: 1.2 + 0.5·${f1} + ${a12}·${f2} = <b>${g1}</b>; 0.6 + ${a21}·${f1} + 0.4·${f2} = <b>${g2}</b>.`,
