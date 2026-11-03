@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 3 · Rădăcini unitare și modele ARIMA</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch3.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch3_data.js?v=20261101a", "ch3_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch3.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Serii de timp</h1><p>Capitolul 3 · Rădăcini unitare și modele ARIMA</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_03" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch3.html" class="lang-btn">EN</a><a href="ch3_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură, calculată în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas.</p>
+<p class="toc"><a href="#s-trend">Trend determinist și trend stochastic</a> · <a href="#s-spur">Regresia falsă</a> · <a href="#s-df">Testul Dickey–Fuller</a> · <a href="#s-kpss">Phillips–Perron, KPSS și folosirea lor împreună</a> · <a href="#s-brk">Rupturi structurale</a> · <a href="#s-arima">Modele ARIMA(p,d,q)</a> · <a href="#s-prac">ARIMA în practică</a></p>
+<h2 class="sec" id="s-trend">Trend determinist și trend stochastic</h2>
+<section class="blk" id="four-series">
+  <h3>Patru serii care urcă în timp</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=7" target="_blank" rel="noopener"><img src="slides/tsa_ch3_four_series_ro.jpg" alt="Slide-ul 6: Patru serii care urcă în timp" loading="lazy"></a>
+      <figcaption>Slide-ul 6</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fs-end">Dreapta PIB estimată pînă în: <b id="fs-end-v"></b></label><input type="range" id="fs-end" min="19" max="105" step="1" value="105"></div><button class="btn play" id="fs-play" type="button"></button></div><div class="charts "><div class="chart" id="fs-chart"></div></div><ul class="out" id="fs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ mută sfîrșitul eșantionului pe care se estimează dreapta PIB. Unde se află PIB-ul din T2 2026 față de o dreaptă estimată pe datele de pînă în T3 2008?</div>
+  <details><summary>Răspuns</summary><p>Mult sub ea: dreapta estimată pînă în T3 2008 are panta 1,56% pe trimestru, iar PIB-ul din T2 2026 este cu 76 de puncte logaritmice (100 × diferența logaritmilor) sub prelungirea ei. Pe tot eșantionul panta este 0,80% pe trimestru (circa 3,2% pe an), iar cea mai mare abatere, 17,5 puncte logaritmice, apare în T3 2008. După recesiunea din 2009, PIB-ul nu a revenit la dreapta de dinainte: un argument pentru un trend stochastic, nu pentru o dreaptă fixă plus zgomot.</p></details>
+</section>
+<section class="blk" id="ts-ds">
+  <h3>Aceeași derivă, memorie diferită</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=11" target="_blank" rel="noopener"><img src="slides/tsa_ch3_ts_ds_ro.jpg" alt="Slide-ul 10: Aceeași derivă, memorie diferită" loading="lazy"></a>
+      <figcaption>Slide-ul 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="td-phi">φ al seriei staționare în jurul trendului: <b id="td-phi-v"></b></label><input type="range" id="td-phi" min="0" max="1" step="0.01" value="0.8"></div><div class="ctl"><label for="td-sh">Mărimea șocului la t = 100: <b id="td-sh-v"></b></label><input type="range" id="td-sh" min="0" max="10" step="0.5" value="6"></div><button class="btn play" id="td-play" type="button"></button></div><div class="charts "><div class="chart" id="td-chart"></div></div><ul class="out" id="td-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește φ de la 0 la 1. Ce rămîne, la sfîrșitul eșantionului, din șocul de +6 în seria staționară în jurul trendului?</div>
+  <details><summary>Răspuns</summary><p>Pentru φ < 1, aproape nimic: 6φ⁹⁹ este 1,5 · 10⁻⁹ la φ = 0,8 și 0,04 la φ = 0,95; abia la φ = 0,99 rămîn 2,2. La φ = 1 rămîne întregul șoc, 6, ca la mersul aleator: zgomotul AR(1) devine el însuși un mers aleator, iar cele două modele coincid. Cu φ = 0,8, efectul unui șoc unitar este 0,107 după 10 perioade, iar timpul de înjumătățire este 3,1 perioade.</p></details>
+</section>
+<section class="blk" id="detrend">
+  <h3>Eliminarea trendului dintr-un mers aleator</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=16" target="_blank" rel="noopener"><img src="slides/tsa_ch3_detrend_ro.jpg" alt="Slide-ul 15: Eliminarea trendului dintr-un mers aleator" loading="lazy"></a>
+      <figcaption>Slide-ul 15</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dt-T">Lungimea eșantionului T: <b id="dt-T-v"></b></label><input type="range" id="dt-T" min="50" max="200" step="10" value="200"></div><button class="btn play" id="dt-play" type="button"></button></div><div class="charts "><div class="chart" id="dt-chart"></div></div><ul class="out" id="dt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Panta adevărată a mersului aleator este 0. Pe 2 000 de mersuri aleatoare cu T = 200, cît de des respinge testul t ipoteza „panta este 0” la 5%?</div>
+  <details><summary>Răspuns</summary><p>În 90,4% din cazuri, nu în 5%; R² median este 0,44. Pe traiectoria din slide, R² = 0,61 și t = −17,7. Reziduurile au ρ̂(1) = 0,96 și rămîn pozitiv autocorelate pînă la lagul 36: cicluri lungi create de eliminarea trendului (Nelson și Kang). Cu T = 50, testul respinge tot în 82,0% din cazuri: eroarea nu dispare cu un eșantion mai scurt sau mai lung.</p></details>
+</section><h2 class="sec" id="s-spur">Regresia falsă</h2>
+<section class="blk" id="spurious-mc">
+  <h3>Regresia falsă prin simulare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=21" target="_blank" rel="noopener"><img src="slides/tsa_ch3_spurious_mc_ro.jpg" alt="Slide-ul 20: Regresia falsă prin simulare" loading="lazy"></a>
+      <figcaption>Slide-ul 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sm-T">T în histograma din dreapta</label><select id="sm-T"><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="200" selected>200</option><option value="500">500</option><option value="1000">1000</option></select></div><button class="btn play" id="sm-play" type="button"></button></div><div class="charts "><div class="chart" id="sm-chart"></div></div><ul class="out" id="sm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> În niveluri, testul t respinge b = 0 în 83,6% din eșantioane pentru T = 200. Ce se întîmplă cu rata de respingere cînd T crește la 1 000?</div>
+  <details><summary>Răspuns</summary><p>Crește, la 92,3%: |t| median urcă de la 6,3 la 14,2, aproximativ ca √T; R² median rămîne în jur de 0,17, iar DW median scade la 0,015. Mai multe date nu corectează o regresie falsă. În diferențe, rata rămîne aproape de nivelul nominal: 4,65% la T = 200 și 4,5% la T = 1 000.</p></details>
+</section>
+<section class="blk" id="spurious-real">
+  <h3>O regresie falsă pe date reale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=24" target="_blank" rel="noopener"><img src="slides/tsa_ch3_spurious_real_ro.jpg" alt="Slide-ul 23: O regresie falsă pe date reale" loading="lazy"></a>
+      <figcaption>Slide-ul 23</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sr-y0">De la anul: <b id="sr-y0-v"></b></label><input type="range" id="sr-y0" min="2005" max="2022" step="1" value="2005"></div><div class="ctl"><label for="sr-y1">Pînă în anul: <b id="sr-y1-v"></b></label><input type="range" id="sr-y1" min="2008" max="2026" step="1" value="2026"></div><button class="btn play" id="sr-play" type="button"></button></div><div class="charts "><div class="chart" id="sr-chart"></div></div><ul class="out" id="sr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pe 2005–2026, regresia IAPC pe S&amp;P 500 în niveluri dă t = 34,6 și R² = 0,82. Rămîne legătura dacă folosim doar 2005–2012?</div>
+  <details><summary>Răspuns</summary><p>Nu: pe 2005–2012, t = −0,72 și R² sub 0,01 în niveluri; pe 2013–2026, t = 33,2 și R² = 0,87. În 2005–2012 acțiunile au scăzut și au revenit, în timp ce prețurile au crescut; după 2013 ambele cresc. În diferențe, pe tot eșantionul, t = −0,21 (p = 0,83) și R² = 0,0002. Regula lui Granger și Newbold semnalează problema: R² = 0,82 > DW = 0,03.</p></details>
+</section><h2 class="sec" id="s-df">Testul Dickey–Fuller</h2>
+<section class="blk" id="df-dist">
+  <h3>Distribuțiile Dickey–Fuller</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=30" target="_blank" rel="noopener"><img src="slides/tsa_ch3_df_dist_ro.jpg" alt="Slide-ul 29: Distribuțiile Dickey–Fuller" loading="lazy"></a>
+      <figcaption>Slide-ul 29</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dd-c">Valoarea critică folosită: <b id="dd-c-v"></b></label><input type="range" id="dd-c" min="-4" max="-1" step="0.005" value="-1.645"></div><button class="btn play" id="dd-play" type="button"></button></div><div class="charts "><div class="chart" id="dd-chart"></div></div><ul class="out" id="dd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Dacă folosim valoarea critică a distribuției Normale, −1,645, cît de des „respingem” o rădăcină unitară adevărată în regresia cu constantă și trend?</div>
+  <details><summary>Răspuns</summary><p>În 77,4% din eșantioane (46,1% cu constantă, 9,8% fără constantă), față de 5% sub N(0, 1). Ca să respingem în 5% din cazuri, valoarea critică trebuie coborîtă la cuantila de 5% a distribuției Dickey–Fuller: −1,95, −2,86 și −3,42 în simulare; −1,94, −2,87 și −3,43 în tabelele MacKinnon. Cu −3,42, proporția pentru constantă și trend este 4,99%.</p></details>
+</section>
+<section class="blk" id="adf-power">
+  <h3>Mărimea și puterea testului Dickey–Fuller</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=36" target="_blank" rel="noopener"><img src="slides/tsa_ch3_adf_power_ro.jpg" alt="Slide-ul 35: Mărimea și puterea testului Dickey–Fuller" loading="lazy"></a>
+      <figcaption>Slide-ul 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ap-T">Lungimea eșantionului T</label><select id="ap-T"><option value="50">50</option><option value="100" selected>100</option><option value="250">250</option><option value="500">500</option><option value="1000">1000</option></select></div><button class="btn play" id="ap-play" type="button"></button></div><div class="charts "><div class="chart" id="ap-chart"></div></div><ul class="out" id="ap-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu o serie trimestrială de 25 de ani (T = 100) și φ = 0,95, cît de des respinge testul Dickey–Fuller cu constantă rădăcina unitară la 5%?</div>
+  <details><summary>Răspuns</summary><p>În 12,5% din cazuri: testul aproape niciodată nu deosebește φ = 0,95 de φ = 1. Cu T = 250, 47,4%; cu T = 500, 97,25%. La φ = 1, proporțiile sînt mărimea testului: 5,3%, 5,2% și 4,65% cu constantă. Un trend inutil costă putere: la T = 100 și φ = 0,9, 35,1% cu constantă și 19,4% cu constantă și trend.</p></details>
+</section><h2 class="sec" id="s-kpss">Phillips–Perron, KPSS și folosirea lor împreună</h2>
+<section class="blk" id="kpss-sums">
+  <h3>KPSS: rolul sumelor parțiale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=43" target="_blank" rel="noopener"><img src="slides/tsa_ch3_kpss_sums_ro.jpg" alt="Slide-ul 42: KPSS: rolul sumelor parțiale" loading="lazy"></a>
+      <figcaption>Slide-ul 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="kp-phi">φ al seriei AR(1): <b id="kp-phi-v"></b></label><input type="range" id="kp-phi" min="0" max="1" step="0.05" value="0.5"></div><button class="btn play" id="kp-play" type="button"></button></div><div class="charts "><div class="chart" id="kp-chart"></div></div><ul class="out" id="kp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește φ al seriei AR(1) de la 0 la 1. De la ce valoare respinge KPSS staționaritatea la 5%?</div>
+  <details><summary>Răspuns</summary><p>Abia de la φ = 0,95: KPSS = 0,565 > 0,463 (p = 0,027). La φ = 0,9 statistica este 0,326 și testul nu respinge, deși seria este foarte persistentă; la φ = 1 urcă la 1,213. Pentru mersul aleator din panou, KPSS = 0,733 (p = 0,011). Sumele parțiale ale unei serii persistente se îndepărtează mult de 0, iar η crește.</p></details>
+</section><h2 class="sec" id="s-brk">Rupturi structurale</h2>
+<section class="blk" id="breaks-sim">
+  <h3>O schimbare de nivel înșală testul ADF</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=50" target="_blank" rel="noopener"><img src="slides/tsa_ch3_breaks_sim_ro.jpg" alt="Slide-ul 49: O schimbare de nivel înșală testul ADF" loading="lazy"></a>
+      <figcaption>Slide-ul 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bs-d">Saltul mediei la t = 100: <b id="bs-d-v"></b></label><input type="range" id="bs-d" min="0" max="10" step="0.5" value="5"></div><button class="btn play" id="bs-play" type="button"></button></div><div class="charts "><div class="chart" id="bs-chart"></div></div><ul class="out" id="bs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește saltul mediei de la 0 la 10. De la ce mărime a saltului nu mai respinge ADF rădăcina unitară la 5%, pe această serie staționară?</div>
+  <details><summary>Răspuns</summary><p>De la un salt de 3,5 (p = 0,056); la 3, p = 0,030. La saltul din curs, 5, p = 0,17, iar pe 2 000 de serii cu același salt testul DF respinge în 71,5% din cazuri (fără salt: 100%); la saltul 7, doar în 0,55%. Zivot–Andrews include ruptura și respinge pentru orice salt: la saltul 5, ZA = −7,47 (un lag ales după AIC), mult sub −4,81, cu nivelul schimbat de la t = 100. Curba din dreapta este calculată fără laguri: minimul ei, −8,37, este atins la t = 100; −7,47 este statistica testului, nu minimul curbei.</p></details>
+</section>
+<section class="blk" id="breaks-real">
+  <h3>Zivot–Andrews pe două serii reale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=53" target="_blank" rel="noopener"><img src="slides/tsa_ch3_breaks_real_ro.jpg" alt="Slide-ul 52: Zivot–Andrews pe două serii reale" loading="lazy"></a>
+      <figcaption>Slide-ul 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="br-reg">Ruptura permisă de testul Zivot–Andrews</label><select id="br-reg"><option value="c" selected>în nivel</option><option value="t">în pantă</option><option value="ct">în nivel și pantă</option></select></div><button class="btn play" id="br-play" type="button"></button></div><div class="charts "><div class="chart" id="br-chart"></div></div><ul class="out" id="br-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru EUR/RON, ZA cu ruptură în nivel dă −6,89. Ce dă varianta cu ruptură doar în pantă?</div>
+  <details><summary>Răspuns</summary><p>ZA = −4,40, cu valoarea critică de 5% −4,41 (p = 0,051): rădăcina unitară nu mai este respinsă la 5%, iar data aleasă se mută în iulie 2009. Cu ruptură în nivel și pantă: −6,83, sub −5,07, în octombrie 2008. Pentru Nil, toate cele trei variante resping (−6,86; −5,68; −6,84); rupturile în nivel sînt datate în 1898, cea în pantă în 1914. Rezultatul depinde de forma presupusă a rupturii.</p></details>
+</section><h2 class="sec" id="s-arima">Modele ARIMA(p,d,q)</h2>
+<section class="blk" id="gdp-ident">
+  <h3>PIB-ul României: identificarea</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=59" target="_blank" rel="noopener"><img src="slides/tsa_ch3_gdp_ident_ro.jpg" alt="Slide-ul 58: PIB-ul României: identificarea" loading="lazy"></a>
+      <figcaption>Slide-ul 58</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gi-end">Eșantionul se termină în: <b id="gi-end-v"></b></label><input type="range" id="gi-end" min="20" max="105" step="1" value="105"></div><button class="btn play" id="gi-play" type="button"></button></div><div class="charts "><div class="chart" id="gi-chart"></div></div><ul class="out" id="gi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pe eșantionul complet, nicio autocorelație a creșterii nu iese din bandă. Rămîne așa dacă eșantionul se oprește în T4 2008, înainte de criză?</div>
+  <details><summary>Răspuns</summary><p>Nu întru totul: cu 35 de rate de creștere (T2 2000–T4 2008), media este 1,57% pe trimestru, ρ̂(1) = −0,27, iar o valoare ACF iese din banda ±0,33; Ljung–Box Q*(8) = 11,1 (p = 0,20) nu respinge însă zgomotul alb. Pe tot eșantionul: media 0,81%, ρ̂(1) = −0,05, ρ̂(2) = −0,14, Q*(8) = 7,3 (p = 0,51); pînă în T4 2019, Q*(8) = 4,2 (p = 0,84).</p></details>
+</section>
+<section class="blk" id="gdp-diag">
+  <h3>PIB-ul României: verificarea reziduurilor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch3_gdp_diag_ro.jpg" alt="Slide-ul 61: PIB-ul României: verificarea reziduurilor" loading="lazy"></a>
+      <figcaption>Slide-ul 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gd-mod">Modelul ARIMA(p,1,q) cu derivă</label><select id="gd-mod"><option value="00" selected>ARIMA(0,1,0) · cel mai mic AICc</option><option value="01">ARIMA(0,1,1)</option><option value="02">ARIMA(0,1,2)</option><option value="10">ARIMA(1,1,0)</option><option value="11">ARIMA(1,1,1)</option><option value="12">ARIMA(1,1,2)</option><option value="20">ARIMA(2,1,0)</option><option value="21">ARIMA(2,1,1)</option><option value="22">ARIMA(2,1,2) · nu a convers</option></select></div><button class="btn play" id="gd-play" type="button"></button></div><div class="charts "><div class="chart" id="gd-chart"></div></div><ul class="out" id="gd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ARIMA(2,1,2) are cel mai mic Q*(8) dintre cele nouă modele, 3,28. Este acesta un argument pentru el?</div>
+  <details><summary>Răspuns</summary><p>Nu: optimizarea nu a convers, iar AICc este 495,4, față de 491,9 pentru ARIMA(0,1,0) cu derivă. ARIMA(0,1,0) lasă deja reziduuri necorelate: Q*(8) = 7,3 (p = 0,51), iar Q*(12) are p = 0,54. Parametrii în plus reduc mecanic autocorelația reziduurilor. Ce rămîne în toate modelele sînt cozile groase: pentru ARIMA(0,1,0), kurtosis-ul 7,9, Jarque–Bera 145 și reziduul −11,0 în T1 2009.</p></details>
+</section>
+<section class="blk" id="interval-width">
+  <h3>Viteza de creștere a intervalelor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=66" target="_blank" rel="noopener"><img src="slides/tsa_ch3_interval_width_ro.jpg" alt="Slide-ul 65: Viteza de creștere a intervalelor" loading="lazy"></a>
+      <figcaption>Slide-ul 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="iw-f0">φ al modelului AR(1): <b id="iw-f0-v"></b></label><input type="range" id="iw-f0" min="0" max="0.99" step="0.01" value="0.8"></div><div class="ctl"><label for="iw-f1">φ al modelului ARIMA(1,1,0): <b id="iw-f1-v"></b></label><input type="range" id="iw-f1" min="-0.9" max="0.95" step="0.05" value="0.5"></div><div class="ctl"><label for="iw-th">θ al modelului ARIMA(0,1,1): <b id="iw-th-v"></b></label><input type="range" id="iw-th" min="-0.95" max="0.95" step="0.05" value="-0.5"></div><button class="btn play" id="iw-play" type="button"></button></div><div class="charts "><div class="chart" id="iw-chart"></div></div><ul class="out" id="iw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ mișcă θ al modelului ARIMA(0,1,1) de la −0,95 la 0,95. Cum se schimbă semilățimea intervalului la h = 20?</div>
+  <details><summary>Răspuns</summary><p>Crește cu θ: 2,14σ la θ = −0,9, 4,70σ la θ = −0,5, 8,77σ la θ = 0 (mersul aleator) și 12,96σ la θ = 0,5. Varianța este σ²[1 + (h − 1)(1 + θ)²]: un θ negativ compensează o parte din fiecare șoc. Pentru ARIMA(1,1,0), semilățimea la h = 20 este 16,78σ cu φ = 0,5 (graficul) și 20,53σ cu φ = 0,6 (exemplul rezolvat, unde la h = 3 este 5,33σ, adică 10,66 cu σ = 2). AR(1) cu φ = 0,8 se oprește la 3,27σ.</p></details>
+</section>
+<section class="blk" id="gdp-forecast">
+  <h3>PIB-ul României: două prognoze</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=68" target="_blank" rel="noopener"><img src="slides/tsa_ch3_gdp_forecast_ro.jpg" alt="Slide-ul 67: PIB-ul României: două prognoze" loading="lazy"></a>
+      <figcaption>Slide-ul 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gf-o">Originea prognozei: <b id="gf-o-v"></b></label><input type="range" id="gf-o" min="0" max="42" step="1" value="42"></div><button class="btn play" id="gf-play" type="button"></button></div><div class="charts "><div class="chart" id="gf-chart"></div></div><ul class="out" id="gf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu originea în T4 2019, cele două modele prognozează PIB-ul pe 12 trimestre. Care a avut eroarea mai mică pe trimestrele observate?</div>
+  <details><summary>Răspuns</summary><p>Modelul staționar în jurul trendului, dar la mică distanță: RMSE 7,2 puncte logaritmice, față de 7,6 pentru ARIMA(0,1,0) cu derivă; ambele au ratat scăderea din 2020. Din T4 2015 diferența este mai mare (2,6 față de 4,7), iar din T2 2023 ordinea se inversează (6,5 față de 5,6). Din T2 2026, ARIMA(0,1,0) dă 53,8 mld. EUR (prețuri 2010) după 12 trimestre, cu semilățimea de 95% de 16,8 puncte logaritmice; modelul cu trend dă 56,3 mld. și 11,2. ADF și KPSS clasifică nivelul PIB ca I(1) (p = 0,43; 0,198 > 0,146), dar puterea mică a testelor nu exclude modelul cu trend: alegerea lui d schimbă prognoza și intervalul.</p></details>
+</section>
+<section class="blk" id="overdiff">
+  <h3>Supradiferențierea PIB-ului României</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch3_overdiff_gdp_ro.jpg" alt="Slide-ul 70: Supradiferențierea PIB-ului României" loading="lazy"></a>
+      <figcaption>Slide-ul 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="od-s">Seria</label><select id="od-s"><option value="ro" selected>PIB-ul real al României</option><option value="us">PIB-ul real al SUA</option></select></div><div class="ctl"><label for="od-d">Ordinul de diferențiere din dreapta</label><select id="od-d"><option value="2" selected>d = 2</option><option value="3">d = 3</option></select></div><button class="btn play" id="od-play" type="button"></button></div><div class="charts "><div class="chart" id="od-chart"></div></div><ul class="out" id="od-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru PIB-ul SUA, ce simptome de supradiferențiere apar la a doua diferențiere?</div>
+  <details><summary>Răspuns</summary><p>Toate trei: ρ̂(1) scade de la 0,13 la −0,49, varianța crește de la 1,22 la 2,12, iar un MA(1) estimat pe Δ² dă θ̂ = −0,986 (SE 0,008). Pentru România: ρ̂(1) de la −0,05 la −0,43, varianța de la 6,16 la 12,80, θ̂ = −0,987 (SE 0,080). O a treia diferențiere agravează simptomele: pentru România, varianța urcă la 35,6 și ρ̂(1) la −0,57.</p></details>
+</section><h2 class="sec" id="s-prac">ARIMA în practică</h2>
+<section class="blk" id="inflation">
+  <h3>Inflația din România: d = 0 sau d = 1?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=76" target="_blank" rel="noopener"><img src="slides/tsa_ch3_inflation_d_ro.jpg" alt="Slide-ul 75: Inflația din România: d = 0 sau d = 1?" loading="lazy"></a>
+      <figcaption>Slide-ul 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="in-m0">Modelul cu d = 0</label><select id="in-m0"><option value="00">ARIMA(0,0,0)</option><option value="01">ARIMA(0,0,1)</option><option value="02">ARIMA(0,0,2)</option><option value="10">ARIMA(1,0,0)</option><option value="11">ARIMA(1,0,1)</option><option value="12">ARIMA(1,0,2)</option><option value="20" selected>ARIMA(2,0,0) · cel mai mic AICc</option><option value="21">ARIMA(2,0,1)</option><option value="22">ARIMA(2,0,2)</option><option value="30">ARIMA(3,0,0)</option><option value="31">ARIMA(3,0,1)</option><option value="32">ARIMA(3,0,2)</option></select></div><div class="ctl"><label for="in-m1">Modelul cu d = 1</label><select id="in-m1"><option value="00">ARIMA(0,1,0)</option><option value="01">ARIMA(0,1,1)</option><option value="02">ARIMA(0,1,2)</option><option value="10" selected>ARIMA(1,1,0) · cel mai mic AICc</option><option value="11">ARIMA(1,1,1)</option><option value="12">ARIMA(1,1,2)</option><option value="20">ARIMA(2,1,0) · nu a convers</option><option value="21">ARIMA(2,1,1)</option><option value="22">ARIMA(2,1,2)</option><option value="30">ARIMA(3,1,0)</option><option value="31">ARIMA(3,1,1)</option><option value="32">ARIMA(3,1,2) · nu a convers</option></select></div><button class="btn play" id="in-play" type="button"></button></div><div class="charts "><div class="chart" id="in-chart"></div></div><ul class="out" id="in-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cel mai mic AICc pentru d = 1, 451,2 (ARIMA(1,1,0)), este sub cel pentru d = 0, 455,6 (ARIMA(2,0,0)). Arată aceasta că d = 1 este alegerea mai bună?</div>
+  <details><summary>Răspuns</summary><p>Nu: AICc nu compară modele cu d diferit, deoarece cu d = 1 verosimilitatea este calculată pentru Δπ, o altă serie. Alegem d prin teste și judecată: KPSS (0,404 < 0,463) păstrează d = 0, ADF (p = 0,32) sugerează d = 1. Prognozele după 24 de luni sînt apropiate, 5,1% și 5,2%, dar intervalele de 95% diferă: [−0,6; 10,9] și [−2,9; 13,3]. ARIMA(3,1,2) are AICc 441,1, dar optimizarea nu a convers.</p></details>
+</section>
+<section class="blk" id="eurron">
+  <h3>EUR/RON: ARIMA față de mersul aleator</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=79" target="_blank" rel="noopener"><img src="slides/tsa_ch3_eurron_forecast_ro.jpg" alt="Slide-ul 78: EUR/RON: ARIMA față de mersul aleator" loading="lazy"></a>
+      <figcaption>Slide-ul 78</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fx-y">Perioada de test începe în ianuarie: <b id="fx-y-v"></b></label><input type="range" id="fx-y" min="2010" max="2025" step="1" value="2024"></div><button class="btn play" id="fx-play" type="button"></button></div><div class="charts "><div class="chart" id="fx-chart"></div></div><ul class="out" id="fx-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu începutul perioadei de test în ianuarie 2015, mai bate ARIMA(1,1,0) mersul aleator la o zi?</div>
+  <details><summary>Răspuns</summary><p>Nu: RMSE 0,1307, față de 0,1304 pentru mersul aleator, o pierdere de 0,19%. Cu testul din 2019, 2020, 2022 sau 2024, cîștigul este 2,1–2,3%; în curs (din 2024), 0,1300 față de 0,1330, iar pe 20 de zile 0,638 față de 0,667 (4,3%). Cîștigul depinde de perioada aleasă și provine din cîteva zile cu salturi ale cursului; o comparație formală cere testul Diebold–Mariano.</p></details>
+</section>
+<section class="blk" id="us-gdp">
+  <h3>O serie clasică: PIB-ul real al SUA după 2007</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf#page=81" target="_blank" rel="noopener"><img src="slides/tsa_ch3_us_gdp_ro.jpg" alt="Slide-ul 80: O serie clasică: PIB-ul real al SUA după 2007" loading="lazy"></a>
+      <figcaption>Slide-ul 80</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="us-y">Originea prognozei: <b id="us-y-v"></b></label><input type="range" id="us-y" min="1990" max="2019" step="1" value="2007"></div><button class="btn play" id="us-play" type="button"></button></div><div class="charts "><div class="chart" id="us-chart"></div></div><ul class="out" id="us-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu originea în T4 2007, modelul staționar în jurul trendului greșește cu −30 de puncte logaritmice la final. Este eroarea specifică lui 2007? Mutați originea în T4 2000.</div>
+  <details><summary>Răspuns</summary><p>Nu: din T4 2000, abaterea la final este −34,7 pentru modelul cu trend (semilățimea intervalului de 95%: 7,9) și −34,5 pentru ARIMA(1,1,0) cu derivă (28,1). Din T4 2007: −30,1 (8,2) și −25,4 (22,9); din T4 2019: −8,0 (11,1) și −5,0 (13,2). Din 2000 și din 2007, niciun interval nu acoperă rezultatul; din 2019, ambele îl acoperă. Ambele modele prelungesc deriva de dinaintea originii, iar creșterea de după 2008 a fost mai lentă.</p></details>
+</section>
+<p class="src foot">Simulări: șocuri din distribuția Normală, generate cu seed-urile codului capitolului; rezultatele Monte Carlo sînt cele din curs. PIB-ul României: Eurostat, volume înlănțuite (prețuri 2010), serie ajustată sezonier, în versiunea folosită în curs. IAPC: Eurostat, pînă în august 2026. EUR/RON: cursul de referință BNR; BET și S&amp;P 500: datele de piață ale cursului, pînă la 18 septembrie 2026. PIB-ul SUA: FRED GDPC1, pînă în T2 2026. Nilul: setul de date din statsmodels, 1871–1970.</p>
+</main>
+</body>
+</html>
