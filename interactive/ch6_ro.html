@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 6 · Modele VAR și cauzalitate Granger</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch6.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch6_data.js?v=20261101a", "ch6_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch6.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Serii de timp</h1><p>Capitolul 6 · Modele VAR și cauzalitate Granger</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_06" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch6.html" class="lang-btn">EN</a><a href="ch6_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură sau același tabel, calculat în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas; casetele „Exemplu rezolvat” refac calculul cu cifrele capitolului.</p>
+<p class="toc"><a href="#s-ms">De la o serie la mai multe</a> · <a href="#s-var">Modelul VAR(p)</a> · <a href="#s-stab">Staționaritate și forma companion</a> · <a href="#s-est">Estimare și alegerea numărului de laguri</a> · <a href="#s-diag">Diagnosticarea reziduurilor</a> · <a href="#s-gr">Cauzalitatea Granger</a> · <a href="#s-irf">Funcții de răspuns la impuls</a> · <a href="#s-fevd">Descompunerea varianței erorii de prognoză</a> · <a href="#s-fc">Prognoza cu un VAR</a> · <a href="#s-svar">VAR-uri structurale și un studiu de caz de referință</a></p>
+<h2 class="sec" id="s-ms">De la o serie la mai multe</h2>
+<section class="blk" id="ro-macro">
+  <h3>România: patru serii macroeconomice care evoluează împreună</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=7" target="_blank" rel="noopener"><img src="slides/tsa_ch6_ro_macro_ro.jpg" alt="Slide-ul 6: România: patru serii macroeconomice care evoluează împreună" loading="lazy"></a>
+      <figcaption>Slide-ul 6</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rm-y0">Fereastra începe în: <b id="rm-y0-v"></b></label><input type="range" id="rm-y0" min="2000" max="2022" step="1" value="2005"></div><div class="ctl"><label for="rm-y1">Fereastra se termină în: <b id="rm-y1-v"></b></label><input type="range" id="rm-y1" min="2008" max="2026" step="1" value="2026"></div><button class="btn play" id="rm-play" type="button"></button></div><style>.c6x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c6x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c6x .c6f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c6x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c6x li{margin:.18rem 0}.c6t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c6t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c6t th,.c6t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c6t thead th{border-bottom:1px solid #1A3A6E}.c6t tbody tr:nth-child(even){background:#F5F7FB}.c6t .r{text-align:right}.c6cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="rm-chart"></div></div><div class="tbl c6t" id="rm-tb"></div><ul class="out" id="rm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați începutul ferestrei în 2015. Cît devine corelația dintre inflație și ROBOR 3M?</div>
+  <details><summary>Răspuns</summary><p>0,89, față de 0,66 pe 2005–2026. După 2015 cele două serii au urcat și au coborît împreună (inflația a atins 13,6% în noiembrie 2022, ROBOR 3M 8,0% în octombrie 2022), iar episodul din 2008, cînd ROBOR a ajuns la 18,2% în criza de lichiditate, a ieșit din fereastră. Corelația dintre nivelurile a două serii persistente depinde mult de eșantion și nu spune care dintre ele o precedă pe cealaltă.</p></details>
+</section>
+<section class="blk" id="ccf">
+  <h3>Corelații încrucișate: piețe și date macroeconomice românești</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=11" target="_blank" rel="noopener"><img src="slides/tsa_ch6_ccf_ro.jpg" alt="Slide-ul 10: Corelații încrucișate: piețe și date macroeconomice românești" loading="lazy"></a>
+      <figcaption>Slide-ul 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cc-y0">Randamente zilnice de la: <b id="cc-y0-v"></b></label><input type="range" id="cc-y0" min="2000" max="2024" step="1" value="2000"></div><div class="ctl"><label for="cc-t">ROBOR și inflația (dreapta)</label><select id="cc-t"><option value="lev" selected>niveluri (curs)</option><option value="d1">diferențe de ordinul întîi</option></select></div><button class="btn play" id="cc-play" type="button"></button></div><div class="charts "><div class="chart" id="cc-chart"></div></div><div class="tbl c6t" id="cc-tb"></div><ul class="out" id="cc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți randamentele zilnice în 2015. Este corelația dintre DAX de ieri și S&P 500 de azi (k = −1) în interiorul benzii?</div>
+  <details><summary>Răspuns</summary><p>Nu: −0,058, în afara benzii ±0,037; pe tot eșantionul este −0,046, tot în afara benzii ±0,024. Precedența merge în principal de la New York spre Europa (0,135 la k = 1 din 2015, 0,171 pe tot eșantionul), dar nu doar într-un sens: și DAX de ieri are o corelație mică, negativă, cu S&P 500 de azi. Pentru BET valoarea la k = −1 (−0,005 din 2015, −0,017 pe tot eșantionul) rămîne în bandă.</p></details>
+</section><h2 class="sec" id="s-var">Modelul VAR(p)</h2>
+<section class="blk" id="wx-var1">
+  <h3>Exemplu rezolvat: un VAR(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=17" target="_blank" rel="noopener"><img src="slides/ch6x_wx-var1_ro.jpg" alt="Slide-ul 16: Exemplu rezolvat: un VAR(1)" loading="lazy"></a>
+      <figcaption>Slide-ul 16</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="w1-a12">a₁₂: <b id="w1-a12-v"></b></label><input type="range" id="w1-a12" min="-0.4" max="0.6" step="0.05" value="0.2"></div><div class="ctl"><label for="w1-a21">a₂₁: <b id="w1-a21-v"></b></label><input type="range" id="w1-a21" min="0" max="1.2" step="0.05" value="0.3"></div><div class="ctl"><label for="w1-h">Orizontul h: <b id="w1-h-v"></b></label><input type="range" id="w1-h" min="1" max="12" step="1" value="2"></div><button class="btn play" id="w1-play" type="button"></button></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\hat{\mathbf Y}_{T+h}=\mathbf c+\mathbf A\hat{\mathbf Y}_{T+h-1},\quad \boldsymbol\mu=(\mathbf I-\mathbf A)^{-1}\mathbf c,\quad \lambda^2-\mathrm{tr}(\mathbf A)\lambda+\det(\mathbf A)=0,\quad \boldsymbol\Sigma(h)=\sum_{s=0}^{h-1}\mathbf A^{s}\boldsymbol\Sigma\mathbf A^{s\prime}\]</div><ol id="w1-ws"></ol></div><div class="charts "><div class="chart" id="w1-chart"></div></div><div class="tbl c6t" id="w1-tb"></div><ul class="out" id="w1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Setați a₁₂ = 0,5 și a₂₁ = 0,8. Toți coeficienții lui A sînt sub 1. Este VAR-ul stabil?</div>
+  <details><summary>Răspuns</summary><p>Nu. tr(A) = 0,9 și det(A) = 0,5·0,4 − 0,5·0,8 = −0,20, deci λ = (0,9 ± √1,61)/2: λ₁ = 1,084 și λ₂ = −0,184. Cel mai mare modul depășește 1, iar prognozele cresc fără limită (ŷ₁ = 16,48 la h = 8). Stabilitatea depinde de valorile proprii, nu de mărimea fiecărui coeficient: efectele încrucișate a₁₂a₂₁ = 0,40 se adaugă persistenței proprii. Cu a₁₁ = 0,5 și a₂₂ = 0,4, VAR-ul este stabil doar dacă a₁₂a₂₁ < 0,30.</p></details>
+</section>
+<section class="blk" id="var-sim">
+  <h3>Exemplul rezolvat, simulat</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=18" target="_blank" rel="noopener"><img src="slides/tsa_ch6_var_sim_ro.jpg" alt="Slide-ul 17: Exemplul rezolvat, simulat" loading="lazy"></a>
+      <figcaption>Slide-ul 17</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="vs-a">a₂₁: <b id="vs-a-v"></b></label><input type="range" id="vs-a" min="0" max="1.2" step="0.05" value="0.3"></div><div class="ctl"><label for="vs-r">Corelația șocurilor ρ: <b id="vs-r-v"></b></label><input type="range" id="vs-r" min="-0.9" max="0.9" step="0.1" value="0.5"></div><div class="ctl"><label for="vs-h">Orizontul h (calculul de mai jos): <b id="vs-h-v"></b></label><input type="range" id="vs-h" min="0" max="10" step="1" value="5"></div><button class="btn play" id="vs-play" type="button"></button></div><div class="charts "><div class="chart" id="vs-chart"></div></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\boldsymbol\Phi_h=\mathbf A\boldsymbol\Phi_{h-1}=\mathbf A^h,\qquad \boldsymbol\Phi_h\mathbf e_1=w_1\lambda_1^h\mathbf v_1+w_2\lambda_2^h\mathbf v_2\]</div><ol id="vs-ws"></ol></div><div class="tbl c6t" id="vs-tb"></div><ul class="out" id="vs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți a₂₁ la 0,6 (λ₁ = 0,8). Cît este răspunsul lui y₁ după 5 perioade, Φ₁₁(5)?</div>
+  <details><summary>Răspuns</summary><p>0,187, nu 0,8⁵ = 0,328. Φ₁₁(h) = 0,571·0,8ʰ + 0,429·0,1ʰ: componenta dominantă intră în e₁ cu ponderea 0,571, iar raportul Φ₁₁(h)/Φ₁₁(h−1) se apropie de 0,8 abia după cîteva perioade. La fel în exemplul din curs: Φ₁₁(5) = 0,6·0,7⁵ + 0,4·0,2⁵ = 0,101, deci după 5 perioade rămîne circa 0,10 din efectul inițial; 0,7⁵ ≈ 0,17 este factorul cu care scade componenta dominantă, nu răspunsul.</p></details>
+</section><h2 class="sec" id="s-stab">Staționaritate și forma companion</h2>
+<section class="blk" id="roots">
+  <h3>Valorile proprii a trei VAR-uri estimate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=26" target="_blank" rel="noopener"><img src="slides/tsa_ch6_roots_ro.jpg" alt="Slide-ul 25: Valorile proprii a trei VAR-uri estimate" loading="lazy"></a>
+      <figcaption>Slide-ul 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ro-p">Ordinul p al VAR-ului românesc: <b id="ro-p-v"></b></label><input type="range" id="ro-p" min="1" max="6" step="1" value="2"></div><div class="ctl"><label for="ro-e">Eșantionul se termină în: <b id="ro-e-v"></b></label><input type="range" id="ro-e" min="2012" max="2026" step="1" value="2026"></div><button class="btn play" id="ro-play" type="button"></button></div><div class="charts "><div class="chart" id="ro-chart"></div></div><div class="tbl c6t" id="ro-tb"></div><ul class="out" id="ro-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu p = 5, ordinul ales de AIC, cît devine cel mai mare modul și cîte valori proprii are matricea companion?</div>
+  <details><summary>Răspuns</summary><p>0,913, din 15 valori proprii (matricea companion este 15 × 15), față de 0,869 din 6 pentru p = 2; un șoc scade la jumătate după 7,7 trimestre, față de 5,0. Lagurile suplimentare adaugă valori proprii, iar unele cu modul mare (0,874, 0,836) apar în perechi complexe, adică oscilații pe care VAR(2) nu le are. Cu 48 de coeficienți pe circa 80 de trimestre, aceste oscilații pot fi zgomot de estimare.</p></details>
+</section><h2 class="sec" id="s-est">Estimare și alegerea numărului de laguri</h2>
+<section class="blk" id="ic">
+  <h3>VAR-ul românesc: alegerea lui p</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=32" target="_blank" rel="noopener"><img src="slides/tsa_ch6_ic_ro.jpg" alt="Slide-ul 31: VAR-ul românesc: alegerea lui p" loading="lazy"></a>
+      <figcaption>Slide-ul 31</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ic-m">p<sub>max</sub>: <b id="ic-m-v"></b></label><input type="range" id="ic-m" min="4" max="8" step="1" value="6"></div><div class="ctl"><label for="ic-e">Eșantionul se termină în: <b id="ic-e-v"></b></label><input type="range" id="ic-e" min="2012" max="2026" step="1" value="2026"></div><div class="ctl"><label for="ic-p">p în calculul de mai jos: <b id="ic-p-v"></b></label><input type="range" id="ic-p" min="0" max="6" step="1" value="2"></div><button class="btn play" id="ic-play" type="button"></button></div><div class="charts "><div class="chart" id="ic-chart"></div></div><div class="tbl c6t" id="ic-tb"></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\mathrm{IC}(p)=\ln\det\tilde{\boldsymbol\Sigma}(p)+c_T\,\frac{pK^2}{T},\qquad c_T=2\ (\mathrm{AIC}),\ \ 2\ln\ln T\ (\mathrm{HQ}),\ \ \ln T\ (\mathrm{BIC})\]</div><ol id="ic-ws"></ol></div><ul class="out" id="ic-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în 2019 (p<sub>max</sub> = 6). Ce ordin alege HQ?</div>
+  <details><summary>Răspuns</summary><p>p = 5, ca AIC; BIC alege tot p = 1. Eșantionul comun are doar T = 54 de trimestre, iar ln det Σ̃(5) = −0,446 este mult mai mic decît pentru p = 2 (0,970), pentru că un VAR(5) are 48 de coeficienți pe 54 de observații și aproape reproduce datele. Penalizarea HQ, 2 ln ln T = 2,767 pe unitatea lui pK²/T, nu compensează. Pe eșantioane scurte criteriile pot alege ordine mari: trebuie verificat cîte grade de libertate rămîn.</p></details>
+</section>
+<section class="blk" id="var-table">
+  <h3>VAR(2) românesc estimat</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=34" target="_blank" rel="noopener"><img src="slides/ch6x_var-table_ro.jpg" alt="Slide-ul 33: VAR(2) românesc estimat" loading="lazy"></a>
+      <figcaption>Slide-ul 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="vt-p">Ordinul p: <b id="vt-p-v"></b></label><input type="range" id="vt-p" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="vt-e">Eșantionul se termină în</label><select id="vt-e"><option value="2026-04-01" selected>T2 2026 (curs)</option><option value="2019-10-01">T4 2019</option><option value="2014-10-01">T4 2014</option></select></div><button class="btn play" id="vt-play" type="button"></button></div><div class="tbl c6t" id="vt-tb"></div><ul class="out" id="vt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în T4 2019. Rămîne semnificativ (|t| ≥ 2) coeficientul lui g<sub>t−1</sub> în ecuația ROBOR?</div>
+  <details><summary>Răspuns</summary><p>Da: 0,21 cu t = 3,7, față de 0,14 cu t = 3,5 pe tot eșantionul; în plus devine semnificativ și g<sub>t−2</sub> (0,14, t = 2,3). Fără 2020–2026, R² al ecuației PIB crește de la 0,16 la 0,30, pentru că trimestrul pandemiei, cu reziduul de −9,1, nu mai este în eșantion. Legătura dintre creșterea PIB și dobînda din trimestrul următor nu vine din anii pandemiei.</p></details>
+</section><h2 class="sec" id="s-diag">Diagnosticarea reziduurilor</h2>
+<section class="blk" id="resid">
+  <h3>Reziduurile VAR(2) românesc</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=38" target="_blank" rel="noopener"><img src="slides/tsa_ch6_resid_ro.jpg" alt="Slide-ul 37: Reziduurile VAR(2) românesc" loading="lazy"></a>
+      <figcaption>Slide-ul 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="re-p">Ordinul p: <b id="re-p-v"></b></label><input type="range" id="re-p" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="re-d">Trimestrele de criză</label><select id="re-d"><option value="none" selected>fără dummy (curs)</option><option value="dum">dummy pentru T1 2009 și T2 2020</option></select></div><div class="ctl"><label for="re-h">Lagurile h ale testului portmanteau: <b id="re-h-v"></b></label><input type="range" id="re-h" min="3" max="16" step="1" value="8"></div><button class="btn play" id="re-play" type="button"></button></div><div class="charts "><div class="chart" id="re-chart"></div></div><div class="tbl c6t" id="re-tb"></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[Q_h=T^2\sum_{j=1}^{h}\frac{1}{T-j}\,\mathrm{tr}\big(\hat{\mathbf C}_j^{\prime}\hat{\mathbf C}_0^{-1}\hat{\mathbf C}_j\hat{\mathbf C}_0^{-1}\big)\sim\chi^2\big(K^2(h-p)\big)\]</div><ol id="re-ws"></ol></div><ul class="out" id="re-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Adăugați dummy pentru T1 2009 și T2 2020. Mai respinge testul Jarque–Bera normalitatea reziduurilor?</div>
+  <details><summary>Răspuns</summary><p>Da: statistica scade de la 191 la 144 (χ²(6), p < 0,001). Dummy-urile anulează reziduurile celor două trimestre, dar rămîn alte valori extreme: ROBOR +3,5 în T4 2008, inflația −3,7 în T3 2011, PIB −5,9 în T3 2010; kurtosisul ROBOR rămîne 7,9. Testul portmanteau iese chiar mai prost (Q₈ = 88,2, p = 0,002): eliminarea a două observații nu face reziduurile un zgomot alb Normal.</p></details>
+</section><h2 class="sec" id="s-gr">Cauzalitatea Granger</h2>
+<section class="blk" id="granger-wx">
+  <h3>Exemplu rezolvat: este creșterea PIB-ului o cauză Granger pentru ROBOR?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=43" target="_blank" rel="noopener"><img src="slides/ch6x_granger-wx_ro.jpg" alt="Slide-ul 42: Exemplu rezolvat: este creșterea PIB-ului o cauză Granger pentru ROBOR?" loading="lazy"></a>
+      <figcaption>Slide-ul 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gw-c">Cauza</label><select id="gw-c"><option value="0" selected>creșterea PIB (curs)</option><option value="1">inflația</option><option value="2">ROBOR 3M</option></select></div><div class="ctl"><label for="gw-e">Efectul</label><select id="gw-e"><option value="0">creșterea PIB</option><option value="1">inflația</option><option value="2" selected>ROBOR 3M (curs)</option></select></div><div class="ctl"><label for="gw-p">Ordinul p: <b id="gw-p-v"></b></label><input type="range" id="gw-p" min="1" max="4" step="1" value="2"></div><button class="btn play" id="gw-play" type="button"></button></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[F=\frac{(RSS_R-RSS_U)/p}{RSS_U/(T-Kp-1)}\sim F(p,\,T-Kp-1),\qquad W=pF\sim\chi^2(p)\]</div><ol id="gw-ws"></ol></div><ul class="out" id="gw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți la p = 4. Cît devin F și gradele de libertate pentru creșterea PIB → ROBOR 3M?</div>
+  <details><summary>Răspuns</summary><p>F = 8,50 cu (4, 69) grade de libertate, p < 0,001; valoarea critică de 5% scade la 2,50. Se testează acum 4 restricții: RSS<sub>R</sub> − RSS<sub>U</sub> = 64,08 − 42,93 = 21,15 se împarte la 4, iar RSS<sub>U</sub> la T − Kp − 1 = 82 − 12 − 1 = 69. Concluzia nu depinde de p: cu p = 1, F = 10,63 (p = 0,002).</p></details>
+</section>
+<section class="blk" id="granger-ro">
+  <h3>Cauzalitatea Granger în VAR(2) românesc</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=44" target="_blank" rel="noopener"><img src="slides/ch6x_granger-ro_ro.jpg" alt="Slide-ul 43: Cauzalitatea Granger în VAR(2) românesc" loading="lazy"></a>
+      <figcaption>Slide-ul 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gr-p">Ordinul p: <b id="gr-p-v"></b></label><input type="range" id="gr-p" min="1" max="6" step="1" value="2"></div><div class="ctl"><label for="gr-s">Sistemul</label><select id="gr-s"><option value="tri" selected>trei variabile (curs)</option><option value="bi">două variabile: perechea testată</option></select></div><div class="ctl"><label for="gr-e">Eșantionul se termină în</label><select id="gr-e"><option value="2026-04-01" selected>T2 2026 (curs)</option><option value="2019-10-01">T4 2019</option><option value="2014-10-01">T4 2014</option></select></div><button class="btn play" id="gr-play" type="button"></button></div><div class="tbl c6t" id="gr-tb"></div><div class="charts "><div class="chart" id="gr-chart"></div></div><ul class="out" id="gr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în T4 2019 (VAR cu trei variabile). Rămîne inflația → ROBOR 3M semnificativă la 5%?</div>
+  <details><summary>Răspuns</summary><p>Nu: F = 2,46, p = 0,096, față de 4,74 (p = 0,011) pe tot eșantionul. În schimb, inflația → creșterea PIB devine semnificativă (F = 6,27, p = 0,004). Fără anii 2021–2023, cînd inflația a urcat la 13,6% și ROBOR a crescut odată cu ea, legătura de la inflație la ROBOR nu se mai separă de zgomot pe 58 de trimestre. Rezultatele Granger depind de eșantion, nu doar de setul de variabile.</p></details>
+</section>
+<section class="blk" id="granger-mkt">
+  <h3>Piețe: New York-ul precedă Frankfurtul și Bucureștiul</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=46" target="_blank" rel="noopener"><img src="slides/ch6x_granger-mkt_ro.jpg" alt="Slide-ul 45: Piețe: New York-ul precedă Frankfurtul și Bucureștiul" loading="lazy"></a>
+      <figcaption>Slide-ul 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gm-p">Ordinul p: <b id="gm-p-v"></b></label><input type="range" id="gm-p" min="1" max="10" step="1" value="4"></div><div class="ctl"><label for="gm-y">Eșantionul începe în: <b id="gm-y-v"></b></label><input type="range" id="gm-y" min="2000" max="2020" step="1" value="2000"></div><button class="btn play" id="gm-play" type="button"></button></div><div class="tbl c6t" id="gm-tb"></div><div class="charts "><div class="chart" id="gm-chart"></div></div><ul class="out" id="gm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți eșantionul în 2010. Rămîne DAX → BET semnificativă la 5%?</div>
+  <details><summary>Răspuns</summary><p>Nu: F = 1,1, p = 0,369 (pe 2000–2026: F = 3,2, p = 0,012). S&P 500 → BET rămîne foarte puternică (F = 22,5), iar coeficientul S&P 500 de ieri în ecuația BET scade de la 0,218 la 0,183. Cu 4 033 de zile testul are multă putere, deci p = 0,369 arată că efectul DAX → BET, dată fiind S&P 500, este mic după 2010; nu arată că este exact zero.</p></details>
+</section>
+<section class="blk" id="granger-sim">
+  <h3>Cauzalitate Granger falsă din cauza unei variabile omise</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch6_granger_sim_ro.jpg" alt="Slide-ul 48: Cauzalitate Granger falsă din cauza unei variabile omise" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gs-c">Efectul lui z asupra lui y</label><select id="gs-c"><option value="0.0">0</option><option value="0.4">0,4</option><option value="0.8" selected>0,8 (curs)</option></select></div><div class="ctl"><label for="gs-p">Ordinul p al VAR-ului testat</label><select id="gs-p"><option value="1">1</option><option value="2" selected>2 (curs)</option><option value="4">4</option></select></div><div class="ctl"><label for="gs-a">Nivelul de semnificație</label><select id="gs-a"><option value="0.01">1%</option><option value="0.05" selected>5% (curs)</option><option value="0.1">10%</option></select></div><button class="btn play" id="gs-play" type="button"></button></div><div class="charts "><div class="chart" id="gs-chart"></div></div><div class="tbl c6t" id="gs-tb"></div><ul class="out" id="gs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Setați efectul lui z asupra lui y la 0. Ce rată de respingere are VAR-ul fără z la T = 500?</div>
+  <details><summary>Răspuns</summary><p>5,6%, apropiată de nivelul nominal de 5% (între 4,5% și 5,6% la toate volumele), față de 100% cu efectul 0,8 și 100% cu 0,4. x pare o cauză a lui y doar pentru că x<sub>t−1</sub> este o măsură zgomotoasă a lui z<sub>t−2</sub>, care îl determină pe y<sub>t</sub>. Contează și ordinul: cu p = 1, chiar VAR-ul cu z respinge în 76%–100% din cazuri, pentru că un singur lag al lui z nu conține z<sub>t−2</sub>, iar x<sub>t−1</sub> îl înlocuiește.</p></details>
+</section><h2 class="sec" id="s-irf">Funcții de răspuns la impuls</h2>
+<section class="blk" id="wx-orth">
+  <h3>Exemplu rezolvat: răspunsuri ortogonalizate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=56" target="_blank" rel="noopener"><img src="slides/ch6x_wx-orth_ro.jpg" alt="Slide-ul 55: Exemplu rezolvat: răspunsuri ortogonalizate" loading="lazy"></a>
+      <figcaption>Slide-ul 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wo-r">Corelația șocurilor ρ: <b id="wo-r-v"></b></label><input type="range" id="wo-r" min="-0.9" max="0.9" step="0.1" value="0.5"></div><div class="ctl"><label for="wo-o">Ordinea Cholesky</label><select id="wo-o"><option value="y1" selected>(y₁, y₂) (curs)</option><option value="y2">(y₂, y₁)</option></select></div><div class="ctl"><label for="wo-h">Orizontul h: <b id="wo-h-v"></b></label><input type="range" id="wo-h" min="0" max="8" step="1" value="1"></div><button class="btn play" id="wo-play" type="button"></button></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\boldsymbol\Sigma=\mathbf P\mathbf P^{\prime},\qquad \boldsymbol\Theta_0=\mathbf P,\qquad \boldsymbol\Theta_h=\boldsymbol\Phi_h\mathbf P=\mathbf A\boldsymbol\Theta_{h-1}\]</div><ol id="wo-ws"></ol></div><div class="charts "><div class="chart" id="wo-chart"></div></div><ul class="out" id="wo-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți y₂ primul în ordinea Cholesky. Cît este răspunsul lui y₂ la șocul u₁ la impact și după o perioadă?</div>
+  <details><summary>Răspuns</summary><p>0 la impact și 0,260 după o perioadă (0,3·0,866 + 0,4·0), față de 0,500 și 0,500 în ordinea (y₁, y₂). Cu y₂ primul, întreaga corelație de 0,5 este atribuită șocului u₂, care îl mișcă pe y₁ cu 0,500 la impact; u₁ ajunge la y₂ doar prin a₂₁, cu o perioadă întîrziere. Același VAR și aceleași date dau răspunsuri diferite: ordinea este o ipoteză.</p></details>
+</section>
+<section class="blk" id="irf-ro">
+  <h3>Răspunsurile la impuls ale VAR(2) românesc</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch6_irf_ro_ro.jpg" alt="Slide-ul 56: Răspunsurile la impuls ale VAR(2) românesc" loading="lazy"></a>
+      <figcaption>Slide-ul 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ir-o">Ordinea Cholesky</label><select id="ir-o"><option value="gpi" selected>g, π, i (curs)</option><option value="gip">g, i, π</option><option value="pgi">π, g, i</option><option value="pig">π, i, g</option><option value="igp">i, g, π</option><option value="ipg">i, π, g</option></select></div><div class="ctl"><label for="ir-p">Ordinul p (benzi doar pentru p = 2): <b id="ir-p-v"></b></label><input type="range" id="ir-p" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="ir-j">Răspunsul din tabel și din calcul</label><select id="ir-j"><option value="0-0">creșterea PIB la șocul creșterii PIB</option><option value="0-1">creșterea PIB la șocul inflației</option><option value="0-2">creșterea PIB la șocul ROBOR 3M</option><option value="1-0">inflația la șocul creșterii PIB</option><option value="1-1">inflația la șocul inflației</option><option value="1-2">inflația la șocul ROBOR 3M</option><option value="2-0">ROBOR 3M la șocul creșterii PIB</option><option value="2-1" selected>ROBOR 3M la șocul inflației (curs)</option><option value="2-2">ROBOR 3M la șocul ROBOR 3M</option></select></div><div class="ctl"><label for="ir-h">Orizontul h al calculului: <b id="ir-h-v"></b></label><input type="range" id="ir-h" min="0" max="12" step="1" value="4"></div><button class="btn play" id="ir-play" type="button"></button></div><div class="charts "><div class="chart" id="ir-chart"></div></div><div class="tbl c6t" id="ir-tb"></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\theta_{jk,h}=\sum_{m=1}^{K}\phi_{jm,h}\,p_{mk},\qquad \boldsymbol\Theta_h=\boldsymbol\Phi_h\mathbf P,\quad \boldsymbol\Sigma=\mathbf P\mathbf P^{\prime}\]</div><ol id="ir-ws"></ol></div><ul class="out" id="ir-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți ROBOR primul (ordinea i, g, π). Cît este răspunsul ROBOR la șocul inflației la impact și după 4 trimestre?</div>
+  <details><summary>Răspuns</summary><p>0 la impact, prin construcție, și 0,64 pp după 4 trimestre, față de 0,23 și 0,82 pp în ordinea din curs; banda exclude zero la 9 orizonturi din 13, față de 11. Cu ROBOR primul, partea comună a celor două șocuri (corelația reziduurilor 0,25) este atribuită ROBOR. Concluzia calitativă rămîne: ROBOR crește după un șoc al inflației și rămîne mai sus ani la rînd (0,38 pp după 12 trimestre).</p></details>
+</section>
+<section class="blk" id="irf-order">
+  <h3>Efectul ordinii asupra răspunsurilor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=59" target="_blank" rel="noopener"><img src="slides/tsa_ch6_irf_order_ro.jpg" alt="Slide-ul 58: Efectul ordinii asupra răspunsurilor" loading="lazy"></a>
+      <figcaption>Slide-ul 58</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="io-p">Ordinul p: <b id="io-p-v"></b></label><input type="range" id="io-p" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="io-e">Eșantionul se termină în</label><select id="io-e"><option value="2026-04-01" selected>T2 2026 (curs)</option><option value="2019-10-01">T4 2019</option><option value="2014-10-01">T4 2014</option></select></div><button class="btn play" id="io-play" type="button"></button></div><div class="charts "><div class="chart" id="io-chart"></div></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\boldsymbol\Theta_0=\mathbf P\ \ (\text{Cholesky}),\qquad \boldsymbol\psi_k(0)=\boldsymbol\Sigma\mathbf e_k/\sqrt{\sigma_{kk}}\ \ (\text{generalised})\]</div><ol id="io-ws"></ol></div><ul class="out" id="io-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți la p = 1. Mai crește inflația după un șoc ROBOR („enigma prețurilor”) cînd inflația este înaintea ROBOR?</div>
+  <details><summary>Răspuns</summary><p>Nu: maximul răspunsului este 0,00 pp, la impact (zero prin ordine), iar apoi răspunsul este negativ; cu p = 2 urca la 0,16 pp. Cu ROBOR primul, impactul este 0,29 pp și în VAR(1), pentru că ordinea atribuie ROBOR partea comună a șocurilor. „Enigma” depinde aici și de ordine, și de numărul de laguri: un rezultat care se schimbă cu p și cu ordinea este fragil.</p></details>
+</section>
+<section class="blk" id="market-irf">
+  <h3>Piețe: răspunsuri la un șoc S&P 500</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch6_market_irf_ro.jpg" alt="Slide-ul 61: Piețe: răspunsuri la un șoc S&P 500" loading="lazy"></a>
+      <figcaption>Slide-ul 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mi-p">Ordinul p: <b id="mi-p-v"></b></label><input type="range" id="mi-p" min="1" max="8" step="1" value="4"></div><div class="ctl"><label for="mi-y">Eșantionul începe în: <b id="mi-y-v"></b></label><input type="range" id="mi-y" min="2000" max="2020" step="1" value="2000"></div><button class="btn play" id="mi-play" type="button"></button></div><div class="charts "><div class="chart" id="mi-chart"></div></div><div class="tbl c6t" id="mi-tb"></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\boldsymbol\psi_{S}(0)=\frac{\boldsymbol\Sigma\mathbf e_{S}}{\sqrt{\sigma_{SS}}},\qquad \psi_{j}(0)=\frac{\sigma_{jS}}{\sqrt{\sigma_{SS}}}=\rho_{jS}\,\sqrt{\sigma_{jj}},\quad S=\text{S\&P 500}\]</div><ol id="mi-ws"></ol></div><ul class="out" id="mi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți eșantionul în 2015. Cît devine răspunsul generalizat al BET a doua zi după un șoc S&P 500?</div>
+  <details><summary>Răspuns</summary><p>0,11%, față de 0,24% pe 2000–2026; răspunsul din aceeași zi rămîne 0,32%. Pentru DAX răspunsul scade de la 0,85% la 0,68% în aceeași zi și de la 0,24% la 0,16% a doua zi. Partea din ziua următoare, care vine din orele de închidere diferite, este după 2015 de circa două ori mai mică.</p></details>
+</section><h2 class="sec" id="s-fevd">Descompunerea varianței erorii de prognoză</h2>
+<section class="blk" id="wx-fevd">
+  <h3>Descompunerea varianței erorii de prognoză</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=65" target="_blank" rel="noopener"><img src="slides/ch6x_wx-fevd_ro.jpg" alt="Slide-ul 64: Descompunerea varianței erorii de prognoză" loading="lazy"></a>
+      <figcaption>Slide-ul 64</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wf-r">Corelația șocurilor ρ: <b id="wf-r-v"></b></label><input type="range" id="wf-r" min="-0.9" max="0.9" step="0.1" value="0.5"></div><div class="ctl"><label for="wf-o">Ordinea Cholesky</label><select id="wf-o"><option value="y1" selected>(y₁, y₂) (curs)</option><option value="y2">(y₂, y₁)</option></select></div><div class="ctl"><label for="wf-v">Variabila</label><select id="wf-v"><option value="0">y₁</option><option value="1" selected>y₂ (curs)</option></select></div><div class="ctl"><label for="wf-h">Orizontul h: <b id="wf-h-v"></b></label><input type="range" id="wf-h" min="1" max="10" step="1" value="2"></div><button class="btn play" id="wf-play" type="button"></button></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\omega_{jk}(h)=\frac{\sum_{s=0}^{h-1}\theta_{jk,s}^2}{\sum_{s=0}^{h-1}\sum_{m=1}^{K}\theta_{jm,s}^2}\]</div><ol id="wf-ws"></ol></div><div class="charts "><div class="chart" id="wf-chart"></div></div><ul class="out" id="wf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți y₂ primul. Ce pondere are u₁ în varianța erorii de prognoză la 10 pași a lui y₂?</div>
+  <details><summary>Răspuns</summary><p>10,6%, față de 45,8% în ordinea (y₁, y₂); la un pas ponderea este 0%. Cu y₂ primul, u₁ ajunge la y₂ doar prin a₂₁ = 0,3, cu o perioadă întîrziere (0,260 la h = 1), iar suma pătratelor acestor răspunsuri este 0,182 din 1,724. Varianța erorii nu se schimbă (1,72 la h = 10 în ambele ordini); se schimbă doar împărțirea ei între șocuri.</p></details>
+</section>
+<section class="blk" id="fevd-ro">
+  <h3>FEVD pentru VAR(2) românesc</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=66" target="_blank" rel="noopener"><img src="slides/tsa_ch6_fevd_ro_ro.jpg" alt="Slide-ul 65: FEVD pentru VAR(2) românesc" loading="lazy"></a>
+      <figcaption>Slide-ul 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fv-o">Ordinea Cholesky</label><select id="fv-o"><option value="gpi" selected>g, π, i (curs)</option><option value="gip">g, i, π</option><option value="pgi">π, g, i</option><option value="pig">π, i, g</option><option value="igp">i, g, π</option><option value="ipg">i, π, g</option></select></div><div class="ctl"><label for="fv-p">Ordinul p: <b id="fv-p-v"></b></label><input type="range" id="fv-p" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="fv-h">Orizontul h al calculului: <b id="fv-h-v"></b></label><input type="range" id="fv-h" min="1" max="12" step="1" value="12"></div><button class="btn play" id="fv-play" type="button"></button></div><div class="charts "><div class="chart" id="fv-chart"></div></div><div class="tbl c6t" id="fv-tb"></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\omega_{i\pi}(h)=\frac{\sum_{s=0}^{h-1}\theta_{i\pi,s}^2}{\sum_{s=0}^{h-1}\big(\theta_{ig,s}^2+\theta_{i\pi,s}^2+\theta_{ii,s}^2\big)}\]</div><ol id="fv-ws"></ol></div><ul class="out" id="fv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți ordinea i, π, g (ROBOR primul). Cît explică șocurile inflației din varianța erorii de prognoză a ROBOR la 12 trimestre?</div>
+  <details><summary>Răspuns</summary><p>27%, față de 53% în ordinea din curs; propriile șocuri ale ROBOR explică 63% în loc de 37%. La un trimestru ROBOR este explicat 100% de propriul șoc, prin construcție. Concluzia că pe termen lung dobînda este determinată mai ales de inflație se bazează deci pe ipoteza că ROBOR reacționează la inflație în același trimestru, nu invers.</p></details>
+</section>
+<section class="blk" id="spill-table">
+  <h3>Tabelul de spillover: S&P 500, DAX, BET</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=69" target="_blank" rel="noopener"><img src="slides/ch6x_spill-table_ro.jpg" alt="Slide-ul 68: Tabelul de spillover: S&P 500, DAX, BET" loading="lazy"></a>
+      <figcaption>Slide-ul 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="st-h">Orizontul H (zile): <b id="st-h-v"></b></label><input type="range" id="st-h" min="1" max="20" step="1" value="10"></div><div class="ctl"><label for="st-p">Ordinul p: <b id="st-p-v"></b></label><input type="range" id="st-p" min="1" max="8" step="1" value="4"></div><div class="ctl"><label for="st-y">Eșantionul</label><select id="st-y"><option value="all" selected>2000–2026 (curs)</option><option value="2008">anul 2008</option><option value="2017">anul 2017</option><option value="2020">anul 2020</option></select></div><button class="btn play" id="st-play" type="button"></button></div><div class="tbl c6t" id="st-tb"></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[S(H)=\frac{100}{K}\sum_{j\ne k}\tilde\omega_{jk}(H),\qquad \text{spre}_k=100\sum_{j\ne k}\tilde\omega_{jk},\quad \text{de la}_j=100\sum_{k\ne j}\tilde\omega_{jk},\quad \text{net}_k=\text{spre}_k-\text{de la}_k\]</div><ol id="st-ws"></ol></div><div class="charts "><div class="chart" id="st-chart"></div></div><ul class="out" id="st-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți anul 2020. Ce pondere din varianța erorii de prognoză a BET provine de la celelalte piețe?</div>
+  <details><summary>Răspuns</summary><p>49,0%, față de 14,7% pe 2000–2026; indicele urcă la 51,2% (26,4% pe tot eșantionul), iar BET transmite 45,3% în loc de 9,1%. În anul pandemiei piețele s-au mișcat împreună. Un singur an are doar 237 de zile pentru 39 de coeficienți ai VAR(4), deci tabelul unui an este mai zgomotos; în 2017, un an calm, indicele este 24,4%, iar BET primește 13,2%.</p></details>
+</section>
+<section class="blk" id="spillover">
+  <h3>Indicele de spillover în timp</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=70" target="_blank" rel="noopener"><img src="slides/tsa_ch6_spillover_ro.jpg" alt="Slide-ul 69: Indicele de spillover în timp" loading="lazy"></a>
+      <figcaption>Slide-ul 69</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-w">Fereastra W (zile): <b id="sp-w-v"></b></label><input type="range" id="sp-w" min="100" max="500" step="50" value="200"></div><div class="ctl"><label for="sp-h">Orizontul H (zile): <b id="sp-h-v"></b></label><input type="range" id="sp-h" min="5" max="20" step="1" value="10"></div><div class="ctl"><label for="sp-d">Tabelul de mai jos: fereastra care se încheie pe: <b id="sp-d-v"></b></label><input type="range" id="sp-d" min="0" max="6233" step="1" value="0"></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><div class="tbl c6t" id="sp-tb"></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Măriți fereastra la 500 de zile. Cît devine maximul indicelui și cînd apare?</div>
+  <details><summary>Răspuns</summary><p>47,3%, pe 22 septembrie 2021, față de 57,5% pe 17 martie 2020 cu ferestre de 200 de zile. O fereastră mai lungă amestecă prăbușirea din martie 2020 cu mai multe zile calme, deci vîrful este mai mic și apare mai tîrziu; media rămîne aproape aceeași (29,1% față de 29,0%). Mărimea și data vîrfurilor depind de lungimea ferestrei: o parte din salturi este mecanică.</p></details>
+</section><h2 class="sec" id="s-fc">Prognoza cu un VAR</h2>
+<section class="blk" id="forecast-ro">
+  <h3>VAR(2) românesc: prognoze pe doi ani</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=74" target="_blank" rel="noopener"><img src="slides/tsa_ch6_forecast_ro_ro.jpg" alt="Slide-ul 73: VAR(2) românesc: prognoze pe doi ani" loading="lazy"></a>
+      <figcaption>Slide-ul 73</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fc-p">Ordinul p: <b id="fc-p-v"></b></label><input type="range" id="fc-p" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="fc-o">Originea prognozei: <b id="fc-o-v"></b></label><input type="range" id="fc-o" min="63" max="105" step="1" value="105"></div><div class="ctl"><label for="fc-v">Variabila din calcul</label><select id="fc-v"><option value="0">creșterea PIB</option><option value="1" selected>inflația (curs)</option><option value="2">ROBOR 3M</option></select></div><button class="btn play" id="fc-play" type="button"></button></div><div class="charts "><div class="chart" id="fc-chart"></div></div><div class="tbl c6t" id="fc-tb"></div><div class="c6x"><h4>Exemplu rezolvat</h4><div class="c6f">\[\hat{\mathbf Y}_{T+1|T}=\mathbf c+\mathbf A_1\mathbf Y_T+\mathbf A_2\mathbf Y_{T-1},\qquad \hat Y_{j,T+h|T}\pm1{,}96\sqrt{\sigma_{jj}(h)},\quad \boldsymbol\Sigma(h)=\sum_{s=0}^{h-1}\boldsymbol\Phi_s\boldsymbol\Sigma\boldsymbol\Phi_s^{\prime}\]</div><ol id="fc-ws"></ol></div><ul class="out" id="fc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați originea în T4 2020. Este inflația realizată în T4 2022 în interiorul intervalului de 95% al prognozei pe 8 trimestre?</div>
+  <details><summary>Răspuns</summary><p>Nu: 13,2% realizat, față de o prognoză de 2,4% și intervalul [−2,3; 7,1]. VAR-ul estimat pînă în 2020 nu conține șocurile prețurilor energiei din 2021–2022, iar intervalul presupune șocuri Normale cu varianța din trecut și ignoră incertitudinea parametrilor. Cu originea T4 2019, inflația din T4 2021 (6,4%) era încă în interval ([−2,0; 7,7]).</p></details>
+</section>
+<section class="blk" id="oos">
+  <h3>VAR față de metodele univariate de referință</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=77" target="_blank" rel="noopener"><img src="slides/tsa_ch6_oos_ro.jpg" alt="Slide-ul 76: VAR față de metodele univariate de referință" loading="lazy"></a>
+      <figcaption>Slide-ul 76</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="oo-c">Tabelul: țara și orizontul</label><select id="oo-c"><option value="ro-1" selected>România, h = 1 (curs)</option><option value="ro-4">România, h = 4</option><option value="us-2">SUA, h = 2</option><option value="us-4">SUA, h = 4</option><option value="us-8">SUA, h = 8</option></select></div><div class="ctl"><label for="oo-y">Evaluarea țării din tabel începe în: <b id="oo-y-v"></b></label><input type="range" id="oo-y" min="2015" max="2022" step="1" value="2015"></div><button class="btn play" id="oo-play" type="button"></button></div><div class="charts "><div class="chart" id="oo-chart"></div></div><div class="tbl c6t" id="oo-tb"></div><ul class="out" id="oo-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Începeți evaluarea României în 2021 (h = 1). Este VAR-ul tot semnificativ mai puțin precis decît AR pentru creșterea PIB?</div>
+  <details><summary>Răspuns</summary><p>Nu la 5%: RMSE relativ 1,06 pentru VAR și 0,76 pentru AR, dar DM = 1,74, p = 0,082, pe doar 22 de prognoze. Diferența rămîne în favoarea AR, iar VAR-ul este acum mai puțin precis chiar decît mersul aleator; cu jumătate din prognoze, testul nu o mai separă de zgomot la 5%.</p></details>
+</section><h2 class="sec" id="s-svar">VAR-uri structurale și un studiu de caz de referință</h2>
+<section class="blk" id="us-data">
+  <h3>Cele trei serii americane</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=82" target="_blank" rel="noopener"><img src="slides/tsa_ch6_us_data_ro.jpg" alt="Slide-ul 81: Cele trei serii americane" loading="lazy"></a>
+      <figcaption>Slide-ul 81</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="us-y0">Fereastra începe în: <b id="us-y0-v"></b></label><input type="range" id="us-y0" min="1960" max="2015" step="1" value="1960"></div><div class="ctl"><label for="us-y1">Fereastra se termină în: <b id="us-y1-v"></b></label><input type="range" id="us-y1" min="1970" max="2026" step="1" value="2000"></div><button class="btn play" id="us-play" type="button"></button></div><div class="charts "><div class="chart" id="us-chart"></div></div><div class="tbl c6t" id="us-tb"></div><ul class="out" id="us-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Extindeți fereastra pînă în 2026. Cît devine media dobînzii federale?</div>
+  <details><summary>Răspuns</summary><p>4,78%, față de 6,59% în 1960–2000; corelația șomaj–dobîndă scade de la 0,29 la 0,05. După 2008 și în 2020 dobînda a stat aproape de zero (minimul 0,06%), iar inflația a coborît pînă la −1,43%. Eșantionul extins conține un regim pe care VAR-ul din 1960–2000 nu l-a văzut.</p></details>
+</section>
+<section class="blk" id="sw-irf">
+  <h3>VAR-ul Stock–Watson: răspunsuri la impuls</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol6_modele_var_cauzalitate_granger.pdf#page=83" target="_blank" rel="noopener"><img src="slides/tsa_ch6_sw_irf_ro.jpg" alt="Slide-ul 82: VAR-ul Stock–Watson: răspunsuri la impuls" loading="lazy"></a>
+      <figcaption>Slide-ul 82</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sw-e">Eșantionul se termină în</label><select id="sw-e"><option value="2000-10-01" selected>T4 2000 (curs)</option><option value="2007-10-01">T4 2007</option><option value="2019-10-01">T4 2019</option><option value="2026-04-01">T2 2026</option></select></div><div class="ctl"><label for="sw-p">Ordinul p (benzi doar pentru curs): <b id="sw-p-v"></b></label><input type="range" id="sw-p" min="1" max="6" step="1" value="4"></div><button class="btn play" id="sw-play" type="button"></button></div><div class="charts "><div class="chart" id="sw-chart"></div></div><div class="tbl c6t" id="sw-tb"></div><ul class="out" id="sw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Extindeți eșantionul pînă în T2 2026. Ce semn are răspunsul șomajului la un șoc monetar după 2 trimestre?</div>
+  <details><summary>Răspuns</summary><p>Negativ: −0,13 pp, față de +0,05 pp în 1960–2000 (unde maximul este 0,16 pp după 8 trimestre). Șocul monetar explică acum doar 4% din varianța șomajului la 12 trimestre, față de 19%. Dobînzile aproape zero de după 2008 și pandemia schimbă sistemul, iar un VAR cu parametri constanți pe 1960–2026 amestecă regimuri diferite: semnul greșit semnalează instabilitatea modelului.</p></details>
+</section>
+<p class="src foot">Date trimestriale pentru România, T1 2005 – T2 2026: creșterea PIB-ului real (Eurostat, seria din curs), inflația anuală IAPC și ROBOR 3M (medii trimestriale). Randamente logaritmice zilnice în %, 6.433 de zile comune, 6 ianuarie 2000 – 18 septembrie 2026: S&P 500, DAX și BET (EODHD). Statele Unite: FRED (GDPCTPI, UNRATE, FEDFUNDS), T1 1960 – T2 2026. VAR-urile, testele, răspunsurile la impuls, FEVD și indicele de spillover se reestimează în browser prin OLS; stările inițiale sînt cele din curs. Benzile bootstrap ale răspunsurilor românești folosesc extragerile seminței capitolului (500 de replicări); simularea VAR(1) folosește extragerile Normale ale aceleiași semințe. Variantele care nu apar în curs (alt ordin p, altă ordine Cholesky, alt eșantion, alte ferestre, alte efecte în simulare) sînt rulări suplimentare ale codului capitolului, cu aceleași date și aceeași sămînță; indicele de spillover cu alte ferestre sau alt orizont se calculează din 5 în 5 zile.</p>
+</main>
+</body>
+</html>
