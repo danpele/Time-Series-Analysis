@@ -124,14 +124,26 @@ function blkEns() {
   const phi = +$('en-phi').value, t0 = +$('en-t').value; set('en-phi', nf(phi, 2)); set('en-t', t0);
   const E = D.ens, n = 100, sd = 1 / Math.sqrt(1 - phi * phi), t = lags(n);
   const A = E.e.map((e, i) => ar1(e, phi, sd * E.z0[i])), W = E.w.map(cumsum);
-  const G = grid('en-chart', [{ r: 0, c: 0, t: `Stationary AR(1), φ = ${phi}: same band at every t`, xt: 't' }, { r: 0, c: 1, t: 'Random walk: the band widens like √t', xt: 't' }], { cols: 2, h: 380 });
-  const [a, b] = G.ax, tr = [], pa = joinPaths(A, t), pw = joinPaths(W, t);
+  const G = grid('en-chart', [{ r: 0, c: 0, t: `Stationary AR(1), φ = ${phi}: same band at every t`, xt: 't' }, { r: 0, c: 1, t: 'Random walk: the band widens like √t', xt: 't' },
+    { r: 1, c: 0, t: `AR(1): the 40 values at t = ${t0}`, xt: `X<sub>${t0}</sub>` }, { r: 1, c: 1, t: `Random walk: the 40 values at t = ${t0}`, xt: `X<sub>${t0}</sub>` }], { cols: 2, h: 640 });
+  const [a, b, ca, cb] = G.ax, tr = [], pa = joinPaths(A, t), pw = joinPaths(W, t);
+  // cross-sections at t0: histogram of the 40 paths and the theoretical N(0, Var) density
+  const xsA = A.map(x => x[t0 - 1]), xsW = W.map(x => x[t0 - 1]), vA = sd * sd, vW = t0;
+  const dens = (v, L) => { const xs = range(-L, L, L / 60); return { x: xs, y: xs.map(z => Math.exp(-z * z / (2 * v)) / Math.sqrt(2 * Math.PI * v)) }; };
+  const LA = Math.max(4, 3.5 * sd), LW = 25, dA = dens(vA, LA), dW = dens(vW, LW);
+  tr.push({ x: xsA, type: 'histogram', histnorm: 'probability density', xbins: { start: -LA, end: LA, size: LA / 10 }, marker: { color: rgba(K.blue, 0.5) }, showlegend: false, xaxis: ca.xa, yaxis: ca.ya, hovertemplate: '%{x}: %{y:.3f}<extra></extra>' });
+  tr.push({ x: dA.x, y: dA.y, mode: 'lines', line: { color: K.navy, width: 1.6 }, name: 'N(0, Var X<sub>t</sub>)', xaxis: ca.xa, yaxis: ca.ya, hoverinfo: 'skip' });
+  tr.push({ x: xsW, type: 'histogram', histnorm: 'probability density', xbins: { start: -LW, end: LW, size: 2.5 }, marker: { color: rgba(K.green, 0.5) }, showlegend: false, xaxis: cb.xa, yaxis: cb.ya, hovertemplate: '%{x}: %{y:.3f}<extra></extra>' });
+  tr.push({ x: dW.x, y: dW.y, mode: 'lines', line: { color: K.navy, width: 1.6 }, showlegend: false, xaxis: cb.xa, yaxis: cb.ya, hoverinfo: 'skip' });
+  const axKey = s => s.replace(/^x/, 'xaxis').replace(/^y/, 'yaxis');
+  G.lay[axKey(ca.xa)].range = [-LA, LA]; G.lay[axKey(cb.xa)].range = [-LW, LW];
   tr.push({ x: t.concat([...t].reverse()), y: t.map(() => 1.96 * sd).concat(t.map(() => -1.96 * sd)), fill: 'toself', fillcolor: rgba(K.orange, 0.18), line: { width: 0 }, mode: 'lines', name: '±1.96 sd(X<sub>t</sub>)', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' });
   tr.push({ x: t.concat([...t].reverse()), y: t.map(v => 1.96 * Math.sqrt(v)).concat([...t].reverse().map(v => -1.96 * Math.sqrt(v))), fill: 'toself', fillcolor: rgba(K.orange, 0.18), line: { width: 0 }, mode: 'lines', showlegend: false, xaxis: b.xa, yaxis: b.ya, hoverinfo: 'skip' });
   tr.push({ x: pa.x, y: pa.y, mode: 'lines', line: { color: rgba(K.blue, 0.45), width: 0.7 }, name: 'one path', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' });
   tr.push({ x: pw.x, y: pw.y, mode: 'lines', line: { color: rgba(K.green, 0.45), width: 0.7 }, showlegend: false, xaxis: b.xa, yaxis: b.ya, hoverinfo: 'skip' });
-  const lim = Math.max(25, 1.96 * sd * 1.15);
-  G.lay.yaxis.range = [-lim, lim]; G.lay.yaxis2.range = [-lim, lim];
+  // AR(1) band: ±1.96 sd, at most ±13.9 at φ = 0.99; the random walk keeps ±25
+  // the AR(1) panel keeps one scale for every φ, so the band visibly widens as ▶ raises φ
+  G.lay[axKey(a.ya)].range = [-15, 15]; G.lay[axKey(b.ya)].range = [-LW, LW];
   G.lay.shapes.push(vl(a, t0, K.navy, 'dot', 1), vl(b, t0, K.navy, 'dot', 1));
   tr.push(leg(`cross-section at t = ${t0}`, { color: K.navy, dash: 'dot', width: 1.2 }));
   plot('en-chart', tr, G.lay);
