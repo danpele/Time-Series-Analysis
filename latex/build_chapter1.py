@@ -47,8 +47,8 @@ PH = {
              T('Photo', 'Foto') + ': Uppsala-Bild (1969); CC BY 4.0; Wikimedia Commons'),
     'bvb': ('ch1_bvb_2024.jpg', C + 'Bursa_de_Valori_București.jpg',
             T('Photo', 'Foto') + ': Corina Chitu (2024); CC BY-SA 4.0; Wikimedia Commons'),
-    'bnr': ('ch1_bnr_2018.jpg', C + 'National_Bank_of_Romania_(old_building),_Bucharest_by_nickispeaki_01.jpg',
-            T('Photo', 'Foto') + ': Nickispeaki (2018); CC BY-SA 4.0; Wikimedia Commons'),
+    'bnr': ('ch7_bnr_palace_2015.jpg', C + 'Bucharest_-_BNR_Palace_(19644434340).jpg',
+            T('Photo', 'Foto') + ': Ștefan Jurcă (2015); CC BY 2.0; Wikimedia Commons'),
     'nilo': ('ch1_nilometer_cairo.jpg', C + 'Kairo_Nilometer_BW_1.jpg',
              T('Photo', 'Foto') + ': Berthold Werner (2010); CC BY-SA 3.0; Wikimedia Commons'),
 }
@@ -771,7 +771,7 @@ interp(('the ACF and PACF', 'ACF și PACF'), [
      [T('PACF cuts off after $p$: AR($p$); ACF cuts off after $q$: MA($q$); both decay: ARMA', 'PACF se anulează după $p$: AR($p$); ACF se anulează după $q$: MA($q$); ambele descresc: ARMA')])])
 
 D.frame(T('Real data: three markets', 'Date reale: trei piețe'), cols(
-    ph('bnr', T('The National Bank of Romania (BNR), publisher of the EUR/RON reference rate', 'Banca Națională a României (BNR), care publică cursul de referință EUR/RON'), h='0.48\\textheight'),
+    ph('bnr', T('The National Bank of Romania (BNR), publisher of the EUR/RON reference rate', 'Banca Națională a României (BNR), care publică cursul de referință EUR/RON'), h='0.30\\textheight'),
     items(T('Next: the ACF of BET daily log returns since 2000, of their absolute values and of their squares', 'Urmează: ACF a randamentelor logaritmice zilnice ale BET din 2000, a valorilor lor absolute și a pătratelor lor'),
           T('The same analysis for EUR/RON (the BNR reference rate) and the S\\&P 500: Seminar 1, task B2', 'Aceeași analiză pentru EUR/RON (cursul de referință BNR) și S\\&P 500: Seminarul 1, cerința B2'),
           T('Question: are BET returns white noise? Of which kind?', 'Întrebarea: sînt randamentele BET zgomot alb? De ce tip?')),

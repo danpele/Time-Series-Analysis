@@ -59,8 +59,8 @@ PH = {
                T('Photo', 'Foto') + ': Robert Scoble (2008); CC BY 2.0; Wikimedia Commons'),
     'fidi': ('ch5_fidi_2020.jpg', C + 'Subdued_FiDi_(50063555551).jpg',
              T('Photo', 'Foto') + ': Billie Grace Ward (2020); CC BY 2.0; Wikimedia Commons'),
-    'bnr': ('ch1_bnr_2018.jpg', C + 'National_Bank_of_Romania_(old_building),_Bucharest_by_nickispeaki_01.jpg',
-            T('Photo', 'Foto') + ': Nickispeaki (2018); CC BY-SA 4.0; Wikimedia Commons'),
+    'bnr': ('ch5_bnr_palace_2018.jpg', C + 'Bucuresti,_Romania._BANCA_NATIONALA_A_ROMANIEI_(2)_(B-II-m-A-19023).jpg',
+            T('Photo', 'Foto') + ': Britchi Mirela (2018); CC BY-SA 4.0; Wikimedia Commons'),
 }
 
 
