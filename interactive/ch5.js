@@ -584,7 +584,7 @@ function init() {
   const PFX = { returns: 're', 'acf-squares': 'aq', 'arma-resid': 'ar', simulated: 'si', 'ewma-garch': 'ew', 'lik-arch1': 'l1', 'lik-garch': 'lg', qq: 'qq',
     'vol-sp500-bet': 'v1', 'vol-eurron-btc': 'v2', persistence: 'pe', bands: 'bd', nic: 'ni', 'acf-diag': 'dg', 'term-structure': 'ts', 'forecast-eval': 'fe', var: 'va' };
   if (T.predict && predict) Object.entries(T.predict).forEach(([b, sp]) => { if (has(b)) predict(b, Object.assign({ player: players[PFX[b] + '-play'], veil: { out: true } }, sp)); });
-  if (T.ticket && exitTicket && document.querySelector('main.imain')) exitTicket(T.ticket);
+  if (T.ticket && exitTicket) exitTicket(T.ticket);
   ALL.forEach(f => f());
   let w = window.innerWidth, tm = null;
   window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); } }, 250); });

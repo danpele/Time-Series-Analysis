@@ -893,7 +893,7 @@ function init() {
     players[b] = new Player(x + '-play', $(pl[0]), vals, pl[2]);
   });
   if (T.predict && predict) Object.entries(T.predict).forEach(([b, sp]) => { if (has(b) && live.includes(b)) predict(b, Object.assign({ player: players[b], veil: { out: true } }, sp)); });
-  if (T.ticket && exitTicket && document.querySelector('main.imain')) exitTicket(T.ticket);
+  if (T.ticket && exitTicket) exitTicket(T.ticket);
   live.forEach(b => BLK[b][1]());
   let w = window.innerWidth, tm = null;
   window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; live.forEach(b => BLK[b][1]()); } }, 250); });
