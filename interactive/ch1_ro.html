@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 1 · Procese stochastice și staționaritate</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch1.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch1_data.js?v=20261101a", "ch1_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch1.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Serii de timp</h1><p>Capitolul 1 · Procese stochastice și staționaritate</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_01" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch1.html" class="lang-btn">EN</a><a href="ch1_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură, calculată în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas.</p>
+<p class="toc"><a href="#s-ts">Serii de timp și procese stochastice</a> · <a href="#s-st">Staționaritate</a> · <a href="#s-wn">Zgomotul alb și mersul aleator</a> · <a href="#s-lag">Operatorul lag, diferențierea și descompunerea Wold</a> · <a href="#s-acf">ACF și PACF de selecție</a> · <a href="#s-pm">Teste portmanteau: Box–Pierce și Ljung–Box</a> · <a href="#s-tr">Transformări</a> · <a href="#s-cl">Două serii clasice</a></p>
+<h2 class="sec" id="s-ts">Serii de timp și procese stochastice</h2>
+<section class="blk" id="four-series">
+  <h3>Patru serii ale acestui curs</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=6" target="_blank" rel="noopener"><img src="slides/tsa_ch1_four_series_ro.jpg" alt="Slide-ul 5: Patru serii ale acestui curs" loading="lazy"></a>
+      <figcaption>Slide-ul 5</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fs-y0">Fereastra începe în: <b id="fs-y0-v"></b></label><input type="range" id="fs-y0" min="1995" max="2025" step="1" value="1995"></div><div class="ctl"><label for="fs-len">Lungimea ferestrei</label><select id="fs-len"><option value="1">1 an</option><option value="2">2 ani</option><option value="5">5 ani</option><option value="10">10 ani</option><option value="32" selected>tot eșantionul</option></select></div><button class="btn play" id="fs-play" type="button"></button></div><div class="charts "><div class="chart" id="fs-chart"></div></div><ul class="out" id="fs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ mută o fereastră de 5 ani de la 1995–1999 la 2021–2025. Care dintre cele patru serii are media apropiată de aceeași valoare în toate ferestrele?</div>
+  <details><summary>Răspuns</summary><p>Randamentele BET: media este 0,18% în 2000–2004, −0,05% în 2008–2012, 0,03% în 2013–2017 și 0,07% în 2021–2025, toate apropiate de 0. Abaterea standard se schimbă însă: 1,48%, 2,04%, 0,78% și 0,88%. Media PIB-ului real crește de la 21,3 mld. EUR în 1995–1999 la 48,1 mld. EUR în 2021–2025, iar media inflației scade de la 59,3% în 1995–1999 la 0,82% în 2013–2017: pentru aceste serii, media depinde de perioadă.</p></details>
+</section>
+<section class="blk" id="ensemble">
+  <h3>Un ansamblu de traiectorii</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=10" target="_blank" rel="noopener"><img src="slides/tsa_ch1_ensemble_ro.jpg" alt="Slide-ul 9: Un ansamblu de traiectorii" loading="lazy"></a>
+      <figcaption>Slide-ul 9</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="en-phi">φ al AR(1): <b id="en-phi-v"></b></label><input type="range" id="en-phi" min="0" max="0.99" step="0.01" value="0.7"></div><div class="ctl"><label for="en-t">Secțiunea la data t: <b id="en-t-v"></b></label><input type="range" id="en-t" min="1" max="100" step="1" value="100"></div><button class="btn play" id="en-play" type="button"></button></div><div class="charts "><div class="chart" id="en-chart"></div></div><ul class="out" id="en-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu aceleași șocuri, butonul ▶ crește φ de la 0 la 0,99. Ce se întîmplă cu banda din stînga și rămîne procesul staționar?</div>
+  <details><summary>Răspuns</summary><p>Banda se lărgește de la ±1,96 la ±13,89, pentru că Var(X<sub>t</sub>) = 1/(1 − φ²) crește de la 1 la 50,25; varianța celor 40 de traiectorii la t = 100 urcă de la 0,95 la 44,26. Pentru orice |φ| < 1, banda are însă aceeași lățime la orice t: procesul rămîne staționar. La mersul aleator, banda crește cu t și ajunge la ±19,6 la t = 100.</p></details>
+</section><h2 class="sec" id="s-st">Staționaritate</h2>
+<section class="blk" id="counterexample">
+  <h3>Slab, dar nu strict staționar</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=17" target="_blank" rel="noopener"><img src="slides/tsa_ch1_counterexample_ro.jpg" alt="Slide-ul 16: Slab, dar nu strict staționar" loading="lazy"></a>
+      <figcaption>Slide-ul 16</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ce-k">Grade de libertate k ale χ² la t impar: <b id="ce-k-v"></b></label><input type="range" id="ce-k" min="1" max="60" step="1" value="5"></div><button class="btn play" id="ce-play" type="button"></button></div><div class="charts "><div class="chart" id="ce-chart"></div></div><ul class="out" id="ce-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește k, gradele de libertate ale χ² de la t impar, de la 1 la 60. Ce se schimbă: media și varianța sau forma distribuției?</div>
+  <details><summary>Răspuns</summary><p>Doar forma. Pentru orice k, (χ²<sub>k</sub> − k)/√(2k) are media 0 și varianța 1, deci procesul rămîne slab staționar. Asimetria teoretică √(8/k) scade de la 2,83 la k = 1 la 1,26 la k = 5 și la 0,37 la k = 60 (în eșantion: 2,80; 1,30; 0,35). P(X<sub>t</sub> < −1,6) la t impar este 0 pînă la k = 5 și 4,2% la k = 60, față de 5,9% la t par. Pentru orice k finit, distribuțiile de la t par și impar diferă, deci procesul nu este strict staționar.</p></details>
+</section>
+<section class="blk" id="nonstationary">
+  <h3>Întrebare pentru sală: care serii sînt staționare?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=22" target="_blank" rel="noopener"><img src="slides/tsa_ch1_nonstationary_ro.jpg" alt="Slide-ul 21: Întrebare pentru sală: care serii sînt staționare?" loading="lazy"></a>
+      <figcaption>Slide-ul 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ns-b">Seria B: panta trendului: <b id="ns-b-v"></b></label><input type="range" id="ns-b" min="0" max="0.1" step="0.005" value="0.04"></div><div class="ctl"><label for="ns-s">Seria C: scala finală (inițial 0,4): <b id="ns-s-v"></b></label><input type="range" id="ns-s" min="0.4" max="5" step="0.1" value="3"></div><div class="ctl"><label for="ns-d">Seria D: saltul de nivel la t = 150: <b id="ns-d-v"></b></label><input type="range" id="ns-d" min="0" max="8" step="0.5" value="4"></div><button class="btn play" id="ns-play" type="button"></button></div><div class="charts "><div class="chart" id="ns-chart"></div></div><ul class="out" id="ns-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Care dintre condițiile (ii) și (iii) ale staționarității slabe nu este îndeplinită pentru seriile B, C și D?</div>
+  <details><summary>Răspuns</summary><p>Doar seria A este staționară. B are trendul determinist μ<sub>t</sub> = 0,04t: condiția (ii) nu este îndeplinită, iar media este 2,84 în prima jumătate și 9,05 în a doua. C are abaterea standard de 7,5 ori mai mare la final decît la început (1,09 și 2,74 pe cele două jumătăți): condiția (iii) nu este îndeplinită la h = 0. D are un salt de nivel de +4 la t = 150, care mută media de la −0,07 la 4,19: condiția (ii).</p></details>
+</section><h2 class="sec" id="s-wn">Zgomotul alb și mersul aleator</h2>
+<section class="blk" id="white-noise">
+  <h3>Trei tipuri de zgomot alb</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=26" target="_blank" rel="noopener"><img src="slides/tsa_ch1_white_noise_ro.jpg" alt="Slide-ul 25: Trei tipuri de zgomot alb" loading="lazy"></a>
+      <figcaption>Slide-ul 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wn-a">α al GARCH (β = 0,85, ω = 1 − α − β): <b id="wn-a-v"></b></label><input type="range" id="wn-a" min="0" max="0.14" step="0.01" value="0.1"></div><button class="btn play" id="wn-play" type="button"></button></div><div class="charts "><div class="chart" id="wn-chart"></div></div><ul class="out" id="wn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu aceleași șocuri z<sub>t</sub>, butonul ▶ crește α al GARCH de la 0 la 0,14 (β = 0,85). Ce se întîmplă cu testul Ljung–Box pentru pătratele seriei?</div>
+  <details><summary>Răspuns</summary><p>La α = 0, varianța condiționată este constantă și seria este un zgomot gaussian i.i.d.: Q*(10) = 9,3 pentru pătrate, p = 0,507. Statistica crește la 14,5 (p = 0,152) pentru α = 0,05, la 73,2 (p < 0,001) pentru α = 0,10 și la 838,9 pentru α = 0,14, iar kurtosis-ul urcă de la 3,20 la 5,85. Prin construcție, seria rămîne necorelată; testul pentru X<sub>t</sub> dă totuși p = 0,028 la α = 0,14, pentru că banda testului presupune varianță constantă.</p></details>
+</section>
+<section class="blk" id="random-walk">
+  <h3>Mersuri aleatoare și varianța lor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=29" target="_blank" rel="noopener"><img src="slides/tsa_ch1_random_walk_ro.jpg" alt="Slide-ul 28: Mersuri aleatoare și varianța lor" loading="lazy"></a>
+      <figcaption>Slide-ul 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rw-t">Data t: <b id="rw-t-v"></b></label><input type="range" id="rw-t" min="1" max="250" step="1" value="250"></div><div class="ctl"><label for="rw-c">Deriva c: <b id="rw-c-v"></b></label><input type="range" id="rw-c" min="-0.3" max="0.3" step="0.02" value="0"></div><button class="btn play" id="rw-play" type="button"></button></div><div class="charts "><div class="chart" id="rw-chart"></div></div><ul class="out" id="rw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ mută data t de la 10 la 250. Depinde corelația dintre X<sub>t</sub> și X<sub>t+10</sub> doar de distanța de 10 perioade?</div>
+  <details><summary>Răspuns</summary><p>Nu. Pe cele 5000 de traiectorii, corelația este 0,708 între X<sub>10</sub> și X<sub>20</sub> și 0,954 între X<sub>100</sub> și X<sub>110</sub>, ca valorile teoretice √(t/s) = 0,707 și 0,953. Pentru un proces staționar, corelația ar depinde doar de lag. Varianța crește și ea cu t: 10,1 la t = 10, 98,1 la t = 100 și 249,1 la t = 250 (teoretic tσ²).</p></details>
+</section>
+<section class="blk" id="spot-real">
+  <h3>Întrebare pentru sală: care serie este cea reală?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=33" target="_blank" rel="noopener"><img src="slides/tsa_ch1_spot_real_ro.jpg" alt="Slide-ul 32: Întrebare pentru sală: care serie este cea reală?" loading="lazy"></a>
+      <figcaption>Slide-ul 32</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sr-n">Numărul de zile: <b id="sr-n-v"></b></label><input type="range" id="sr-n" min="100" max="500" step="50" value="500"></div><div class="ctl"><label for="sr-v">Afișează</label><select id="sr-v"><option value="lev" selected>nivelul</option><option value="acf">ACF a variațiilor zilnice</option></select></div><button class="btn play" id="sr-play" type="button"></button></div><div class="charts "><div class="chart" id="sr-chart"></div></div><ul class="out" id="sr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Un panou este logaritmul prețului BET în ultimele 500 de zile de tranzacționare, celelalte cinci sînt mersuri aleatoare cu aceeași derivă și aceeași abatere standard zilnică. Care panou este BET?</div>
+  <details><summary>Răspuns</summary><p>Seria D: BET, 11 septembrie 2024 – 18 septembrie 2026. Cu ochiul liber nu poate fi deosebită de mersurile aleatoare. Variațiile zilnice o deosebesc: ρ̂(1) = 0,123, iar p-value-ul testului Ljung–Box Q*(10) este 0,018, singurul sub 5% dintre cele șase serii; la mersurile aleatoare simulate, p-value-urile sînt între 0,377 și 0,911.</p></details>
+</section><h2 class="sec" id="s-lag">Operatorul lag, diferențierea și descompunerea Wold</h2>
+<section class="blk" id="sp500-diff">
+  <h3>S&P 500: nivelul și diferența lui</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=38" target="_blank" rel="noopener"><img src="slides/tsa_ch1_sp500_diff_ro.jpg" alt="Slide-ul 37: S&P 500: nivelul și diferența lui" loading="lazy"></a>
+      <figcaption>Slide-ul 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-y0">Eșantionul începe în: <b id="sp-y0-v"></b></label><input type="range" id="sp-y0" min="2000" max="2024" step="1" value="2000"></div><div class="ctl"><label for="sp-d">Panoul de jos</label><select id="sp-d"><option value="1" selected>prima diferență</option><option value="2">a doua diferență</option></select></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Panoul de jos arată randamentele, Δ ln P<sub>t</sub>. Ce ρ̂(1) are a doua diferență, Δ² ln P<sub>t</sub>?</div>
+  <details><summary>Răspuns</summary><p>−0,543. Randamentele sînt deja apropiate de un zgomot alb (ρ̂(1) = −0,099), iar diferența unui zgomot alb este un MA(1) cu ρ(1) = −0,5: o diferențiere în plus creează autocorelație negativă și crește abaterea standard de la 1,21% la 1,80%. Nivelul ln P<sub>t</sub> are ACF 0,999 la lagul 1 și 0,973 la lagul 50; la lagul 1, ACF rămîne peste 0,99 pentru orice început al eșantionului între 2000 și 2024.</p></details>
+</section>
+<section class="blk" id="wold">
+  <h3>Ponderile Wold ale a patru procese</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=41" target="_blank" rel="noopener"><img src="slides/tsa_ch1_wold_ro.jpg" alt="Slide-ul 40: Ponderile Wold ale a patru procese" loading="lazy"></a>
+      <figcaption>Slide-ul 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-a">φ, primul panou: <b id="wd-a-v"></b></label><input type="range" id="wd-a" min="-1" max="1" step="0.05" value="0.8"></div><div class="ctl"><label for="wd-b">φ, al doilea panou: <b id="wd-b-v"></b></label><input type="range" id="wd-b" min="-1" max="1" step="0.05" value="-0.6"></div><div class="ctl"><label for="wd-th">θ, al treilea panou: <b id="wd-th-v"></b></label><input type="range" id="wd-th" min="-2" max="2" step="0.1" value="0.6"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește φ din primul panou de la 0 la 1. Ce se întîmplă cu Σψ<sub>j</sub>²?</div>
+  <details><summary>Răspuns</summary><p>Crește: Σψ<sub>j</sub>² = 1/(1 − φ²) este 1 la φ = 0, 2,78 la φ = 0,8 și 10,26 la φ = 0,95, cînd ψ<sub>10</sub> = 0,599. La φ = 1, ψ<sub>j</sub> = 1 pentru orice j, ca la mersul aleator, iar suma este infinită: procesul nu mai are formă Wold și nu mai este staționar.</p></details>
+</section>
+<section class="blk" id="ergodicity">
+  <h3>Mediile în timp: proces ergodic și neergodic</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch1_ergodicity_ro.jpg" alt="Slide-ul 43: Mediile în timp: proces ergodic și neergodic" loading="lazy"></a>
+      <figcaption>Slide-ul 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="eg-phi">φ al AR(1), stînga: <b id="eg-phi-v"></b></label><input type="range" id="eg-phi" min="0" max="0.99" step="0.01" value="0.7"></div><div class="ctl"><label for="eg-z">Abaterea standard a lui Z, dreapta: <b id="eg-z-v"></b></label><input type="range" id="eg-z" min="0" max="2" step="0.1" value="1"></div><button class="btn play" id="eg-play" type="button"></button></div><div class="charts "><div class="chart" id="eg-chart"></div></div><ul class="out" id="eg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește φ de la 0 la 0,99. Rămîne AR(1) din stînga ergodic pentru medie?</div>
+  <details><summary>Răspuns</summary><p>Da: pentru orice |φ| < 1, γ(h) → 0, deci X̄<sub>T</sub> → 0. Convergența este însă mai lentă: abaterea standard a lui X̄<sub>2000</sub> este aproximativ 1/((1 − φ)√T), adică 0,022 la φ = 0, 0,075 la φ = 0,7 și 2,24 la φ = 0,99, iar valorile finale ale celor 6 traiectorii sînt între −0,04 și 0,03, între −0,13 și 0,09, respectiv între −3,66 și 3,00. În dreapta, cu sd(Z) = 0, X<sub>t</sub> devine zgomot alb, iar mediile se apropie toate de 0.</p></details>
+</section><h2 class="sec" id="s-acf">ACF și PACF de selecție</h2>
+<section class="blk" id="bartlett">
+  <h3>Distribuția de selecție a ACF</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch1_bartlett_ro.jpg" alt="Slide-ul 48: Distribuția de selecție a ACF" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bt-m">Numărul de laguri m: <b id="bt-m-v"></b></label><input type="range" id="bt-m" min="1" max="20" step="1" value="20"></div><div class="ctl"><label for="bt-T">Lungimea eșantionului T</label><select id="bt-T"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="500">500</option></select></div><button class="btn play" id="bt-play" type="button"></button></div><div class="charts "><div class="chart" id="bt-chart"></div></div><ul class="out" id="bt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește numărul de laguri m de la 1 la 20, pe aceleași 10000 de eșantioane de zgomot alb. Cît de des iese cel puțin o bară din bandă?</div>
+  <details><summary>Răspuns</summary><p>Din ce în ce mai des: în 4,5% dintre eșantioane la m = 1, 20,3% la m = 5 și 50,3% la m = 20, deși nu există nicio corelație. Cu teste independente ar fi 1 − 0,95<sup>m</sup>: 5,0%, 22,6% și 64,2%; la laguri mari Var(ρ̂(h)) < 1/T, deci ies ceva mai puține bare. La m = 20 ies în medie 0,73 bare.</p></details>
+</section>
+<section class="blk" id="acf-models">
+  <h3>ACF teoretică și de selecție pentru patru procese</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=51" target="_blank" rel="noopener"><img src="slides/tsa_ch1_acf_models_ro.jpg" alt="Slide-ul 50: ACF teoretică și de selecție pentru patru procese" loading="lazy"></a>
+      <figcaption>Slide-ul 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="am-phi">φ (AR(1)): <b id="am-phi-v"></b></label><input type="range" id="am-phi" min="-0.95" max="0.99" step="0.01" value="0.8"></div><div class="ctl"><label for="am-th">θ (MA(1)): <b id="am-th-v"></b></label><input type="range" id="am-th" min="-2" max="2" step="0.05" value="0.6"></div><div class="ctl"><label for="am-T">Lungimea eșantionului T: <b id="am-T-v"></b></label><input type="range" id="am-T" min="50" max="500" step="10" value="500"></div><button class="btn play" id="am-play" type="button"></button></div><div class="charts "><div class="chart" id="am-chart"></div></div><ul class="out" id="am-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește T de la 50 la 500. Ce se întîmplă cu ACF de selecție a mersului aleator la lagul 10?</div>
+  <details><summary>Răspuns</summary><p>Crește: ρ̂(10) este −0,08 la T = 50, 0,37 la T = 100 și 0,55 la T = 500. Mersul aleator nu are o ACF teoretică, iar descreșterea ACF de selecție depinde de lungimea eșantionului. Pentru AR(1) cu φ = 0,8, ρ̂(10) se apropie de valoarea teoretică 0,11: −0,14 la T = 50, 0,11 la T = 100 și 0,09 la T = 500, iar banda se îngustează de la ±0,277 la ±0,088.</p></details>
+</section>
+<section class="blk" id="acf-pacf">
+  <h3>ACF și PACF pentru trei procese</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=54" target="_blank" rel="noopener"><img src="slides/tsa_ch1_acf_pacf_ro.jpg" alt="Slide-ul 53: ACF și PACF pentru trei procese" loading="lazy"></a>
+      <figcaption>Slide-ul 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ap-a">φ (AR(1)): <b id="ap-a-v"></b></label><input type="range" id="ap-a" min="-0.95" max="0.95" step="0.05" value="0.7"></div><div class="ctl"><label for="ap-b">φ₂ al AR(2) (φ₁ = 0,5): <b id="ap-b-v"></b></label><input type="range" id="ap-b" min="-0.9" max="0.49" step="0.01" value="0.3"></div><div class="ctl"><label for="ap-c">θ (MA(1)): <b id="ap-c-v"></b></label><input type="range" id="ap-c" min="-0.95" max="0.95" step="0.05" value="0.7"></div><button class="btn play" id="ap-play" type="button"></button></div><div class="charts "><div class="chart" id="ap-chart"></div></div><ul class="out" id="ap-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ mută φ₂ al AR(2) de la −0,4 la 0,45. Ce valoare urmărește PACF de selecție la lagul 2?</div>
+  <details><summary>Răspuns</summary><p>Coeficientul φ₂: φ̂<sub>22</sub> = −0,40 pentru φ₂ = −0,4, −0,03 pentru φ₂ = 0 și 0,38 pentru φ₂ = 0,45 (teoretic, φ<sub>22</sub> = φ₂). φ̂<sub>33</sub> rămîne în bandă (0,05; 0,04; −0,01): PACF se anulează după lagul 2. ρ̂(2) nu urmărește φ₂: la φ₂ = 0 este 0,28, aproape de ρ(2) = φ₁² = 0,25.</p></details>
+</section>
+<section class="blk" id="bet-acf">
+  <h3>BET: ACF a randamentelor, a valorilor absolute și a pătratelor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch1_bet_acf_ro.jpg" alt="Slide-ul 56: BET: ACF a randamentelor, a valorilor absolute și a pătratelor" loading="lazy"></a>
+      <figcaption>Slide-ul 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ba-s">Seria</label><select id="ba-s"><option value="bet" selected>BET</option><option value="sp">S&amp;P 500</option><option value="fx">EUR/RON</option></select></div><div class="ctl"><label for="ba-y0">Eșantionul începe în: <b id="ba-y0-v"></b></label><input type="range" id="ba-y0" min="2000" max="2024" step="1" value="2000"></div><button class="btn play" id="ba-play" type="button"></button></div><div class="charts "><div class="chart" id="ba-chart"></div></div><ul class="out" id="ba-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Selectați S&P 500. Au randamentele aceeași autocorelație de ordinul 1 ca BET? Dar pătratele lor?</div>
+  <details><summary>Răspuns</summary><p>Pentru randamente, nu: ρ̂(1) = −0,099 pentru S&P 500 și 0,109 pentru BET (0,170 pentru EUR/RON). Pentru pătrate, da: ρ̂(1) = 0,31 pentru S&P 500 și 0,33 pentru BET, cu Q*(10) = 6133 și 2440. Semnul autocorelației randamentelor diferă de la o piață la alta, iar volatility clustering apare pe toate trei. Dacă eșantionul BET începe în 2013, ρ̂(1) scade la 0,054 pentru randamente și la 0,18 pentru pătrate.</p></details>
+</section><h2 class="sec" id="s-pm">Teste portmanteau: Box–Pierce și Ljung–Box</h2>
+<section class="blk" id="lb-size">
+  <h3>Box–Pierce și Ljung–Box în eșantioane mici</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch1_lb_size_ro.jpg" alt="Slide-ul 61: Box–Pierce și Ljung–Box în eșantioane mici" loading="lazy"></a>
+      <figcaption>Slide-ul 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ls-m">Numărul de laguri m (dreapta): <b id="ls-m-v"></b></label><input type="range" id="ls-m" min="1" max="20" step="1" value="20"></div><div class="ctl"><label for="ls-T">T în panoul din dreapta</label><select id="ls-T"><option value="50" selected>50</option><option value="100">100</option><option value="500">500</option></select></div><div class="ctl"><label for="ls-a">Nivelul de semnificație</label><select id="ls-a"><option value="0.01">1%</option><option value="0.05" selected>5%</option><option value="0.1">10%</option></select></div><button class="btn play" id="ls-play" type="button"></button></div><div class="charts "><div class="chart" id="ls-chart"></div></div><ul class="out" id="ls-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu T = 50, butonul ▶ crește m de la 1 la 20. Cum se îndepărtează cele două teste de nivelul de 5%?</div>
+  <details><summary>Răspuns</summary><p>În direcții opuse. Box–Pierce respinge ipoteza adevărată în 4,5% dintre eșantioane la m = 1, în 4,0% la m = 10 și în 2,4% la m = 20; Ljung–Box în 5,2%, 7,4% și 9,4%. Cu T = 500 și m = 20, ratele sînt 5,0% și 5,9%. De aceea păstrăm m mult sub T (de exemplu, m ≤ T/5).</p></details>
+</section>
+<section class="blk" id="lb-stats">
+  <h3>Statisticile Ljung–Box pentru serii reale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=64" target="_blank" rel="noopener"><img src="slides/tsa_ch1_lb_stats_ro.jpg" alt="Slide-ul 63: Statisticile Ljung–Box pentru serii reale" loading="lazy"></a>
+      <figcaption>Slide-ul 63</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lq-m">Numărul de laguri m: <b id="lq-m-v"></b></label><input type="range" id="lq-m" min="1" max="30" step="1" value="10"></div><div class="ctl"><label for="lq-y0">Eșantionul începe în: <b id="lq-y0-v"></b></label><input type="range" id="lq-y0" min="1995" max="2025" step="1" value="1995"></div><button class="btn play" id="lq-play" type="button"></button></div><div class="charts "><div class="chart" id="lq-chart"></div></div><ul class="out" id="lq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Dacă eșantionul începe în 2025 (circa 425 de zile), mai respinge testul Ljung–Box cu m = 10 ipoteza de zgomot alb pentru randamentele BET?</div>
+  <details><summary>Răspuns</summary><p>Nu: Q*(10) = 14,3, p = 0,161, sub valoarea critică 18,31. Pe tot eșantionul, cu 6670 de zile, Q*(10) = 108,0, p < 0,001. Autocorelația mică a randamentelor BET (ρ̂(1) = 0,11) are nevoie de multe observații ca să fie separată de zgomot; nerespingerea nu arată că seria este zgomot alb. Pătratele resping și pe eșantionul scurt: Q*(10) = 68,6 pentru BET și 103,0 pentru S&P 500.</p></details>
+</section><h2 class="sec" id="s-tr">Transformări</h2>
+<section class="blk" id="gdp-transform">
+  <h3>PIB-ul real al României: logaritm, creștere trimestrială și anuală</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=68" target="_blank" rel="noopener"><img src="slides/tsa_ch1_gdp_transform_ro.jpg" alt="Slide-ul 67: PIB-ul real al României: logaritm, creștere trimestrială și anuală" loading="lazy"></a>
+      <figcaption>Slide-ul 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gt-k">Lagul diferenței din dreapta, k: <b id="gt-k-v"></b></label><input type="range" id="gt-k" min="1" max="8" step="1" value="4"></div><button class="btn play" id="gt-play" type="button"></button></div><div class="charts "><div class="chart" id="gt-chart"></div></div><ul class="out" id="gt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește lagul k al diferenței din dreapta de la 1 la 8. Pentru ce k dispare vîrful sezonier al ACF la lagul 4?</div>
+  <details><summary>Răspuns</summary><p>Pentru k = 4: ρ̂(4) = 0,03. Pentru k = 1, 2, 3 și 5, ρ̂(4) rămîne între 0,94 și 0,96: o diferență care nu acoperă un an întreg păstrează sezonul. k = 8 elimină și el sezonul, dar ρ̂(4) = 0,52, pentru că două creșteri pe doi ani aflate la un an distanță au un an în comun. Creșterea anuală, k = 4, are media 2,73% și ρ̂(1) = 0,63.</p></details>
+</section>
+<section class="blk" id="boxcox">
+  <h3>Box–Cox pentru PIB-ul nominal al României</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch1_boxcox_ro.jpg" alt="Slide-ul 70: Box–Cox pentru PIB-ul nominal al României" loading="lazy"></a>
+      <figcaption>Slide-ul 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bc-l">λ: <b id="bc-l-v"></b></label><input type="range" id="bc-l" min="-1" max="2" step="0.01" value="0.02"></div><button class="btn play" id="bc-play" type="button"></button></div><div class="charts "><div class="chart" id="bc-chart"></div></div><ul class="out" id="bc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu λ = 1 (fără transformare), de cîte ori este mai mare amplitudinea sezonieră din ultimii cinci ani decît din primii cinci?</div>
+  <details><summary>Răspuns</summary><p>De 10,5 ori: 3059 de milioane EUR în primii cinci ani și 32155 în ultimii cinci, pentru că oscilația sezonieră este o proporție stabilă din nivel. Cu λ = 0, logaritmul, raportul este 1,07 (0,392 și 0,420), iar criteriul lui Guerrero, 0,243, este practic minimul atins la λ̂ = 0,02; la λ = 1 criteriul este 0,677.</p></details>
+</section>
+<section class="blk" id="overdiff">
+  <h3>Supradiferențierea</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch1_overdiff_ro.jpg" alt="Slide-ul 72: Supradiferențierea" loading="lazy"></a>
+      <figcaption>Slide-ul 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="od-phi">φ al seriei diferențiate (0: zgomot alb, 1: mers aleator): <b id="od-phi-v"></b></label><input type="range" id="od-phi" min="0" max="1" step="0.02" value="0"></div><button class="btn play" id="od-play" type="button"></button></div><div class="charts "><div class="chart" id="od-chart"></div></div><ul class="out" id="od-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ crește φ al seriei diferențiate de la 0 (zgomot alb) la 1 (mers aleator). Cum se schimbă ρ̂(1) al primei diferențe?</div>
+  <details><summary>Răspuns</summary><p>Urcă de la −0,54 spre 0: −0,28 la φ = 0,5, −0,10 la φ = 0,9 și −0,06 la φ = 1, conform valorii teoretice −(1 − φ)/2. Diferențierea este potrivită numai pentru mersul aleator, cînd ΔX<sub>t</sub> = ε<sub>t</sub>; pentru o serie staționară, un ρ̂(1) negativ, apropiat de −0,5, semnalează supradiferențierea. Varianța primei diferențe scade de la 2,01 la 0,95.</p></details>
+</section><h2 class="sec" id="s-cl">Două serii clasice</h2>
+<section class="blk" id="textbook">
+  <h3>Nilul și petele solare: seriile și ACF</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol1_procese_stochastice_stationaritate.pdf#page=78" target="_blank" rel="noopener"><img src="slides/tsa_ch1_textbook_ro.jpg" alt="Slide-ul 77: Nilul și petele solare: seriile și ACF" loading="lazy"></a>
+      <figcaption>Slide-ul 77</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tb-y">Nilul: ultimul an al primului regim: <b id="tb-y-v"></b></label><input type="range" id="tb-y" min="1875" max="1965" step="1" value="1898"></div><button class="btn play" id="tb-play" type="button"></button></div><div class="charts "><div class="chart" id="tb-chart"></div></div><ul class="out" id="tb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Butonul ▶ mută anul rupturii Nilului de la 1875 la 1965. Ce se întîmplă cu ρ̂(1) al seriei după eliminarea celor două medii?</div>
+  <details><summary>Răspuns</summary><p>Este cel mai mic în jurul lui 1898: 0,13 pentru o ruptură după 1897 și 0,16 după 1898, cu Q*(10) = 13,0 (p = 0,225). Cu ruptura după 1880 sau după 1920, ρ̂(1) este 0,40 și 0,42, iar după 1950 este 0,50, cît are debitul însuși. O mare parte din autocorelația debitului vine din schimbarea mediei în jurul lui 1898.</p></details>
+</section>
+<p class="src foot">Simulări: șocuri generate cu seed-urile codului capitolului; cînd parametrii diferă de cei din curs, seria se recalculează din aceleași șocuri sau se simulează în browser. PIB real și nominal: Eurostat, trimestrial, neajustat sezonier, în versiunea folosită în curs. IAPC: Eurostat, pînă în august 2026. EUR/RON: cursul de referință BNR. BET și S&P 500: datele de piață ale cursului (EODHD), pînă la 18 septembrie 2026. Nilul și petele solare: seturile de date din statsmodels.</p>
+</main>
+</body>
+</html>

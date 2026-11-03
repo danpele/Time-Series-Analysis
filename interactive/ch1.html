@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 · Stochastic Processes and Stationarity</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch1.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch1_data.js?v=20261101a", "ch1_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch1.js?v=20261101a", []);
+</script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1>Time Series Analysis</h1><p>Chapter 1 · Stochastic Processes and Stationarity</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_01" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch1.html" class="lang-btn active">EN</a><a href="ch1_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step.</p>
+<p class="toc"><a href="#s-ts">Time series and stochastic processes</a> · <a href="#s-st">Stationarity</a> · <a href="#s-wn">White noise and the random walk</a> · <a href="#s-lag">The lag operator, differencing and the Wold decomposition</a> · <a href="#s-acf">Sample ACF and PACF</a> · <a href="#s-pm">Portmanteau tests: Box–Pierce and Ljung–Box</a> · <a href="#s-tr">Transformations</a> · <a href="#s-cl">Two classic series</a></p>
+<h2 class="sec" id="s-ts">Time series and stochastic processes</h2>
+<section class="blk" id="four-series">
+  <h3>Four series of this course</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=6" target="_blank" rel="noopener"><img src="slides/tsa_ch1_four_series_en.jpg" alt="Slide 5: Four series of this course" loading="lazy"></a>
+      <figcaption>Slide 5</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fs-y0">Window starts in: <b id="fs-y0-v"></b></label><input type="range" id="fs-y0" min="1995" max="2025" step="1" value="1995"></div><div class="ctl"><label for="fs-len">Window length</label><select id="fs-len"><option value="1">1 year</option><option value="2">2 years</option><option value="5">5 years</option><option value="10">10 years</option><option value="32" selected>full sample</option></select></div><button class="btn play" id="fs-play" type="button"></button></div><div class="charts "><div class="chart" id="fs-chart"></div></div><ul class="out" id="fs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button moves a 5-year window from 1995–1999 to 2021–2025. Which of the four series has a mean close to the same value in every window?</div>
+  <details><summary>Answer</summary><p>The BET returns: the mean is 0.18% in 2000–2004, −0.05% in 2008–2012, 0.03% in 2013–2017 and 0.07% in 2021–2025, all close to 0. The standard deviation changes, however: 1.48%, 2.04%, 0.78% and 0.88%. The mean of real GDP rises from 21.3 bn EUR in 1995–1999 to 48.1 bn EUR in 2021–2025, and the mean of inflation falls from 59.3% in 1995–1999 to 0.82% in 2013–2017: for these series the mean depends on the period.</p></details>
+</section>
+<section class="blk" id="ensemble">
+  <h3>An ensemble of paths</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=10" target="_blank" rel="noopener"><img src="slides/tsa_ch1_ensemble_en.jpg" alt="Slide 9: An ensemble of paths" loading="lazy"></a>
+      <figcaption>Slide 9</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="en-phi">AR(1) φ: <b id="en-phi-v"></b></label><input type="range" id="en-phi" min="0" max="0.99" step="0.01" value="0.7"></div><div class="ctl"><label for="en-t">Cross-section at t: <b id="en-t-v"></b></label><input type="range" id="en-t" min="1" max="100" step="1" value="100"></div><button class="btn play" id="en-play" type="button"></button></div><div class="charts "><div class="chart" id="en-chart"></div></div><ul class="out" id="en-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With the same shocks, the ▶ button raises φ from 0 to 0.99. What happens to the band on the left, and is the process still stationary?</div>
+  <details><summary>Answer</summary><p>The band widens from ±1.96 to ±13.89, because Var(X<sub>t</sub>) = 1/(1 − φ²) rises from 1 to 50.25; the variance of the 40 paths at t = 100 rises from 0.95 to 44.26. For every |φ| < 1, however, the band has the same width at every t: the process stays stationary. For the random walk the band grows with t and reaches ±19.6 at t = 100.</p></details>
+</section><h2 class="sec" id="s-st">Stationarity</h2>
+<section class="blk" id="counterexample">
+  <h3>Weakly but not strictly stationary</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=17" target="_blank" rel="noopener"><img src="slides/tsa_ch1_counterexample_en.jpg" alt="Slide 16: Weakly but not strictly stationary" loading="lazy"></a>
+      <figcaption>Slide 16</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ce-k">Degrees of freedom k of the χ² at odd t: <b id="ce-k-v"></b></label><input type="range" id="ce-k" min="1" max="60" step="1" value="5"></div><button class="btn play" id="ce-play" type="button"></button></div><div class="charts "><div class="chart" id="ce-chart"></div></div><ul class="out" id="ce-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises k, the degrees of freedom of the χ² at odd t, from 1 to 60. What changes: the mean and the variance, or the shape of the distribution?</div>
+  <details><summary>Answer</summary><p>Only the shape. For every k, (χ²<sub>k</sub> − k)/√(2k) has mean 0 and variance 1, so the process stays weakly stationary. The theoretical skewness √(8/k) falls from 2.83 at k = 1 to 1.26 at k = 5 and 0.37 at k = 60 (in the sample: 2.80, 1.30, 0.35). P(X<sub>t</sub> < −1.6) at odd t is 0 up to k = 5 and 4.2% at k = 60, against 5.9% at even t. For every finite k, the distributions at even and odd t differ, so the process is not strictly stationary.</p></details>
+</section>
+<section class="blk" id="nonstationary">
+  <h3>Question for the room: which series are stationary?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=22" target="_blank" rel="noopener"><img src="slides/tsa_ch1_nonstationary_en.jpg" alt="Slide 21: Question for the room: which series are stationary?" loading="lazy"></a>
+      <figcaption>Slide 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ns-b">Series B: slope of the trend: <b id="ns-b-v"></b></label><input type="range" id="ns-b" min="0" max="0.1" step="0.005" value="0.04"></div><div class="ctl"><label for="ns-s">Series C: final scale (initial 0.4): <b id="ns-s-v"></b></label><input type="range" id="ns-s" min="0.4" max="5" step="0.1" value="3"></div><div class="ctl"><label for="ns-d">Series D: level shift at t = 150: <b id="ns-d-v"></b></label><input type="range" id="ns-d" min="0" max="8" step="0.5" value="4"></div><button class="btn play" id="ns-play" type="button"></button></div><div class="charts "><div class="chart" id="ns-chart"></div></div><ul class="out" id="ns-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Which of conditions (ii) and (iii) of weak stationarity fails for series B, C and D?</div>
+  <details><summary>Answer</summary><p>Only series A is stationary. B has the deterministic trend μ<sub>t</sub> = 0.04t: condition (ii) fails, and the mean is 2.84 in the first half and 9.05 in the second. C has a standard deviation 7.5 times larger at the end than at the start (1.09 and 2.74 over the two halves): condition (iii) fails at h = 0. D has a level shift of +4 at t = 150, which moves the mean from −0.07 to 4.19: condition (ii).</p></details>
+</section><h2 class="sec" id="s-wn">White noise and the random walk</h2>
+<section class="blk" id="white-noise">
+  <h3>Three kinds of white noise</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=26" target="_blank" rel="noopener"><img src="slides/tsa_ch1_white_noise_en.jpg" alt="Slide 25: Three kinds of white noise" loading="lazy"></a>
+      <figcaption>Slide 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wn-a">GARCH α (β = 0.85, ω = 1 − α − β): <b id="wn-a-v"></b></label><input type="range" id="wn-a" min="0" max="0.14" step="0.01" value="0.1"></div><button class="btn play" id="wn-play" type="button"></button></div><div class="charts "><div class="chart" id="wn-chart"></div></div><ul class="out" id="wn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With the same shocks z<sub>t</sub>, the ▶ button raises the GARCH α from 0 to 0.14 (β = 0.85). What happens to the Ljung–Box test for the squares of the series?</div>
+  <details><summary>Answer</summary><p>At α = 0 the conditional variance is constant and the series is Gaussian i.i.d. noise: Q*(10) = 9.3 for the squares, p = 0.507. The statistic rises to 14.5 (p = 0.152) for α = 0.05, to 73.2 (p < 0.001) for α = 0.10 and to 838.9 for α = 0.14, and the kurtosis rises from 3.20 to 5.85. By construction the series stays uncorrelated; the test for X<sub>t</sub> nevertheless gives p = 0.028 at α = 0.14, because the band of the test assumes a constant variance.</p></details>
+</section>
+<section class="blk" id="random-walk">
+  <h3>Random walks and their variance</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=29" target="_blank" rel="noopener"><img src="slides/tsa_ch1_random_walk_en.jpg" alt="Slide 28: Random walks and their variance" loading="lazy"></a>
+      <figcaption>Slide 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rw-t">Date t: <b id="rw-t-v"></b></label><input type="range" id="rw-t" min="1" max="250" step="1" value="250"></div><div class="ctl"><label for="rw-c">Drift c: <b id="rw-c-v"></b></label><input type="range" id="rw-c" min="-0.3" max="0.3" step="0.02" value="0"></div><button class="btn play" id="rw-play" type="button"></button></div><div class="charts "><div class="chart" id="rw-chart"></div></div><ul class="out" id="rw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button moves the date t from 10 to 250. Does the correlation between X<sub>t</sub> and X<sub>t+10</sub> depend only on the distance of 10 periods?</div>
+  <details><summary>Answer</summary><p>No. Over the 5000 paths, the correlation is 0.708 between X<sub>10</sub> and X<sub>20</sub> and 0.954 between X<sub>100</sub> and X<sub>110</sub>, like the theoretical values √(t/s) = 0.707 and 0.953. For a stationary process the correlation would depend only on the lag. The variance also grows with t: 10.1 at t = 10, 98.1 at t = 100 and 249.1 at t = 250 (theoretical tσ²).</p></details>
+</section>
+<section class="blk" id="spot-real">
+  <h3>Question for the room: which one is real?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=33" target="_blank" rel="noopener"><img src="slides/tsa_ch1_spot_real_en.jpg" alt="Slide 32: Question for the room: which one is real?" loading="lazy"></a>
+      <figcaption>Slide 32</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sr-n">Number of days: <b id="sr-n-v"></b></label><input type="range" id="sr-n" min="100" max="500" step="50" value="500"></div><div class="ctl"><label for="sr-v">Show</label><select id="sr-v"><option value="lev" selected>the level</option><option value="acf">ACF of the daily changes</option></select></div><button class="btn play" id="sr-play" type="button"></button></div><div class="charts "><div class="chart" id="sr-chart"></div></div><ul class="out" id="sr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> One panel is the log price of the BET over its last 500 trading days, the other five are random walks with the same drift and the same daily standard deviation. Which panel is the BET?</div>
+  <details><summary>Answer</summary><p>Series D: the BET, 11 September 2024 – 18 September 2026. By eye it cannot be told apart from the random walks. Its daily changes set it apart: ρ̂(1) = 0.123, and the p-value of the Ljung–Box test Q*(10) is 0.018, the only one below 5% among the six series; for the simulated random walks the p-values lie between 0.377 and 0.911.</p></details>
+</section><h2 class="sec" id="s-lag">The lag operator, differencing and the Wold decomposition</h2>
+<section class="blk" id="sp500-diff">
+  <h3>S&P 500: the level and its difference</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=38" target="_blank" rel="noopener"><img src="slides/tsa_ch1_sp500_diff_en.jpg" alt="Slide 37: S&P 500: the level and its difference" loading="lazy"></a>
+      <figcaption>Slide 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-y0">Sample starts in: <b id="sp-y0-v"></b></label><input type="range" id="sp-y0" min="2000" max="2024" step="1" value="2000"></div><div class="ctl"><label for="sp-d">Bottom panel</label><select id="sp-d"><option value="1" selected>first difference</option><option value="2">second difference</option></select></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The bottom panel shows the returns, Δ ln P<sub>t</sub>. What ρ̂(1) does the second difference, Δ² ln P<sub>t</sub>, have?</div>
+  <details><summary>Answer</summary><p>−0.543. The returns are already close to white noise (ρ̂(1) = −0.099), and the difference of white noise is an MA(1) with ρ(1) = −0.5: one more difference creates negative autocorrelation and raises the standard deviation from 1.21% to 1.80%. The level ln P<sub>t</sub> has an ACF of 0.999 at lag 1 and 0.973 at lag 50; at lag 1 the ACF stays above 0.99 for every start of the sample between 2000 and 2024.</p></details>
+</section>
+<section class="blk" id="wold">
+  <h3>Wold weights of four processes</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=41" target="_blank" rel="noopener"><img src="slides/tsa_ch1_wold_en.jpg" alt="Slide 40: Wold weights of four processes" loading="lazy"></a>
+      <figcaption>Slide 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-a">φ, first panel: <b id="wd-a-v"></b></label><input type="range" id="wd-a" min="-1" max="1" step="0.05" value="0.8"></div><div class="ctl"><label for="wd-b">φ, second panel: <b id="wd-b-v"></b></label><input type="range" id="wd-b" min="-1" max="1" step="0.05" value="-0.6"></div><div class="ctl"><label for="wd-th">θ, third panel: <b id="wd-th-v"></b></label><input type="range" id="wd-th" min="-2" max="2" step="0.1" value="0.6"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises φ in the first panel from 0 to 1. What happens to Σψ<sub>j</sub>²?</div>
+  <details><summary>Answer</summary><p>It rises: Σψ<sub>j</sub>² = 1/(1 − φ²) is 1 at φ = 0, 2.78 at φ = 0.8 and 10.26 at φ = 0.95, where ψ<sub>10</sub> = 0.599. At φ = 1, ψ<sub>j</sub> = 1 for every j, as for the random walk, and the sum is infinite: the process no longer has a Wold form and is no longer stationary.</p></details>
+</section>
+<section class="blk" id="ergodicity">
+  <h3>Time averages: ergodic and non-ergodic</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch1_ergodicity_en.jpg" alt="Slide 43: Time averages: ergodic and non-ergodic" loading="lazy"></a>
+      <figcaption>Slide 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="eg-phi">AR(1) φ, left: <b id="eg-phi-v"></b></label><input type="range" id="eg-phi" min="0" max="0.99" step="0.01" value="0.7"></div><div class="ctl"><label for="eg-z">Standard deviation of Z, right: <b id="eg-z-v"></b></label><input type="range" id="eg-z" min="0" max="2" step="0.1" value="1"></div><button class="btn play" id="eg-play" type="button"></button></div><div class="charts "><div class="chart" id="eg-chart"></div></div><ul class="out" id="eg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises φ from 0 to 0.99. Is the AR(1) on the left still ergodic for the mean?</div>
+  <details><summary>Answer</summary><p>Yes: for every |φ| < 1, γ(h) → 0, so X̄<sub>T</sub> → 0. Convergence is slower, however: the standard deviation of X̄<sub>2000</sub> is about 1/((1 − φ)√T), that is 0.022 at φ = 0, 0.075 at φ = 0.7 and 2.24 at φ = 0.99, and the final values of the 6 paths lie between −0.04 and 0.03, between −0.13 and 0.09, and between −3.66 and 3.00. On the right, with sd(Z) = 0, X<sub>t</sub> becomes white noise and all the averages approach 0.</p></details>
+</section><h2 class="sec" id="s-acf">Sample ACF and PACF</h2>
+<section class="blk" id="bartlett">
+  <h3>Sampling distribution of the sample ACF</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch1_bartlett_en.jpg" alt="Slide 48: Sampling distribution of the sample ACF" loading="lazy"></a>
+      <figcaption>Slide 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bt-m">Number of lags m: <b id="bt-m-v"></b></label><input type="range" id="bt-m" min="1" max="20" step="1" value="20"></div><div class="ctl"><label for="bt-T">Sample length T</label><select id="bt-T"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="500">500</option></select></div><button class="btn play" id="bt-play" type="button"></button></div><div class="charts "><div class="chart" id="bt-chart"></div></div><ul class="out" id="bt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises the number of lags m from 1 to 20, on the same 10000 samples of white noise. How often is at least one bar outside the band?</div>
+  <details><summary>Answer</summary><p>More and more often: in 4.5% of the samples at m = 1, 20.3% at m = 5 and 50.3% at m = 20, although there is no correlation at all. With independent tests it would be 1 − 0.95<sup>m</sup>: 5.0%, 22.6% and 64.2%; at large lags Var(ρ̂(h)) < 1/T, so slightly fewer bars fall outside. At m = 20, on average 0.73 bars fall outside.</p></details>
+</section>
+<section class="blk" id="acf-models">
+  <h3>Theoretical and sample ACF of four processes</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=51" target="_blank" rel="noopener"><img src="slides/tsa_ch1_acf_models_en.jpg" alt="Slide 50: Theoretical and sample ACF of four processes" loading="lazy"></a>
+      <figcaption>Slide 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="am-phi">φ (AR(1)): <b id="am-phi-v"></b></label><input type="range" id="am-phi" min="-0.95" max="0.99" step="0.01" value="0.8"></div><div class="ctl"><label for="am-th">θ (MA(1)): <b id="am-th-v"></b></label><input type="range" id="am-th" min="-2" max="2" step="0.05" value="0.6"></div><div class="ctl"><label for="am-T">Sample length T: <b id="am-T-v"></b></label><input type="range" id="am-T" min="50" max="500" step="10" value="500"></div><button class="btn play" id="am-play" type="button"></button></div><div class="charts "><div class="chart" id="am-chart"></div></div><ul class="out" id="am-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises T from 50 to 500. What happens to the sample ACF of the random walk at lag 10?</div>
+  <details><summary>Answer</summary><p>It rises: ρ̂(10) is −0.08 at T = 50, 0.37 at T = 100 and 0.55 at T = 500. The random walk has no theoretical ACF, and the decay of its sample ACF depends on the length of the sample. For the AR(1) with φ = 0.8, ρ̂(10) approaches the theoretical value 0.11: −0.14 at T = 50, 0.11 at T = 100 and 0.09 at T = 500, while the band narrows from ±0.277 to ±0.088.</p></details>
+</section>
+<section class="blk" id="acf-pacf">
+  <h3>ACF and PACF of three processes</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=54" target="_blank" rel="noopener"><img src="slides/tsa_ch1_acf_pacf_en.jpg" alt="Slide 53: ACF and PACF of three processes" loading="lazy"></a>
+      <figcaption>Slide 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ap-a">φ (AR(1)): <b id="ap-a-v"></b></label><input type="range" id="ap-a" min="-0.95" max="0.95" step="0.05" value="0.7"></div><div class="ctl"><label for="ap-b">AR(2) φ₂ (φ₁ = 0.5): <b id="ap-b-v"></b></label><input type="range" id="ap-b" min="-0.9" max="0.49" step="0.01" value="0.3"></div><div class="ctl"><label for="ap-c">θ (MA(1)): <b id="ap-c-v"></b></label><input type="range" id="ap-c" min="-0.95" max="0.95" step="0.05" value="0.7"></div><button class="btn play" id="ap-play" type="button"></button></div><div class="charts "><div class="chart" id="ap-chart"></div></div><ul class="out" id="ap-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button moves the AR(2) φ₂ from −0.4 to 0.45. Which value does the sample PACF at lag 2 follow?</div>
+  <details><summary>Answer</summary><p>The coefficient φ₂: φ̂<sub>22</sub> = −0.40 for φ₂ = −0.4, −0.03 for φ₂ = 0 and 0.38 for φ₂ = 0.45 (in theory, φ<sub>22</sub> = φ₂). φ̂<sub>33</sub> stays inside the band (0.05, 0.04, −0.01): the PACF cuts off after lag 2. ρ̂(2) does not follow φ₂: at φ₂ = 0 it is 0.28, close to ρ(2) = φ₁² = 0.25.</p></details>
+</section>
+<section class="blk" id="bet-acf">
+  <h3>BET: ACF of returns, absolute and squared returns</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch1_bet_acf_en.jpg" alt="Slide 56: BET: ACF of returns, absolute and squared returns" loading="lazy"></a>
+      <figcaption>Slide 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ba-s">Series</label><select id="ba-s"><option value="bet" selected>BET</option><option value="sp">S&amp;P 500</option><option value="fx">EUR/RON</option></select></div><div class="ctl"><label for="ba-y0">Sample starts in: <b id="ba-y0-v"></b></label><input type="range" id="ba-y0" min="2000" max="2024" step="1" value="2000"></div><button class="btn play" id="ba-play" type="button"></button></div><div class="charts "><div class="chart" id="ba-chart"></div></div><ul class="out" id="ba-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Select the S&P 500. Do its returns have the same first-order autocorrelation as the BET? And their squares?</div>
+  <details><summary>Answer</summary><p>For the returns, no: ρ̂(1) = −0.099 for the S&P 500 and 0.109 for the BET (0.170 for EUR/RON). For the squares, yes: ρ̂(1) = 0.31 for the S&P 500 and 0.33 for the BET, with Q*(10) = 6133 and 2440. The sign of the autocorrelation of returns differs from one market to another, while volatility clustering appears in all three. If the BET sample starts in 2013, ρ̂(1) falls to 0.054 for the returns and to 0.18 for the squares.</p></details>
+</section><h2 class="sec" id="s-pm">Portmanteau tests: Box–Pierce and Ljung–Box</h2>
+<section class="blk" id="lb-size">
+  <h3>Box–Pierce and Ljung–Box in small samples</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch1_lb_size_en.jpg" alt="Slide 61: Box–Pierce and Ljung–Box in small samples" loading="lazy"></a>
+      <figcaption>Slide 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ls-m">Number of lags m (right): <b id="ls-m-v"></b></label><input type="range" id="ls-m" min="1" max="20" step="1" value="20"></div><div class="ctl"><label for="ls-T">T in the right panel</label><select id="ls-T"><option value="50" selected>50</option><option value="100">100</option><option value="500">500</option></select></div><div class="ctl"><label for="ls-a">Significance level</label><select id="ls-a"><option value="0.01">1%</option><option value="0.05" selected>5%</option><option value="0.1">10%</option></select></div><button class="btn play" id="ls-play" type="button"></button></div><div class="charts "><div class="chart" id="ls-chart"></div></div><ul class="out" id="ls-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With T = 50, the ▶ button raises m from 1 to 20. How do the two tests move away from the 5% level?</div>
+  <details><summary>Answer</summary><p>In opposite directions. Box–Pierce rejects the true hypothesis in 4.5% of the samples at m = 1, in 4.0% at m = 10 and in 2.4% at m = 20; Ljung–Box in 5.2%, 7.4% and 9.4%. With T = 500 and m = 20 the rates are 5.0% and 5.9%. This is why we keep m well below T (for example, m ≤ T/5).</p></details>
+</section>
+<section class="blk" id="lb-stats">
+  <h3>Ljung–Box statistics of real series</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=64" target="_blank" rel="noopener"><img src="slides/tsa_ch1_lb_stats_en.jpg" alt="Slide 63: Ljung–Box statistics of real series" loading="lazy"></a>
+      <figcaption>Slide 63</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lq-m">Number of lags m: <b id="lq-m-v"></b></label><input type="range" id="lq-m" min="1" max="30" step="1" value="10"></div><div class="ctl"><label for="lq-y0">Sample starts in: <b id="lq-y0-v"></b></label><input type="range" id="lq-y0" min="1995" max="2025" step="1" value="1995"></div><button class="btn play" id="lq-play" type="button"></button></div><div class="charts "><div class="chart" id="lq-chart"></div></div><ul class="out" id="lq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> If the sample starts in 2025 (about 425 days), does the Ljung–Box test with m = 10 still reject white noise for the BET returns?</div>
+  <details><summary>Answer</summary><p>No: Q*(10) = 14.3, p = 0.161, below the critical value 18.31. On the full sample, with 6670 days, Q*(10) = 108.0, p < 0.001. The small autocorrelation of the BET returns (ρ̂(1) = 0.11) needs many observations to be separated from noise; the non-rejection does not show that the series is white noise. The squares reject on the short sample too: Q*(10) = 68.6 for the BET and 103.0 for the S&P 500.</p></details>
+</section><h2 class="sec" id="s-tr">Transformations</h2>
+<section class="blk" id="gdp-transform">
+  <h3>Romanian real GDP: log, quarterly and annual growth</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=68" target="_blank" rel="noopener"><img src="slides/tsa_ch1_gdp_transform_en.jpg" alt="Slide 67: Romanian real GDP: log, quarterly and annual growth" loading="lazy"></a>
+      <figcaption>Slide 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gt-k">Lag of the difference on the right, k: <b id="gt-k-v"></b></label><input type="range" id="gt-k" min="1" max="8" step="1" value="4"></div><button class="btn play" id="gt-play" type="button"></button></div><div class="charts "><div class="chart" id="gt-chart"></div></div><ul class="out" id="gt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises the lag k of the difference on the right from 1 to 8. For which k does the seasonal spike of the ACF at lag 4 disappear?</div>
+  <details><summary>Answer</summary><p>For k = 4: ρ̂(4) = 0.03. For k = 1, 2, 3 and 5, ρ̂(4) stays between 0.94 and 0.96: a difference that does not cover a whole year keeps the season. k = 8 removes the season too, but ρ̂(4) = 0.52, because two two-year growth rates one year apart share a year. The annual growth rate, k = 4, has a mean of 2.73% and ρ̂(1) = 0.63.</p></details>
+</section>
+<section class="blk" id="boxcox">
+  <h3>Box–Cox for Romanian nominal GDP</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch1_boxcox_en.jpg" alt="Slide 70: Box–Cox for Romanian nominal GDP" loading="lazy"></a>
+      <figcaption>Slide 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bc-l">λ: <b id="bc-l-v"></b></label><input type="range" id="bc-l" min="-1" max="2" step="0.01" value="0.02"></div><button class="btn play" id="bc-play" type="button"></button></div><div class="charts "><div class="chart" id="bc-chart"></div></div><ul class="out" id="bc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With λ = 1 (no transformation), how many times larger is the seasonal amplitude in the last five years than in the first five?</div>
+  <details><summary>Answer</summary><p>10.5 times: 3059 million EUR in the first five years and 32155 in the last five, because the seasonal swing is a stable share of the level. With λ = 0, the logarithm, the ratio is 1.07 (0.392 and 0.420), and Guerrero's criterion, 0.243, is practically the minimum reached at λ̂ = 0.02; at λ = 1 the criterion is 0.677.</p></details>
+</section>
+<section class="blk" id="overdiff">
+  <h3>Over-differencing</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch1_overdiff_en.jpg" alt="Slide 72: Over-differencing" loading="lazy"></a>
+      <figcaption>Slide 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="od-phi">φ of the differenced series (0: white noise, 1: random walk): <b id="od-phi-v"></b></label><input type="range" id="od-phi" min="0" max="1" step="0.02" value="0"></div><button class="btn play" id="od-play" type="button"></button></div><div class="charts "><div class="chart" id="od-chart"></div></div><ul class="out" id="od-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button raises φ of the differenced series from 0 (white noise) to 1 (random walk). How does ρ̂(1) of the first difference change?</div>
+  <details><summary>Answer</summary><p>It rises from −0.54 towards 0: −0.28 at φ = 0.5, −0.10 at φ = 0.9 and −0.06 at φ = 1, in line with the theoretical value −(1 − φ)/2. Differencing is appropriate only for the random walk, where ΔX<sub>t</sub> = ε<sub>t</sub>; for a stationary series, a negative ρ̂(1) close to −0.5 signals over-differencing. The variance of the first difference falls from 2.01 to 0.95.</p></details>
+</section><h2 class="sec" id="s-cl">Two classic series</h2>
+<section class="blk" id="textbook">
+  <h3>The Nile and the sunspots: series and ACF</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter1_stochastic_processes_stationarity.pdf#page=78" target="_blank" rel="noopener"><img src="slides/tsa_ch1_textbook_en.jpg" alt="Slide 77: The Nile and the sunspots: series and ACF" loading="lazy"></a>
+      <figcaption>Slide 77</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tb-y">Nile: last year of the first regime: <b id="tb-y-v"></b></label><input type="range" id="tb-y" min="1875" max="1965" step="1" value="1898"></div><button class="btn play" id="tb-play" type="button"></button></div><div class="charts "><div class="chart" id="tb-chart"></div></div><ul class="out" id="tb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> The ▶ button moves the year of the Nile break from 1875 to 1965. What happens to ρ̂(1) of the series after removing the two means?</div>
+  <details><summary>Answer</summary><p>It is smallest around 1898: 0.13 for a break after 1897 and 0.16 after 1898, with Q*(10) = 13.0 (p = 0.225). With the break after 1880 or after 1920, ρ̂(1) is 0.40 and 0.42, and after 1950 it is 0.50, the value of the flow itself. A large part of the autocorrelation of the flow comes from the change in the mean around 1898.</p></details>
+</section>
+<p class="src foot">Simulations: shocks drawn with the seeds of the chapter code; when the parameters differ from those of the lecture, the series is recomputed from the same shocks or simulated in the browser. Real and nominal GDP: Eurostat, quarterly, not seasonally adjusted, in the version used in the lecture. HICP: Eurostat, up to August 2026. EUR/RON: BNR reference rate. BET and S&P 500: the course market data (EODHD), up to 18 September 2026. The Nile and the sunspots: the statsmodels data sets.</p>
+</main>
+</body>
+</html>
