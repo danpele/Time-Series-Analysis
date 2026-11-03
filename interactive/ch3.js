@@ -498,10 +498,368 @@ function blkUs() {
   out('us-out', [T.us0(T.q(o), T.q(fq[5]), T.q(fq[H - 1]))].concat(res));
 }
 
+// ================================================================= tables and worked examples (blocks of their own frames)
+const X = () => T.x;
+function table(id, head, rows, o) {
+  const el = $(id); if (!el) return;
+  const cell = (c, tag) => { const v = typeof c === 'object' && c !== null ? c : { v: c }; return `<${tag}${v.cls ? ` class="${v.cls}"` : ''}${v.cs ? ` colspan="${v.cs}"` : ''}>${v.v}</${tag}>`; };
+  const hd = (Array.isArray(head[0]) ? head : [head]).map(r => '<tr>' + r.map(c => cell(c, 'th')).join('') + '</tr>').join('');
+  el.innerHTML = (o && o.cap ? `<p class="c3cap">${o.cap}</p>` : '') + '<table><thead>' + hd + '</thead><tbody>'
+    + rows.map(r => `<tr${r.hi ? ' class="hi"' : ''}>` + r.map(c => cell(c, 'td')).join('') + '</tr>').join('') + '</tbody></table>' + (o && o.note ? `<p class="c3cap">${o.note}</p>` : '');
+}
+const nz = (v, d = 2) => nf(Math.abs(v) < 0.5 * 10 ** -d ? 0 : v, d);                // no '−0.00'
+const num = (x, d, bold) => ({ v: x === null || x === undefined || !isFinite(x) ? '—' : bold ? `<b>${nz(x, d)}</b>` : nz(x, d), cls: 'r' });
+const txt = (v, bold) => ({ v: bold ? `<b>${v}</b>` : v, cls: 'r' });
+const steps = (id, items) => { const el = $(id); if (el) el.innerHTML = items.map(s => `<li>${s}</li>`).join(''); };
+const hiRow = (r, on) => { if (on) r.hi = true; return r; };
+const pn = (x, d) => (x < 0 ? `(${nz(x, d)})` : nz(x, d));                       // a factor: negative numbers in parentheses
+const fp = p => (p < 0.001 ? '< ' + nf(0.001, 3) : nf(p, 3));
+
+// MacKinnon (1994) p-values and MacKinnon (2010) critical values of the (A)DF statistic, one regressor (statsmodels adfvalues)
+const MK = { n: { max: 1e9, min: -19.04, star: -1.04, sp: [0.6344, 1.2378, 0.032496], lp: [0.4797, 0.93557, -0.06999, 0.033066],
+  cv: [[-2.56574, -2.2358, -3.627, 0], [-1.941, -0.2686, -3.365, 31.223], [-1.61682, 0.2656, -2.714, 25.364]] },
+c: { max: 2.74, min: -18.83, star: -1.61, sp: [2.1659, 1.4412, 0.038269], lp: [1.7339, 0.93202, -0.12745, -0.010368],
+  cv: [[-3.43035, -6.5393, -16.786, -79.433], [-2.86154, -2.8903, -4.234, -40.04], [-2.56677, -1.5384, -2.809, 0]] },
+ct: { max: 0.7, min: -16.18, star: -2.89, sp: [3.2512, 1.6047, 0.049588], lp: [2.5261, 0.61654, -0.37956, -0.060285],
+  cv: [[-3.95877, -9.0531, -28.428, -134.155], [-3.41049, -4.3904, -9.036, -45.374], [-3.12705, -2.5856, -3.925, -22.38]] } };
+function mkp(t, reg) { const m = MK[reg]; if (t > m.max) return 1; if (t < m.min) return 0; const c = t <= m.star ? m.sp : m.lp; return normCdf(c.reduce((s, v, i) => s + v * t ** i, 0)); }
+const mkc = (reg, n) => MK[reg].cv.map(r => (n === Infinity ? r[0] : r[0] + r[1] / n + r[2] / n ** 2 + r[3] / n ** 3));   // [1%, 5%, 10%]
+const LV = { '0.01': 0, '0.05': 1, '0.1': 2 };
+const KC = { c: { '0.1': 0.347, '0.05': 0.463, '0.01': 0.739 }, ct: { '0.1': 0.119, '0.05': 0.146, '0.01': 0.216 } };   // KPSS critical values
+
+// ADF regression with k lagged differences on the last N observations (statsmodels adfuller: same sample for every k
+// when choosing k, then the chosen k on all the observations it allows)
+function adfFit(x, reg, k, Nfix) {
+  const dx = dif(x, 1), N = Nfix || dx.length - k, off = dx.length - N, rows = range(off, dx.length - 1, 1), cols = [];
+  if (reg !== 'n') cols.push(ones(N)); if (reg === 'ct') cols.push(range(1, N, 1));
+  cols.push(rows.map(i => x[i]));
+  for (let j = 1; j <= k; j++) cols.push(rows.map(i => dx[i - j]));
+  const o = ols(cols, dx.slice(off)), ig = reg === 'n' ? 0 : reg === 'c' ? 1 : 2, m = cols.length, ssr = o.s2 * (N - m);
+  const llf = -N / 2 * (Math.log(2 * Math.PI) + Math.log(ssr / N) + 1);
+  return { o, ig, k, tau: o.t[ig], gam: o.b[ig], se: o.se[ig], N, m, llf, aic: -2 * llf + 2 * m, bic: -2 * llf + Math.log(N) * m };
+}
+const kmaxOf = (n, reg) => Math.min(Math.floor(n / 2) - (reg === 'n' ? 0 : reg.length) - 1, Math.ceil(12 * (n / 100) ** 0.25));
+function adfAuto(x, reg, ic) {
+  const kmax = kmaxOf(x.length, reg), N = x.length - 1 - kmax, sel = range(0, kmax, 1).map(k => adfFit(x, reg, k, N));
+  let best = 0; sel.forEach((s, k) => { if (s[ic] < sel[best][ic]) best = k; });
+  const fit = adfFit(x, reg, best); return { kmax, Nsel: N, sel, k: best, fit, p: mkp(fit.tau, reg), cv: mkc(reg, fit.N) };
+}
+// KPSS around a level (reg 'c') or a trend ('ct'), bandwidth chosen as in statsmodels (nlags='auto') unless L is given
+function kpssG(x, reg, Lfix) {
+  const n = x.length, e = reg === 'c' ? x.map(v => v - mean(x)) : ols([ones(n), range(1, n, 1)], x).e;
+  const dot = i => { let s = 0; for (let t = i; t < n; t++) s += e[t] * e[t - i]; return s; };
+  let L = Lfix;
+  if (L === null || L === undefined) {
+    const cov = Math.floor(Math.pow(n, 2 / 9)); let s0 = dot(0) / n, s1 = 0;
+    for (let i = 1; i <= cov; i++) { const p = dot(i) / (n / 2); s0 += p; s1 += i * p; }
+    L = Math.min(Math.floor(1.1447 * Math.pow((s1 / s0) ** 2, 1 / 3) * Math.pow(n, 1 / 3)), n - 1);
+  }
+  const g = range(0, L, 1).map(j => dot(j) / n), lr = g[0] + 2 * sum(g.slice(1).map((v, i) => v * (1 - (i + 1) / (L + 1))));
+  let c = 0; const S = e.map(v => (c += v)), ss = sum(S.map(v => v * v)), eta = ss / (n * n) / lr;
+  const cv = reg === 'c' ? [0.347, 0.463, 0.574, 0.739] : [0.119, 0.146, 0.176, 0.216], pv = [0.10, 0.05, 0.025, 0.01];
+  let p; if (eta <= cv[0]) p = 0.10; else if (eta >= cv[3]) p = 0.01; else { const j = cv.findIndex(v => v > eta); p = pv[j - 1] + (pv[j] - pv[j - 1]) * (eta - cv[j - 1]) / (cv[j] - cv[j - 1]); }
+  return { eta, L, p, e, S, ss, g, lr, n, crit5: cv[1] };
+}
+// series of the slides that the browser tests itself (quarterly, monthly, yearly)
+let SERC = null;
+function SER() {
+  if (SERC) return SERC;
+  const hm = D.four.hicp_m, i0 = hm.indexOf('2005-01'), h = D.four.hicp.slice(i0).map(v => 100 * v), pi = D.infl.y, us = D.overdiff.us, uq = D.overdiff.us_q, N0 = D.brk_real.nile;
+  SERC = { gdp: { y: GY, reg: 'ct', d: GQ, f: 'q' }, dgdp: { y: dif(GY, 1), reg: 'c', d: GQ.slice(1), f: 'q' }, hicp: { y: h, reg: 'ct', d: hm.slice(i0), f: 'm' },
+    infl: { y: pi, reg: 'c', d: D.infl.m, f: 'm' }, dinfl: { y: dif(pi, 1), reg: 'c', d: D.infl.m.slice(1), f: 'm' }, us: { y: us, reg: 'ct', d: uq, f: 'q' },
+    dus: { y: dif(us, 1), reg: 'c', d: uq.slice(1), f: 'q' }, nile: { y: N0.v, reg: 'c', d: N0.d, f: 'y' } };
+  return SERC;
+}
+const SEN = { gdp: '100 ln Romanian real GDP', dgdp: 'Romanian GDP growth', hicp: '100 ln Romanian HICP', infl: 'Romanian 12-month inflation', dinfl: 'change of inflation',
+  us: '100 ln US real GDP', dus: 'US GDP growth', nile: 'Nile flow' };
+const dlab = (s, i) => (s.f === 'q' ? T.q(s.d[i]) : s.f === 'm' ? T.m(s.d[i]) : s.d[i].slice(0, 4));
+const xdate = s => s.d.map(v => (s.f === 'q' ? q2d(v) : m2d(v.slice(0, 7))));
+
+// ---------------------------------------------------------------- Critical values of the Dickey-Fuller test
+function blkXCv() {
+  const Tn = +$('cv-T').value; set('cv-T', Tn);
+  const regs = ['n', 'c', 'ct'], Ts = [50, 100, 250], rows = Ts.concat(Ts.includes(Tn) ? [] : [Tn]).sort((a, b) => a - b).concat([Infinity]);
+  table('cv-tb', [[{ v: '' }, { v: X().case.n, cs: 3 }, { v: X().case.c, cs: 3 }, { v: X().case.ct, cs: 3 }], ['T'].concat(...regs.map(() => ['1%', '5%', '10%']))],
+    rows.map(t => hiRow([t === Infinity ? '∞' : String(t)].concat(...regs.map(r => mkc(r, t).map(v => num(v, 2)))), t === Tn)), { cap: X().cvCap });
+  const tt = range(20, 1000, 5), G = grid('cv-chart', [{ r: 0, c: 0, t: '5% critical value of τ by sample size', xt: 'T (log scale)', yt: '5% critical value', x: { type: 'log' }, y: { range: [-3.8, -1.4] } }], { cols: 1, h: 340, legendRows: 2 });
+  const a = G.ax[0], tr = regs.map(r => ln(tt, tt.map(t => mkc(r, t)[1]), a, DFC[r], DFN[r], { hovertemplate: `${DFN[r]}, T = %{x}: %{y:.3f}<extra></extra>` }));
+  tr.push({ x: [250, 250, 250], y: regs.map(r => NB.dfdist[r].q05_sim), mode: 'markers', marker: { color: regs.map(r => DFC[r]), size: 9, symbol: 'diamond' }, name: 'simulated 5% quantile, T = 250', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{y:.3f}<extra></extra>' },
+    ln([20, 1000], [-1.645, -1.645], a, K.navy, 'Normal 5% value −1.645', { line: { color: K.navy, dash: 'dot', width: 1.2 } }));
+  G.lay.shapes.push(vl(a, Tn, K.navy, 'dot', 0.8));
+  plot('cv-chart', tr, G.lay);
+  const c = regs.map(r => nz(mkc(r, Tn)[1], 2));
+  out('cv-out', [X().cv1(Tn, ...c), X().cv2(...regs.map(r => nz(NB.dfdist[r].q05_sim, 2)))]);
+}
+
+// ---------------------------------------------------------------- Worked example: Romanian real GDP (Dickey-Fuller by hand)
+function blkXDf() {
+  const end = +$('xd-end').value, reg = $('xd-reg').value, kk = $('xd-k').value, y = GY.slice(0, end + 1); set('xd-end', T.q(GQ[end]));
+  const kmax = kmaxOf(y.length, reg), A = /IC$/.test(kk) ? adfAuto(y, reg, kk.toLowerCase()) : null, k = A ? A.k : Math.min(+kk, kmax), F = A ? A.fit : adfFit(y, reg, k);
+  const cv = mkc(reg, F.N), p = mkp(F.tau, reg), phi = 1 + F.gam, names = (reg === 'n' ? [] : reg === 'c' ? ['c'] : ['c', 'b (t)']).concat(['γ (y<sub>t−1</sub>)']).concat(range(1, k, 1).map(j => `δ<sub>${j}</sub> (Δy<sub>t−${j}</sub>)`));
+  const S = [X().xd1(T.q(GQ[0]), T.q(GQ[end]), F.N, k, A ? kk : null, kmax), X().xd2(reg, nz(F.gam, 4), nz(F.se, 4), nz(phi, 3)), X().xd3(nz(F.gam, 4), nz(F.se, 4), nz(F.tau, 2)),
+    X().xd4(reg, F.N, nz(cv[0], 2), nz(cv[1], 2), nz(cv[2], 2), fp(p)), X().xd5(nz(F.tau, 2), nz(cv[1], 2), F.tau < cv[1], F.tau < -1.645)];
+  if (phi > 0 && phi < 1) S.push(X().xd6(nz(phi, 3), nz(Math.log(0.5) / Math.log(phi), 1)));
+  steps('xd-ws', S);
+  table('xd-tb', [X().coef, X().est, 'SE', 't'], F.o.b.map((b, j) => hiRow([names[j], num(b, 4), num(F.o.se[j], 4), num(F.o.t[j], 2)], j === F.ig)), { cap: X().xdCap(F.N, nz(Math.sqrt(F.o.s2), 3)) });
+  const ks = range(0, kmax, 1), taus = ks.map(j => adfFit(y, reg, j)), G = grid('xd-chart', [{ r: 0, c: 0, t: `ADF τ by number of lags k (${DFN[reg]})`, xt: 'k', yt: 'τ', x: { dtick: 1 } }], { cols: 1, h: 320, legendRows: 2 });
+  const a = G.ax[0];
+  plot('xd-chart', [ln(ks, taus.map(f => f.tau), a, K.blue, 'τ', { mode: 'lines+markers', marker: { size: 6 }, hovertemplate: 'k = %{x}: τ = %{y:.2f}<extra></extra>' }),
+    ln(ks, taus.map(f => mkc(reg, f.N)[1]), a, K.red, '5% critical value (MacKinnon)', { line: { color: K.red, dash: 'dash', width: 1.2 } }),
+    ln(ks, ks.map(() => -1.645), a, K.navy, 'Normal 5% value −1.645', { line: { color: K.navy, dash: 'dot', width: 1.1 } }),
+    { x: [k], y: [F.tau], mode: 'markers', marker: { color: K.red, size: 12, symbol: 'circle-open', line: { width: 2 } }, name: 'k used', xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' }], G.lay);
+  out('xd-out', [X().xd(nz(F.tau, 2), nz(cv[1], 2), fp(p), F.tau < cv[1])]);
+  return { F, cv, p, k };
+}
+
+// ---------------------------------------------------------------- Choosing the number of lags k
+function blkXLag() {
+  const s = SER()[$('lg-s').value], reg = $('lg-reg').value, ic = $('lg-ic').value, A = adfAuto(s.y, reg, ic);
+  table('lg-tb', ['k', 'AIC', 'BIC', 'τ'], A.sel.map((f, j) => hiRow([String(j), num(f.aic, 2, j === A.k && ic === 'aic'), num(f.bic, 2, j === A.k && ic === 'bic'), num(f.tau, 2)], j === A.k)),
+    { cap: X().lgCap(A.Nsel, A.kmax) });
+  steps('lg-ws', [X().lg1(s.y.length, nz(12 * (s.y.length / 100) ** 0.25, 2), A.kmax), X().lg2(A.kmax, A.Nsel, ic.toUpperCase(), A.k), X().lg3(A.k, A.fit.N, nz(A.fit.tau, 2), fp(A.p), nz(A.cv[1], 2))]);
+  out('lg-out', [X().lg(X().ser[$('lg-s').value], X().case[reg], ic.toUpperCase(), A.k, nz(A.fit.tau, 2), fp(A.p))]);
+  return A;
+}
+
+// ---------------------------------------------------------------- Interpreting the power curves (table of size and power)
+function blkXPow() {
+  const reg = $('pw-reg').value, phi = +$('pw-phi').value, Ts = [50, 100, 250, 500, 1000];
+  table('pw-tb', [['φ'].concat(Ts.map(t => `T = ${t}` + ([100, 250, 500].includes(t) ? '' : ' *')))],
+    PHIS.map(f => hiRow([nz(f, f === 0.925 || f === 0.975 ? 3 : 2)].concat(Ts.map(t => num(100 * powerAt(t, reg, f), 1, f === 1))), f === phi)), { cap: X().pwCap(X().case[reg]), note: X().pwNote });
+  const G = grid('pw-chart', [{ r: 0, c: 0, t: `Rejections of the unit root at φ = ${phi} by sample size`, xt: 'T (log scale)', yt: '% rejections', x: { type: 'log' }, y: { range: [0, 105] } }], { cols: 1, h: 330, legendRows: 2 });
+  const a = G.ax[0], tr = [['c', K.blue, 'circle', 'solid'], ['ct', K.purple, 'square', 'dash']].map(([r, c, sym, dash]) => ln(Ts, Ts.map(t => 100 * powerAt(t, r, phi)), a, c, DFN[r],
+    { mode: 'lines+markers', marker: { size: 7, symbol: sym }, line: { color: c, width: r === reg ? 2.2 : 1.3, dash }, hovertemplate: `${DFN[r]}, T = %{x}: %{y:.1f}%<extra></extra>` }));
+  G.lay.shapes.push(hl(a, 5, K.navy, 'dot', 0.9));
+  plot('pw-chart', tr, G.lay);
+  const v = t => nz(100 * powerAt(t, reg, phi), 1);
+  out('pw-out', [X().pw1(X().case[reg], nz(100 * powerAt(100, reg, 1), 2), nz(100 * powerAt(250, reg, 1), 2), nz(100 * powerAt(500, reg, 1), 2)), X().pw2(nf(phi, phi === 0.925 || phi === 0.975 ? 3 : 2), v(50), v(100), v(250), v(500), v(1000))]);
+}
+
+// ---------------------------------------------------------------- The KPSS test: worked example from the partial sums
+function blkXKpss() {
+  const key = $('xk-s').value, s = SER()[key], reg = $('xk-reg').value, Ls = $('xk-L').value, K0 = kpssG(s.y, reg, Ls === 'auto' ? null : +Ls);
+  const n = K0.n, iS = K0.S.reduce((b, v, i) => (Math.abs(v) > Math.abs(K0.S[b]) ? i : b), 0);
+  steps('xk-ws', [X().xk1(reg, n, X().ser[key]), X().xk2(nz(K0.S[iS], 1), dlab(s, iS), nz(K0.ss, 0)), X().xk3(nz(K0.g[0], 3), K0.L, Ls === 'auto', nz(K0.lr, 3)),
+    X().xk4(nz(K0.ss, 0), n, nz(K0.lr, 3), nz(K0.eta, 3)), X().xk5(nz(K0.eta, 3), nf(K0.crit5, 3), K0.eta > K0.crit5, pk(K0.p))]);
+  table('xk-tb', ['j', 'γ̂<sub>j</sub>', X().wgt, X().contrib], K0.g.map((g, j) => [String(j), num(g, 3), num(j ? 1 - j / (K0.L + 1) : 1, 3), num(j ? 2 * g * (1 - j / (K0.L + 1)) : g, 3)])
+    .concat([[{ v: `<b>λ̂²</b>` }, '', '', num(K0.lr, 3, true)]]), { cap: X().xkCap(K0.L) });
+  const x = xdate(s), G = grid('xk-chart', [{ r: 0, c: 0, t: `Residuals e<sub>t</sub> (${reg === 'c' ? 'deviations from the mean' : 'deviations from a linear trend'})`, x: { type: 'date' } },
+    { r: 0, c: 1, t: 'Partial sums S<sub>t</sub> = e<sub>1</sub> + … + e<sub>t</sub>', x: { type: 'date' } }], { cols: 2, h: 340 });
+  const [a, b] = G.ax;
+  G.lay.shapes.push(hl(a, 0, K.navy, 'solid', 0.6), hl(b, 0, K.navy, 'solid', 0.6));
+  plot('xk-chart', [ln(x, K0.e, a, K.blue, SEN[key], { line: { color: K.blue, width: 1 }, customdata: s.d, hovertemplate: '%{customdata}: %{y:.2f}<extra></extra>' }),
+    ln(x, K0.S, b, K.red, 'partial sums', { line: { color: K.red, width: 1.4 }, customdata: s.d, hovertemplate: '%{customdata}: %{y:.1f}<extra></extra>' })], G.lay);
+  out('xk-out', [X().xk(X().ser[key], reg, nz(K0.eta, 3), K0.L, nf(K0.crit5, 3), K0.eta > K0.crit5)]);
+  return K0;
+}
+
+// ---------------------------------------------------------------- the unit-root table of the slides (D.tab.urt)
+function urtRow(e, det, ic, lv) {
+  const reg = det === 'slide' ? e.reg : det, a = e.adf[`${reg}_${ic}`], kp = e.kpss[reg] || null, er = e.ers[`${reg}_${ic}`] || null, pp = e.pp[reg];
+  const ca = mkc(reg, a[3])[LV[lv]], kc = kp ? KC[reg][lv] : null, ra = a[1] < +lv, rk = kp ? kp[0] > kc : null;
+  const v = kp ? (ra ? (rk ? 'conflict' : 'I0') : (rk ? 'I1' : 'inc')) : null;
+  return { reg, a, kp, er, pp, ca, kc, ra, rk, v, cpp: mkc(reg, e.n - 1)[LV[lv]] };
+}
+const fpa = p => (p < 0.001 ? '<&nbsp;' + nf(0.001, 3) : nf(p, 3));
+const URS = ['RO GDP', 'RO GDP growth', 'RO HICP', 'RO inflation', 'RO Δ inflation', 'EUR/RON', 'EUR/RON returns', 'BET', 'BET returns', 'S&P 500', 'S&P 500 returns', 'US GDP', 'US GDP growth', 'Nile'];
+function blkXUrt() {
+  const det = $('ut-det').value, ic = $('ut-ic').value, lv = $('ut-lv').value, U = D.tab.urt, R = U.map(e => urtRow(e, det, ic, lv));
+  const big = n => (n >= 1000 ? nf(n, 0).replace(/(\d)(?=(\d{3})+$)/, '$1&nbsp;') : String(n));
+  table('ut-tb', [X().utH], U.map((e, i) => { const r = R[i];
+    return [X().urtName[i], r.reg === 'ct' ? 'c, t' : r.reg === 'c' ? 'c' : '—', txt(big(e.n)), txt(`${nz(r.a[0], 2)} (${fpa(r.a[1])})`, r.ra), txt(String(r.a[2])),
+      txt(`${nz(r.pp[0], 2)}`, r.pp[0] < r.cpp), r.kp ? txt(nz(r.kp[0], 3), r.rk) : txt('—'), r.er ? txt(`${nz(r.er[0], 2)} (${r.er[2]})`, r.er[0] < r.er[3 + LV[lv]]) : txt('—'),
+      r.v ? X().verd[r.v] : '—']; }), { cap: X().utCap(Math.round(100 * lv) + '%'), note: X().utNote });
+  const G = grid('ut-chart', [{ r: 0, c: 0, t: `ADF τ and the ${Math.round(100 * lv)}% critical value`, xt: 'τ', x: { range: [-12.8, 0.8] }, y: { autorange: 'reversed', tickfont: { size: 10 } } }], { cols: 1, h: 520, legendRows: 1 });
+  const a = G.ax[0]; G.lay.margin.l = 108;
+  const ys = URS, cl = v => Math.max(-12, v);
+  plot('ut-chart', [{ x: R.map(r => cl(r.a[0])), y: ys, mode: 'markers', marker: { color: R.map(r => (r.ra ? K.green : K.red)), size: 9, symbol: R.map(r => (r.a[0] < -12 ? 'triangle-left' : 'circle')) },
+    name: 'ADF τ (green: rejected; ◀: below −12)', xaxis: a.xa, yaxis: a.ya, customdata: R.map(r => r.a[0]), hovertemplate: '%{y}: τ = %{customdata:.2f}<extra></extra>' },
+  { x: R.map(r => r.ca), y: ys, mode: 'markers', marker: { color: K.navy, size: 14, symbol: 'line-ns', line: { width: 2, color: K.navy } }, name: `${Math.round(100 * lv)}% critical value`, xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{y}: %{x:.2f}<extra></extra>' }], G.lay);
+  const cnt = k => R.filter(r => r.v === k).length;
+  out('ut-out', [X().ut1(det, ic, Math.round(100 * lv) + '%', cnt('I1'), cnt('I0'), cnt('inc'), cnt('conflict'), R.filter(r => !r.v).length), X().ut2(nz(R[0].a[0], 2), fpa(R[0].a[1]), R[0].kp ? nz(R[0].kp[0], 3) : '—', R[0].v)]);
+  return R;
+}
+// ---------------------------------------------------------------- ADF and KPSS together: the 2 x 2 table, filled with the series
+function blkXAk() {
+  const det = $('ak-det').value, ic = $('ak-ic').value, lv = $('ak-lv').value, U = D.tab.urt, R = U.map(e => urtRow(e, det, ic, lv));
+  const cell = (ra, rk) => R.map((r, i) => (r.ra === ra && r.rk === rk ? X().urtShort[i] : null)).filter(Boolean).join('; ') || '—';
+  table('ak-tb', ['', X().kNo, X().kYes], [[`<b>${X().aYes}</b>`, `<b>I(0)</b>: ${cell(true, false)}`, `<b>${X().conf}</b>: ${cell(true, true)}`],
+    [`<b>${X().aNo}</b>`, `<b>${X().inc}</b>: ${cell(false, false)}`, `<b>I(1)</b>: ${cell(false, true)}`]], { cap: X().akCap(Math.round(100 * lv) + '%') });
+  const c = (ra, rk) => R.filter(r => r.ra === ra && r.rk === rk).length;
+  out('ak-out', [X().ak(Math.round(100 * lv) + '%', c(true, false), c(false, true), c(false, false), c(true, true))]);
+}
+
+// ---------------------------------------------------------------- Interpreting the simulated break: ZA statistic against the no-lag curve
+const zsCache = {};
+function zsRow(dl) {
+  const k = dl.toFixed(1); if (zsCache[k]) return zsCache[k];
+  const g = D.brk_sim.grid[k], y = D.brk_sim.u.map((v, t) => v + (t >= 100 ? dl : 0)), Z = zaCurve(y), im = Z.t.indexOf(Math.min(...Z.t));
+  return (zsCache[k] = { g, min: Z.t[im], at: Z.bs[im] });
+}
+function blkXZaSim() {
+  const dl = +$('zs-d').value; set('zs-d', nf(dl, 1));
+  const ds = range(0, 10, 1).concat(Number.isInteger(dl) ? [] : [dl]).sort((a, b) => a - b), B = D.brk_sim;
+  table('zs-tb', [X().zsH], ds.map(d => { const r = zsRow(d), g = r.g; return hiRow([nz(d, 1), num(100 * g.rej, 1), txt(`${nz(g.adf, 2)} (${g.adf_k})`), num(g.adf_p, 3),
+    txt(`${nz(g.za, 2)} (${g.za_k})`, g.za < B.crit_za), txt(String(g.za_b + 1)), txt(nz(r.min, 2), r.min < B.crit_za), txt(String(r.at))], d === dl); }), { cap: X().zsCap(nz(B.crit_adf, 2), nz(B.crit_za, 2)) });
+  const r = zsRow(dl), g = r.g;
+  out('zs-out', [X().zs1(nf(dl, 1), pct(g.rej, 1), nz(g.adf_p, 2)), X().zs2(nz(g.za, 2), g.za_k, g.za_b + 1, nz(r.min, 2), r.at, nz(B.crit_za, 2))]);
+  return r;
+}
+
+// ---------------------------------------------------------------- Interpreting the two breaks: Zivot-Andrews, three versions
+function blkXZa() {
+  const reg = $('zt-reg').value, BR = D.brk_real, regs = ['c', 't', 'ct'], rows = [], br = [];
+  [['nile', 'Nile'], ['eurron', 'EUR/RON']].forEach(([k, lab]) => regs.forEach(r => {
+    const z = BR[k].za[r], m = v => (k === 'eurron' ? nz(Math.exp(v / 100), 2) : nz(v, 0));
+    rows.push(hiRow([X().zaSer[k], X().zaReg[r], txt(nz(z.stat, 2), z.stat < z.crit5), num(z.crit5, 2), txt(fp(z.p)), txt(k === 'nile' ? z.brk.slice(0, 4) : T.m(z.brk)), txt(String(z.lags)), txt(m(z.m0)), txt(m(z.m1))], r === reg));
+    br.push({ k, lab, r, z });
+  }));
+  table('zt-tb', [X().ztH], rows, { cap: X().ztCap(nz(BR.nile.adf_p, 3), nz(BR.nile.kpss, 3), nz(BR.eurron.adf_p, 2), nz(BR.eurron.kpss, 3)) });
+  const G = grid('zt-chart', [{ r: 0, c: 0, t: 'Zivot-Andrews statistic and its 5% critical value', yt: 'ZA statistic', y: { range: [-8, 0] } }], { cols: 1, h: 320, legendRows: 2 });
+  const a = G.ax[0], cat = br.map(b => `${b.lab}<br>${{ c: 'level', t: 'trend', ct: 'both' }[b.r]}`);
+  plot('zt-chart', [{ x: cat, y: br.map(b => b.z.stat), type: 'bar', marker: { color: br.map(b => (b.r === reg ? K.red : b.k === 'nile' ? K.blue : K.green)) }, name: 'ZA statistic', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' },
+    { x: cat, y: br.map(b => b.z.crit5), mode: 'markers', marker: { color: K.navy, size: 18, symbol: 'line-ew', line: { width: 2.5, color: K.navy } }, name: '5% critical value', xaxis: a.xa, yaxis: a.ya, hovertemplate: '%{x}: %{y:.2f}<extra></extra>' }], G.lay);
+  const N0 = BR.nile.za[reg], E = BR.eurron.za[reg];
+  out('zt-out', [X().zt1(reg, nz(N0.stat, 2), nz(N0.crit5, 2), N0.brk.slice(0, 4), nz(N0.m0, 0), nz(N0.m1, 0)), X().zt2(nz(E.stat, 2), nz(E.crit5, 2), T.m(E.brk), nz(Math.exp(E.m0 / 100), 2), nz(Math.exp(E.m1 / 100), 2))]);
+}
+
+// ---------------------------------------------------------------- Model choice by AICc
+const ACI = { aicc: 0, aic: 1, bic: 2 };
+function blkXAicc() {
+  const O = keysSorted(D.tab.aicc), o = O[+$('ac-end').value], c = $('ac-c').value, G0 = D.tab.aicc[o], ci = ACI[c]; set('ac-end', T.q(o));
+  const ks = Object.keys(G0).sort(), ok = ks.filter(k => G0[k][3]), best = ok.reduce((b, k) => (G0[k][ci] < G0[b][ci] ? k : b)), srt = ok.slice().sort((a, b) => G0[a][ci] - G0[b][ci]);
+  table('ac-tb', ['', 'q = 0', 'q = 1', 'q = 2'], [0, 1, 2].map(p => [`p = ${p}`].concat([0, 1, 2].map(q => { const v = G0[`${p}${q}`]; return txt(nz(v[ci], 1) + (v[3] ? '' : '<sup>†</sup>'), `${p}${q}` === best); }))),
+    { cap: X().acCap(c.toUpperCase().replace('AICC', 'AICc'), T.q(GQ[0]), T.q(o), GQ.indexOf(o)), note: X().acNote });
+  const B = G0[best], n = GQ.indexOf(o);
+  out('ac-out', [X().ac1(best[0], best[1], c.toUpperCase().replace('AICC', 'AICc'), nz(G0[srt[1]][ci] - B[ci], 1), srt[1][0], srt[1][1]), X().ac2(best[0], best[1], nz(B[4], 2), nz(B[5], 2), nz(B[4] / B[5], 2), nz(B[6], 2), n)]);
+  return { best, B, gap: G0[srt[1]][ci] - B[ci] };
+}
+
+// ---------------------------------------------------------------- Interpreting the residual checks: Ljung-Box and Jarque-Bera
+function blkXDiag() {
+  const key = $('dg-mod').value, p = +key[0], q = +key[1], e = D.gdp.models[key].e, n = e.length, kk = p + q, m = +$('dg-m').value; set('dg-m', m);
+  table('dg-tb', ['m', 'Q*(m)', X().df, 'p', X().at5], range(1, 16, 1).map(mm => { const Q = ljungBox(e, mm).q, df = mm - kk, pv = df > 0 ? chi2sf(Q, df) : null;
+    return hiRow([String(mm), num(Q, 2), txt(df > 0 ? String(df) : '—'), pv === null ? txt('—') : num(pv, 3), txt(pv === null ? '—' : pv < 0.05 ? X().rej : X().norej)], mm === m); }),
+  { cap: X().dgCap(p, q, n) });
+  const mo = moments(e), lo = Math.min(...e), hi = Math.max(...e), sk = mo.sk;
+  table('dg-tb2', [X().mom, X().val], [[X().skew, num(sk, 2)], [X().kurt, num(mo.ku, 2)], ['Jarque–Bera', num(mo.jb, 1)], [X().jbp, txt(fp(chi2sf(mo.jb, 2)))],
+    [X().minr, txt(`${nz(lo, 2)} (${T.q(GQ[e.indexOf(lo) + 1])})`)], [X().maxr, txt(`${nz(hi, 2)} (${T.q(GQ[e.indexOf(hi) + 1])})`)]]);
+  const Q = ljungBox(e, m).q, df = m - kk;
+  out('dg-out', [df > 0 ? X().dg1(m, nz(Q, 2), df, fp(chi2sf(Q, df))) : X().dg0(m, kk), X().dg2(nz(mo.ku, 1), nz(mo.jb, 0))]);
+}
+
+// ---------------------------------------------------------------- Forecasting with ARIMA: the variance of a random walk and of a trend-stationary model
+function blkXFvar() {
+  const h = +$('fv-h').value, phi = +$('fv-phi').value; set('fv-h', h); set('fv-phi', nf(phi, 3));
+  const P = NB.gdp_fc, s2d = P.ds.params.sigma2, s2t = P.ts.params.sigma2, z = 1.96;
+  const vD = j => j * s2d, vT = j => s2t * (1 - phi ** (2 * j)) / (1 - phi * phi), lim = z * Math.sqrt(s2t / (1 - phi * phi));
+  steps('fv-ws', [X().fv1(nz(s2d, 3), h, nz(vD(h), 2), nz(z * Math.sqrt(vD(h)), 2)), X().fv2(nz(s2t, 3), nz(phi, 3), h, nz(vT(h), 2), nz(z * Math.sqrt(vT(h)), 2)),
+    X().fv3(nz(lim, 2)), X().fv4(h, nz(Math.sqrt(vD(h) / vT(h)), 2))]);
+  const hs = [1, 4, 8, 12, 20, 40].concat([1, 4, 8, 12, 20, 40].includes(h) ? [] : [h]).sort((a, b) => a - b);
+  table('fv-tb', ['h', X().fvD, X().fvT, X().ratio], hs.map(j => hiRow([String(j), num(z * Math.sqrt(vD(j)), 2), num(z * Math.sqrt(vT(j)), 2), num(Math.sqrt(vD(j) / vT(j)), 2)], j === h)), { cap: X().fvCap });
+  const hh = range(1, 40, 1), G = grid('fv-chart', [{ r: 0, c: 0, t: '95% half-width of the GDP forecast interval (% of GDP)', xt: 'horizon h (quarters)', yt: 'half-width', x: { dtick: 4 } }], { cols: 1, h: 340, legendRows: 2 });
+  const a = G.ax[0];
+  plot('fv-chart', [ln(hh, hh.map(j => z * Math.sqrt(vD(j))), a, K.red, 'I(1): ARIMA(0,1,0) with drift, 1.96σ√h', { hovertemplate: 'h = %{x}: %{y:.2f}<extra></extra>' }),
+    ln(hh, hh.map(j => z * Math.sqrt(vT(j))), a, K.blue, `I(0) around a trend: AR(1), φ = ${phi.toFixed(3)}`, { hovertemplate: 'h = %{x}: %{y:.2f}<extra></extra>' }),
+    ln([1, 40], [lim, lim], a, K.blue, 'limit 1.96σ/√(1 − φ²)', { line: { color: K.blue, dash: 'dot', width: 1.1 } }),
+    { x: [h, h], y: [z * Math.sqrt(vD(h)), z * Math.sqrt(vT(h))], mode: 'markers', marker: { color: [K.red, K.blue], size: 10 }, showlegend: false, xaxis: a.xa, yaxis: a.ya, hoverinfo: 'skip' }], G.lay);
+  out('fv-out', [X().fv(h, nz(z * Math.sqrt(vD(h)), 1), nz(z * Math.sqrt(vT(h)), 1))]);
+  return { d: z * Math.sqrt(vD(h)), t: z * Math.sqrt(vT(h)), lim };
+}
+
+// ---------------------------------------------------------------- Worked example: ARIMA(1,1,0) forecasts
+function blkX110() {
+  const phi = +$('x1-phi').value, sg = +$('x1-s').value, yT = +$('x1-y').value, dT = +$('x1-dy').value, H = +$('x1-H').value;
+  set('x1-phi', nf(phi, 2)); set('x1-s', nf(sg, 1)); set('x1-y', nf(yT, 0)); set('x1-dy', nf(dT, 1)); set('x1-H', H);
+  const hs = range(1, Math.max(H, 3), 1), dF = hs.map(h => phi ** h * dT), yF = []; dF.reduce((y, d) => { yF.push(y + d); return y + d; }, yT);
+  const psi = psiW([phi], [], 1, Math.max(H, 3)), V = []; psi.reduce((c, v) => { V.push(sg * sg * (c + v * v)); return c + v * v; }, 0);
+  const half = V.map(v => 1.96 * Math.sqrt(v));
+  steps('x1-ws', [X().x11(nz(phi, 2), nz(dT, 1), nz(dF[0], 2), nz(yT, 0), nz(yF[0], 2)), X().x12(nz(phi, 2), nz(dF[0], 2), nz(dF[1], 2), nz(yF[0], 2), nz(yF[1], 2), nz(dF[2], 3), nz(yF[2], 2)),
+    X().x13(nz(phi, 2), nz(psi[1], 2), nz(psi[2], 2)), X().x14(nz(sg * sg, 2), nz(V[0], 2), nz(V[1], 2), nz(V[2], 2)), X().x15(nz(half[0], 2), nz(half[1], 2), nz(half[2], 2), nz(half[2] / half[0], 2))]);
+  table('x1-tb', ['h', 'Δŷ<sub>T+h</sub>', 'ŷ<sub>T+h</sub>', 'ψ<sub>h−1</sub>', X().var, X().half, X().rwHalf], hs.slice(0, H).map((h, i) => [String(h), num(dF[i], 3), num(yF[i], 2), num(psi[i], 3), num(V[i], 2), num(half[i], 2), num(1.96 * sg * Math.sqrt(h), 2)]), { cap: X().x1Cap });
+  const xs = [0].concat(hs.slice(0, H)), yy = [yT].concat(yF.slice(0, H)), G = grid('x1-chart', [{ r: 0, c: 0, t: 'Forecasts from y<sub>T</sub> with 95% intervals', xt: 'horizon h', yt: 'y', x: { dtick: 1 } }], { cols: 1, h: 320, legendRows: 2 });
+  const a = G.ax[0], up = [yT].concat(yF.slice(0, H).map((v, i) => v + half[i])), lo = [yT].concat(yF.slice(0, H).map((v, i) => v - half[i]));
+  const rw = xs.map(h => 1.96 * sg * Math.sqrt(h));
+  plot('x1-chart', [band(xs, lo, up, a, K.red, 0.15, ''), ln(xs, yy, a, K.red, `ARIMA(1,1,0), φ = ${phi.toFixed(2)}`, { mode: 'lines+markers', marker: { size: 6 }, hovertemplate: 'h = %{x}: %{y:.2f}<extra></extra>' }),
+    ln(xs, xs.map(() => yT), a, K.blue, 'random walk: flat at y_T', { line: { color: K.blue, dash: 'dash', width: 1.3 } }),
+    ln(xs, rw.map(v => yT + v), a, K.blue, 'random walk ±1.96σ√h', { line: { color: K.blue, dash: 'dot', width: 1 } }), ln(xs, rw.map(v => yT - v), a, K.blue, '', { line: { color: K.blue, dash: 'dot', width: 1 } })], G.lay);
+  out('x1-out', [X().x1(nz(yF[0], 2), nz(yF[1], 2), nz(yF[2], 2), nz(half[0], 2), nz(half[1], 2), nz(half[2], 2))]);
+  return { yF, psi, V, half };
+}
+
+// ---------------------------------------------------------------- Interpreting the interval widths: φ = 0.5 (chart) and φ = 0.6 (worked example)
+function blkXWid() {
+  const h = +$('xw-h').value, f0 = +$('xw-f0').value, f1 = +$('xw-f1').value, th = +$('xw-th').value; set('xw-h', h); set('xw-f0', nf(f0, 2)); set('xw-f1', nf(f1, 2)); set('xw-th', nf(th, 2));
+  const n = Math.max(h, 20), M = [[`AR(1), φ = ${nz(f0, 2)} (d = 0)`, [f0], [], 0, Math.abs(f0) < 1 ? 1.96 / Math.sqrt(1 - f0 * f0) : null], [X().rw, [], [], 1, null],
+    [`ARIMA(1,1,0), φ = ${nz(f1, 2)}`, [f1], [], 1, null]].concat(Math.abs(f1 - 0.6) > 1e-9 ? [[`ARIMA(1,1,0), φ = ${nz(0.6, 2)} (${X().wex})`, [0.6], [], 1, null]] : [])
+    .concat([[`ARIMA(0,1,1), θ = ${nz(th, 2)}`, [], [th], 1, null], ['ARIMA(0,2,0)', [], [], 2, null]]);
+  const W = M.map(m => { const p = psiW(m[1], m[2], m[3], n); return { p, w: halfW(p) }; }), rwH = W[1].w[h - 1];
+  table('xw-tb', [X().model, 'ψ<sub>1</sub>', 'ψ<sub>2</sub>', 'ψ<sub>3</sub>', 'h = 1', 'h = 4', `h = ${h}`, X().vsRw, X().limit],
+    M.map((m, i) => [m[0], num(W[i].p[1], 3), num(W[i].p[2], 3), num(W[i].p[3], 3), num(W[i].w[0], 2), num(W[i].w[3], 2), num(W[i].w[h - 1], 2, true), num(W[i].w[h - 1] / rwH, 2), m[4] ? num(m[4], 2) : txt('∞')]),
+    { cap: X().xwCap });
+  const i6 = M.findIndex(m => m[3] === 1 && m[1].length && Math.abs(m[1][0] - 0.6) < 1e-9), i5 = 2, w6 = psiW([0.6], [], 1, n), w5 = psiW([0.5], [], 1, n);
+  steps('xw-ws', [X().xw1(nz(f0, 2), M[0][4] ? nz(M[0][4], 2) : null, h, nz(W[0].w[h - 1], 2)), X().xw2(h, nz(Math.sqrt(h), 2), nz(W[1].w[h - 1], 2)),
+    X().xw3(nz(f1, 2), nz(f1 < 1 ? 1 / (1 - f1) : Infinity, 2), h, nz(W[i5].w[h - 1], 2)), X().xw4(h, nz(halfW(w5)[h - 1], 2), nz(halfW(w6)[h - 1], 2)),
+    X().xw5(nz(th, 2), nz(1 + th, 2), h, nz(W[M.length - 2].w[h - 1], 2)), X().xw6(h, nz(W[M.length - 1].w[h - 1], 2))]);
+  out('xw-out', [X().xw(h, nz(W[0].w[h - 1], 2), nz(W[1].w[h - 1], 2), nz(W[i5].w[h - 1], 2), nz(W[M.length - 2].w[h - 1], 2), nz(W[M.length - 1].w[h - 1], 2))]);
+  return { W, M, i6 };
+}
+
+// ---------------------------------------------------------------- Interpreting the GDP forecasts: the table of the two forecasts
+function blkXFct() {
+  const O = keysSorted(D.gdp_fc), o = O[+$('ft-o').value], F = D.gdp_fc[o], lv = +$('ft-lv').value, z = normPpf(0.5 + lv / 2), H = F.ds.f.length, io = GQ.indexOf(o); set('ft-o', T.q(o));
+  const fq = range(1, H, 1).map(h => addQ(o, h));
+  table('ft-tb', [[{ v: '' }, { v: '' }, { v: X().ftDS, cs: 3 }, { v: X().ftTS, cs: 3 }, { v: '' }], ['h', X().quarter, X().fc, X().intv(Math.round(100 * lv)), X().halfp, X().fc, X().intv(Math.round(100 * lv)), X().halfp, X().obs]],
+    fq.map((q, i) => { const j = GQ.indexOf(q), c = k => [num(bn(F[k].f[i]), 1), txt(`[${nz(bn(F[k].f[i] - z * F[k].se[i]), 1)}; ${nz(bn(F[k].f[i] + z * F[k].se[i]), 1)}]`), num(z * F[k].se[i], 1)];
+      return hiRow([String(i + 1), T.q(q)].concat(c('ds'), c('ts'), [j < 0 ? txt('—') : num(bn(GY[j]), 1)]), [1, 4, 12].includes(i + 1)); }), { cap: X().ftCap(T.q(o), nz(bn(GY[io]), 1)) });
+  const h12 = H - 1;
+  out('ft-out', [X().ft1(Math.round(100 * lv), nz(bn(F.ds.f[h12]), 1), nz(z * F.ds.se[0], 1), nz(z * F.ds.se[3], 1), nz(z * F.ds.se[h12], 1), nz(F.ds.se[h12] / F.ds.se[0], 2)),
+    X().ft2(nz(bn(F.ts.f[h12]), 1), nz(z * F.ts.se[h12], 1))]);
+}
+
+// ---------------------------------------------------------------- Interpreting the HICP regression: slope, t, R² and DW by hand
+function blkXSpur() {
+  let y0 = +$('xs-y0').value, y1 = +$('xs-y1').value; if (y1 < y0 + 3) { y1 = Math.min(2026, y0 + 3); $('xs-y1').value = y1; } set('xs-y0', y0); set('xs-y1', y1);
+  const kind = $('xs-k').value, S = spurReal(y0, y1), lev = kind === 'lev', x = lev ? S.s : S.dsp, y = lev ? S.h : S.dh, O = lev ? S.L : S.Df, n = y.length;
+  const mx = mean(x), my = mean(y), sxx = sum(x.map(v => (v - mx) ** 2)), sxy = sum(x.map((v, i) => (v - mx) * (y[i] - my))), b = sxy / sxx, s2 = O.s2, se = Math.sqrt(s2 / sxx), t = b / se;
+  steps('xs-ws', [X().xs1(lev, n, nz(mx, 2), nz(my, 2)), X().xs2(nz(sxy, 1), nz(sxx, 1), nz(b, 4)), X().xs3(nz(s2, 4), nz(se, 4), nz(t, 2)),
+    X().xs4(nz(t, 2), n - 2, nz(t * t / (t * t + n - 2), 4)), X().xs5(nz(lev ? S.dwL : S.dwD, 2), lev ? S.L.r2 > S.dwL : S.Df.r2 > S.dwD)]);
+  const col = (o, d, nn) => [num(o.b[1], 4), num(o.se[1], 4), num(o.t[1], 2), txt(fp(tsf2(o.t[1], nn - 2))), num(o.r2, 4), num(d, 2)];
+  const L = col(S.L, S.dwL, S.h.length), Dd = col(S.Df, S.dwD, S.dh.length), lab = [X().slope, 'SE', 't', 'p', 'R²', 'DW'];
+  table('xs-tb', ['', X().levels, X().diffs], [['n', txt(String(S.h.length)), txt(String(S.dh.length))]].concat(lab.map((l, i) => hiRow([l, L[i], Dd[i]], i === 2 || i === 4))), { cap: X().xsCap });
+  out('xs-out', [X().xs(nz(S.L.t[1], 1), nz(S.L.r2, 2), nz(S.dwL, 2), nz(S.Df.t[1], 2), nz(S.Df.r2, 4))]);
+}
+
+// blocks of the worked examples and result tables (own frames): [anchor, prefix, function, controls, player parameter, values, ms]
+const XB = [['wx-spur', 'xs', blkXSpur, ['xs-y0', 'xs-y1', 'xs-k'], 'xs-y0', range(2005, 2022, 1), 600],
+  ['cv-table', 'cv', blkXCv, ['cv-T'], 'cv-T', range(20, 1000, 20), 250],
+  ['wx-df', 'xd', blkXDf, ['xd-end', 'xd-reg', 'xd-k'], 'xd-k', range(0, 13, 1).map(String), 700],
+  ['lag-table', 'lg', blkXLag, ['lg-s', 'lg-reg', 'lg-ic'], 'lg-s', ['gdp', 'dgdp', 'hicp', 'infl', 'dinfl', 'us', 'dus', 'nile'], 1300],
+  ['power-table', 'pw', blkXPow, ['pw-reg', 'pw-phi'], 'pw-phi', PHIS.map(String), 900],
+  ['wx-kpss', 'xk', blkXKpss, ['xk-s', 'xk-reg', 'xk-L'], 'xk-L', range(0, 20, 1).map(String), 500],
+  ['adf-kpss', 'ak', blkXAk, ['ak-det', 'ak-ic', 'ak-lv'], 'ak-lv', ['0.01', '0.05', '0.1'], 1400],
+  ['urt-table', 'ut', blkXUrt, ['ut-det', 'ut-ic', 'ut-lv'], 'ut-det', ['slide', 'n', 'c', 'ct'], 1500],
+  ['za-sim', 'zs', blkXZaSim, ['zs-d'], 'zs-d', range(0, 10, 0.5), 500],
+  ['za-table', 'zt', blkXZa, ['zt-reg'], 'zt-reg', ['c', 't', 'ct'], 1300],
+  ['aicc-table', 'ac', blkXAicc, ['ac-end', 'ac-c'], 'ac-end', range(0, 42, 1), 350],
+  ['diag-table', 'dg', blkXDiag, ['dg-mod', 'dg-m'], 'dg-m', range(1, 16, 1), 500],
+  ['wx-fvar', 'fv', blkXFvar, ['fv-h', 'fv-phi'], 'fv-h', range(1, 40, 1), 200],
+  ['wx-110', 'x1', blkX110, ['x1-phi', 'x1-s', 'x1-y', 'x1-dy', 'x1-H'], 'x1-phi', range(-0.9, 0.95, 0.05), 350],
+  ['wx-width', 'xw', blkXWid, ['xw-h', 'xw-f0', 'xw-f1', 'xw-th'], 'xw-f1', range(0.05, 0.95, 0.05), 350],
+  ['fc-table', 'ft', blkXFct, ['ft-o', 'ft-lv'], 'ft-o', range(0, 42, 1), 350]];
+function placeExtras() {                // web lecture: the extra blocks travel inside a chart block; move each to its own frame
+  document.querySelectorAll('.xhold > section.xblk').forEach(sec => {
+    const art = document.getElementById('s' + sec.dataset.frame), head = art && art.querySelector('.fhead');
+    if (head) head.after(sec); else sec.closest('section.blk').after(sec);
+  });
+  document.querySelectorAll('.xhold').forEach(h => { if (!h.children.length) h.remove(); });
+}
+
 // ================================================================= wiring
 const ALL = [blkFour, blkTsDs, blkDetrend, blkSpurMC, blkSpurReal, blkDfDist, blkPower, blkKpss, blkBrkSim, blkBrkReal, blkGdpId, blkGdpDiag, blkWidth, blkGdpFc,
   blkOverdiff, blkInfl, blkFx, blkUs];
 function init() {
+  placeExtras();
   const has = id => !!$(id), on = (ids, f) => ids.forEach(id => $(id).addEventListener('input', f));
   const players = {}, P = (btn, id, vals, ms) => (players[btn] = new Player(btn, $(id), vals, ms));
   const nq = GY.length - 1;
@@ -526,11 +884,21 @@ function init() {
   const PFX = { 'four-series': 'fs', 'ts-ds': 'td', detrend: 'dt', 'spurious-mc': 'sm', 'spurious-real': 'sr', 'df-dist': 'dd', 'adf-power': 'ap', 'kpss-sums': 'kp',
     'breaks-sim': 'bs', 'breaks-real': 'br', 'gdp-ident': 'gi', 'gdp-diag': 'gd', 'interval-width': 'iw', 'gdp-forecast': 'gf', overdiff: 'od', inflation: 'in', eurron: 'fx', 'us-gdp': 'us' };
   if (T.predict && predict) Object.entries(T.predict).forEach(([b, sp]) => { if (has(b)) predict(b, Object.assign({ player: players[PFX[b] + '-play'], veil: { out: true } }, sp)); });
+  const live = XB.filter(([, x]) => has(x + '-out'));
+  if (has('xd-end')) { $('xd-end').max = nq; $('xd-end').value = nq; }
+  const nA = Object.keys(D.tab.aicc).length, nF = Object.keys(D.gdp_fc).length;
+  if (has('ac-end')) { $('ac-end').max = nA - 1; $('ac-end').value = nA - 1; }
+  if (has('ft-o')) { $('ft-o').max = nF - 1; $('ft-o').value = nF - 1; }
+  if (has('fv-phi')) $('fv-phi').value = NB.gdp_fc.ts.params['ar.L1'];
+  if (has('lg-s')) $('lg-s').addEventListener('input', () => { $('lg-reg').value = SER()[$('lg-s').value].reg; });
+  if (has('xk-s')) $('xk-s').addEventListener('input', () => { $('xk-reg').value = SER()[$('xk-s').value].reg; });
+  live.forEach(([, x, f, ids, pid, vals, ms]) => { on(ids, f); P(x + '-play', pid, vals, ms); });
   if (T.ticket && exitTicket) exitTicket(T.ticket);
   ALL.forEach(f => f());
+  live.forEach(b => b[2]());
   let w = window.innerWidth, tm = null;
-  window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); } }, 250); });
+  window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if ((window.innerWidth < 720) !== (w < 720) || Math.abs(window.innerWidth - w) > 200) { w = window.innerWidth; ALL.forEach(f => f()); live.forEach(b => b[2]()); } }, 250); });
 }
-window.CH3 = { chi2sf, tsf2, ols, dw, tsdsPaths, detrendStats, spurReal, dfShare, powerAt, kpss, kpssPaths, zaCurve, gdpId, moments, psiW, halfW, fxCompare, dif, svar, bn };
+window.CH3 = { mkp, mkc, adfFit, adfAuto, kpssG, SER, urtRow, zsRow, XB, ALL, chi2sf, tsf2, ols, dw, tsdsPaths, detrendStats, spurReal, dfShare, powerAt, kpss, kpssPaths, zaCurve, gdpId, moments, psiW, halfW, fxCompare, dif, svar, bn };
 if (!window.CH3_NO_INIT) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init(); }
 })();
