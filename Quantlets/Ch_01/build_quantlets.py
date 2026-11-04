@@ -100,7 +100,7 @@ try:                                   # seminar code (instructor files, see .gi
              'Ljung-Box statistic by hand; BET log price and returns (ACF, Ljung-Box on returns and squares); Romanian '
              'real GDP in logs, quarterly and annual growth with their ACF.',
         keywords='seminar, autocovariance, MA(1), random walk, sample ACF, Ljung-Box, BET, GDP, Romania',
-        consts=CONSTS, funcs=CORE + [s.ma_acvf, s.rw_moments, s.acf_by_hand, s.b1_returns, s.b3_gdp],
+        consts=CONSTS, funcs=[s._tidy_dates] + CORE + [s.ma_acvf, s.rw_moments, s.acf_by_hand, s.b1_returns, s.b3_gdp],
         run="print(ma_acvf([0.5], 2.0))\nprint(rw_moments(0.25, 100, 120))\nprint(acf_by_hand([4, 6, 5, 8, 7, 9, 6, 7]))\n"
             "print(b1_returns('bet', fname='ch1_sem_b1'))\nprint(b3_gdp())",
         charts=['ch1_sem_b1', 'ch1_sem_b3']))

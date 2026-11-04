@@ -135,7 +135,7 @@ try:                                   # seminar code
              'seasonality in monthly HICP inflation, tourism nights after the pandemic.',
         keywords='seminar, seasonal difference, SARIMA, airline model, working days, cross-validation, Diebold-Mariano, '
                  'forecast combination, GDP, electricity load, HICP, Romania',
-        consts=CONSTS, funcs=CORE + LOAD + [s.seasonal_differences, s.airline_acf, s.dm_by_hand, s.b1_gdp, s.b3_load_cv],
+        consts=CONSTS, funcs=[s._tidy_dates] + CORE + LOAD + [s.seasonal_differences, s.airline_acf, s.dm_by_hand, s.b1_gdp, s.b3_load_cv],
         run="print(seasonal_differences([10, 14, 16, 18, 12, 16, 19, 21, 14]))\nprint(airline_acf(-0.5, -0.6, s=4))\n"
             "print(dm_by_hand([0.4, -0.6, 0.9, -0.3, 0.5, -0.8], [1.1, -0.9, 0.7, -1.2, 0.8, -1.0], scale=1.0))\n"
             "print(b1_gdp())\nprint(b3_load_cv())",

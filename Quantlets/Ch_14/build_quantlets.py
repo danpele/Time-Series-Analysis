@@ -29,7 +29,7 @@ INSTALL = ("# The arch package (step 1: univariate GARCH) is not preinstalled in
            "        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-q', 'arch'])\n"
            "    except Exception as e:\n"
            "        print('arch not installed, the numpy fallback will be used:', e)")
-CONSTS = ['from scipy.signal import lfilter',
+CONSTS = ['from scipy.signal import lfilter', 'import matplotlib.dates as mdates',
           f'NAME = {g.NAME!r}', f'PANEL = {g.PANEL!r}', f'PANEL_START = {g.PANEL_START!r}', f'PAIR_START = {g.PAIR_START!r}',
           f'HEDGE_START = {g.HEDGE_START!r}', f'SPLIT = {g.SPLIT!r}', f'ROLL = {g.ROLL!r}', f'ALPHA_VAR = {g.ALPHA_VAR!r}',
           f'WEIGHTS = {g.WEIGHTS!r}', f'CRISES = {g.CRISES!r}', f'CALM = {g.CALM!r}', f'PANEL_CRISIS = {g.PANEL_CRISIS!r}',

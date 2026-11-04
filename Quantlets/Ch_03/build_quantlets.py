@@ -123,7 +123,7 @@ try:                                   # seminar code (instructor files, see .gi
              'ARIMA(0,1,1) forecasts with intervals; ADF, PP and KPSS on the BET, the S&P 500 and EUR/RON; an ARIMA for '
              'Romanian real GDP with 8-quarter forecasts; Romanian inflation with d = 0 and d = 1; Zivot-Andrews breaks.',
         keywords='seminar, unit root, Dickey-Fuller, KPSS, ARIMA, forecast, BET, GDP, inflation, Romania, Zivot-Andrews',
-        consts=CONSTS, funcs=CORE + ARIMA_F + [g.psi_weights, s.df_by_hand, s.adf_choice, s.arima_by_hand, s.ar_roots,
+        consts=CONSTS, funcs=[s._tidy_dates] + CORE + ARIMA_F + [g.psi_weights, s.df_by_hand, s.adf_choice, s.arima_by_hand, s.ar_roots,
                                                s.unit_root_set, s.b1_tests, s.b3_gdp],
         run="print(df_by_hand(-0.061, 0.025, 120, 'c'))\nprint(arima_by_hand(ar=(0.6,), d=1, y=(103.0, 108.0), sigma=2.0))\n"
             "print(ar_roots([1.5, -0.5]))\nprint(b1_tests('bet', fname='ch3_sem_b1'))\nprint(b3_gdp())",

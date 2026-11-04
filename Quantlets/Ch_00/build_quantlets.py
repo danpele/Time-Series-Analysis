@@ -91,7 +91,7 @@ try:                                            # instructor file (git-ignored):
              'reference rate (BNR), the Romanian HICP (Eurostat) and electricity generation in Romania (Eurostat).',
         keywords='growth rate, year on year, autocorrelation, ACF, naive forecast, seasonal naive, MAE, RMSE, seminar',
         consts=[f'GDP_NSA = {s0.GDP_NSA!r}', f'HICP = {s0.HICP!r}', f'ELEC = {s0.ELEC!r}', f'START = {s0.START!r}'],
-        funcs=[s0.growth_rates, s0.sample_acf, s0.paper_forecasts, s0.gdp_growth, s0.fig_gdp_growth, s0.eurron_acf,
+        funcs=[s0._tidy_dates, s0.growth_rates, s0.sample_acf, s0.paper_forecasts, s0.gdp_growth, s0.fig_gdp_growth, s0.eurron_acf,
                s0.fig_acf_pair],
         run="d = gdp_growth()\nprint(d.tail(4).round(2))\nfig_gdp_growth(d)\n"
             "b2 = eurron_acf()\nprint('EUR/RON: r1 level', round(b2['acf_level'][0], 3), '; r1 returns', round(b2['acf_ret'][0], 3))\n"

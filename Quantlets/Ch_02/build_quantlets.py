@@ -104,7 +104,7 @@ try:                                   # seminar code
              'estimates and information criteria on paper; the Box-Jenkins steps for US real GDP growth (statsmodels '
              'macrodata); an AR(1) for BET daily returns with residual diagnostics and a one-day forecast.',
         keywords='seminar, AR(1), MA(1), invertibility, Yule-Walker, AIC, BIC, Box-Jenkins, GDP, BET, Ljung-Box',
-        consts=CONSTS, funcs=CORE + [s.ar1_facts, s.ma1_facts, s.yw_ar2, s.ic_table, s.box_jenkins, s.b1_us_gdp, s.b3_returns],
+        consts=CONSTS, funcs=[s._tidy_dates] + CORE + [s.ar1_facts, s.ma1_facts, s.yw_ar2, s.ic_table, s.box_jenkins, s.b1_us_gdp, s.b3_returns],
         run="print(ar1_facts(1.0, 0.6, 0.64, 4.0))\nprint(ma1_facts(2.0, 1.0))\nprint(yw_ar2(0.75, 0.65, 4.0))\n"
             "print(ic_table({'AR(1)': -214.6, 'AR(2)': -210.9}, {'AR(1)': 3, 'AR(2)': 4}, 100))\n"
             "print(b1_us_gdp())\nprint(b3_returns('bet', fname='ch2_sem_b3'))",

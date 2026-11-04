@@ -67,6 +67,7 @@ LOAD_END = '2026-06-30'
 CV_FIRST, CV_STEP, CV_H = '2025-06-30', 14, 14
 LAGS = 14                      # y_t, ..., y_{t-13} at the forecast origin
 HICP = ('prc_hicp_minr', 'M.I15.TOTAL.{}')
+HICP_END = '2026-08-01'                           # last month of the slides (later releases are cut)
 EU27 = ['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'FI', 'FR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV',
         'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK']
 INF_START, INF_OOS = '2005-01-01', 2016          # inflation targeting in Romania since August 2005; tests from 2016
@@ -816,6 +817,7 @@ def hicp(geo='RO'):
                 raise
             import time
             time.sleep(5)
+    s = s.loc[:HICP_END]
     s.index.freq = None
     return s.rename(geo)
 
