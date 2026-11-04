@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 7 · Cointegrare și modele VECM</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch7.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch7_data.js?v=20261101a", "ch7_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch7.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index_ro.html">Serii de timp</a></h1><p>Capitolul 7 · Cointegrare și modele VECM</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_07" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch7.html" class="lang-btn">EN</a><a href="ch7_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură sau același tabel, calculat în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas; casetele „Exemplu rezolvat” refac calculul cu cifrele capitolului.</p>
+<p class="toc"><a href="#s-idea">Ideea de cointegrare</a> · <a href="#s-eg">Metoda Engle–Granger în doi pași</a> · <a href="#s-ecm">Modele cu corecția erorii</a> · <a href="#s-vecm">Modelul VECM și teorema de reprezentare a lui Granger</a> · <a href="#s-joh">Testele Johansen</a> · <a href="#s-beta">Estimarea și interpretarea lui β și α</a> · <a href="#s-fc">Prognoza: VECM sau VAR în diferențe?</a> · <a href="#s-app">Exemple economice: paritate și rate ale dobînzii</a> · <a href="#s-pairs">O aplicație: pairs trading</a></p>
+<h2 class="sec" id="s-idea">Ideea de cointegrare</h2>
+<section class="blk" id="drunk">
+  <h3>Femeia beată și cîinele ei prin simulare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=9" target="_blank" rel="noopener"><img src="slides/tsa_ch7_drunk_dog_ro.jpg" alt="Slide-ul 8: Femeia beată și cîinele ei prin simulare" loading="lazy"></a>
+      <figcaption>Slide-ul 8</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dd-c">c: partea din distanță recuperată de femeie: <b id="dd-c-v"></b></label><input type="range" id="dd-c" min="0" max="0.5" step="0.05" value="0.15"></div><div class="ctl"><label for="dd-d">d: partea din distanță recuperată de cîine: <b id="dd-d-v"></b></label><input type="range" id="dd-d" min="0" max="0.5" step="0.05" value="0.25"></div><button class="btn play" id="dd-play" type="button"></button></div><style>.c7x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c7x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c7x .c7f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c7x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c7x li{margin:.18rem 0;overflow-wrap:anywhere}.c7x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c7t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c7t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c7t th,.c7t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c7t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c7t tbody tr:nth-child(even){background:#F5F7FB}.c7t .r{text-align:right}.c7cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="dd-chart"></div></div><div class="tbl c7t" id="dd-tb"></div><ul class="out" id="dd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Setați c = d = 0: nici femeia, nici cîinele nu mai corectează distanța. Ce p-value dă ADF pentru distanța y − x?</div>
+  <details><summary>Răspuns</summary><p>0,261: rădăcina unitară nu se mai respinge. Fără corecție, y − x este diferența a două mersuri aleatoare independente, deci tot un mers aleator; abaterea standard a distanței crește de la 1,86 la 7,07. Cu c = 0,15 și d = 0,25, ρ = 0,6 și p < 0,001: corecția erorii, nu faptul că ambele serii pornesc din același loc, ține distanța mărginită.</p></details>
+</section>
+<section class="blk" id="wx-trends">
+  <h3>Trenduri stochastice comune</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=12" target="_blank" rel="noopener"><img src="slides/ch7x_wx-trends_ro.jpg" alt="Slide-ul 11: Trenduri stochastice comune" loading="lazy"></a>
+      <figcaption>Slide-ul 11</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ct-a">a în y<sub>t</sub> = a x<sub>t</sub> + u<sub>t</sub>: <b id="ct-a-v"></b></label><input type="range" id="ct-a" min="0.5" max="3" step="0.5" value="2"></div><div class="ctl"><label for="ct-c">c în z<sub>t</sub> = c x<sub>t</sub> + v<sub>t</sub></label><select id="ct-c"><option value="-2">-2</option><option value="-1.5">-1,5</option><option value="-1" selected>-1</option><option value="-0.5">-0,5</option><option value="0.5">0,5</option><option value="1">1</option><option value="1.5">1,5</option><option value="2">2</option></select></div><button class="btn play" id="ct-play" type="button"></button></div><div class="charts "><div class="chart" id="ct-chart"></div></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="c7f">\[\beta_1^\top\mathbf y_t=y_t-a\,x_t=u_t,\qquad \beta_2^\top\mathbf y_t=y_t-\tfrac{a}{c}\,z_t=u_t-\tfrac{a}{c}\,v_t,\qquad n-r=3-2=1\]</div><ol id="ct-ws"></ol></div><ul class="out" id="ct-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Setați a = 1 (c = −1). Care este al doilea vector de cointegrare?</div>
+  <details><summary>Răspuns</summary><p>β₂ = (0, 1, 1)ᵀ: y<sub>t</sub> + z<sub>t</sub> = u<sub>t</sub> + v<sub>t</sub>, fără trend. Vectorul depinde de coeficienți: în general β₂ = (0, 1, −a/c)ᵀ, deci (0, 1, 2)ᵀ pentru a = 2 și c = −1. Rangul rămîne 2, pentru că trei serii au tot un singur trend comun.</p></details>
+</section>
+<section class="blk" id="examples">
+  <h3>Patru perechi de serii cu trend</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=14" target="_blank" rel="noopener"><img src="slides/tsa_ch7_examples_ro.jpg" alt="Slide-ul 13: Patru perechi de serii cu trend" loading="lazy"></a>
+      <figcaption>Slide-ul 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ex-k">Partea eliminată de la începutul fiecărui eșantion: <b id="ex-k-v"></b></label><input type="range" id="ex-k" min="0" max="60" step="5" value="0"></div><button class="btn play" id="ex-play" type="button"></button></div><div class="charts "><div class="chart" id="ex-chart"></div></div><div class="tbl c7t" id="ex-tb"></div><ul class="out" id="ex-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați primele 50% din fiecare eșantion. Mai respinge Engle–Granger „fără cointegrare” la 5% pentru consumul și PIB-ul SUA?</div>
+  <details><summary>Răspuns</summary><p>Nu: τ = −1,95, p = 0,553 pe ultimele 102 trimestre, față de τ = −3,54, p = 0,029 pe 203. Cu jumătate din date și abateri de durata unor ani, testul are puțină putere; p mare înseamnă că relația nu se separă de zgomot pe acest eșantion, nu că nu există. Pentru bănci testul rămîne sub 5% (p = 0,044).</p></details>
+</section><h2 class="sec" id="s-eg">Metoda Engle–Granger în doi pași</h2>
+<section class="blk" id="eg-dist">
+  <h3>Distribuția în ipoteza nulă prin simulare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=20" target="_blank" rel="noopener"><img src="slides/tsa_ch7_eg_dist_ro.jpg" alt="Slide-ul 19: Distribuția în ipoteza nulă prin simulare" loading="lazy"></a>
+      <figcaption>Slide-ul 19</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ed-T">Lungimea eșantionului T</label><select id="ed-T"><option value="50">50</option><option value="100">100</option><option value="200" selected>200 (curs)</option><option value="500">500</option></select></div><div class="ctl"><label for="ed-a">Nivelul de semnificație (cuantilele punctate)</label><select id="ed-a"><option value="1">1%</option><option value="5" selected>5% (curs)</option><option value="10">10%</option></select></div><button class="btn play" id="ed-play" type="button"></button></div><div class="charts "><div class="chart" id="ed-chart"></div></div><div class="tbl c7t" id="ed-tb"></div><ul class="out" id="ed-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți la T = 50. Cu valoarea critică Dickey–Fuller de 5%, ce proporție din eșantioanele cu 2 variabile ar respinge o ipoteză nulă adevărată?</div>
+  <details><summary>Răspuns</summary><p>14,2%, aproape ca la T = 200 (14,5%), și 30,0% cu 3 variabile. Distorsiunea vine din faptul că OLS alege b̂ pentru a face reziduurile cît mai mici, nu din lungimea eșantionului; la T = 50 valoarea critică corectă pentru 2 variabile este −3,46 (cuantila simulată −3,41), față de −2,92 în tabelul Dickey–Fuller.</p></details>
+</section>
+<section class="blk" id="eg-crit">
+  <h3>Valorile critice ale testului Engle–Granger</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=22" target="_blank" rel="noopener"><img src="slides/ch7x_eg-crit_ro.jpg" alt="Slide-ul 21: Valorile critice ale testului Engle–Granger" loading="lazy"></a>
+      <figcaption>Slide-ul 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ec-T">Numărul de observații T</label><select id="ec-T"><option value="inf" selected>∞ (curs)</option><option value="1000">1000</option><option value="500">500</option><option value="200">200</option><option value="100">100</option><option value="50">50</option></select></div><button class="btn play" id="ec-play" type="button"></button></div><div class="charts "><div class="chart" id="ec-chart"></div></div><div class="tbl c7t" id="ec-tb"></div><ul class="out" id="ec-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți la T = 50. Cît este valoarea critică de 5% pentru n = 2, cu constantă?</div>
+  <details><summary>Răspuns</summary><p>−3,46, față de −3,34 asimptotic și −3,37 la T = 200. La eșantioane mici distribuția statisticii este mai deplasată spre stînga, deci valorile critice sînt mai negative; tabelul Dickey–Fuller (−2,92 la T = 50) ar fi și mai departe de cea corectă.</p></details>
+</section>
+<section class="blk" id="wx-eg">
+  <h3>Exemplu rezolvat: consumul și venitul în SUA</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=24" target="_blank" rel="noopener"><img src="slides/ch7x_wx-eg_ro.jpg" alt="Slide-ul 23: Exemplu rezolvat: consumul și venitul în SUA" loading="lazy"></a>
+      <figcaption>Slide-ul 23</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="we-e">Eșantionul se termină în: <b id="we-e-v"></b></label><input type="range" id="we-e" min="1975" max="2009" step="1" value="2009"></div><div class="ctl"><label for="we-k">Laguri în pasul 2</label><select id="we-k"><option value="aic" selected>alese după AIC (curs)</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="4">4</option></select></div><button class="btn play" id="we-play" type="button"></button></div><div class="charts "><div class="chart" id="we-chart"></div></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="c7f">\[c_t=a+b\,y_t+u_t\ \text{(OLS)},\qquad \Delta\hat u_t=\gamma\,\hat u_{t-1}+\textstyle\sum_{j=1}^{k}\delta_j\Delta\hat u_{t-j}+e_t,\qquad \tau=\hat\gamma/\mathrm{SE}(\hat\gamma)\]</div><ol id="we-ws"></ol></div><ul class="out" id="we-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în 1985. Se respinge „fără cointegrare” la 5%?</div>
+  <details><summary>Răspuns</summary><p>Nu: τ = −3,00 față de valoarea critică Engle–Granger −3,39 (p = 0,111), pe 108 trimestre. Cu valoarea Dickey–Fuller (−2,89) s-ar respinge, greșit. R² rămîne peste 0,99 și panta 1,072, dar nici R² mare, nici o pantă apropiată de 1 nu dovedesc cointegrarea.</p></details>
+</section>
+<section class="blk" id="eg-steps">
+  <h3>Reziduurile din pasul 1</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=25" target="_blank" rel="noopener"><img src="slides/tsa_ch7_eg_steps_ro.jpg" alt="Slide-ul 24: Reziduurile din pasul 1" loading="lazy"></a>
+      <figcaption>Slide-ul 24</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="es-k">Partea eliminată de la începutul fiecărui eșantion: <b id="es-k-v"></b></label><input type="range" id="es-k" min="0" max="60" step="5" value="0"></div><div class="ctl"><label for="es-L">Laguri în ACF: <b id="es-L-v"></b></label><input type="range" id="es-L" min="8" max="48" step="4" value="24"></div><button class="btn play" id="es-play" type="button"></button></div><div class="charts "><div class="chart" id="es-chart"></div></div><ul class="out" id="es-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați primele 50% din fiecare eșantion. Scade autocorelația de ordinul 8 a reziduurilor consumului?</div>
+  <details><summary>Răspuns</summary><p>Nu: crește de la 0,31 la 0,46, iar pentru randamente ρ̂(12) crește de la 0,58 la 0,62. În a doua jumătate a eșantioanelor abaterile de la relația pe termen lung durează mai mult; persistența reziduurilor depinde de perioada aleasă, de aceea decizia o dă testul, nu forma ACF.</p></details>
+</section>
+<section class="blk" id="eg-table">
+  <h3>Engle–Granger și Phillips–Ouliaris pe date reale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=27" target="_blank" rel="noopener"><img src="slides/ch7x_eg-table_ro.jpg" alt="Slide-ul 26: Engle–Granger și Phillips–Ouliaris pe date reale" loading="lazy"></a>
+      <figcaption>Slide-ul 26</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="et-k">Partea eliminată de la începutul fiecărui eșantion</label><select id="et-k"><option value="0" selected>0% (curs)</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option></select></div><button class="btn play" id="et-play" type="button"></button></div><div class="charts "><div class="chart" id="et-chart"></div></div><div class="tbl c7t" id="et-tb"></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="et-r">Regresia din calcul</label><select id="et-r"><option value="cons" selected>consumul SUA pe venit</option><option value="rates">SUA: 10 ani pe 3 luni</option><option value="tlv">TLV pe BRD (din 2014)</option><option value="brd">BRD pe TLV (din 2014)</option><option value="tlv10">TLV pe BRD (din 2010)</option><option value="fx">EUR/RON pe EUR/HUF</option><option value="ro">România: consumul pe PIB</option></select></div></div><div class="c7f">\[\Delta\hat u_t=\gamma\,\hat u_{t-1}+\textstyle\sum_{j=1}^{k}\delta_j\Delta\hat u_{t-j}+e_t,\qquad \tau=\dfrac{\hat\gamma}{\mathrm{SE}(\hat\gamma)}\ \text{față de valoarea critică Engle–Granger}\]</div><ol id="et-ws"></ol></div><ul class="out" id="et-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați primele 30% din fiecare eșantion. Mai lipsește dovada de cointegrare pentru TLV pe BRD din 2010?</div>
+  <details><summary>Răspuns</summary><p>Nu: τ = −3,98, p = 0,008 (Phillips–Ouliaris p = 0,001), față de p = 0,622 pe tot eșantionul din 2010. Fără anii 2010–2014 relația dintre cele două bănci apare; aceeași pereche dă verdicte opuse după data de început, de aceea alegerea eșantionului după ce ați văzut datele este data snooping.</p></details>
+</section><h2 class="sec" id="s-ecm">Modele cu corecția erorii</h2>
+<section class="blk" id="wx-half">
+  <h3>Viteza de ajustare și timpul de înjumătățire</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=33" target="_blank" rel="noopener"><img src="slides/ch7x_wx-half_ro.jpg" alt="Slide-ul 32: Viteza de ajustare și timpul de înjumătățire" loading="lazy"></a>
+      <figcaption>Slide-ul 32</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-g">Viteza de ajustare γ: <b id="wh-g-v"></b></label><input type="range" id="wh-g" min="-0.9" max="-0.05" step="0.01" value="-0.2"></div><div class="ctl"><label for="wh-u">Unitatea de timp</label><select id="wh-u"><option value="m" selected>luni</option><option value="q">trimestre</option></select></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="c7f">\[u_h=(1+\gamma)^h u_0,\qquad (1+\gamma)^{h_{1/2}}=0{,}5\ \Rightarrow\ h_{1/2}=\frac{\ln 0{,}5}{\ln(1+\gamma)}\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Setați γ = −0,5. Cît este timpul de înjumătățire?</div>
+  <details><summary>Răspuns</summary><p>O perioadă: ln 0,5/ln 0,5 = 1. Jumătate din abatere dispare la fiecare pas, deci după o perioadă rămîne exact jumătate. Regula 1/|γ| = 2 ar presupune o ajustare liniară, nu geometrică.</p></details>
+</section>
+<section class="blk" id="ecm">
+  <h3>Timpi de înjumătățire: teorie și estimări</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=34" target="_blank" rel="noopener"><img src="slides/tsa_ch7_ecm_ro.jpg" alt="Slide-ul 33: Timpi de înjumătățire: teorie și estimări" loading="lazy"></a>
+      <figcaption>Slide-ul 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="em-e">Eșantioanele se termină în (consumul: cel mult 2009): <b id="em-e-v"></b></label><input type="range" id="em-e" min="1980" max="2026" step="1" value="2026"></div><div class="ctl"><label for="em-p">Laguri ale diferențelor în ECM: <b id="em-p-v"></b></label><input type="range" id="em-p" min="0" max="4" step="1" value="1"></div><button class="btn play" id="em-play" type="button"></button></div><div class="charts "><div class="chart" id="em-chart"></div></div><ul class="out" id="em-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantioanele în 1990. Cît devine timpul de înjumătățire al ECM-ului pentru consum?</div>
+  <details><summary>Răspuns</summary><p>27 de trimestre: γ̂ = −0,025, cu t = −0,66, față de 14,3 trimestre și t = −1,75 pînă în 2009. Pe 1959–1990 termenul de corecție nu se separă de zgomot, iar un γ̂ mic în modul dă un timp de înjumătățire lung și imprecis. Pentru randamentul la 10 ani, pînă în 1990: γ̂ = −0,048 (t = −4,58), 13,9 luni.</p></details>
+</section>
+<section class="blk" id="wx-ecm">
+  <h3>Exemplu rezolvat: un trimestru de consum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=36" target="_blank" rel="noopener"><img src="slides/ch7x_wx-ecm_ro.jpg" alt="Slide-ul 35: Exemplu rezolvat: un trimestru de consum" loading="lazy"></a>
+      <figcaption>Slide-ul 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wc-u">Abaterea de la echilibru û<sub>t−1</sub> (%): <b id="wc-u-v"></b></label><input type="range" id="wc-u" min="-4" max="4" step="0.5" value="2"></div><div class="ctl"><label for="wc-g">Creșterea venitului Δy<sub>t</sub> (%): <b id="wc-g-v"></b></label><input type="range" id="wc-g" min="-2" max="3" step="0.5" value="1"></div><button class="btn play" id="wc-play" type="button"></button></div><div class="charts "><div class="chart" id="wc-chart"></div></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="c7f">\[\Delta c_t=c+\delta_0\,\Delta y_t+\gamma\,\hat u_{t-1}+\dots,\qquad \hat u_{t-1}=c_{t-1}-\hat a-\hat b\,y_{t-1}\]</div><ol id="wc-ws"></ol></div><ul class="out" id="wc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Setați abaterea û<sub>t−1</sub> = −2 (consumul sub echilibru), cu venitul +1%. Cît devine creșterea prognozată a consumului?</div>
+  <details><summary>Răspuns</summary><p>1,05%: 0,418 + 0,537 × 1 + (−0,047) × (−2) = 0,418 + 0,537 + 0,095. Cînd consumul este sub echilibru, termenul de corecție îl împinge în sus, cu aceeași mărime cu care îl frîna în exemplul din curs (0,86%).</p></details>
+</section><h2 class="sec" id="s-vecm">Modelul VECM și teorema de reprezentare a lui Granger</h2>
+<section class="blk" id="wx-vecm">
+  <h3>Exemplu rezolvat: un VECM cu două variabile</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=43" target="_blank" rel="noopener"><img src="slides/ch7x_wx-vecm_ro.jpg" alt="Slide-ul 42: Exemplu rezolvat: un VECM cu două variabile" loading="lazy"></a>
+      <figcaption>Slide-ul 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wv-a1">α₁: <b id="wv-a1-v"></b></label><input type="range" id="wv-a1" min="-0.5" max="0.3" step="0.05" value="-0.1"></div><div class="ctl"><label for="wv-a2">α₂: <b id="wv-a2-v"></b></label><input type="range" id="wv-a2" min="-0.3" max="0.5" step="0.05" value="0.1"></div><button class="btn play" id="wv-play" type="button"></button></div><div class="charts "><div class="chart" id="wv-chart"></div></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="c7f">\[\Delta\mathbf y_t=\alpha\beta^\top\mathbf y_{t-1}+\mathbf u_t,\quad \beta=(1,-1)^\top,\quad z_t=\beta^\top\mathbf y_t=(1+\beta^\top\alpha)\,z_{t-1}+u_{1t}-u_{2t}\]</div><ol id="wv-ws"></ol></div><ul class="out" id="wv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Setați α₂ = −0,1 (cu α₁ = −0,1). Mai revine decalajul y₁ − y₂ la zero?</div>
+  <details><summary>Răspuns</summary><p>Nu: 1 + βᵀα = 1 + α₁ − α₂ = 1 − 0,1 + 0,1 = 1, deci z<sub>t</sub> = z<sub>t−1</sub> + u₁<sub>t</sub> − u₂<sub>t</sub> este un mers aleator. Ambele variabile scad cînd y₁ > y₂, cu aceeași viteză, deci decalajul nu se închide: contează βᵀα, nu semnul fiecărui α.</p></details>
+</section><h2 class="sec" id="s-joh">Testele Johansen</h2>
+<section class="blk" id="wx-joh">
+  <h3>Exemplu rezolvat: de la valori proprii la statistici</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=49" target="_blank" rel="noopener"><img src="slides/ch7x_wx-joh_ro.jpg" alt="Slide-ul 48: Exemplu rezolvat: de la valori proprii la statistici" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wj-k">Diferențe întîrziate k: <b id="wj-k-v"></b></label><input type="range" id="wj-k" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="wj-e">Eșantionul se termină în: <b id="wj-e-v"></b></label><input type="range" id="wj-e" min="1990" max="2026" step="1" value="2026"></div><button class="btn play" id="wj-play" type="button"></button></div><div class="charts "><div class="chart" id="wj-chart"></div></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="c7f">\[\lambda_{\mathrm{trace}}(r)=-T\sum_{i=r+1}^{n}\ln(1-\hat\lambda_i),\qquad \lambda_{\max}(r)=-T\ln(1-\hat\lambda_{r+1}),\qquad T=n_{\mathrm{obs}}-k-1\]</div><ol id="wj-ws"></ol></div><ul class="out" id="wj-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în 2010. Ce rang dă testul urmei?</div>
+  <details><summary>Răspuns</summary><p>Rangul 1: λ<sub>trace</sub>(0) = 45,5 > 29,80, dar λ<sub>trace</sub>(1) = 14,5 < 15,49, pe T = 609. Pe 1960–2026 rangul este 2. Cu mai puține observații a doua relație, foarte persistentă, nu se mai separă de o rădăcină unitară; rangul ales de test depinde și de puterea lui, nu doar de structura datelor.</p></details>
+</section>
+<section class="blk" id="joh-table">
+  <h3>Testele Johansen pe trei sisteme</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=50" target="_blank" rel="noopener"><img src="slides/ch7x_joh-table_ro.jpg" alt="Slide-ul 49: Testele Johansen pe trei sisteme" loading="lazy"></a>
+      <figcaption>Slide-ul 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="jt-k">Diferențe întîrziate k</label><select id="jt-k"><option value="bic" selected>alese după BIC: 2, 1, 1 (curs)</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div><button class="btn play" id="jt-play" type="button"></button></div><div class="charts "><div class="chart" id="jt-chart"></div></div><div class="tbl c7t" id="jt-tb"></div><ul class="out" id="jt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu k = 4 diferențe întîrziate în toate sistemele, ce rang dă testul urmei pentru producția, consumul și investițiile SUA?</div>
+  <details><summary>Răspuns</summary><p>Rangul 1: λ<sub>trace</sub>(0) = 37,5 > 29,80, iar λ<sub>trace</sub>(1) = 15,3 < 15,49, față de rangul 0 cu k = 1 (28,9, un rezultat la limită). Numărul de laguri schimbă verdictul; pentru cele trei monede rangul rămîne 0 (28,1).</p></details>
+</section>
+<section class="blk" id="joh-det">
+  <h3>Cazul termenilor determiniști schimbă răspunsul</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=52" target="_blank" rel="noopener"><img src="slides/ch7x_joh-det_ro.jpg" alt="Slide-ul 51: Cazul termenilor determiniști schimbă răspunsul" loading="lazy"></a>
+      <figcaption>Slide-ul 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="jd-y">Eșantionul începe în: <b id="jd-y-v"></b></label><input type="range" id="jd-y" min="1960" max="2000" step="1" value="1960"></div><div class="ctl"><label for="jd-k">Diferențe întîrziate k: <b id="jd-k-v"></b></label><input type="range" id="jd-k" min="1" max="4" step="1" value="2"></div><button class="btn play" id="jd-play" type="button"></button></div><div class="charts "><div class="chart" id="jd-chart"></div></div><div class="tbl c7t" id="jd-tb"></div><ul class="out" id="jd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți eșantionul în 1990. Ce rang dă cazul 5 (constantă și trend)?</div>
+  <details><summary>Răspuns</summary><p>Rangul 1: λ<sub>trace</sub> = 41,4, apoi 11,1 < 18,40, față de rangul 3 pe 1960–2026. Pe tot eșantionul trendul liniar absoarbe scăderea randamentelor după 1981, iar testul ajunge să declare fiecare randament staționar în jurul unui trend; pe eșantionul de după 1990 toate cele trei cazuri dau rangul 1.</p></details>
+</section><h2 class="sec" id="s-beta">Estimarea și interpretarea lui β și α</h2>
+<section class="blk" id="rates">
+  <h3>Modelul VECM al structurii la termen</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=55" target="_blank" rel="noopener"><img src="slides/tsa_ch7_rates_ro.jpg" alt="Slide-ul 54: Modelul VECM al structurii la termen" loading="lazy"></a>
+      <figcaption>Slide-ul 54</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ra-e">Eșantionul se termină în</label><select id="ra-e"><option value="2000-12">decembrie 2000</option><option value="2005-12">decembrie 2005</option><option value="2010-12">decembrie 2010</option><option value="2015-12">decembrie 2015</option><option value="2019-12">decembrie 2019</option><option value="2026-09" selected>septembrie 2026 (curs)</option></select></div><div class="ctl"><label for="ra-k">Diferențe întîrziate k</label><select id="ra-k"><option value="1">1</option><option value="2" selected>2 (curs)</option><option value="3">3</option></select></div><button class="btn play" id="ra-play" type="button"></button></div><div class="charts "><div class="chart" id="ra-chart"></div></div><ul class="out" id="ra-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în decembrie 2000. Cît devine panta randamentului la 10 ani în prima relație de echilibru?</div>
+  <details><summary>Răspuns</summary><p>−0,954, față de −1,046 pe 1960–2026; în a doua relație −0,988 față de −1,045. Ambele rămîn aproape de −1, deci echilibrele sînt tot aproape spread-urile i⁽¹⁾ − i⁽¹⁰⁾ și i⁽⁵⁾ − i⁽¹⁰⁾. Cu β̂ super-consistent, o diferență de 0,09 pe 40 de ani de date este o schimbare reală a eșantionului, nu doar zgomot de estimare.</p></details>
+</section>
+<section class="blk" id="alpha-table">
+  <h3>Coeficienții de ajustare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=57" target="_blank" rel="noopener"><img src="slides/ch7x_alpha-table_ro.jpg" alt="Slide-ul 56: Coeficienții de ajustare" loading="lazy"></a>
+      <figcaption>Slide-ul 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="at-e">Eșantionul se termină în</label><select id="at-e"><option value="2000-12">decembrie 2000</option><option value="2005-12">decembrie 2005</option><option value="2010-12">decembrie 2010</option><option value="2015-12">decembrie 2015</option><option value="2019-12">decembrie 2019</option><option value="2026-09" selected>septembrie 2026 (curs)</option></select></div><div class="ctl"><label for="at-k">Diferențe întîrziate k</label><select id="at-k"><option value="1">1</option><option value="2" selected>2 (curs)</option><option value="3">3</option></select></div><button class="btn play" id="at-play" type="button"></button></div><div class="charts "><div class="chart" id="at-chart"></div></div><div class="tbl c7t" id="at-tb"></div><div class="c7x"><h4>Exemplu rezolvat</h4><div class="c7f">\[\mathbf z_t=\hat\beta^\top\mathbf y_t,\qquad \mathbf z_t=(I+\hat\beta^\top\hat\alpha)\,\mathbf z_{t-1}+\dots,\qquad h_{1/2}=\frac{\ln 0{,}5}{\ln|\lambda|}\]</div><ol id="at-ws"></ol></div><ul class="out" id="at-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în decembrie 2000. Mai pare randamentul la 1 an slab exogen?</div>
+  <details><summary>Răspuns</summary><p>Nu: t = 2,10 și −3,10 pentru cele două erori de echilibru, față de −0,82 și 0,31 pe 1960–2026. Înainte de 2001 și randamentul scurt reacționa la abaterile de la echilibru; exogenitatea slabă a capătului scurt apare pe eșantionul care include politica monetară cu dobînzi aproape de zero.</p></details>
+</section>
+<section class="blk" id="vecm-irf">
+  <h3>Funcțiile de răspuns la impuls ale modelului VECM</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=58" target="_blank" rel="noopener"><img src="slides/tsa_ch7_vecm_irf_ro.jpg" alt="Slide-ul 57: Funcțiile de răspuns la impuls ale modelului VECM" loading="lazy"></a>
+      <figcaption>Slide-ul 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ir-s">Șocul</label><select id="ir-s"><option value="0" selected>randamentul la 1 an (curs)</option><option value="1">randamentul la 5 ani</option><option value="2">randamentul la 10 ani</option></select></div><div class="ctl"><label for="ir-e">Eșantionul se termină în</label><select id="ir-e"><option value="2000-12">decembrie 2000</option><option value="2005-12">decembrie 2005</option><option value="2010-12">decembrie 2010</option><option value="2015-12">decembrie 2015</option><option value="2019-12">decembrie 2019</option><option value="2026-09" selected>septembrie 2026 (curs)</option></select></div><div class="ctl"><label for="ir-k">Diferențe întîrziate k</label><select id="ir-k"><option value="1">1</option><option value="2" selected>2 (curs)</option><option value="3">3</option></select></div><button class="btn play" id="ir-play" type="button"></button></div><div class="charts "><div class="chart" id="ir-chart"></div></div><ul class="out" id="ir-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Terminați eșantionul în decembrie 2005. Revin la zero, după 60 de luni, răspunsurile la un șoc pe randamentul la 1 an?</div>
+  <details><summary>Răspuns</summary><p>Nu: +0,30, +0,30 și +0,29 puncte procentuale pentru 1, 5 și 10 ani (la impact 0,41, 0,27, 0,21). Cu un singur trend comun, șocul mută nivelul tuturor randamentelor permanent, iar răspunsurile devin aproape egale pentru că spread-urile revin la medie; aceeași formă apare și pe 1960–2026 (0,37, 0,36, 0,33).</p></details>
+</section><h2 class="sec" id="s-fc">Prognoza: VECM sau VAR în diferențe?</h2>
+<section class="blk" id="forecast">
+  <h3>VECM față de un VAR în diferențe, în afara eșantionului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=63" target="_blank" rel="noopener"><img src="slides/tsa_ch7_forecast_ro.jpg" alt="Slide-ul 62: VECM față de un VAR în diferențe, în afara eșantionului" loading="lazy"></a>
+      <figcaption>Slide-ul 62</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fc-y">Evaluarea începe în: <b id="fc-y-v"></b></label><input type="range" id="fc-y" min="1990" max="2015" step="1" value="1990"></div><button class="btn play" id="fc-play" type="button"></button></div><div class="charts "><div class="chart" id="fc-chart"></div></div><div class="c7x"><div class="wctl"><div class="ctl"><label for="fc-h">Orizontul din tabel (luni): <b id="fc-h-v"></b></label><input type="range" id="fc-h" min="1" max="36" step="1" value="36"></div></div><div class="tbl c7t" id="fc-tb"></div></div><ul class="out" id="fc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți evaluarea în 2005. Mai cîștigă VECM-ul la spread-ul 10 ani − 1 an la orizontul de 36 de luni?</div>
+  <details><summary>Răspuns</summary><p>Da: RMSE relativ 0,83 (75 de origini), față de 0,74 de la 1990, iar VAR-ul în diferențe rămîne la 1,00. Pentru nivelul randamentului la 1 an, VECM-ul nu bate mersul aleator (1,05 la 36 de luni). Cointegrarea ajută la prognoza relației, nu a trendului comun.</p></details>
+</section><h2 class="sec" id="s-app">Exemple economice: paritate și rate ale dobînzii</h2>
+<section class="blk" id="ppp">
+  <h3>PPP pentru leu</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=67" target="_blank" rel="noopener"><img src="slides/tsa_ch7_ppp_ro.jpg" alt="Slide-ul 66: PPP pentru leu" loading="lazy"></a>
+      <figcaption>Slide-ul 66</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pp-y">Eșantionul începe în: <b id="pp-y-v"></b></label><input type="range" id="pp-y" min="2005" max="2016" step="1" value="2005"></div><button class="btn play" id="pp-play" type="button"></button></div><div class="charts "><div class="chart" id="pp-chart"></div></div><div class="tbl c7t" id="pp-tb"></div><ul class="out" id="pp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți eșantionul în 2010. Respinge ADF rădăcina unitară în cursul real q<sub>t</sub>?</div>
+  <details><summary>Răspuns</summary><p>Nu: p = 0,924 (cu trend 0,957), mai departe de respingere decît pe 2005–2026 (0,24). După 2010 leul s-a depreciat cu 23,7 puncte logaritmice, iar prețurile relative au crescut cu 33,1: cursul real a continuat să scadă. Un eșantion mai scurt nu poate arăta ajustări cu timpi de înjumătățire de cîțiva ani.</p></details>
+</section>
+<section class="blk" id="ro-ea">
+  <h3>ROBOR și Euribor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=69" target="_blank" rel="noopener"><img src="slides/tsa_ch7_ro_ea_rates_ro.jpg" alt="Slide-ul 68: ROBOR și Euribor" loading="lazy"></a>
+      <figcaption>Slide-ul 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="re-y">Al doilea eșantion începe în: <b id="re-y-v"></b></label><input type="range" id="re-y" min="2005" max="2018" step="1" value="2010"></div><button class="btn play" id="re-play" type="button"></button></div><div class="charts "><div class="chart" id="re-chart"></div></div><div class="tbl c7t" id="re-tb"></div><ul class="out" id="re-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți al doilea eșantion în 2015. Rămîne Engle–Granger semnificativ la 5%?</div>
+  <details><summary>Răspuns</summary><p>Nu: τ = −3,24, p = 0,063, iar Phillips–Ouliaris dă p = 0,338, față de 0,047 și 0,029 de la 2010. În plus, γ̂ din ECM-ul pentru ROBOR devine pozitiv (0,011): după 2015 ROBOR nu se mai întoarce spre relația cu Euribor. Cu o politică monetară proprie, legătura dintre cele două dobînzi depinde mult de perioada aleasă.</p></details>
+</section>
+<section class="blk" id="cee-fx">
+  <h3>Trei monede central-europene</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch7_cee_fx_ro.jpg" alt="Slide-ul 70: Trei monede central-europene" loading="lazy"></a>
+      <figcaption>Slide-ul 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cx-y">Eșantionul începe în: <b id="cx-y-v"></b></label><input type="range" id="cx-y" min="2005" max="2016" step="1" value="2005"></div><div class="ctl"><label for="cx-k">Diferențe întîrziate k: <b id="cx-k-v"></b></label><input type="range" id="cx-k" min="1" max="4" step="1" value="1"></div><button class="btn play" id="cx-play" type="button"></button></div><div class="charts "><div class="chart" id="cx-chart"></div></div><ul class="out" id="cx-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți eșantionul în 2015. Cît devine statistica urmei pentru r = 0?</div>
+  <details><summary>Răspuns</summary><p>11,1, față de valoarea critică 29,80: rangul rămîne 0, ca de la 2005 (24,2) și de la 2012 (12,7). Pe un eșantion mai scurt testul are și mai puțină putere, iar ADF nu respinge rădăcina unitară pentru niciun curs (p = 0,958; 0,626; 0,335). Nicio perioadă nu arată un trend comun al celor trei monede.</p></details>
+</section><h2 class="sec" id="s-pairs">O aplicație: pairs trading</h2>
+<section class="blk" id="pair">
+  <h3>Banca Transilvania și BRD</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=76" target="_blank" rel="noopener"><img src="slides/tsa_ch7_pair_ro.jpg" alt="Slide-ul 75: Banca Transilvania și BRD" loading="lazy"></a>
+      <figcaption>Slide-ul 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pr-y">Eșantionul începe în: <b id="pr-y-v"></b></label><input type="range" id="pr-y" min="2010" max="2020" step="1" value="2014"></div><div class="ctl"><label for="pr-z">Pragul de intrare |z|: <b id="pr-z-v"></b></label><input type="range" id="pr-z" min="1" max="3" step="0.25" value="2"></div><button class="btn play" id="pr-play" type="button"></button></div><div class="charts "><div class="chart" id="pr-chart"></div></div><ul class="out" id="pr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Porniți eșantionul în 2010. Cît devine timpul de înjumătățire al spread-ului TLV − b̂ BRD?</div>
+  <details><summary>Răspuns</summary><p>Circa 444 de zile de tranzacționare, cu ρ̂ = 0,998 și b̂ = 1,68, față de 69 de zile din 2014. Pe 2010–2026 testul Engle–Granger nu respinge „fără cointegrare” (p = 0,622): spread-ul se comportă aproape ca un mers aleator, iar o poziție deschisă ar putea aștepta ani. Rezultatul favorabil din 2014 depinde de data de început aleasă.</p></details>
+</section>
+<section class="blk" id="pairs-bt">
+  <h3>Pairs trading în afara eșantionului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol7_cointegrare_vecm.pdf#page=78" target="_blank" rel="noopener"><img src="slides/tsa_ch7_pairs_backtest_ro.jpg" alt="Slide-ul 77: Pairs trading în afara eșantionului" loading="lazy"></a>
+      <figcaption>Slide-ul 77</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pb-e">Pragul de intrare |z|</label><select id="pb-e"><option value="1.5">1,5</option><option value="2.0" selected>2 (curs)</option><option value="2.5">2,5</option></select></div><div class="ctl"><label for="pb-c">Costurile, ca multiplu al celor din curs (0,20% și 0,05%): <b id="pb-c-v"></b></label><input type="range" id="pb-c" min="0" max="3" step="0.25" value="1"></div><button class="btn play" id="pb-play" type="button"></button></div><div class="charts "><div class="chart" id="pb-chart"></div></div><ul class="out" id="pb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Dublați costurile (2×: 0,40% la București). Ce randament net anual are strategia la București?</div>
+  <details><summary>Răspuns</summary><p>−0,35% pe an (Sharpe −0,05), față de 0,41% cu costurile din curs; brut rămîne 1,17%. Costul de echilibru este 0,31%, deci orice cost mai mare face strategia neprofitabilă. La băncile americane, cu un cost de 0,10%, randamentul net scade doar de la 2,57% la 2,37%.</p></details>
+</section>
+<p class="src foot">Randamentele titlurilor de stat americane GS1, GS5, GS10 și TB3MS (FRED, lunar, ianuarie 1960 – septembrie 2026), cursurile EUR/RON, EUR/HUF și EUR/PLN (BNR, sfîrșit de lună, iulie 2005 – septembrie 2026), media lunară EUR/RON și IAPC (Eurostat, iulie 2005 – august 2026), ROBOR 3M și Euribor 3M (Eurostat, august 1995 – august 2026), consumul gospodăriilor și PIB-ul României (Eurostat, T1 1995 – T2 2026, versiunea din curs, citită de pe linia graficului din seminar, fără puncte omise). Randamentele, cursurile BNR, IAPC, ROBOR și Euribor sînt citite cu funcțiile capitolului (FRED, BNR, Eurostat, descărcate pe 4 noiembrie 2026) și tăiate la datele de sfîrșit ale slide-urilor; reproduc exact cifrele din curs. Consumul, venitul și investițiile SUA: macrodata din statsmodels (T1 1959 – T3 2009). Prețurile ajustate ale acțiunilor: data/market. Testele Engle–Granger, ADF și Johansen se recalculează în browser; statisticile Phillips–Ouliaris, modelele VECM, prognozele în afara eșantionului și testele istorice pairs trading sînt cele ale codului capitolului. Simulările folosesc extragerile seminței capitolului. Variantele care nu apar în curs (alt eșantion, alt număr de laguri, alte praguri, alte costuri, alți parametri ai simulărilor) sînt rulări suplimentare ale codului capitolului, cu aceleași date și aceeași sămînță.</p>
+</main>
+</body>
+</html>

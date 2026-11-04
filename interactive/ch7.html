@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 7 · Cointegration and VECM</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch7.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch7_data.js?v=20261101a", "ch7_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch7.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index.html">Time Series Analysis</a></h1><p>Chapter 7 · Cointegration and VECM</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_07" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch7.html" class="lang-btn active">EN</a><a href="ch7_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure or table on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step; the “Worked example” boxes redo the calculation with the numbers of the chapter.</p>
+<p class="toc"><a href="#s-idea">The idea of cointegration</a> · <a href="#s-eg">The Engle–Granger two-step method</a> · <a href="#s-ecm">Error correction models</a> · <a href="#s-vecm">The VECM and the Granger representation theorem</a> · <a href="#s-joh">The Johansen tests</a> · <a href="#s-beta">Estimating and interpreting β and α</a> · <a href="#s-fc">Forecasting: VECM or VAR in differences?</a> · <a href="#s-app">Economic examples: parity and interest rates</a> · <a href="#s-pairs">An application: pairs trading</a></p>
+<h2 class="sec" id="s-idea">The idea of cointegration</h2>
+<section class="blk" id="drunk">
+  <h3>The drunk and her dog by simulation</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=8" target="_blank" rel="noopener"><img src="slides/tsa_ch7_drunk_dog_en.jpg" alt="Slide 7: The drunk and her dog by simulation" loading="lazy"></a>
+      <figcaption>Slide 7</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dd-c">c: share of the gap closed by the drunk: <b id="dd-c-v"></b></label><input type="range" id="dd-c" min="0" max="0.5" step="0.05" value="0.15"></div><div class="ctl"><label for="dd-d">d: share of the gap closed by the dog: <b id="dd-d-v"></b></label><input type="range" id="dd-d" min="0" max="0.5" step="0.05" value="0.25"></div><button class="btn play" id="dd-play" type="button"></button></div><style>.c7x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c7x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c7x .c7f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c7x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c7x li{margin:.18rem 0;overflow-wrap:anywhere}.c7x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c7t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c7t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c7t th,.c7t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c7t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c7t tbody tr:nth-child(even){background:#F5F7FB}.c7t .r{text-align:right}.c7cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="dd-chart"></div></div><div class="tbl c7t" id="dd-tb"></div><ul class="out" id="dd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set c = d = 0: neither the drunk nor the dog corrects the distance any more. What p-value does ADF give for the distance y − x?</div>
+  <details><summary>Answer</summary><p>0.261: the unit root is no longer rejected. Without correction, y − x is the difference of two independent random walks, hence a random walk itself; the standard deviation of the distance rises from 1.86 to 7.07. With c = 0.15 and d = 0.25, ρ = 0.6 and p < 0.001: error correction, not the common starting point, keeps the distance bounded.</p></details>
+</section>
+<section class="blk" id="wx-trends">
+  <h3>Common stochastic trends</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=11" target="_blank" rel="noopener"><img src="slides/ch7x_wx-trends_en.jpg" alt="Slide 10: Common stochastic trends" loading="lazy"></a>
+      <figcaption>Slide 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ct-a">a in y<sub>t</sub> = a x<sub>t</sub> + u<sub>t</sub>: <b id="ct-a-v"></b></label><input type="range" id="ct-a" min="0.5" max="3" step="0.5" value="2"></div><div class="ctl"><label for="ct-c">c in z<sub>t</sub> = c x<sub>t</sub> + v<sub>t</sub></label><select id="ct-c"><option value="-2">-2</option><option value="-1.5">-1.5</option><option value="-1" selected>-1</option><option value="-0.5">-0.5</option><option value="0.5">0.5</option><option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option></select></div><button class="btn play" id="ct-play" type="button"></button></div><div class="charts "><div class="chart" id="ct-chart"></div></div><div class="c7x"><h4>Worked example</h4><div class="c7f">\[\beta_1^\top\mathbf y_t=y_t-a\,x_t=u_t,\qquad \beta_2^\top\mathbf y_t=y_t-\tfrac{a}{c}\,z_t=u_t-\tfrac{a}{c}\,v_t,\qquad n-r=3-2=1\]</div><ol id="ct-ws"></ol></div><ul class="out" id="ct-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set a = 1 (c = −1). What is the second cointegrating vector?</div>
+  <details><summary>Answer</summary><p>β₂ = (0, 1, 1)ᵀ: y<sub>t</sub> + z<sub>t</sub> = u<sub>t</sub> + v<sub>t</sub>, with no trend. The vector depends on the coefficients: in general β₂ = (0, 1, −a/c)ᵀ, hence (0, 1, 2)ᵀ for a = 2 and c = −1. The rank stays 2, because three series still share one common trend.</p></details>
+</section>
+<section class="blk" id="examples">
+  <h3>Four pairs of trending series</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=13" target="_blank" rel="noopener"><img src="slides/tsa_ch7_examples_en.jpg" alt="Slide 12: Four pairs of trending series" loading="lazy"></a>
+      <figcaption>Slide 12</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ex-k">Share dropped at the start of each sample: <b id="ex-k-v"></b></label><input type="range" id="ex-k" min="0" max="60" step="5" value="0"></div><button class="btn play" id="ex-play" type="button"></button></div><div class="charts "><div class="chart" id="ex-chart"></div></div><div class="tbl c7t" id="ex-tb"></div><ul class="out" id="ex-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Drop the first 50% of each sample. Does Engle–Granger still reject “no cointegration” at 5% for US consumption and GDP?</div>
+  <details><summary>Answer</summary><p>No: τ = −1.95, p = 0.553 on the last 102 quarters, against τ = −3.54, p = 0.029 on 203. With half the data and deviations that last years, the test has little power; a large p means that the relation is not separated from noise in this sample, not that it does not exist. For the banks the test stays below 5% (p = 0.044).</p></details>
+</section><h2 class="sec" id="s-eg">The Engle–Granger two-step method</h2>
+<section class="blk" id="eg-dist">
+  <h3>The null distribution by simulation</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=19" target="_blank" rel="noopener"><img src="slides/tsa_ch7_eg_dist_en.jpg" alt="Slide 18: The null distribution by simulation" loading="lazy"></a>
+      <figcaption>Slide 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ed-T">Sample length T</label><select id="ed-T"><option value="50">50</option><option value="100">100</option><option value="200" selected>200 (lecture)</option><option value="500">500</option></select></div><div class="ctl"><label for="ed-a">Significance level (dotted quantiles)</label><select id="ed-a"><option value="1">1%</option><option value="5" selected>5% (lecture)</option><option value="10">10%</option></select></div><button class="btn play" id="ed-play" type="button"></button></div><div class="charts "><div class="chart" id="ed-chart"></div></div><div class="tbl c7t" id="ed-tb"></div><ul class="out" id="ed-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Switch to T = 50. With the 5% Dickey–Fuller critical value, what share of the samples with 2 variables would reject a true null?</div>
+  <details><summary>Answer</summary><p>14.2%, about as at T = 200 (14.5%), and 30.0% with 3 variables. The distortion comes from OLS choosing b̂ to make the residuals as small as possible, not from the sample length; at T = 50 the right critical value for 2 variables is −3.46 (simulated quantile −3.41), against −2.92 in the Dickey–Fuller table.</p></details>
+</section>
+<section class="blk" id="eg-crit">
+  <h3>Critical values of the Engle–Granger test</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=21" target="_blank" rel="noopener"><img src="slides/ch7x_eg-crit_en.jpg" alt="Slide 20: Critical values of the Engle–Granger test" loading="lazy"></a>
+      <figcaption>Slide 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ec-T">Number of observations T</label><select id="ec-T"><option value="inf" selected>∞ (lecture)</option><option value="1000">1000</option><option value="500">500</option><option value="200">200</option><option value="100">100</option><option value="50">50</option></select></div><button class="btn play" id="ec-play" type="button"></button></div><div class="charts "><div class="chart" id="ec-chart"></div></div><div class="tbl c7t" id="ec-tb"></div><ul class="out" id="ec-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Switch to T = 50. What is the 5% critical value for n = 2, with a constant?</div>
+  <details><summary>Answer</summary><p>−3.46, against −3.34 asymptotically and −3.37 at T = 200. In small samples the distribution of the statistic is shifted further to the left, so the critical values are more negative; the Dickey–Fuller table (−2.92 at T = 50) would be even further from the right one.</p></details>
+</section>
+<section class="blk" id="wx-eg">
+  <h3>Worked example: US consumption and income</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=23" target="_blank" rel="noopener"><img src="slides/ch7x_wx-eg_en.jpg" alt="Slide 22: Worked example: US consumption and income" loading="lazy"></a>
+      <figcaption>Slide 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="we-e">Sample ends in: <b id="we-e-v"></b></label><input type="range" id="we-e" min="1975" max="2009" step="1" value="2009"></div><div class="ctl"><label for="we-k">Lags in step 2</label><select id="we-k"><option value="aic" selected>chosen by AIC (lecture)</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="4">4</option></select></div><button class="btn play" id="we-play" type="button"></button></div><div class="charts "><div class="chart" id="we-chart"></div></div><div class="c7x"><h4>Worked example</h4><div class="c7f">\[c_t=a+b\,y_t+u_t\ \text{(OLS)},\qquad \Delta\hat u_t=\gamma\,\hat u_{t-1}+\textstyle\sum_{j=1}^{k}\delta_j\Delta\hat u_{t-j}+e_t,\qquad \tau=\hat\gamma/\mathrm{SE}(\hat\gamma)\]</div><ol id="we-ws"></ol></div><ul class="out" id="we-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in 1985. Is “no cointegration” rejected at 5%?</div>
+  <details><summary>Answer</summary><p>No: τ = −3.00 against the Engle–Granger critical value −3.39 (p = 0.111), on 108 quarters. With the Dickey–Fuller value (−2.89) it would be rejected, wrongly. R² stays above 0.99 and the slope is 1.072, but neither a high R² nor a slope close to 1 proves cointegration.</p></details>
+</section>
+<section class="blk" id="eg-steps">
+  <h3>The step-1 residuals</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=24" target="_blank" rel="noopener"><img src="slides/tsa_ch7_eg_steps_en.jpg" alt="Slide 23: The step-1 residuals" loading="lazy"></a>
+      <figcaption>Slide 23</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="es-k">Share dropped at the start of each sample: <b id="es-k-v"></b></label><input type="range" id="es-k" min="0" max="60" step="5" value="0"></div><div class="ctl"><label for="es-L">Lags in the ACF: <b id="es-L-v"></b></label><input type="range" id="es-L" min="8" max="48" step="4" value="24"></div><button class="btn play" id="es-play" type="button"></button></div><div class="charts "><div class="chart" id="es-chart"></div></div><ul class="out" id="es-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Drop the first 50% of each sample. Does the lag-8 autocorrelation of the consumption residuals fall?</div>
+  <details><summary>Answer</summary><p>No: it rises from 0.31 to 0.46, and for the yields ρ̂(12) rises from 0.58 to 0.62. In the second half of the samples the deviations from the long-run relation last longer; the persistence of the residuals depends on the period, which is why the test, not the shape of the ACF, decides.</p></details>
+</section>
+<section class="blk" id="eg-table">
+  <h3>Engle–Granger and Phillips–Ouliaris on real data</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=26" target="_blank" rel="noopener"><img src="slides/ch7x_eg-table_en.jpg" alt="Slide 25: Engle–Granger and Phillips–Ouliaris on real data" loading="lazy"></a>
+      <figcaption>Slide 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="et-k">Share dropped at the start of each sample</label><select id="et-k"><option value="0" selected>0% (lecture)</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option></select></div><button class="btn play" id="et-play" type="button"></button></div><div class="charts "><div class="chart" id="et-chart"></div></div><div class="tbl c7t" id="et-tb"></div><div class="c7x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="et-r">Regression of the calculation</label><select id="et-r"><option value="cons" selected>US consumption on income</option><option value="rates">US: 10-year on 3-month</option><option value="tlv">TLV on BRD (since 2014)</option><option value="brd">BRD on TLV (since 2014)</option><option value="tlv10">TLV on BRD (since 2010)</option><option value="fx">EUR/RON on EUR/HUF</option><option value="ro">Romania: consumption on GDP</option></select></div></div><div class="c7f">\[\Delta\hat u_t=\gamma\,\hat u_{t-1}+\textstyle\sum_{j=1}^{k}\delta_j\Delta\hat u_{t-j}+e_t,\qquad \tau=\dfrac{\hat\gamma}{\mathrm{SE}(\hat\gamma)}\ \text{against the Engle–Granger critical value}\]</div><ol id="et-ws"></ol></div><ul class="out" id="et-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Drop the first 30% of each sample. Is there still no evidence of cointegration for TLV on BRD since 2010?</div>
+  <details><summary>Answer</summary><p>There is now: τ = −3.98, p = 0.008 (Phillips–Ouliaris p = 0.001), against p = 0.622 on the whole sample since 2010. Without 2010–2014 the relation between the two banks appears; the same pair gives opposite verdicts depending on the start date, which is why choosing the sample after seeing the data is data snooping.</p></details>
+</section><h2 class="sec" id="s-ecm">Error correction models</h2>
+<section class="blk" id="wx-half">
+  <h3>Speed of adjustment and half-life</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=32" target="_blank" rel="noopener"><img src="slides/ch7x_wx-half_en.jpg" alt="Slide 31: Speed of adjustment and half-life" loading="lazy"></a>
+      <figcaption>Slide 31</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-g">Speed of adjustment γ: <b id="wh-g-v"></b></label><input type="range" id="wh-g" min="-0.9" max="-0.05" step="0.01" value="-0.2"></div><div class="ctl"><label for="wh-u">Time unit</label><select id="wh-u"><option value="m" selected>months</option><option value="q">quarters</option></select></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c7x"><h4>Worked example</h4><div class="c7f">\[u_h=(1+\gamma)^h u_0,\qquad (1+\gamma)^{h_{1/2}}=0.5\ \Rightarrow\ h_{1/2}=\frac{\ln 0.5}{\ln(1+\gamma)}\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set γ = −0.5. What is the half-life?</div>
+  <details><summary>Answer</summary><p>One period: ln 0.5/ln 0.5 = 1. Half of the deviation disappears at each step, so after one period exactly half is left. The rule 1/|γ| = 2 would assume a linear, not a geometric, adjustment.</p></details>
+</section>
+<section class="blk" id="ecm">
+  <h3>Half-lives: theory and estimates</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=33" target="_blank" rel="noopener"><img src="slides/tsa_ch7_ecm_en.jpg" alt="Slide 32: Half-lives: theory and estimates" loading="lazy"></a>
+      <figcaption>Slide 32</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="em-e">Samples end in (consumption: 2009 at most): <b id="em-e-v"></b></label><input type="range" id="em-e" min="1980" max="2026" step="1" value="2026"></div><div class="ctl"><label for="em-p">Lagged differences in the ECM: <b id="em-p-v"></b></label><input type="range" id="em-p" min="0" max="4" step="1" value="1"></div><button class="btn play" id="em-play" type="button"></button></div><div class="charts "><div class="chart" id="em-chart"></div></div><ul class="out" id="em-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the samples in 1990. What does the half-life of the consumption ECM become?</div>
+  <details><summary>Answer</summary><p>27 quarters: γ̂ = −0.025, with t = −0.66, against 14.3 quarters and t = −1.75 up to 2009. On 1959–1990 the error correction term is not separated from noise, and a γ̂ small in modulus gives a long and imprecise half-life. For the 10-year yield, up to 1990: γ̂ = −0.048 (t = −4.58), 13.9 months.</p></details>
+</section>
+<section class="blk" id="wx-ecm">
+  <h3>Worked example: one quarter of consumption</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=35" target="_blank" rel="noopener"><img src="slides/ch7x_wx-ecm_en.jpg" alt="Slide 34: Worked example: one quarter of consumption" loading="lazy"></a>
+      <figcaption>Slide 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wc-u">Deviation from equilibrium û<sub>t−1</sub> (%): <b id="wc-u-v"></b></label><input type="range" id="wc-u" min="-4" max="4" step="0.5" value="2"></div><div class="ctl"><label for="wc-g">Income growth Δy<sub>t</sub> (%): <b id="wc-g-v"></b></label><input type="range" id="wc-g" min="-2" max="3" step="0.5" value="1"></div><button class="btn play" id="wc-play" type="button"></button></div><div class="charts "><div class="chart" id="wc-chart"></div></div><div class="c7x"><h4>Worked example</h4><div class="c7f">\[\Delta c_t=c+\delta_0\,\Delta y_t+\gamma\,\hat u_{t-1}+\dots,\qquad \hat u_{t-1}=c_{t-1}-\hat a-\hat b\,y_{t-1}\]</div><ol id="wc-ws"></ol></div><ul class="out" id="wc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the deviation û<sub>t−1</sub> = −2 (consumption below equilibrium), with income +1%. What does the predicted growth of consumption become?</div>
+  <details><summary>Answer</summary><p>1.05%: 0.418 + 0.537 × 1 + (−0.047) × (−2) = 0.418 + 0.537 + 0.095. When consumption is below equilibrium, the correction term pushes it up, by the same amount by which it held it back in the lecture’s example (0.86%).</p></details>
+</section><h2 class="sec" id="s-vecm">The VECM and the Granger representation theorem</h2>
+<section class="blk" id="wx-vecm">
+  <h3>Worked example: a bivariate VECM</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=42" target="_blank" rel="noopener"><img src="slides/ch7x_wx-vecm_en.jpg" alt="Slide 41: Worked example: a bivariate VECM" loading="lazy"></a>
+      <figcaption>Slide 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wv-a1">α₁: <b id="wv-a1-v"></b></label><input type="range" id="wv-a1" min="-0.5" max="0.3" step="0.05" value="-0.1"></div><div class="ctl"><label for="wv-a2">α₂: <b id="wv-a2-v"></b></label><input type="range" id="wv-a2" min="-0.3" max="0.5" step="0.05" value="0.1"></div><button class="btn play" id="wv-play" type="button"></button></div><div class="charts "><div class="chart" id="wv-chart"></div></div><div class="c7x"><h4>Worked example</h4><div class="c7f">\[\Delta\mathbf y_t=\alpha\beta^\top\mathbf y_{t-1}+\mathbf u_t,\quad \beta=(1,-1)^\top,\quad z_t=\beta^\top\mathbf y_t=(1+\beta^\top\alpha)\,z_{t-1}+u_{1t}-u_{2t}\]</div><ol id="wv-ws"></ol></div><ul class="out" id="wv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set α₂ = −0.1 (with α₁ = −0.1). Does the gap y₁ − y₂ still return to zero?</div>
+  <details><summary>Answer</summary><p>No: 1 + βᵀα = 1 + α₁ − α₂ = 1 − 0.1 + 0.1 = 1, so z<sub>t</sub> = z<sub>t−1</sub> + u₁<sub>t</sub> − u₂<sub>t</sub> is a random walk. Both variables fall when y₁ > y₂, at the same speed, so the gap does not close: what matters is βᵀα, not the sign of each α.</p></details>
+</section><h2 class="sec" id="s-joh">The Johansen tests</h2>
+<section class="blk" id="wx-joh">
+  <h3>Worked example: from eigenvalues to statistics</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=48" target="_blank" rel="noopener"><img src="slides/ch7x_wx-joh_en.jpg" alt="Slide 47: Worked example: from eigenvalues to statistics" loading="lazy"></a>
+      <figcaption>Slide 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wj-k">Lagged differences k: <b id="wj-k-v"></b></label><input type="range" id="wj-k" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="wj-e">Sample ends in: <b id="wj-e-v"></b></label><input type="range" id="wj-e" min="1990" max="2026" step="1" value="2026"></div><button class="btn play" id="wj-play" type="button"></button></div><div class="charts "><div class="chart" id="wj-chart"></div></div><div class="c7x"><h4>Worked example</h4><div class="c7f">\[\lambda_{\mathrm{trace}}(r)=-T\sum_{i=r+1}^{n}\ln(1-\hat\lambda_i),\qquad \lambda_{\max}(r)=-T\ln(1-\hat\lambda_{r+1}),\qquad T=n_{\mathrm{obs}}-k-1\]</div><ol id="wj-ws"></ol></div><ul class="out" id="wj-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in 2010. What rank does the trace test give?</div>
+  <details><summary>Answer</summary><p>Rank 1: λ<sub>trace</sub>(0) = 45.5 > 29.80, but λ<sub>trace</sub>(1) = 14.5 < 15.49, with T = 609. Over 1960–2026 the rank is 2. With fewer observations the second, very persistent relation is no longer separated from a unit root; the rank chosen by the test depends on its power too, not only on the structure of the data.</p></details>
+</section>
+<section class="blk" id="joh-table">
+  <h3>Johansen tests on three systems</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=49" target="_blank" rel="noopener"><img src="slides/ch7x_joh-table_en.jpg" alt="Slide 48: Johansen tests on three systems" loading="lazy"></a>
+      <figcaption>Slide 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="jt-k">Lagged differences k</label><select id="jt-k"><option value="bic" selected>chosen by BIC: 2, 1, 1 (lecture)</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div><button class="btn play" id="jt-play" type="button"></button></div><div class="charts "><div class="chart" id="jt-chart"></div></div><div class="tbl c7t" id="jt-tb"></div><ul class="out" id="jt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With k = 4 lagged differences in every system, what rank does the trace test give for US output, consumption and investment?</div>
+  <details><summary>Answer</summary><p>Rank 1: λ<sub>trace</sub>(0) = 37.5 > 29.80 and λ<sub>trace</sub>(1) = 15.3 < 15.49, against rank 0 with k = 1 (28.9, a near miss). The number of lags changes the verdict; for the three currencies the rank stays 0 (28.1).</p></details>
+</section>
+<section class="blk" id="joh-det">
+  <h3>The deterministic case changes the answer</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=51" target="_blank" rel="noopener"><img src="slides/ch7x_joh-det_en.jpg" alt="Slide 50: The deterministic case changes the answer" loading="lazy"></a>
+      <figcaption>Slide 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="jd-y">Sample starts in: <b id="jd-y-v"></b></label><input type="range" id="jd-y" min="1960" max="2000" step="1" value="1960"></div><div class="ctl"><label for="jd-k">Lagged differences k: <b id="jd-k-v"></b></label><input type="range" id="jd-k" min="1" max="4" step="1" value="2"></div><button class="btn play" id="jd-play" type="button"></button></div><div class="charts "><div class="chart" id="jd-chart"></div></div><div class="tbl c7t" id="jd-tb"></div><ul class="out" id="jd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the sample in 1990. What rank does case 5 (constant and trend) give?</div>
+  <details><summary>Answer</summary><p>Rank 1: λ<sub>trace</sub> = 41.4, then 11.1 < 18.40, against rank 3 over 1960–2026. On the whole sample the linear trend absorbs the fall of the yields after 1981, and the test ends up calling every yield stationary around a trend; on the sample since 1990 all three cases give rank 1.</p></details>
+</section><h2 class="sec" id="s-beta">Estimating and interpreting β and α</h2>
+<section class="blk" id="rates">
+  <h3>The term-structure VECM</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=54" target="_blank" rel="noopener"><img src="slides/tsa_ch7_rates_en.jpg" alt="Slide 53: The term-structure VECM" loading="lazy"></a>
+      <figcaption>Slide 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ra-e">Sample ends in</label><select id="ra-e"><option value="2000-12">December 2000</option><option value="2005-12">December 2005</option><option value="2010-12">December 2010</option><option value="2015-12">December 2015</option><option value="2019-12">December 2019</option><option value="2026-09" selected>September 2026 (lecture)</option></select></div><div class="ctl"><label for="ra-k">Lagged differences k</label><select id="ra-k"><option value="1">1</option><option value="2" selected>2 (lecture)</option><option value="3">3</option></select></div><button class="btn play" id="ra-play" type="button"></button></div><div class="charts "><div class="chart" id="ra-chart"></div></div><ul class="out" id="ra-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in December 2000. What does the slope of the 10-year yield in the first equilibrium relation become?</div>
+  <details><summary>Answer</summary><p>−0.954, against −1.046 over 1960–2026; in the second relation −0.988 against −1.045. Both stay close to −1, so the equilibria are still almost the spreads i⁽¹⁾ − i⁽¹⁰⁾ and i⁽⁵⁾ − i⁽¹⁰⁾. With a super-consistent β̂, a difference of 0.09 on 40 years of data reflects a change of sample, not only estimation noise.</p></details>
+</section>
+<section class="blk" id="alpha-table">
+  <h3>The adjustment coefficients</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=56" target="_blank" rel="noopener"><img src="slides/ch7x_alpha-table_en.jpg" alt="Slide 55: The adjustment coefficients" loading="lazy"></a>
+      <figcaption>Slide 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="at-e">Sample ends in</label><select id="at-e"><option value="2000-12">December 2000</option><option value="2005-12">December 2005</option><option value="2010-12">December 2010</option><option value="2015-12">December 2015</option><option value="2019-12">December 2019</option><option value="2026-09" selected>September 2026 (lecture)</option></select></div><div class="ctl"><label for="at-k">Lagged differences k</label><select id="at-k"><option value="1">1</option><option value="2" selected>2 (lecture)</option><option value="3">3</option></select></div><button class="btn play" id="at-play" type="button"></button></div><div class="charts "><div class="chart" id="at-chart"></div></div><div class="tbl c7t" id="at-tb"></div><div class="c7x"><h4>Worked example</h4><div class="c7f">\[\mathbf z_t=\hat\beta^\top\mathbf y_t,\qquad \mathbf z_t=(I+\hat\beta^\top\hat\alpha)\,\mathbf z_{t-1}+\dots,\qquad h_{1/2}=\frac{\ln 0.5}{\ln|\lambda|}\]</div><ol id="at-ws"></ol></div><ul class="out" id="at-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in December 2000. Does the 1-year yield still look weakly exogenous?</div>
+  <details><summary>Answer</summary><p>No: t = 2.10 and −3.10 for the two equilibrium errors, against −0.82 and 0.31 over 1960–2026. Before 2001 the short yield also reacted to the deviations from equilibrium; the weak exogeneity of the short end appears on the sample that includes the periods of near-zero policy rates.</p></details>
+</section>
+<section class="blk" id="vecm-irf">
+  <h3>Impulse responses of the VECM</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch7_vecm_irf_en.jpg" alt="Slide 56: Impulse responses of the VECM" loading="lazy"></a>
+      <figcaption>Slide 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ir-s">Shock</label><select id="ir-s"><option value="0" selected>the 1-year yield (lecture)</option><option value="1">the 5-year yield</option><option value="2">the 10-year yield</option></select></div><div class="ctl"><label for="ir-e">Sample ends in</label><select id="ir-e"><option value="2000-12">December 2000</option><option value="2005-12">December 2005</option><option value="2010-12">December 2010</option><option value="2015-12">December 2015</option><option value="2019-12">December 2019</option><option value="2026-09" selected>September 2026 (lecture)</option></select></div><div class="ctl"><label for="ir-k">Lagged differences k</label><select id="ir-k"><option value="1">1</option><option value="2" selected>2 (lecture)</option><option value="3">3</option></select></div><button class="btn play" id="ir-play" type="button"></button></div><div class="charts "><div class="chart" id="ir-chart"></div></div><ul class="out" id="ir-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in December 2005. Do the responses to a shock to the 1-year yield return to zero after 60 months?</div>
+  <details><summary>Answer</summary><p>No: +0.30, +0.30 and +0.29 percentage points for 1, 5 and 10 years (on impact 0.41, 0.27, 0.21). With one common trend, the shock moves the level of all yields permanently, and the responses become almost equal because the spreads return to their means; the same shape appears over 1960–2026 (0.37, 0.36, 0.33).</p></details>
+</section><h2 class="sec" id="s-fc">Forecasting: VECM or VAR in differences?</h2>
+<section class="blk" id="forecast">
+  <h3>VECM against a VAR in differences, out of sample</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch7_forecast_en.jpg" alt="Slide 61: VECM against a VAR in differences, out of sample" loading="lazy"></a>
+      <figcaption>Slide 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fc-y">Evaluation starts in: <b id="fc-y-v"></b></label><input type="range" id="fc-y" min="1990" max="2015" step="1" value="1990"></div><button class="btn play" id="fc-play" type="button"></button></div><div class="charts "><div class="chart" id="fc-chart"></div></div><div class="c7x"><div class="wctl"><div class="ctl"><label for="fc-h">Horizon in the table (months): <b id="fc-h-v"></b></label><input type="range" id="fc-h" min="1" max="36" step="1" value="36"></div></div><div class="tbl c7t" id="fc-tb"></div></div><ul class="out" id="fc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the evaluation in 2005. Does the VECM still gain for the 10-year minus 1-year spread at the 36-month horizon?</div>
+  <details><summary>Answer</summary><p>Yes: relative RMSE 0.83 (75 origins), against 0.74 from 1990, and the VAR in differences stays at 1.00. For the level of the 1-year yield the VECM does not beat the random walk (1.05 at 36 months). Cointegration helps to forecast the relation, not the common trend.</p></details>
+</section><h2 class="sec" id="s-app">Economic examples: parity and interest rates</h2>
+<section class="blk" id="ppp">
+  <h3>PPP for the leu</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=66" target="_blank" rel="noopener"><img src="slides/tsa_ch7_ppp_en.jpg" alt="Slide 65: PPP for the leu" loading="lazy"></a>
+      <figcaption>Slide 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pp-y">Sample starts in: <b id="pp-y-v"></b></label><input type="range" id="pp-y" min="2005" max="2016" step="1" value="2005"></div><button class="btn play" id="pp-play" type="button"></button></div><div class="charts "><div class="chart" id="pp-chart"></div></div><div class="tbl c7t" id="pp-tb"></div><ul class="out" id="pp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the sample in 2010. Does ADF reject a unit root in the real exchange rate q<sub>t</sub>?</div>
+  <details><summary>Answer</summary><p>No: p = 0.924 (with trend 0.957), further from rejection than over 2005–2026 (0.24). Since 2010 the leu depreciated by 23.7 log points while relative prices rose by 33.1: the real exchange rate kept falling. A shorter sample cannot show adjustments with half-lives of several years.</p></details>
+</section>
+<section class="blk" id="ro-ea">
+  <h3>ROBOR and Euribor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=68" target="_blank" rel="noopener"><img src="slides/tsa_ch7_ro_ea_rates_en.jpg" alt="Slide 67: ROBOR and Euribor" loading="lazy"></a>
+      <figcaption>Slide 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="re-y">Second sample starts in: <b id="re-y-v"></b></label><input type="range" id="re-y" min="2005" max="2018" step="1" value="2010"></div><button class="btn play" id="re-play" type="button"></button></div><div class="charts "><div class="chart" id="re-chart"></div></div><div class="tbl c7t" id="re-tb"></div><ul class="out" id="re-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the second sample in 2015. Is Engle–Granger still significant at 5%?</div>
+  <details><summary>Answer</summary><p>No: τ = −3.24, p = 0.063, and Phillips–Ouliaris gives p = 0.338, against 0.047 and 0.029 since 2010. Moreover, γ̂ of the ROBOR ECM turns positive (0.011): after 2015 ROBOR no longer returns towards the relation with Euribor. With its own monetary policy, the link between the two rates depends strongly on the chosen period.</p></details>
+</section>
+<section class="blk" id="cee-fx">
+  <h3>Three Central European currencies</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=70" target="_blank" rel="noopener"><img src="slides/tsa_ch7_cee_fx_en.jpg" alt="Slide 69: Three Central European currencies" loading="lazy"></a>
+      <figcaption>Slide 69</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cx-y">Sample starts in: <b id="cx-y-v"></b></label><input type="range" id="cx-y" min="2005" max="2016" step="1" value="2005"></div><div class="ctl"><label for="cx-k">Lagged differences k: <b id="cx-k-v"></b></label><input type="range" id="cx-k" min="1" max="4" step="1" value="1"></div><button class="btn play" id="cx-play" type="button"></button></div><div class="charts "><div class="chart" id="cx-chart"></div></div><ul class="out" id="cx-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the sample in 2015. What does the trace statistic for r = 0 become?</div>
+  <details><summary>Answer</summary><p>11.1, against the critical value 29.80: the rank stays 0, as since 2005 (24.2) and since 2012 (12.7). On a shorter sample the test has even less power, and ADF does not reject a unit root for any rate (p = 0.958; 0.626; 0.335). No period shows a common trend of the three currencies.</p></details>
+</section><h2 class="sec" id="s-pairs">An application: pairs trading</h2>
+<section class="blk" id="pair">
+  <h3>Banca Transilvania and BRD</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=75" target="_blank" rel="noopener"><img src="slides/tsa_ch7_pair_en.jpg" alt="Slide 74: Banca Transilvania and BRD" loading="lazy"></a>
+      <figcaption>Slide 74</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pr-y">Sample starts in: <b id="pr-y-v"></b></label><input type="range" id="pr-y" min="2010" max="2020" step="1" value="2014"></div><div class="ctl"><label for="pr-z">Entry threshold |z|: <b id="pr-z-v"></b></label><input type="range" id="pr-z" min="1" max="3" step="0.25" value="2"></div><button class="btn play" id="pr-play" type="button"></button></div><div class="charts "><div class="chart" id="pr-chart"></div></div><ul class="out" id="pr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the sample in 2010. What does the half-life of the spread TLV − b̂ BRD become?</div>
+  <details><summary>Answer</summary><p>About 444 trading days, with ρ̂ = 0.998 and b̂ = 1.68, against 69 days since 2014. Over 2010–2026 the Engle–Granger test does not reject “no cointegration” (p = 0.622): the spread behaves almost like a random walk, and an open position could wait for years. The favourable result since 2014 depends on the chosen start date.</p></details>
+</section>
+<section class="blk" id="pairs-bt">
+  <h3>Pairs trading out of sample</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter7_cointegration_vecm.pdf#page=77" target="_blank" rel="noopener"><img src="slides/tsa_ch7_pairs_backtest_en.jpg" alt="Slide 76: Pairs trading out of sample" loading="lazy"></a>
+      <figcaption>Slide 76</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pb-e">Entry threshold |z|</label><select id="pb-e"><option value="1.5">1.5</option><option value="2.0" selected>2 (lecture)</option><option value="2.5">2.5</option></select></div><div class="ctl"><label for="pb-c">Costs, as a multiple of the lecture’s (0.20% and 0.05%): <b id="pb-c-v"></b></label><input type="range" id="pb-c" min="0" max="3" step="0.25" value="1"></div><button class="btn play" id="pb-play" type="button"></button></div><div class="charts "><div class="chart" id="pb-chart"></div></div><ul class="out" id="pb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Double the costs (2×: 0.40% in Bucharest). What net annual return does the strategy earn in Bucharest?</div>
+  <details><summary>Answer</summary><p>−0.35% per year (Sharpe −0.05), against 0.41% with the lecture’s costs; gross it stays 1.17%. The break-even cost is 0.31%, so any higher cost makes the strategy unprofitable. For the US banks, with a cost of 0.10%, the net return falls only from 2.57% to 2.37%.</p></details>
+</section>
+<p class="src foot">US Treasury yields GS1, GS5, GS10 and TB3MS (FRED, monthly, January 1960 – September 2026), EUR/RON, EUR/HUF and EUR/PLN (BNR, month-end, July 2005 – September 2026), the monthly mean of EUR/RON and the HICP (Eurostat, July 2005 – August 2026), ROBOR 3M and Euribor 3M (Eurostat, August 1995 – August 2026), Romanian household consumption and GDP (Eurostat, 1995Q1 – 2026Q2, the vintage of the lecture, read from the line of the seminar chart, with no point dropped). The yields, BNR rates, HICP, ROBOR and Euribor are read with the chapter’s loaders (FRED, BNR, Eurostat, downloaded on 4 November 2026) and cut at the end dates of the slides; they reproduce the numbers of the lecture exactly. US consumption, income and investment: macrodata of statsmodels (1959Q1 – 2009Q3). Adjusted share prices: data/market. The Engle–Granger, ADF and Johansen tests are recomputed in the browser; the Phillips–Ouliaris statistics, the VECMs, the out-of-sample forecasts and the pairs-trading backtests are those of the chapter code. The simulations use the draws of the chapter’s seed. Variants that do not appear in the lecture (another sample, another number of lags, other thresholds, other costs, other simulation parameters) are extra runs of the chapter code with the same data and seed.</p>
+</main>
+</body>
+</html>
