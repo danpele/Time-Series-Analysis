@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 10 · State Space Models, the Kalman Filter and Markov Switching</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch10.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch10_data.js?v=20261101a", "ch10_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch10.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index.html">Time Series Analysis</a></h1><p>Chapter 10 · State Space Models, the Kalman Filter and Markov Switching</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_10" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch10.html" class="lang-btn active">EN</a><a href="ch10_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure or table on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step; the “Worked example” boxes redo the calculation with the numbers of the chapter.</p>
+<p class="toc"><a href="#s-ssf">The state space form</a> · <a href="#s-kf">The Kalman filter</a> · <a href="#s-sm">Smoothing, likelihood and missing data</a> · <a href="#s-tc">Trend, cycle and common factors</a> · <a href="#s-ms">Markov switching</a></p>
+<h2 class="sec" id="s-ssf">The state space form</h2>
+<section class="blk" id="ss-examples">
+  <h3>Local level and local linear trend paths</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=10" target="_blank" rel="noopener"><img src="slides/tsa_ch10_ss_examples_en.jpg" alt="Slide 9: Local level and local linear trend paths" loading="lazy"></a>
+      <figcaption>Slide 9</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="se-T">Periods shown T (lecture: 200): <b id="se-T-v"></b></label><input type="range" id="se-T" min="20" max="200" step="20" value="200"></div><div class="ctl"><label for="se-q">q of the red path (lecture: 1): <b id="se-q-v"></b></label><input type="range" id="se-q" min="0.1" max="3" step="0.1" value="1"></div><div class="ctl"><label for="se-z">σ<sub>ζ</sub> of the slope (lecture: 0.02): <b id="se-z-v"></b></label><input type="range" id="se-z" min="0.005" max="0.05" step="0.005" value="0.02"></div><button class="btn play" id="se-play" type="button"></button></div><style>.c10x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c10x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c10x .c10f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c10x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c10x li{margin:.18rem 0;overflow-wrap:anywhere}.c10x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c10t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c10t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c10t th,.c10t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c10t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c10t tbody tr:nth-child(even){background:#F5F7FB}.c10t tbody tr.hi{background:#E3F4F7}.c10t .r{text-align:right}.c10cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="se-chart"></div></div><ul class="out" id="se-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With T = 200, which path has the lag-1 autocorrelation of Δy<sub>t</sub> closest to −0.5?</div>
+  <details><summary>Answer</summary><p>The one with q = 0.01: −0.51 (theory −1/2.01 = −0.50); for q = 1 the autocorrelation is −0.28 (theory −1/3). When the noise dominates, Δy<sub>t</sub> ≈ ε<sub>t</sub> − ε<sub>t−1</sub>, an MA(1) with ρ(1) = −1/2; the first difference of a random walk without noise would be uncorrelated.</p></details>
+</section>
+<section class="blk" id="wx-arma">
+  <h3>Worked example: AR(2) for US GDP growth</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=14" target="_blank" rel="noopener"><img src="slides/ch10x_wx-arma_en.jpg" alt="Slide 13: Worked example: AR(2) for US GDP growth" loading="lazy"></a>
+      <figcaption>Slide 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wa-t">Quarter t of the calculation: <b id="wa-t-v"></b></label><input type="range" id="wa-t" min="1" max="12" step="1" value="1"></div><button class="btn play" id="wa-play" type="button"></button></div><div class="charts "><div class="chart" id="wa-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="c10f">\[\mathrm{vec}(P_1)=(I-T\otimes T)^{-1}\mathrm{vec}(Q),\quad v_t=y_t-\hat\mu-Za_t,\quad F_t=ZP_tZ^{\prime},\quad \log L=-\tfrac12\sum_t\Big(\log 2\pi+\log F_t+\frac{v_t^2}{F_t}\Big)\]</div><ol id="wa-ws"></ol></div><ul class="out" id="wa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> What is F<sub>1</sub>, the variance of the first prediction error of the AR(2) filter?</div>
+  <details><summary>Answer</summary><p>0.858 = γ(0), the stationary variance of the AR(2), the (1,1) element of P<sub>1</sub>. F<sub>2</sub> = 0.748, and from t = 3 on, with two lags known, F<sub>t</sub> = σ̂² = 0.739. A stationary model needs no diffuse start.</p></details>
+</section><h2 class="sec" id="s-kf">The Kalman filter</h2>
+<section class="blk" id="wx-kf">
+  <h3>Worked example: three periods by hand (1/2)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=21" target="_blank" rel="noopener"><img src="slides/ch10x_wx-kf_en.jpg" alt="Slide 20: Worked example: three periods by hand (1/2)" loading="lazy"></a>
+      <figcaption>Slide 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wk-e">σ²<sub>ε</sub> (lecture: 4): <b id="wk-e-v"></b></label><input type="range" id="wk-e" min="0.5" max="10" step="0.5" value="4"></div><div class="ctl"><label for="wk-n">σ²<sub>η</sub> (lecture: 1): <b id="wk-n-v"></b></label><input type="range" id="wk-n" min="0" max="4" step="0.25" value="1"></div><div class="ctl"><label for="wk-p">P<sub>1</sub> (lecture: 4): <b id="wk-p-v"></b></label><input type="range" id="wk-p" min="0.5" max="20" step="0.5" value="4"></div><button class="btn play" id="wk-play" type="button"></button></div><div class="charts "><div class="chart" id="wk-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wk-s">Step of the calculation</label><select id="wk-s"><option value="1" selected>t = 1 (lecture)</option><option value="2">t = 2 (lecture)</option><option value="3">t = 3 (slide 2/2)</option></select></div></div><div class="c10f">\[F_t=P_t+\sigma^2_\varepsilon,\quad K_t=\frac{P_t}{F_t},\quad a_{t|t}=a_t+K_tv_t,\quad P_{t|t}=P_t(1-K_t),\quad P_{t+1}=P_{t|t}+\sigma^2_\eta\]</div><ol id="wk-ws"></ol></div><ul class="out" id="wk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ raises σ²<sub>ε</sub>. At σ²<sub>ε</sub> = 8 (with P<sub>1</sub> = 4), what is K<sub>1</sub>?</div>
+  <details><summary>Answer</summary><p>K<sub>1</sub> = 4/(4 + 8) = 0.333: with noisier measurements the filter relies less on the observation, and the filtered level stays closer to the prediction (a<sub>1|1</sub> = 10.67 instead of 11).</p></details>
+</section>
+<section class="blk" id="kf-table">
+  <h3>Worked example: three periods by hand (2/2)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=22" target="_blank" rel="noopener"><img src="slides/ch10x_kf-table_en.jpg" alt="Slide 21: Worked example: three periods by hand (2/2)" loading="lazy"></a>
+      <figcaption>Slide 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="kt-y">y<sub>3</sub> (lecture: 14): <b id="kt-y-v"></b></label><input type="range" id="kt-y" min="8" max="20" step="0.5" value="14"></div><div class="ctl"><label for="kt-a">a<sub>1</sub>, the prior mean (lecture: 10): <b id="kt-a-v"></b></label><input type="range" id="kt-a" min="6" max="14" step="0.5" value="10"></div><button class="btn play" id="kt-play" type="button"></button></div><div class="charts "><div class="chart" id="kt-chart"></div></div><div class="c10x"><div class="wctl"><div class="ctl"><label for="kt-r">Rows</label><select id="kt-r"><option value="3" selected>3 (lecture)</option><option value="6">6: t = 4–6 without data</option></select></div></div><div class="tbl c10t" id="kt-tb"></div></div><ul class="out" id="kt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set y<sub>3</sub> = 18 (the surprise becomes 7 instead of 3). How far does the level move at t = 3?</div>
+  <details><summary>Answer</summary><p>By K<sub>3</sub>v<sub>3</sub> = 0.404·7 = 2.83, to a<sub>3|3</sub> = 13.83. The gain K<sub>3</sub> = 2.71/6.71 = 0.404 does not depend on the data, only on P<sub>3</sub> and σ²<sub>ε</sub>: a larger surprise moves the level proportionally, not to the observation.</p></details>
+</section>
+<section class="blk" id="wx-ss">
+  <h3>Steady state and exponential smoothing</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=23" target="_blank" rel="noopener"><img src="slides/ch10x_wx-ss_en.jpg" alt="Slide 22: Steady state and exponential smoothing" loading="lazy"></a>
+      <figcaption>Slide 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ws-q">q = σ²<sub>η</sub>/σ²<sub>ε</sub> (lecture: 0.25): <b id="ws-q-v"></b></label><input type="range" id="ws-q" min="0" max="9" step="1" value="4"></div><button class="btn play" id="ws-play" type="button"></button></div><div class="charts "><div class="chart" id="ws-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="ws-a">SES weight α for the inverse map (self-assessment: 0.5): <b id="ws-a-v"></b></label><input type="range" id="ws-a" min="0.05" max="0.95" step="0.05" value="0.5"></div></div><div class="c10f">\[\bar P=\sigma^2_\varepsilon\,\frac{q+\sqrt{q^2+4q}}{2},\qquad \bar K=\frac{\bar P}{\bar P+\sigma^2_\varepsilon}=\alpha_{SES},\qquad q=\frac{\alpha^2}{1-\alpha}\]</div><ol id="ws-ws"></ol></div><ul class="out" id="ws-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves q from 0.01 to 10. What is K̄ at q = 10?</div>
+  <details><summary>Answer</summary><p>P̄/σ²<sub>ε</sub> = (10 + √140)/2 = 10.92, so K̄ = 10.92/11.92 = 0.916. K̄ stays below 1 for every finite q; q/(q + 1) = 0.909 is not the steady state.</p></details>
+</section>
+<section class="blk" id="nile-filter">
+  <h3>The Nile: the Kalman filter of the local level model</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=24" target="_blank" rel="noopener"><img src="slides/tsa_ch10_nile_filter_en.jpg" alt="Slide 23: The Nile: the Kalman filter of the local level model" loading="lazy"></a>
+      <figcaption>Slide 23</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="nf-q">Signal-to-noise ratio q = σ²<sub>η</sub>/σ²<sub>ε</sub> (σ²<sub>ε</sub> = 15100; lecture: 0.097, ML): <b id="nf-q-v"></b></label><input type="range" id="nf-q" min="0" max="8" step="1" value="4"></div><button class="btn play" id="nf-play" type="button"></button></div><div class="charts "><div class="chart" id="nf-chart"></div></div><ul class="out" id="nf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ takes q to 1. Where is the filtered level in 1899, the year with flow 774?</div>
+  <details><summary>Answer</summary><p>At 899, against 1037 at q̂ = 0.097: with q = 1, K̄ = 0.618, and the level takes almost two thirds of the surprise (757 in 1905). The level adapts to the dam faster, but it also follows isolated years.</p></details>
+</section>
+<section class="blk" id="nile-ml">
+  <h3>Interpreting the Nile filter</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=25" target="_blank" rel="noopener"><img src="slides/ch10x_nile-ml_en.jpg" alt="Slide 24: Interpreting the Nile filter" loading="lazy"></a>
+      <figcaption>Slide 24</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="nm-e">Last year of the sample (lecture: 1970): <b id="nm-e-v"></b></label><input type="range" id="nm-e" min="1920" max="1970" step="5" value="1970"></div><button class="btn play" id="nm-play" type="button"></button></div><div class="charts "><div class="chart" id="nm-chart"></div></div><div class="c10x"><div class="wctl"><div class="ctl"><label for="nm-u">Show</label><select id="nm-u"><option value="var" selected>variances (lecture)</option><option value="sd">standard deviations</option></select></div></div><div class="tbl c10t" id="nm-tb"></div></div><ul class="out" id="nm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Cut the sample at 1920. Does q̂ rise or fall compared to the full sample?</div>
+  <details><summary>Answer</summary><p>It rises, to 0.163 (0.097 on 1871–1970), with σ̂²<sub>ε</sub> = 19103. Over 50 years the 1899 break weighs more, and the likelihood attributes it to movement of the level.</p></details>
+</section>
+<section class="blk" id="gain-ses">
+  <h3>The gain converges; SES reproduces the filter</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=26" target="_blank" rel="noopener"><img src="slides/tsa_ch10_gain_ses_en.jpg" alt="Slide 25: The gain converges; SES reproduces the filter" loading="lazy"></a>
+      <figcaption>Slide 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gs-q">Signal-to-noise ratio q = σ²<sub>η</sub>/σ²<sub>ε</sub> (σ²<sub>ε</sub> = 15100; lecture: 0.097, ML): <b id="gs-q-v"></b></label><input type="range" id="gs-q" min="0" max="8" step="1" value="4"></div><div class="ctl"><label for="gs-a">SES weight on the right</label><select id="gs-a"><option value="K" selected>α = K̄ (lecture)</option><option value="ls">α̂ = 0.246, least squares</option></select></div><button class="btn play" id="gs-play" type="button"></button></div><div class="charts "><div class="chart" id="gs-chart"></div></div><ul class="out" id="gs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ takes q to 1. From which year on is K<sub>t</sub> within 0.001 of K̄?</div>
+  <details><summary>Answer</summary><p>From year 5 (from year 11 at q̂ = 0.097 and from year 17 at q = 0.03). With a large q, P<sub>t</sub> settles quickly: every new observation dominates the uncertainty left by the diffuse start.</p></details>
+</section><h2 class="sec" id="s-sm">Smoothing, likelihood and missing data</h2>
+<section class="blk" id="wx-rts">
+  <h3>Smoothing: using the whole sample</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=29" target="_blank" rel="noopener"><img src="slides/ch10x_wx-rts_en.jpg" alt="Slide 28: Smoothing: using the whole sample" loading="lazy"></a>
+      <figcaption>Slide 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wr-y">Year t of the calculation (lecture: 1897): <b id="wr-y-v"></b></label><input type="range" id="wr-y" min="1872" max="1969" step="1" value="1897"></div><button class="btn play" id="wr-play" type="button"></button></div><div class="charts "><div class="chart" id="wr-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="c10f">\[J_t=\frac{P_{t|t}}{P_{t+1}},\qquad \hat\alpha_t=a_{t|t}+J_t(\hat\alpha_{t+1}-a_{t+1}),\qquad V_t=P_{t|t}+J_t^2(V_{t+1}-P_{t+1})\]</div><ol id="wr-ws"></ol></div><ul class="out" id="wr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the year to 1898. What is the difference between the filtered and the smoothed level?</div>
+  <details><summary>Answer</summary><p>Filtered 1133, smoothed 1000: a difference of 134, larger than in 1897 (1145 against 1038, i.e. 107). The smoother uses the low years after 1899, so it lowers the level before the drop appears in the data.</p></details>
+</section>
+<section class="blk" id="nile-smooth">
+  <h3>The Nile: filtered against smoothed level</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=30" target="_blank" rel="noopener"><img src="slides/tsa_ch10_nile_smooth_en.jpg" alt="Slide 29: The Nile: filtered against smoothed level" loading="lazy"></a>
+      <figcaption>Slide 29</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ns-q">Signal-to-noise ratio q = σ²<sub>η</sub>/σ²<sub>ε</sub> (σ²<sub>ε</sub> = 15100; lecture: 0.097, ML): <b id="ns-q-v"></b></label><input type="range" id="ns-q" min="0" max="8" step="1" value="4"></div><button class="btn play" id="ns-play" type="button"></button></div><div class="charts "><div class="chart" id="ns-chart"></div></div><ul class="out" id="ns-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set q = 0.001 (an almost constant level). What does the smoothed level look like around 1899?</div>
+  <details><summary>Answer</summary><p>Almost a straight line, falling slowly from 956 in 1897 to 881 in 1950: the step disappears. With a small q the model attributes the drop to noise, and the smoother cannot show a break that the model rules out.</p></details>
+</section>
+<section class="blk" id="wx-lik">
+  <h3>The likelihood: prediction-error decomposition</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=32" target="_blank" rel="noopener"><img src="slides/ch10x_wx-lik_en.jpg" alt="Slide 31: The likelihood: prediction-error decomposition" loading="lazy"></a>
+      <figcaption>Slide 31</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wl-q">Signal-to-noise ratio q = σ²<sub>η</sub>/σ²<sub>ε</sub> (σ²<sub>ε</sub> = 15100; lecture: 0.097, ML): <b id="wl-q-v"></b></label><input type="range" id="wl-q" min="0" max="8" step="1" value="4"></div><button class="btn play" id="wl-play" type="button"></button></div><div class="charts "><div class="chart" id="wl-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wl-y">Year of the term in the calculation: <b id="wl-y-v"></b></label><input type="range" id="wl-y" min="1872" max="1970" step="1" value="1899"></div></div><div class="c10f">\[\log L=\sum_{t=2}^{n}\ell_t,\qquad \ell_t=-\tfrac12\Big(\log 2\pi+\log F_t+\frac{v_t^2}{F_t}\Big)\]</div><ol id="wl-ws"></ol></div><ul class="out" id="wl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> At q̂ = 0.097, which year contributes the most negative term to log L?</div>
+  <details><summary>Answer</summary><p>1913 (ℓ<sub>t</sub> = −9.78), a single very dry year; then 1916 (−9.18) and 1899 (−9.02). The year 1871 is not in the sum: the diffuse start gives it a huge F<sub>t</sub>.</p></details>
+</section>
+<section class="blk" id="likelihood">
+  <h3>Profile likelihood and the choice of q</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=34" target="_blank" rel="noopener"><img src="slides/tsa_ch10_likelihood_en.jpg" alt="Slide 33: Profile likelihood and the choice of q" loading="lazy"></a>
+      <figcaption>Slide 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lk-q">q chosen on the right, between 0.001 and 1 (lecture: 0.097, ML): <b id="lk-q-v"></b></label><input type="range" id="lk-q" min="0" max="8" step="1" value="4"></div><button class="btn play" id="lk-play" type="button"></button></div><div class="charts "><div class="chart" id="lk-chart"></div></div><ul class="out" id="lk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Take the chosen q to 10. What is the likelihood-ratio statistic against the maximum?</div>
+  <details><summary>Answer</summary><p>23.3, as far from the data as q = 0.001 (23.1); q = 1 gives 7.2. A level that chases every flood predicts one step ahead as badly as an almost constant level.</p></details>
+</section>
+<section class="blk" id="diagnostics">
+  <h3>Diagnostics of the Nile model</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=37" target="_blank" rel="noopener"><img src="slides/tsa_ch10_diagnostics_en.jpg" alt="Slide 36: Diagnostics of the Nile model" loading="lazy"></a>
+      <figcaption>Slide 36</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dg-q">Signal-to-noise ratio q = σ²<sub>η</sub>/σ²<sub>ε</sub> (σ²<sub>ε</sub> = 15100; lecture: 0.097, ML): <b id="dg-q-v"></b></label><input type="range" id="dg-q" min="0" max="8" step="1" value="4"></div><button class="btn play" id="dg-play" type="button"></button></div><div class="charts "><div class="chart" id="dg-chart"></div></div><ul class="out" id="dg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set q = 0.001. Is the Ljung–Box Q(10) test still passed?</div>
+  <details><summary>Answer</summary><p>No: Q(10) = 20.9, p = 0.022. An almost constant level leaves the drop after 1899 in the prediction errors, which become autocorrelated; at q̂ = 0.097, p = 0.21.</p></details>
+</section>
+<section class="blk" id="missing">
+  <h3>Missing years and forecasts of the Nile</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=40" target="_blank" rel="noopener"><img src="slides/tsa_ch10_missing_en.jpg" alt="Slide 39: Missing years and forecasts of the Nile" loading="lazy"></a>
+      <figcaption>Slide 39</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mi-q">Signal-to-noise ratio q = σ²<sub>η</sub>/σ²<sub>ε</sub> (σ²<sub>ε</sub> = 15100; lecture: 0.097, ML): <b id="mi-q-v"></b></label><input type="range" id="mi-q" min="0" max="8" step="1" value="4"></div><div class="ctl"><label for="mi-g">Length of each gap (years; lecture: 20): <b id="mi-g-v"></b></label><input type="range" id="mi-g" min="0" max="20" step="5" value="20"></div><div class="ctl"><label for="mi-h">Forecast horizon (years; lecture: 30): <b id="mi-h-v"></b></label><input type="range" id="mi-h" min="10" max="50" step="10" value="30"></div><button class="btn play" id="mi-play" type="button"></button></div><div class="charts "><div class="chart" id="mi-chart"></div></div><ul class="out" id="mi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Gaps of 10 years (1891–1900 and 1931–1940): what is the standard error of the smoothed level in 1895?</div>
+  <details><summary>Answer</summary><p>78, against 99 in 1900 with 20-year gaps and 48 with all data. The band grows with the distance to the nearest observed year.</p></details>
+</section><h2 class="sec" id="s-tc">Trend, cycle and common factors</h2>
+<section class="blk" id="wx-hp">
+  <h3>The HP filter is a state space smoother</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=44" target="_blank" rel="noopener"><img src="slides/ch10x_wx-hp_en.jpg" alt="Slide 43: The HP filter is a state space smoother" loading="lazy"></a>
+      <figcaption>Slide 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-l">λ (lecture: 1600): <b id="wh-l-v"></b></label><input type="range" id="wh-l" min="0" max="7" step="1" value="4"></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="c10f">\[\min_{\tau}\sum_t(y_t-\tau_t)^2+\lambda\sum_t(\Delta^2\tau_t)^2\ \Longleftrightarrow\ y_t=\mu_t+\varepsilon_t,\ \ \Delta^2\mu_{t+1}=\zeta_{t-1},\ \ \lambda=\frac{\sigma^2_\varepsilon}{\sigma^2_\zeta}\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ takes λ to 100000. What becomes of the standard deviation of the HP gap?</div>
+  <details><summary>Answer</summary><p>5.5, against 2.9 at λ = 1600 and 1.3 at λ = 1: a stiffer trend leaves more of the movement of GDP in the gap.</p></details>
+</section>
+<section class="blk" id="ro-trend">
+  <h3>Romanian GDP: trend</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=46" target="_blank" rel="noopener"><img src="slides/tsa_ch10_ro_trend_en.jpg" alt="Slide 45: Romanian GDP: trend" loading="lazy"></a>
+      <figcaption>Slide 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-l">λ of the HP filter (lecture: 1600): <b id="rt-l-v"></b></label><input type="range" id="rt-l" min="0" max="7" step="1" value="4"></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Which λ of the grid brings the HP trend closest to the UC trend?</div>
+  <details><summary>Answer</summary><p>λ = 400: the largest distance is 0.63 points (1.01 at λ = 100 and 2.65 at λ = 1600). The UC trend is more flexible than the trend imposed by λ = 1600, so a smaller λ approximates it better.</p></details>
+</section>
+<section class="blk" id="output-gap">
+  <h3>The Romanian output gap: three methods</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=48" target="_blank" rel="noopener"><img src="slides/tsa_ch10_output_gap_en.jpg" alt="Slide 47: The Romanian output gap: three methods" loading="lazy"></a>
+      <figcaption>Slide 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="og-h">Horizon h of the Hamilton filter (quarters; lecture: 8): <b id="og-h-v"></b></label><input type="range" id="og-h" min="4" max="12" step="1" value="8"></div><div class="ctl"><label for="og-p">Lags p (lecture: 4): <b id="og-p-v"></b></label><input type="range" id="og-p" min="1" max="6" step="1" value="4"></div><div class="ctl"><label for="og-l">λ of the HP filter (lecture: 1600): <b id="og-l-v"></b></label><input type="range" id="og-l" min="0" max="7" step="1" value="4"></div><button class="btn play" id="og-play" type="button"></button></div><div class="charts "><div class="chart" id="og-chart"></div></div><ul class="out" id="og-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ takes h to 4. How does the standard deviation of the Hamilton gap change?</div>
+  <details><summary>Answer</summary><p>It falls to 4.6 (6.5 at h = 8 and 7.7 at h = 12): the residual of the regression contains the surprises of a shorter horizon.</p></details>
+</section>
+<section class="blk" id="realtime">
+  <h3>Real time against hindsight</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=50" target="_blank" rel="noopener"><img src="slides/tsa_ch10_realtime_en.jpg" alt="Slide 49: Real time against hindsight" loading="lazy"></a>
+      <figcaption>Slide 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rl-e">Data up to</label><select id="rl-e"><option value="2008-07-01">2008Q3</option><option value="2009-04-01">2009Q2</option><option value="2010-04-01">2010Q2</option><option value="2011-04-01">2011Q2</option><option value="2012-04-01">2012Q2</option><option value="2013-04-01">2013Q2</option><option value="2014-04-01">2014Q2</option><option value="2015-04-01">2015Q2</option><option value="2016-04-01">2016Q2</option><option value="2017-04-01">2017Q2</option><option value="2018-04-01">2018Q2</option><option value="2019-04-01">2019Q2</option><option value="2020-04-01">2020Q2</option><option value="2021-04-01">2021Q2</option><option value="2022-04-01">2022Q2</option><option value="2023-04-01">2023Q2</option><option value="2024-04-01">2024Q2</option><option value="2025-04-01">2025Q2</option><option value="2026-04-01" selected>2026Q2 (lecture)</option></select></div><div class="ctl"><label for="rl-l">λ of the HP filter (lecture: 1600): <b id="rl-l-v"></b></label><input type="range" id="rl-l" min="0" max="7" step="1" value="4"></div><button class="btn play" id="rl-play" type="button"></button></div><div class="charts "><div class="chart" id="rl-chart"></div></div><ul class="out" id="rl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the data up to 2008Q3. What is the two-sided HP gap in 2008Q3?</div>
+  <details><summary>Answer</summary><p>2.2%, exactly the real-time value: at the end of the sample the two-sided filter becomes one-sided. With the data up to 2026Q2, the gap of 2008Q3 is 9.5%.</p></details>
+</section>
+<section class="blk" id="tvp-beta">
+  <h3>A time-varying beta: the BET and the euro area</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=52" target="_blank" rel="noopener"><img src="slides/tsa_ch10_tvp_beta_en.jpg" alt="Slide 51: A time-varying beta: the BET and the euro area" loading="lazy"></a>
+      <figcaption>Slide 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tv-s">Variance of the beta shocks, multiple of σ̂²<sub>β</sub> (lecture: 1 × ML): <b id="tv-s-v"></b></label><input type="range" id="tv-s" min="0" max="5" step="1" value="3"></div><div class="ctl"><label for="tv-w">Rolling OLS window (weeks; lecture: 52): <b id="tv-w-v"></b></label><input type="range" id="tv-w" min="26" max="104" step="13" value="52"></div><button class="btn play" id="tv-play" type="button"></button></div><div class="charts "><div class="chart" id="tv-chart"></div></div><ul class="out" id="tv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the variance of the beta shocks to 0. What becomes of the Kalman beta?</div>
+  <details><summary>Answer</summary><p>A flat line at 0.58, the OLS beta: with σ²<sub>β</sub> = 0 the Kalman filter computes the OLS estimate recursively, and the smoother gives every week the full-sample estimate.</p></details>
+</section>
+<section class="blk" id="dfm">
+  <h3>A common factor of US activity</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=55" target="_blank" rel="noopener"><img src="slides/tsa_ch10_dfm_en.jpg" alt="Slide 54: A common factor of US activity" loading="lazy"></a>
+      <figcaption>Slide 54</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="df-k">Missing months of income and sales at the end of the sample</label><select id="df-k"><option value="0">0</option><option value="1">1</option><option value="2" selected>2 (lecture)</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div><button class="btn play" id="df-play" type="button"></button></div><div class="charts "><div class="chart" id="df-chart"></div></div><ul class="out" id="df-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Without missing months (k = 0), what is the value of the factor for July 2026?</div>
+  <details><summary>Answer</summary><p>−0.78 with today’s FRED data, against −0.87 with two missing months (the slide, with the data of that time: −0.9). The factor uses whatever has arrived: missing income and sales move the latest value, they do not make it impossible to compute.</p></details>
+</section><h2 class="sec" id="s-ms">Markov switching</h2>
+<section class="blk" id="wx-dur">
+  <h3>Transition matrix, durations and ergodic probabilities</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=60" target="_blank" rel="noopener"><img src="slides/ch10x_wx-dur_en.jpg" alt="Slide 59: Transition matrix, durations and ergodic probabilities" loading="lazy"></a>
+      <figcaption>Slide 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-p">p<sub>11</sub> (lecture: 0.75): <b id="wd-p-v"></b></label><input type="range" id="wd-p" min="0.05" max="0.95" step="0.05" value="0.75"></div><div class="ctl"><label for="wd-q">p<sub>22</sub> (lecture: 0.95): <b id="wd-q-v"></b></label><input type="range" id="wd-q" min="0.5" max="0.99" step="0.01" value="0.95"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wd-h">Horizon h of P<sup>h</sup>: <b id="wd-h-v"></b></label><input type="range" id="wd-h" min="1" max="20" step="1" value="4"></div></div><div class="c10f">\[E(D_i)=\frac{1}{1-p_{ii}},\qquad \pi_1=\frac{1-p_{22}}{2-p_{11}-p_{22}},\qquad \Pr(S_{t+h}=1\mid S_t=1)=\pi_1+(1-\pi_1)(p_{11}+p_{22}-1)^h\]</div><ol id="wd-ws"></ol></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set p<sub>11</sub> = 0.5. How long does regime 1 last on average?</div>
+  <details><summary>Answer</summary><p>1/(1 − 0.5) = 2 periods. p<sub>11</sub>/(1 − p<sub>11</sub>) = 1 counts only the periods after the first, and 1/p<sub>11</sub> is not a duration.</p></details>
+</section>
+<section class="blk" id="wx-ham">
+  <h3>The Hamilton filter</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=61" target="_blank" rel="noopener"><img src="slides/ch10x_wx-ham_en.jpg" alt="Slide 60: The Hamilton filter" loading="lazy"></a>
+      <figcaption>Slide 60</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wf-t">Quarter (lecture: 2008Q3): <b id="wf-t-v"></b></label><input type="range" id="wf-t" min="0" max="15" step="1" value="6"></div><button class="btn play" id="wf-play" type="button"></button></div><div class="charts "><div class="chart" id="wf-chart"></div></div><div class="c10x"><h4>Worked example</h4><div class="c10f">\[\Pr(S_t=j\mid Y_{t-1})=\sum_i p_{ij}\Pr(S_{t-1}=i\mid Y_{t-1}),\qquad \Pr(S_t=j\mid Y_t)=\frac{\Pr(S_t=j\mid Y_{t-1})\,f_j(y_t)}{\sum_i\Pr(S_t=i\mid Y_{t-1})\,f_i(y_t)}\]</div><ol id="wf-ws"></ol></div><ul class="out" id="wf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ reaches 2008Q4 (growth −2.21%). What is the filtered probability of recession?</div>
+  <details><summary>Answer</summary><p>0.993: the prediction was 0.349, but f<sub>1</sub>(−2.21) is much larger than f<sub>2</sub>(−2.21), and Bayes’ rule takes the probability close to 1.</p></details>
+</section>
+<section class="blk" id="ms-table">
+  <h3>Hamilton's specification on today's data</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=63" target="_blank" rel="noopener"><img src="slides/ch10x_ms-table_en.jpg" alt="Slide 62: Hamilton's specification on today's data" loading="lazy"></a>
+      <figcaption>Slide 62</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mt-m">Maximum in the chart</label><select id="mt-m"><option value="A" selected>A (lecture)</option><option value="B">B</option></select></div><button class="btn play" id="mt-play" type="button"></button></div><div class="charts "><div class="chart" id="mt-chart"></div></div><div class="c10x"><div class="wctl"><div class="ctl"><label for="mt-c">Threshold of the smoothed probability (lecture: 0.5): <b id="mt-c-v"></b></label><input type="range" id="mt-c" min="0.3" max="0.7" step="0.05" value="0.5"></div></div><div class="tbl c10t" id="mt-tb"></div></div><ul class="out" id="mt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise the threshold to 0.7. Which share of the NBER recession quarters does maximum A still find?</div>
+  <details><summary>Answer</summary><p>90% (94% at the threshold 0.5); maximum B stays at 10%. The smoothed probabilities of maximum A are close to 0 or 1, so the threshold changes little.</p></details>
+</section>
+<section class="blk" id="ms-us">
+  <h3>US recessions from GDP growth</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=64" target="_blank" rel="noopener"><img src="slides/tsa_ch10_ms_us_en.jpg" alt="Slide 63: US recessions from GDP growth" loading="lazy"></a>
+      <figcaption>Slide 63</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mu-p">p<sub>11</sub> of the recession regime (lecture: 0.685, ML): <b id="mu-p-v"></b></label><input type="range" id="mu-p" min="0" max="9" step="1" value="4"></div><button class="btn play" id="mu-play" type="button"></button></div><div class="charts "><div class="chart" id="mu-chart"></div></div><ul class="out" id="mu-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Lower p<sub>11</sub> to 0.3. What become the duration of a recession and the share of NBER quarters detected?</div>
+  <details><summary>Answer</summary><p>1.4 quarters and 39.6% (3.2 quarters and 62.5% at p̂<sub>11</sub> = 0.685). A less persistent regime needs weaker data for every recession quarter, so short and mild recessions are no longer found; 2020Q2 keeps the probability 1.00.</p></details>
+</section>
+<section class="blk" id="ms-filtered">
+  <h3>Filtered against smoothed probabilities: 2008</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=66" target="_blank" rel="noopener"><img src="slides/tsa_ch10_ms_filtered_en.jpg" alt="Slide 65: Filtered against smoothed probabilities: 2008" loading="lazy"></a>
+      <figcaption>Slide 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mf-w">Window</label><select id="mf-w"><option value="2005-01-01|2012-10-01" selected>2005–2012 (lecture)</option><option value="1973-01-01|1976-10-01">1973–1976</option><option value="1979-01-01|1983-10-01">1979–1983</option><option value="1989-01-01|1992-10-01">1989–1992</option><option value="2000-01-01|2002-10-01">2000–2002</option><option value="2019-01-01|2021-10-01">2019–2021 (parameters of 1947–2019)</option></select></div><button class="btn play" id="mf-play" type="button"></button></div><div class="charts "><div class="chart" id="mf-chart"></div></div><ul class="out" id="mf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the window 2000–2002 (the mild recession of 2001). Does the filtered probability cross 0.5?</div>
+  <details><summary>Answer</summary><p>No: its maximum is 0.38, and the smoothed one does not cross 0.5 either. The 2001 recession was too mild for the mean of −0.42% per quarter of the recession regime.</p></details>
+</section>
+<section class="blk" id="ms-checks">
+  <h3>Checks: which regimes did the model find?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=68" target="_blank" rel="noopener"><img src="slides/ch10x_ms-checks_en.jpg" alt="Slide 67: Checks: which regimes did the model find?" loading="lazy"></a>
+      <figcaption>Slide 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mc-e">The sample 1947–… ends in</label><select id="mc-e"><option value="2019-10-01" selected>2019Q4 (lecture: switching variance)</option><option value="2020-04-01">2020Q2</option><option value="2020-10-01">2020Q4</option><option value="2021-10-01">2021Q4</option><option value="2023-10-01">2023Q4</option><option value="2026-04-01">2026Q2 (lecture: including 2020)</option></select></div><button class="btn play" id="mc-play" type="button"></button></div><div class="charts "><div class="chart" id="mc-chart"></div></div><ul class="out" id="mc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in 2020Q2. How many quarters form the low-mean regime?</div>
+  <details><summary>Answer</summary><p>One, 2020Q2 (mean −8.2%); on 1947–2019 the regime holds 30 quarters. A single extreme observation forms a regime on its own.</p></details>
+</section>
+<section class="blk" id="ms-ro">
+  <h3>Romanian GDP growth regimes</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=69" target="_blank" rel="noopener"><img src="slides/tsa_ch10_ms_ro_en.jpg" alt="Slide 68: Romanian GDP growth regimes" loading="lazy"></a>
+      <figcaption>Slide 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mr-p">p<sub>11</sub> of the volatile regime (lecture: 0.911, ML): <b id="mr-p-v"></b></label><input type="range" id="mr-p" min="0" max="8" step="1" value="6"></div><button class="btn play" id="mr-play" type="button"></button></div><div class="charts "><div class="chart" id="mr-chart"></div></div><ul class="out" id="mr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Lower p<sub>11</sub> of the volatile regime to 0.5. Which share of the quarters stays volatile?</div>
+  <details><summary>Answer</summary><p>29% (40% at p̂<sub>11</sub> = 0.911): a less persistent volatile regime keeps only the quarters with large rises or falls.</p></details>
+</section>
+<section class="blk" id="vol-regimes">
+  <h3>Calm and turbulent stock markets</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch10_vol_regimes_en.jpg" alt="Slide 70: Calm and turbulent stock markets" loading="lazy"></a>
+      <figcaption>Slide 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="vr-p">p<sub>11</sub> of the turbulent regime (lecture: 0.930, ML): <b id="vr-p-v"></b></label><input type="range" id="vr-p" min="0" max="6" step="1" value="4"></div><button class="btn play" id="vr-play" type="button"></button></div><div class="charts "><div class="chart" id="vr-chart"></div></div><ul class="out" id="vr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set p<sub>11</sub> = 0.5 for the turbulent regime. Which share of the weeks stays turbulent?</div>
+  <details><summary>Answer</summary><p>12% (26% at p̂<sub>11</sub> = 0.930). p<sub>11</sub> = 0.5 does not mean a random classification: a turbulent regime that lasts two weeks on average remains only for the extreme weeks.</p></details>
+</section>
+<section class="blk" id="regimes-memory">
+  <h3>Regimes imitate memory</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=74" target="_blank" rel="noopener"><img src="slides/tsa_ch10_regimes_memory_en.jpg" alt="Slide 73: Regimes imitate memory" loading="lazy"></a>
+      <figcaption>Slide 73</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rm-m">Simulated paths averaged (lecture: 40): <b id="rm-m-v"></b></label><input type="range" id="rm-m" min="1" max="40" step="1" value="40"></div><div class="ctl"><label for="rm-l">Largest lag (weeks; lecture: 100): <b id="rm-l-v"></b></label><input type="range" id="rm-l" min="20" max="100" step="10" value="100"></div><button class="btn play" id="rm-play" type="button"></button></div><div class="charts "><div class="chart" id="rm-chart"></div></div><ul class="out" id="rm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ adds simulated paths, from 1 to 40. Where does the mean ACF at lag 1 settle?</div>
+  <details><summary>Answer</summary><p>Around 0.21, below the 0.31 of the data: the regimes explain much of the short-run clustering, not all of it. The first path gives 0.26, the second 0.19: the mean over 40 paths removes the sampling variation.</p></details>
+</section>
+<section class="blk" id="ms-params">
+  <h3>Recap: Markov switching</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter10_state_space_kalman_markov_switching.pdf#page=76" target="_blank" rel="noopener"><img src="slides/ch10x_ms-params_en.jpg" alt="Slide 75: Recap: Markov switching" loading="lazy"></a>
+      <figcaption>Slide 75</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mp-h">Duration d (periods): <b id="mp-h-v"></b></label><input type="range" id="mp-h" min="1" max="40" step="1" value="4"></div><button class="btn play" id="mp-play" type="button"></button></div><div class="charts "><div class="chart" id="mp-chart"></div></div><div class="c10x"><div class="wctl"><div class="ctl"><label for="mp-u">Durations in</label><select id="mp-u"><option value="p" selected>periods (lecture)</option><option value="y">years</option></select></div></div><div class="tbl c10t" id="mp-tb"></div></div><ul class="out" id="mp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Which regime lasts longer in calendar time: the calm regime of the S&P 500 (36.8 periods) or the US expansion (19.7 periods)?</div>
+  <details><summary>Answer</summary><p>The US expansion: 19.7 quarters = 4.9 years, against 36.8 weeks = 0.7 years. The duration 1/(1 − p<sub>ii</sub>) is in the time unit of the data.</p></details>
+</section>
+<p class="src foot">Annual flow of the Nile at Aswan, 1871–1970 (the statsmodels data set). Weekly S&P 500, BET and Euro Stoxx 50 prices (data/market, up to 18 September 2026). US real GDP growth and the NBER dates (FRED GDPC1, USREC), read with the chapter’s loader on 4 November 2026 and cut at 2026Q2, the last quarter of the slides; they reproduce the numbers of the lecture exactly. The four coincident indicators (FRED INDPRO, PAYEMS, W875RX1, CMRMTSPL), also read on 4 November 2026 and cut at July 2026: they have been revised since the slides were made; the parameters of the factor model (estimated on 1967–2019) are those of the lecture, but the latest months of the factor differ slightly (the July 2026 value: −0.87 with today’s data, −0.9 on the slide). Romanian real GDP (Eurostat namq_10_gdp) has been revised since the slides were made; the page uses the series of the slides, read from the vector line of the lecture chart (charts/tsa_ch10_ro_trend.pdf, all 126 quarters), which reproduces the numbers of the lecture to the sixth significant digit. The components of the UC model, the common factor, the probabilities of the two maxima of the MS-AR(4), the GARCH(1,1) volatility and the simulated regime paths come from the chapter’s code, with the same seed; the browser recomputes the Kalman filter and smoother, the likelihood, the diagnostics, the HP filter, the Hamilton (2018) filter, the real-time gaps, the time-varying beta, the Hamilton (1989) filter and the Kim smoother. Variants that do not appear in the lecture (another q, λ, h, sample end, p₁₁ or number of missing months) are extra runs of the chapter’s code with the same data; the chart “Checks: which regimes did the model find?” is an extra run for a slide that gives only numbers.</p>
+</main>
+</body>
+</html>
