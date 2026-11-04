@@ -263,10 +263,10 @@ D.frame('⟦Evaluation||Evaluare⟧', items(
     ('⟦\\textbf{Team project: 20\\%}||\\textbf{Proiect de echipă: 20\\%}⟧',
      ['⟦2--4 students analyse and forecast real time series with the methods of the course||2--4 studenți analizează și prognozează serii de timp reale cu metodele cursului⟧',
       '⟦a GitHub repository, a short report, a presentation and an oral defence||un repository GitHub, un raport scurt, o prezentare și o susținere orală⟧']),
-    ('⟦\\textbf{Attendance: 10\\%}||\\textbf{Prezență: 10\\%}⟧',
-     ['⟦lectures and seminars||cursuri și seminarii⟧']),
-    ('⟦\\textbf{Self-assessment quizzes}||\\textbf{Quiz-uri de autoevaluare}⟧',
-     ['⟦one per chapter on the website: 20 questions drawn from a bank of 24, each answer explained||cîte unul pentru fiecare capitol, pe site: 20 de întrebări extrase dintr-o bancă de 24, cu explicație pentru fiecare răspuns⟧'])))
+    ('⟦\\textbf{Attendance and quizzes: 10\\%}||\\textbf{Prezență și quiz-uri: 10\\%}⟧',
+     ['⟦lectures and seminars||cursuri și seminarii⟧',
+      '⟦one quiz per chapter on the website: 20 questions drawn from a bank of 24, each answer explained||cîte un quiz pentru fiecare capitol, pe site: 20 de întrebări extrase dintr-o bancă de 24, cu explicație pentru fiecare răspuns⟧',
+      '⟦taken with the ASE account; name and score are recorded for the grade||rezolvate cu contul ASE; numele și scorul se înregistrează pentru notă⟧'])))
 
 D.frame('⟦Textbooks||Manuale⟧', items(
     ('⟦\\textbf{Main textbook}||\\textbf{Manualul de bază}⟧',

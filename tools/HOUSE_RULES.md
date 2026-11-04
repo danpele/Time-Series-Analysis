@@ -65,7 +65,7 @@ Repo: `~/Documents/Teaching/TSA - Serii de timp/repo` (GitHub `danpele/Time-Seri
 - `assets/quizzes/<id>.js`, înregistrat ca `window.TSA_DATA.quizzes['<id>']`: 24 de întrebări EN+RO, `draw: 20`, `correct` = index 0–3, explicațiile nu numesc litere.
 
 ## Evaluare și AI
-- 70% examen scris, 20% proiect de echipă (2–4 studenți, susținere orală), 10% prezență.
+- 70% examen scris, 20% proiect de echipă (2–4 studenți, susținere orală), 10% prezență și quiz-uri (scorul se înregistrează la autentificarea cu contul ASE).
 - AI permis și declarat în `AI_USE.md`; susținerea orală verifică înțelegerea codului și a rezultatelor.
 
 ## Verificare finală

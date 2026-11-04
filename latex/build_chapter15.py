@@ -446,7 +446,7 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), two(i
     (T('\\textbf{Route}', '\\textbf{Traseul}'),
      [T('Part I: the course map, two recap slides per chapter, the toolbox of tests and models', 'Partea I: harta cursului, cîte două slide-uri de recapitulare pentru fiecare capitol, trusa de teste și modele'),
       T('Part II: the Box--Jenkins method from start to finish on Romanian inflation', 'Partea a II-a: metoda Box--Jenkins de la un capăt la altul, pe inflația din România'),
-      T('Part III: the exam (format, grading, eight solved problems), the team project and attendance', 'Partea a III-a: examenul (format, criterii, opt probleme rezolvate), proiectul de echipă și prezența')]),
+      T('Part III: the exam (format, grading, eight solved problems), the team project, attendance and quizzes', 'Partea a III-a: examenul (format, criterii, opt probleme rezolvate), proiectul de echipă, prezența și quiz-urile')]),
     T('Chapters 11--14 are for self-study', 'Capitolele 11--14 sînt pentru studiu individual')),
     ph('ase', T('Bucharest University of Economic Studies', 'Academia de Studii Economice din București'), h='0.40\\textheight')))
 
@@ -1099,10 +1099,10 @@ D.frame(T('The final grade', 'Nota finală'), table(
     T('\\textbf{Component}', '\\textbf{Componenta}') + ' & ' + T('\\textbf{Weight}', '\\textbf{Pondere}') + ' & ' + T('\\textbf{When}', '\\textbf{Cînd}') + ' & ' + T('\\textbf{Criteria}', '\\textbf{Criterii}'),
     [T('written exam', 'examenul scris') + ' & 70\\% & ' + T('exam session', 'sesiunea') + ' & ' + T('method, result, interpretation', 'metodă, rezultat, interpretare'),
      T('team project', 'proiectul de echipă') + ' & 20\\% & ' + T('end of semester', 'finalul semestrului') + ' & ' + T('question, methods, checks, oral defence', 'întrebare, metode, verificări, susținere orală'),
-     T('attendance', 'prezența') + ' & 10\\% & ' + T('every week', 'în fiecare săptămînă') + ' & ' + T('presence at the lectures and seminars', 'prezența la cursuri și seminarii')],
+     T('attendance and quizzes', 'prezența și quiz-urile') + ' & 10\\% & ' + T('every week', 'în fiecare săptămînă') + ' & ' + T('presence at the lectures and seminars; the chapter quizzes', 'prezența la cursuri și seminarii; quiz-urile capitolelor')],
     size='footnotesize') + items(
     T('The seminars are for practice and are not graded; students hand in nothing from the seminars', 'Seminariile au rol de exercițiu și nu se notează; studenții nu predau nimic de la seminarii'),
-    T('The quizzes on the course site are for self-assessment', 'Quiz-urile de pe site-ul cursului sînt pentru autoevaluare')))
+    T('The quizzes on the course site are taken with the ASE account; name and score are recorded for the grade', 'Quiz-urile de pe site-ul cursului se rezolvă cu contul ASE; numele și scorul se înregistrează pentru notă')))
 
 # =============================================================================
 # 10. CONTRIBUȚIA POSIBILĂ A AI

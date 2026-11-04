@@ -98,7 +98,7 @@
                 aiTitle: 'Using AI in this course',
                 quizzes: 'Self-Assessment Quizzes',
                 quizIntro: 'Each attempt draws up to 20 questions at random from the chapter bank and shuffles the answers. An answer is locked once selected.',
-                loginPrompt: 'Sign in with your ASE Google account (@ase.ro or @stud.ase.ro) to take the quizzes.',
+                loginPrompt: 'Sign in with your ASE Google account (@ase.ro or @stud.ase.ro) to take the quizzes. Your name and score are recorded for the course grade.',
                 loginRequired: 'Sign in above with your ASE Google account to see this quiz.',
                 loginWrongDomain: 'Please use your ASE account (@ase.ro or @stud.ase.ro).',
                 saving: 'Saving your score...',
@@ -165,7 +165,7 @@
                 aiTitle: 'Utilizarea instrumentelor AI',
                 quizzes: 'Quiz-uri de autoevaluare',
                 quizIntro: 'La fiecare încercare se extrag aleator cel mult 20 de întrebări din banca de întrebări a capitolului, iar ordinea variantelor de răspuns se schimbă. Un răspuns ales nu mai poate fi modificat.',
-                loginPrompt: 'Autentificați-vă cu contul Google ASE (@ase.ro sau @stud.ase.ro) pentru a rezolva quiz-urile.',
+                loginPrompt: 'Autentificați-vă cu contul Google ASE (@ase.ro sau @stud.ase.ro) pentru a rezolva quiz-urile. Numele și scorul se înregistrează pentru nota de la curs.',
                 loginRequired: 'Autentificați-vă mai sus cu contul Google ASE pentru a vedea acest quiz.',
                 loginWrongDomain: 'Folosiți contul ASE (@ase.ro sau @stud.ase.ro).',
                 saving: 'Se salvează scorul...',
@@ -206,14 +206,14 @@
             en: [
                 { h: 'Course', p: ['Time Series Analysis', "Bachelor's programmes Economic Informatics and Economic Cybernetics", 'Year 3, semester 2, academic year 2026/2027', '2 hours of lecture and 1 hour of seminar per week; 4 ECTS'] },
                 { h: 'Prerequisites', p: ['Probability and statistics', 'Econometrics (linear regression)', 'Python programming'] },
-                { h: 'Assessment', p: ['Written exam: 70%', 'Team project: 20%', 'Attendance: 10%'] },
+                { h: 'Assessment', p: ['Written exam: 70%', 'Team project: 20%', 'Attendance and quizzes: 10%'] },
                 { h: 'Main textbook', p: ['Huang &amp; Petukhina, <a href="https://doi.org/10.1007/978-3-031-13584-2" target="_blank" rel="noopener"><em>Applied Time Series Analysis and Forecasting with Python</em></a>, Springer, 2022', 'Free companion: Hyndman &amp; Athanasopoulos, <a href="https://otexts.com/fpp3/" target="_blank" rel="noopener"><em>Forecasting: Principles and Practice</em></a> (3rd ed.)'] },
                 { h: 'Tools', p: ['Python (statsmodels, arch, pandas), Jupyter / Google Colab', 'GitHub, Quantlet, Quantinar'] }
             ],
             ro: [
                 { h: 'Curs', p: ['Serii de timp', 'Programele de licență Informatică economică și Cibernetică economică', 'Anul III, semestrul 2, anul universitar 2026/2027', '2 ore de curs și 1 oră de seminar pe săptămînă; 4 credite ECTS'] },
                 { h: 'Cunoștințe prealabile', p: ['Probabilități și statistică', 'Econometrie (regresia liniară)', 'Programare în Python'] },
-                { h: 'Evaluare', p: ['Examen scris: 70%', 'Proiect de echipă: 20%', 'Prezență: 10%'] },
+                { h: 'Evaluare', p: ['Examen scris: 70%', 'Proiect de echipă: 20%', 'Prezență și quiz-uri: 10%'] },
                 { h: 'Manual de bază', p: ['Huang și Petukhina, <a href="https://doi.org/10.1007/978-3-031-13584-2" target="_blank" rel="noopener"><em>Applied Time Series Analysis and Forecasting with Python</em></a>, Springer, 2022', 'Manual însoțitor, gratuit: Hyndman și Athanasopoulos, <a href="https://otexts.com/fpp3/" target="_blank" rel="noopener"><em>Forecasting: Principles and Practice</em></a> (ediția a 3-a)'] },
                 { h: 'Instrumente', p: ['Python (statsmodels, arch, pandas), Jupyter / Google Colab', 'GitHub, Quantlet, Quantinar'] }
             ]
@@ -511,8 +511,8 @@
                 id: 'review', num: 15,
                 title: { en: 'Review and exam preparation', ro: 'Recapitulare și pregătire pentru examen' },
                 topics: {
-                    en: ['The course map and one recap per chapter: key formulas, empirical facts on Romanian and international series, common mistakes; Chapters 11–14 for self-study', 'The toolbox and the Box–Jenkins method from start to finish on Romanian inflation: tests, identification, SARIMA, diagnostics, out-of-sample evaluation', 'The written exam (70%): format, grading and eight worked problems on software output; the team project (20%), its oral defence and AI_USE.md; attendance (10%)'],
-                    ro: ['Harta cursului și cîte o recapitulare pentru fiecare capitol: formule-cheie, fapte empirice pe serii românești și internaționale, greșeli frecvente; capitolele 11–14 pentru studiu individual', 'Trusa de instrumente și metoda Box–Jenkins de la un capăt la altul pe inflația din România: teste, identificare, SARIMA, diagnosticare, evaluare în afara eșantionului', 'Examenul scris (70%): format, criterii și opt probleme rezolvate pe rezultate obținute cu software; proiectul de echipă (20%), susținerea orală și AI_USE.md; prezența (10%)']
+                    en: ['The course map and one recap per chapter: key formulas, empirical facts on Romanian and international series, common mistakes; Chapters 11–14 for self-study', 'The toolbox and the Box–Jenkins method from start to finish on Romanian inflation: tests, identification, SARIMA, diagnostics, out-of-sample evaluation', 'The written exam (70%): format, grading and eight worked problems on software output; the team project (20%), its oral defence and AI_USE.md; attendance and quizzes (10%)'],
+                    ro: ['Harta cursului și cîte o recapitulare pentru fiecare capitol: formule-cheie, fapte empirice pe serii românești și internaționale, greșeli frecvente; capitolele 11–14 pentru studiu individual', 'Trusa de instrumente și metoda Box–Jenkins de la un capăt la altul pe inflația din România: teste, identificare, SARIMA, diagnosticare, evaluare în afara eșantionului', 'Examenul scris (70%): format, criterii și opt probleme rezolvate pe rezultate obținute cu software; proiectul de echipă (20%), susținerea orală și AI_USE.md; prezența și quiz-urile (10%)']
                 },
                 links: {
                     en: [pdf('slides', 'EN/Courses/chapter15_review.pdf'), pdf('seminar', 'EN/Seminars/seminar15_review.pdf'), pdf('seminarExtra', 'exam/practice/exam_problems_en.pdf', { en: 'Exam practice problems', ro: 'Probleme de examen' }),
