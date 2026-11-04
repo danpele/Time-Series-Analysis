@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 8 · Memorie lungă și modele ARFIMA</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch8.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch8_data.js?v=20261101a", "ch8_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch8.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index_ro.html">Serii de timp</a></h1><p>Capitolul 8 · Memorie lungă și modele ARFIMA</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_08" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch8.html" class="lang-btn">EN</a><a href="ch8_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură sau același tabel, calculat în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas; casetele „Exemplu rezolvat” refac calculul cu cifrele capitolului.</p>
+<p class="toc"><a href="#s-short">Memorie scurtă și memorie lungă</a> · <a href="#s-frac">Diferențierea fracționară</a> · <a href="#s-arfima">Modelul ARFIMA(p,d,q)</a> · <a href="#s-est">Estimarea lui d</a> · <a href="#s-fc">Prognoza cu ARFIMA</a> · <a href="#s-vol">Memoria lungă a volatilității</a> · <a href="#s-spur">Memoria lungă aparentă</a></p>
+<h2 class="sec" id="s-short">Memorie scurtă și memorie lungă</h2>
+<section class="blk" id="memory-data">
+  <h3>Patru serii persistente</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=8" target="_blank" rel="noopener"><img src="slides/tsa_ch8_memory_data_ro.jpg" alt="Slide-ul 7: Patru serii persistente" loading="lazy"></a>
+      <figcaption>Slide-ul 7</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="md-k">Media mobilă a ultimelor k observații (k = 1: seria): <b id="md-k-v"></b></label><input type="range" id="md-k" min="1" max="36" step="1" value="1"></div><button class="btn play" id="md-play" type="button"></button></div><style>.c8x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c8x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c8x .c8f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c8x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c8x li{margin:.18rem 0;overflow-wrap:anywhere}.c8x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c8t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c8t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c8t th,.c8t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c8t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c8t tbody tr:nth-child(even){background:#F5F7FB}.c8t tbody tr.hi{background:#E3F4F7}.c8t .r{text-align:right}.c8cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="md-chart"></div></div><ul class="out" id="md-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pe cîte luni consecutive, cel mult, rămîne șomajul din SUA de aceeași parte a mediei sale din 1948–2026?</div>
+  <details><summary>Răspuns</summary><p>106 luni, aproape nouă ani; Nilul rămîne 11 ani de aceeași parte a mediei, inflația anuală din România 103 luni. Pentru o serie fără memorie, șirurile lungi de acest fel ar fi foarte rare.</p></details>
+</section>
+<section class="blk" id="memory-acf">
+  <h3>ACF de selecție comparată cu un AR(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=12" target="_blank" rel="noopener"><img src="slides/tsa_ch8_memory_acf_ro.jpg" alt="Slide-ul 11: ACF de selecție comparată cu un AR(1)" loading="lazy"></a>
+      <figcaption>Slide-ul 11</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ma-k">Partea eliminată de la începutul fiecărui eșantion: <b id="ma-k-v"></b></label><input type="range" id="ma-k" min="0" max="60" step="5" value="0"></div><button class="btn play" id="ma-play" type="button"></button></div><div class="charts "><div class="chart" id="ma-chart"></div></div><ul class="out" id="ma-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați primele 50% din fiecare eșantion (inflația din SUA începe atunci în noiembrie 1986). Cîte dintre cele 48 de autocorelații ale inflației lunare din SUA rămîn peste bandă?</div>
+  <details><summary>Răspuns</summary><p>11 din 48, față de 48 din 48 pe 1947–2026; ρ̂(10) scade de la 0,38 la 0,16. O mare parte din memoria seriei complete vine din anii 1970 și de la începutul anilor 1980.</p></details>
+</section>
+<section class="blk" id="decay">
+  <h3>Descreștere hiperbolică și descreștere exponențială</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=14" target="_blank" rel="noopener"><img src="slides/tsa_ch8_decay_ro.jpg" alt="Slide-ul 13: Descreștere hiperbolică și descreștere exponențială" loading="lazy"></a>
+      <figcaption>Slide-ul 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dc-d">d: <b id="dc-d-v"></b></label><input type="range" id="dc-d" min="0.05" max="0.45" step="0.05" value="0.4"></div><button class="btn play" id="dc-play" type="button"></button></div><div class="charts "><div class="chart" id="dc-chart"></div></div><ul class="out" id="dc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați d = 0,2. Cît este ρ(10) pentru ARFIMA(0; 0,2; 0) și pentru AR(1) cu același ρ(1) = 0,25?</div>
+  <details><summary>Răspuns</summary><p>0,064 față de 9,5 · 10⁻⁷. Cu d mic, coada hiperbolică este joasă, dar tot cu cinci ordine de mărime peste cea exponențială.</p></details>
+</section>
+<section class="blk" id="wx-decay">
+  <h3>Interpretarea celor două legi de descreștere</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=15" target="_blank" rel="noopener"><img src="slides/ch8x_wx-decay_ro.jpg" alt="Slide-ul 14: Interpretarea celor două legi de descreștere" loading="lazy"></a>
+      <figcaption>Slide-ul 14</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-d">d: <b id="wd-d-v"></b></label><input type="range" id="wd-d" min="0.05" max="0.45" step="0.05" value="0.4"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><div class="c8x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wd-k">Lagul k din calcul</label><select id="wd-k"><option value="10" selected>10</option><option value="50">50</option><option value="100">100</option><option value="1000">1000</option></select></div></div><div class="c8f">\[\rho(k)=\frac{\Gamma(k+d)\,\Gamma(1-d)}{\Gamma(k-d+1)\,\Gamma(d)}\approx C\,k^{2d-1},\quad C=\frac{\Gamma(1-d)}{\Gamma(d)};\qquad \rho_{AR}(k)=\phi^k,\ \ \phi=\frac{d}{1-d}\]</div><ol id="wd-ws"></ol></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați d = 0,1. De cîte ori este suma primelor 1000 de autocorelații ARFIMA mai mare decît suma completă a AR(1)?</div>
+  <details><summary>Răspuns</summary><p>De 14 ori: 1,74 față de 0,125. Chiar o memorie lungă slabă acumulează mult peste o memorie scurtă cu același ρ(1).</p></details>
+</section><h2 class="sec" id="s-frac">Diferențierea fracționară</h2>
+<section class="blk" id="wx-weights">
+  <h3>Exemplu rezolvat: ponderile lui (1-L)^0,4</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=18" target="_blank" rel="noopener"><img src="slides/ch8x_wx-weights_ro.jpg" alt="Slide-ul 17: Exemplu rezolvat: ponderile lui (1-L)^0,4" loading="lazy"></a>
+      <figcaption>Slide-ul 17</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ww-d">d: <b id="ww-d-v"></b></label><input type="range" id="ww-d" min="0.1" max="1.5" step="0.1" value="0.4"></div><button class="btn play" id="ww-play" type="button"></button></div><div class="charts "><div class="chart" id="ww-chart"></div></div><div class="c8x"><h4>Exemplu rezolvat</h4><div class="c8f">\[\pi_0=1,\qquad \pi_k=\pi_{k-1}\,\frac{k-1-d}{k},\qquad (1-L)^d x_t=\sum_{k\ge0}\pi_k x_{t-k},\qquad \sum_{k\ge0}\pi_k=(1-1)^d=0\]</div><ol id="ww-ws"></ol></div><ul class="out" id="ww-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați d = 1,5. Cît sînt π₁ și π₂ și ce semn are π₂?</div>
+  <details><summary>Răspuns</summary><p>π₁ = −1,5 și π₂ = −1,5 · (1 − 1,5)/2 = +0,375. Pentru d > 1 factorul (k − 1 − d) este negativ la k = 2, deci ponderile își schimbă semnul după primul lag.</p></details>
+</section>
+<section class="blk" id="weights">
+  <h3>Diferențiere fracționară și integrare fracționară</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=19" target="_blank" rel="noopener"><img src="slides/tsa_ch8_weights_ro.jpg" alt="Slide-ul 18: Diferențiere fracționară și integrare fracționară" loading="lazy"></a>
+      <figcaption>Slide-ul 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wt-d">d al curbei albastre (curs: 0,4): <b id="wt-d-v"></b></label><input type="range" id="wt-d" min="0.05" max="0.95" step="0.05" value="0.4"></div><div class="ctl"><label for="wt-p">φ al AR(1) de comparație: <b id="wt-p-v"></b></label><input type="range" id="wt-p" min="0.5" max="0.99" step="0.01" value="0.9"></div><button class="btn play" id="wt-play" type="button"></button></div><div class="charts "><div class="chart" id="wt-chart"></div></div><ul class="out" id="wt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți curba albastră la d = 0,9. Ce parte dintr-un șoc unitar mai rămîne după 100 de perioade?</div>
+  <details><summary>Răspuns</summary><p>ψ₁₀₀ = 0,59 (0,74 după 10 perioade), față de 0,9¹⁰⁰ = 2,7 · 10⁻⁵ pentru AR(1) cu φ = 0,9. Seria revine la medie, dar foarte încet.</p></details>
+</section>
+<section class="blk" id="ffd">
+  <h3>Gradul de diferențiere necesar pentru un preț</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=21" target="_blank" rel="noopener"><img src="slides/tsa_ch8_ffd_ro.jpg" alt="Slide-ul 20: Gradul de diferențiere necesar pentru un preț" loading="lazy"></a>
+      <figcaption>Slide-ul 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ff-y">Eșantionul începe în: <b id="ff-y-v"></b></label><input type="range" id="ff-y" min="2000" max="2018" step="1" value="2000"></div><div class="ctl"><label for="ff-t">Pragul ponderilor păstrate</label><select id="ff-t"><option value="0.001">10⁻³</option><option value="0.0001" selected>10⁻⁴ (curs)</option><option value="0.00001">10⁻⁵</option></select></div><button class="btn play" id="ff-play" type="button"></button></div><div class="charts "><div class="chart" id="ff-chart"></div></div><ul class="out" id="ff-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți pragul 10⁻³ (fereastră mai scurtă). De la ce d trece statistica ADF de valoarea critică de 5% și cu cîte ponderi?</div>
+  <details><summary>Răspuns</summary><p>De la d = 0,35, cu 61 de ponderi, față de 0,25 cu 445. Ponderile trunchiate nu mai au suma 0, deci filtrul păstrează o parte din nivel și trebuie un d mai mare pentru staționaritate.</p></details>
+</section><h2 class="sec" id="s-arfima">Modelul ARFIMA(p,d,q)</h2>
+<section class="blk" id="d-range">
+  <h3>Parametrul d: semnificația fiecărui interval</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=26" target="_blank" rel="noopener"><img src="slides/ch8x_d-range_ro.jpg" alt="Slide-ul 25: Parametrul d: semnificația fiecărui interval" loading="lazy"></a>
+      <figcaption>Slide-ul 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dr-d">d: <b id="dr-d-v"></b></label><input type="range" id="dr-d" min="-0.6" max="1.2" step="0.1" value="0.4"></div><button class="btn play" id="dr-play" type="button"></button></div><div class="charts "><div class="chart" id="dr-chart"></div></div><div class="tbl c8t" id="dr-tb"></div><ul class="out" id="dr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați d = 0,6. Este seria staționară și ce este prima ei diferență?</div>
+  <details><summary>Răspuns</summary><p>Nu este staționară (d ≥ 0,5), dar revine la medie: ψ₁₀₀ = 0,11. Prima diferență este ARFIMA(0; −0,4; 0), antipersistentă, cu ρ(1) = −0,29.</p></details>
+</section>
+<section class="blk" id="wx-acf">
+  <h3>Exemplu rezolvat: ARFIMA(0; 0,3; 0)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=28" target="_blank" rel="noopener"><img src="slides/ch8x_wx-acf_ro.jpg" alt="Slide-ul 27: Exemplu rezolvat: ARFIMA(0; 0,3; 0)" loading="lazy"></a>
+      <figcaption>Slide-ul 27</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wa-d">d: <b id="wa-d-v"></b></label><input type="range" id="wa-d" min="0.05" max="0.45" step="0.05" value="0.3"></div><button class="btn play" id="wa-play" type="button"></button></div><div class="charts "><div class="chart" id="wa-chart"></div></div><div class="c8x"><h4>Exemplu rezolvat</h4><div class="c8f">\[\rho(1)=\frac{d}{1-d},\quad \rho(k)=\rho(k-1)\,\frac{k-1+d}{k-d},\quad \gamma(0)=\sigma^2\,\frac{\Gamma(1-2d)}{\Gamma(1-d)^2},\quad H=d+\tfrac12\]</div><ol id="wa-ws"></ol></div><ul class="out" id="wa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați d = 0,45. Cît sînt ρ(1) și ρ(10)?</div>
+  <details><summary>Răspuns</summary><p>ρ(1) = 0,818 și ρ(10) = 0,652; AR(1) cu același ρ(1) are ρ(10) = 0,134. Varianța crește la 3,64.</p></details>
+</section>
+<section class="blk" id="arfima-paths">
+  <h3>ARFIMA(0,d,0) cu d = 0,4 și d = -0,4</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=29" target="_blank" rel="noopener"><img src="slides/tsa_ch8_arfima_paths_ro.jpg" alt="Slide-ul 28: ARFIMA(0,d,0) cu d = 0,4 și d = -0,4" loading="lazy"></a>
+      <figcaption>Slide-ul 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ap-d">d (rîndul de jos: −d): <b id="ap-d-v"></b></label><input type="range" id="ap-d" min="0.05" max="0.45" step="0.05" value="0.4"></div><button class="btn play" id="ap-play" type="button"></button></div><div class="charts "><div class="chart" id="ap-chart"></div></div><ul class="out" id="ap-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați d = 0,45. Cît este varianța teoretică a seriei (σ² = 1)?</div>
+  <details><summary>Răspuns</summary><p>Γ(0,1)/Γ(0,55)² = 3,64. Varianța traiectoriei de 1000 de observații este doar 2,31: media eșantionului absoarbe o parte din componenta lentă.</p></details>
+</section>
+<section class="blk" id="fbm">
+  <h3>Mișcarea browniană fracționară pentru trei exponenți Hurst</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=32" target="_blank" rel="noopener"><img src="slides/tsa_ch8_fbm_ro.jpg" alt="Slide-ul 31: Mișcarea browniană fracționară pentru trei exponenți Hurst" loading="lazy"></a>
+      <figcaption>Slide-ul 31</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fb-h">Distanța lui H față de 1/2 (H = 0,5 ± Δ): <b id="fb-h-v"></b></label><input type="range" id="fb-h" min="0.05" max="0.45" step="0.05" value="0.2"></div><button class="btn play" id="fb-play" type="button"></button></div><div class="charts "><div class="chart" id="fb-chart"></div></div><ul class="out" id="fb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți H la 0,05 și 0,95 (Δ = 0,45). Cît este autocorelația de lag 1 a incrementelor pentru H = 0,95, în teorie și în eșantion?</div>
+  <details><summary>Răspuns</summary><p>În teorie 2<sup>0,9</sup> − 1 = 0,87, în eșantion 0,72. Cu o persistență atît de puternică, media celor 1000 de incremente absoarbe o parte din dependență, așa că ACF de selecție este deplasată în jos.</p></details>
+</section><h2 class="sec" id="s-est">Estimarea lui d</h2>
+<section class="blk" id="wx-rs">
+  <h3>Statistica R/S, pas cu pas</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=36" target="_blank" rel="noopener"><img src="slides/ch8x_wx-rs_ro.jpg" alt="Slide-ul 35: Statistica R/S, pas cu pas" loading="lazy"></a>
+      <figcaption>Slide-ul 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wr-x">Ultima valoare x<sub>8</sub> (curs: −0,7): <b id="wr-x-v"></b></label><input type="range" id="wr-x" min="-1.5" max="1.5" step="0.1" value="-0.7"></div><button class="btn play" id="wr-play" type="button"></button></div><div class="charts "><div class="chart" id="wr-chart"></div></div><div class="c8x"><h4>Exemplu rezolvat</h4><div class="c8f">\[Y_k=\sum_{i\le k}(x_i-\bar x),\qquad R=\max_k Y_k-\min_k Y_k,\qquad S=\sqrt{\tfrac1n\sum_i(x_i-\bar x)^2},\qquad R/S\]</div><ol id="wr-ws"></ol></div><ul class="out" id="wr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați x₈ = 0,5. Cît devine R/S?</div>
+  <details><summary>Răspuns</summary><p>Media devine 0,275, R = 0,575, S = 0,386, deci R/S = 1,49 (față de 1,79). O singură valoare schimbă media, deci toate abaterile cumulate.</p></details>
+</section>
+<section class="blk" id="rs-dfa">
+  <h3>R/S și DFA pentru trei serii</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=37" target="_blank" rel="noopener"><img src="slides/tsa_ch8_rs_dfa_ro.jpg" alt="Slide-ul 36: R/S și DFA pentru trei serii" loading="lazy"></a>
+      <figcaption>Slide-ul 36</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rd-n">Cel mai mic bloc n<sub>min</sub>: <b id="rd-n-v"></b></label><input type="range" id="rd-n" min="6" max="60" step="2" value="10"></div><button class="btn play" id="rd-play" type="button"></button></div><div class="charts "><div class="chart" id="rd-chart"></div></div><ul class="out" id="rd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați cel mai mic bloc la n = 60. Ce pantă R/S obțin randamentele absolute S&P 500?</div>
+  <details><summary>Răspuns</summary><p>0,92, față de 0,86 cu n de la 10; randamentele rămîn la 0,53. La blocuri mici domină zgomotul de la o zi la alta al lui |r<sub>t</sub>|; partea persistentă se vede la blocuri mari.</p></details>
+</section>
+<section class="blk" id="wx-gph">
+  <h3>Periodograma și estimatorul GPH</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=39" target="_blank" rel="noopener"><img src="slides/ch8x_wx-gph_ro.jpg" alt="Slide-ul 38: Periodograma și estimatorul GPH" loading="lazy"></a>
+      <figcaption>Slide-ul 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wg-s">Seria</label><select id="wg-s"><option value="nile" selected>Nilul</option><option value="infl">inflația lunară din România (SA)</option></select></div><div class="ctl"><label for="wg-a">Exponentul lățimii de bandă a, m = ⌊T<sup>a</sup>⌋: <b id="wg-a-v"></b></label><input type="range" id="wg-a" min="0.3" max="0.9" step="0.05" value="0.65"></div><button class="btn play" id="wg-play" type="button"></button></div><div class="charts "><div class="chart" id="wg-chart"></div></div><div class="c8x"><h4>Exemplu rezolvat</h4><div class="c8f">\[\log I(\lambda_j)=c+d\,X_j+u_j,\quad X_j=-\log\!\big(4\sin^2(\lambda_j/2)\big),\quad \hat d=\frac{\sum_j(X_j-\bar X)(Y_j-\bar Y)}{\sum_j(X_j-\bar X)^2},\quad \mathrm{SE}=\frac{\pi}{\sqrt{24m}}\]</div><ol id="wg-ws"></ol></div><ul class="out" id="wg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Inflația din România cu a = 0,5 (m = 16): cît sînt d̂ și SE?</div>
+  <details><summary>Răspuns</summary><p>d̂ = 0,56, SE 0,16. Cu mai puține frecvențe estimarea urcă spre 0,5, iar eroarea standard crește ca 1/√m.</p></details>
+</section>
+<section class="blk" id="gph">
+  <h3>Regresii GPH: Nilul și inflația din România</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=40" target="_blank" rel="noopener"><img src="slides/tsa_ch8_gph_ro.jpg" alt="Slide-ul 39: Regresii GPH: Nilul și inflația din România" loading="lazy"></a>
+      <figcaption>Slide-ul 39</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gp-a">Exponentul lățimii de bandă a, m = ⌊T<sup>a</sup>⌋: <b id="gp-a-v"></b></label><input type="range" id="gp-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="gp-play" type="button"></button></div><div class="charts "><div class="chart" id="gp-chart"></div></div><ul class="out" id="gp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați a = 0,8. Ce dau GPH și Whittle local pentru inflația lunară din România (m = 85)?</div>
+  <details><summary>Răspuns</summary><p>GPH 0,62 (SE 0,07), Whittle local 0,29 (SE 0,05). GPH lucrează cu log I, iar valorile aproape nule de la frecvențele sezoniere eliminate prin ajustare îi trag panta în sus; Whittle local folosește I însăși și nu este afectat.</p></details>
+</section>
+<section class="blk" id="gph-table">
+  <h3>Interpretarea regresiilor GPH</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=41" target="_blank" rel="noopener"><img src="slides/ch8x_gph-table_ro.jpg" alt="Slide-ul 40: Interpretarea regresiilor GPH" loading="lazy"></a>
+      <figcaption>Slide-ul 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gt-a">Exponentul lățimii de bandă a, m = ⌊T<sup>a</sup>⌋: <b id="gt-a-v"></b></label><input type="range" id="gt-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="gt-play" type="button"></button></div><div class="charts "><div class="chart" id="gt-chart"></div></div><div class="tbl c8t" id="gt-tb"></div><ul class="out" id="gt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați a = 0,5. Mai exclude 0 intervalul GPH pentru Nil?</div>
+  <details><summary>Răspuns</summary><p>Nu: d̂ = 0,39, SE 0,20, intervalul [−0,01; 0,79]. Cu m = 10 GPH nu mai separă d de 0; Whittle local [0,15; 0,77] încă îl separă.</p></details>
+</section>
+<section class="blk" id="wx-lw">
+  <h3>Estimatorul Whittle local</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=42" target="_blank" rel="noopener"><img src="slides/ch8x_wx-lw_ro.jpg" alt="Slide-ul 41: Estimatorul Whittle local" loading="lazy"></a>
+      <figcaption>Slide-ul 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wl-s">Seria</label><select id="wl-s"><option value="nile" selected>Nilul</option><option value="infl">inflația lunară din România (SA)</option><option value="usinfl">inflația lunară din SUA</option><option value="unrate">șomajul din SUA</option></select></div><div class="ctl"><label for="wl-a">Exponentul lățimii de bandă a, m = ⌊T<sup>a</sup>⌋: <b id="wl-a-v"></b></label><input type="range" id="wl-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="wl-play" type="button"></button></div><div class="charts "><div class="chart" id="wl-chart"></div></div><div class="c8x"><h4>Exemplu rezolvat</h4><div class="c8f">\[R(d)=\log\Big(\frac1m\sum_{j=1}^m\lambda_j^{2d}I(\lambda_j)\Big)-\frac{2d}{m}\sum_{j=1}^m\log\lambda_j,\qquad \hat d=\arg\min_d R(d),\qquad \mathrm{SE}=\frac{1}{2\sqrt m}\]</div><ol id="wl-ws"></ol></div><ul class="out" id="wl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți șomajul din SUA (a = 0,65). Este valabilă eroarea standard 1/(2√m)?</div>
+  <details><summary>Răspuns</summary><p>Nu: d̂ = 0,91 > 3/4, în afara intervalului aproximării normale. Intervalul [0,80; 1,01] conține oricum 1, deci revenirea la medie nu este demonstrată.</p></details>
+</section>
+<section class="blk" id="bandwidth">
+  <h3>Sensibilitatea la lățimea de bandă</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=43" target="_blank" rel="noopener"><img src="slides/tsa_ch8_bandwidth_ro.jpg" alt="Slide-ul 42: Sensibilitatea la lățimea de bandă" loading="lazy"></a>
+      <figcaption>Slide-ul 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bw-e">Eșantioanele se termină în august: <b id="bw-e-v"></b></label><input type="range" id="bw-e" min="2014" max="2026" step="1" value="2026"></div><button class="btn play" id="bw-play" type="button"></button></div><div class="charts "><div class="chart" id="bw-chart"></div></div><ul class="out" id="bw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Încheiați ambele eșantioane în august 2019. Între ce valori se mișcă Whittle local pentru SUA și pentru România (T = 176)?</div>
+  <details><summary>Răspuns</summary><p>SUA: 0,35–0,54; România: 0,24–0,59. Concluzia memoriei lungi rămîne, iar incertitudinea de circa ±0,15 se vede și fără anii 2020–2026.</p></details>
+</section>
+<section class="blk" id="mc">
+  <h3>Monte Carlo: cinci estimatori ai lui d</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=46" target="_blank" rel="noopener"><img src="slides/tsa_ch8_mc_ro.jpg" alt="Slide-ul 45: Monte Carlo: cinci estimatori ai lui d" loading="lazy"></a>
+      <figcaption>Slide-ul 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mc-r">Replicări folosite: <b id="mc-r-v"></b></label><input type="range" id="mc-r" min="30" max="300" step="30" value="300"></div><button class="btn play" id="mc-play" type="button"></button></div><div class="charts "><div class="chart" id="mc-chart"></div></div><ul class="out" id="mc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Folosiți doar primele 30 de replicări. Care estimator este cel mai precis la d = 0,3?</div>
+  <details><summary>Răspuns</summary><p>Whittle ML: abaterea standard 0,033, față de 0,076 (Whittle local) și 0,086 (GPH), aceeași ordine ca la 300 de replicări (0,04; 0,08; 0,10).</p></details>
+</section>
+<section class="blk" id="fit-table">
+  <h3>Inflația din România: ARMA sau ARFIMA?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=48" target="_blank" rel="noopener"><img src="slides/ch8x_fit-table_ro.jpg" alt="Slide-ul 47: Inflația din România: ARMA sau ARFIMA?" loading="lazy"></a>
+      <figcaption>Slide-ul 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ft-e">Eșantionul se termină în</label><select id="ft-e"><option value="2014-12">decembrie 2014</option><option value="2016-12">decembrie 2016</option><option value="2018-12">decembrie 2018</option><option value="2020-12">decembrie 2020</option><option value="2022-12">decembrie 2022</option><option value="2024-12">decembrie 2024</option><option value="2026-08" selected>august 2026 (curs)</option></select></div><button class="btn play" id="ft-play" type="button"></button></div><div class="charts "><div class="chart" id="ft-chart"></div></div><div class="tbl c8t" id="ft-tb"></div><ul class="out" id="ft-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Încheiați eșantionul în decembrie 2018 (T = 168). Care model are BIC cel mai mic și cît este d̂?</div>
+  <details><summary>Răspuns</summary><p>ARFIMA(0,d,0), cu d̂ = 0,24: BIC 191,2 față de 195,5 pentru ARMA(1,1). Concluzia din curs se păstrează și pe eșantionul mai scurt.</p></details>
+</section>
+<section class="blk" id="arfima-fit">
+  <h3>Inflația din România: autocorelațiile modelelor estimate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch8_arfima_fit_ro.jpg" alt="Slide-ul 48: Inflația din România: autocorelațiile modelelor estimate" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="af-d">d − d̂ (ML) al curbei ARFIMA: <b id="af-d-v"></b></label><input type="range" id="af-d" min="-0.3" max="0.18" step="0.02" value="0"></div><div class="ctl"><label for="af-L">Laguri afișate: <b id="af-L-v"></b></label><input type="range" id="af-L" min="24" max="60" step="4" value="36"></div><button class="btn play" id="af-play" type="button"></button></div><div class="charts "><div class="chart" id="af-chart"></div></div><ul class="out" id="af-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați d cu 0,14, la 0,45. Cu cît scade log-verosimilitatea și trece 2Δℓ de 3,84?</div>
+  <details><summary>Răspuns</summary><p>ℓ scade de la −135,9 la −139,8; 2Δℓ = 7,8 > 3,84, deci d = 0,45 este respins la 5%. Curba ARFIMA devine prea înaltă la lagurile 12 și 24 (0,65 și 0,60).</p></details>
+</section>
+<section class="blk" id="memory-table">
+  <h3>Memoria lungă în douăsprezece serii</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=51" target="_blank" rel="noopener"><img src="slides/ch8x_memory-table_ro.jpg" alt="Slide-ul 50: Memoria lungă în douăsprezece serii" loading="lazy"></a>
+      <figcaption>Slide-ul 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mt-a">Exponentul lățimii de bandă a, m = ⌊T<sup>a</sup>⌋: <b id="mt-a-v"></b></label><input type="range" id="mt-a" min="0.5" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="mt-play" type="button"></button></div><div class="charts "><div class="chart" id="mt-chart"></div></div><div class="tbl c8t" id="mt-tb"></div><ul class="out" id="mt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați a = 0,5 (m = 30 pentru șomajul din SUA). Mai conține 1 intervalul Whittle local?</div>
+  <details><summary>Răspuns</summary><p>Nu: d̂ = 0,64, intervalul [0,46; 0,82], iar SE este valabilă (d̂ < 3/4). Cu a = 0,65 (m = 85): 0,91, [0,80; 1,01]. Verdictul depinde de lățimea de bandă.</p></details>
+</section><h2 class="sec" id="s-fc">Prognoza cu ARFIMA</h2>
+<section class="blk" id="forecast-path">
+  <h3>Inflația din SUA: prognoze ARFIMA și AR</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=55" target="_blank" rel="noopener"><img src="slides/tsa_ch8_forecast_path_ro.jpg" alt="Slide-ul 54: Inflația din SUA: prognoze ARFIMA și AR" loading="lazy"></a>
+      <figcaption>Slide-ul 54</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fp-o">Originea prognozei</label><select id="fp-o"><option value="2019-12">decembrie 2019</option><option value="2020-12">decembrie 2020</option><option value="2021-06">iunie 2021</option><option value="2021-12">decembrie 2021</option><option value="2022-06">iunie 2022</option><option value="2022-12">decembrie 2022</option><option value="2023-12">decembrie 2023</option><option value="2024-12">decembrie 2024</option><option value="2025-08">august 2025</option><option value="2026-08" selected>august 2026 (curs)</option></select></div><button class="btn play" id="fp-play" type="button"></button></div><div class="charts "><div class="chart" id="fp-chart"></div></div><ul class="out" id="fp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați originea în iunie 2022. Pe cele 36 de luni observate după ea, care prognoză are RMSE mai mic?</div>
+  <details><summary>Răspuns</summary><p>ARFIMA: 3,37 pp, față de 4,02 pp pentru AR(12). Ambele porneau de sus, dar AR(12) a prelungit vîrful din 2022 (6,2% peste un an, față de 5,4%), iar inflația a scăzut mai repede.</p></details>
+</section>
+<section class="blk" id="forecast">
+  <h3>Contribuția memoriei lungi la prognoză</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch8_forecast_ro.jpg" alt="Slide-ul 56: Contribuția memoriei lungi la prognoză" loading="lazy"></a>
+      <figcaption>Slide-ul 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fo-k">Partea eliminată din primele origini: <b id="fo-k-v"></b></label><input type="range" id="fo-k" min="0" max="80" step="10" value="0"></div><div class="ctl"><label for="fo-b">Reperul (= 1)</label><select id="fo-b"><option value="AR" selected>AR(p) (curs)</option><option value="Mean">media eșantionului</option><option value="RW">mersul aleator</option></select></div><button class="btn play" id="fo-play" type="button"></button></div><div class="charts "><div class="chart" id="fo-chart"></div></div><ul class="out" id="fo-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați primele 50% din origini (România de la mai 2019). Mai este ARFIMA mai precis decît AR la toate orizonturile în România?</div>
+  <details><summary>Răspuns</summary><p>Nu: raportul este 1,038 la o lună (AR mai precis), 0,999 la 12 și 0,976 la 24. Cîștigul rămîne doar la orizonturile lungi.</p></details>
+</section>
+<section class="blk" id="ratio-table">
+  <h3>Interpretarea comparației prognozelor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=58" target="_blank" rel="noopener"><img src="slides/ch8x_ratio-table_ro.jpg" alt="Slide-ul 57: Interpretarea comparației prognozelor" loading="lazy"></a>
+      <figcaption>Slide-ul 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-k">Partea eliminată din primele origini: <b id="rt-k-v"></b></label><input type="range" id="rt-k" min="0" max="80" step="10" value="0"></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><div class="c8x"><div class="wctl"><div class="ctl"><label for="rt-h">Orizontul din tabel (luni)</label><select id="rt-h"><option value="1">1</option><option value="3">3</option><option value="6">6</option><option value="12" selected>12 (curs)</option><option value="18">18</option><option value="24">24</option></select></div></div><div class="tbl c8t" id="rt-tb"></div></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați primele 50% din origini (România de la mai 2019). Cît sînt RMSE la 12 luni pentru ARFIMA și pentru mersul aleator în România?</div>
+  <details><summary>Răspuns</summary><p>0,57 și 0,64 pp pe lună (față de 0,53 și 0,61 pe toate originile): mersul aleator rămîne cel mai slab.</p></details>
+</section><h2 class="sec" id="s-vol">Memoria lungă a volatilității</h2>
+<section class="blk" id="vol-acf">
+  <h3>Randamente, randamente absolute și pătrate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=61" target="_blank" rel="noopener"><img src="slides/tsa_ch8_vol_acf_ro.jpg" alt="Slide-ul 60: Randamente, randamente absolute și pătrate" loading="lazy"></a>
+      <figcaption>Slide-ul 60</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="va-p">Puterea δ în |r<sub>t</sub>|<sup>δ</sup>: <b id="va-p-v"></b></label><input type="range" id="va-p" min="0.25" max="3" step="0.25" value="1"></div><div class="ctl"><label for="va-s">Ordinea zilelor</label><select id="va-s"><option value="0" selected>cea observată (curs)</option><option value="1">amestecată aleator</option></select></div><button class="btn play" id="va-play" type="button"></button></div><div class="charts "><div class="chart" id="va-chart"></div></div><ul class="out" id="va-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți zilele amestecate. Cîte dintre cele 250 de autocorelații ale lui |r<sub>t</sub>| S&P 500 rămîn peste bandă și cît dă Whittle local?</div>
+  <details><summary>Răspuns</summary><p>6 din 250 (față de 227), iar Whittle local 0,00. Amestecarea păstrează distribuția și distruge ordinea: memoria stă în succesiunea zilelor calme și agitate.</p></details>
+</section>
+<section class="blk" id="rv">
+  <h3>Volatilitatea realizată lunară: ARFIMA sau ARMA?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=64" target="_blank" rel="noopener"><img src="slides/tsa_ch8_rv_ro.jpg" alt="Slide-ul 63: Volatilitatea realizată lunară: ARFIMA sau ARMA?" loading="lazy"></a>
+      <figcaption>Slide-ul 63</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rv-d">d − d̂ (ML), cu φ̂ fixat: <b id="rv-d-v"></b></label><input type="range" id="rv-d" min="-0.3" max="0.08" step="0.02" value="0"></div><button class="btn play" id="rv-play" type="button"></button></div><div class="charts "><div class="chart" id="rv-chart"></div></div><ul class="out" id="rv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Scădeți d cu 0,30 (cu φ fixat). Cu cît scade log-verosimilitatea pentru BET și pentru S&P 500?</div>
+  <details><summary>Răspuns</summary><p>Cu 43,8 (BET) și 33,4 (S&P 500): ambele valori sînt respinse clar. La BET, ACF a modelului la lagul 24 ar fi 0,004, față de 0,28 în eșantion.</p></details>
+</section>
+<section class="blk" id="rv-table">
+  <h3>Interpretarea volatilității realizate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=65" target="_blank" rel="noopener"><img src="slides/ch8x_rv-table_ro.jpg" alt="Slide-ul 64: Interpretarea volatilității realizate" loading="lazy"></a>
+      <figcaption>Slide-ul 64</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rq-a">Exponentul lățimii de bandă a, m = ⌊T<sup>a</sup>⌋: <b id="rq-a-v"></b></label><input type="range" id="rq-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="rq-play" type="button"></button></div><div class="charts "><div class="chart" id="rq-chart"></div></div><div class="tbl c8t" id="rq-tb"></div><ul class="out" id="rq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați a = 0,5 (m = 17). Între ce valori sînt cele șase estimări?</div>
+  <details><summary>Răspuns</summary><p>Între 0,36 (ML, BET) și 0,74 (GPH, BET), față de 0,36–0,44 în curs. Cu puține frecvențe estimările semiparametrice se împrăștie; ML nu depinde de m.</p></details>
+</section>
+<section class="blk" id="wx-har">
+  <h3>FIGARCH și HAR</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=66" target="_blank" rel="noopener"><img src="slides/ch8x_wx-har_ro.jpg" alt="Slide-ul 65: FIGARCH și HAR" loading="lazy"></a>
+      <figcaption>Slide-ul 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-e">Eșantionul se termină în: <b id="wh-e-v"></b></label><input type="range" id="wh-e" min="2006" max="2026" step="1" value="2026"></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c8x"><h4>Exemplu rezolvat</h4><div class="c8f">\[RV_{t+1}=c+\beta_d RV_t+\beta_w \overline{RV}_{t-4:t}+\beta_m \overline{RV}_{t-21:t}+u_{t+1},\quad w_1=\beta_d+\tfrac{\beta_w}{5}+\tfrac{\beta_m}{22},\ \ w_{2..5}=\tfrac{\beta_w}{5}+\tfrac{\beta_m}{22},\ \ w_{6..22}=\tfrac{\beta_m}{22}\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Încheiați eșantionul în 2008. Care componentă are coeficientul cel mai mare și cît este β̂<sub>d</sub>?</div>
+  <details><summary>Răspuns</summary><p>Componenta săptămînală: β̂<sub>w</sub> = 0,62; β̂<sub>d</sub> = 0,10, jumătate din 0,20 pe 2000–2026.</p></details>
+</section>
+<section class="blk" id="vol-models">
+  <h3>FIGARCH comparat cu GARCH; HAR comparat cu (1-L)^d</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=67" target="_blank" rel="noopener"><img src="slides/tsa_ch8_vol_models_ro.jpg" alt="Slide-ul 66: FIGARCH comparat cu GARCH; HAR comparat cu (1-L)^d" loading="lazy"></a>
+      <figcaption>Slide-ul 66</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="vm-k">Lagul comparat k (zile): <b id="vm-k-v"></b></label><input type="range" id="vm-k" min="0" max="10" step="1" value="8"></div><div class="ctl"><label for="vm-d">d − d̂ (Whittle local) al lui (1−L)<sup>d</sup>: <b id="vm-d-v"></b></label><input type="range" id="vm-d" min="-0.3" max="0.3" step="0.02" value="0"></div><button class="btn play" id="vm-play" type="button"></button></div><div class="charts "><div class="chart" id="vm-chart"></div></div><ul class="out" id="vm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți k la 500 de zile. Cît sînt ponderile FIGARCH și GARCH pentru S&P 500?</div>
+  <details><summary>Răspuns</summary><p>FIGARCH 2,9 · 10⁻⁵, GARCH 2,8 · 10⁻³¹. Chiar cu α + β = 0,995, ponderile GARCH scad exponențial; cele FIGARCH scad ca o putere.</p></details>
+</section>
+<section class="blk" id="har-table">
+  <h3>Interpretarea modelelor FIGARCH și HAR</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=68" target="_blank" rel="noopener"><img src="slides/ch8x_har-table_ro.jpg" alt="Slide-ul 67: Interpretarea modelelor FIGARCH și HAR" loading="lazy"></a>
+      <figcaption>Slide-ul 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="hb-d">d − d̂ (Whittle local): <b id="hb-d-v"></b></label><input type="range" id="hb-d" min="-0.3" max="0.3" step="0.05" value="0"></div><button class="btn play" id="hb-play" type="button"></button></div><div class="charts "><div class="chart" id="hb-chart"></div></div><div class="tbl c8t" id="hb-tb"></div><ul class="out" id="hb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați d cu 0,3 (la 0,88). Cum se compară ponderile lui (1 − L)<sup>d</sup> la lagurile 1 și 22 cu HAR?</div>
+  <details><summary>Răspuns</summary><p>Lagul 1: 0,88 față de 0,31; lagul 22: 0,0003 față de 0,008. Un d mai mare pune mai multă pondere pe primul lag și mai puțină pe coadă.</p></details>
+</section><h2 class="sec" id="s-spur">Memoria lungă aparentă</h2>
+<section class="blk" id="spurious">
+  <h3>Memorie scurtă care pare lungă</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch8_spurious_ro.jpg" alt="Slide-ul 70: Memorie scurtă care pare lungă" loading="lazy"></a>
+      <figcaption>Slide-ul 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-r">Eșantioane folosite: <b id="sp-r-v"></b></label><input type="range" id="sp-r" min="20" max="200" step="20" value="200"></div><div class="ctl"><label for="sp-b">Banda</label><select id="sp-b"><option value="0" selected>fără (curs)</option><option value="1">5%–95% pentru Whittle local</option></select></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Afișați banda 5%–95%. Cu o schimbare de o abatere standard, cît este cuantila de 5% a lui d̂ (Whittle local)?</div>
+  <details><summary>Răspuns</summary><p>0,31, peste cuantila de 95% fără schimbare (0,07): distribuțiile nu se suprapun, deci fiecare dintre cele 200 de eșantioane cu ruptură arată „memorie lungă”.</p></details>
+</section>
+<section class="blk" id="nile-break">
+  <h3>Nilul în 1898: memorie sau ruptură?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch8_nile_break_ro.jpg" alt="Slide-ul 72: Nilul în 1898: memorie sau ruptură?" loading="lazy"></a>
+      <figcaption>Slide-ul 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="nb-y">Ultimul an înainte de ruptură: <b id="nb-y-v"></b></label><input type="range" id="nb-y" min="1880" max="1960" step="1" value="1898"></div><button class="btn play" id="nb-play" type="button"></button></div><div class="charts "><div class="chart" id="nb-chart"></div></div><ul class="out" id="nb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați ruptura în 1930. Ce d (ML exactă) rămîne după eliminarea celor două medii?</div>
+  <details><summary>Răspuns</summary><p>0,35, aproape cît în seria brută (0,36). O ruptură pusă în alt an nu explică memoria; doar ruptura din 1898 o reduce la 0,05.</p></details>
+</section>
+<section class="blk" id="rolling">
+  <h3>Stabilitatea memoriei în timp</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol8_memorie_lunga_arfima.pdf#page=75" target="_blank" rel="noopener"><img src="slides/tsa_ch8_rolling_ro.jpg" alt="Slide-ul 74: Stabilitatea memoriei în timp" loading="lazy"></a>
+      <figcaption>Slide-ul 74</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rl-w">Lungimea ferestrei, multiplu al celei din curs: <b id="rl-w-v"></b></label><input type="range" id="rl-w" min="0.5" max="1.5" step="0.25" value="1"></div><button class="btn play" id="rl-play" type="button"></button></div><div class="charts "><div class="chart" id="rl-chart"></div></div><ul class="out" id="rl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Înjumătățiți ferestrele (10 ani, 500 de zile). Cînd și cît de sus ajunge d pentru inflația din SUA?</div>
+  <details><summary>Răspuns</summary><p>0,64 în fereastra încheiată în iulie 1974, față de 0,71 în iulie 1980 cu ferestre de 20 de ani; banda fără memorie se lărgește la [−0,33; 0,25].</p></details>
+</section>
+<p class="src foot">Debitul Nilului la Assuan, 1871–1970 (statsmodels). Inflația IAPC a României, lunară și anuală (Eurostat prc_hicp_minr, ianuarie 2005 – august 2026). Inflația IPC a SUA (FRED CPIAUCSL, februarie 1947 – august 2026) și rata șomajului (FRED UNRATE, ianuarie 1948 – septembrie 2026). Cursul EUR/RON de referință (BNR) și prețurile zilnice S&P 500 și BET (data/market, pînă la 18 septembrie 2026). Seriile FRED, Eurostat și BNR sînt citite cu funcțiile capitolului (descărcate pe 4 noiembrie 2026) și tăiate la datele de sfîrșit ale slide-urilor; reproduc exact cifrele din curs. Estimatorii R/S, DFA, GPH, Whittle local, verosimilitatea exactă, regresia HAR și diferențierea fracționară se recalculează în browser; simulările folosesc extragerile seminței capitolului, iar estimările Monte Carlo, erorile prognozelor în afara eșantionului, estimările Whittle ARFIMA(1,d,0) și tabelele de modele sînt cele ale codului capitolului. Variantele care nu apar în curs (alt eșantion, altă lățime de bandă, altă origine a prognozei, alte ferestre, alt d) sînt rulări suplimentare ale codului capitolului, cu aceleași date și aceeași sămînță.</p>
+</main>
+</body>
+</html>

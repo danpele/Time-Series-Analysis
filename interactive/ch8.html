@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 8 · Long Memory and ARFIMA</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch8.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch8_data.js?v=20261101a", "ch8_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch8.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index.html">Time Series Analysis</a></h1><p>Chapter 8 · Long Memory and ARFIMA</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_08" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch8.html" class="lang-btn active">EN</a><a href="ch8_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure or table on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step; the “Worked example” boxes redo the calculation with the numbers of the chapter.</p>
+<p class="toc"><a href="#s-short">Short and long memory</a> · <a href="#s-frac">Fractional differencing</a> · <a href="#s-arfima">The ARFIMA(p,d,q) model</a> · <a href="#s-est">Estimating d</a> · <a href="#s-fc">Forecasting with ARFIMA</a> · <a href="#s-vol">Long memory in volatility</a> · <a href="#s-spur">Spurious long memory</a></p>
+<h2 class="sec" id="s-short">Short and long memory</h2>
+<section class="blk" id="memory-data">
+  <h3>Four persistent series</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=8" target="_blank" rel="noopener"><img src="slides/tsa_ch8_memory_data_en.jpg" alt="Slide 7: Four persistent series" loading="lazy"></a>
+      <figcaption>Slide 7</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="md-k">Moving average of the last k observations (k = 1: the series): <b id="md-k-v"></b></label><input type="range" id="md-k" min="1" max="36" step="1" value="1"></div><button class="btn play" id="md-play" type="button"></button></div><style>.c8x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c8x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c8x .c8f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c8x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c8x li{margin:.18rem 0;overflow-wrap:anywhere}.c8x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c8t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c8t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c8t th,.c8t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c8t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c8t tbody tr:nth-child(even){background:#F5F7FB}.c8t tbody tr.hi{background:#E3F4F7}.c8t .r{text-align:right}.c8cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="md-chart"></div></div><ul class="out" id="md-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> For how many consecutive months, at most, does US unemployment stay on one side of its 1948–2026 mean?</div>
+  <details><summary>Answer</summary><p>106 months, almost nine years; the Nile stays 11 years on one side of its mean, Romanian 12-month inflation 103 months. For a series without memory such long runs would be very rare.</p></details>
+</section>
+<section class="blk" id="memory-acf">
+  <h3>Sample ACF against an AR(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=12" target="_blank" rel="noopener"><img src="slides/tsa_ch8_memory_acf_en.jpg" alt="Slide 11: Sample ACF against an AR(1)" loading="lazy"></a>
+      <figcaption>Slide 11</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ma-k">Share dropped at the start of each sample: <b id="ma-k-v"></b></label><input type="range" id="ma-k" min="0" max="60" step="5" value="0"></div><button class="btn play" id="ma-play" type="button"></button></div><div class="charts "><div class="chart" id="ma-chart"></div></div><ul class="out" id="ma-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Drop the first 50% of each sample (US inflation then starts in November 1986). How many of the 48 autocorrelations of US monthly inflation stay above the band?</div>
+  <details><summary>Answer</summary><p>11 of 48, against 48 of 48 on 1947–2026; ρ̂(10) falls from 0.38 to 0.16. Much of the memory of the full series comes from the 1970s and early 1980s.</p></details>
+</section>
+<section class="blk" id="decay">
+  <h3>Hyperbolic against exponential decay</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=14" target="_blank" rel="noopener"><img src="slides/tsa_ch8_decay_en.jpg" alt="Slide 13: Hyperbolic against exponential decay" loading="lazy"></a>
+      <figcaption>Slide 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dc-d">d: <b id="dc-d-v"></b></label><input type="range" id="dc-d" min="0.05" max="0.45" step="0.05" value="0.4"></div><button class="btn play" id="dc-play" type="button"></button></div><div class="charts "><div class="chart" id="dc-chart"></div></div><ul class="out" id="dc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set d = 0.2. What is ρ(10) for ARFIMA(0, 0.2, 0) and for the AR(1) with the same ρ(1) = 0.25?</div>
+  <details><summary>Answer</summary><p>0.064 against 9.5 · 10⁻⁷. With a small d the hyperbolic tail is low, but still five orders of magnitude above the exponential one.</p></details>
+</section>
+<section class="blk" id="wx-decay">
+  <h3>Interpreting the two decay laws</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=15" target="_blank" rel="noopener"><img src="slides/ch8x_wx-decay_en.jpg" alt="Slide 14: Interpreting the two decay laws" loading="lazy"></a>
+      <figcaption>Slide 14</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-d">d: <b id="wd-d-v"></b></label><input type="range" id="wd-d" min="0.05" max="0.45" step="0.05" value="0.4"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><div class="c8x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wd-k">Lag k of the calculation</label><select id="wd-k"><option value="10" selected>10</option><option value="50">50</option><option value="100">100</option><option value="1000">1000</option></select></div></div><div class="c8f">\[\rho(k)=\frac{\Gamma(k+d)\,\Gamma(1-d)}{\Gamma(k-d+1)\,\Gamma(d)}\approx C\,k^{2d-1},\quad C=\frac{\Gamma(1-d)}{\Gamma(d)};\qquad \rho_{AR}(k)=\phi^k,\ \ \phi=\frac{d}{1-d}\]</div><ol id="wd-ws"></ol></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set d = 0.1. How many times larger is the sum of the first 1000 ARFIMA autocorrelations than the full sum of the AR(1)?</div>
+  <details><summary>Answer</summary><p>14 times: 1.74 against 0.125. Even a weak long memory accumulates far more than a short memory with the same ρ(1).</p></details>
+</section><h2 class="sec" id="s-frac">Fractional differencing</h2>
+<section class="blk" id="wx-weights">
+  <h3>Worked example: the weights of (1-L)^0.4</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=18" target="_blank" rel="noopener"><img src="slides/ch8x_wx-weights_en.jpg" alt="Slide 17: Worked example: the weights of (1-L)^0.4" loading="lazy"></a>
+      <figcaption>Slide 17</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ww-d">d: <b id="ww-d-v"></b></label><input type="range" id="ww-d" min="0.1" max="1.5" step="0.1" value="0.4"></div><button class="btn play" id="ww-play" type="button"></button></div><div class="charts "><div class="chart" id="ww-chart"></div></div><div class="c8x"><h4>Worked example</h4><div class="c8f">\[\pi_0=1,\qquad \pi_k=\pi_{k-1}\,\frac{k-1-d}{k},\qquad (1-L)^d x_t=\sum_{k\ge0}\pi_k x_{t-k},\qquad \sum_{k\ge0}\pi_k=(1-1)^d=0\]</div><ol id="ww-ws"></ol></div><ul class="out" id="ww-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set d = 1.5. What are π₁ and π₂, and what sign has π₂?</div>
+  <details><summary>Answer</summary><p>π₁ = −1.5 and π₂ = −1.5 · (1 − 1.5)/2 = +0.375. For d > 1 the factor (k − 1 − d) is negative at k = 2, so the weights change sign after the first lag.</p></details>
+</section>
+<section class="blk" id="weights">
+  <h3>Fractional differencing and fractional integration</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=19" target="_blank" rel="noopener"><img src="slides/tsa_ch8_weights_en.jpg" alt="Slide 18: Fractional differencing and fractional integration" loading="lazy"></a>
+      <figcaption>Slide 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wt-d">d of the blue curve (lecture: 0.4): <b id="wt-d-v"></b></label><input type="range" id="wt-d" min="0.05" max="0.95" step="0.05" value="0.4"></div><div class="ctl"><label for="wt-p">φ of the AR(1) for comparison: <b id="wt-p-v"></b></label><input type="range" id="wt-p" min="0.5" max="0.99" step="0.01" value="0.9"></div><button class="btn play" id="wt-play" type="button"></button></div><div class="charts "><div class="chart" id="wt-chart"></div></div><ul class="out" id="wt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the blue curve to d = 0.9. What share of a unit shock is left after 100 periods?</div>
+  <details><summary>Answer</summary><p>ψ₁₀₀ = 0.59 (0.74 after 10 periods), against 0.9¹⁰⁰ = 2.7 · 10⁻⁵ for the AR(1) with φ = 0.9. The series reverts to its mean, but very slowly.</p></details>
+</section>
+<section class="blk" id="ffd">
+  <h3>The degree of differencing a price needs</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=21" target="_blank" rel="noopener"><img src="slides/tsa_ch8_ffd_en.jpg" alt="Slide 20: The degree of differencing a price needs" loading="lazy"></a>
+      <figcaption>Slide 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ff-y">Sample starts in: <b id="ff-y-v"></b></label><input type="range" id="ff-y" min="2000" max="2018" step="1" value="2000"></div><div class="ctl"><label for="ff-t">Threshold of the weights kept</label><select id="ff-t"><option value="0.001">10⁻³</option><option value="0.0001" selected>10⁻⁴ (lecture)</option><option value="0.00001">10⁻⁵</option></select></div><button class="btn play" id="ff-play" type="button"></button></div><div class="charts "><div class="chart" id="ff-chart"></div></div><ul class="out" id="ff-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the threshold 10⁻³ (a shorter window). From which d does the ADF statistic pass the 5% critical value, and with how many weights?</div>
+  <details><summary>Answer</summary><p>From d = 0.35, with 61 weights, against 0.25 with 445. The truncated weights no longer sum to 0, so the filter keeps part of the level and a larger d is needed for stationarity.</p></details>
+</section><h2 class="sec" id="s-arfima">The ARFIMA(p,d,q) model</h2>
+<section class="blk" id="d-range">
+  <h3>The parameter d: what each range means</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=26" target="_blank" rel="noopener"><img src="slides/ch8x_d-range_en.jpg" alt="Slide 25: The parameter d: what each range means" loading="lazy"></a>
+      <figcaption>Slide 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dr-d">d: <b id="dr-d-v"></b></label><input type="range" id="dr-d" min="-0.6" max="1.2" step="0.1" value="0.4"></div><button class="btn play" id="dr-play" type="button"></button></div><div class="charts "><div class="chart" id="dr-chart"></div></div><div class="tbl c8t" id="dr-tb"></div><ul class="out" id="dr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set d = 0.6. Is the series stationary, and what is its first difference?</div>
+  <details><summary>Answer</summary><p>It is not stationary (d ≥ 0.5) but it reverts to its mean: ψ₁₀₀ = 0.11. The first difference is ARFIMA(0, −0.4, 0), anti-persistent with ρ(1) = −0.29.</p></details>
+</section>
+<section class="blk" id="wx-acf">
+  <h3>Worked example: ARFIMA(0, 0.3, 0)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=28" target="_blank" rel="noopener"><img src="slides/ch8x_wx-acf_en.jpg" alt="Slide 27: Worked example: ARFIMA(0, 0.3, 0)" loading="lazy"></a>
+      <figcaption>Slide 27</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wa-d">d: <b id="wa-d-v"></b></label><input type="range" id="wa-d" min="0.05" max="0.45" step="0.05" value="0.3"></div><button class="btn play" id="wa-play" type="button"></button></div><div class="charts "><div class="chart" id="wa-chart"></div></div><div class="c8x"><h4>Worked example</h4><div class="c8f">\[\rho(1)=\frac{d}{1-d},\quad \rho(k)=\rho(k-1)\,\frac{k-1+d}{k-d},\quad \gamma(0)=\sigma^2\,\frac{\Gamma(1-2d)}{\Gamma(1-d)^2},\quad H=d+\tfrac12\]</div><ol id="wa-ws"></ol></div><ul class="out" id="wa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set d = 0.45. What are ρ(1) and ρ(10)?</div>
+  <details><summary>Answer</summary><p>ρ(1) = 0.818 and ρ(10) = 0.652; an AR(1) with the same ρ(1) has ρ(10) = 0.134. The variance rises to 3.64.</p></details>
+</section>
+<section class="blk" id="arfima-paths">
+  <h3>ARFIMA(0,d,0) with d = 0.4 and d = -0.4</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=29" target="_blank" rel="noopener"><img src="slides/tsa_ch8_arfima_paths_en.jpg" alt="Slide 28: ARFIMA(0,d,0) with d = 0.4 and d = -0.4" loading="lazy"></a>
+      <figcaption>Slide 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ap-d">d (bottom row: −d): <b id="ap-d-v"></b></label><input type="range" id="ap-d" min="0.05" max="0.45" step="0.05" value="0.4"></div><button class="btn play" id="ap-play" type="button"></button></div><div class="charts "><div class="chart" id="ap-chart"></div></div><ul class="out" id="ap-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set d = 0.45. What is the theoretical variance of the series (σ² = 1)?</div>
+  <details><summary>Answer</summary><p>Γ(0.1)/Γ(0.55)² = 3.64. The variance of the 1000-observation path is only 2.31: the sample mean absorbs part of the slow component.</p></details>
+</section>
+<section class="blk" id="fbm">
+  <h3>Fractional Brownian motion for three Hurst exponents</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=32" target="_blank" rel="noopener"><img src="slides/tsa_ch8_fbm_en.jpg" alt="Slide 31: Fractional Brownian motion for three Hurst exponents" loading="lazy"></a>
+      <figcaption>Slide 31</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fb-h">Distance of H from 1/2 (H = 0.5 ± Δ): <b id="fb-h-v"></b></label><input type="range" id="fb-h" min="0.05" max="0.45" step="0.05" value="0.2"></div><button class="btn play" id="fb-play" type="button"></button></div><div class="charts "><div class="chart" id="fb-chart"></div></div><ul class="out" id="fb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move H to 0.05 and 0.95 (Δ = 0.45). What is the lag-1 autocorrelation of the increments for H = 0.95, in theory and in the sample?</div>
+  <details><summary>Answer</summary><p>In theory 2<sup>0.9</sup> − 1 = 0.87, in the sample 0.72. With such strong persistence the mean of the 1000 increments absorbs part of the dependence, so the sample ACF is biased downwards.</p></details>
+</section><h2 class="sec" id="s-est">Estimating d</h2>
+<section class="blk" id="wx-rs">
+  <h3>The R/S statistic, step by step</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=36" target="_blank" rel="noopener"><img src="slides/ch8x_wx-rs_en.jpg" alt="Slide 35: The R/S statistic, step by step" loading="lazy"></a>
+      <figcaption>Slide 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wr-x">The last value x<sub>8</sub> (lecture: −0.7): <b id="wr-x-v"></b></label><input type="range" id="wr-x" min="-1.5" max="1.5" step="0.1" value="-0.7"></div><button class="btn play" id="wr-play" type="button"></button></div><div class="charts "><div class="chart" id="wr-chart"></div></div><div class="c8x"><h4>Worked example</h4><div class="c8f">\[Y_k=\sum_{i\le k}(x_i-\bar x),\qquad R=\max_k Y_k-\min_k Y_k,\qquad S=\sqrt{\tfrac1n\sum_i(x_i-\bar x)^2},\qquad R/S\]</div><ol id="wr-ws"></ol></div><ul class="out" id="wr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set x₈ = 0.5. What does R/S become?</div>
+  <details><summary>Answer</summary><p>The mean becomes 0.275, R = 0.575, S = 0.386, so R/S = 1.49 (against 1.79). One value changes the mean, hence all cumulative deviations.</p></details>
+</section>
+<section class="blk" id="rs-dfa">
+  <h3>R/S and DFA on three series</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=37" target="_blank" rel="noopener"><img src="slides/tsa_ch8_rs_dfa_en.jpg" alt="Slide 36: R/S and DFA on three series" loading="lazy"></a>
+      <figcaption>Slide 36</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rd-n">Smallest block n<sub>min</sub>: <b id="rd-n-v"></b></label><input type="range" id="rd-n" min="6" max="60" step="2" value="10"></div><button class="btn play" id="rd-play" type="button"></button></div><div class="charts "><div class="chart" id="rd-chart"></div></div><ul class="out" id="rd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise the smallest block to n = 60. What R/S slope do the S&P 500 absolute returns get?</div>
+  <details><summary>Answer</summary><p>0.92, against 0.86 with n from 10; returns stay at 0.53. In small blocks the day-to-day noise of |r<sub>t</sub>| dominates; the persistent part shows in large blocks.</p></details>
+</section>
+<section class="blk" id="wx-gph">
+  <h3>The periodogram and the GPH estimator</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=39" target="_blank" rel="noopener"><img src="slides/ch8x_wx-gph_en.jpg" alt="Slide 38: The periodogram and the GPH estimator" loading="lazy"></a>
+      <figcaption>Slide 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wg-s">Series</label><select id="wg-s"><option value="nile" selected>the Nile</option><option value="infl">Romanian monthly inflation (SA)</option></select></div><div class="ctl"><label for="wg-a">Bandwidth exponent a, m = ⌊T<sup>a</sup>⌋: <b id="wg-a-v"></b></label><input type="range" id="wg-a" min="0.3" max="0.9" step="0.05" value="0.65"></div><button class="btn play" id="wg-play" type="button"></button></div><div class="charts "><div class="chart" id="wg-chart"></div></div><div class="c8x"><h4>Worked example</h4><div class="c8f">\[\log I(\lambda_j)=c+d\,X_j+u_j,\quad X_j=-\log\!\big(4\sin^2(\lambda_j/2)\big),\quad \hat d=\frac{\sum_j(X_j-\bar X)(Y_j-\bar Y)}{\sum_j(X_j-\bar X)^2},\quad \mathrm{SE}=\frac{\pi}{\sqrt{24m}}\]</div><ol id="wg-ws"></ol></div><ul class="out" id="wg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Romanian inflation with a = 0.5 (m = 16): what are d̂ and its SE?</div>
+  <details><summary>Answer</summary><p>d̂ = 0.56, SE 0.16. With fewer frequencies the estimate moves towards 0.5, and the standard error grows like 1/√m.</p></details>
+</section>
+<section class="blk" id="gph">
+  <h3>GPH regressions: the Nile and Romanian inflation</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=40" target="_blank" rel="noopener"><img src="slides/tsa_ch8_gph_en.jpg" alt="Slide 39: GPH regressions: the Nile and Romanian inflation" loading="lazy"></a>
+      <figcaption>Slide 39</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gp-a">Bandwidth exponent a, m = ⌊T<sup>a</sup>⌋: <b id="gp-a-v"></b></label><input type="range" id="gp-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="gp-play" type="button"></button></div><div class="charts "><div class="chart" id="gp-chart"></div></div><ul class="out" id="gp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set a = 0.8. What do GPH and local Whittle give for Romanian monthly inflation (m = 85)?</div>
+  <details><summary>Answer</summary><p>GPH 0.62 (SE 0.07), local Whittle 0.29 (SE 0.05). GPH works with log I, and the near-zero ordinates at the seasonal frequencies removed by the adjustment pull its slope up; local Whittle uses I itself and is not affected.</p></details>
+</section>
+<section class="blk" id="gph-table">
+  <h3>Interpreting the GPH regressions</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=41" target="_blank" rel="noopener"><img src="slides/ch8x_gph-table_en.jpg" alt="Slide 40: Interpreting the GPH regressions" loading="lazy"></a>
+      <figcaption>Slide 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gt-a">Bandwidth exponent a, m = ⌊T<sup>a</sup>⌋: <b id="gt-a-v"></b></label><input type="range" id="gt-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="gt-play" type="button"></button></div><div class="charts "><div class="chart" id="gt-chart"></div></div><div class="tbl c8t" id="gt-tb"></div><ul class="out" id="gt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set a = 0.5. Does the GPH interval of the Nile still exclude 0?</div>
+  <details><summary>Answer</summary><p>No: d̂ = 0.39, SE 0.20, interval [−0.01, 0.79]. With m = 10 GPH no longer separates d from 0; local Whittle [0.15, 0.77] still does.</p></details>
+</section>
+<section class="blk" id="wx-lw">
+  <h3>The local Whittle estimator</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=42" target="_blank" rel="noopener"><img src="slides/ch8x_wx-lw_en.jpg" alt="Slide 41: The local Whittle estimator" loading="lazy"></a>
+      <figcaption>Slide 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wl-s">Series</label><select id="wl-s"><option value="nile" selected>the Nile</option><option value="infl">Romanian monthly inflation (SA)</option><option value="usinfl">US monthly inflation</option><option value="unrate">US unemployment</option></select></div><div class="ctl"><label for="wl-a">Bandwidth exponent a, m = ⌊T<sup>a</sup>⌋: <b id="wl-a-v"></b></label><input type="range" id="wl-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="wl-play" type="button"></button></div><div class="charts "><div class="chart" id="wl-chart"></div></div><div class="c8x"><h4>Worked example</h4><div class="c8f">\[R(d)=\log\Big(\frac1m\sum_{j=1}^m\lambda_j^{2d}I(\lambda_j)\Big)-\frac{2d}{m}\sum_{j=1}^m\log\lambda_j,\qquad \hat d=\arg\min_d R(d),\qquad \mathrm{SE}=\frac{1}{2\sqrt m}\]</div><ol id="wl-ws"></ol></div><ul class="out" id="wl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose US unemployment (a = 0.65). Is the standard error 1/(2√m) valid?</div>
+  <details><summary>Answer</summary><p>No: d̂ = 0.91 > 3/4, outside the range of the normal approximation. The interval [0.80, 1.01] contains 1 anyway, so mean reversion is not established.</p></details>
+</section>
+<section class="blk" id="bandwidth">
+  <h3>Sensitivity to the bandwidth</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=43" target="_blank" rel="noopener"><img src="slides/tsa_ch8_bandwidth_en.jpg" alt="Slide 42: Sensitivity to the bandwidth" loading="lazy"></a>
+      <figcaption>Slide 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bw-e">Samples end in August: <b id="bw-e-v"></b></label><input type="range" id="bw-e" min="2014" max="2026" step="1" value="2026"></div><button class="btn play" id="bw-play" type="button"></button></div><div class="charts "><div class="chart" id="bw-chart"></div></div><ul class="out" id="bw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End both samples in August 2019. Between which values does local Whittle move for the US and for Romania (T = 176)?</div>
+  <details><summary>Answer</summary><p>US: 0.35–0.54; Romania: 0.24–0.59. The conclusion of long memory stays, and the uncertainty of about ±0.15 is there without the years 2020–2026 too.</p></details>
+</section>
+<section class="blk" id="mc">
+  <h3>Monte Carlo: five estimators of d</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=46" target="_blank" rel="noopener"><img src="slides/tsa_ch8_mc_en.jpg" alt="Slide 45: Monte Carlo: five estimators of d" loading="lazy"></a>
+      <figcaption>Slide 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mc-r">Replications used: <b id="mc-r-v"></b></label><input type="range" id="mc-r" min="30" max="300" step="30" value="300"></div><button class="btn play" id="mc-play" type="button"></button></div><div class="charts "><div class="chart" id="mc-chart"></div></div><ul class="out" id="mc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Use only the first 30 replications. Which estimator is the most precise at d = 0.3?</div>
+  <details><summary>Answer</summary><p>Whittle ML: standard deviation 0.033, against 0.076 (local Whittle) and 0.086 (GPH), the same order as with 300 replications (0.04, 0.08, 0.10).</p></details>
+</section>
+<section class="blk" id="fit-table">
+  <h3>Romanian inflation: ARMA or ARFIMA?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=48" target="_blank" rel="noopener"><img src="slides/ch8x_fit-table_en.jpg" alt="Slide 47: Romanian inflation: ARMA or ARFIMA?" loading="lazy"></a>
+      <figcaption>Slide 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ft-e">Sample ends in</label><select id="ft-e"><option value="2014-12">December 2014</option><option value="2016-12">December 2016</option><option value="2018-12">December 2018</option><option value="2020-12">December 2020</option><option value="2022-12">December 2022</option><option value="2024-12">December 2024</option><option value="2026-08" selected>August 2026 (lecture)</option></select></div><button class="btn play" id="ft-play" type="button"></button></div><div class="charts "><div class="chart" id="ft-chart"></div></div><div class="tbl c8t" id="ft-tb"></div><ul class="out" id="ft-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in December 2018 (T = 168). Which model has the smallest BIC, and what is d̂?</div>
+  <details><summary>Answer</summary><p>ARFIMA(0,d,0), with d̂ = 0.24: BIC 191.2 against 195.5 for ARMA(1,1). The conclusion of the lecture holds on the shorter sample too.</p></details>
+</section>
+<section class="blk" id="arfima-fit">
+  <h3>Romanian inflation: fitted autocorrelations</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch8_arfima_fit_en.jpg" alt="Slide 48: Romanian inflation: fitted autocorrelations" loading="lazy"></a>
+      <figcaption>Slide 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="af-d">d − d̂ (ML) of the ARFIMA curve: <b id="af-d-v"></b></label><input type="range" id="af-d" min="-0.3" max="0.18" step="0.02" value="0"></div><div class="ctl"><label for="af-L">Lags shown: <b id="af-L-v"></b></label><input type="range" id="af-L" min="24" max="60" step="4" value="36"></div><button class="btn play" id="af-play" type="button"></button></div><div class="charts "><div class="chart" id="af-chart"></div></div><ul class="out" id="af-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise d by 0.14, to 0.45. How much does the log-likelihood fall, and is 2Δℓ above 3.84?</div>
+  <details><summary>Answer</summary><p>ℓ falls from −135.9 to −139.8; 2Δℓ = 7.8 > 3.84, so d = 0.45 is rejected at 5%. The ARFIMA curve becomes too high at lags 12 and 24 (0.65 and 0.60).</p></details>
+</section>
+<section class="blk" id="memory-table">
+  <h3>Long memory in twelve series</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=51" target="_blank" rel="noopener"><img src="slides/ch8x_memory-table_en.jpg" alt="Slide 50: Long memory in twelve series" loading="lazy"></a>
+      <figcaption>Slide 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="mt-a">Bandwidth exponent a, m = ⌊T<sup>a</sup>⌋: <b id="mt-a-v"></b></label><input type="range" id="mt-a" min="0.5" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="mt-play" type="button"></button></div><div class="charts "><div class="chart" id="mt-chart"></div></div><div class="tbl c8t" id="mt-tb"></div><ul class="out" id="mt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set a = 0.5 (m = 30 for US unemployment). Does the local Whittle interval still contain 1?</div>
+  <details><summary>Answer</summary><p>No: d̂ = 0.64, interval [0.46, 0.82], and the SE is valid (d̂ < 3/4). With a = 0.65 (m = 85): 0.91, [0.80, 1.01]. The verdict depends on the bandwidth.</p></details>
+</section><h2 class="sec" id="s-fc">Forecasting with ARFIMA</h2>
+<section class="blk" id="forecast-path">
+  <h3>US inflation: ARFIMA and AR forecasts</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=55" target="_blank" rel="noopener"><img src="slides/tsa_ch8_forecast_path_en.jpg" alt="Slide 54: US inflation: ARFIMA and AR forecasts" loading="lazy"></a>
+      <figcaption>Slide 54</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fp-o">Forecast origin</label><select id="fp-o"><option value="2019-12">December 2019</option><option value="2020-12">December 2020</option><option value="2021-06">June 2021</option><option value="2021-12">December 2021</option><option value="2022-06">June 2022</option><option value="2022-12">December 2022</option><option value="2023-12">December 2023</option><option value="2024-12">December 2024</option><option value="2025-08">August 2025</option><option value="2026-08" selected>August 2026 (lecture)</option></select></div><button class="btn play" id="fp-play" type="button"></button></div><div class="charts "><div class="chart" id="fp-chart"></div></div><ul class="out" id="fp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the origin to June 2022. Over the 36 months observed after it, which forecast has the smaller RMSE?</div>
+  <details><summary>Answer</summary><p>ARFIMA: 3.37 pp, against 4.02 pp for the AR(12). Both started high, but the AR(12) extended the 2022 peak (6.2% a year ahead, against 5.4%), and inflation fell faster.</p></details>
+</section>
+<section class="blk" id="forecast">
+  <h3>Does long memory improve forecasts?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch8_forecast_en.jpg" alt="Slide 56: Does long memory improve forecasts?" loading="lazy"></a>
+      <figcaption>Slide 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fo-k">Share of the first origins dropped: <b id="fo-k-v"></b></label><input type="range" id="fo-k" min="0" max="80" step="10" value="0"></div><div class="ctl"><label for="fo-b">Benchmark (= 1)</label><select id="fo-b"><option value="AR" selected>AR(p) (lecture)</option><option value="Mean">sample mean</option><option value="RW">random walk</option></select></div><button class="btn play" id="fo-play" type="button"></button></div><div class="charts "><div class="chart" id="fo-chart"></div></div><ul class="out" id="fo-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Drop the first 50% of the origins (Romania from May 2019). Does ARFIMA still beat the AR at every horizon in Romania?</div>
+  <details><summary>Answer</summary><p>No: the ratio is 1.038 at 1 month (the AR is better), 0.999 at 12 and 0.976 at 24. The gain remains at the long horizons only.</p></details>
+</section>
+<section class="blk" id="ratio-table">
+  <h3>Interpreting the forecast comparison</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=58" target="_blank" rel="noopener"><img src="slides/ch8x_ratio-table_en.jpg" alt="Slide 57: Interpreting the forecast comparison" loading="lazy"></a>
+      <figcaption>Slide 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-k">Share of the first origins dropped: <b id="rt-k-v"></b></label><input type="range" id="rt-k" min="0" max="80" step="10" value="0"></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><div class="c8x"><div class="wctl"><div class="ctl"><label for="rt-h">Horizon in the table (months)</label><select id="rt-h"><option value="1">1</option><option value="3">3</option><option value="6">6</option><option value="12" selected>12 (lecture)</option><option value="18">18</option><option value="24">24</option></select></div></div><div class="tbl c8t" id="rt-tb"></div></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Drop the first 50% of the origins (Romania from May 2019). What are the 12-month RMSE of ARFIMA and of the random walk for Romania?</div>
+  <details><summary>Answer</summary><p>0.57 and 0.64 pp per month (against 0.53 and 0.61 on all origins): the random walk stays the worst.</p></details>
+</section><h2 class="sec" id="s-vol">Long memory in volatility</h2>
+<section class="blk" id="vol-acf">
+  <h3>Returns, absolute and squared returns</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=61" target="_blank" rel="noopener"><img src="slides/tsa_ch8_vol_acf_en.jpg" alt="Slide 60: Returns, absolute and squared returns" loading="lazy"></a>
+      <figcaption>Slide 60</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="va-p">Power δ in |r<sub>t</sub>|<sup>δ</sup>: <b id="va-p-v"></b></label><input type="range" id="va-p" min="0.25" max="3" step="0.25" value="1"></div><div class="ctl"><label for="va-s">Order of the days</label><select id="va-s"><option value="0" selected>as observed (lecture)</option><option value="1">randomly shuffled</option></select></div><button class="btn play" id="va-play" type="button"></button></div><div class="charts "><div class="chart" id="va-chart"></div></div><ul class="out" id="va-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose shuffled days. How many of the 250 autocorrelations of S&P 500 |r<sub>t</sub>| stay above the band, and what does local Whittle give?</div>
+  <details><summary>Answer</summary><p>6 of 250 (against 227), and local Whittle 0.00. The shuffle keeps the distribution and destroys the order: the memory lies in the sequence of calm and turbulent days.</p></details>
+</section>
+<section class="blk" id="rv">
+  <h3>Monthly realised volatility: ARFIMA or ARMA?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=64" target="_blank" rel="noopener"><img src="slides/tsa_ch8_rv_en.jpg" alt="Slide 63: Monthly realised volatility: ARFIMA or ARMA?" loading="lazy"></a>
+      <figcaption>Slide 63</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rv-d">d − d̂ (ML), with φ̂ fixed: <b id="rv-d-v"></b></label><input type="range" id="rv-d" min="-0.3" max="0.08" step="0.02" value="0"></div><button class="btn play" id="rv-play" type="button"></button></div><div class="charts "><div class="chart" id="rv-chart"></div></div><ul class="out" id="rv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Lower d by 0.30 (with φ fixed). By how much does the log-likelihood fall for the BET and for the S&P 500?</div>
+  <details><summary>Answer</summary><p>By 43.8 (BET) and 33.4 (S&P 500): both values are clearly rejected. For the BET the model ACF at lag 24 would be 0.004, against 0.28 in the sample.</p></details>
+</section>
+<section class="blk" id="rv-table">
+  <h3>Interpreting realised volatility</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=65" target="_blank" rel="noopener"><img src="slides/ch8x_rv-table_en.jpg" alt="Slide 64: Interpreting realised volatility" loading="lazy"></a>
+      <figcaption>Slide 64</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rq-a">Bandwidth exponent a, m = ⌊T<sup>a</sup>⌋: <b id="rq-a-v"></b></label><input type="range" id="rq-a" min="0.4" max="0.8" step="0.05" value="0.65"></div><button class="btn play" id="rq-play" type="button"></button></div><div class="charts "><div class="chart" id="rq-chart"></div></div><div class="tbl c8t" id="rq-tb"></div><ul class="out" id="rq-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set a = 0.5 (m = 17). Between which values do the six estimates lie?</div>
+  <details><summary>Answer</summary><p>Between 0.36 (ML, BET) and 0.74 (GPH, BET), against 0.36–0.44 in the lecture. With few frequencies the semiparametric estimates scatter; ML does not depend on m.</p></details>
+</section>
+<section class="blk" id="wx-har">
+  <h3>FIGARCH and HAR</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=66" target="_blank" rel="noopener"><img src="slides/ch8x_wx-har_en.jpg" alt="Slide 65: FIGARCH and HAR" loading="lazy"></a>
+      <figcaption>Slide 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-e">Sample ends in: <b id="wh-e-v"></b></label><input type="range" id="wh-e" min="2006" max="2026" step="1" value="2026"></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c8x"><h4>Worked example</h4><div class="c8f">\[RV_{t+1}=c+\beta_d RV_t+\beta_w \overline{RV}_{t-4:t}+\beta_m \overline{RV}_{t-21:t}+u_{t+1},\quad w_1=\beta_d+\tfrac{\beta_w}{5}+\tfrac{\beta_m}{22},\ \ w_{2..5}=\tfrac{\beta_w}{5}+\tfrac{\beta_m}{22},\ \ w_{6..22}=\tfrac{\beta_m}{22}\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> End the sample in 2008. Which component has the largest coefficient, and what is β̂<sub>d</sub>?</div>
+  <details><summary>Answer</summary><p>The weekly one: β̂<sub>w</sub> = 0.62; β̂<sub>d</sub> = 0.10, half of 0.20 on 2000–2026.</p></details>
+</section>
+<section class="blk" id="vol-models">
+  <h3>FIGARCH against GARCH; HAR against (1-L)^d</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=67" target="_blank" rel="noopener"><img src="slides/tsa_ch8_vol_models_en.jpg" alt="Slide 66: FIGARCH against GARCH; HAR against (1-L)^d" loading="lazy"></a>
+      <figcaption>Slide 66</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="vm-k">Lag compared k (days): <b id="vm-k-v"></b></label><input type="range" id="vm-k" min="0" max="10" step="1" value="8"></div><div class="ctl"><label for="vm-d">d − d̂ (local Whittle) of (1−L)<sup>d</sup>: <b id="vm-d-v"></b></label><input type="range" id="vm-d" min="-0.3" max="0.3" step="0.02" value="0"></div><button class="btn play" id="vm-play" type="button"></button></div><div class="charts "><div class="chart" id="vm-chart"></div></div><ul class="out" id="vm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move k to 500 days. What are the FIGARCH and GARCH weights of the S&P 500?</div>
+  <details><summary>Answer</summary><p>FIGARCH 2.9 · 10⁻⁵, GARCH 2.8 · 10⁻³¹. Even with α + β = 0.995 the GARCH weights fall exponentially; the FIGARCH weights fall like a power.</p></details>
+</section>
+<section class="blk" id="har-table">
+  <h3>Interpreting FIGARCH and HAR</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=68" target="_blank" rel="noopener"><img src="slides/ch8x_har-table_en.jpg" alt="Slide 67: Interpreting FIGARCH and HAR" loading="lazy"></a>
+      <figcaption>Slide 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="hb-d">d − d̂ (local Whittle): <b id="hb-d-v"></b></label><input type="range" id="hb-d" min="-0.3" max="0.3" step="0.05" value="0"></div><button class="btn play" id="hb-play" type="button"></button></div><div class="charts "><div class="chart" id="hb-chart"></div></div><div class="tbl c8t" id="hb-tb"></div><ul class="out" id="hb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise d by 0.3 (to 0.88). How do the weights of (1 − L)<sup>d</sup> at lags 1 and 22 compare with HAR?</div>
+  <details><summary>Answer</summary><p>Lag 1: 0.88 against 0.31; lag 22: 0.0003 against 0.008. A larger d puts more weight on the first lag and less on the tail.</p></details>
+</section><h2 class="sec" id="s-spur">Spurious long memory</h2>
+<section class="blk" id="spurious">
+  <h3>Short memory that looks long</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=71" target="_blank" rel="noopener"><img src="slides/tsa_ch8_spurious_en.jpg" alt="Slide 70: Short memory that looks long" loading="lazy"></a>
+      <figcaption>Slide 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-r">Samples used: <b id="sp-r-v"></b></label><input type="range" id="sp-r" min="20" max="200" step="20" value="200"></div><div class="ctl"><label for="sp-b">Band</label><select id="sp-b"><option value="0" selected>none (lecture)</option><option value="1">5%–95% of local Whittle</option></select></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Show the 5%–95% band. With a shift of one standard deviation, what is the 5% quantile of d̂ (local Whittle)?</div>
+  <details><summary>Answer</summary><p>0.31, above the 95% quantile without a shift (0.07): the distributions do not overlap, so every one of the 200 samples with a break shows “long memory”.</p></details>
+</section>
+<section class="blk" id="nile-break">
+  <h3>The Nile in 1898: memory or a break?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch8_nile_break_en.jpg" alt="Slide 72: The Nile in 1898: memory or a break?" loading="lazy"></a>
+      <figcaption>Slide 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="nb-y">Last year before the break: <b id="nb-y-v"></b></label><input type="range" id="nb-y" min="1880" max="1960" step="1" value="1898"></div><button class="btn play" id="nb-play" type="button"></button></div><div class="charts "><div class="chart" id="nb-chart"></div></div><ul class="out" id="nb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the break to 1930. What d (exact ML) is left after removing the two means?</div>
+  <details><summary>Answer</summary><p>0.35, almost as in the raw series (0.36). A break placed in another year does not explain the memory; only the 1898 break brings it down to 0.05.</p></details>
+</section>
+<section class="blk" id="rolling">
+  <h3>The stability of memory over time</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter8_long_memory_arfima.pdf#page=75" target="_blank" rel="noopener"><img src="slides/tsa_ch8_rolling_en.jpg" alt="Slide 74: The stability of memory over time" loading="lazy"></a>
+      <figcaption>Slide 74</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rl-w">Window length, multiple of the lecture’s: <b id="rl-w-v"></b></label><input type="range" id="rl-w" min="0.5" max="1.5" step="0.25" value="1"></div><button class="btn play" id="rl-play" type="button"></button></div><div class="charts "><div class="chart" id="rl-chart"></div></div><ul class="out" id="rl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Halve the windows (10 years, 500 days). When and how high does d of US inflation peak?</div>
+  <details><summary>Answer</summary><p>0.64 in the window ending July 1974, against 0.71 in July 1980 with 20-year windows; the band of no memory widens to [−0.33, 0.25].</p></details>
+</section>
+<p class="src foot">Nile flow at Aswan, 1871–1970 (statsmodels). Romanian HICP inflation, monthly and 12-month (Eurostat prc_hicp_minr, January 2005 – August 2026). US CPI inflation (FRED CPIAUCSL, February 1947 – August 2026) and the unemployment rate (FRED UNRATE, January 1948 – September 2026). The BNR EUR/RON reference rate and the daily S&P 500 and BET prices (data/market, up to 18 September 2026). The FRED, Eurostat and BNR series are read with the chapter’s loaders (downloaded on 4 November 2026) and cut at the end dates of the slides; they reproduce the numbers of the lecture exactly. The R/S, DFA, GPH and local Whittle estimators, the exact likelihood, the HAR regression and fractional differencing are recomputed in the browser; the simulations use the draws of the chapter’s seed, and the Monte Carlo estimates, the out-of-sample forecast errors, the Whittle ARFIMA(1,d,0) fits and the model tables are those of the chapter code. Variants that do not appear in the lecture (another sample, another bandwidth, another forecast origin, other windows, another d) are extra runs of the chapter code with the same data and seed.</p>
+</main>
+</body>
+</html>
