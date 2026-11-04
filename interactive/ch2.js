@@ -695,7 +695,7 @@ function olsAR(y, p) {             // conditional least squares: OLS of y_t on 1
   return { b: bh.slice(1), se: se.slice(1), s2: sum(e.map(v => v * v)) / n };
 }
 function ywAR(y, p) {
-  const n = y.length, r = acf(y, p), m = mean(y), g0 = sum(y.map(v => (v - m) ** 2)) / (n - 1);
+  const n = y.length, r = acf(y, p), m = mean(y), g0 = sum(y.map(v => (v - m) ** 2)) / n;
   const R = range(0, p - 1, 1).map(i => range(0, p - 1, 1).map(j => (i === j ? 1 : r[Math.abs(i - j) - 1]))), ph = solve(R, r.slice(0, p));
   const s2 = g0 * (1 - sum(ph.map((v, i) => v * r[i]))), se = ph.map((_, i) => Math.sqrt(s2 / (g0 * n) * solve(R, R.map((__, j) => (j === i ? 1 : 0)))[i]));
   return { r, g0, b: ph, se, s2 };

@@ -397,7 +397,8 @@ chart(T('A simulated rational bubble and three AR(1) roots', 'O bulă rațional�
 
 interp(('the simulation', 'simulării'), [
     (T('The bubble grows, bursts, restarts: in this path it reaches @{ra.max} and bursts @{ra.bursts} times after a large size', 'Bula crește, se sparge, reîncepe: pe această traiectorie atinge @{ra.max} și se sparge de @{ra.bursts} ori după ce a devenit mare'),
-     [T('the price inherits the explosive episodes; between them it follows the fundamental value', 'prețul preia episoadele explozive; între ele urmează valoarea fundamentală')]),
+     [T('the price inherits the explosive episodes; between them it follows the fundamental value', 'prețul preia episoadele explozive; între ele urmează valoarea fundamentală'),
+      T('the first bubble of this path is negative and drives the price below zero: free disposal rules this out for a real asset, so a rational bubble must be nonnegative', 'prima bulă a acestei traiectorii este negativă și duce prețul sub zero: pentru un activ real acest lucru este exclus (prețul nu poate fi negativ), deci o bulă rațională trebuie să fie nenegativă')]),
     (T('AR(1) roots (Chapter 3): $\\rho = 0.9$ reverts to the mean, $\\rho = 1$ wanders (unit root), $\\rho = 1.02$ explodes', 'Rădăcinile AR(1) (Capitolul 3): $\\rho = 0{,}9$ revine la medie, $\\rho = 1$ rătăcește (rădăcină unitară), $\\rho = 1{,}02$ explodează'),
      [T('with $\\rho = 1.02$ a shock doubles in about @{ra.g35} periods and is multiplied by @{ra.g100} after 100', 'cu $\\rho = 1{,}02$ un șoc se dublează în aproximativ @{ra.g35}@{ra.g35.de} perioade și se înmulțește cu @{ra.g100} după 100')]),
     T('Idea of the tests: an explosive root ($\\rho > 1$) in the log price during a run-up is the statistical trace of a rational bubble', 'Ideea testelor: o rădăcină explozivă ($\\rho > 1$) în prețul logaritmic în timpul unei creșteri este urma statistică a unei bule raționale')])
@@ -461,7 +462,7 @@ chart(T('Bitcoin, BET and Shanghai: dated episodes', 'Bitcoin, BET și Shanghai:
     h='0.62\\textheight')
 
 interp(('the three markets', 'celor trei piețe'), [
-    (T('GSADF: Bitcoin @{ps.btc.gsadf}, BET @{ps.bet.gsadf}, Shanghai @{ps.ssec.gsadf}; all above their 95\\% critical values (about @{ps.btc.cv})', 'GSADF: Bitcoin @{ps.btc.gsadf}, BET @{ps.bet.gsadf}, Shanghai @{ps.ssec.gsadf}; toate peste valorile critice de 95\\% (aproximativ @{ps.btc.cv})'),
+    (T('GSADF: Bitcoin @{ps.btc.gsadf}, BET @{ps.bet.gsadf}, Shanghai @{ps.ssec.gsadf}; above their 95\\% critical values (@{ps.btc.cv}, @{ps.bet.cv}, @{ps.ssec.cv})', 'GSADF: Bitcoin @{ps.btc.gsadf}, BET @{ps.bet.gsadf}, Shanghai @{ps.ssec.gsadf}; peste valorile critice de 95\\% (@{ps.btc.cv}, @{ps.bet.cv}, @{ps.ssec.cv})'),
      [T('Bitcoin: @{ps.btc.e0.a} -- @{ps.btc.e0.b} and @{ps.btc.e1.a} -- @{ps.btc.e1.b}; Shanghai: @{ps.ssec.e0.a} -- @{ps.ssec.e0.b}', 'Bitcoin: @{ps.btc.e0.a} -- @{ps.btc.e0.b} și @{ps.btc.e1.a} -- @{ps.btc.e1.b}; Shanghai: @{ps.ssec.e0.a} -- @{ps.ssec.e0.b}')]),
     (T('BET: the explosive phase is @{ps.bet.e1.a} -- @{ps.bet.e1.b}, not the run-up to July 2007, which was strong but not explosive', 'BET: faza explozivă este @{ps.bet.e1.a} -- @{ps.bet.e1.b}, nu creșterea pînă în iulie 2007, care a fost puternică, dar nu explozivă'),
      [T('the BET flag of @{ps.bet.e2.a} -- @{ps.bet.e2.b} is the collapse: an \\textbf{accelerating fall} also gives $\\hat\\delta > 0$; always read the dates against the price chart', 'semnalul BET din @{ps.bet.e2.a} -- @{ps.bet.e2.b} este prăbușirea: o \\textbf{scădere care se accelerează} dă tot $\\hat\\delta > 0$; citiți întotdeauna datele alături de graficul prețului')]),
@@ -556,7 +557,7 @@ D.frame(T('The LPPL equation', 'Ecuația LPPL'), items(
      '$\\omega$ & ' + T('angular log-frequency of the oscillations', 'frecvența unghiulară logaritmică a oscilațiilor') + ' & $2 \\le \\omega \\le 25$',
      '$\\phi$ & ' + T('phase of the oscillations', 'faza oscilațiilor') + ' & $[0, 2\\pi)$'],
     size='scriptsize') + items(
-    T('Seven parameters: three of them ($t_c$, $m$, $\\omega$) enter nonlinearly; $\\phi$ disappears in the estimation (Section 4)', 'Șapte parametri: trei dintre ei ($t_c$, $m$, $\\omega$) intră neliniar; $\\phi$ dispare la estimare (Secțiunea 4)')),
+    T('Seven parameters: three of them ($t_c$, $m$, $\\omega$) enter nonlinearly; $\\phi$ disappears in the estimation (Section 5)', 'Șapte parametri: trei dintre ei ($t_c$, $m$, $\\omega$) intră neliniar; $\\phi$ dispare la estimare (Secțiunea 5)')),
     size='footnotesize')
 
 D.frame(T('Log-periodic oscillations', 'Oscilațiile log-periodice'), items(
@@ -578,7 +579,7 @@ interp(('the components', 'componentelor'), [
      [T('$m$ close to 1 is almost a straight line: hardly a bubble; $m$ close to 0 is a jump at $t_c$', '$m$ apropiat de 1 este aproape o dreaptă: cu greu o bulă; $m$ apropiat de 0 este un salt la $t_c$')]),
     (T('The oscillation term shrinks with $(t_c - t)^m$ and speeds up: the cycles get shorter by the factor $\\lambda$', 'Termenul oscilant se micșorează cu $(t_c - t)^m$ și se accelerează: ciclurile se scurtează cu factorul $\\lambda$'),
      [T('a larger $\\omega$ gives more cycles before $t_c$', 'un $\\omega$ mai mare dă mai multe cicluri înainte de $t_c$')]),
-    T('Real run-ups (Section 4) show this mixture: an accelerating trend with corrections that come more and more often', 'Creșterile reale (Secțiunea 4) arată acest amestec: un trend accelerat cu corecții tot mai dese')])
+    T('Real run-ups (Section 5) show this mixture: an accelerating trend with corrections that come more and more often', 'Creșterile reale (Secțiunea 5) arată acest amestec: un trend accelerat cu corecții tot mai dese')])
 
 D.frame(T('Worked example: an LPPL value by hand', 'Exemplu rezolvat: o valoare LPPL calculată de mînă'), items(
     (T('Parameters: $A = 8$, $B = -1.2$, $C = 0.08$, $m = 0.5$, $\\omega = 8$, $\\phi = 0$, $t_c = 2$ (years); compute $\\ln P(t)$', 'Parametri: $A = 8$, $B = -1{,}2$, $C = 0{,}08$, $m = 0{,}5$, $\\omega = 8$, $\\phi = 0$, $t_c = 2$ (ani); calculați $\\ln P(t)$'),
@@ -643,7 +644,7 @@ interp(('the cost landscape', 'peisajului funcției de cost'), [
      [T('the waves come from the oscillation term: shifting $t_c$ shifts the phase of the cycles', 'valurile provin din termenul oscilant: mutarea lui $t_c$ mută faza ciclurilor')]),
     (T('The landscape is flat: the worst and the best $t_c$ differ by only @{cost.ratio}\\% in SSR', 'Peisajul este plat: cel mai prost și cel mai bun $t_c$ diferă cu doar @{cost.ratio}\\% în SSR'),
      [T('the global minimum is at $m$ near 1 and $t_c$ = @{cost.tc}, far after the actual peak: the data barely identify $t_c$', 'minimul global este la $m$ aproape de 1 și $t_c$ = @{cost.tc}, mult după maximul real: datele abia identifică $t_c$')]),
-    T('Lesson: one LPPL fit is never enough; we need many windows and the filter (Section 5)', 'Lecția: o singură ajustare LPPL nu este niciodată suficientă; avem nevoie de multe ferestre și de filtru (Secțiunea 5)')])
+    T('Lesson: one LPPL fit is never enough; we need many windows and the filter (Section 6)', 'Lecția: o singură ajustare LPPL nu este niciodată suficientă; avem nevoie de multe ferestre și de filtru (Secțiunea 6)')])
 
 D.frame(T('Worked example: the Shanghai fit at the end of the window', 'Exemplu rezolvat: ajustarea pentru Shanghai la sfîrșitul ferestrei'), items(
     (T('Shanghai Composite, window @{ep.ssec.low} -- @{fi.ssec.t2} (@{fi.ssec.n} days); estimates: $t_c = @{fx.tc}$ (@{fi.ssec.tc}), $m = @{fx.m}$, $\\omega = @{fx.w}$', 'Shanghai Composite, fereastra @{ep.ssec.low} -- @{fi.ssec.t2} (@{fi.ssec.n}@{fi.ssec.n.de} zile); estimări: $t_c = @{fx.tc}$ (@{fi.ssec.tc}), $m = @{fx.m}$, $\\omega = @{fx.w}$'),
@@ -666,7 +667,7 @@ D.frame(T('Interpreting the six fits', 'Interpretarea celor șase ajustări'), t
     size='scriptsize') + items(
     T('Days to peak: $\\hat t_c$ minus the actual peak; Param.: the fit passes the parameter conditions; All: it also passes the residual conditions', 'Zile față de maxim: $\\hat t_c$ minus maximul real; Param.: ajustarea trece de condițiile asupra parametrilor; Toate: trece și de condițiile asupra reziduurilor'),
     T('Only Shanghai passes the whole filter, with $\\hat t_c$ within a week of the peak; S\\&P 500 and Nasdaq 100 hit the boundary $m = 1$: no super-exponential growth in these windows', 'Doar Shanghai trece de tot filtrul, cu $\\hat t_c$ la mai puțin de o săptămînă de maximum; S\\&P 500 și Nasdaq 100 ating limita $m = 1$: nicio creștere superexponențială în aceste ferestre'),
-    T('Bitcoin fails the 15\\% error condition: its daily swings are too large for one smooth path', 'Bitcoin nu trece de condiția erorii de 15\\%: variațiile lui zilnice sînt prea mari pentru o singură traiectorie netedă')),
+    T('Bitcoin fails the 15\\% error condition (its daily swings are too large for one smooth path) and the $t_c$ condition ($\\hat t_c$ too far after $t_2$)', 'Bitcoin nu trece de condiția erorii de 15\\% (variațiile lui zilnice sînt prea mari pentru o singură traiectorie netedă) și nici de condiția asupra lui $t_c$ ($\\hat t_c$ prea departe după $t_2$)')),
     size='footnotesize')
 
 D.recap(('Estimation', 'estimarea'), [
@@ -725,7 +726,7 @@ chart(T('The critical time moves with the data', 'Timpul critic se mută odată 
 interp(('the moving critical time', 'timpului critic care se mută'), [
     (T('Nasdaq 100: over @{tp.ndx.n} end dates $\\hat t_c$ ranges from @{tp.ndx.min} to @{tp.ndx.max} (@{tp.ndx.range} days); none of these fits passes the parameter conditions', 'Nasdaq 100: pe @{tp.ndx.n}@{tp.ndx.n.de} date de sfîrșit, $\\hat t_c$ variază de la @{tp.ndx.min} la @{tp.ndx.max} (@{tp.ndx.range}@{tp.ndx.range.de} zile); niciuna dintre aceste ajustări nu trece de condițiile asupra parametrilor'),
      [T('Bitcoin 2017: range @{tp.btc17.min} -- @{tp.btc17.max}; @{tp.btc17.q}\\% of the fits pass; median error @{tp.btc17.err} days', 'Bitcoin 2017: intervalul @{tp.btc17.min} -- @{tp.btc17.max}; @{tp.btc17.q}\\% dintre ajustări trec; eroarea mediană @{tp.btc17.err}@{tp.btc17.err.de} zile')]),
-    (T('Many points lie close to the line $t_c = t_2$: the fit often says ``the end is now\'\', week after week', 'Multe puncte stau aproape de dreapta $t_c = t_2$: ajustarea spune adesea „sfîrșitul este acum”, săptămînă după săptămînă'),
+    (T('Bitcoin: many points lie close to the line $t_c = t_2$, the fit often says ``the end is now\'\', week after week; Nasdaq 100: $\\hat t_c$ mostly sits at the upper bound of the search space', 'Bitcoin: multe puncte stau aproape de dreapta $t_c = t_2$, ajustarea spune adesea „sfîrșitul este acum”, săptămînă după săptămînă; Nasdaq 100: $\\hat t_c$ stă mai ales la limita superioară a spațiului de căutare'),
      [T('a forecast that keeps moving with the data is a description of the past, not a prediction', 'o prognoză care se tot mută odată cu datele este o descriere a trecutului, nu o predicție')]),
     T('Picking, after the crash, the one window whose $\\hat t_c$ was right is \\textbf{look-ahead bias}', 'Alegerea, după crah, a singurei ferestre al cărei $\\hat t_c$ a fost corect înseamnă \\textbf{look-ahead bias} (folosirea informației din viitor)')])
 
@@ -860,7 +861,7 @@ D.frame(T('Self-assessment (2/2)', 'Autoevaluare (2/2)'), items(
 D.frame(T('Project idea', 'Idee de proiect'), items(
     (T('\\textbf{Is the BET in a bubble today?} A real-time protocol, fixed before looking at the result', '\\textbf{Este BET azi într-o bulă?} Un protocol în timp real, fixat înainte de a vedea rezultatul'),
      [T('BSADF on the weekly BET and BET-TR; the indicator of this chapter on the daily BET', 'BSADF pe BET și BET-TR săptămînal; indicatorul din acest capitol pe BET zilnic'),
-      T('the evaluation of Section 6 on the BET since 2000: alarms, false alarms, base rate', 'evaluarea din Secțiunea 6 pe BET din 2000: alarme, alarme false, frecvența de bază')]),
+      T('the evaluation of Section 7 on the BET since 2000: alarms, false alarms, base rate', 'evaluarea din Secțiunea 7 pe BET din 2000: alarme, alarme false, frecvența de bază')]),
     (T('Extensions', 'Extensii'),
      [T('the price--earnings ratio instead of the price; Bitcoin and Ethereum together', 'raportul preț--profit în locul prețului; Bitcoin și Ethereum împreună'),
       T('compare with the regime-switching models of Chapter 10', 'comparați cu modelele cu schimbare de regim din Capitolul 10')]),

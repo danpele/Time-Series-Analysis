@@ -469,7 +469,7 @@ def fig_growth(save_it=True):
     sing = 1.0 - 1.0 * (tc - t) ** 0.5
     lppl = sing + 0.06 * (tc - t) ** 0.5 * np.cos(8 * np.log(tc - t))
     fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.65))
-    for yv, lab, c in [(expo, 'exponential: ln p = r t', st.MainBlue), (sing, 'power-law singularity: A + B (tc - t)^m',
+    for yv, lab, c in [(expo, 'exponential: ln p = g t', st.MainBlue), (sing, 'power-law singularity: A + B (tc - t)^m',
                                                                          st.IDAred),
                        (lppl, 'LPPL: singularity with log-periodic oscillations', st.Forest)]:
         axes[0].plot(t, yv - yv[0], color=c, label=lab)

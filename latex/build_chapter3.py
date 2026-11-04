@@ -121,7 +121,7 @@ PW = N['power']
 for Tn in [100, 250, 500]:
     for reg in ['c', 'ct']:
         for phi in [0.9, 0.95, 1.0]:
-            V.put(f'pw.{Tn}.{reg}.{phi}', 100 * PW[f'{Tn}_{reg}_{phi}'], 0)
+            V.put(f'pw.{Tn}.{reg}.{phi}', 100 * PW[f'{Tn}_{reg}_{phi}'], 2 if phi == 1.0 else 0)   # sizes: 5.30, not 5
 
 H = N['dfhand']
 V.put('h.g', H['gamma'], 4)
@@ -171,6 +171,7 @@ def urow(i):
 
 
 UROWS = [urow(i) for i in range(len(ROWS))]
+assert ROWS[0][0] == 'Romania real GDP, log' and U[ROWS[0][0]]['reg'] == 'ct'   # u0 = log GDP, cited in the GDP forecasts
 for k in ['adf', 'pp']:
     pass
 V.put('ug.adfp', U['Romania real GDP, log']['adf']['p'], 2)
@@ -187,6 +188,7 @@ V.put('bs.zacv', BS['za']['crit5'], 2)
 V.put('bs.rej', 100 * BS['rej_break'], 0)
 V.put('bs.rej0', 100 * BS['rej_nobreak'], 0)
 V.raw('bs.date', str(BS['best_date']))
+V.put('bs.mint', BS['min_t'], 2)
 
 BR = N['brk_real']
 V.put('bn.za', BR['nile']['za']['stat'], 2)
@@ -642,7 +644,7 @@ chart(T('Size and power of the Dickey--Fuller test', 'Mărimea și puterea testu
       '2\\,000 de traiectorii AR(1) $y_t = \\phi y_{t-1} + \\varepsilon_t$ pentru fiecare $\\phi$; proporția respingerilor la 5\\%; la $\\phi = 1$ aceasta este mărimea testului')], h='0.55\\textheight')
 
 interp(('the power curves', 'curbelor de putere'), [
-    (T('Size: @{pw.100.c.1.0}\\%, @{pw.250.c.1.0}\\% and @{pw.500.c.1.0}\\% at $\\phi = 1$: the test holds its 5\\% level', 'Mărimea: @{pw.100.c.1.0}\\%, @{pw.250.c.1.0}\\% și @{pw.500.c.1.0}\\% la $\\phi = 1$: testul își respectă nivelul de 5\\%'),
+    (T('Size: @{pw.100.c.1.0}\\%, @{pw.250.c.1.0}\\% and @{pw.500.c.1.0}\\% at $\\phi = 1$ (with a constant): the test holds its 5\\% level', 'Mărimea: @{pw.100.c.1.0}\\%, @{pw.250.c.1.0}\\% și @{pw.500.c.1.0}\\% la $\\phi = 1$ (cu constantă): testul își respectă nivelul de 5\\%'),
      []),
     (T('Power at $\\phi = 0.95$: @{pw.100.c.0.95}\\% with $T = 100$, @{pw.250.c.0.95}\\% with $T = 250$, @{pw.500.c.0.95}\\% with $T = 500$', 'Puterea la $\\phi = 0{,}95$: @{pw.100.c.0.95}\\% cu $T = 100$, @{pw.250.c.0.95}\\% cu $T = 250$, @{pw.500.c.0.95}\\% cu $T = 500$'),
      [T('a quarterly series of 25 years ($T = 100$) almost never distinguishes $\\phi = 0.95$ from a unit root', 'o serie trimestrială de 25 de ani ($T = 100$) aproape niciodată nu deosebește $\\phi = 0{,}95$ de o rădăcină unitară'),
@@ -763,8 +765,8 @@ chart(T('A level shift misleads the ADF test', 'O schimbare de nivel înșală t
 interp(('the simulated break', 'rupturii simulate'), [
     (T('ADF with a constant: p = @{bs.adfp}: the stationary series ``has a unit root\'\'', 'ADF cu constantă: p = @{bs.adfp}: seria staționară „are rădăcină unitară”'),
      [T('over 2\\,000 such series, the DF test rejects in @{bs.rej}\\% of cases; without the break: @{bs.rej0}\\%', 'pe 2\\,000 de asemenea serii, testul DF respinge în @{bs.rej}\\% din cazuri; fără ruptură: @{bs.rej0}\\%')]),
-    (T('With the break modelled, the statistic falls to $@{bs.za}$, far below the 5\\% value $@{bs.zacv}$', 'Cînd ruptura este modelată, statistica scade la $@{bs.za}$, mult sub valoarea de 5\\%, $@{bs.zacv}$'),
-     [T('the minimum is reached at the true date $t = @{bs.date}$', 'minimul este atins la data adevărată, $t = @{bs.date}$')])])
+    (T('With the break modelled, the Zivot--Andrews statistic falls to $@{bs.za}$, far below the 5\\% value $@{bs.zacv}$', 'Cînd ruptura este modelată, statistica Zivot--Andrews scade la $@{bs.za}$, mult sub valoarea de 5\\%, $@{bs.zacv}$'),
+     [T('the curve on the right reaches its minimum, $@{bs.mint}$, at the true date $t = @{bs.date}$', 'curba din dreapta își atinge minimul, $@{bs.mint}$, la data adevărată, $t = @{bs.date}$')])])
 
 D.frame(T('Zivot and Andrews (1992): an unknown break date', 'Zivot și Andrews (1992): data rupturii necunoscută'), items(
     (T('\\refZA: let the data choose the break date $T_B$', '\\refZA: lăsăm datele să aleagă data rupturii $T_B$'),
@@ -885,22 +887,22 @@ chart(T('How fast the intervals grow', 'Viteza de creștere a intervalelor'), 't
 interp(('the interval widths', 'lățimii intervalelor'), [
     (T('$d = 0$, AR(1) with $\\phi = 0.8$: the width levels off at $1.96\\sigma/\\sqrt{1 - \\phi^2}$ (@{w0.20}$\\sigma$ at $h = 20$)', '$d = 0$, AR(1) cu $\\phi = 0{,}8$: lățimea se stabilizează la $1{,}96\\sigma/\\sqrt{1 - \\phi^2}$ (@{w0.20}$\\sigma$ la $h = 20$)'),
      []),
-    (T('$d = 1$: growth like $\\sqrt{h}$; at $h = 20$: @{w1.20}$\\sigma$ (random walk), @{w2.20}$\\sigma$ (ARIMA(1,1,0)), @{w3.20}$\\sigma$ (ARIMA(0,1,1), $\\theta = -0.5$)',
-       '$d = 1$: creștere ca $\\sqrt{h}$; la $h = 20$: @{w1.20}$\\sigma$ (mers aleator), @{w2.20}$\\sigma$ (ARIMA(1,1,0)), @{w3.20}$\\sigma$ (ARIMA(0,1,1), $\\theta = -0{,}5$)'),
+    (T('$d = 1$: growth like $\\sqrt{h}$; at $h = 20$: @{w1.20}$\\sigma$ (random walk), @{w2.20}$\\sigma$ (ARIMA(1,1,0), $\\phi = 0.5$), @{w3.20}$\\sigma$ (ARIMA(0,1,1), $\\theta = -0.5$)',
+       '$d = 1$: creștere ca $\\sqrt{h}$; la $h = 20$: @{w1.20}$\\sigma$ (mers aleator), @{w2.20}$\\sigma$ (ARIMA(1,1,0), $\\phi = 0{,}5$), @{w3.20}$\\sigma$ (ARIMA(0,1,1), $\\theta = -0{,}5$)'),
      [T('a negative MA part offsets part of each shock: narrower intervals', 'o componentă MA negativă compensează o parte din fiecare șoc: intervale mai înguste')]),
     T('$d = 2$: growth like $h^{3/2}$ (@{w4.20}$\\sigma$ at $h = 20$): over-differencing makes long-run forecasts useless', '$d = 2$: creștere ca $h^{3/2}$ (@{w4.20}$\\sigma$ la $h = 20$): supradiferențierea face prognozele pe termen lung inutilizabile')])
 
 chart(T('Romanian GDP: two forecasts', 'PIB-ul României: două prognoze'), 'tsa_ch3_gdp_forecast', 'TSA_ch3_arima_gdp', [
-    T('@{gd.order} with drift (red) and a linear trend with AR(1) errors (blue), both estimated on @{gi.q0}--@{gi.q1}; forecasts to @{gf2.fq}, transformed back to bn EUR',
-      '@{gd.order} cu derivă (roșu) și un trend liniar cu erori AR(1) (albastru), ambele estimate pe @{gi.q0}--@{gi.q1}; prognoze pînă în @{gf2.fq}, transformate înapoi în mld. EUR')], h='0.56\\textheight')
+    T('@{gd.order} with drift (red) and a linear trend with AR(1) errors (blue), both estimated on @{gi.q0}--@{gi.q1}; forecasts to @{gf2.fq}, transformed back to bn EUR (2010 prices)',
+      '@{gd.order} cu derivă (roșu) și un trend liniar cu erori AR(1) (albastru), ambele estimate pe @{gi.q0}--@{gi.q1}; prognoze pînă în @{gf2.fq}, transformate înapoi în mld. EUR (prețuri 2010)')], h='0.56\\textheight')
 
 interp(('the GDP forecasts', 'prognozelor PIB'), [
-    (T('The random walk with drift grows by @{gd.drift}\\% per quarter from the last value (@{gf2.last} bn EUR in @{gf2.lq}): @{gf2.ds.l12} bn after 12 quarters',
-       'Mersul aleator cu derivă crește cu @{gd.drift}\\% pe trimestru de la ultima valoare (@{gf2.last} mld. EUR în @{gf2.lq}): @{gf2.ds.l12} mld. după 12 trimestre'),
+    (T('The random walk with drift grows by @{gd.drift}\\% per quarter from the last value (@{gf2.last} bn EUR, 2010 prices, in @{gf2.lq}): @{gf2.ds.l12} bn after 12 quarters',
+       'Mersul aleator cu derivă crește cu @{gd.drift}\\% pe trimestru de la ultima valoare (@{gf2.last} mld. EUR, în prețurile din 2010, în @{gf2.lq}): @{gf2.ds.l12} mld. după 12 trimestre'),
      [T('95\\% half-width (in \\% of GDP): @{gf2.ds.w1} after 1 quarter, @{gf2.ds.w4} after 4, @{gf2.ds.w12} after 12, i.e.\\ $\\times$@{gf2.ratio} $= \\sqrt{12}$', 'semilățimea de 95\\% (în \\% din PIB): @{gf2.ds.w1} după 1 trimestru, @{gf2.ds.w4} după 4, @{gf2.ds.w12} după 12, adică $\\times$@{gf2.ratio} $= \\sqrt{12}$')]),
     (T('The TS model pulls GDP back towards its old line ($\\hat\\phi = @{gf2.ts.phi}$): @{gf2.ts.l12} bn after 12 quarters, half-width @{gf2.ts.w12}\\%', 'Modelul staționar în jurul trendului readuce PIB-ul spre vechea dreaptă ($\\hat\\phi = @{gf2.ts.phi}$): @{gf2.ts.l12} mld. după 12 trimestre, semilățimea @{gf2.ts.w12}\\%'),
      [T('more optimistic and more confident, because it assumes the recent slowdown is temporary', 'mai optimist și cu intervale mai înguste, pentru că presupune că încetinirea recentă este temporară')]),
-    T('The tests could not settle TS against DS for this sample: the choice of $d$ is a forecasting decision with consequences', 'Testele nu au putut decide între cele două modele pe acest eșantion: alegerea lui $d$ este o decizie de prognoză cu consecințe')])
+    T('The tests favour DS at 5\\% (ADF p = @{u0.adfp}; KPSS @{u0.kpss} $>$ 0.146), but are inconclusive at 1\\% (KPSS $<$ 0.216): the choice of $d$ is a forecasting decision with consequences', 'Testele favorizează modelul staționar în diferențe la 5\\% (ADF p = @{u0.adfp}; KPSS @{u0.kpss} $>$ 0,146), dar sînt neconcludente la 1\\% (KPSS $<$ 0,216): alegerea lui $d$ este o decizie de prognoză cu consecințe')])
 
 D.frame(T('Over-differencing', 'Supradiferențierea'), items(
     (T('Differencing an $I(0)$ series creates an MA unit root: $\\Delta\\varepsilon_t = \\varepsilon_t - \\varepsilon_{t-1}$, $\\theta = -1$ (Chapter 1)', 'Diferențierea unei serii $I(0)$ creează o rădăcină unitară MA: $\\Delta\\varepsilon_t = \\varepsilon_t - \\varepsilon_{t-1}$, $\\theta = -1$ (Capitolul 1)'),

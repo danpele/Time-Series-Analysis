@@ -584,7 +584,7 @@ def fig_leakage(L=None, save=True):
     ax.set_xticklabels(['simulated random walk\n(nothing to predict)', 'S&P 500, 2000-2026'])
     ax.set_ylabel('out-of-sample $R^2$ (%)')
     lo = min(100 * L[s][k] for s in ('sim', 'sp500') for k in ('kfold', 'wf', 'gap'))
-    ax.set_ylim(min(lo - 6, -10), max(100 * L[s]['kfold'] for s in ('sim', 'sp500')) + 8)
+    ax.set_ylim(min(lo - 16, -10), max(100 * L[s]['kfold'] for s in ('sim', 'sp500')) + 10)
     st.legend_outside_bottom(ax, ncol=3, y=-0.25)
     st.check_no_grey(fig)
     if save:
@@ -678,7 +678,7 @@ def shrinkage_paths(y=None, end=CV_FIRST):
             'kept': kept, 'n_kept': len(kept), 'top': top, 'first3': first3, 'n': int(len(F)), 'p': len(FEATS)}
 
 
-HIGHLIGHT = {'lag0': st.MainBlue, 'same_dow': st.IDAred, 'mean7': st.Forest, 'sat': st.Orange, 'holiday': st.Purple,
+HIGHLIGHT = {'lag0': st.MainBlue, 'lag6': st.Crimson, 'same_dow': st.IDAred, 'mean7': st.Forest, 'sat': st.Orange, 'holiday': st.Purple,
              'easter': st.Amber, 'xmas': st.Teal}
 
 
@@ -689,7 +689,9 @@ def fig_shrinkage(S=None, save=True):
     fig, ax = plt.subplots(1, 2, figsize=(9.33, 2.46))
     for j, f in enumerate(FEATS):
         col = HIGHLIGHT.get(f)
-        kw = dict(color=col, lw=1.8, label=f) if col else dict(color=st.MainBlue, lw=0.6, alpha=0.35, label='_nolegend_')
+        kw = dict(color=col, lw=1.8, label=f) if col else dict(color=st.MainBlue, lw=0.8, ls=':', label='_nolegend_')
+        if f == 'lag6':
+            kw['ls'] = '--'
         ax[0].plot(S['lams'], S['coefs_r'][j], **kw)
         ax[1].plot(S['alphas_l'], S['coefs_l'][j], **{**kw, 'label': '_nolegend_'})
     ax[0].set_xscale('log')
@@ -702,7 +704,7 @@ def fig_shrinkage(S=None, save=True):
     ax[1].set_title('lasso: coefficients drop to exactly zero', fontsize=11)
     ax[1].invert_xaxis()
     ax[0].invert_xaxis()
-    h0 = plt.Line2D([], [], color=st.MainBlue, lw=0.6, alpha=0.5, label='other features')
+    h0 = plt.Line2D([], [], color=st.MainBlue, lw=0.8, ls=':', label='other features')
     hh, ll = ax[0].get_legend_handles_labels()
     fig.legend(hh + [h0], ll + ['other features'], loc='upper center', bbox_to_anchor=(0.5, 0.02), ncol=7, frameon=False)
     fig.tight_layout(rect=(0, 0.08, 1, 1))

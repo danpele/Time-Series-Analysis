@@ -193,6 +193,8 @@ for r in range(3):
 # worked example: trace from the eigenvalues of the yields system
 lam = JO['US yields 1y, 5y, 10y']['eig']
 Tn = JO['US yields 1y, 5y, 10y']['n']
+Tn = Tn - JO['US yields 1y, 5y, 10y']['k_ar_diff'] - 1   # effective sample: n minus (lagged differences + 1)
+V.int('j0.Te', Tn)
 V.put('wj.l0', -math.log(1 - lam[0]), 4)
 V.put('wj.l1', -math.log(1 - lam[1]), 4)
 V.put('wj.l2', -math.log(1 - lam[2]), 4)
@@ -216,6 +218,8 @@ for i in range(3):
     for j in range(2):
         V.put(f've.a{i}{j}', VE['alpha'][i][j], 3)
         V.put(f've.t{i}{j}', VE['alpha_t'][i][j], 2)
+V.put('ve.tmin', min(abs(VE['alpha_t'][i][j]) for i in (1, 2) for j in (0, 1)), 2)
+V.put('ve.tmax', max(abs(VE['alpha_t'][i][j]) for i in (1, 2) for j in (0, 1)), 2)
 V.put('ve.eig0', VE['ec_eig'][0], 3)
 V.put('ve.eig1', VE['ec_eig'][1], 3)
 V.put('ve.h0', VE['ec_half'][0], 1)
@@ -400,8 +404,8 @@ D.frame(T('Common stochastic trends', 'Trenduri stochastice comune'), items(
      [T('$r = 0$: $n$ separate trends, no cointegration; $r = n - 1$: one trend shared by all', '$r = 0$: $n$ trenduri separate, fără cointegrare; $r = n - 1$: un singur trend, comun tuturor'),
       T('example: three yields (1, 5 and 10 years) with $r = 2$ share one trend, the \\textbf{level} of interest rates (Section 5)', 'exemplu: trei randamente (la 1, 5 și 10 ani) cu $r = 2$ au un singur trend comun, \\textbf{nivelul} ratelor dobînzii (secțiunea 5)')]),
     (T('\\textbf{Worked example}: $x_t$ a random walk, $y_t = 2x_t + u_t$, $z_t = -x_t + v_t$ ($u_t$, $v_t$ stationary)', '\\textbf{Exemplu rezolvat}: $x_t$ mers aleator, $y_t = 2x_t + u_t$, $z_t = -x_t + v_t$ ($u_t$, $v_t$ staționare)'),
-     [T('$n = 3$, one common trend, so $r = 2$: e.g.\\ $\\beta_1 = (1, -2, 0)^\\top$ and $\\beta_2 = (0, 1, 2)^\\top$ (since $y_t + 2z_t = u_t + 2v_t$)',
-        '$n = 3$, un singur trend comun, deci $r = 2$: de exemplu $\\beta_1 = (1, -2, 0)^\\top$ și $\\beta_2 = (0, 1, 2)^\\top$ (deoarece $y_t + 2z_t = u_t + 2v_t$)')])))
+     [T('$n = 3$, one common trend, so $r = 2$: in the order $(x_t, y_t, z_t)$, e.g.\\ $\\beta_1 = (-2, 1, 0)^\\top$ and $\\beta_2 = (0, 1, 2)^\\top$ (since $y_t - 2x_t = u_t$ and $y_t + 2z_t = u_t + 2v_t$)',
+        '$n = 3$, un singur trend comun, deci $r = 2$: în ordinea $(x_t, y_t, z_t)$, de exemplu $\\beta_1 = (-2, 1, 0)^\\top$ și $\\beta_2 = (0, 1, 2)^\\top$ (deoarece $y_t - 2x_t = u_t$ și $y_t + 2z_t = u_t + 2v_t$)')])))
 
 D.frame(T('Where economics predicts cointegration', 'Cointegrarea în teoria economică'), items(
     (T('\\textbf{Purchasing power parity}: $s_t = p_t - p^*_t + q_t$, with the real exchange rate $q_t$ stationary (Section 8)', '\\textbf{Paritatea puterii de cumpărare}: $s_t = p_t - p^*_t + q_t$, cu cursul real $q_t$ staționar (secțiunea 8)'),
@@ -423,7 +427,7 @@ interp(('the four pairs', 'celor patru perechi'), [
      [T('Engle--Granger test (Section 2), 5\\% critical value about $@{ex.rates.cv}$', 'testul Engle--Granger (secțiunea 2), valoarea critică de 5\\% circa $@{ex.rates.cv}$')]),
     T('Yields: $\\tau = @{ex.rates.tau}$, p = @{ex.rates.p}: borderline; consumption and income: $\\tau = @{ex.cons.tau}$, p = @{ex.cons.p}', 'Randamentele: $\\tau = @{ex.rates.tau}$, p = @{ex.rates.p}: la limită; consumul și venitul: $\\tau = @{ex.cons.tau}$, p = @{ex.cons.p}'),
     T('The two banks: $\\tau = @{ex.banks.tau}$, p = @{ex.banks.p}: cointegrated in this sample', 'Cele două bănci: $\\tau = @{ex.banks.tau}$, p = @{ex.banks.p}: cointegrate în acest eșantion'),
-    (T('EUR/RON and EUR/HUF: $\\tau = @{ex.fx.tau}$, p = @{ex.fx.p}: \\textbf{not} cointegrated', 'EUR/RON și EUR/HUF: $\\tau = @{ex.fx.tau}$, p = @{ex.fx.p}: \\textbf{nu} sînt cointegrate'),
+    (T('EUR/RON and EUR/HUF: $\\tau = @{ex.fx.tau}$, p = @{ex.fx.p}: \\textbf{no evidence} of cointegration', 'EUR/RON și EUR/HUF: $\\tau = @{ex.fx.tau}$, p = @{ex.fx.p}: \\textbf{nicio dovadă} de cointegrare'),
      [T('although they rose by similar amounts and $R^2 = @{ex.fx.r2}$ in levels: a common direction is not a common trend', 'deși au crescut cu valori apropiate, iar $R^2 = @{ex.fx.r2}$ în niveluri: o direcție comună nu este un trend comun')])])
 
 D.frame(T('Question for the room', 'Întrebare pentru sală'), items(
@@ -492,7 +496,7 @@ D.frame(T('The Phillips--Ouliaris test', 'Testul Phillips--Ouliaris'), items(
     T('In Python: \\texttt{coint(y, x)} from \\texttt{statsmodels}; \\texttt{phillips\\_ouliaris(y, x, test\\_type="Zt")} from \\texttt{arch}', 'În Python: \\texttt{coint(y, x)} din \\texttt{statsmodels}; \\texttt{phillips\\_ouliaris(y, x, test\\_type="Zt")} din \\texttt{arch}')))
 
 D.frame(T('Worked example: US consumption and income', 'Exemplu rezolvat: consumul și venitul în SUA'), items(
-    (T('Data: $c_t$, $y_t$ = 100 $\\times$ log of real consumption and real GDP, quarterly, 1959Q1--2009Q3 (@{eg0.n} quarters)', 'Datele: $c_t$, $y_t$ = 100 $\\times$ logaritmul consumului real și al PIB-ului real, trimestrial, T1 1959--T3 2009 (@{eg0.n} de trimestre)'),
+    (T('Data: $c_t$, $y_t$ = 100 $\\times$ log of real consumption and real GDP, quarterly, 1959Q1--2009Q3 (@{eg0.n} quarters)', 'Datele: $c_t$, $y_t$ = 100 $\\times$ logaritmul consumului real și al PIB-ului real, trimestrial, T1 1959--T3 2009 (@{eg0.n} trimestre)'),
      [T('pretest: ADF with trend, p = @{ex.cc.p} for $c_t$ and @{ex.cy.p} for $y_t$: both $I(1)$', 'testare prealabilă: ADF cu trend, p = @{ex.cc.p} pentru $c_t$ și @{ex.cy.p} pentru $y_t$: ambele $I(1)$')]),
     (T('Step 1: $\\hat c_t = @{eg.cons.a} + @{eg.cons.b}\\,y_t$, $R^2 = @{eg.cons.r2}$, DW $= @{eg.cons.dw}$', 'Pasul 1: $\\hat c_t = @{eg.cons.a} + @{eg.cons.b}\\,y_t$, $R^2 = @{eg.cons.r2}$, DW $= @{eg.cons.dw}$'),
      [T('DW: the Durbin--Watson statistic of the residuals, about 2 without autocorrelation and close to 0 for very persistent residuals', 'DW: statistica Durbin--Watson a reziduurilor, aproximativ 2 fără autocorelație și apropiată de 0 pentru reziduuri foarte persistente'),
@@ -522,7 +526,7 @@ D.frame(T('Engle--Granger and Phillips--Ouliaris on real data', 'Engle--Granger 
 interp(('the table', 'tabelului'), [
     (T('\\textbf{Normalisation}: TLV on BRD and BRD on TLV give different $\\tau$ ($@{eg2.tau}$ and $@{eg3.tau}$) and slopes that are not exact inverses', '\\textbf{Normalizarea}: TLV pe BRD și BRD pe TLV dau valori $\\tau$ diferite ($@{eg2.tau}$ și $@{eg3.tau}$) și pante care nu sînt exact inverse una alteia'),
      [T('Engle--Granger depends on which variable is on the left; here the verdict is the same', 'Engle--Granger depinde de variabila aleasă în stînga; aici verdictul este același')]),
-    (T('\\textbf{The sample}: since 2010 the same banks are not cointegrated (p = @{eg4.p}); since 2014 they are (p = @{eg2.p})', '\\textbf{Eșantionul}: din 2010 aceleași bănci nu sînt cointegrate (p = @{eg4.p}); din 2014 sînt (p = @{eg2.p})'),
+    (T('\\textbf{The sample}: since 2010 the test finds no cointegration for the same banks (p = @{eg4.p}); since 2014 it does (p = @{eg2.p})', '\\textbf{Eșantionul}: din 2010 testul nu găsește cointegrare pentru aceleași bănci (p = @{eg4.p}); din 2014 o găsește (p = @{eg2.p})'),
      [T('choosing the start date after looking at the data is a form of data snooping', 'alegerea datei de început după examinarea datelor este o formă de data snooping (căutare în date pînă la găsirea unui rezultat)')]),
     (T('\\textbf{The two tests disagree} for Romania: Engle--Granger p = @{eg6.p} with @{eg.ro.k} lags, Phillips--Ouliaris p @{eg6.pop}', '\\textbf{Cele două teste nu concordă} pentru România: Engle--Granger p = @{eg6.p} cu @{eg.ro.k} laguri, Phillips--Ouliaris p @{eg6.pop}'),
      [T('the slope @{eg6.b} is far from 1: the consumption share rose strongly; Seminar 7 (B2) discusses this case', 'panta @{eg6.b} este departe de 1: ponderea consumului a crescut puternic; Seminarul 7 (B2) discută acest caz')])])
@@ -718,10 +722,10 @@ D.frame(T('Trace and maximum-eigenvalue statistics', 'Statisticile urmei și a v
     T('The two tests usually agree; if not, the trace test is preferred in most applied work', 'Cele două teste concordă de obicei; dacă nu, în majoritatea lucrărilor aplicate se preferă testul urmei')))
 
 D.frame(T('Worked example: from eigenvalues to statistics', 'Exemplu rezolvat: de la valori proprii la statistici'), items(
-    (T('US yields at 1, 5 and 10 years, monthly, $T = @{j0.n}$: $\\hat\\lambda = (@{j0.e0}, @{j0.e1}, @{j0.e2})$', 'Randamentele din SUA la 1, 5 și 10 ani, lunar, $T = @{j0.n}$: $\\hat\\lambda = (@{j0.e0}, @{j0.e1}, @{j0.e2})$'),
+    (T('US yields at 1, 5 and 10 years, @{j0.n} months; effective sample $T = @{j0.n} - @{j0.k} - 1 = @{j0.Te}$: $\\hat\\lambda = (@{j0.e0}, @{j0.e1}, @{j0.e2})$', 'Randamentele din SUA la 1, 5 și 10 ani, @{j0.n} luni; eșantionul efectiv $T = @{j0.n} - @{j0.k} - 1 = @{j0.Te}$: $\\hat\\lambda = (@{j0.e0}, @{j0.e1}, @{j0.e2})$'),
      [T('$-\\ln(1 - \\hat\\lambda_i)$: @{wj.l0}; @{wj.l1}; @{wj.l2}', '$-\\ln(1 - \\hat\\lambda_i)$: @{wj.l0}; @{wj.l1}; @{wj.l2}')]),
-    (T('$r = 0$: trace $= @{j0.n} \\times (@{wj.l0} + @{wj.l1} + @{wj.l2}) = @{wj.tr0} > @{jcv.t0}$: reject', '$r = 0$: urma $= @{j0.n} \\times (@{wj.l0} + @{wj.l1} + @{wj.l2}) = @{wj.tr0} > @{jcv.t0}$: respingem'),
-     [T('max-eigenvalue: $@{j0.n} \\times @{wj.l0} = @{wj.mx0} > @{jcv.m0}$: reject', 'valoarea proprie maximă: $@{j0.n} \\times @{wj.l0} = @{wj.mx0} > @{jcv.m0}$: respingem')]),
+    (T('$r = 0$: trace $= @{j0.Te} \\times (@{wj.l0} + @{wj.l1} + @{wj.l2}) = @{wj.tr0} > @{jcv.t0}$: reject', '$r = 0$: urma $= @{j0.Te} \\times (@{wj.l0} + @{wj.l1} + @{wj.l2}) = @{wj.tr0} > @{jcv.t0}$: respingem'),
+     [T('max-eigenvalue: $@{j0.Te} \\times @{wj.l0} = @{wj.mx0} > @{jcv.m0}$: reject', 'valoarea proprie maximă: $@{j0.Te} \\times @{wj.l0} = @{wj.mx0} > @{jcv.m0}$: respingem')]),
     (T('$r \\le 1$: trace $= @{wj.tr1} > @{jcv.t1}$: reject; \\quad $r \\le 2$: trace $= @{j0.t2} < @{jcv.t2}$: do not reject', '$r \\le 1$: urma $= @{wj.tr1} > @{jcv.t1}$: respingem; \\quad $r \\le 2$: urma $= @{j0.t2} < @{jcv.t2}$: nu respingem'),
      [T('rank 2: two cointegrating vectors, one common trend', 'rangul 2: doi vectori de cointegrare, un singur trend comun')]),
     T('Small eigenvalues still matter: they are multiplied by $T$', 'Și valorile proprii mici contează: sînt înmulțite cu $T$')))
@@ -747,8 +751,8 @@ interp(('the three systems', 'celor trei sisteme'), [
 D.frame(T('The deterministic case changes the answer', 'Cazul termenilor determiniști schimbă răspunsul'), table(
     'lcccccc', T('\\textbf{Deterministic terms}', '\\textbf{Termeni determiniști}') + ' & $\\lambda_{\\mathrm{trace}}(0)$ & 5\\% & $\\lambda_{\\mathrm{trace}}(1)$ & 5\\% & $\\lambda_{\\mathrm{trace}}(2)$ & 5\\%',
     [lab + ' & ' + ' & '.join(f'@{{yd.{d}.t{r}}} & @{{yd.{d}.c{r}}}' for r in range(3)) for lab, d in
-     [(T('none (\\texttt{det\\_order=-1})', 'niciunul (\\texttt{det\\_order=-1})'), '-1'), (T('constant (\\texttt{det\\_order=0})', 'constantă (\\texttt{det\\_order=0})'), '0'),
-      (T('linear trend (\\texttt{det\\_order=1})', 'trend liniar (\\texttt{det\\_order=1})'), '1')]],
+     [(T('none, case 1 (\\texttt{det\\_order=-1})', 'niciunul, cazul 1 (\\texttt{det\\_order=-1})'), '-1'), (T('constant, case 3 (\\texttt{det\\_order=0})', 'constantă, cazul 3 (\\texttt{det\\_order=0})'), '0'),
+      (T('constant and trend, case 5 (\\texttt{det\\_order=1})', 'constantă și trend, cazul 5 (\\texttt{det\\_order=1})'), '1')]],
     size='scriptsize') + items(
     T('US yields at 1, 5 and 10 years: ranks @{yd.-1.r}, @{yd.0.r} and @{yd.1.r}', 'Randamentele din SUA la 1, 5 și 10 ani: rangurile @{yd.-1.r}, @{yd.0.r} și @{yd.1.r}'),
     (T('With a linear trend, the test says that every yield is stationary around a trend: not plausible for interest rates over 66 years', 'Cu trend liniar, testul spune că fiecare randament este staționar în jurul unui trend: neplauzibil pentru ratele dobînzii pe 66 de ani'),
@@ -792,7 +796,7 @@ D.frame(T('The adjustment coefficients', 'Coeficienții de ajustare'), table(
      T('$\\Delta i^{(10)}_t$ (10 years)', '$\\Delta i^{(10)}_t$ (10 ani)') + ' & $@{ve.a20}$ & $@{ve.t20}$ & $@{ve.a21}$ & $@{ve.t21}$'],
     size='footnotesize') + items(
     (T('The 1-year yield does not react to either error ($|t| < 1$): it behaves as \\textbf{weakly exogenous}', 'Randamentul la 1 an nu reacționează la niciuna dintre erori ($|t| < 1$): se comportă ca \\textbf{slab exogen}'),
-     [T('the short end follows monetary policy; the 5- and 10-year yields do the adjusting ($|t| \\approx 2$)', 'capătul scurt urmează politica monetară; randamentele la 5 și 10 ani fac ajustarea ($|t| \\approx 2$)')]),
+     [T('the short end follows monetary policy; the 5- and 10-year yields do the adjusting ($|t|$ from @{ve.tmin} to @{ve.tmax})', 'capătul scurt urmează politica monetară; randamentele la 5 și 10 ani fac ajustarea ($|t|$ între @{ve.tmin} și @{ve.tmax})')]),
     (T('The equilibrium errors $\\mathbf z_t = \\hat\\beta^\\top\\mathbf y_t$ follow $\\mathbf z_t = (I + \\hat\\beta^\\top\\hat\\alpha)\\,\\mathbf z_{t-1} + \\dots$; eigenvalues @{ve.eig0} and @{ve.eig1}', 'Erorile de echilibru $\\mathbf z_t = \\hat\\beta^\\top\\mathbf y_t$ urmează $\\mathbf z_t = (I + \\hat\\beta^\\top\\hat\\alpha)\\,\\mathbf z_{t-1} + \\dots$; valorile proprii @{ve.eig0} și @{ve.eig1}'),
      [T('half-lives of about @{ve.h0} and @{ve.h1} months: slow error correction, typical of interest rates', 'timpi de înjumătățire de circa @{ve.h0} și @{ve.h1} luni: corecție lentă a erorii, tipică pentru ratele dobînzii')])), 'small')
 
@@ -884,14 +888,14 @@ chart(T('Three Central European currencies', 'Trei monede central-europene'), 't
     T('EUR/RON, EUR/HUF and EUR/PLN, cross rates from the BNR reference rates, month-end, 100 ln', 'EUR/RON, EUR/HUF și EUR/PLN, cursuri încrucișate calculate din cursurile de referință BNR, la sfîrșitul lunii, 100 ln')], h='0.55\\textheight')
 
 interp(('the three currencies', 'celor trei monede'), [
-    (T('Since July 2005: EUR/RON +@{ce.ron}, EUR/HUF +@{ce.huf}, EUR/PLN +@{ce.pln} log points; each rate is $I(1)$ (ADF p = @{ce.ron.p}; @{ce.huf.p}; @{ce.pln.p})', 'Din iulie 2005: EUR/RON +@{ce.ron}, EUR/HUF +@{ce.huf}, EUR/PLN +@{ce.pln} puncte logaritmice; fiecare curs este $I(1)$ (ADF p = @{ce.ron.p}; @{ce.huf.p}; @{ce.pln.p})'),
+    (T('Since July 2005: EUR/RON +@{ce.ron}, EUR/HUF +@{ce.huf}, EUR/PLN +@{ce.pln} log points; ADF does not reject a unit root at 5\\% for any rate (p = @{ce.ron.p}; @{ce.huf.p}; @{ce.pln.p}, EUR/PLN borderline at 10\\%)', 'Din iulie 2005: EUR/RON +@{ce.ron}, EUR/HUF +@{ce.huf}, EUR/PLN +@{ce.pln} puncte logaritmice; ADF nu respinge rădăcina unitară la 5\\% pentru niciun curs (p = @{ce.ron.p}; @{ce.huf.p}; @{ce.pln.p}, EUR/PLN la limită la 10\\%)'),
      []),
-    (T('Johansen: trace @{ce.t0} for $r = 0$ (critical value @{jcv.t0}); also no cointegration since 2012 (trace @{ce.t12})', 'Johansen: urma @{ce.t0} pentru $r = 0$ (valoarea critică @{jcv.t0}); nici din 2012 nu există cointegrare (urma @{ce.t12})'),
+    (T('Johansen: trace @{ce.t0} for $r = 0$ (critical value @{jcv.t0}): no evidence of cointegration, also since 2012 (trace @{ce.t12})', 'Johansen: urma @{ce.t0} pentru $r = 0$ (valoarea critică @{jcv.t0}): nicio dovadă de cointegrare, nici din 2012 (urma @{ce.t12})'),
      [T('a common anchor (the euro) and similar shocks do not create a common trend: each central bank and each inflation path adds its own', 'o ancoră comună (euro) și șocuri similare nu creează un trend comun: fiecare bancă centrală și fiecare evoluție a inflației adaugă propriul trend')]),
     T('The right model for these rates is a VAR in differences (Chapter 6); Seminar 7 (B3) repeats the analysis', 'Modelul potrivit pentru aceste cursuri este un VAR în diferențe (Capitolul 6); Seminarul 7 (B3) reia analiza')])
 
 D.recap(('Economic examples', 'exemple economice'), [
-    T('PPP for the leu is rejected over 2005--2026: real appreciation of a converging economy', 'PPP pentru leu este respinsă în 2005--2026: aprecierea reală a unei economii în convergență'),
+    T('No evidence of PPP for the leu over 2005--2026 (a unit root in $q_t$ is not rejected): real appreciation of a converging economy', 'Nicio dovadă de PPP pentru leu în 2005--2026 (rădăcina unitară în $q_t$ nu este respinsă): aprecierea reală a unei economii în convergență'),
     T('ROBOR and Euribor: a loose, slow link since 2010; the sample decides the verdict', 'ROBOR și Euribor: o legătură slabă și lentă din 2010; eșantionul decide verdictul'),
     T('Theory proposes $\\beta$; the tests, the sample and the deterministic terms decide whether the data agree', 'Teoria propune $\\beta$; testele, eșantionul și termenii determiniști decid dacă datele sînt de acord')])
 

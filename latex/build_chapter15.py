@@ -323,10 +323,12 @@ P('e4.F', gh['F'], 2)
 V.raw('e4.df2', str(gh['df2']))
 V.raw('e4.T', str(gh['T']))
 P('e4.crit', gh['crit5'], 2)
+for k in ('L1.pi', 'L2.pi', 'L1.i', 'L2.i'):
+    P(f'e4.b4.{k}', EI[k], 4)
 num_pi = EI['L1.pi'] + EI['L2.pi']
 den = 1 - EI['L1.i'] - EI['L2.i']
-P('e4.num', num_pi, 3)
-P('e4.den', den, 3)
+P('e4.num', round(EI['L1.pi'], 4) + round(EI['L2.pi'], 4), 4)       # from the coefficients shown (4 decimals)
+P('e4.den', 1 - round(EI['L1.i'], 4) - round(EI['L2.i'], 4), 4)
 P('e4.lr', num_pi / den, 2)
 
 # P5: VECM pentru randamentele SUA (Capitolul 7)
@@ -363,8 +365,11 @@ V.raw('e6.n', f"{GB['n']:,}".replace(',', '\\,'))
 s2T6, eT6 = 1.0, -3.0
 s2n6 = om6 + al6 * eT6 ** 2 + be6 * s2T6
 q6 = stats.t.ppf(0.01, round(nu6)) * math.sqrt((round(nu6) - 2) / round(nu6))
-P('e6.a9', al6 * eT6 ** 2, 3)
-P('e6.s2n', s2n6, 3)
+P('e6.a9', al6 * eT6 ** 2, 4)
+P('e6.s2n', s2n6, 4)
+P('e6.al5', al6, 5)
+P('e6.be4', be6, 4)
+P('e6.pers4', al6 + be6, 4)
 P('e6.sn', math.sqrt(s2n6), 3)
 P('e6.pers', al6 + be6, 3)
 P('e6.hl', math.log(0.5) / math.log(al6 + be6), 0)
@@ -372,8 +377,8 @@ P('e6.lv', om6 / (1 - al6 - be6), 2)
 P('e6.ann', math.sqrt(250 * om6 / (1 - al6 - be6)), 1)
 P('e6.ann_ch', GB['vol_lr'], 1)
 P('e6.vs', GB['vol_sample'], 1)
-P('e6.tq', stats.t.ppf(0.01, round(nu6)), 3)
-P('e6.sc', math.sqrt((round(nu6) - 2) / round(nu6)), 3)
+P('e6.tq', stats.t.ppf(0.01, round(nu6)), 4)
+P('e6.sc', math.sqrt((round(nu6) - 2) / round(nu6)), 4)
 P('e6.q', q6, 3)
 P('e6.var', -(mu6 + math.sqrt(s2n6) * q6), 2)
 P('e6.varn', -(mu6 + math.sqrt(s2n6) * stats.norm.ppf(0.01)), 2)
@@ -768,7 +773,7 @@ D.frame(T('Step 4: estimating the candidates', 'Pasul 4: estimarea candidaților
     ['$(1,1,0)(0,1,1)_{12}$, ' + T('identified', 'identificat') + ' & @{gr0.k} & @{gr0.aicc} & @{gr0.bic} & @{gr0.lb12} & @{gr0.lb24}']
     + [f'${{@{{gr{i}.m}}}}_{{12}}$ & @{{gr{i}.k}} & @{{gr{i}.aicc}} & @{{gr{i}.bic}} & @{{gr{i}.lb12}} & @{{gr{i}.lb24}}' for i in range(1, 5)],
     size='footnotesize') + items(
-    T('All @{gr.n} SARIMA$(p,1,q)(P,1,Q)_{12}$ with $p, q \\le 2$, $P, Q \\le 1$, on the training sample to @{gr.trlast} ($T = @{gr.ntr}$); sorted by BIC', 'Toate cele @{gr.n} de modele SARIMA$(p,1,q)(P,1,Q)_{12}$ cu $p, q \\le 2$, $P, Q \\le 1$, pe eșantionul de antrenare pînă în @{gr.trlast} ($T = @{gr.ntr}$); ordonate după BIC'),
+    T('All @{gr.n} SARIMA$(p,1,q)(P,1,Q)_{12}$ with $p, q \\le 2$, $P, Q \\le 1$, on the training sample to @{gr.trlast} ($T = @{gr.ntr}$); first row: the identified model, then the four other models with the lowest BIC, in order', 'Toate cele @{gr.n} de modele SARIMA$(p,1,q)(P,1,Q)_{12}$ cu $p, q \\le 2$, $P, Q \\le 1$, pe eșantionul de antrenare pînă în @{gr.trlast} ($T = @{gr.ntr}$); primul rînd: modelul identificat, apoi celelalte patru modele cu cel mai mic BIC, în ordine'),
     T('param.: all estimated parameters, the variance included; Ljung--Box on the residuals with $m - k$ degrees of freedom, $k$ = the ARMA parameters', 'param.: toți parametrii estimați, inclusiv varianța; Ljung--Box pe reziduuri cu $m - k$ grade de libertate, $k$ = parametrii ARMA'),
     T('The identified model fails the residual check; the lowest BIC, $@{gr.best}$, fails at lag 12; the chosen model is $@{gr.chosen}_{12}$, the lowest BIC among the models that pass', 'Modelul identificat nu trece verificarea reziduurilor; cel mai mic BIC, $@{gr.best}$, eșuează la lagul 12; modelul ales este $@{gr.chosen}_{12}$, cel mai mic BIC dintre modelele care trec')) + ql('TSA_ch15_box_jenkins'), 'footnotesize')
 
@@ -972,7 +977,7 @@ problem(4, ('VAR output and Granger causality', 'rezultate VAR și cauzalitate G
 solution(4, [
     T('$x$ Granger-causes $y$ if the lags of $x$ improve the forecast of $y$ given the lags of $y$ (joint $F$ test) \\refGranger\n\\begin{itemize}\n\\item growth and inflation help to forecast ROBOR ($p =$ @{e4.p.gi} and @{e4.p.pii}); ROBOR does not help to forecast inflation ($p = @{e4.p.ipi}$)\n\\end{itemize}', '$x$ cauzează Granger $y$ dacă lagurile lui $x$ îmbunătățesc prognoza lui $y$, dată fiind istoria lui $y$ (test $F$ comun) \\refGranger\n\\begin{itemize}\n\\item creșterea și inflația ajută la prognoza ROBOR ($p =$ @{e4.p.gi} și @{e4.p.pii}); ROBOR nu ajută la prognoza inflației ($p = @{e4.p.ipi}$)\n\\end{itemize}'),
     T('$i_t = @{e4.b.const} + @{e4.b.L1.g}g_{t-1} + @{e4.b.L2.g}g_{t-2} + @{e4.b.L1.pi}\\pi_{t-1} + (@{e4.b.L2.pi})\\pi_{t-2} + @{e4.b.L1.i}i_{t-1} + (@{e4.b.L2.i})i_{t-2} + u_t$', '$i_t = @{e4.b.const} + @{e4.b.L1.g}g_{t-1} + @{e4.b.L2.g}g_{t-2} + @{e4.b.L1.pi}\\pi_{t-1} + (@{e4.b.L2.pi})\\pi_{t-2} + @{e4.b.L1.i}i_{t-1} + (@{e4.b.L2.i})i_{t-2} + u_t$'),
-    T('Long run ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b.L1.pi} + (@{e4.b.L2.pi}))/(1 - @{e4.b.L1.i} - (@{e4.b.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp', 'Pe termen lung ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b.L1.pi} + (@{e4.b.L2.pi}))/(1 - @{e4.b.L1.i} - (@{e4.b.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp'),
+    T('Long run ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b4.L1.pi} + (@{e4.b4.L2.pi}))/(1 - @{e4.b4.L1.i} - (@{e4.b4.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp', 'Pe termen lung ($i_t = i_{t-1}$, $\\pi_t = \\pi_{t-1}$): $\\partial i/\\partial\\pi = (@{e4.b4.L1.pi} + (@{e4.b4.L2.pi}))/(1 - @{e4.b4.L1.i} - (@{e4.b4.L2.i})) = @{e4.num}/@{e4.den} = @{e4.lr}$ pp'),
     T('$F = \\frac{(@{e4.rssr} - @{e4.rssu})/2}{@{e4.rssu}/@{e4.df2}} = @{e4.F} > F_{0.95}(2, @{e4.df2}) = @{e4.crit}$: $H_0$ rejected', '$F = \\frac{(@{e4.rssr} - @{e4.rssu})/2}{@{e4.rssu}/@{e4.df2}} = @{e4.F} > F_{0,95}(2, @{e4.df2}) = @{e4.crit}$: $H_0$ se respinge')],
     [T('The money market rate follows the economy and inflation, as a central bank reaction would imply; the reverse link is not visible in quarterly data', 'Dobînda interbancară urmează economia și inflația, așa cum ar implica reacția unei bănci centrale; legătura inversă nu se vede în datele trimestriale'),
      T('The long-run effect divides by $@{e4.den}$, a number close to zero: it is imprecise; Granger causality is predictability, not proof of a policy effect', 'Efectul pe termen lung împarte la $@{e4.den}$, un număr apropiat de zero: este imprecis; cauzalitatea Granger înseamnă predictibilitate, nu dovada unui efect de politică')])
@@ -1009,8 +1014,8 @@ problem(6, ('GARCH output and VaR 1\\%', 'rezultate GARCH și VaR 1\\%'),
          T('Compute the one-day VaR 1\\% with the standardised $t_5$ quantile and compare it with the Normal one.', 'Calculați VaR 1\\% pe o zi cu cuantila $t_5$ standardizată și comparați-l cu cel Normal.')],
         extra=P6OUT)
 solution(6, [
-    T('$\\alpha + \\beta = @{e6.pers}$; $h_{1/2} = \\ln 0.5/\\ln @{e6.pers} = @{e6.hl}$ days; $\\bar\\sigma^2 = @{e6.om}/(1 - @{e6.pers}) = @{e6.lv}$, $\\sqrt{250 \\times @{e6.lv}} = @{e6.ann}\\%$ a year', '$\\alpha + \\beta = @{e6.pers}$; $h_{1/2} = \\ln 0{,}5/\\ln @{e6.pers} = @{e6.hl}$ de zile; $\\bar\\sigma^2 = @{e6.om}/(1 - @{e6.pers}) = @{e6.lv}$, $\\sqrt{250 \\times @{e6.lv}} = @{e6.ann}\\%$ pe an'),
-    T('$\\sigma_{t+1}^2 = @{e6.om} + @{e6.al} \\times 9 + @{e6.be} \\times 1.0 = @{e6.om} + @{e6.a9} + @{e6.be} = @{e6.s2n}$, $\\sigma_{t+1} = @{e6.sn}\\%$', '$\\sigma_{t+1}^2 = @{e6.om} + @{e6.al} \\times 9 + @{e6.be} \\times 1{,}0 = @{e6.om} + @{e6.a9} + @{e6.be} = @{e6.s2n}$, $\\sigma_{t+1} = @{e6.sn}\\%$'),
+    T('$\\alpha + \\beta = @{e6.pers4}$; $h_{1/2} = \\ln 0.5/\\ln @{e6.pers4} = @{e6.hl}$ days; $\\bar\\sigma^2 = @{e6.om}/(1 - @{e6.pers4}) = @{e6.lv}$, $\\sqrt{250 \\times @{e6.lv}} = @{e6.ann}\\%$ a year', '$\\alpha + \\beta = @{e6.pers4}$; $h_{1/2} = \\ln 0{,}5/\\ln @{e6.pers4} = @{e6.hl}$ de zile; $\\bar\\sigma^2 = @{e6.om}/(1 - @{e6.pers4}) = @{e6.lv}$, $\\sqrt{250 \\times @{e6.lv}} = @{e6.ann}\\%$ pe an'),
+    T('$\\sigma_{t+1}^2 = @{e6.om} + @{e6.al5} \\times 9 + @{e6.be4} \\times 1.0 = @{e6.om} + @{e6.a9} + @{e6.be4} = @{e6.s2n}$, $\\sigma_{t+1} = @{e6.sn}\\%$', '$\\sigma_{t+1}^2 = @{e6.om} + @{e6.al5} \\times 9 + @{e6.be4} \\times 1{,}0 = @{e6.om} + @{e6.a9} + @{e6.be4} = @{e6.s2n}$, $\\sigma_{t+1} = @{e6.sn}\\%$'),
     T('$q_{0.01}(z) = @{e6.tq} \\times \\sqrt{3/5} = @{e6.tq} \\times @{e6.sc} = @{e6.q}$; VaR 1\\% $= -(@{e6.mu} + @{e6.sn} \\times (@{e6.q})) = @{e6.var}\\%$; Normal: $@{e6.varn}\\%$', '$q_{0,01}(z) = @{e6.tq} \\times \\sqrt{3/5} = @{e6.tq} \\times @{e6.sc} = @{e6.q}$; VaR 1\\% $= -(@{e6.mu} + @{e6.sn} \\times (@{e6.q})) = @{e6.var}\\%$; Normal: $@{e6.varn}\\%$')],
     [T('Persistence close to 1: a shock to volatility halves only after about @{e6.hl} trading days', 'Persistență aproape de 1: un șoc al volatilității se înjumătățește abia după circa @{e6.hl} de zile de tranzacționare'),
      T('The long-run volatility (@{e6.ann}\\%) is far above the sample one (@{e6.vs}\\%): when $\\alpha + \\beta \\approx 1$, $\\omega/(1 - \\alpha - \\beta)$ is very imprecise', 'Volatilitatea pe termen lung (@{e6.ann}\\%) este mult peste cea de selecție (@{e6.vs}\\%): cînd $\\alpha + \\beta \\approx 1$, raportul $\\omega/(1 - \\alpha - \\beta)$ este foarte imprecis'),

@@ -114,6 +114,8 @@ V.raw('sh.p', str(SH['p']))
 V.int('sh.n', SH['n'])
 V.put('sh.alpha', SH['alpha_cv'], 4)
 V.put('sh.b0', SH['top'][0][1], 2)
+V.put('sh.b1', SH['top'][1][1], 2)
+assert SH['first3'] == ['lag6', 'lag0', 'lag13'] and SH['top'][1][0] == 'mon', 'lasso entry order changed: update the coefficient-path slide'
 
 TR = N['tree']
 V.put('tr.thr', TR['root']['thr'], 2)
@@ -165,6 +167,8 @@ for k, v in LD['dm'].items():
     a, b = k.split('|')
     V.raw(f'dm.{KEY[a]}.{KEY[b]}', pv(v['p']))
     V.put(f'dmd.{KEY[a]}.{KEY[b]}', 1000 * v['dbar'], 0)
+for m in ('GB direct', 'MLP', 'RF'):
+    V.raw(f'dm4.{KEY[m]}.Seasonalnaive', pv(LD['dm'][m + '|Seasonal naive']['p'], 4))
 V.raw('ld.no', str(LD['n_origins']))
 V.raw('ld.first', date(LD['first']))
 V.raw('ld.last', date(LD['last']))
@@ -228,6 +232,8 @@ for k in ('sp500', 'bet'):
         V.put(f'sg.{k}.{m}', 100 * SG[k][m]['acc'], 1)
         V.put(f'sg.{k}.{m}.auc', SG[k][m]['auc'], 3)
         V.raw(f'sg.{k}.{m}.p', pv(SG[k][m]['p']))
+V.put('sg.auclo', min(SG[k][m]['auc'] for k in ('sp500', 'bet') for m in ('Logit', 'RF', 'GB')), 3)
+V.put('sg.auchi', max(SG[k][m]['auc'] for k in ('sp500', 'bet') for m in ('Logit', 'RF', 'GB')), 3)
 
 M4 = N['m4']
 V.raw('m4.n', str(M4['n']))
@@ -502,9 +508,9 @@ chart(T('Ridge and lasso paths on the load features', 'Traiectoriile ridge și l
     h='0.54\\textheight')
 
 interp(('the coefficient paths', 'traiectoriilor coeficienților'), [
-    (T('With a large penalty all coefficients are near 0; as $\\lambda$ falls, $y_t$ (lag0) enters first and dominates, with coefficient @{sh.b0} GW per standard deviation',
-       'Cu o penalizare mare toți coeficienții sînt aproape de 0; cînd $\\lambda$ scade, $y_t$ (lag0) intră primul și domină, cu coeficientul @{sh.b0} GW la o abatere standard'),
-     [T('then the weekday dummies and the holiday flags: the calendar carries most of the remaining signal', 'urmează variabilele binare ale zilelor și sărbătorile: calendarul poartă cea mai mare parte din semnalul rămas')]),
+    (T('With a large penalty all coefficients are near 0; as $\\lambda$ falls, the first to enter are lag6 ($y_{t-6}$, the same weekday as the target), lag0 ($y_t$) and lag13; at the chosen penalty $y_t$ dominates, with coefficient @{sh.b0} GW per standard deviation',
+       'Cu o penalizare mare toți coeficienții sînt aproape de 0; cînd $\\lambda$ scade, intră primele lag6 ($y_{t-6}$, aceeași zi a săptămînii ca ținta), lag0 ($y_t$) și lag13; la penalizarea aleasă domină $y_t$, cu coeficientul @{sh.b0} GW la o abatere standard'),
+     [T('the next largest coefficients are the weekday dummies (Monday @{sh.b1}): the calendar carries most of the remaining signal', 'următorii coeficienți ca mărime sînt cei ai variabilelor binare ale zilelor (lunea @{sh.b1}): calendarul poartă cea mai mare parte din semnalul rămas')]),
     T('At the chosen penalty the lasso keeps @{sh.kept} of @{sh.p} features: many lags are redundant once $y_t$, the weekday and the holidays are in', 'La penalizarea aleasă, lasso păstrează @{sh.kept} din @{sh.p} de variabile: multe laguri sînt redundante cînd $y_t$, ziua săptămînii și sărbătorile sînt incluse'),
     T('Ridge keeps everything but shrinks it smoothly; on the test origins of Section 6 ridge is the best ML model', 'Ridge păstrează totul, dar contractă lin; pe originile de test din secțiunea 6, ridge este cel mai bun model ML')])
 
@@ -702,8 +708,8 @@ chart(T('MASE and accuracy by horizon', 'MASE și acuratețea pe orizonturi'), '
 interp(('the load results', 'rezultatelor pentru consum'), [
     (T('DHR (MASE @{ld.DHR.MASE}) and ridge (@{ld.Ridge.MASE}) are the most accurate; the difference is not significant (p @{dm.Ridge.DHR})', 'DHR (MASE @{ld.DHR.MASE}) și ridge (@{ld.Ridge.MASE}) sînt cele mai precise; diferența nu este semnificativă (p @{dm.Ridge.DHR})'),
      [T('both are linear models with the right calendar features; the trees and networks do not beat them', 'ambele sînt modele liniare cu variabilele de calendar potrivite; arborii și rețelele nu le depășesc')]),
-    (T('GB direct (@{ld.GBdirect.MASE}), MLP (@{ld.MLP.MASE}), random forest (@{ld.RF.MASE}) beat the seasonal naive method clearly (p @{dm.GBdirect.Seasonalnaive}) and SARIMA, ETS',
-       'GB direct (@{ld.GBdirect.MASE}), MLP (@{ld.MLP.MASE}), random forest (@{ld.RF.MASE}) depășesc clar metoda naivă sezonieră (p @{dm.GBdirect.Seasonalnaive}), SARIMA și ETS'),
+    (T('GB direct (@{ld.GBdirect.MASE}), MLP (@{ld.MLP.MASE}), random forest (@{ld.RF.MASE}) beat the seasonal naive method clearly (DM p = @{dm4.GBdirect.Seasonalnaive}; @{dm4.MLP.Seasonalnaive}; @{dm4.RF.Seasonalnaive}) and have a lower MASE than SARIMA and ETS (not tested with DM)',
+       'GB direct (@{ld.GBdirect.MASE}), MLP (@{ld.MLP.MASE}), random forest (@{ld.RF.MASE}) depășesc clar metoda naivă sezonieră (DM p = @{dm4.GBdirect.Seasonalnaive}; @{dm4.MLP.Seasonalnaive}; @{dm4.RF.Seasonalnaive}) și au un MASE mai mic decît SARIMA și ETS (diferență netestată cu DM)'),
      [T('direct and recursive GB are close (@{ld.GBdirect.MASE} and @{ld.GBrecursive.MASE}); the LSTM (@{ld.LSTM.MASE}) is worse than every model except the naive, SARIMA and ETS', 'GB direct și recursiv sînt apropiate (@{ld.GBdirect.MASE} și @{ld.GBrecursive.MASE}); LSTM (@{ld.LSTM.MASE}) este mai slab decît toate modelele, cu excepția celui naiv, SARIMA și ETS')]),
     T('Lesson: features matter more than the algorithm; with four years of daily data, a well-specified linear model is hard to beat', 'Lecția: variabilele contează mai mult decît algoritmul; cu patru ani de date zilnice, un model liniar bine specificat este greu de depășit')])
 
@@ -713,14 +719,14 @@ chart(T('Forecasts around Orthodox Easter 2026', 'Prognozele în jurul Paștelui
     h='0.5\\textheight')
 
 interp(('the Easter window', 'ferestrei de Paște'), [
-    (T('All models see the Easter flag, but the trees have only four Easters in training: they predict a dip that is too shallow', 'Toate modelele văd indicatorul de Paște, dar arborii au doar patru sărbători de Paște la antrenare: prognozează o scădere prea mică'),
+    (T('All models except the LSTM see the Easter flag, but the trees have only four Easters in training: they predict a dip that is too shallow', 'Toate modelele, cu excepția LSTM, văd indicatorul de Paște, dar arborii au doar patru sărbători de Paște la antrenare: prognozează o scădere prea mică'),
      [T('DHR estimates one Easter coefficient from the same four episodes and pools the information more efficiently', 'DHR estimează un singur coeficient pentru Paște din aceleași patru episoade și folosește informația mai eficient')]),
     T('The LSTM sees no holiday flag: it repeats the weekly pattern and misses the holiday entirely', 'LSTM nu vede indicatorul de sărbătoare: repetă tiparul săptămînal și nu surprinde deloc sărbătoarea'),
     T('Rare events need either structure (a regression coefficient) or many series that share the event (a global model)', 'Evenimentele rare cer fie structură (un coeficient de regresie), fie multe serii care au în comun evenimentul (un model global)')])
 
 D.recap(('Electricity load', 'consumul de energie electrică'), [
     T('Same origins, same horizon, same errors: ML models enter the comparison of Chapter 4', 'Aceleași origini, același orizont, aceleași erori: modelele ML intră în comparația din Capitolul 4'),
-    T('Ridge equals DHR; GB, random forest and the MLP beat SARIMA and ETS; the LSTM does not', 'Ridge are aceeași precizie ca DHR; GB, random forest și MLP depășesc SARIMA și ETS; LSTM nu'),
+    T('Ridge and DHR: no significant difference (p @{dm.Ridge.DHR}); GB, random forest and the MLP have a lower MASE than SARIMA and ETS; the LSTM is the weakest ML model', 'Ridge și DHR: nicio diferență semnificativă (p @{dm.Ridge.DHR}); GB, random forest și MLP au un MASE mai mic decît SARIMA și ETS; LSTM este cel mai slab model ML'),
     T('Calendar features and holidays decide the ranking', 'Variabilele de calendar și sărbătorile decid clasamentul')])
 
 # =============================================================================
@@ -852,7 +858,7 @@ D.frame(T('The sign of tomorrow\'s return: the right baseline', 'Semnul randamen
     (T('\\textbf{The right baseline} is not 50\\%: markets rise on more days than they fall', '\\textbf{Reperul corect} nu este 50\\%: piețele cresc în mai multe zile decît scad'),
      [T('``always up\'\' (the majority class of the training data) is right on @{sg.sp500.base}\\% of S\\&P 500 days and @{sg.bet.base}\\% of BET days', '„întotdeauna în creștere” (clasa majoritară din antrenare) are dreptate în @{sg.sp500.base}\\% din zilele S\\&P 500 și în @{sg.bet.base}\\% din zilele BET')]),
     T('Accuracy, S\\&P 500: logit @{sg.sp500.Logit}\\%, random forest @{sg.sp500.RF}\\%, GB @{sg.sp500.GB}\\%; BET: @{sg.bet.Logit}\\%, @{sg.bet.RF}\\%, @{sg.bet.GB}\\%', 'Acuratețea, S\\&P 500: logit @{sg.sp500.Logit}\\%, random forest @{sg.sp500.RF}\\%, GB @{sg.sp500.GB}\\%; BET: @{sg.bet.Logit}\\%, @{sg.bet.RF}\\%, @{sg.bet.GB}\\%'),
-    (T('No model beats the baseline; AUC (area under the ROC curve) @{sg.sp500.Logit.auc}--@{sg.bet.Logit.auc}, close to 0.5: no ranking skill either', 'Niciun model nu depășește reperul; AUC (aria de sub curba ROC) @{sg.sp500.Logit.auc}--@{sg.bet.Logit.auc}, aproape de 0,5: nici capacitate de ordonare'),
+    (T('No model beats the baseline; AUC (area under the ROC curve) @{sg.auclo}--@{sg.auchi}, close to 0.5: no ranking skill either', 'Niciun model nu depășește reperul; AUC (aria de sub curba ROC) @{sg.auclo}--@{sg.auchi}, aproape de 0,5: nici capacitate de ordonare'),
      [T('AUC: the probability that a randomly chosen up day gets a higher model score than a randomly chosen down day; 0.5: no skill, 1: perfect ranking', 'AUC: probabilitatea ca o zi de creștere aleasă la întîmplare să primească un scor mai mare decît o zi de scădere aleasă la întîmplare; 0,5: fără putere, 1: ordonare perfectă')])), 'footnotesize')
 
 chart(T('Accuracy against the baseline', 'Acuratețea față de reper'), 'tsa_ch9_sign', 'TSA_ch9_finance', [

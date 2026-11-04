@@ -268,7 +268,7 @@ MSCA Digital Finance}
 \begin{itemize}
     \item \refVaswani: o rețea pentru secvențe construită pe \textbf{atenție}, fără recurență
     \begin{itemize}
-        \item creată pentru traducere; stă la baza oricărui model mare de limbaj (LLM)
+        \item creată pentru traducere; stă la baza majorității modelelor mari de limbaj (LLM)
     \end{itemize}
     \item Intrarea: o secvență de \textbf{tokeni}, fiecare transformat într-un vector (embedding)
     \item Arhitectura \textbf{encoder--decoder}
@@ -590,7 +590,7 @@ Chronos-2 (2025) & encoder & patch-uri + covariate & 21 de cuantile & Apache-2.0
 TimesFM (2024) & decoder & patch-uri de 32 & patch-uri de 128 & Apache-2.0 \\
 Moirai (2024) & encoder & patch-uri, orice variabile & amestec & CC BY-NC 4.0 \\
 Lag-Llama (2023) & decoder (Llama) & valori la laguri fixe & Student-$t$ & Apache-2.0 \\
-TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
+TimeGPT (2023) & encoder--decoder (puține detalii) & -- & puncte, intervale & API cu plată \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -625,7 +625,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
     \item Două calități de verificat
     \begin{itemize}
         \item \textbf{calibrarea}: intervalul de 80\% conține circa 80\% din valorile observate
-        \item \textbf{precizia} (sharpness): dintre prognozele calibrate, cea mai îngustă este mai bună (\refGR)
+        \item \textbf{finețea} (sharpness): dintre prognozele calibrate, cea mai îngustă este mai bună (\refGR)
     \end{itemize}
     \item Pentru ETS și ARIMA folosim cuantilele distribuției Normale, $\hat q_\tau = \hat y_{T+h} + z_\tau \hat\sigma_h$
     \begin{itemize}
@@ -715,7 +715,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
     \item La $\tau = 0{,}9$, o valoare peste cuantilă costă de 9 ori mai mult decît una sub ea: cuantila de 0,9 ar trebui depășită doar în 10\% din cazuri
     \item La $\tau = 0{,}5$, pierderea este jumătate din eroarea absolută: mediana este evaluată ca o prognoză punctuală
     \item CRPS pentru N(0, 1): 0{,}234 dacă $y = 0$, 0{,}602 dacă $y = 1$; N(0, 4) în $y = 1$ dă 0{,}663: o bandă mai largă este penalizată chiar dacă acoperă valoarea
-    \item CRPS răsplătește în același timp calibrarea și precizia
+    \item CRPS răsplătește în același timp calibrarea și finețea
 \end{itemize}
 \end{frame}
 
@@ -843,7 +843,7 @@ TimeGPT (2023) & nepublicată & -- & puncte, intervale & API cu plată \\
 \begin{frame}{Exemplu rezolvat: evaluarea unei ore}
 \itemsize{\small}
 \begin{itemize}
-    \item Ora 24 a prognozei consumului (22 iunie 2026, ora 23:00): $\hat q_{0{,}1}$ = 5{,}18, $\hat q_{0{,}5}$ = 5{,}48, $\hat q_{0{,}9}$ = 5{,}78 GW; valoarea observată 5{,}80 GW
+    \item Ora 24 a prognozei consumului (22 iunie 2026, ora 23:00): $\hat q_{0{,}1}$ = 5{,}1837, $\hat q_{0{,}5}$ = 5{,}4763, $\hat q_{0{,}9}$ = 5{,}7758 GW; valoarea observată 5{,}8033 GW
     \item Toate cele trei cuantile sînt sub valoarea observată, deci fiecare pierdere este $\tau\,(y - \hat q_\tau)$
     \begin{itemize}
         \item $\tau = 0{,}1$: 0{,}062; \ $\tau = 0{,}5$: 0{,}163; \ $\tau = 0{,}9$: 0{,}025 GW
@@ -966,7 +966,7 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \begin{itemize}
     \item Consumul orar: foundation models cîștigă clar (raportul WQL 0{,}58 pentru Chronos-2, 0{,}66 pentru Bolt small, 0{,}96 pentru ARIMA); ETS, doar cu sezonul zilnic, eșuează (1{,}75)
     \item PIB-ul României (serie trimestrială scurtă): ARIMA este cel mai bun (0{,}72); Chronos-Bolt este mai slab decît prognoza sezonieră naivă (1{,}22)
-    \item Șomajul și EUR/RON: toate modelele sînt aproape de 1: nimic nu bate cu mult prognoza naivă
+    \item Șomajul: toate modelele sînt aproape de 1; EUR/RON: aproape de 1, cu excepția Chronos-2 (WQL 0{,}87), a cărui mediană nu este totuși mai bună decît prognoza naivă (MASE 1{,}05)
     \item Media geometrică a WQL: Chronos-2 0{,}78, ARIMA 0{,}87, Bolt small 0{,}90, Bolt tiny 0{,}95, ETS 0{,}97; Chronos-2 este cel mai bun pe 5 din 7 serii
     \item Un ARIMA bine specificat este la fel de bun ca foundation models mici; un cîștigător unic pe toate seriile nu există
 \end{itemize}
@@ -988,8 +988,8 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \itemsize{\small}
 \begin{itemize}
     \item Acoperirea medie: prognoza sezonieră naivă 83\%, ETS 84\%, ARIMA 84\%, Bolt small 80\%, Chronos-2 76\%
-    \item Chronos-2 are cel mai bun WQL, dar intervale prea înguste: precis, dar nu complet calibrat
-    \item Vînzările din SUA: fiecare model acoperă mult sub 80\% (de la 65\% pentru Chronos-2 la 75\% pentru Bolt tiny): șocul din 2020 și saltul din 2021 îi surprind pe toți
+    \item Chronos-2 are cel mai bun WQL, dar intervale prea înguste: fine, dar nu complet calibrate
+    \item Vînzările din SUA: fiecare model acoperă mult sub 80\% (de la 64{,}7\% pentru prognoza sezonieră naivă și 65{,}0\% pentru Chronos-2 pînă la 75{,}2\% pentru Bolt tiny): șocul din 2020 și saltul din 2021 îi surprind pe toți
     \item Benzile ETS și ARIMA presupun erori Normale și varianță constantă: prea largi în perioadele calme, prea înguste în crize
 \end{itemize}
 \end{frame}
@@ -1050,7 +1050,7 @@ Vînzările cu amănuntul SUA & 117 & 0{,}69 & 0{,}66 & 0{,}90 & 0{,}84 & 0{,}60
 \itemsize{\small}
 \begin{itemize}
     \item Parametri: Bolt tiny 9 milioane, Bolt small 48 de milioane, Chronos-2 119 milioane; ETS și ARIMA: cîțiva pe serie
-    \item Precizia crește cu dimensiunea, dar ARIMA (0{,}87) se situează între modelul mic și cel mare
+    \item Modelele mai mari obțin aici scoruri mai bune, dar Chronos-2 diferă și prin arhitectură și date de antrenare: dimensiunea singură nu este cauza; ARIMA (0{,}87) se situează între Bolt small și Chronos-2
     \item Timpul pentru o prognoză a consumului pe procesorul unui laptop: Bolt small 19 ms, Chronos-2 43 ms, ARIMA 114 ms, ETS 411 ms
     \item Inferența zero-shot este ieftină; costul a fost plătit o singură dată, la pre-antrenare
 \end{itemize}
@@ -1292,7 +1292,7 @@ Acoperirea & $\frac1n\sum_i \mathbf{1}\{\hat q_{0{,}1}^{(i)} \le y_i \le \hat q_
 \begin{itemize}
     \item \textbf{Întrebare}: un interval de 80\% acoperă 95\% din valorile observate. Este un rezultat bun?
     \begin{itemize}
-        \item \textbf{Răspuns}: nu: intervalele sînt prea largi (lipsește precizia); CRPS penalizează acest lucru
+        \item \textbf{Răspuns}: nu: intervalele sînt prea largi (lipsește finețea); CRPS penalizează acest lucru
     \end{itemize}
     \item \textbf{Întrebare}: de ce nu poate un foundation model să bată mersul aleator pe EUR/RON?
     \begin{itemize}

@@ -30,6 +30,8 @@ def items(*xs):
 
 N = load()
 V = values(N)
+for _k in ('sp500', 'bet'):                   # 4 decimals, so that ln 0.5/ln(alpha + beta) gives the half-life shown
+    V.put(f'm.{_k}.pers', N['markets'][_k]['pers'], 4)
 D = Deck(5, 'lecture', refs=REFS)
 C = 'https://commons.wikimedia.org/wiki/File:'
 
@@ -273,7 +275,7 @@ D.section('Conditional mean and conditional variance', 'Media condiționată și
 
 D.frame(T('Conditioning on the past', 'Condiționarea pe trecut'), items(
     (T('$\\mathcal{F}_{t-1}$: the information available at the end of day $t-1$ (all past values)', '$\\mathcal{F}_{t-1}$: informația disponibilă la sfîrșitul zilei $t-1$ (toate valorile trecute)'),
-     [T('conditional expectation $E[X \\mid \\mathcal{F}_{t-1}]$: the best forecast of $X$ given the past (Chapter 2)', 'speranța condiționată $E[X \\mid \\mathcal{F}_{t-1}]$: cea mai bună prognoză a lui $X$, dat fiind trecutul (Capitolul 2)')]),
+     [T('conditional expectation $E[X \\mid \\mathcal{F}_{t-1}]$: the best forecast of $X$ given the past (Chapter 2)', 'media condiționată $E[X \\mid \\mathcal{F}_{t-1}]$: cea mai bună prognoză a lui $X$, dat fiind trecutul (Capitolul 2)')]),
     (T('\\textbf{Conditional mean}: $\\mu_t = E[r_t \\mid \\mathcal{F}_{t-1}]$', '\\textbf{Media condiționată}: $\\mu_t = E[r_t \\mid \\mathcal{F}_{t-1}]$'),
      [T('an ARMA model (Chapter 2) is a model for $\\mu_t$; for daily returns $\\mu_t$ is small and almost constant', 'un model ARMA (Capitolul 2) este un model pentru $\\mu_t$; pentru randamentele zilnice, $\\mu_t$ este mică și aproape constantă')]),
     (T('\\textbf{Conditional variance}: $\\sigma_t^2 = \\mathrm{Var}(r_t \\mid \\mathcal{F}_{t-1}) = E[(r_t - \\mu_t)^2 \\mid \\mathcal{F}_{t-1}]$',
@@ -980,7 +982,7 @@ D.frame(T('Self-assessment', 'Autoevaluare'), items(
     (T('\\textbf{Question}: $\\omega = 0.05$, $\\alpha = 0.05$, $\\beta = 0.90$. What are the long-run variance and the half-life?', '\\textbf{Întrebare}: $\\omega = 0{,}05$, $\\alpha = 0{,}05$, $\\beta = 0{,}90$. Care sînt varianța de lungă durată și timpul de înjumătățire?'),
      [T('\\textbf{Answer}: $0.05/0.05 = 1$; $\\ln 0.5/\\ln 0.95 = 13.5$ days', '\\textbf{Răspuns}: $0{,}05/0{,}05 = 1$; $\\ln 0{,}5/\\ln 0{,}95 = 13{,}5$ zile')]),
     (T('\\textbf{Question}: an ARCH-LM regression with $q = 5$ on 1000 residuals gives $R^2 = 0.004$. Are there ARCH effects at 5\\%?', '\\textbf{Întrebare}: o regresie ARCH-LM cu $q = 5$ pe 1000 de reziduuri dă $R^2 = 0{,}004$. Există efecte ARCH la 5\\%?'),
-     [T('\\textbf{Answer}: no: $\\mathrm{LM} = 1000 \\times 0.004 = 4 < 11.07$', '\\textbf{Răspuns}: nu: $\\mathrm{LM} = 1000 \\times 0{,}004 = 4 < 11{,}07$')]),
+     [T('\\textbf{Answer}: $\\mathrm{LM} = 1000 \\times 0.004 = 4 < 11.07$: $H_0$ is not rejected, no evidence of ARCH effects at 5\\% (which does not prove they are absent)', '\\textbf{Răspuns}: $\\mathrm{LM} = 1000 \\times 0{,}004 = 4 < 11{,}07$: $H_0$ nu se respinge, nu există dovezi de efecte ARCH la 5\\% (ceea ce nu dovedește că ele lipsesc)')]),
     (T('\\textbf{Question}: GJR gives $\\hat\\alpha = 0$ and $\\hat\\gamma = 0.2$. What happens to the variance after a rise of 3\\%?', '\\textbf{Întrebare}: GJR dă $\\hat\\alpha = 0$ și $\\hat\\gamma = 0{,}2$. Ce se întîmplă cu varianța după o creștere de 3\\%?'),
      [T('\\textbf{Answer}: nothing beyond the decay $\\beta\\sigma_t^2$: only negative shocks raise the variance', '\\textbf{Răspuns}: nimic în afară de scăderea $\\beta\\sigma_t^2$: doar șocurile negative cresc varianța')]),
     T('Next: Chapter 6, VAR models and Granger causality (several series at once)', 'Urmează: Capitolul 6, modele VAR și cauzalitate Granger (mai multe serii deodată)')))

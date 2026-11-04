@@ -135,8 +135,8 @@ P('fl.mn', FL['mase_naive'], 2)
 P('fl.mb', FL['mase_bolt'], 2)
 P('fl.cov', 100 * FL['cov_bolt'], 0)
 for i, q in enumerate(FL['q_24']):
-    P(f'fl.q{i}', q, 2)
-P('fl.y', FL['y_24'], 2)
+    P(f'fl.q{i}', q, 4)
+P('fl.y', FL['y_24'], 4)
 P('fl.p1', FL['pin_24']['0.1'], 3)
 P('fl.p5', FL['pin_24']['0.5'], 3)
 P('fl.p9', FL['pin_24']['0.9'], 3)
@@ -168,6 +168,8 @@ for k in KEYS:
         P(f'b.{k}.{a}.w', B[k][m]['rel_wql'], 2)
         P(f'b.{k}.{a}.m', B[k][m]['rel_mase'], 2)
         P(f'b.{k}.{a}.c', 100 * B[k][m]['cov80'], 0)
+for m, a in MOD.items():
+    P(f'b.retail.{a}.c1', 100 * B['retail'][m]['cov80'], 1)
 for m, a in MOD.items():
     P(f'gm.{a}.w', B['_gm'][m]['rel_wql'], 2)
     P(f'gm.{a}.m', B['_gm'][m]['rel_mase'], 2)
@@ -308,7 +310,7 @@ D.frame(T('The Transformer (Vaswani et al., 2017)', 'Transformer-ul (Vaswani et 
     ph('attention', T('The original diagram: encoder (left), decoder (right)', 'Diagrama originală: encoder (stînga), decoder (dreapta)'), h='0.62\\textheight'),
     items(
         (T('\\refVaswani: a network for sequences built on \\textbf{attention}, without recurrence', '\\refVaswani: o rețea pentru secvențe construită pe \\textbf{atenție}, fără recurență'),
-         [T('designed for translation; behind every large language model (LLM)', 'creată pentru traducere; stă la baza oricărui model mare de limbaj (LLM)')]),
+         [T('designed for translation; behind most large language models (LLM)', 'creată pentru traducere; stă la baza majorității modelelor mari de limbaj (LLM)')]),
         (T('Input: a sequence of \\textbf{tokens}, each turned into a vector (an embedding)', 'Intrarea: o secvență de \\textbf{tokeni}, fiecare transformat într-un vector (embedding)'), []),
         (T('\\textbf{Encoder--decoder} architecture', 'Arhitectura \\textbf{encoder--decoder}'),
              [T('the \\textbf{encoder} reads the whole input', '\\textbf{encoder-ul} citește toată intrarea'),
@@ -477,7 +479,7 @@ D.frame(T('The families side by side', 'Comparația familiilor de modele'), tabl
      'TimesFM (2024) & decoder & ' + T('patches of 32', 'patch-uri de 32') + ' & ' + T('patches of 128', 'patch-uri de 128') + ' & Apache-2.0',
      'Moirai (2024) & encoder & ' + T('patches, any variables', 'patch-uri, orice variabile') + ' & ' + T('mixture', 'amestec') + ' & CC BY-NC 4.0',
      'Lag-Llama (2023) & decoder (Llama) & ' + T('lagged values', 'valori la laguri fixe') + ' & Student-$t$ & Apache-2.0',
-     'TimeGPT (2023) & ' + T('not disclosed', 'nepublicată') + ' & -- & ' + T('points, intervals', 'puncte, intervale') + ' & ' + T('paid API', 'API cu plată')],
+     'TimeGPT (2023) & ' + T('encoder--decoder (few details)', 'encoder--decoder (puține detalii)') + ' & -- & ' + T('points, intervals', 'puncte, intervale') + ' & ' + T('paid API', 'API cu plată')],
     size='scriptsize') + items(
     T('A further line of work feeds the digits to general LLMs (\\refGruver); \\refTan show that the language-model part adds cost but no accuracy', 'O altă direcție dă cifrele unor LLM-uri generale (\\refGruver); \\refTan arată că partea de model de limbaj adaugă cost, dar nu și precizie')),
     size='footnotesize')
@@ -499,7 +501,7 @@ D.frame(T('Quantile forecasts', 'Prognozele cuantile'), items(
     (T('Central 80\\% interval: $[\\hat q_{0.1}, \\hat q_{0.9}]$; a \\textbf{fan chart} draws several such bands', 'Intervalul central de 80\\%: $[\\hat q_{0{,}1}, \\hat q_{0{,}9}]$; un \\textbf{fan chart} desenează mai multe astfel de benzi'), []),
     (T('Two qualities to check', 'Două calități de verificat'),
      [T('\\textbf{calibration}: the 80\\% interval contains about 80\\% of the outcomes', '\\textbf{calibrarea}: intervalul de 80\\% conține circa 80\\% din valorile observate'),
-      T('\\textbf{sharpness}: among calibrated forecasts, narrower is better (\\refGR)', '\\textbf{precizia} (sharpness): dintre prognozele calibrate, cea mai îngustă este mai bună (\\refGR)')]),
+      T('\\textbf{sharpness}: among calibrated forecasts, narrower is better (\\refGR)', '\\textbf{finețea} (sharpness): dintre prognozele calibrate, cea mai îngustă este mai bună (\\refGR)')]),
     (T('For ETS and ARIMA we use Normal quantiles $\\hat q_\\tau = \\hat y_{T+h} + z_\\tau \\hat\\sigma_h$', 'Pentru ETS și ARIMA folosim cuantilele distribuției Normale, $\\hat q_\\tau = \\hat y_{T+h} + z_\\tau \\hat\\sigma_h$'),
      [T('$z_\\tau$: the $\\tau$ quantile of the standard Normal distribution ($z_{0.9} = 1.28$); $\\hat\\sigma_h$: the estimated standard deviation of the $h$-step forecast error', '$z_\\tau$: cuantila de nivel $\\tau$ a distribuției Normale standard ($z_{0.9} = 1.28$); $\\hat\\sigma_h$: abaterea standard estimată a erorii de prognoză la orizontul $h$')])), size='footnotesize')
 
@@ -544,7 +546,7 @@ interp(('the scores', 'scorurilor'), [
     T('At $\\tau = 0.9$ an outcome above the quantile costs 9 times more than one below: the 0.9 quantile should be exceeded only 10\\% of the time', 'La $\\tau = 0{,}9$, o valoare peste cuantilă costă de 9 ori mai mult decît una sub ea: cuantila de 0,9 ar trebui depășită doar în 10\\% din cazuri'),
     T('At $\\tau = 0.5$ the loss is half the absolute error: the median is scored like a point forecast', 'La $\\tau = 0{,}5$, pierderea este jumătate din eroarea absolută: mediana este evaluată ca o prognoză punctuală'),
     T('CRPS of N(0, 1): @{crps0} if $y = 0$, @{crps} if $y = 1$; N(0, 4) at $y = 1$ gives @{crpsw}: a wider band is penalised even when it covers the outcome', 'CRPS pentru N(0, 1): @{crps0} dacă $y = 0$, @{crps} dacă $y = 1$; N(0, 4) în $y = 1$ dă @{crpsw}: o bandă mai largă este penalizată chiar dacă acoperă valoarea'),
-    T('The CRPS rewards calibration and sharpness at the same time', 'CRPS răsplătește în același timp calibrarea și precizia')])
+    T('The CRPS rewards calibration and sharpness at the same time', 'CRPS răsplătește în același timp calibrarea și finețea')])
 
 D.frame(T('Worked example: pinball losses', 'Exemplu rezolvat: pierderile pinball'), items(
     (T('Forecast of next month\'s unemployment rate: $\\hat q_{0.1}$ = @{pin.q0}, $\\hat q_{0.5}$ = @{pin.q1}, $\\hat q_{0.9}$ = @{pin.q2}; outcome $y$ = @{pin.y}', 'Prognoza ratei șomajului pentru luna viitoare: $\\hat q_{0{,}1}$ = @{pin.q0}, $\\hat q_{0{,}5}$ = @{pin.q1}, $\\hat q_{0{,}9}$ = @{pin.q2}; valoarea observată $y$ = @{pin.y}'), []),
@@ -670,7 +672,7 @@ chart(T('MASE and WQL by series and model', 'MASE și WQL pe serii și modele'),
 interp(('the benchmark', 'testului'), [
     T('Hourly load: the foundation models win clearly (WQL ratio @{b.load.c2.w} for Chronos-2, @{b.load.bs.w} for Bolt small, @{b.load.arima.w} for ARIMA); ETS with a daily season only fails (@{b.load.ets.w})', 'Consumul orar: foundation models cîștigă clar (raportul WQL @{b.load.c2.w} pentru Chronos-2, @{b.load.bs.w} pentru Bolt small, @{b.load.arima.w} pentru ARIMA); ETS, doar cu sezonul zilnic, eșuează (@{b.load.ets.w})'),
     T('Romanian GDP (short quarterly series): ARIMA is best (@{b.gdp.arima.w}); Chronos-Bolt is worse than the seasonal naive (@{b.gdp.bs.w})', 'PIB-ul României (serie trimestrială scurtă): ARIMA este cel mai bun (@{b.gdp.arima.w}); Chronos-Bolt este mai slab decît prognoza sezonieră naivă (@{b.gdp.bs.w})'),
-    T('Unemployment and EUR/RON: all models are close to 1: nothing beats the naive forecast by much', 'Șomajul și EUR/RON: toate modelele sînt aproape de 1: nimic nu bate cu mult prognoza naivă'),
+    T('Unemployment: all models are close to 1; EUR/RON: close to 1 except Chronos-2 (WQL @{b.eurron.c2.w}), whose median is still no better than the naive (MASE @{b.eurron.c2.m})', 'Șomajul: toate modelele sînt aproape de 1; EUR/RON: aproape de 1, cu excepția Chronos-2 (WQL @{b.eurron.c2.w}), a cărui mediană nu este totuși mai bună decît prognoza naivă (MASE @{b.eurron.c2.m})'),
     T('Geometric mean of WQL: Chronos-2 @{gm.c2.w}, ARIMA @{gm.arima.w}, Bolt small @{gm.bs.w}, Bolt tiny @{gm.bt.w}, ETS @{gm.ets.w}; Chronos-2 is best on @{gm.c2.wins} of 7 series', 'Media geometrică a WQL: Chronos-2 @{gm.c2.w}, ARIMA @{gm.arima.w}, Bolt small @{gm.bs.w}, Bolt tiny @{gm.bt.w}, ETS @{gm.ets.w}; Chronos-2 este cel mai bun pe @{gm.c2.wins} din 7 serii'),
     T('A well-specified ARIMA is as good as the small foundation models; a single winner on all series does not exist', 'Un ARIMA bine specificat este la fel de bun ca foundation models mici; un cîștigător unic pe toate seriile nu există')], size='footnotesize')
 
@@ -680,8 +682,8 @@ chart(T('Coverage of the 80\\% intervals', 'Acoperirea intervalelor de 80\\%'), 
 
 interp(('the coverage', 'acoperirii'), [
     T('Average coverage: seasonal naive @{gm.sn.c}\\%, ETS @{gm.ets.c}\\%, ARIMA @{gm.arima.c}\\%, Bolt small @{gm.bs.c}\\%, Chronos-2 @{gm.c2.c}\\%', 'Acoperirea medie: prognoza sezonieră naivă @{gm.sn.c}\\%, ETS @{gm.ets.c}\\%, ARIMA @{gm.arima.c}\\%, Bolt small @{gm.bs.c}\\%, Chronos-2 @{gm.c2.c}\\%'),
-    T('Chronos-2 has the best WQL but intervals that are too narrow: sharp, not fully calibrated', 'Chronos-2 are cel mai bun WQL, dar intervale prea înguste: precis, dar nu complet calibrat'),
-    T('US retail sales: every model covers well below 80\\% (from @{b.retail.c2.c}\\% for Chronos-2 to @{b.retail.bt.c}\\% for Bolt tiny): the 2020 shock and the 2021 jump surprise all of them', 'Vînzările din SUA: fiecare model acoperă mult sub 80\\% (de la @{b.retail.c2.c}\\% pentru Chronos-2 la @{b.retail.bt.c}\\% pentru Bolt tiny): șocul din 2020 și saltul din 2021 îi surprind pe toți'),
+    T('Chronos-2 has the best WQL but intervals that are too narrow: sharp, not fully calibrated', 'Chronos-2 are cel mai bun WQL, dar intervale prea înguste: fine, dar nu complet calibrate'),
+    T('US retail sales: every model covers well below 80\\% (from @{b.retail.sn.c1}\\% for the seasonal naive and @{b.retail.c2.c1}\\% for Chronos-2 to @{b.retail.bt.c1}\\% for Bolt tiny): the 2020 shock and the 2021 jump surprise all of them', 'Vînzările din SUA: fiecare model acoperă mult sub 80\\% (de la @{b.retail.sn.c1}\\% pentru prognoza sezonieră naivă și @{b.retail.c2.c1}\\% pentru Chronos-2 pînă la @{b.retail.bt.c1}\\% pentru Bolt tiny): șocul din 2020 și saltul din 2021 îi surprind pe toți'),
     T('ETS and ARIMA bands assume Normal errors and constant variance: too wide in calm periods, too narrow in crises', 'Benzile ETS și ARIMA presupun erori Normale și varianță constantă: prea largi în perioadele calme, prea înguste în crize')])
 
 chart(T('Romanian load: error by horizon', 'Consumul României: eroarea în funcție de orizont'), 'tsa_ch11_horizon', 'TSA_ch11_benchmark', [
@@ -707,7 +709,7 @@ chart(T('Size and accuracy', 'Dimensiunea și precizia'), 'tsa_ch11_size', 'TSA_
 
 interp(('size and cost', 'dimensiunii și a costului'), [
     T('Parameters: Bolt tiny @{sz.bt} million, Bolt small @{sz.bs} million, Chronos-2 @{sz.c2} million; ETS and ARIMA: a few per series', 'Parametri: Bolt tiny @{sz.bt} @{sz.bt.de}milioane, Bolt small @{sz.bs} @{sz.bs.de}milioane, Chronos-2 @{sz.c2} @{sz.c2.de}milioane; ETS și ARIMA: cîțiva pe serie'),
-    T('Accuracy improves with size, but ARIMA (@{gm.arima.w}) sits between the small and the large model', 'Precizia crește cu dimensiunea, dar ARIMA (@{gm.arima.w}) se situează între modelul mic și cel mare'),
+    T('The larger models score better here, but Chronos-2 also differs in architecture and training data: size alone is not the cause; ARIMA (@{gm.arima.w}) sits between Bolt small and Chronos-2', 'Modelele mai mari obțin aici scoruri mai bune, dar Chronos-2 diferă și prin arhitectură și date de antrenare: dimensiunea singură nu este cauza; ARIMA (@{gm.arima.w}) se situează între Bolt small și Chronos-2'),
     T('Time per load forecast on a laptop CPU: Bolt small @{sec.bs} ms, Chronos-2 @{sec.c2} ms, ARIMA @{sec.arima} ms, ETS @{sec.ets} ms', 'Timpul pentru o prognoză a consumului pe procesorul unui laptop: Bolt small @{sec.bs} ms, Chronos-2 @{sec.c2} ms, ARIMA @{sec.arima} ms, ETS @{sec.ets} ms'),
     T('Zero-shot inference is cheap; the cost was paid once, in pretraining', 'Inferența zero-shot este ieftină; costul a fost plătit o singură dată, la pre-antrenare')])
 
@@ -845,7 +847,7 @@ D.frame(T('Self-assessment (1/2)', 'Autoevaluare (1/2)'), items(
 
 D.frame(T('Self-assessment (2/2)', 'Autoevaluare (2/2)'), items(
     (T('\\textbf{Question}: an 80\\% interval covers 95\\% of the outcomes. Is this good?', '\\textbf{Întrebare}: un interval de 80\\% acoperă 95\\% din valorile observate. Este un rezultat bun?'),
-     [T('\\textbf{Answer}: no: the intervals are too wide (not sharp); the CRPS penalises this', '\\textbf{Răspuns}: nu: intervalele sînt prea largi (lipsește precizia); CRPS penalizează acest lucru')]),
+     [T('\\textbf{Answer}: no: the intervals are too wide (not sharp); the CRPS penalises this', '\\textbf{Răspuns}: nu: intervalele sînt prea largi (lipsește finețea); CRPS penalizează acest lucru')]),
     (T('\\textbf{Question}: why can a foundation model not beat the random walk on EUR/RON?', '\\textbf{Întrebare}: de ce nu poate un foundation model să bată mersul aleator pe EUR/RON?'),
      [T('\\textbf{Answer}: the changes of the rate are close to unpredictable from the past; no model can extract information that the context does not contain', '\\textbf{Răspuns}: variațiile cursului sînt aproape imprevizibile pe baza trecutului; niciun model nu poate extrage informație pe care contextul nu o conține')]),
     (T('\\textbf{Question}: a model released in 2025 scores very well on test data from 2018--2023. What do you check?', '\\textbf{Întrebare}: un model lansat în 2025 obține scoruri foarte bune pe date de test din 2018--2023. Ce verificați?'),

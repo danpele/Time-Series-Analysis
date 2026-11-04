@@ -232,8 +232,8 @@ D.frame(T('Learning outcomes', 'Rezultatele învățării'), items(
     T('Identify cycles in sunspots, GDP and electricity load; read coherence and phase between two series', 'Identificați cicluri în petele solare, în PIB și în consumul de energie electrică; interpretați coerența și faza dintre două serii')))
 
 D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
-    (T('Main reference for this chapter: \\refSS, Chapter 4 (spectral analysis and filtering)', 'Referința principală a capitolului: \\refSS, capitolul 4 (analiză spectrală și filtrare)'),
-     [T('theory: \\refBDtm, Chapters 4 and 10; \\refHamTS, Chapter 6; applications in Python: \\refHP', 'teorie: \\refBDtm, capitolele 4 și 10; \\refHamTS, capitolul 6; aplicații în Python: \\refHP'),
+    (T('Main reference for this chapter: \\refSS, Ch.~4 (spectral analysis and filtering)', 'Referința principală a capitolului: \\refSS, cap.~4 (analiză spectrală și filtrare)'),
+     [T('theory: \\refBDtm, Ch.~4 and~10; \\refHamTS, Ch.~6; applications in Python: \\refHP', 'teorie: \\refBDtm, cap.~4 și~10; \\refHamTS, cap.~6; aplicații în Python: \\refHP'),
       T('\\refSS\\ measure frequency in cycles per observation; Chapter 8 used the angular frequency $\\lambda = 2\\pi\\nu$', '\\refSS\\ măsoară frecvența în cicluri pe observație; în Capitolul 8 am folosit frecvența unghiulară $\\lambda = 2\\pi\\nu$')]),
     (T('Python Quantlets of this chapter: \\href{' + QLURL + '}{Quantlets/Ch\\_12}', 'Quantlet-urile Python ale capitolului: \\href{' + QLURL + '}{Quantlets/Ch\\_12}'),
      [T('the periodogram, the Daniell smoother and the Morlet wavelet are written out in \\texttt{numpy}; Welch and coherence come from \\texttt{scipy.signal}',
@@ -309,7 +309,7 @@ solved(('the DFT of four numbers', 'DFT pentru patru numere'), [
     T('Parseval: $4 + 0 + 4 = 8 = 2^2 + 0^2 + (-2)^2 + 0^2$; the whole variance ($8/4 = 2$) sits at period 4', 'Parseval: $4 + 0 + 4 = 8 = 2^2 + 0^2 + (-2)^2 + 0^2$; toată varianța ($8/4 = 2$) se află la perioada 4'),
     T('Check in Python: \\texttt{abs(np.fft.fft([2, 0, -2, 0]))**2 / 4} gives $(0, 4, 0, 4)$', 'Verificare în Python: \\texttt{abs(np.fft.fft([2, 0, -2, 0]))**2 / 4} dă $(0, 4, 0, 4)$')])
 
-chart(T('Aliasing', 'Aliasing'), 'tsa_ch12_aliasing', 'TSA_ch12_aliasing', [
+chart(T('Aliasing', 'Aliasing'), 'tsa_ch12_aliasing', 'TSA_ch12_fourier', [
     T('A cycle of 4 months ($\\nu = 1/4$ per month) observed only once a quarter (every 3 months)', 'Un ciclu de 4 luni ($\\nu = 1/4$ pe lună), observat doar o dată pe trimestru (la fiecare 3 luni)')],
     h='0.6\\textheight')
 
@@ -393,7 +393,7 @@ solved(('the peak of an AR(2) spectrum', 'vîrful spectrului unui AR(2)'), [
      [T('a clear peak: the series oscillates with a typical period of about 12 observations', 'un vîrf clar: seria oscilează cu o perioadă tipică de aproximativ 12 observații')]),
     T('The same AR(2) is used in Section 4 to test the estimators of the spectrum', 'Același AR(2) este folosit în secțiunea 4 pentru a testa estimatorii spectrului')])
 
-chart(T('A gallery of spectral densities', 'O galerie de densități spectrale'), 'tsa_ch12_spectra', 'TSA_ch12_spectra', [
+chart(T('A gallery of spectral densities', 'O galerie de densități spectrale'), 'tsa_ch12_spectra', 'TSA_ch12_spectral_densities', [
     T('Theoretical spectra with $\\sigma^2 = 1$ on $0 \\le \\nu \\le 1/2$; the shaded area equals half the variance', 'Spectre teoretice, cu $\\sigma^2 = 1$, pe $0 \\le \\nu \\le 1/2$; aria hașurată este jumătate din varianță')],
     h='0.66\\textheight')
 
@@ -433,7 +433,7 @@ D.frame(T('The periodogram', 'Periodograma'), items(
      [T('the share of a band of frequencies is the sum of its ordinates divided by the total', 'ponderea unei benzi de frecvențe este suma ordonatelor ei împărțită la total')]),
     T('In Python: \\texttt{np.abs(np.fft.fft(x - x.mean()))**2 / T}; keep $j = 1, \\ldots, \\lfloor T/2\\rfloor$', 'În Python: \\texttt{np.abs(np.fft.fft(x - x.mean()))**2 / T}; se păstrează $j = 1, \\ldots, \\lfloor T/2\\rfloor$')))
 
-chart(T('Sunspots and their periodogram', 'Petele solare și periodograma lor'), 'tsa_ch12_sunspots', 'TSA_ch12_sunspots', [
+chart(T('Sunspots and their periodogram', 'Petele solare și periodograma lor'), 'tsa_ch12_sunspots', 'TSA_ch12_periodogram', [
     T('Yearly mean sunspot number, 1700--2008, @{su.T} observations (Wolf / SILSO series, statsmodels); right: the raw periodogram', 'Numărul mediu anual de pete solare, 1700--2008, @{su.T} observații (seria Wolf / SILSO, statsmodels); dreapta: periodograma brută')],
     h='0.62\\textheight')
 
@@ -455,7 +455,7 @@ D.frame(T('Statistical properties of the periodogram', 'Proprietățile statisti
     (T('$\\chi^2_2/2$ is an exponential distribution with mean 1: a single ordinate can easily be 3 times the true value', '$\\chi^2_2/2$ este o distribuție exponențială cu media 1: o singură ordonată poate depăși ușor de 3 ori valoarea adevărată'),
      [T('its 95\\% quantile is @{ic.q95}: about 1 ordinate in 20 exceeds $@{ic.q95}\\,f(\\nu)$ by chance', 'cuantila ei de 95\\% este @{ic.q95}: aproximativ 1 ordonată din 20 depășește întîmplător $@{ic.q95}\\,f(\\nu)$')])), size='footnotesize')
 
-chart(T('The periodogram of white noise', 'Periodograma zgomotului alb'), 'tsa_ch12_inconsistency', 'TSA_ch12_inconsistency', [
+chart(T('The periodogram of white noise', 'Periodograma zgomotului alb'), 'tsa_ch12_inconsistency', 'TSA_ch12_periodogram', [
     T('Gaussian white noise with $\\sigma^2 = 1$, so the true spectrum is flat at 1; samples of $T = 128$ and $T = 2048$', 'Zgomot alb gaussian cu $\\sigma^2 = 1$, deci spectrul adevărat este constant, egal cu 1; eșantioane de $T = 128$ și $T = 2048$')],
     h='0.6\\textheight')
 
@@ -508,7 +508,7 @@ D.frame(T('Leakage and tapering', 'Scurgerea spectrală (leakage) și ferestrele
           T('the price: a slightly wider main peak (less resolution) for much smaller leakage', 'prețul: un vîrf principal puțin mai lat (rezoluție mai mică) pentru o scurgere mult mai mică')]),
     T('Default in practice: always taper a little; always remove the mean (and a trend, if there is one) first', 'În practică: aplicați întotdeauna o atenuare ușoară; eliminați întîi media (și trendul, dacă există)')), size='footnotesize')
 
-chart(T('Leakage: raw and tapered periodograms', 'Scurgerea: periodograma brută și cea cu atenuare'), 'tsa_ch12_leakage', 'TSA_ch12_leakage', [
+chart(T('Leakage: raw and tapered periodograms', 'Scurgerea: periodograma brută și cea cu atenuare'), 'tsa_ch12_leakage', 'TSA_ch12_spectral_estimation', [
     T('$T = 256$: $\\cos(2\\pi\\cdot @{lk.nu1}\\,t)$ (between two Fourier frequencies) plus $0.02\\cos(2\\pi\\cdot 0.3\\,t)$ and tiny noise; log scale', '$T = 256$: $\\cos(2\\pi\\cdot @{lk.nu1}\\,t)$ (între două frecvențe Fourier) plus $0.02\\cos(2\\pi\\cdot 0.3\\,t)$ și un zgomot foarte mic; scară logaritmică')],
     h='0.6\\textheight')
 
@@ -539,7 +539,7 @@ D.frame(T('Smoothing the periodogram (2/2): lag windows and Welch', 'Netezirea p
           T('split the series into $K$ overlapping segments, taper each, average their periodograms', 'seria se împarte în $K$ segmente care se suprapun, se aplică fereastra pe fiecare și se face media periodogramelor'),
           T('\\texttt{scipy.signal.welch}; the segment length sets the resolution', '\\texttt{scipy.signal.welch}; lungimea segmentului fixează rezoluția')])))
 
-chart(T('Smoothed estimates of an AR(2) spectrum', 'Estimări netezite ale spectrului unui AR(2)'), 'tsa_ch12_smoothing', 'TSA_ch12_smoothing', [
+chart(T('Smoothed estimates of an AR(2) spectrum', 'Estimări netezite ale spectrului unui AR(2)'), 'tsa_ch12_smoothing', 'TSA_ch12_spectral_estimation', [
     T('Simulated AR(2), $\\phi = (1.5, -0.75)$, $T = 512$; true spectrum (dashed) with the raw periodogram (left) and three smoothed estimates (right)', 'AR(2) simulat, $\\phi = (1.5;\\ -0.75)$, $T = 512$; spectrul adevărat (linie întreruptă), periodograma brută (stînga) și trei estimări netezite (dreapta)')],
     h='0.6\\textheight')
 
@@ -565,7 +565,7 @@ solved(('a 95\\% band with $L = 5$', 'o bandă de 95\\% pentru $L = 5$'), [
      [T('95\\% interval: [@{sc.lo}, @{sc.hi}]: asymmetric, wider upwards', 'intervalul de 95\\%: [@{sc.lo}, @{sc.hi}]: asimetric, mai lat în sus')]),
     T('With only 5 ordinates the estimate is still uncertain by a factor of 2--3; more smoothing narrows the band but blurs the peak', 'Cu doar 5 ordonate estimarea are încă o incertitudine de un factor de 2--3; o netezire mai puternică îngustează banda, dar estompează vîrful')])
 
-chart(T('Sunspots: smoothed spectrum with a confidence band', 'Petele solare: spectrul netezit cu bandă de încredere'), 'tsa_ch12_sunspot_ci', 'TSA_ch12_sunspot_ci', [
+chart(T('Sunspots: smoothed spectrum with a confidence band', 'Petele solare: spectrul netezit cu bandă de încredere'), 'tsa_ch12_sunspot_ci', 'TSA_ch12_spectral_estimation', [
     T('Daniell smoother with $m = 2$ ($L = 5$, $df = 10$, bandwidth $B = 5/@{su.T} = @{sc.B}$ cycles per year) and its 95\\% band; log scale', 'Netezire Daniell cu $m = 2$ ($L = 5$, $df = 10$, lățimea de bandă $B = 5/@{su.T} = @{sc.B}$ cicluri pe an) și banda de 95\\%; scară logaritmică')],
     h='0.6\\textheight')
 
@@ -597,7 +597,7 @@ D.frame(T('The typical spectral shape and the business cycle', 'Forma spectrală
      [T('both up to 2019 Q4: the 2020 collapse and rebound would dominate every periodogram', 'ambele pînă în T4 2019: prăbușirea și revenirea din 2020 ar domina orice periodogramă'),
       T('the cycle is also extracted with the HP filter, $\\lambda = 1600$ (\\refHPf; Chapter 10)', 'ciclul este extras și cu filtrul HP, $\\lambda = 1600$ (\\refHPf; Capitolul 10)')])))
 
-chart(T('GDP growth and HP cycles', 'Creșterea PIB și ciclurile HP'), 'tsa_ch12_gdp_series', 'TSA_ch12_gdp_series', [
+chart(T('GDP growth and HP cycles', 'Creșterea PIB și ciclurile HP'), 'tsa_ch12_gdp_series', 'TSA_ch12_business_cycle', [
     T('Quarterly growth $100\\,\\Delta\\ln \\mathrm{GDP}_t$ and the HP cycle ($100\\ln\\mathrm{GDP}_t$ minus its HP trend), United States 1947--2019 and Romania 1995--2019', 'Creșterea trimestrială $100\\,\\Delta\\ln \\mathrm{PIB}_t$ și ciclul HP ($100\\ln\\mathrm{PIB}_t$ minus trendul HP), Statele Unite 1947--2019 și România 1995--2019')],
     h='0.6\\textheight')
 
@@ -608,7 +608,7 @@ interp(('the GDP series', 'seriilor PIB'), [
      [T('one large boom--bust (2004--2010) dominates a sample of only 25 years', 'un singur ciclu mare de expansiune și recesiune (2004--2010) domină un eșantion de doar 25 de ani')]),
     T('The growth rate is noisy and short-lived; the HP cycle is smooth and persistent: their spectra will differ', 'Rata de creștere este zgomotoasă și de scurtă durată; ciclul HP este neted și persistent: spectrele lor vor fi diferite')])
 
-chart(T('Spectra of GDP growth and HP cycles', 'Spectrele creșterii PIB și ale ciclurilor HP'), 'tsa_ch12_gdp_spectra', 'TSA_ch12_gdp_spectra', [
+chart(T('Spectra of GDP growth and HP cycles', 'Spectrele creșterii PIB și ale ciclurilor HP'), 'tsa_ch12_gdp_spectra', 'TSA_ch12_business_cycle', [
     T('Daniell smoother, $m = 2$; each spectrum divided by the variance of its series; shaded: periods of 6 to 32 quarters', 'Netezire Daniell, $m = 2$; fiecare spectru este împărțit la varianța seriei sale; hașurat: perioade între 6 și 32 de trimestre')],
     h='0.6\\textheight')
 
@@ -619,8 +619,8 @@ interp(('the GDP spectra', 'spectrelor PIB'), [
      [T('Romanian HP cycle: @{gs.RO.c.bc}\\% in the band and @{gs.RO.c.low}\\% at periods longer than 8 years: one long cycle in a short sample', 'ciclul HP al României: @{gs.RO.c.bc}\\% în bandă și @{gs.RO.c.low}\\% la perioade de peste 8 ani: un singur ciclu lung într-un eșantion scurt')]),
     T('Caution: the HP filter itself removes low frequencies and can shape the peak (Section 7); 99 Romanian observations give a very wide confidence band', 'Atenție: filtrul HP elimină el însuși frecvențele joase și poate modela vîrful (secțiunea 7); cele 99 de observații ale României dau o bandă de încredere foarte largă')])
 
-chart(T('The rhythm of electricity demand', 'Ritmul consumului de energie electrică'), 'tsa_ch12_load', 'TSA_ch12_load', [
-    T('Hourly electricity load of Romania (ENTSO-E, MW, UTC hours), 2022--2026, @{lo.T} hours, mean @{lo.mean} MW (Chapter 4); Welch spectrum with 8-week segments', 'Consumul orar de energie electrică al României (ENTSO-E, MW, ore UTC), 2022--2026, @{lo.T} de ore, media @{lo.mean} MW (Capitolul 4); spectrul Welch cu segmente de 8 săptămîni')],
+chart(T('The rhythm of electricity demand', 'Ritmul consumului de energie electrică'), 'tsa_ch12_load', 'TSA_ch12_electricity_load', [
+    T('Hourly electricity load of Romania (ENTSO-E, MW, UTC hours), 2022--2026, @{lo.T} hours, mean @{lo.mean} MW (Chapter 4); Welch spectrum with 8-week segments', 'Consumul orar de energie electrică al României (ENTSO-E, MW, ore UTC), 2022--2026, @{lo.T} ore, media @{lo.mean} MW (Capitolul 4); spectrul Welch cu segmente de 8 săptămîni')],
     h='0.58\\textheight')
 
 interp(('the load spectrum', 'spectrului consumului'), [
@@ -686,7 +686,7 @@ D.frame(T('Linear filters and their gain (2/2)', 'Filtrele liniare și cîștigu
      [T('zero at $\\nu = 0$ (removes the trend), 4 at $\\nu = 1/2$ (amplifies noise); at a period of 40 quarters: @{fi.d40}; at 4 quarters: @{fi.d4}', 'zero la $\\nu = 0$ (elimină trendul), 4 la $\\nu = 1/2$ (amplifică zgomotul); la o perioadă de 40 de trimestre: @{fi.d40}; la 4 trimestre: @{fi.d4}')]),
     (T('Seasonal difference $(1 - L^4)x_t = x_t - x_{t-4}$ (quarterly data): squared gain $4\\sin^2(4\\pi\\nu)$', 'Diferența sezonieră $(1 - L^4)x_t = x_t - x_{t-4}$ (date trimestriale): cîștigul pătratic $4\\sin^2(4\\pi\\nu)$'),
      [T('zero at $\\nu = 0, 1/4, 1/2$: it removes the trend and the seasonal cycles', 'zero la $\\nu = 0, 1/4, 1/2$: elimină trendul și ciclurile sezoniere')]),
-    (T('HP cycle filter: squared gain $\\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$', 'Filtrul HP pentru ciclu: cîștigul pătratic $\\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$'),
+    (T('HP cycle filter: gain $G(\\nu) = \\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$ (real), squared gain $G(\\nu)^2$', 'Filtrul HP pentru ciclu: cîștigul $G(\\nu) = \\dfrac{4\\lambda(1 - \\cos 2\\pi\\nu)^2}{1 + 4\\lambda(1 - \\cos 2\\pi\\nu)^2}$ (real), cîștigul pătratic $G(\\nu)^2$'),
      [T('$\\lambda$: the smoothing parameter (1600 for quarterly data); a larger $\\lambda$ moves the cut-off to slower cycles', '$\\lambda$: parametrul de netezire (1600 pentru date trimestriale); un $\\lambda$ mai mare mută pragul spre ciclurile mai lente'),
       T('close to 0 at low frequencies, close to 1 at high ones: a \\textbf{high-pass} filter', 'aproape de 0 la frecvențele joase și aproape de 1 la cele înalte: un filtru \\textbf{trece-sus}')])))
 
@@ -698,7 +698,7 @@ interp(('the filter gains', 'cîștigurilor filtrelor'), [
     (T('Differencing is not neutral: it weakens business cycles and amplifies the highest frequencies', 'Diferențierea nu este neutră: slăbește ciclurile economice și amplifică frecvențele cele mai înalte'),
      [T('this is why growth rates look noisier than levels; filtering white noise can even create spurious cycles (the Slutsky effect, Chapter 0)', 'de aceea ratele de creștere par mai zgomotoase decît nivelurile; filtrarea unui zgomot alb poate crea chiar cicluri false (efectul Slutsky, Capitolul 0)')]),
     (T('HP cycle filter: squared gain @{fi.h8} at 8 quarters, @{fi.h32} at 32 quarters, @{fi.h40} at 40 quarters; half power at about @{fi.hhalf} quarters', 'Filtrul HP pentru ciclu: cîștigul pătratic @{fi.h8} la 8 trimestre, @{fi.h32} la 32 de trimestre, @{fi.h40} la 40 de trimestre; jumătate din putere la aproximativ @{fi.hhalf} de trimestre'),
-     [T('it keeps everything faster than 10 years, including noise: not a band-pass filter (\\refBK)', 'păstrează tot ce este mai rapid de 10 ani, inclusiv zgomotul: nu este un filtru trece-bandă (\\refBK)')]),
+     [T('it keeps most of the power of cycles faster than about 8 years, including noise: not a band-pass filter (\\refBK)', 'păstrează cea mai mare parte din puterea ciclurilor mai rapide de aproximativ 8 ani, inclusiv zgomotul: nu este un filtru trece-bandă (\\refBK)')]),
     T('Applied to a random walk, the HP filter produces a cycle with a peak that comes from the filter, not from the data (\\refHamHP)', 'Aplicat unui mers aleator, filtrul HP produce un ciclu cu un vîrf care provine din filtru, nu din date (\\refHamHP)')])
 
 # =============================================================================
@@ -804,7 +804,7 @@ D.frame(T('Key takeaways', 'Idei de reținut'), items(
     T('The spectrum splits the variance of a stationary series by frequency; it carries the same information as the ACF', 'Spectrul împarte varianța unei serii staționare pe frecvențe; conține aceeași informație ca ACF'),
     T('Read its shape: flat (white noise), falling (persistence), peaked (cycles), a pole at zero (long memory)', 'Interpretați forma lui: plat (zgomot alb), descrescător (persistență), cu vîrfuri (cicluri), cu pol la zero (memorie lungă)'),
     T('The raw periodogram is unbiased but inconsistent: taper, smooth and add confidence bands', 'Periodograma brută este nedeplasată, dar neconsistentă: aplicați atenuarea, netezirea și benzile de încredere'),
-    T('Real cycles: 11 years in sunspots, 4--8 years in GDP, 24 hours and 1 week in electricity load', 'Cicluri reale: 11 ani la petele solare, 4--8 ani în PIB, 24 de ore și o săptămînă în consumul de energie electrică'),
+    T('Real cycles: 11 years in sunspots, about @{gs.US.c.yrs} years in the US HP cycle of GDP, 24 hours and 1 week in electricity load', 'Cicluri reale: 11 ani la petele solare, circa @{gs.US.c.yrs} ani în ciclul HP al PIB-ului SUA, 24 de ore și o săptămînă în consumul de energie electrică'),
     T('Filters reshape spectra; coherence and phase relate the cycles of two series', 'Filtrele remodelează spectrele; coerența și faza leagă ciclurile a două serii')))
 
 D.frame(T('Key formulas', 'Formule de reținut'), '{\\renewcommand{\\arraystretch}{1.35}' + table(

@@ -466,8 +466,8 @@ D.frame(T('Properties of the autocovariance function', 'Proprietățile funcție
     (T('Proof of the third property', 'Demonstrația celei de-a treia proprietăți'),
      [T('$0 \\le \\mathrm{Var}\\big(\\sum_i a_i X_i\\big) = \\sum_{i,j} a_i a_j \\mathrm{Cov}(X_i, X_j) = \\sum_{i,j} a_i a_j \\gamma(i - j)$', '$0 \\le \\mathrm{Var}\\big(\\sum_i a_i X_i\\big) = \\sum_{i,j} a_i a_j \\mathrm{Cov}(X_i, X_j) = \\sum_{i,j} a_i a_j \\gamma(i - j)$')]),
     (T('Consequence: not every sequence is an ACF', 'Consecință: nu orice șir este o ACF'),
-     [T('$\\rho(1) = 0.9$, $\\rho(2) = -0.9$ is impossible: with $a = (1, -1, -1)$, $\\mathrm{Var}(X_1 - X_2 - X_3) = \\gamma(0)(3 - 2\\rho(1) - 2\\rho(1) + 2\\rho(2)) < 0$',
-        '$\\rho(1) = 0{,}9$, $\\rho(2) = -0{,}9$ este imposibil: cu $a = (1, -1, -1)$, $\\mathrm{Var}(X_1 - X_2 - X_3) = \\gamma(0)(3 - 2\\rho(1) - 2\\rho(1) + 2\\rho(2)) < 0$')])))
+     [T('$\\rho(1) = 0.9$, $\\rho(2) = -0.9$ is impossible: with $a = (1, -1, 1)$, $\\mathrm{Var}(X_1 - X_2 + X_3) = \\gamma(0)(3 - 4\\rho(1) + 2\\rho(2)) = -2.4\\,\\gamma(0) < 0$',
+        '$\\rho(1) = 0{,}9$, $\\rho(2) = -0{,}9$ este imposibil: cu $a = (1, -1, 1)$, $\\mathrm{Var}(X_1 - X_2 + X_3) = \\gamma(0)(3 - 4\\rho(1) + 2\\rho(2)) = -2{,}4\\,\\gamma(0) < 0$')])))
 
 D.frame(T('Worked example: a moving average of order 1', 'Exemplu rezolvat: o medie mobilă de ordinul 1'), items(
     (T('$X_t = \\varepsilon_t + \\theta\\varepsilon_{t-1}$, $\\{\\varepsilon_t\\}$ uncorrelated, mean 0, variance $\\sigma^2$: the \\textbf{MA(1)} (moving average) process',
@@ -537,7 +537,7 @@ chart(T('Three kinds of white noise', 'Trei tipuri de zgomot alb'), 'tsa_ch1_whi
 
 interp(('the three white noises', 'celor trei zgomote albe'), [
     (T('All three are white noise by construction; Ljung--Box $Q^*(10)$ (Section 6) on $X_t$: p = @{wn.g.p} (Gaussian), @{wn.l.p} (Laplace), @{wn.h.p} (GARCH)', 'Toate trei sînt zgomot alb prin construcție; testul Ljung--Box $Q^*(10)$ (secțiunea 6) pentru $X_t$: p = @{wn.g.p} (gaussian), @{wn.l.p} (Laplace), @{wn.h.p} (GARCH)'),
-     [T('the GARCH series is close to rejection although it is uncorrelated: with changing variance the usual test rejects too often', 'seria GARCH este aproape de respingere, deși este necorelată: cînd varianța se schimbă, testul obișnuit respinge prea des')]),
+     [T('the GARCH series is rejected at 5\\% although it is uncorrelated: with changing variance the usual test rejects too often', 'pentru seria GARCH, ipoteza este respinsă la 5\\%, deși seria este necorelată: cînd varianța se schimbă, testul obișnuit respinge prea des')]),
     (T('Laplace: heavier tails (kurtosis @{wn.l.k} against @{wn.g.k}), but still i.i.d.: the squares are uncorrelated (p = @{wn.l.p2})',
        'Laplace: cozi mai groase (kurtosis-ul @{wn.l.k}, față de @{wn.g.k}), dar tot i.i.d.: pătratele sînt necorelate (p = @{wn.l.p2})'),
      [T('heavy tails alone do not create dependence', 'cozile groase singure nu creează dependență')]),
@@ -760,7 +760,7 @@ D.frame(T('Partial autocorrelation', 'Autocorelația parțială'), items(
     T('Same band as the ACF under white noise: $\\pm 1.96/\\sqrt{T}$', 'Aceeași bandă ca pentru ACF, în cazul zgomotului alb: $\\pm 1{,}96/\\sqrt{T}$')))
 
 chart(T('ACF and PACF of three processes', 'ACF și PACF pentru trei procese'), 'tsa_ch1_acf_pacf', 'TSA_ch1_acf_pacf', [
-    T('$T = 500$ simulated values of AR(1), AR(2) and MA(1); top: sample ACF; bottom: sample PACF', '$T = 500$ de valori simulate din AR(1), AR(2) și MA(1); sus: ACF de selecție; jos: PACF de selecție')],
+    T('$T = 500$ simulated values of AR(1) ($\\phi = 0.7$), AR(2) ($\\phi_1 = 0.5$, $\\phi_2 = 0.3$) and MA(1) ($\\theta = 0.7$); top: sample ACF; bottom: sample PACF', '$T = 500$ de valori simulate din AR(1) ($\\phi = 0{,}7$), AR(2) ($\\phi_1 = 0{,}5$, $\\phi_2 = 0{,}3$) și MA(1) ($\\theta = 0{,}7$); sus: ACF de selecție; jos: PACF de selecție')],
     h='0.64\\textheight')
 
 interp(('the ACF and PACF', 'ACF și PACF'), [

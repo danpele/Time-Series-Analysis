@@ -117,6 +117,7 @@ P('ga.qa', GA['q_from_alpha'], 3)
 P('ga.gap20', GA['gap20'], 2)
 P('ga.gap5', GA['gap5'], 2)
 V.raw('ga.nclose', str(GA['n_close']))
+V.raw('ga.yclose', str(GA['n_close'] + 1))     # n_close counts from K_2: first year within 0.001 of the steady state
 SMO = N['smooth']
 for k in ('sd_f_mid', 'sd_s_mid', 's1897', 'f1897', 's1900', 'f1900'):
     P(f'smo.{k}', SMO[k], 0)
@@ -499,7 +500,7 @@ chart(T('The gain converges; SES reproduces the filter', 'Cîștigul converge; S
     h='0.66\\textheight')
 
 interp(('the gain', 'cîștigului'), [
-    (T('$K_t$ starts at @{ni.K2} (after the diffuse start), @{ni.K5} in year 5, and is within 0.001 of $\\bar K = @{ni.ssK}$ after @{ga.nclose} years', '$K_t$ pornește de la @{ni.K2} (după pornirea difuză), @{ni.K5} în anul 5 și ajunge la mai puțin de 0,001 de $\\bar K = @{ni.ssK}$ după @{ga.nclose} ani'),
+    (T('$K_t$ starts at @{ni.K2} (after the diffuse start), @{ni.K5} in year 5, and is within 0.001 of $\\bar K = @{ni.ssK}$ from year @{ga.yclose} on', '$K_t$ pornește de la @{ni.K2} (după pornirea difuză), @{ni.K5} în anul 5 și se află la mai puțin de 0,001 de $\\bar K = @{ni.ssK}$ începînd din anul @{ga.yclose}'),
      [T('the forecasts differ by @{ga.gap5} in year 5 and by less than @{ga.gap20} after 20 years', 'prognozele diferă cu @{ga.gap5} în anul 5 și cu mai puțin de @{ga.gap20} după 20 de ani')]),
     (T('SES fitted directly by least squares (Chapter 0) gives $\\hat\\alpha = @{ga.ses}$, i.e.\\ $q = \\alpha^2/(1-\\alpha) = @{ga.qa}$', 'SES estimată direct prin cele mai mici pătrate (Capitolul 0) dă $\\hat\\alpha = @{ga.ses}$, adică $q = \\alpha^2/(1-\\alpha) = @{ga.qa}$'),
      [T('close to the likelihood answer: two criteria, one model', 'aproape de răspunsul verosimilității: două criterii, un singur model')]),
@@ -549,7 +550,7 @@ D.frame(T('The likelihood: prediction-error decomposition', 'Verosimilitatea: de
 D.frame(T('Maximum likelihood in practice', 'Verosimilitatea maximă în practică'), items(
     (T('Optimise over $\\log\\sigma^2$ (variances stay positive); several starting values, since the surface can be flat', 'Optimizăm după $\\log\\sigma^2$ (varianțele rămîn pozitive); mai multe valori de pornire, deoarece suprafața poate fi plată'),
      [T('a variance estimated at zero is common and meaningful: that component is deterministic', 'o varianță estimată la zero este frecventă și are sens: acea componentă este deterministă')]),
-    (T('\\textbf{Concentrating}: for the local level, write $\\sigma^2_\\eta = q\\sigma^2_\\varepsilon$; for fixed $q$, $\\hat\\sigma^2_\\varepsilon = \\frac{1}{n-1}\\sum_t v_t^2/F_t$ in closed form', '\\textbf{Concentrarea}: pentru local level scriem $\\sigma^2_\\eta = q\\sigma^2_\\varepsilon$; pentru $q$ fixat, $\\hat\\sigma^2_\\varepsilon = \\frac{1}{n-1}\\sum_t v_t^2/F_t$ are formă închisă'),
+    (T('\\textbf{Concentrating}: for the local level, write $\\sigma^2_\\eta = q\\sigma^2_\\varepsilon$; for fixed $q$, $\\hat\\sigma^2_\\varepsilon = \\frac{1}{n-1}\\sum_t v_t^2/F^*_t$ in closed form, with $v_t$, $F^*_t$ from the filter run with $\\sigma^2_\\varepsilon = 1$, $\\sigma^2_\\eta = q$', '\\textbf{Concentrarea}: pentru local level scriem $\\sigma^2_\\eta = q\\sigma^2_\\varepsilon$; pentru $q$ fixat, $\\hat\\sigma^2_\\varepsilon = \\frac{1}{n-1}\\sum_t v_t^2/F^*_t$ are formă închisă, cu $v_t$, $F^*_t$ din filtrul rulat cu $\\sigma^2_\\varepsilon = 1$, $\\sigma^2_\\eta = q$'),
      [T('the profile log-likelihood is then a function of $q$ alone (next chart)', 'log-verosimilitatea profil devine atunci o funcție doar de $q$ (graficul următor)')]),
     (T('Standard errors from the numerical Hessian; model choice by AIC and BIC; tests on the standardised prediction errors $e_t = v_t/\\sqrt{F_t}$', 'Erorile standard din hessiana numerică; alegerea modelului după AIC și BIC; teste pe erorile de predicție standardizate $e_t = v_t/\\sqrt{F_t}$'),
      [T('\\texttt{statsmodels}: \\texttt{UnobservedComponents}, \\texttt{SARIMAX}, \\texttt{DynamicFactor} all use this machinery', '\\texttt{statsmodels}: \\texttt{UnobservedComponents}, \\texttt{SARIMAX}, \\texttt{DynamicFactor} folosesc toate acest mecanism')])))
@@ -631,7 +632,7 @@ D.frame(T('The HP filter is a state space smoother', 'Filtrul HP este un netezit
     (T('\\refHPf: the trend $\\tau_t$ minimises $\\sum_t(y_t - \\tau_t)^2 + \\lambda\\sum_t(\\Delta^2\\tau_t)^2$; $\\lambda = 1600$ for quarterly data', '\\refHPf: trendul $\\tau_t$ minimizează $\\sum_t(y_t - \\tau_t)^2 + \\lambda\\sum_t(\\Delta^2\\tau_t)^2$; $\\lambda = 1600$ pentru date trimestriale'),
      [T('$\\Delta^2\\tau_t = \\tau_t - 2\\tau_{t-1} + \\tau_{t-2}$: the change in the slope of the trend; $\\lambda \\ge 0$: the smoothing parameter', '$\\Delta^2\\tau_t = \\tau_t - 2\\tau_{t-1} + \\tau_{t-2}$: variația pantei trendului; $\\lambda \\ge 0$: parametrul de netezire'),
       T('large $\\lambda$: a straight-line trend; $\\lambda = 0$: the trend is the series itself', '$\\lambda$ mare: un trend liniar; $\\lambda = 0$: trendul este chiar seria')]),
-    (T('This is exactly the \\textbf{smoothed} trend of a UC model: smooth trend ($\\Delta^2\\mu_{t+1} = \\zeta_t$) plus white noise, with $\\lambda = \\sigma^2_\\varepsilon/\\sigma^2_\\zeta$ \\refHJ', 'Este exact trendul \\textbf{netezit} al unui model UC: trend neted ($\\Delta^2\\mu_{t+1} = \\zeta_t$) plus zgomot alb, cu $\\lambda = \\sigma^2_\\varepsilon/\\sigma^2_\\zeta$ \\refHJ'),
+    (T('This is exactly the \\textbf{smoothed} trend of a UC model: smooth trend ($\\Delta^2\\mu_{t+1} = \\zeta_{t-1}$) plus white noise, with $\\lambda = \\sigma^2_\\varepsilon/\\sigma^2_\\zeta$ \\refHJ', 'Este exact trendul \\textbf{netezit} al unui model UC: trend neted ($\\Delta^2\\mu_{t+1} = \\zeta_{t-1}$) plus zgomot alb, cu $\\lambda = \\sigma^2_\\varepsilon/\\sigma^2_\\zeta$ \\refHJ'),
      [T('the HP filter imposes the signal-to-noise ratio and a white-noise gap; the UC model estimates both', 'filtrul HP impune raportul semnal--zgomot și o deviație de tip zgomot alb; modelul UC le estimează pe amîndouă')]),
     T('Being a smoother, HP uses future data: its last values are revised as new quarters arrive', 'Fiind un netezitor, HP folosește date viitoare: ultimele lui valori se revizuiesc pe măsură ce sosesc trimestre noi')))
 
@@ -653,7 +654,7 @@ interp(('the trend', 'trendului'), [
     (T('Average growth @{tr.avg}\\% per year, with a slow start (the 1997--1999 recession), a boom until 2008, a stagnation and a recovery after 2013', 'Creștere medie de @{tr.avg}\\% pe an, cu un început lent (recesiunea din 1997--1999), un boom pînă în 2008, o stagnare și o revenire după 2013'),
      [T('the two trends are almost identical: the difference between methods lies in the gap, not in the trend', 'cele două trenduri sînt aproape identice: diferența dintre metode se află în deviație, nu în trend')]),
     (T('UC estimates: $\\hat\\sigma^2_\\zeta = @{tr.st}$ (trend slope), cycle AR(2) with $\\hat\\phi_1 = @{tr.phi1}$, $\\hat\\phi_2 = @{tr.phi2}$, $\\hat\\sigma^2_\\kappa = @{tr.sar}$; the irregular variance is estimated at zero', 'Estimările UC: $\\hat\\sigma^2_\\zeta = @{tr.st}$ (panta trendului), ciclul AR(2) cu $\\hat\\phi_1 = @{tr.phi1}$, $\\hat\\phi_2 = @{tr.phi2}$, $\\hat\\sigma^2_\\kappa = @{tr.sar}$; varianța componentei neregulate este estimată la zero'),
-     [T('the ratio cycle variance / trend variance is @{tr.lam}, far below the 1600 that HP imposes: a more flexible trend', 'raportul dintre varianța ciclului și varianța trendului este @{tr.lam}, mult sub valoarea 1600 impusă de HP: un trend mai flexibil')]),
+     [T('the ratio of the shock variances, cycle to trend slope, $\\hat\\sigma^2_\\kappa/\\hat\\sigma^2_\\zeta = @{tr.lam}$, is far below the 1600 ($\\sigma^2_\\varepsilon/\\sigma^2_\\zeta$) that HP imposes: a more flexible trend', 'raportul varianțelor șocurilor, ciclu față de panta trendului, $\\hat\\sigma^2_\\kappa/\\hat\\sigma^2_\\zeta = @{tr.lam}$, este mult sub valoarea 1600 ($\\sigma^2_\\varepsilon/\\sigma^2_\\zeta$) impusă de HP: un trend mai flexibil')]),
     T('A flexible trend absorbs part of the boom: the UC gap will be smaller than the HP gap', 'Un trend flexibil absoarbe o parte din boom: deviația UC va fi mai mică decît deviația HP')])
 
 chart(T('The Romanian output gap: three methods', 'Deviația PIB a României: trei metode'), 'tsa_ch10_output_gap', 'TSA_ch10_trend_cycle', [
@@ -785,7 +786,7 @@ D.frame(T('Hamilton\'s specification on today\'s data', 'Specificația lui Hamil
 
 chart(T('US recessions from GDP growth', 'Recesiunile din SUA din creșterea PIB'), 'tsa_ch10_ms_us', 'TSA_ch10_markov_gdp', [
     T('Two regimes with switching mean, constant variance, estimated on @{ms.nrec} NBER recession quarters out of 1947Q2--2019Q4 (FRED GDPC1, USREC); probabilities after 2019 computed with the same parameters',
-      'Două regimuri cu medie variabilă și varianță constantă, estimate pe T2 1947--T4 2019, eșantion cu @{ms.nrec} de trimestre de recesiune NBER (FRED GDPC1, USREC); probabilitățile de după 2019 sînt calculate cu aceiași parametri')],
+      'Două regimuri cu medie variabilă și varianță constantă, estimate pe T2 1947--T4 2019, eșantion cu @{ms.nrec} trimestre de recesiune NBER (FRED GDPC1, USREC); probabilitățile de după 2019 sînt calculate cu aceiași parametri')],
     h='0.66\\textheight')
 
 interp(('the recession probabilities', 'probabilităților de recesiune'), [
@@ -808,9 +809,9 @@ interp(('the real-time probabilities', 'probabilităților în timp real'), [
 
 D.frame(T('Checks: which regimes did the model find?', 'Verificări: regimurile găsite de model'), items(
     (T('\\textbf{Switching variance} on 1947--2019: the regimes become high and low volatility, not recession and expansion', '\\textbf{Varianță cu schimbare de regim} pe 1947--2019: regimurile devin volatilitate mare și volatilitate mică, nu recesiune și expansiune'),
-     [T('standard deviations @{pi.s2} and @{pi.s1}; durations @{pi.d2} and @{pi.d1} quarters; the switch to the calm regime in @{pi.sw}', 'abateri standard @{pi.s2} și @{pi.s1}; durate de @{pi.d2} și @{pi.d1} de trimestre; trecerea la regimul calm în @{pi.sw}'),
+     [T('standard deviations @{pi.s2} and @{pi.s1}; durations @{pi.d2} and @{pi.d1} quarters; the switch to the calm regime in @{pi.sw}', 'abateri standard @{pi.s2} și @{pi.s1}; durate de @{pi.d2} și @{pi.d1} trimestre; trecerea la regimul calm în @{pi.sw}'),
       T('this is the ``Great Moderation\'\' of the mid-1980s; agreement with the NBER falls to @{pi.con}\\% (@{pi.false}\\% false alarms)', 'aceasta este „Marea Moderație” de la mijlocul anilor 1980; concordanța cu NBER scade la @{pi.con}\\% (@{pi.false}\\% alarme false)')]),
-    (T('\\textbf{Including 2020} in the estimation: one regime is the single quarter 2020Q2 (mean @{pi.m1}\\%), the other lasts @{pi.d2all} quarters', '\\textbf{Includerea anului 2020} în estimare: un regim este doar trimestrul T2 2020 (media @{pi.m1}\\%), celălalt durează @{pi.d2all} de trimestre'),
+    (T('\\textbf{Including 2020} in the estimation: one regime is the single quarter 2020Q2 (mean @{pi.m1}\\%), the other lasts @{pi.d2all} quarters', '\\textbf{Includerea anului 2020} în estimare: un regim este doar trimestrul T2 2020 (media @{pi.m1}\\%), celălalt durează @{pi.d2all} trimestre'),
      [T('one extreme observation can capture a whole regime', 'o singură observație extremă poate forma singură un regim')]),
     T('Checklist: plot the probabilities against known events; compare several starting values and samples; prefer the specification with a clear economic meaning', 'Lista de verificări: reprezentați probabilitățile alături de evenimente cunoscute; comparați mai multe valori de pornire și eșantioane; preferați specificația cu un înțeles economic clar')))
 

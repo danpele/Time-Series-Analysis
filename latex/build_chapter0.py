@@ -468,7 +468,7 @@ chart(D, '⟦BET and S\\&P 500 since 2000||BET și S\\&P 500 din 2000⟧', 'tsa_
 
 D.frame('⟦Interpretation: stock indices||Interpretarea: indicii bursieri⟧', items(
     ('⟦\\textbf{Long-run growth with deep falls}||\\textbf{Creștere pe termen lung, cu scăderi adînci}⟧',
-     ['⟦100 invested became about @{bet_mult} times more in the BET and @{sp_mult} times more in the S\\&P 500 (price indices, without dividends)||100 de unități investite s-au înmulțit de aproximativ @{bet_mult} de ori în BET și de @{sp_mult} ori în S\\&P 500 (indici de preț, fără dividende)⟧',
+     ['⟦100 invested grew about @{bet_mult}-fold in the BET and @{sp_mult}-fold in the S\\&P 500 (price indices, without dividends)||100 de unități investite s-au înmulțit de aproximativ @{bet_mult} de ori în BET și de @{sp_mult} ori în S\\&P 500 (indici de preț, fără dividende)⟧',
       '⟦2008--2009: the BET lost more than three quarters of its value; it took years to recover||2008--2009: BET a pierdut mai mult de trei sferturi din valoare; revenirea a durat ani⟧']),
     ('⟦\\textbf{Why the log scale}||\\textbf{Rolul scării logaritmice}⟧',
      ['⟦on a linear scale, the early years look flat and recent moves look huge||pe o scară liniară, primii ani par plați, iar variațiile recente par uriașe⟧',
@@ -610,7 +610,7 @@ D.frame('⟦A century in one line||Un secol pe o singură axă⟧', TIMELINE + '
     '⟦1927 Yule, 1937 Slutsky, 1941 Kolmogorov, 1949 Wiener: the foundations (Chapters 1 and 2)||1927 Yule, 1937 Slutsky, 1941 Kolmogorov, 1949 Wiener: fundamentele (Capitolele 1 și 2)⟧',
     '⟦1957 \\refHolt, 1960 \\refWinters: exponential smoothing, born in industry for sales and inventories (this chapter)||1957 \\refHolt, 1960 \\refWinters: netezirea exponențială, apărută în industrie, pentru vînzări și stocuri (acest capitol)⟧',
     '⟦1970 Box--Jenkins (Chapters 2--4); 1980 \\refSims\\ (Chapter 6); 1982 \\refEngle\\ (Chapter 5); 1987 \\refEG\\ (Chapter 7)||1970 Box--Jenkins (Capitolele 2--4); 1980 \\refSims\\ (Capitolul 6); 1982 \\refEngle\\ (Capitolul 5); 1987 \\refEG\\ (Capitolul 7)⟧',
-    '⟦2000 and 2020: the M3 and M4 forecasting competitions compare methods on thousands of real series (\\refMthree; \\refMfour)||2000 și 2020: competițiile de prognoză M3 și M4 compară metodele pe mii de serii reale (\\refMthree; \\refMfour)⟧'),
+    '⟦2000 and 2018: the M3 and M4 forecasting competitions compare methods on thousands of real series (\\refMthree; \\refMfour)||2000 și 2018: competițiile de prognoză M3 și M4 compară metodele pe mii de serii reale (\\refMthree; \\refMfour)⟧'),
     size='scriptsize')
 
 # ===============================================================================================================
@@ -936,8 +936,8 @@ D.frame('⟦Measures of forecast error||Măsuri ale erorii de prognoză⟧', ite
      ['⟦penalises large errors more; always $\\ge$ MAE||penalizează mai mult erorile mari; întotdeauna $\\ge$ MAE⟧']),
     ('⟦\\textbf{MAPE} (mean absolute percentage error) $= \\frac{100}{h} \\sum_j |e_{T+j} / y_{T+j}|$||\\textbf{MAPE} (mean absolute percentage error, eroarea procentuală absolută medie) $= \\frac{100}{h} \\sum_j |e_{T+j} / y_{T+j}|$⟧',
      ['⟦without units, but useless when $y$ is close to 0 (inflation, returns)||fără unități de măsură, dar inutilizabilă cînd $y$ este aproape de 0 (inflație, randamente)⟧']),
-    ('⟦\\textbf{MASE} (mean absolute scaled error) $=$ MAE $/$ in-sample MAE of the seasonal naive method (\\refHK)||\\textbf{MASE} (mean absolute scaled error, eroarea absolută medie scalată) $=$ MAE $/$ MAE în eșantion a metodei naive sezoniere (\\refHK)⟧',
-     ['⟦below 1: better than the seasonal naive method on the training data; comparable across series||sub 1: mai bună decît metoda naivă sezonieră pe datele de antrenare; comparabilă între serii⟧'])), size='footnotesize')
+    ('⟦\\textbf{MASE} (mean absolute scaled error) $=$ MAE $/$ in-sample MAE of the naive method (\\refHK); for seasonal series, of the seasonal naive method (as in M4)||\\textbf{MASE} (mean absolute scaled error, eroarea absolută medie scalată) $=$ MAE $/$ MAE în eșantion a metodei naive (\\refHK); pentru serii sezoniere, a metodei naive sezoniere (ca în M4)⟧',
+     ['⟦below 1: better than that benchmark on the training data; comparable across series||sub 1: mai bună decît această metodă de referință pe datele de antrenare; comparabilă între serii⟧'])), size='footnotesize')
 
 D.frame('⟦Worked example: errors by hand||Exemplu rezolvat: erorile calculate de mînă⟧', cols(
     table('lrrrr', '& ⟦Q1||T1⟧ & ⟦Q2||T2⟧ & ⟦Q3||T3⟧ & ⟦Q4||T4⟧',

@@ -274,7 +274,7 @@ def fig_simulated(n=1000, save_it=True):
     paths = {'i.i.d. Normal(0, 1)': rng.standard_normal(n),
              'ARCH(1): omega = 0.5, alpha = 0.5': simulate_garch(n, 0.5, 0.5, 0.0, seed=SEED + 1)[0],
              'GARCH(1,1): omega = 0.02, alpha = 0.10, beta = 0.88': simulate_garch(n, 0.02, 0.10, 0.88, seed=SEED + 2)[0]}
-    fig, axes = plt.subplots(3, 1, figsize=(9.33, 2.09), sharex=True, sharey=True)
+    fig, axes = plt.subplots(3, 1, figsize=(9.33, 4.6), sharex=True, sharey=True)
     out = {}
     for ax, (lab, x), c in zip(axes, paths.items(), [st.MainBlue, st.IDAred, st.Forest]):
         ax.plot(np.arange(n), x, color=c, lw=0.7, label=lab)

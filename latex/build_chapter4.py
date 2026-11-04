@@ -75,6 +75,8 @@ V.put('gdp.q4q1', 100 * SE['gdp_q4_q1'], 0)
 V.put('tour.ratio', SE['tour_aug_jan'], 1)
 V.put('infl.jun', SE['infl_month_mean'][5], 2)
 V.put('infl.oct', SE['infl_month_mean'][9], 2)
+V.put('infl.jan', SE['infl_month_mean'][0], 3)
+assert max(SE['infl_month_mean']) == SE['infl_month_mean'][0]      # January is the highest month
 V.int('load.T', SE['load_T'])
 V.put('load.mean', SE['load_mean'], 2)
 SP = N['splot']
@@ -449,7 +451,7 @@ interp(('the six series', 'celor șase serii'), [
     (T('GDP: the mean of Q4 is @{gdp.q4q1}\\% above the mean of Q1 (2000--2026); the swing grows with the level: multiplicative, take logs', 'PIB: media trimestrului 4 este cu @{gdp.q4q1}\\% peste media trimestrului 1 (2000--2026); amplitudinea crește cu nivelul: multiplicativă, folosim logaritmi'),
      [T('quarter means (bn EUR, 2010 prices): @{gdp.m1}, @{gdp.m2}, @{gdp.m3}, @{gdp.m4}: construction and agriculture in Q2--Q3', 'mediile trimestriale (mld. EUR, prețuri 2010): @{gdp.m1}; @{gdp.m2}; @{gdp.m3}; @{gdp.m4}: construcțiile și agricultura în T2--T3')]),
     T('Tourism: August has @{tour.ratio} times the nights of January (2015--2019); the 2020 lockdown breaks the pattern', 'Turismul: august are de @{tour.ratio} ori mai multe înnoptări decît ianuarie (2015--2019); restricțiile din 2020 (lockdown) întrerup tiparul'),
-    T('HICP: monthly inflation is lower in June (@{infl.jun}\\% on average, 2010--2019, fresh food) and higher in October (@{infl.oct}\\%)', 'IAPC: inflația lunară este mai mică în iunie (în medie @{infl.jun}\\%, 2010--2019, alimentele proaspete) și mai mare în octombrie (@{infl.oct}\\%)'),
+    T('HICP: monthly inflation is lower in June (@{infl.jun}\\% on average, 2010--2019, fresh food) and highest in January (@{infl.jan}\\%, new prices and excise duties), high again in October (@{infl.oct}\\%)', 'IAPC: inflația lunară este mai mică în iunie (în medie @{infl.jun}\\%, 2010--2019, alimentele proaspete) și cea mai mare în ianuarie (@{infl.jan}\\%, prețuri și accize noi), din nou ridicată în octombrie (@{infl.oct}\\%)'),
     T('Electricity: two patterns at once, the week (dense oscillation) and the year (winter peaks): \\textbf{multiple seasonality}, Section 8', 'Electricitatea: două tipare simultan, săptămîna (oscilația deasă) și anul (vîrfurile de iarnă): \\textbf{sezonalitate multiplă}, secțiunea 8')], size='footnotesize')
 
 chart(T('Seasonal plot and subseries plot', 'Graficul sezonier și graficul pe subserii'), 'tsa_ch4_seasonal_plot', 'TSA_ch4_seasonal_data', [
@@ -661,8 +663,9 @@ chart(T('Identification of the airline model', 'Identificarea modelului airline'
 interp(('the airline correlograms', 'corelogramelor airline'), [
     T('The log makes the summer swing constant: the multiplicative pattern becomes additive', 'Logaritmul face constantă amplitudinea verii: tiparul multiplicativ devine aditiv'),
     (T('ACF of $w_t$: $@{air.r1}$ at lag 1 and $@{air.r12}$ at lag 12, outside the band $\\pm @{air.band}$', 'ACF pentru $w_t$: $@{air.r1}$ la lagul 1 și $@{air.r12}$ la lagul 12, în afara benzii $\\pm @{air.band}$'),
-     [T('a regular MA(1) and a seasonal MA(1); lag 3 ($@{air.r3}$) is borderline', 'un MA(1) obișnuit și un MA(1) sezonier; lagul 3 ($@{air.r3}$) este la limită')]),
-    T('The PACF decays at lags 1, 2, 3 and 12, 24: consistent with MA terms, not AR terms', 'PACF descrește la lagurile 1, 2, 3 și 12, 24: în acord cu termeni MA, nu cu termeni AR'),
+     [T('a regular MA(1) and a seasonal MA(1); lag 3 ($@{air.r3}$) is borderline', 'un MA(1) obișnuit și un MA(1) sezonier; lagul 3 ($@{air.r3}$) este la limită'),
+      T('isolated bars at lags 9, 23 and 32 also cross the band: with 36 lags, about two crossings are expected by chance', 'barele izolate de la lagurile 9, 23 și 32 depășesc și ele banda: cu 36 de laguri, aproximativ două depășiri sînt așteptate din întîmplare')]),
+    T('The PACF: negative spikes at lags 1, 3 and 12, almost 0 at lag 2, and no clean cut-off after a few lags: consistent with MA terms, not AR terms', 'PACF: valori negative mari la lagurile 1, 3 și 12, aproape 0 la lagul 2 și nicio anulare clară după cîteva laguri: în acord cu termeni MA, nu cu termeni AR'),
     T('Conclusion: SARIMA$(0,1,1)(0,1,1)_{12}$, exactly the model of Box and Jenkins', 'Concluzia: SARIMA$(0,1,1)(0,1,1)_{12}$, exact modelul lui Box și Jenkins')])
 
 chart(T('Airline model: forecasts out of sample', 'Modelul airline: prognoze în afara eșantionului'), 'tsa_ch4_airline_fc', 'TSA_ch4_airline', [
@@ -671,7 +674,7 @@ chart(T('Airline model: forecasts out of sample', 'Modelul airline: prognoze în
 
 interp(('the airline forecasts', 'prognozelor airline'), [
     (T('1949--1958: $\\hat\\theta = @{af.th}$ (@{af.ths}), $\\hat\\Theta = @{af.Th}$ (@{af.Ths}); full sample: $\\hat\\theta = @{af.fth}$ (@{af.fths}), $\\hat\\Theta = @{af.fTh}$ (@{af.fThs})', '1949--1958: $\\hat\\theta = @{af.th}$ (@{af.ths}), $\\hat\\Theta = @{af.Th}$ (@{af.Ths}); întregul eșantion: $\\hat\\theta = @{af.fth}$ (@{af.fths}), $\\hat\\Theta = @{af.fTh}$ (@{af.fThs})'),
-     [T('residual sd @{af.sig}\\% per month; Ljung--Box $Q^*(24)$ on 22 degrees of freedom, p = @{af.lbp}', 'abaterea standard a reziduurilor @{af.sig}\\% pe lună; Ljung--Box $Q^*(24)$ cu 22 de grade de libertate, p = @{af.lbp}')]),
+     [T('full sample: residual sd @{af.sig}\\% per month; Ljung--Box $Q^*(24)$ on 22 degrees of freedom, p = @{af.lbp}', 'întregul eșantion: abaterea standard a reziduurilor @{af.sig}\\% pe lună; Ljung--Box $Q^*(24)$ cu 22 de grade de libertate, p = @{af.lbp}')]),
     T('MAPE over 1959--1960: @{af.mape}\\% for the airline model, @{af.mapesn}\\% for the seasonal naive forecast (which ignores growth)', 'MAPE pe 1959--1960: @{af.mape}\\% pentru modelul airline, @{af.mapesn}\\% pentru prognoza sezonieră naivă (care ignoră creșterea)'),
     (T('December 1960: forecast @{af.f}, interval [@{af.lo}, @{af.hi}], actual @{af.act}: inside, but the model under-predicts the 1959--1960 growth', 'Decembrie 1960: prognoza @{af.f}, intervalul [@{af.lo}; @{af.hi}], valoarea reală @{af.act}: în interior, dar modelul subestimează creșterea din 1959--1960'),
      [T('the interval width grows from @{af.w1} (first month) to @{af.w24} (24th month): two unit roots', 'lățimea intervalului crește de la @{af.w1} (prima lună) la @{af.w24} (luna 24): două rădăcini unitare')])], size='footnotesize')
@@ -791,13 +794,13 @@ D.frame(T('Seasonal dummies and Fourier terms', 'Variabile dummy sezoniere și t
     T('$K$ is chosen by AICc or by cross-validation; the same terms are inside TBATS and Prophet (Section 9)', '$K$ se alege cu AICc sau prin validare încrucișată; aceiași termeni se află în TBATS și Prophet (secțiunea 9)')))
 
 chart(T('Fourier approximation of a seasonal pattern', 'Aproximarea Fourier a unui tipar sezonier'), 'tsa_ch4_fourier', 'TSA_ch4_calendar_fourier', [
-    T('Monthly seasonal effect of $\\ln$(tourism nights), 2012--2019, after removing a 13-month centred mean; fits with $K = 1, 2, 3, 6$', 'Efectul sezonier lunar al $\\ln$(înnoptări turistice), 2012--2019, după eliminarea unei medii centrate pe 13 luni; ajustări cu $K = 1, 2, 3, 6$')],
+    T('Monthly seasonal effect of $\\ln$(tourism nights), 2012--2019, after removing a 13-month centred mean; fits with $K = 1, 2, 3, 5$ (the legend label ``$K = 6$, 11 coefficients'' is the $K = 5$ fit plus $\\sin(\\pi t)$, which is 0 at every month)', 'Efectul sezonier lunar al $\\ln$(înnoptări turistice), 2012--2019, după eliminarea unei medii centrate pe 13 luni; ajustări cu $K = 1, 2, 3, 5$ (eticheta „$K = 6$, 11 coefficients” din legendă este ajustarea cu $K = 5$ plus $\\sin(\\pi t)$, egal cu 0 în fiecare lună)')],
     h='0.58\\textheight')
 
 interp(('the Fourier fits', 'ajustărilor Fourier'), [
     (T('$K = 1$ (two coefficients) already gives $R^2 = @{fo.r1}$: the summer peak is close to a single wave', '$K = 1$ (doi coeficienți) dă deja $R^2 = @{fo.r1}$: vîrful de vară este aproape o singură undă'),
      [T('$K = 2$: @{fo.r2}; $K = 3$: @{fo.r3} with six coefficients instead of eleven', '$K = 2$: @{fo.r2}; $K = 3$: @{fo.r3} cu șase coeficienți în loc de unsprezece')]),
-    T('$K = 6$ (11 coefficients) interpolates the 12 monthly points: the same as 11 dummies, $R^2 = @{fo.r6}$', '$K = 6$ (11 coeficienți) trece prin cele 12 puncte lunare: la fel ca 11 variabile dummy, $R^2 = @{fo.r6}$'),
+    T('$K = 5$ (10 coefficients): $R^2 = @{fo.r6}$; the full $K = 6$ adds $\\cos(\\pi t)$, 11 coefficients, and interpolates the 12 points like 11 dummies ($R^2 = 1$)', '$K = 5$ (10 coeficienți): $R^2 = @{fo.r6}$; $K = 6$ complet adaugă $\\cos(\\pi t)$, 11 coeficienți, și trece prin cele 12 puncte, ca 11 variabile dummy ($R^2 = 1$)'),
     T('Higher harmonics add sharper detail: the August peak needs $K \\ge 3$', 'Armonicele superioare adaugă detalii mai fine: vîrful din august cere $K \\ge 3$')])
 
 D.frame(T('Calendar effects and Orthodox Easter', 'Efecte de calendar și Paștele ortodox'), cols(items(
@@ -883,7 +886,7 @@ interp(('the daily load', 'consumului zilnic'), [
     (T('Week: Saturday @{dy.sat}\\% and Sunday @{dy.sun}\\% below Wednesday', 'Săptămîna: sîmbăta cu @{dy.sat}\\%, iar duminica cu @{dy.sun}\\% sub miercuri'),
      [T('Year: January @{dy.jan}\\% above May; a smaller summer peak (air conditioning)', 'Anul: ianuarie cu @{dy.jan}\\% peste mai; un vîrf mai mic vara (aerul condiționat)')]),
     (T('Holidays: the lowest day of the sample is Easter Sunday, @{dy.lowd} (@{dy.low} GW, mean @{dy.mean} GW)', 'Sărbătorile: cea mai joasă zi din eșantion este Duminica Paștelui, @{dy.lowd} (@{dy.low} GW, media @{dy.mean} GW)'),
-     [T('the four Easter days (Friday to Monday) average @{dy.eas} GW; Christmas to New Year is also low', 'cele patru zile de Paște (vineri--luni) au în medie @{dy.eas} GW; perioada Crăciun--Anul Nou este și ea joasă')]),
+     [T('the four Easter days (Friday to Monday) average @{dy.eas} GW; Christmas to New Year and Pentecost are also low (Pentecost Sunday was the lowest day of 2023)', 'cele patru zile de Paște (vineri--luni) au în medie @{dy.eas} GW; perioada Crăciun--Anul Nou și Rusaliile sînt și ele joase (Duminica Rusaliilor a fost cea mai joasă zi din 2023)')]),
     T('The level falls over 2022--2026; possible causes: the price shock of 2022 and rooftop solar panels that cover part of the demand behind the meter', 'Nivelul scade în 2022--2026; cauze posibile: șocul de preț din 2022 și panourile solare de pe acoperișuri, care acoperă o parte din cerere fără a trece prin rețea')])
 
 D.frame(T('A dynamic harmonic regression for daily load', 'O regresie armonică dinamică pentru consumul zilnic'), items(
@@ -989,7 +992,7 @@ D.frame(T('Worked example: a Diebold--Mariano test', 'Exemplu rezolvat: un test 
      [T('the normal critical value 1.96 would have rejected: with few windows, the correction matters', 'valoarea critică a distribuției Normale, 1,96, ar fi dus la respingere: cu puține ferestre, corecția contează')])))
 
 chart(T('Forecasts from one origin, across Easter 2026', 'Prognoze dintr-o singură origine, peste Paștele din 2026'), 'tsa_ch4_load_fc', 'TSA_ch4_evaluation', [
-    T('Origin @{lf.o}, 14 days ahead; Orthodox Easter Sunday was @{ea.d26}', 'Originea @{lf.o}, 14 zile înainte; Duminica Paștelui ortodox a fost pe @{ea.d26}')],
+    T('Origin @{lf.o}, 14 days ahead; Orthodox Easter Sunday was @{ea.d26}; ETS is not drawn (its MAE is on the next slide)', 'Originea @{lf.o}, 14 zile înainte; Duminica Paștelui ortodox a fost pe @{ea.d26}; ETS nu este desenat (MAE-ul lui se află pe slide-ul următor)')],
     h='0.56\\textheight')
 
 interp(('one forecast window', 'unei ferestre de prognoză'), [

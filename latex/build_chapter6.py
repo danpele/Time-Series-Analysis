@@ -107,6 +107,7 @@ CC = N['ccf']
 V.put('cc.bet0', CC['bet']['0'], 2)
 V.put('cc.bet1', CC['bet']['1'], 2)
 V.put('cc.betm1', CC['bet']['-1'], 2)
+V.put('cc.daxm1', CC['dax']['-1'], 3)
 V.put('cc.dax0', CC['dax']['0'], 2)
 V.put('cc.dax1', CC['dax']['1'], 2)
 V.put('cc.band', CC['band'], 3)
@@ -126,6 +127,7 @@ V.put('wx.det', W['det'], 2)
 V.put('wx.mu1', W['mu'][0], 2)
 V.put('wx.mu2', W['mu'][1], 2)
 V.raw('wx.f1', vec2(W['f1']))
+V.put('wx.a5', np.linalg.matrix_power(np.array([[0.5, 0.2], [0.3, 0.4]]), 5)[0, 0], 2)
 V.raw('wx.f2', vec2(W['f2']))
 V.raw('wx.A2', mat2(W['A2']))
 V.raw('wx.P', mat2(W['P'], 3))
@@ -434,7 +436,7 @@ chart(T('Cross-correlations: markets and Romanian macro data', 'Corelații încr
 
 interp(('the cross-correlations', 'corelațiilor încrucișate'), [
     (T('BET with the S\\&P 500: @{cc.bet0} on the same day and @{cc.bet1} with the previous day ($k = 1$); with $k = -1$: @{cc.betm1}', 'BET cu S\\&P 500: @{cc.bet0} în aceeași zi și @{cc.bet1} cu ziua precedentă ($k = 1$); pentru $k = -1$: @{cc.betm1}'),
-     [T('the band is $\\pm$@{cc.band}: yesterday\'s New York return is visible in today\'s Bucharest and Frankfurt returns, not the reverse', 'banda este $\\pm$@{cc.band}: randamentul de ieri de la New York se vede în randamentele de azi de la București și Frankfurt, nu invers'),
+     [T('the band is $\\pm$@{cc.band}: yesterday\'s New York return is clearly visible in today\'s Bucharest and Frankfurt returns (DAX at $k = 1$: @{cc.dax1}); the reverse link is much weaker (DAX at $k = -1$: @{cc.daxm1}, just outside the band)', 'banda este $\\pm$@{cc.band}: randamentul de ieri de la New York se vede clar în randamentele de azi de la București și Frankfurt (DAX la $k = 1$: @{cc.dax1}); legătura inversă este mult mai slabă (DAX la $k = -1$: @{cc.daxm1}, puțin în afara benzii)'),
       T('reason: Wall Street closes at 22:00 in Frankfurt, after the European markets; its news reaches them the next morning', 'motivul: Wall Street se închide la ora 22:00 (ora Frankfurtului), după piețele europene; știrile ajung la ele a doua zi dimineață')]),
     (T('ROBOR with inflation: the largest correlation, @{cc.ipmax}, is at $k = @{cc.k}$ quarters (inflation leads)', 'ROBOR cu inflația: cea mai mare corelație, @{cc.ipmax}, apare la $k = @{cc.k}$ trimestre (inflația precedă)'),
      [T('but every value is large (@{cc.ipm4} at $k = -4$, @{cc.ip4} at $k = 4$): two persistent series; the CCF alone cannot separate lead from persistence', 'dar toate valorile sînt mari (@{cc.ipm4} la $k = -4$, @{cc.ip4} la $k = 4$): două serii persistente; CCF singură nu poate separa precedența de persistență')])])
@@ -496,7 +498,7 @@ interp(('the simulated VAR(1)', 'VAR(1) simulat'), [
     (T('The two series wander around their means and move together: sample correlation @{sim.c}', 'Cele două serii oscilează în jurul mediilor și evoluează împreună: corelația de eșantion este @{sim.c}'),
      [T('two sources of co-movement: the correlated shocks ($\\Corr = 0.5$) and the cross effects $a_{12}$, $a_{21}$', 'două surse ale evoluției comune: șocurile corelate ($\\Corr = 0{,}5$) și efectele încrucișate $a_{12}$, $a_{21}$')]),
     (T('A unit shock to $y_1$ reaches $y_2$ one period later ($a_{21} = 0.3$), then both fade', 'Un șoc unitar în $y_1$ ajunge la $y_2$ după o perioadă ($a_{21} = 0{,}3$), apoi ambele se sting'),
-     [T('the decay is governed by the largest eigenvalue of $\\bA$, @{wx.l1}: after 5 periods about $0.7^5 \\approx 0.17$ of the effect remains', 'stingerea este guvernată de cea mai mare valoare proprie a lui $\\bA$, @{wx.l1}: după 5 perioade rămîne circa $0{,}7^5 \\approx 0{,}17$ din efect')])])
+     [T('the decay is governed by the largest eigenvalue of $\\bA$, @{wx.l1}: $(\\bA^h)_{11} = 0.6 \\cdot 0.7^h + 0.4 \\cdot 0.2^h$, so after 5 periods @{wx.a5} of the shock remains in $y_1$', 'stingerea este guvernată de cea mai mare valoare proprie a lui $\\bA$, @{wx.l1}: $(\\bA^h)_{11} = 0{,}6 \\cdot 0{,}7^h + 0{,}4 \\cdot 0{,}2^h$, deci după 5 perioade rămîne în $y_1$ @{wx.a5} din șoc')])])
 
 D.frame(T('The number of parameters', 'Numărul de parametri'), items(
     (T('A VAR$(p)$ with $K$ variables and a constant: $K + pK^2$ coefficients, plus $K(K+1)/2$ in $\\bSigma$', 'Un VAR$(p)$ cu $K$ variabile și termen liber: $K + pK^2$ coeficienți, plus $K(K+1)/2$ în $\\bSigma$'),
@@ -539,7 +541,7 @@ D.frame(T('Stability of a VAR(1)', 'Stabilitatea unui VAR(1)'), items(
      [T('$\\lambda = (0.9 \\pm 0.5)/2$: $\\lambda_1 = @{wx.l1}$, $\\lambda_2 = @{wx.l2}$; both inside the unit circle: stable', '$\\lambda = (0{,}9 \\pm 0{,}5)/2$: $\\lambda_1 = @{wx.l1}$, $\\lambda_2 = @{wx.l2}$; ambele în interiorul cercului unitate: stabil')])))
 
 D.frame(T('Mean and variance of a stable VAR(1)', 'Media și varianța unui VAR(1) stabil'), items(
-    (T('\\textbf{Mean}: take expectations, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, so $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$', '\\textbf{Media}: luăm speranța matematică în ambii membri, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, deci $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$'),
+    (T('\\textbf{Mean}: take expectations, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, so $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$', '\\textbf{Media}: luăm media în ambii membri, $\\boldsymbol{\\mu} = \\bc + \\bA\\boldsymbol{\\mu}$, deci $\\boldsymbol{\\mu} = (\\mathbf{I} - \\bA)^{-1}\\bc$'),
      [T('example: $\\mathbf{I} - \\bA = \\begin{pmatrix} 0.5 & -0.2 \\\\ -0.3 & 0.6 \\end{pmatrix}$, determinant @{wx.det}; $\\boldsymbol{\\mu} = \\frac{1}{0.24}\\begin{pmatrix} 0.6 & 0.2 \\\\ 0.3 & 0.5 \\end{pmatrix}\\begin{pmatrix} 1.2 \\\\ 0.6 \\end{pmatrix} = \\begin{pmatrix} @{wx.mu1} \\\\ @{wx.mu2} \\end{pmatrix}$',
         'exemplu: $\\mathbf{I} - \\bA = \\begin{pmatrix} 0{,}5 & -0{,}2 \\\\ -0{,}3 & 0{,}6 \\end{pmatrix}$, determinantul @{wx.det}; $\\boldsymbol{\\mu} = \\frac{1}{0{,}24}\\begin{pmatrix} 0{,}6 & 0{,}2 \\\\ 0{,}3 & 0{,}5 \\end{pmatrix}\\begin{pmatrix} 1{,}2 \\\\ 0{,}6 \\end{pmatrix} = \\begin{pmatrix} @{wx.mu1} \\\\ @{wx.mu2} \\end{pmatrix}$')]),
     (T('\\textbf{Variance}: $\\bGamma(0) = \\bA\\bGamma(0)\\bA\' + \\bSigma$ (a discrete Lyapunov equation); $\\bGamma(h) = \\bA^h\\bGamma(0)$', '\\textbf{Varianța}: $\\bGamma(0) = \\bA\\bGamma(0)\\bA\' + \\bSigma$ (o ecuație Lyapunov discretă); $\\bGamma(h) = \\bA^h\\bGamma(0)$'),

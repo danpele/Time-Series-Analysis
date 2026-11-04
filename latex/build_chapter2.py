@@ -290,8 +290,9 @@ f1 = r1 * (1 - r2) / (1 - r1 ** 2)
 f2 = (r2 - r1 ** 2) / (1 - r1 ** 2)
 V.put('yw.f1', f1, 3)
 V.put('yw.f2', f2, 3)
-V.put('yw.s2', G['sd'] ** 2 * (1 - f1 * r1 - f2 * r2), 2)
-V.put('yw.g0', G['sd'] ** 2, 2)
+g0_T = G['sd'] ** 2 * (G['T'] - 1) / G['T']       # gamma-hat(0) divides by T (Chapter 1); G['sd'] uses T - 1
+V.put('yw.s2', g0_T * (1 - f1 * r1 - f2 * r2), 2)
+V.put('yw.g0', g0_T, 2)
 V.put('yw.det', 1 - r1 ** 2, 3)
 # MA(1): theta and 1/theta
 V.put('ma.r05', 0.5 / 1.25, 1)
@@ -545,7 +546,7 @@ D.frame(T('The ARMA($p,q$) model', 'Modelul ARMA($p,q$)'), items(
      [T('\\textbf{stationary and causal}: roots of $\\phi(z)$ outside the unit circle; then $X_t - \\mu = \\psi(L)\\varepsilon_t$, $\\psi(L) = \\theta(L)/\\phi(L)$', '\\textbf{staționar și cauzal}: rădăcinile lui $\\phi(z)$ în afara cercului unitate; atunci $X_t - \\mu = \\psi(L)\\varepsilon_t$, $\\psi(L) = \\theta(L)/\\phi(L)$'),
       T('\\textbf{invertible}: roots of $\\theta(z)$ outside the unit circle; then $\\pi(L)(X_t - \\mu) = \\varepsilon_t$, $\\pi(L) = \\phi(L)/\\theta(L)$', '\\textbf{invertibil}: rădăcinile lui $\\theta(z)$ în afara cercului unitate; atunci $\\pi(L)(X_t - \\mu) = \\varepsilon_t$, $\\pi(L) = \\phi(L)/\\theta(L)$'),
       T('\\textbf{no common factors}: $\\phi(z)$ and $\\theta(z)$ share no root', '\\textbf{fără factori comuni}: $\\phi(z)$ și $\\theta(z)$ nu au nicio rădăcină comună')]),
-    T('ARMA(1,1) can match a slowly decaying ACF that starts below $\\phi$; a pure AR or MA would need many terms for it', 'ARMA(1,1) poate reproduce o ACF care descrește lent și pornește sub $\\phi$; un AR sau un MA pur ar avea nevoie de mulți termeni')))
+    T('ARMA(1,1) can match an ACF that decays at rate $\\phi$ from a first value set by $\\theta$ (below $\\phi$ if $\\theta < 0$, above if $\\theta > 0$); a pure AR or MA would need many terms for it', 'ARMA(1,1) poate reproduce o ACF care descrește cu rata $\\phi$ pornind de la o primă valoare fixată de $\\theta$ (sub $\\phi$ dacă $\\theta < 0$, peste $\\phi$ dacă $\\theta > 0$); un AR sau un MA pur ar avea nevoie de mulți termeni')))
 
 D.frame(T('The $\\psi$ weights and the impulse response', 'Ponderile $\\psi$ și răspunsul la impuls'), items(
     (T('From $\\phi(L)\\psi(L) = \\theta(L)$, match the coefficients of $L^j$:', 'Din $\\phi(L)\\psi(L) = \\theta(L)$, egalăm coeficienții lui $L^j$:'),
@@ -657,7 +658,8 @@ D.frame(T('Maximum likelihood', 'Verosimilitatea maximă'), items(
      [T('dropping the first factor gives conditional least squares', 'dacă renunțăm la primul factor, obținem cele mai mici pătrate condiționate')]),
     (T('Standard errors (se) from the curvature of $\\ln L$; asymptotically', 'Erorile standard (se, standard error) din curbura lui $\\ln L$; asimptotic'),
      [T('AR(1): $\\mathrm{se}(\\hat\\phi) \\approx \\sqrt{(1 - \\phi^2)/T}$; MA(1): $\\mathrm{se}(\\hat\\theta) \\approx \\sqrt{(1 - \\theta^2)/T}$', 'AR(1): $\\mathrm{se}(\\hat\\phi) \\approx \\sqrt{(1 - \\phi^2)/T}$; MA(1): $\\mathrm{se}(\\hat\\theta) \\approx \\sqrt{(1 - \\theta^2)/T}$'),
-      T('$t$-ratios $\\hat\\phi/\\mathrm{se}$ compared with $\\pm 1.96$, as in regression', 'rapoartele $t$, $\\hat\\phi/\\mathrm{se}$, se compară cu $\\pm 1{,}96$, ca în regresie')])))
+      T('$t$-ratios $\\hat\\phi/\\mathrm{se}$ compared with $\\pm 1.96$, as in regression', 'rapoartele $t$, $\\hat\\phi/\\mathrm{se}$, se compară cu $\\pm 1{,}96$, ca în regresie'),
+      T('\\texttt{statsmodels} reports by default the \\textbf{OPG} se (outer product of the scores): the same limit if the model is right, but smaller than the curvature se when the errors have heavy tails; the se in this chapter are OPG', '\\texttt{statsmodels} raportează implicit erorile standard \\textbf{OPG} (produsul exterior al scorurilor): aceeași limită dacă modelul este corect, dar mai mici decît cele din curbură cînd erorile au cozi groase; erorile standard din acest capitol sînt OPG')])))
 
 chart(T('Sampling distributions of the estimators', 'Distribuțiile de selecție ale estimatorilor'), 'tsa_ch2_estimators', 'TSA_ch2_estimation', [
     T('@{est.nrep} simulated samples of $T = 100$ each; left: AR(1) with $\\phi = 0.9$; right: MA(1) with $\\theta = 0.5$', '@{est.nrep} de eșantioane simulate, fiecare cu $T = 100$; stînga: AR(1) cu $\\phi = 0{,}9$; dreapta: MA(1) cu $\\theta = 0{,}5$')],
@@ -869,12 +871,12 @@ D.frame(T('Step 2: estimation and information criteria', 'Pasul 2: estimarea și
 
 D.frame(T('Interpreting the estimated MA(3)', 'Interpretarea modelului MA(3) estimat'), items(
     (T('$\\hat y_t = @{ma3.mu} + \\hat\\varepsilon_t + @{ma3.t1}\\,\\hat\\varepsilon_{t-1} + @{ma3.t2}\\,\\hat\\varepsilon_{t-2} + @{ma3.t3}\\,\\hat\\varepsilon_{t-3}$, $\\hat\\sigma = @{ma3.sig}$', '$\\hat y_t = @{ma3.mu} + \\hat\\varepsilon_t + @{ma3.t1}\\,\\hat\\varepsilon_{t-1} + @{ma3.t2}\\,\\hat\\varepsilon_{t-2} + @{ma3.t3}\\,\\hat\\varepsilon_{t-3}$, $\\hat\\sigma = @{ma3.sig}$'),
-     [T('standard errors: @{ma3.mus} (mean), @{ma3.s1}, @{ma3.s2}, @{ma3.s3}: all three MA terms are significant', 'erorile standard: @{ma3.mus} (media), @{ma3.s1}; @{ma3.s2}; @{ma3.s3}: toți cei trei termeni MA sînt semnificativi')]),
+     [T('standard errors (OPG): @{ma3.mus} (mean), @{ma3.s1}, @{ma3.s2}, @{ma3.s3}: all three MA terms are significant', 'erorile standard (OPG): @{ma3.mus} (media), @{ma3.s1}; @{ma3.s2}; @{ma3.s3}: toți cei trei termeni MA sînt semnificativi')]),
     (T('The $\\hat\\theta_j$ decline from @{ma3.t1} to @{ma3.t3}: close to, but below, the overlap pattern $(1, 1, 1)$', 'Coeficienții $\\hat\\theta_j$ scad de la @{ma3.t1} la @{ma3.t3}: aproape de tiparul suprapunerii $(1, 1, 1)$, dar sub el'),
      [T('$(1, 1, 1)$ would put roots on the unit circle; the smallest root modulus here is @{ma3.rmin} $> 1$: invertible', '$(1, 1, 1)$ ar pune rădăcini pe cercul unitate; cel mai mic modul al rădăcinilor este aici @{ma3.rmin} $> 1$: invertibil')]),
     (T('ARMA(1,3): $\\hat\\theta_1 = @{arma13.t1} > 1$, yet the roots have modulus at least @{arma13.rmin}: still invertible', 'ARMA(1,3): $\\hat\\theta_1 = @{arma13.t1} > 1$, dar rădăcinile au modulul cel puțin @{arma13.rmin}: tot invertibil'),
      [T('for $q > 1$, invertibility is read from the roots, not from single coefficients', 'pentru $q > 1$, invertibilitatea se citește din rădăcini, nu din coeficienți luați separat'),
-      T('$\\hat\\phi = @{arma13.phi}$ (se @{arma13.phis}): one extra parameter for little gain; BIC drops it', '$\\hat\\phi = @{arma13.phi}$ (eroarea standard @{arma13.phis}): un parametru în plus pentru un cîștig mic; BIC renunță la el')]),
+      T('$\\hat\\phi = @{arma13.phi}$ (se OPG @{arma13.phis}): one extra parameter for little gain; BIC drops it', '$\\hat\\phi = @{arma13.phi}$ (eroarea standard OPG @{arma13.phis}): un parametru în plus pentru un cîștig mic; BIC renunță la el')]),
     T('Mean growth @{ma3.mu}\\% per year, but with a standard error of @{ma3.mus}: overlapping data carry less information than $T$ suggests', 'Creșterea medie este de @{ma3.mu}\\% pe an, dar cu o eroare standard de @{ma3.mus}: datele care se suprapun conțin mai puțină informație decît sugerează $T$')))
 
 chart(T('Step 3: diagnostics of the MA(3)', 'Pasul 3: diagnosticarea modelului MA(3)'), 'tsa_ch2_gdp_diag', 'TSA_ch2_gdp_case', [
@@ -931,7 +933,7 @@ chart(T('Daily returns: BET and EUR/RON', 'Randamente zilnice: BET și EUR/RON')
 D.frame(T('Interpreting the AR(1) for daily returns', 'Interpretarea modelului AR(1) pentru randamentele zilnice'), table(
     'lrr', ' & \\textbf{BET} & \\textbf{EUR/RON}',
     [T('Observations', 'Observații') + ' & @{bet.T} & @{eurron.T}',
-     '$\\hat\\phi$ (se) & $@{bet.phi}$ (@{bet.se}) & $@{eurron.phi}$ (@{eurron.se})',
+     '$\\hat\\phi$ (se OPG) & $@{bet.phi}$ (@{bet.se}) & $@{eurron.phi}$ (@{eurron.se})',
      T('$t$-ratio', 'Raportul $t$') + ' & @{bet.t} & @{eurron.t}',
      T('$R^2$ (\\%)', '$R^2$ (\\%)') + ' & @{bet.r2} & @{eurron.r2}',
      T('LB $Q^*(10)$ residuals, 9 df (p)', 'LB $Q^*(10)$ reziduuri, 9 g.l. (p)') + ' & @{bet.q} (@{bet.qp}) & @{eurron.q} (@{eurron.qp})',
@@ -939,6 +941,7 @@ D.frame(T('Interpreting the AR(1) for daily returns', 'Interpretarea modelului A
      T('Kurtosis of residuals', 'Kurtosis-ul reziduurilor') + ' & @{bet.kurt} & @{eurron.kurt}',
      T('BIC choice, $p, q \\le 2$', 'Alegerea BIC, $p, q \\le 2$') + ' & @{bet.bic} & @{eurron.bic}'],
     size='footnotesize') + items(
+    T('se: OPG; with heavy tails (kurtosis @{bet.kurt} and @{eurron.kurt}) they are too small, and curvature or robust se are several times larger, yet $\\hat\\phi$ stays significant', 'se: OPG; cu cozi groase (kurtosis @{bet.kurt} și @{eurron.kurt}) acestea sînt prea mici, iar erorile standard din curbură sau robuste sînt de cîteva ori mai mari, totuși $\\hat\\phi$ rămîne semnificativ'),
     T('Highly significant $\\hat\\phi$, but $R^2$ of 1--3\\%: \\textbf{statistically} real, \\textbf{economically} small after trading costs', '$\\hat\\phi$ foarte semnificativ, dar un $R^2$ de 1--3\\%: real din punct de vedere \\textbf{statistic}, mic din punct de vedere \\textbf{economic} după costurile de tranzacționare'),
     T('Positive $\\hat\\phi$: slow price adjustment (BET), a managed exchange rate (EUR/RON)', '$\\hat\\phi$ pozitiv: ajustarea lentă a prețurilor (BET), un curs de schimb în regim de managed float (EUR/RON)'),
     T('Squared residuals and kurtosis: the mean is modelled, the variance is not; ARMA + GARCH in Chapter 5', 'Pătratele reziduurilor și kurtosis-ul: media este modelată, varianța nu; ARMA + GARCH în Capitolul 5')), 'footnotesize')

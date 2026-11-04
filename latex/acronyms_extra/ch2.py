@@ -3,6 +3,7 @@
 # OVERRIDE_CH (optional): acronim -> tuplu, sens diferit doar in acest capitol.
 EXTRA = {
     'HICP': ('Harmonised Index of Consumer Prices', 'en', 'indicele armonizat al prețurilor de consum', None),
+    'OPG': ('Outer Product of Gradients', 'en', 'produsul exterior al gradienților', None),
     'IAPC': ('Indicele armonizat al prețurilor de consum', 'ro', None, 'the harmonised index of consumer prices'),
 }
 OVERRIDE_CH = {

@@ -573,7 +573,8 @@ def fig_long_memory(save_it=True):
 # 7. FILTERS
 # =============================================================================
 def hp_gain(nu, lam=HP_LAMBDA):
-    """Squared gain of the HP cycle filter: 4 lam (1 - cos w)^2 / (1 + 4 lam (1 - cos w)^2), w = 2 pi nu."""
+    """Gain of the HP cycle filter (real and nonnegative): G = 4 lam (1 - cos w)^2 / (1 + 4 lam (1 - cos w)^2),
+    w = 2 pi nu; the squared gain is G^2 and the trend filter has gain 1 - G."""
     a = 4 * lam * (1 - np.cos(2 * np.pi * nu)) ** 2
     return a / (1 + a)
 
@@ -583,13 +584,14 @@ def fig_filters(save_it=True):
     nu = np.linspace(0, 0.5, 1001)
     g1 = 4 * np.sin(np.pi * nu) ** 2
     g4 = 4 * np.sin(4 * np.pi * nu) ** 2
-    gh = hp_gain(nu)
+    gh = hp_gain(nu) ** 2                      # squared gain of the cycle filter
+    gt = (1 - hp_gain(nu)) ** 2                # squared gain of the trend filter
     fig, axes = plt.subplots(1, 2, figsize=(9.33, 2.72))
     axes[0].plot(nu, g1, color=st.MainBlue, lw=1.8, label='first difference 1 - L')
     axes[0].plot(nu, g4, color=st.Orange, lw=1.6, ls='--', label='seasonal difference 1 - L^4')
     axes[0].set_title('Differencing filters')
     axes[1].plot(nu, gh, color=st.Forest, lw=1.8, label='HP cycle filter, lambda = 1600')
-    axes[1].plot(nu, 1 - gh, color=st.Purple, lw=1.6, ls='--', label='HP trend filter')
+    axes[1].plot(nu, gt, color=st.Purple, lw=1.6, ls='--', label='HP trend filter')
     for ax in axes:
         ax.axvspan(1 / BC_BAND[1], 1 / BC_BAND[0], color=st.Amber, alpha=0.15, lw=0,
                    label='business-cycle band' if ax is axes[1] else '_')
@@ -600,7 +602,8 @@ def fig_filters(save_it=True):
     save('tsa_ch12_filters', save_it)
     half = float(nu[np.argmin(abs(gh - 0.5))])
     return {'d1_40': float(4 * np.sin(np.pi / 40) ** 2), 'd1_4': float(4 * np.sin(np.pi / 4) ** 2),
-            'hp_8': float(hp_gain(1 / 8)), 'hp_32': float(hp_gain(1 / 32)), 'hp_40': float(hp_gain(1 / 40)),
+            'hp_8': float(hp_gain(1 / 8) ** 2), 'hp_32': float(hp_gain(1 / 32) ** 2),
+            'hp_40': float(hp_gain(1 / 40) ** 2),
             'hp_half_nu': half, 'hp_half_period': 1 / half}
 
 
