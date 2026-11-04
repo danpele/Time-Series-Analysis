@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 15 · Course Review and Exam Preparation</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch15.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch15_data.js?v=20261101a", "ch15_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch15.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index.html">Time Series Analysis</a></h1><p>Chapter 15 · Course Review and Exam Preparation</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_15" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch15.html" class="lang-btn active">EN</a><a href="ch15_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure or table on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step; the “Worked example” boxes redo the solutions of the exam problems with the numbers of the chapter.</p>
+<p class="toc"><a href="#s-bj">Box–Jenkins from start to finish: Romanian inflation</a> · <a href="#s-ex">The exam</a></p>
+<h2 class="sec" id="s-bj">Box–Jenkins from start to finish: Romanian inflation</h2>
+<section class="blk" id="data">
+  <h3>Step 1: the data</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=40" target="_blank" rel="noopener"><img src="slides/tsa_ch15_bj_data_en.jpg" alt="Slide 39: Step 1: the data" loading="lazy"></a>
+      <figcaption>Slide 39</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="da-e">Last month in the chart (August of the year; lecture: August 2026): <b id="da-e-v"></b></label><input type="range" id="da-e" min="2010" max="2026" step="1" value="2026"></div><button class="btn play" id="da-play" type="button"></button></div><style>.c15x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c15x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c15x .c15f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c15x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c15x li{margin:.18rem 0;overflow-wrap:anywhere}.c15x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c15t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c15t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c15t th,.c15t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c15t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c15t tbody tr:nth-child(even){background:#F5F7FB}.c15t tbody tr.hi{background:#E3F4F7}.c15t .r{text-align:right}.c15t .c{text-align:center}.c15cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="da-chart"></div></div><ul class="out" id="da-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves the end of the sample from August 2010 to August 2026. How does the mean monthly inflation change?</div>
+  <details><summary>Answer</summary><p>It falls from 0.52% (2005–2010) to 0.31% (to August 2020), then rises to 0.39% over the whole sample: the 2021–2023 inflation wave and the 2025 tax shock raise the mean. The minimum of annual inflation, −3.0% in May 2016, has the June 2015 VAT cut on food inside its 12-month window; the maximum, 13.6%, is in November 2022.</p></details>
+</section>
+<section class="blk" id="t-data">
+  <h3>Interpreting the data</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=41" target="_blank" rel="noopener"><img src="slides/ch15x_t-data_en.jpg" alt="Slide 40: Interpreting the data" loading="lazy"></a>
+      <figcaption>Slide 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="td-s">First year of the sample for the monthly means (lecture: 2005): <b id="td-s-v"></b></label><input type="range" id="td-s" min="2005" max="2020" step="1" value="2005"></div><button class="btn play" id="td-play" type="button"></button></div><div class="charts "><div class="chart" id="td-chart"></div></div><ul class="out" id="td-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves the start of the sample up to 2020. Does mean June inflation stay negative?</div>
+  <details><summary>Answer</summary><p>No: since 2020 June averages +0.28%, and January remains the highest month (0.94%). The seasonal pattern (January high, June low) survives, but its level rises with the general inflation of 2021–2023; this is why the model works with Δ<sub>12</sub>, which removes both the level and the fixed seasonality.</p></details>
+</section>
+<section class="blk" id="t-tests">
+  <h3>Step 2: unit-root and stationarity tests</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=42" target="_blank" rel="noopener"><img src="slides/ch15x_t-tests_en.jpg" alt="Slide 41: Step 2: unit-root and stationarity tests" loading="lazy"></a>
+      <figcaption>Slide 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tt-e">Last month of the sample (lecture: August 2026)</label><select id="tt-e"><option value="2012-12">Dec 2012</option><option value="2013-12">Dec 2013</option><option value="2014-12">Dec 2014</option><option value="2015-12">Dec 2015</option><option value="2016-12">Dec 2016</option><option value="2017-12">Dec 2017</option><option value="2018-12">Dec 2018</option><option value="2019-12">Dec 2019</option><option value="2020-12">Dec 2020</option><option value="2021-12">Dec 2021</option><option value="2022-12">Dec 2022</option><option value="2023-12">Dec 2023</option><option value="2024-12">Dec 2024</option><option value="2025-12">Dec 2025</option><option value="2026-08" selected>Aug 2026 (lecture)</option></select></div><button class="btn play" id="tt-play" type="button"></button></div><div class="charts "><div class="chart" id="tt-chart"></div></div><div class="tbl c15t" id="tt-tb"></div><ul class="out" id="tt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ steps through the samples ending in December 2012, …, 2025. What verdict does annual inflation Δ<sub>12</sub> ln P get for the 2013–2021 samples?</div>
+  <details><summary>Answer</summary><p>Unit root: ADF does not reject (p between 0.66 and 0.97) and KPSS rejects (η between 0.59 and 1.48, above 0.463). The inconclusive result of the lecture appears only after 2022, when the inflation wave adds variation. In the same years Δ ln P gets “conflicting”: both tests reject, because the seasonality and the level shifts of monthly inflation violate the assumptions of both tests.</p></details>
+</section>
+<section class="blk" id="acf">
+  <h3>Step 3: identification from the correlogram of zₜ</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=43" target="_blank" rel="noopener"><img src="slides/tsa_ch15_bj_acf_en.jpg" alt="Slide 42: Step 3: identification from the correlogram of zₜ" loading="lazy"></a>
+      <figcaption>Slide 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ac-s">Series</label><select id="ac-s"><option value="m">Δ ln P</option><option value="a">Δ₁₂ ln P</option><option value="z" selected>z = ΔΔ₁₂ ln P (lecture)</option></select></div><div class="ctl"><label for="ac-k">Number of lags (lecture: 36): <b id="ac-k-v"></b></label><input type="range" id="ac-k" min="12" max="48" step="6" value="36"></div><button class="btn play" id="ac-play" type="button"></button></div><div class="charts "><div class="chart" id="ac-chart"></div></div><ul class="out" id="ac-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ switches to Δ ln P (no seasonal difference). What does the ACF show at lags 12, 24 and 36?</div>
+  <details><summary>Answer</summary><p>0.25, 0.22 and 0.18, all above the ±0.12 band and decaying slowly: the seasonal pattern has not been removed, so Δ<sub>12</sub> is needed. For Δ<sub>12</sub> ln P the ACF starts at 0.98 and decays very slowly (a near unit root); only z = ΔΔ<sub>12</sub> ln P has a single large seasonal value, −0.45 at lag 12.</p></details>
+</section>
+<section class="blk" id="t-acf">
+  <h3>Interpreting the correlogram</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=44" target="_blank" rel="noopener"><img src="slides/ch15x_t-acf_en.jpg" alt="Slide 43: Interpreting the correlogram" loading="lazy"></a>
+      <figcaption>Slide 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ta-p">φ of the model (lecture: the estimate 0.416): <b id="ta-p-v"></b></label><input type="range" id="ta-p" min="-0.9" max="0.95" step="any" value="0.4164530709825134"></div><div class="ctl"><label for="ta-q">Θ of the model (lecture: the estimate -0.867): <b id="ta-q-v"></b></label><input type="range" id="ta-q" min="-0.99" max="0.5" step="any" value="-0.8672811357090459"></div><button class="btn play" id="ta-play" type="button"></button></div><div class="charts "><div class="chart" id="ta-chart"></div></div><ul class="out" id="ta-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ passes through φ = 0. What is the theoretical ρ<sub>12</sub> then, for Θ = −0.867?</div>
+  <details><summary>Answer</summary><p>−0.49 = Θ/(1 + Θ<sup>2</sup>) = −0.867/1.752. A seasonal MA(1) has a single nonzero seasonal autocorrelation, at lag 12, and its size cannot exceed 0.5 in absolute value; with φ = 0 the satellites at 11 and 13 vanish. With φ = 0.416 they are about φ · ρ<sub>12</sub>, and in the sample ρ̂<sub>11</sub> = −0.12 and ρ̂<sub>13</sub> = −0.15, close to the product ρ̂<sub>1</sub>ρ̂<sub>12</sub> = −0.15.</p></details>
+</section>
+<section class="blk" id="t-grid">
+  <h3>Step 4: estimating the candidates</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=45" target="_blank" rel="noopener"><img src="slides/ch15x_t-grid_en.jpg" alt="Slide 44: Step 4: estimating the candidates" loading="lazy"></a>
+      <figcaption>Slide 44</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tg-c">Penalty c per parameter (lecture: BIC, c = ln 223 = 5.41): <b id="tg-c-v"></b></label><input type="range" id="tg-c" min="0" max="10" step="any" value="5.407171771460119"></div><button class="btn play" id="tg-play" type="button"></button></div><div class="charts "><div class="chart" id="tg-chart"></div></div><div class="c15x"><div class="wctl"><div class="ctl"><label for="tg-a">Level of the Ljung–Box tests for the chosen model</label><select id="tg-a"><option value="0.01">1%</option><option value="0.05" selected>5% (lecture)</option><option value="0.1">10%</option></select></div></div><div class="tbl c15t" id="tg-tb"></div></div><ul class="out" id="tg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves the penalty c from 2 to 9. Which model has the lowest criterion at c = 2 (AIC without the correction)?</div>
+  <details><summary>Answer</summary><p>(2,1,1)(0,1,1)<sub>12</sub>, the chosen model itself. With c = ln 223 = 5.41 (BIC) the winner is (1,1,1)(0,1,1)<sub>12</sub>, which has one parameter less but fails the Ljung–Box test at lag 12 (p = 0.029); from c ≈ 5 upward it stays first. The chosen model does not change for any c in the chart, because it is the best of the models that pass the checks.</p></details>
+</section>
+<section class="blk" id="t-chosen">
+  <h3>Step 4: the chosen model</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=46" target="_blank" rel="noopener"><img src="slides/ch15x_t-chosen_en.jpg" alt="Slide 45: Step 4: the chosen model" loading="lazy"></a>
+      <figcaption>Slide 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tc-m">Model</label><select id="tc-m"><option value="(1,1,0)(0,1,1)">(1,1,0)(0,1,1)₁₂</option><option value="(1,1,1)(0,1,1)">(1,1,1)(0,1,1)₁₂</option><option value="(2,1,1)(0,1,1)" selected>(2,1,1)(0,1,1)₁₂ (chosen, lecture)</option><option value="(1,1,2)(0,1,1)">(1,1,2)(0,1,1)₁₂</option><option value="(1,1,1)(1,1,1)">(1,1,1)(1,1,1)₁₂</option></select></div><button class="btn play" id="tc-play" type="button"></button></div><div class="charts "><div class="chart" id="tc-chart"></div></div><div class="tbl c15t" id="tc-tb"></div><ul class="out" id="tc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ steps through the five models of the table. Which one has its smallest AR root closest to 1?</div>
+  <details><summary>Answer</summary><p>(2,1,1)(0,1,1)<sub>12</sub>, with modulus 1.034 (inverse 0.967), followed by (1,1,2)(0,1,1)<sub>12</sub> with 1.035. The identified model has a single AR root, 2.40: an AR(1) with φ = 0.42 cannot reproduce the persistence of inflation. The seasonal MA roots all have modulus close to 1 (1.006): Θ<sub>1</sub> ≈ −1 nearly cancels Δ<sub>12</sub>.</p></details>
+</section>
+<section class="blk" id="diag">
+  <h3>Step 5: checking the residuals</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=47" target="_blank" rel="noopener"><img src="slides/tsa_ch15_bj_diag_en.jpg" alt="Slide 46: Step 5: checking the residuals" loading="lazy"></a>
+      <figcaption>Slide 46</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dg-m">Model whose residuals are shown</label><select id="dg-m"><option value="(1,1,0)(0,1,1)">(1,1,0)(0,1,1)₁₂ (identified)</option><option value="(1,1,1)(0,1,1)">(1,1,1)(0,1,1)₁₂</option><option value="(2,1,1)(0,1,1)" selected>(2,1,1)(0,1,1)₁₂ (chosen, lecture)</option><option value="(1,1,2)(0,1,1)">(1,1,2)(0,1,1)₁₂</option><option value="(1,1,1)(1,1,1)">(1,1,1)(1,1,1)₁₂</option></select></div><div class="ctl"><label for="dg-k">Lags in the ACF (lecture: 24): <b id="dg-k-v"></b></label><input type="range" id="dg-k" min="12" max="36" step="6" value="24"></div><button class="btn play" id="dg-play" type="button"></button></div><div class="charts "><div class="chart" id="dg-chart"></div></div><ul class="out" id="dg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ steps through the five models of the table of step 4. For which of them does the kurtosis of the residuals fall below 5?</div>
+  <details><summary>Answer</summary><p>None: the kurtosis stays between 9.5 and 10.0 and Jarque–Bera between 390 and 454. Extra AR and MA terms remove autocorrelation, not outliers: the residuals of June 2015 (−6.1σ) and July 2010 (5.3σ) come from VAT changes that no univariate model can foresee.</p></details>
+</section>
+<section class="blk" id="t-diag">
+  <h3>Interpreting the residual checks</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=48" target="_blank" rel="noopener"><img src="slides/ch15x_t-diag_en.jpg" alt="Slide 47: Interpreting the residual checks" loading="lazy"></a>
+      <figcaption>Slide 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tx-m">Number of lags m of the Ljung–Box test (lecture: 12 and 24): <b id="tx-m-v"></b></label><input type="range" id="tx-m" min="6" max="36" step="1" value="12"></div><button class="btn play" id="tx-play" type="button"></button></div><div class="charts "><div class="chart" id="tx-chart"></div></div><div class="tbl c15t" id="tx-tb"></div><ul class="out" id="tx-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves m from 6 to 36. Does the chosen model (2,1,1)(0,1,1)<sub>12</sub> pass the Ljung–Box test at 5% for every m?</div>
+  <details><summary>Answer</summary><p>No: p = 0.025 at m = 7 and p = 0.048 at m = 8; at every other lag, 12 and 24 (those of the lecture) included, p &gt; 0.05. The identified model fails at every m from 6 to 36. Tests at several lags are not independent: the choice of m flips a borderline verdict, which is why the lecture reports two lags fixed in advance.</p></details>
+</section>
+<section class="blk" id="fc">
+  <h3>Step 6: forecasts</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch15_bj_forecast_en.jpg" alt="Slide 48: Step 6: forecasts" loading="lazy"></a>
+      <figcaption>Slide 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fc-o">Forecast origin (lecture: August 2026): <b id="fc-o-v"></b></label><input type="range" id="fc-o" min="0" max="12" step="1" value="12"></div><div class="ctl"><label for="fc-b">Benchmark on the left</label><select id="fc-b"><option value="sn" selected>seasonal naive (lecture)</option><option value="nv">naive</option></select></div><div class="ctl"><label for="fc-l">Interval level</label><select id="fc-l"><option value="80">80%</option><option value="95" selected>95% (lecture)</option><option value="99">99%</option></select></div><button class="btn play" id="fc-play" type="button"></button></div><div class="charts "><div class="chart" id="fc-chart"></div></div><ul class="out" id="fc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves the forecast origin from August 2025 to August 2026. With the origin in August 2025, what does the model forecast for annual inflation in August 2026 (realised: 6.1%)?</div>
+  <details><summary>Answer</summary><p>9.7%, with the 95% interval [3.9, 15.5], which contains the realised value. The model treats part of the July–August 2025 jumps as persistent (AR root 0.967) and cannot know they were one-off tax decisions; over the later origins the 12-month forecast comes down, with ups and downs, to 6.3% from August 2026.</p></details>
+</section>
+<section class="blk" id="t-fc">
+  <h3>Interpreting the forecasts</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=50" target="_blank" rel="noopener"><img src="slides/ch15x_t-fc_en.jpg" alt="Slide 49: Interpreting the forecasts" loading="lazy"></a>
+      <figcaption>Slide 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tf-n">Test months included, from September 2024 (lecture: 24): <b id="tf-n-v"></b></label><input type="range" id="tf-n" min="6" max="24" step="1" value="24"></div><div class="ctl"><label for="tf-l">Loss in the Diebold–Mariano test</label><select id="tf-l"><option value="sq" selected>squared errors (lecture)</option><option value="abs">absolute errors</option></select></div><button class="btn play" id="tf-play" type="button"></button></div><div class="charts "><div class="chart" id="tf-chart"></div></div><div class="tbl c15t" id="tf-tb"></div><ul class="out" id="tf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ lengthens the test sample from 6 to 24 months. Does the Diebold–Mariano test reject equal accuracy against the seasonal naive for any length?</div>
+  <details><summary>Answer</summary><p>No: the smallest p is 0.174, at 24 months. With 11 months the statistic even turns positive (0.10), because the large misses of July–August 2025 fall on SARIMA. A smaller RMSE is not a significant difference: on a short sample the variance of d<sub>t</sub> is large.</p></details>
+</section><h2 class="sec" id="s-ex">The exam</h2>
+<section class="blk" id="p1">
+  <h3>Problem 1: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=57" target="_blank" rel="noopener"><img src="slides/ch15x_p1_en.jpg" alt="Slide 56: Problem 1: solution" loading="lazy"></a>
+      <figcaption>Slide 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q1-f">Coefficient φ of the AR(1) errors (lecture: 0.6): <b id="q1-f-v"></b></label><input type="range" id="q1-f" min="-0.9" max="0.95" step="0.05" value="0.6"></div><button class="btn play" id="q1-play" type="button"></button></div><div class="charts "><div class="chart" id="q1-chart"></div></div><div class="c15x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="q1-y">Observed value Y<sub>T</sub> (lecture: 62): <b id="q1-y-v"></b></label><input type="range" id="q1-y" min="58" max="66" step="0.5" value="62"></div></div><div class="c15f">\[\begin{gathered}Y_t = 10 + 0.5\,t + u_t,\quad u_t = \phi u_{t-1} + \varepsilon_t\\ \hat Y_{T+h} = 10 + 0.5\,(T+h) + \phi^h u_T,\quad \mathrm{Var}(e_{T+h}) = \frac{1-\phi^{2h}}{1-\phi^2}\end{gathered}\]</div><ol id="q1-ws"></ol></div><ul class="out" id="q1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves φ up to 0.95. What is ρ<sub>ΔY</sub>(1) for φ = 0.95?</div>
+  <details><summary>Answer</summary><p>−0.025 = −(1 − φ)/2. Differencing a trend-stationary series gives an ARMA(1,1) with θ = −1; for φ close to 1 the AR root and the MA root nearly cancel and the ACF of ΔY looks like white noise, although ΔY stays non-invertible. With φ = 0 the correlation is −0.5, the value of an MA(1) with θ = −1.</p></details>
+</section>
+<section class="blk" id="p2">
+  <h3>Problem 2: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=59" target="_blank" rel="noopener"><img src="slides/ch15x_p2_en.jpg" alt="Slide 58: Problem 2: solution" loading="lazy"></a>
+      <figcaption>Slide 58</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q2-e">Last quarter of the sample (lecture: 2026Q2)</label><select id="q2-e"><option value="2012Q4">2012Q4</option><option value="2013Q4">2013Q4</option><option value="2014Q4">2014Q4</option><option value="2015Q4">2015Q4</option><option value="2016Q4">2016Q4</option><option value="2017Q4">2017Q4</option><option value="2018Q4">2018Q4</option><option value="2019Q4">2019Q4</option><option value="2020Q4">2020Q4</option><option value="2021Q4">2021Q4</option><option value="2022Q4">2022Q4</option><option value="2023Q4">2023Q4</option><option value="2024Q4">2024Q4</option><option value="2025Q4">2025Q4</option><option value="2026Q2" selected>2026Q2 (lecture)</option></select></div><button class="btn play" id="q2-play" type="button"></button></div><div class="charts "><div class="chart" id="q2-chart"></div></div><div class="tbl c15t" id="q2-tb"></div><div class="c15x"><h4>Worked example</h4><div class="c15f">\[\Delta y_t = c + bt + \gamma y_{t-1} + \sum_j \delta_j \Delta y_{t-j} + \varepsilon_t,\quad H_0:\ \gamma = 0;\qquad Q(m) = T(T+2)\sum_{k=1}^{m}\frac{\hat\rho_k^2}{T-k}\]</div><ol id="q2-ws"></ol></div><ul class="out" id="q2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ shortens the sample to 2019Q4 (no pandemic). Does growth pass the Ljung–Box Q(8) test?</div>
+  <details><summary>Answer</summary><p>Yes: Q(8) = 4.18, p = 0.841, and the drift is 1.00% a quarter (σ̂ = 2.49). Over the full sample, with 2020 included, Q(8) = 7.28 (p = 0.506) and the drift 0.81%: the 2020Q2 fall lowers the mean but creates no autocorrelation. The ADF test for the level is still not rejected (−2.08 in 2019Q4).</p></details>
+</section>
+<section class="blk" id="p3">
+  <h3>Problem 3: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=61" target="_blank" rel="noopener"><img src="slides/ch15x_p3_en.jpg" alt="Slide 60: Problem 3: solution" loading="lazy"></a>
+      <figcaption>Slide 60</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q3-o">Forecast origin (lecture: August 2026; the others: extra runs): <b id="q3-o-v"></b></label><input type="range" id="q3-o" min="0" max="23" step="1" value="23"></div><button class="btn play" id="q3-play" type="button"></button></div><div class="charts "><div class="chart" id="q3-chart"></div></div><div class="c15x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="q3-p">φ (lecture: 0.353): <b id="q3-p-v"></b></label><input type="range" id="q3-p" min="-0.9" max="0.9" step="any" value="0.3532136620425525"></div><div class="ctl"><label for="q3-q">Φ (lecture: -0.488): <b id="q3-q-v"></b></label><input type="range" id="q3-q" min="-0.95" max="0.5" step="any" value="-0.48847165104393603"></div></div><div class="c15f">\[z_t = \phi z_{t-1} + \Phi z_{t-12} - \phi\Phi z_{t-13} + \varepsilon_t,\qquad \Delta_{12}\ln P_{T+1} = \Delta_{12}\ln P_T + \hat z_{T+1}\]</div><ol id="q3-ws"></ol></div><ul class="out" id="q3-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves the origin to August 2025 (the forecast for September 2025, right after the VAT jump). How does the hand forecast compare with the realised value?</div>
+  <details><summary>Answer</summary><p>The forecast is z = 0.753 and annual inflation 8.93%; the realised values are z = 0.090 and 8.26%. The term φz<sub>T</sub> carries the August jump into September, although the jump was a one-off decision. With the origin in July 2026 the forecast for August 2026 is 6.83%, against 6.09% realised: the exit of the jump from the 12-month window is underestimated, because |Φ̂| = 0.49 &lt; 1.</p></details>
+</section>
+<section class="blk" id="p4">
+  <h3>Problem 4: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=63" target="_blank" rel="noopener"><img src="slides/ch15x_p4_en.jpg" alt="Slide 62: Problem 4: solution" loading="lazy"></a>
+      <figcaption>Slide 62</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q4-e">Last quarter of the sample (lecture: 2026Q2)</label><select id="q4-e"><option value="2015Q4">2015Q4</option><option value="2016Q4">2016Q4</option><option value="2017Q4">2017Q4</option><option value="2018Q4">2018Q4</option><option value="2019Q4">2019Q4</option><option value="2020Q4">2020Q4</option><option value="2021Q4">2021Q4</option><option value="2022Q4">2022Q4</option><option value="2023Q4">2023Q4</option><option value="2024Q4">2024Q4</option><option value="2025Q4">2025Q4</option><option value="2026Q2" selected>2026Q2 (lecture)</option></select></div><button class="btn play" id="q4-play" type="button"></button></div><div class="charts "><div class="chart" id="q4-chart"></div></div><div class="tbl c15t" id="q4-tb"></div><div class="tbl c15t" id="q4-tb2"></div><div class="c15x"><h4>Worked example</h4><div class="c15f">\[\frac{\partial i}{\partial \pi} = \frac{b_{\pi,1} + b_{\pi,2}}{1 - b_{i,1} - b_{i,2}},\qquad F = \frac{(RSS_R - RSS_U)/p}{RSS_U/(T - Kp - 1)}\]</div><ol id="q4-ws"></ol></div><ul class="out" id="q4-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ steps through the samples ending in 2015Q4, …, 2026Q2. How does the long-run effect of inflation on ROBOR change?</div>
+  <details><summary>Answer</summary><p>Up to 2022Q4 it stays between 1.06 and 1.32 (1.27 in 2019Q4), then falls to 0.91 in 2023Q4 and 0.90 in 2026Q2. The denominator 1 − b<sub>i,1</sub> − b<sub>i,2</sub> stays between 0.03 and 0.09, so small changes in the coefficients move the ratio a lot. The Granger test for g → i rejects on every sample (p ≤ 0.008).</p></details>
+</section>
+<section class="blk" id="p5">
+  <h3>Problem 5: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=65" target="_blank" rel="noopener"><img src="slides/ch15x_p5_en.jpg" alt="Slide 64: Problem 5: solution" loading="lazy"></a>
+      <figcaption>Slide 64</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q5-k">Multiplier of the adjustment coefficients α (lecture: 1): <b id="q5-k-v"></b></label><input type="range" id="q5-k" min="0.25" max="2" step="0.05" value="1"></div><button class="btn play" id="q5-play" type="button"></button></div><div class="charts "><div class="chart" id="q5-chart"></div></div><div class="c15x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="q5-y">Equation written in step 2 (lecture: Δy<sup>(10)</sup>)</label><select id="q5-y"><option value="0">Δy<sup>(1)</sup></option><option value="1">Δy<sup>(5)</sup></option><option value="2" selected>Δy<sup>(10)</sup></option></select></div></div><div class="c15f">\[\Delta \mathbf{y}_t = \boldsymbol\alpha\,\boldsymbol\beta^\top \mathbf{y}_{t-1} + \dots,\qquad \mathbf{ec}_t \approx (\mathbf{I} + \boldsymbol\beta^\top\boldsymbol\alpha)\,\mathbf{ec}_{t-1},\qquad h_{1/2} = \frac{\ln 0.5}{\ln|\lambda|}\]</div><ol id="q5-ws"></ol></div><ul class="out" id="q5-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ raises the multiplier of α from 0.25 to 2. What does the slow half-life (22.1 months in the lecture) become with α doubled?</div>
+  <details><summary>Answer</summary><p>10.9 months, about half: for eigenvalues close to 1, ln λ ≈ −(1 − λ), and 1 − λ is proportional to α. The fast component falls from 9.0 to 4.3 months. With α divided by 4 the half-lives are 89.6 and 37.2 months.</p></details>
+</section>
+<section class="blk" id="p6">
+  <h3>Problem 6: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=67" target="_blank" rel="noopener"><img src="slides/ch15x_p6_en.jpg" alt="Slide 66: Problem 6: solution" loading="lazy"></a>
+      <figcaption>Slide 66</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q6-e">Today’s shock ε<sub>t</sub> (lecture: −3.0): <b id="q6-e-v"></b></label><input type="range" id="q6-e" min="-6" max="6" step="0.5" value="-3"></div><div class="ctl"><label for="q6-s">Today’s variance σ<sub>t</sub><sup>2</sup> (lecture: 1.0): <b id="q6-s-v"></b></label><input type="range" id="q6-s" min="0.5" max="9" step="0.5" value="1"></div><button class="btn play" id="q6-play" type="button"></button></div><div class="charts "><div class="chart" id="q6-chart"></div></div><div class="c15x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="q6-n">Degrees of freedom ν of the quantile (lecture: 5, the estimate 5.011 rounded): <b id="q6-n-v"></b></label><input type="range" id="q6-n" min="3" max="30" step="1" value="5"></div></div><div class="c15f">\[\begin{gathered}\sigma^2_{t+1} = \omega + \alpha\varepsilon_t^2 + \beta\sigma_t^2,\qquad \bar\sigma^2 = \frac{\omega}{1-\alpha-\beta}\\ \mathrm{VaR}_{1\%} = -\left(\mu + \sigma_{t+1}\, t_\nu^{-1}(0.01)\sqrt{(\nu-2)/\nu}\right)\end{gathered}\]</div><ol id="q6-ws"></ol></div><ul class="out" id="q6-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set ε<sub>t</sub> = +3 instead of −3. What is σ<sup>2</sup><sub>t+1</sub>?</div>
+  <details><summary>Answer</summary><p>Still 2.5685: GARCH(1,1) depends on ε<sub>t</sub><sup>2</sup>, so a 3% rise and a 3% fall have the same effect. The leverage effect needs an asymmetric model (GJR or EGARCH, Chapter 5). With ε<sub>t</sub> = 0, σ<sup>2</sup><sub>t+1</sub> = 0.844, below today’s variance.</p></details>
+</section>
+<section class="blk" id="p7">
+  <h3>Problem 7: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=69" target="_blank" rel="noopener"><img src="slides/ch15x_p7_en.jpg" alt="Slide 68: Problem 7: solution" loading="lazy"></a>
+      <figcaption>Slide 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q7-l">Factor that multiplies the errors of the seasonal naive method (lecture: 1): <b id="q7-l-v"></b></label><input type="range" id="q7-l" min="0.5" max="2" step="0.05" value="1"></div><button class="btn play" id="q7-play" type="button"></button></div><div class="charts "><div class="chart" id="q7-chart"></div></div><div class="c15x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="q7-s">In-sample MAE of the seasonal naive method (lecture: 0.6): <b id="q7-s-v"></b></label><input type="range" id="q7-s" min="0.3" max="1.2" step="0.05" value="0.6"></div></div><div class="c15f">\[\begin{gathered}\mathrm{RMSE} = \sqrt{\tfrac1n\sum e_t^2},\quad \mathrm{MASE} = \frac{\mathrm{MAE}}{\mathrm{MAE}_{\text{in}}}\\ d_t = e_{A,t}^2 - e_{B,t}^2,\quad DM = \frac{\bar d}{s_d/\sqrt n}\end{gathered}\]</div><ol id="q7-ws"></ol></div><ul class="out" id="q7-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ multiplies the errors of the seasonal naive method by a factor from 0.5 to 2. From which factor does the DM test reject equal accuracy at 5%?</div>
+  <details><summary>Answer</summary><p>From about 1.35: DM = −2.33 at 1.2 and −2.63 at 1.4, against the critical value 2.571 with 5 degrees of freedom. With six months even a method with 40% larger errors is barely distinguishable; a MASE below 1 is not proof.</p></details>
+</section>
+<section class="blk" id="p8">
+  <h3>Problem 8: solution</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter15_review.pdf#page=71" target="_blank" rel="noopener"><img src="slides/ch15x_p8_en.jpg" alt="Slide 70: Problem 8: solution" loading="lazy"></a>
+      <figcaption>Slide 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="q8-q">Level variance σ<sub>η</sub><sup>2</sup>, with σ<sub>ε</sub><sup>2</sup> = 4 (lecture: 1): <b id="q8-q-v"></b></label><input type="range" id="q8-q" min="0.1" max="8" step="0.05" value="1"></div><button class="btn play" id="q8-play" type="button"></button></div><div class="charts "><div class="chart" id="q8-chart"></div></div><div class="c15x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="q8-y">Observation y<sub>t</sub> (lecture: 13): <b id="q8-y-v"></b></label><input type="range" id="q8-y" min="6" max="16" step="0.5" value="13"></div><div class="ctl"><label for="q8-a">p<sub>11</sub> (lecture: 0.911): <b id="q8-a-v"></b></label><input type="range" id="q8-a" min="0.5" max="0.99" step="any" value="0.9107572227758387"></div><div class="ctl"><label for="q8-b">p<sub>22</sub> (lecture: 0.934): <b id="q8-b-v"></b></label><input type="range" id="q8-b" min="0.5" max="0.99" step="any" value="0.9340588633962931"></div><div class="ctl"><label for="q8-d">d of the ARFIMA model (lecture: 0.31): <b id="q8-d-v"></b></label><input type="range" id="q8-d" min="-0.45" max="0.95" step="any" value="0.3109082031250008"></div></div><div class="c15f">\[\begin{gathered}K_t = \frac{P_t}{P_t + \sigma^2_\varepsilon},\quad \frac{\bar P}{\sigma^2_\varepsilon} = \frac{q + \sqrt{q^2 + 4q}}{2}\\ E(D_i) = \frac{1}{1 - p_{ii}},\quad \pi_1 = \frac{1 - p_{22}}{2 - p_{11} - p_{22}},\quad H = d + \tfrac12\end{gathered}\]</div><ol id="q8-ws"></ol></div><ul class="out" id="q8-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves σ<sub>η</sub><sup>2</sup> up to 4 (q = 1). What is the steady-state gain?</div>
+  <details><summary>Answer</summary><p>0.618 = (1 + √5)/2 / (1 + (1 + √5)/2). The more the level moves relative to the noise, the more the filter trusts the new observation. The first step stays K<sub>t</sub> = 2/6 = 0.333, because it depends only on P<sub>t</sub> = 2 and σ<sub>ε</sub><sup>2</sup> = 4; the gain then converges to the steady state in a few steps.</p></details>
+</section>
+<p class="src foot">The Romanian HICP (Eurostat prc_hicp_minr, 2015 = 100) is read with the chapter’s loader on 4 November 2026 and cut at August 2026, the last month of the lecture; the January 2005 – August 2026 values have not been revised and reproduce the numbers of the lecture exactly. The estimates of the 36 SARIMA models, their residuals and the forecasts come from the chapter’s code (statsmodels SARIMAX). Problem 2 uses Romanian real GDP in the version of the lecture (Chapter 3, read from the chapter’s vector chart because Eurostat has revised the series), Problem 4 the GDP growth, inflation and ROBOR 3M of the VAR of Chapter 6, Problem 5 the US Treasury yields (FRED, to September 2026), Problem 6 the GARCH(1,1)-t estimates of the BET from Chapter 5. The browser computes the correlograms, the Ljung–Box and Jarque–Bera tests, the accuracy measures, the Diebold–Mariano test, the OLS regressions of Problem 4 and the hand computations. Variants that do not appear in the lecture (other sample ends, other forecast origins, other penalties of the criterion, other lags, other parameters of the problems) are extra runs of the chapter’s code on the same data; the charts of “Interpreting the data”, “Step 2”, “Interpreting the correlogram”, “Step 4”, “Interpreting the residual checks”, “Interpreting the forecasts” and of the problem solutions are extra charts for slides that give only numbers.</p>
+</main>
+</body>
+</html>
