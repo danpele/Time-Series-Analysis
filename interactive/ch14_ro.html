@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 14 · Modele GARCH multivariate</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch14.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch14_data.js?v=20261101a", "ch14_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch14.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index_ro.html">Serii de timp</a></h1><p>Capitolul 14 · Modele GARCH multivariate</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_14" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch14.html" class="lang-btn">EN</a><a href="ch14_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură sau același tabel, calculat în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas; casetele „Exemplu rezolvat” refac calculul cu cifrele capitolului.</p>
+<p class="toc"><a href="#s-wm">Rolul volatilității multivariate</a> · <a href="#s-fw">Cadrul GARCH multivariat</a> · <a href="#s-vb">Modelele VEC și BEKK</a> · <a href="#s-cd">Corelații condiționate constante și dinamice</a> · <a href="#s-sd">DCC pentru S&P 500 și DAX</a> · <a href="#s-fm">Cinci piețe: S&P 500, DAX, BET, EUR/RON, Bitcoin</a> · <a href="#s-pv">VaR 1% al unui portofoliu cu DCC</a> · <a href="#s-hr">Rapoarte dinamice de acoperire</a></p>
+<h2 class="sec" id="s-wm">Rolul volatilității multivariate</h2>
+<section class="blk" id="wx-div">
+  <h3>Exemplu rezolvat: corelația și riscul portofoliului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=8" target="_blank" rel="noopener"><img src="slides/ch14x_wx-div_ro.jpg" alt="Slide-ul 7: Exemplu rezolvat: corelația și riscul portofoliului" loading="lazy"></a>
+      <figcaption>Slide-ul 7</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xd-r">Corelația ρ (curs: 0,2 și 0,8): <b id="xd-r-v"></b></label><input type="range" id="xd-r" min="-1" max="1" step="0.05" value="0.2"></div><button class="btn play" id="xd-play" type="button"></button></div><div class="charts "><div class="chart" id="xd-chart"></div></div><div class="c14x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="xd-s">Volatilitatea fiecărui activ (curs: 20%): <b id="xd-s-v"></b></label><input type="range" id="xd-s" min="5" max="40" step="1" value="20"></div></div><div class="c14f">\[\sigma_p^2=w_1^2\sigma_1^2+w_2^2\sigma_2^2+2w_1w_2\rho\,\sigma_1\sigma_2,\qquad w_1=w_2=0.5\]</div><ol id="xd-ws"></ol></div><ul class="out" id="xd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește ρ de la 0,3 la 1, cu pasul 0,1. Crește σ<sub>p</sub> cu aceeași mărime la fiecare pas?</div>
+  <details><summary>Răspuns</summary><p>Nu: +0,63 puncte de la ρ = 0,2 la 0,3 (de la 15,49% la 16,12%), dar doar +0,51 puncte de la 0,9 la 1 (de la 19,49% la 20%). σ<sub>p</sub><sup>2</sup> este liniar în ρ, iar σ<sub>p</sub> este rădăcina lui, deci curba este concavă. Cu ρ = −0,2 volatilitatea este 12,6%.</p></details>
+</section>
+<section class="blk" id="divers">
+  <h3>Volatilitatea portofoliului în funcție de corelație</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=9" target="_blank" rel="noopener"><img src="slides/tsa_ch14_diversification_ro.jpg" alt="Slide-ul 8: Volatilitatea portofoliului în funcție de corelație" loading="lazy"></a>
+      <figcaption>Slide-ul 8</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dv-w">Ponderea primului activ (curs: 50%): <b id="dv-w-v"></b></label><input type="range" id="dv-w" min="0" max="1" step="0.05" value="0.5"></div><div class="ctl"><label for="dv-s">Volatilitatea celui de-al doilea activ (curs: 20%): <b id="dv-s-v"></b></label><input type="range" id="dv-s" min="10" max="40" step="1" value="20"></div><button class="btn play" id="dv-play" type="button"></button></div><style>.c14x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c14x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c14x .c14f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c14x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c14x li{margin:.18rem 0;overflow-wrap:anywhere}.c14x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c14t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c14t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c14t th,.c14t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c14t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c14t tbody tr:nth-child(even){background:#F5F7FB}.c14t tbody tr.hi{background:#E3F4F7}.c14t .r{text-align:right}.c14t .c{text-align:center}.c14cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="dv-chart"></div></div><ul class="out" id="dv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ mută ponderea primului activ de la 60% la 90% (ambele active cu 20%). Ce se întîmplă cu σ<sub>p</sub> pentru ρ = 0,8?</div>
+  <details><summary>Răspuns</summary><p>Crește: 19,02% la 60% și 19,64% la 90%, față de 18,97% la 50/50. Cu volatilități egale, portofoliul 50/50 are cel mai mic risc oricare ar fi ρ. Cu al doilea activ la 40% și ρ = −1, σ<sub>p</sub> = |0,5 · 20 − 0,5 · 40| = 10%: riscul dispare doar cu w = 2/3.</p></details>
+</section>
+<section class="blk" id="rolling">
+  <h3>Corelațiile se schimbă în timp</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=11" target="_blank" rel="noopener"><img src="slides/tsa_ch14_rolling_corr_ro.jpg" alt="Slide-ul 10: Corelațiile se schimbă în timp" loading="lazy"></a>
+      <figcaption>Slide-ul 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ro-w">Fereastra mobilă (zile de tranzacționare; curs: 250): <b id="ro-w-v"></b></label><input type="range" id="ro-w" min="60" max="500" step="10" value="250"></div><button class="btn play" id="ro-play" type="button"></button></div><div class="charts "><div class="chart" id="ro-chart"></div></div><ul class="out" id="ro-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ lungește fereastra pînă la 500 de zile. Ce se întîmplă cu minimul corelației S&P 500 – DAX (0,21 la 250 de zile)?</div>
+  <details><summary>Răspuns</summary><p>Crește la 0,30 (noiembrie 2025): într-o fereastră lungă zilele asincrone din aprilie 2025 cîntăresc mai puțin. Cu 60 de zile corelația coboară pînă la −0,27 (iulie 2025) și urcă pînă la 0,86 (ianuarie 2012), cu abaterea standard 0,147 față de 0,122 la 250 de zile.</p></details>
+</section>
+<section class="blk" id="t-async">
+  <h3>O capcană: tranzacționarea asincronă</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=13" target="_blank" rel="noopener"><img src="slides/ch14x_t-async_ro.jpg" alt="Slide-ul 12: O capcană: tranzacționarea asincronă" loading="lazy"></a>
+      <figcaption>Slide-ul 12</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ta-k">Orizontul k al randamentelor (zile de tranzacționare; curs: 1, adică zilnic): <b id="ta-k-v"></b></label><input type="range" id="ta-k" min="1" max="10" step="1" value="1"></div><button class="btn play" id="ta-play" type="button"></button></div><div class="charts "><div class="chart" id="ta-chart"></div></div><div class="c14x"><div class="wctl"><div class="ctl"><label for="ta-p">Perechile din tabel</label><select id="ta-p"><option value="lec" selected>cele trei din curs</option><option value="all">toate cele zece</option></select></div></div><div class="tbl c14t" id="ta-tb"></div><div class="tbl c14t" id="ta-tb2"></div></div><ul class="out" id="ta-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ adună randamentele zilnice pe k = 2, …, 10 zile. Ce se întîmplă cu corelația S&P 500 – BET?</div>
+  <details><summary>Răspuns</summary><p>Crește: 0,32 zilnic, 0,40 pe 2 zile și 0,50 pe 10 zile, peste corelația săptămînală de 0,46: o știre care ajunge la București a doua zi intră în același randament pe k zile. Dintre cele zece perechi, doar S&P 500 și Bitcoin au o corelație săptămînală mai mică decît cea zilnică (0,25 → 0,19): randamentul săptămînal al lui Bitcoin include și weekendul, iar cele 610 săptămîni dau o estimare mai zgomotoasă decît cele 2 815 zile.</p></details>
+</section><h2 class="sec" id="s-fw">Cadrul GARCH multivariat</h2>
+<section class="blk" id="wx-pd">
+  <h3>Două condiții pentru Hₜ</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=16" target="_blank" rel="noopener"><img src="slides/ch14x_wx-pd_ro.jpg" alt="Slide-ul 15: Două condiții pentru Hₜ" loading="lazy"></a>
+      <figcaption>Slide-ul 15</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xp-h">Covarianța h<sub>12</sub> (curs: 2,5): <b id="xp-h-v"></b></label><input type="range" id="xp-h" min="-3" max="3" step="0.1" value="2.5"></div><button class="btn play" id="xp-play" type="button"></button></div><div class="charts "><div class="chart" id="xp-chart"></div></div><div class="c14x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="xp-a">Varianța h<sub>11</sub> (curs: 4; h<sub>22</sub> = 1): <b id="xp-a-v"></b></label><input type="range" id="xp-a" min="0.5" max="8" step="0.5" value="4"></div></div><div class="c14f">\[\mathbf{w}^\top\mathbf{H}\mathbf{w}>0\ \ \forall\,\mathbf{w}\neq\mathbf{0}\iff h_{11}>0,\ \ h_{11}h_{22}-h_{12}^2>0,\qquad \rho_{12}=\frac{h_{12}}{\sqrt{h_{11}h_{22}}}\]</div><ol id="xp-ws"></ol></div><ul class="out" id="xp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ coboară h<sub>12</sub> de la 2,75 la −3 (h<sub>11</sub> = 4, h<sub>22</sub> = 1). Pentru ce valori este H pozitiv definită?</div>
+  <details><summary>Răspuns</summary><p>Doar pentru |h<sub>12</sub>| &lt; 2, adică |ρ| &lt; 1. La h<sub>12</sub> = ±2 determinantul și o valoare proprie sînt 0 (o combinație fără risc); pentru |h<sub>12</sub>| &gt; 2 există portofolii cu varianță negativă, de exemplu −0,416 pentru h<sub>12</sub> = ±2,5. Semnul covarianței nu contează, doar mărimea ei față de √(h<sub>11</sub>h<sub>22</sub>).</p></details>
+</section><h2 class="sec" id="s-vb">Modelele VEC și BEKK</h2>
+<section class="blk" id="wx-bekk">
+  <h3>Exemplu rezolvat: un pas al unui BEKK diagonal</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=21" target="_blank" rel="noopener"><img src="slides/ch14x_wx-bekk_ro.jpg" alt="Slide-ul 20: Exemplu rezolvat: un pas al unui BEKK diagonal" loading="lazy"></a>
+      <figcaption>Slide-ul 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xb-e">Șocul de ieri ε<sub>2,t−1</sub> (curs: −1,5): <b id="xb-e-v"></b></label><input type="range" id="xb-e" min="-3" max="3" step="0.1" value="-1.5"></div><button class="btn play" id="xb-play" type="button"></button></div><div class="charts "><div class="chart" id="xb-chart"></div></div><div class="c14x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="xb-f">Șocul de ieri ε<sub>1,t−1</sub> (curs: −2): <b id="xb-f-v"></b></label><input type="range" id="xb-f" min="-3" max="3" step="0.1" value="-2"></div></div><div class="c14f">\[\begin{gathered}h_{12,t}=c_{12}^*+a_{11}a_{22}\,\varepsilon_{1,t-1}\varepsilon_{2,t-1}+b_{11}b_{22}\,h_{12,t-1}\\ c_{12}^*=0.02,\ a_{11}=0.30,\ a_{22}=0.25,\ b_{11}=0.94,\ b_{22}=0.95,\ h_{12,t-1}=0.5\end{gathered}\]</div><ol id="xb-ws"></ol></div><ul class="out" id="xb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți ε<sub>2,t−1</sub> = +1,5 (semn opus lui ε<sub>1,t−1</sub> = −2). Cît este h<sub>12,t</sub>?</div>
+  <details><summary>Răspuns</summary><p>0,2415 = 0,020 + 0,075 · (−3) + 0,4465: șocurile de semne opuse scad covarianța. Cu ε<sub>2,t−1</sub> = 0, h<sub>12,t</sub> = 0,4665, tot sub 0,5, deși nivelul de lungă durată este 0,625: acel nivel ține cont că, în medie, produsul șocurilor este egal cu h<sub>12</sub>, iar o zi fără șoc comun aduce doar constanta și persistența.</p></details>
+</section>
+<section class="blk" id="t-dim">
+  <h3>Problema dimensionalității</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=22" target="_blank" rel="noopener"><img src="slides/ch14x_t-dim_ro.jpg" alt="Slide-ul 21: Problema dimensionalității" loading="lazy"></a>
+      <figcaption>Slide-ul 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tm-n">Numărul de active N din ultima coloană și din grafic: <b id="tm-n-v"></b></label><input type="range" id="tm-n" min="2" max="50" step="1" value="5"></div><button class="btn play" id="tm-play" type="button"></button></div><div class="charts "><div class="chart" id="tm-chart"></div></div><div class="tbl c14t" id="tm-tb"></div><ul class="out" id="tm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Pentru N = 30, BEKK(1,1) are 2 265 de parametri. Cîți are DCC?</div>
+  <details><summary>Răspuns</summary><p>527: 90 de parametri GARCH estimați serie cu serie, 435 de corelații de selecție și doar 2 parametri, a și b, găsiți prin optimizare numerică. VEC(1,1) are 432 915.</p></details>
+</section>
+<section class="blk" id="params">
+  <h3>Numărul de parametri în funcție de numărul de active</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=23" target="_blank" rel="noopener"><img src="slides/tsa_ch14_param_count_ro.jpg" alt="Slide-ul 22: Numărul de parametri în funcție de numărul de active" loading="lazy"></a>
+      <figcaption>Slide-ul 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pc-n">Cel mai mare N de pe axă (curs: 50): <b id="pc-n-v"></b></label><input type="range" id="pc-n" min="5" max="100" step="5" value="50"></div><button class="btn play" id="pc-play" type="button"></button></div><div class="charts "><div class="chart" id="pc-chart"></div></div><ul class="out" id="pc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ mărește cel mai mare N pînă la 100. De cîte ori crește numărul de parametri ai VEC(1,1) de la N = 50 la N = 100?</div>
+  <details><summary>Răspuns</summary><p>De 15,7 ori (de la 3 252 525 la 51 010 050), ca N<sup>4</sup>: 2<sup>4</sup> = 16. DCC crește de 3,8 ori (de la 1 377 la 5 252), BEKK(1,1) de 4 ori (de la 6 275 la 25 050).</p></details>
+</section><h2 class="sec" id="s-cd">Corelații condiționate constante și dinamice</h2>
+<section class="blk" id="wx-dcc">
+  <h3>Exemplu rezolvat: un pas al recurenței DCC</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=29" target="_blank" rel="noopener"><img src="slides/ch14x_wx-dcc_ro.jpg" alt="Slide-ul 28: Exemplu rezolvat: un pas al recurenței DCC" loading="lazy"></a>
+      <figcaption>Slide-ul 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xc-z">Reziduul de ieri z<sub>2,t−1</sub> (curs: −2,5): <b id="xc-z-v"></b></label><input type="range" id="xc-z" min="-3" max="3" step="0.1" value="-2.5"></div><button class="btn play" id="xc-play" type="button"></button></div><div class="charts "><div class="chart" id="xc-chart"></div></div><div class="c14x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="xc-a">Parametrul a (curs: 0,05): <b id="xc-a-v"></b></label><input type="range" id="xc-a" min="0" max="0.06" step="0.01" value="0.05"></div><div class="ctl"><label for="xc-b">Parametrul b (curs: 0,93): <b id="xc-b-v"></b></label><input type="range" id="xc-b" min="0.8" max="0.93" step="0.01" value="0.93"></div></div><div class="c14f">\[\begin{gathered}\mathbf{Q}_t=(1-a-b)\,\bar{\mathbf{Q}}+a\,\mathbf{z}_{t-1}\mathbf{z}_{t-1}^\top+b\,\mathbf{Q}_{t-1},\qquad \rho_{12,t}=\frac{q_{12,t}}{\sqrt{q_{11,t}\,q_{22,t}}}\\ \bar q_{12}=0.5,\ \ \mathbf{Q}_{t-1}=\begin{pmatrix}1&0.5\\0.5&1\end{pmatrix},\ \ z_{1,t-1}=-2\end{gathered}\]</div><ol id="xc-ws"></ol></div><ul class="out" id="xc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ mută z<sub>2,t−1</sub> pînă la +3, cu z<sub>1,t−1</sub> = −2. Cît este ρ<sub>12,t</sub> pentru z<sub>2,t−1</sub> = +2,5?</div>
+  <details><summary>Răspuns</summary><p>0,187: q<sub>12,t</sub> = 0,010 − 0,250 + 0,465 = 0,225, iar q<sub>11,t</sub> = 1,150 și q<sub>22,t</sub> = 1,2625 rămîn aceleași. Cu z<sub>2,t−1</sub> = 0 corelația este 0,454, tot sub 0,5: mișcarea unei singure piețe mărește o varianță de la numitor fără să adauge nimic la covarianță.</p></details>
+</section>
+<section class="blk" id="wx-hl">
+  <h3>Interpretarea parametrilor a și b</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=30" target="_blank" rel="noopener"><img src="slides/ch14x_wx-hl_ro.jpg" alt="Slide-ul 29: Interpretarea parametrilor a și b" loading="lazy"></a>
+      <figcaption>Slide-ul 29</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xh-p">Persistența a + b (curs: 0,98 și 0,99): <b id="xh-p-v"></b></label><input type="range" id="xh-p" min="0.9" max="0.995" step="0.005" value="0.98"></div><button class="btn play" id="xh-play" type="button"></button></div><div class="charts "><div class="chart" id="xh-chart"></div></div><div class="c14x"><h4>Exemplu rezolvat</h4><div class="c14f">\[q_{ij,t+k}-\bar q_{ij}\approx(a+b)^k\,(q_{ij,t}-\bar q_{ij}),\qquad \text{half-life}=\frac{\ln 0.5}{\ln(a+b)}\]</div><ol id="xh-ws"></ol></div><ul class="out" id="xh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește a + b pînă la 0,995. Cum se schimbă timpul de înjumătățire de la a + b = 0,99 la 0,995?</div>
+  <details><summary>Răspuns</summary><p>Se dublează, de la 69 la 138 de zile: ln(a + b) ≈ −(1 − a − b), deci timpul de înjumătățire este aproximativ 0,69/(1 − a − b). Cu a + b = 0,90 el este 6,6 zile, iar după 20 de zile rămîne 12% din abatere.</p></details>
+</section><h2 class="sec" id="s-sd">DCC pentru S&P 500 și DAX</h2>
+<section class="blk" id="t-step1">
+  <h3>Pasul 1: două modele GARCH univariate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=32" target="_blank" rel="noopener"><img src="slides/ch14x_t-step1_ro.jpg" alt="Slide-ul 31: Pasul 1: două modele GARCH univariate" loading="lazy"></a>
+      <figcaption>Slide-ul 31</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="t1-s">Seria din grafic</label><select id="t1-s"><option value="sp500" selected>S&P 500</option><option value="dax">DAX</option></select></div><button class="btn play" id="t1-play" type="button"></button></div><div class="charts "><div class="chart" id="t1-chart"></div></div><div class="tbl c14t" id="t1-tb"></div><ul class="out" id="t1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Care indice pierde o pondere mai mare din excesul de kurtosis după standardizare?</div>
+  <details><summary>Răspuns</summary><p>S&P 500: 1 − 1,8/10,5 = 83%, față de DAX: 1 − 1,4/6,2 = 78%. Volatilitatea variabilă explică cea mai mare parte a cozilor groase, dar reziduurile z<sub>t</sub> păstrează un exces de kurtosis de 1,4–1,8; de aceea VaR-ul cu cuantila distribuției Normale va avea prea multe încălcări.</p></details>
+</section>
+<section class="blk" id="step1">
+  <h3>Pasul 1: volatilitățile condiționate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=33" target="_blank" rel="noopener"><img src="slides/tsa_ch14_garch_step1_ro.jpg" alt="Slide-ul 32: Pasul 1: volatilitățile condiționate" loading="lazy"></a>
+      <figcaption>Slide-ul 32</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="s1-m">Multiplicatorul lui α din pasul 1, cu α + β păstrat (curs: 1): <b id="s1-m-v"></b></label><input type="range" id="s1-m" min="0.25" max="2" step="0.05" value="1"></div><button class="btn play" id="s1-play" type="button"></button></div><div class="charts "><div class="chart" id="s1-chart"></div></div><ul class="out" id="s1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește multiplicatorul lui α pînă la 2 (aceeași persistență). Ce se întîmplă cu maximul volatilității S&P 500 din 2020?</div>
+  <details><summary>Răspuns</summary><p>Crește la 139% (17 martie 2020), de la 109%: un α mai mare reacționează mai mult la șocul fiecărei zile. Cu multiplicatorul 0,25 maximul scade la 64% și se mută pe 25 martie 2020. Sînt rulări suplimentare ale filtrului, nu estimări.</p></details>
+</section>
+<section class="blk" id="t-dcc">
+  <h3>Pasul 2: modelul DCC estimat</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=35" target="_blank" rel="noopener"><img src="slides/ch14x_t-dcc_ro.jpg" alt="Slide-ul 34: Pasul 2: modelul DCC estimat" loading="lazy"></a>
+      <figcaption>Slide-ul 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="t2-b">Parametrul b fixat pe grafic (curs: estimarea 0,9766): <b id="t2-b-v"></b></label><input type="range" id="t2-b" min="0.9" max="0.99" step="any" value="0.9766130941875784"></div><button class="btn play" id="t2-play" type="button"></button></div><div class="charts "><div class="chart" id="t2-chart"></div></div><div class="tbl c14t" id="t2-tb"></div><ul class="out" id="t2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ fixează b la 0,98 și apoi la 0,99. Cu b = 0,99, mai este respinsă corelația constantă?</div>
+  <details><summary>Răspuns</summary><p>Da: cel mai bun a din grilă, 0,0074, dă LR = 121,0, mult peste 5,99. Cu b = 0,90 cel mai bun a este 0,0375 și LR = 102,1: verosimilitatea are o creastă pe care a și b se înlocuiesc parțial; maximul, 131,8, este la estimarea (0,0152; 0,9766).</p></details>
+</section>
+<section class="blk" id="dcc">
+  <h3>Corelația DCC dintre S&P 500 și DAX</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=36" target="_blank" rel="noopener"><img src="slides/tsa_ch14_dcc_sp_dax_ro.jpg" alt="Slide-ul 35: Corelația DCC dintre S&P 500 și DAX" loading="lazy"></a>
+      <figcaption>Slide-ul 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="dc-a">Parametrul a, cu b = 0,9766 fixat (curs: estimarea 0,0152): <b id="dc-a-v"></b></label><input type="range" id="dc-a" min="0" max="0.023" step="any" value="0.01523063696521079"></div><div class="ctl"><label for="dc-w">Fereastra mobilă (zile de tranzacționare; curs: 250): <b id="dc-w-v"></b></label><input type="range" id="dc-w" min="60" max="500" step="10" value="250"></div><button class="btn play" id="dc-play" type="button"></button></div><div class="charts "><div class="chart" id="dc-chart"></div></div><ul class="out" id="dc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește a pînă la 0,022 (b fixat). Ce se întîmplă cu abaterea standard a corelației DCC (0,083 la estimare)?</div>
+  <details><summary>Răspuns</summary><p>Crește la 0,120, aproape cît corelația pe 250 de zile (0,122), iar corelația variază între 0,19 și 0,82. LR scade la 100,1: variația în plus este zgomot pe care verosimilitatea îl penalizează. Cu a = 0 corelația este constantă, 0,575, iar LR = 0.</p></details>
+</section>
+<section class="blk" id="t-crisis">
+  <h3>Corelațiile în crize</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=38" target="_blank" rel="noopener"><img src="slides/ch14x_t-crisis_ro.jpg" alt="Slide-ul 37: Corelațiile în crize" loading="lazy"></a>
+      <figcaption>Slide-ul 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tc-a">Parametrul a, cu b = 0,9766 fixat (curs: estimarea 0,0152): <b id="tc-a-v"></b></label><input type="range" id="tc-a" min="0" max="0.023" step="any" value="0.01523063696521079"></div><button class="btn play" id="tc-play" type="button"></button></div><div class="charts "><div class="chart" id="tc-chart"></div></div><div class="c14x"><div class="wctl"><div class="ctl"><label for="tc-r">Corelația din tabel</label><select id="tc-r"><option value="dcc" selected>media corelației DCC (curs)</option><option value="roll">media corelației pe 250 de zile</option><option value="sample">corelația randamentelor din perioadă</option></select></div></div><div class="tbl c14t" id="tc-tb"></div></div><ul class="out" id="tc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește a pînă la 0,022. Ce se întîmplă cu diferența dintre corelația DCC medie din 2020 și cea din perioada calmă (0,70 − 0,56 = 0,14)?</div>
+  <details><summary>Răspuns</summary><p>Crește la 0,18 (0,73 față de 0,55); cu a = 0 toate trei mediile sînt 0,575. Corelația de selecție a randamentelor (alegeți-o în casetă) dă 0,74 și 0,52: crește mecanic cu volatilitatea (Forbes și Rigobon), iar DCC lucrează cu reziduurile standardizate.</p></details>
+</section>
+<section class="blk" id="zoom">
+  <h3>În interiorul crizelor din 2008 și 2020</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=39" target="_blank" rel="noopener"><img src="slides/tsa_ch14_crisis_zoom_ro.jpg" alt="Slide-ul 38: În interiorul crizelor din 2008 și 2020" loading="lazy"></a>
+      <figcaption>Slide-ul 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="zm-m">Multiplicatorul lui α din pasul 1, cu α + β păstrat (curs: 1): <b id="zm-m-v"></b></label><input type="range" id="zm-m" min="0.25" max="2" step="0.05" value="1"></div><div class="ctl"><label for="zm-a">Parametrul a, cu b = 0,9766 fixat (curs: estimarea 0,0152): <b id="zm-a-v"></b></label><input type="range" id="zm-a" min="0" max="0.023" step="any" value="0.01523063696521079"></div><button class="btn play" id="zm-play" type="button"></button></div><div class="charts "><div class="chart" id="zm-chart"></div></div><ul class="out" id="zm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește multiplicatorul lui α pînă la 2. Mai atinge corelația din 2020 maximul înaintea volatilității?</div>
+  <details><summary>Răspuns</summary><p>Nu: cu α dublat maximul corelației, 0,71, este pe 12 iunie 2020, după maximul volatilității (139% pe 17 martie 2020). Volatilitățile mai mari din martie împart șocurile acelor zile, deci reziduurile standardizate care alimentează recurența DCC sînt mai mici. Cu multiplicatorul 0,25, volatilitatea din 2008 atinge maximul abia pe 2 decembrie 2008 (60%).</p></details>
+</section><h2 class="sec" id="s-fm">Cinci piețe: S&P 500, DAX, BET, EUR/RON, Bitcoin</h2>
+<section class="blk" id="t-panel">
+  <h3>Un model DCC cu cinci active</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=42" target="_blank" rel="noopener"><img src="slides/ch14x_t-panel_ro.jpg" alt="Slide-ul 41: Un model DCC cu cinci active" loading="lazy"></a>
+      <figcaption>Slide-ul 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tp-s">Activul din grafic</label><select id="tp-s"><option value="sp500" selected>S&P 500</option><option value="dax">DAX</option><option value="bet">BET</option><option value="eurron">EUR/RON</option><option value="btc">Bitcoin</option></select></div><button class="btn play" id="tp-play" type="button"></button></div><div class="charts "><div class="chart" id="tp-chart"></div></div><div class="tbl c14t" id="tp-tb"></div><ul class="out" id="tp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ arată pe rînd fiecare activ. Care are cel mai mare maxim al volatilității și cînd?</div>
+  <details><summary>Răspuns</summary><p>Bitcoin: 281% pe 13 martie 2020. S&P 500 atinge 121% pe 17 martie 2020, DAX 84% pe 13 martie 2020, BET 98% pe 20 decembrie 2018 (ziua în care raportul de acoperire DCC atinge 1,00), EUR/RON 13% pe 21 mai 2025.</p></details>
+</section>
+<section class="blk" id="panel">
+  <h3>Corelațiile dinamice a patru perechi</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=43" target="_blank" rel="noopener"><img src="slides/tsa_ch14_panel_corr_ro.jpg" alt="Slide-ul 42: Corelațiile dinamice a patru perechi" loading="lazy"></a>
+      <figcaption>Slide-ul 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pn-a">Parametrul a, cu b fixat (curs: estimarea 0,0088): <b id="pn-a-v"></b></label><input type="range" id="pn-a" min="0" max="0.0215" step="any" value="0.00880008500557167"></div><button class="btn play" id="pn-play" type="button"></button></div><div class="charts "><div class="chart" id="pn-chart"></div></div><ul class="out" id="pn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește a pînă la 0,02. Ce se întîmplă cu intervalul corelației S&P 500 – Bitcoin (−0,05 … 0,42)?</div>
+  <details><summary>Răspuns</summary><p>Se lărgește: de la −0,33 la 0,62, cu media tot 0,21. Cu a = 0 cele patru corelații devin constante, egale cu Q̄: 0,55, 0,32, 0,21 și −0,07; acesta este modelul CCC, respins de LR = 88,5.</p></details>
+</section>
+<section class="blk" id="heat">
+  <h3>Corelațiile medii: perioadă calmă și criză</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=45" target="_blank" rel="noopener"><img src="slides/tsa_ch14_panel_heatmap_ro.jpg" alt="Slide-ul 44: Corelațiile medii: perioadă calmă și criză" loading="lazy"></a>
+      <figcaption>Slide-ul 44</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ht-a">Parametrul a, cu b fixat (curs: estimarea 0,0088): <b id="ht-a-v"></b></label><input type="range" id="ht-a" min="0" max="0.0215" step="any" value="0.00880008500557167"></div><button class="btn play" id="ht-play" type="button"></button></div><div class="charts "><div class="chart" id="ht-chart"></div></div><ul class="out" id="ht-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește a pînă la 0,02. Ce se întîmplă cu corelația medie din crahul din 2020 (0,19)?</div>
+  <details><summary>Răspuns</summary><p>Crește la 0,23, iar media din perioada calmă scade la 0,10. Cu a = 0 cele două matrice sînt identice (media 0,135): cu corelații constante nu se vede nicio creștere în criză.</p></details>
+</section><h2 class="sec" id="s-pv">VaR 1% al unui portofoliu cu DCC</h2>
+<section class="blk" id="wx-var">
+  <h3>Exemplu rezolvat: VaR 1% pentru două active</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=49" target="_blank" rel="noopener"><img src="slides/ch14x_wx-var_ro.jpg" alt="Slide-ul 48: Exemplu rezolvat: VaR 1% pentru două active" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xv-r">Corelația prognozată ρ<sub>t</sub> (curs: 0,3 și 0,9): <b id="xv-r-v"></b></label><input type="range" id="xv-r" min="-0.5" max="1" step="0.05" value="0.3"></div><button class="btn play" id="xv-play" type="button"></button></div><div class="charts "><div class="chart" id="xv-chart"></div></div><div class="c14x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="xv-a">σ<sub>1</sub> zilnic (curs: 1,5%): <b id="xv-a-v"></b></label><input type="range" id="xv-a" min="0.5" max="4" step="0.1" value="1.5"></div><div class="ctl"><label for="xv-b">σ<sub>2</sub> zilnic (curs: 1,2%): <b id="xv-b-v"></b></label><input type="range" id="xv-b" min="0.5" max="4" step="0.1" value="1.2"></div><div class="ctl"><label for="xv-v">Valoarea portofoliului (milioane de lei; curs: 1): <b id="xv-v-v"></b></label><input type="range" id="xv-v" min="0.5" max="10" step="0.5" value="1"></div></div><div class="c14f">\[\mathbf{H}_t=\mathbf{D}_t\mathbf{R}_t\mathbf{D}_t,\quad \sigma_{p,t}=\sqrt{\mathbf{w}^\top\mathbf{H}_t\mathbf{w}},\quad \mathrm{VaR}_{0.01,t}=-(\mu_p+z_{0.01}\,\sigma_{p,t}),\ \ z_{0.01}=-2.326\]</div><ol id="xv-ws"></ol></div><ul class="out" id="xv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește ρ<sub>t</sub> pînă la 1. Cît este VaR 1% pentru ρ<sub>t</sub> = 1?</div>
+  <details><summary>Răspuns</summary><p>3,14%: σ<sub>p</sub> = 0,5 · 1,5 + 0,5 · 1,2 = 1,35%, cea mai mare valoare posibilă cu aceste volatilități. Cu ρ<sub>t</sub> = −0,5 VaR 1% este 1,60%, aproximativ 16,0 mii de lei pentru 1 milion de lei.</p></details>
+</section>
+<section class="blk" id="var">
+  <h3>VaR 1% al unui portofoliu S&P 500 și DAX, 2015–2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=52" target="_blank" rel="noopener"><img src="slides/tsa_ch14_var_backtest_ro.jpg" alt="Slide-ul 51: VaR 1% al unui portofoliu S&P 500 și DAX, 2015–2026" loading="lazy"></a>
+      <figcaption>Slide-ul 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="vb-l">Nivelul VaR-ului</label><select id="vb-l"><option value="0.005">0,5%</option><option value="0.01" selected>1% (curs)</option><option value="0.025">2,5%</option><option value="0.05">5%</option></select></div><div class="ctl"><label for="vb-m">Modelul comparat cu matricea statică</label><select id="vb-m"><option value="DCC-FHS" selected>DCC, FHS (curs)</option><option value="DCC">DCC, distribuția Normală</option><option value="CCC">CCC, distribuția Normală</option></select></div><button class="btn play" id="vb-play" type="button"></button></div><div class="charts "><div class="chart" id="vb-chart"></div></div><ul class="out" id="vb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ trece la nivelurile 2,5% și 5%. La 5%, cît este rata încălcărilor VaR-ului static?</div>
+  <details><summary>Răspuns</summary><p>2,83% (82 de încălcări față de 145 așteptate): prea puține, LR<sub>uc</sub> = 33,6, p &lt; 0,001. La 1% VaR-ul static trecea testul (0,90%, p = 0,577): este prea mare în anii calmi, ceea ce la 1% compensează încălcările din crize, iar la 5% nu. DCC cu FHS are la 5% rata 4,60% (p = 0,314).</p></details>
+</section>
+<section class="blk" id="t-var">
+  <h3>Interpretarea backtesting-ului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=53" target="_blank" rel="noopener"><img src="slides/ch14x_t-var_ro.jpg" alt="Slide-ul 52: Interpretarea backtesting-ului" loading="lazy"></a>
+      <figcaption>Slide-ul 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tv-l">Nivelul VaR-ului</label><select id="tv-l"><option value="0.005">0,5%</option><option value="0.01" selected>1% (curs)</option><option value="0.025">2,5%</option><option value="0.05">5%</option></select></div><button class="btn play" id="tv-play" type="button"></button></div><div class="charts "><div class="chart" id="tv-chart"></div></div><div class="tbl c14t" id="tv-tb"></div><ul class="out" id="tv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ trece la nivelurile 2,5% și 5%. La 5%, trece vreun model testul de independență Christoffersen?</div>
+  <details><summary>Răspuns</summary><p>Nu: toate patru au p ≤ 0,0004; încălcările vin grupate în zilele agitate. La 2,5% doar DCC cu FHS trece testul Kupiec (79 de încălcări, rata 2,73%, p = 0,433).</p></details>
+</section><h2 class="sec" id="s-hr">Rapoarte dinamice de acoperire</h2>
+<section class="blk" id="wx-hedge">
+  <h3>Exemplu rezolvat: un raport de acoperire</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=56" target="_blank" rel="noopener"><img src="slides/ch14x_wx-hedge_ro.jpg" alt="Slide-ul 55: Exemplu rezolvat: un raport de acoperire" loading="lazy"></a>
+      <figcaption>Slide-ul 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xg-r">Corelația ρ (curs: 0,8): <b id="xg-r-v"></b></label><input type="range" id="xg-r" min="-1" max="1" step="0.05" value="0.8"></div><button class="btn play" id="xg-play" type="button"></button></div><div class="charts "><div class="chart" id="xg-chart"></div></div><div class="c14x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="xg-s">σ<sub>s</sub> zilnic (curs: 1,2%): <b id="xg-s-v"></b></label><input type="range" id="xg-s" min="0.5" max="3" step="0.1" value="1.2"></div><div class="ctl"><label for="xg-f">σ<sub>f</sub> zilnic (curs: 1,0%): <b id="xg-f-v"></b></label><input type="range" id="xg-f" min="0.5" max="3" step="0.1" value="1.0"></div></div><div class="c14f">\[h^*=\frac{\sigma_{sf}}{\sigma_f^2}=\rho\,\frac{\sigma_s}{\sigma_f},\qquad HE=1-\frac{\mathrm{Var}(r_s-h^*r_f)}{\mathrm{Var}(r_s)}=\rho^2\]</div><ol id="xg-ws"></ol></div><ul class="out" id="xg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți ρ = −0,8. Cît sînt h* și HE?</div>
+  <details><summary>Răspuns</summary><p>h* = −0,96: cumpărați 0,96 unități din f pentru fiecare unitate din s; HE = ρ<sup>2</sup> = 0,64, ca pentru ρ = 0,8. Cu ρ = 1 volatilitatea poziției acoperite este 0 (h* = 1,2).</p></details>
+</section>
+<section class="blk" id="hedge">
+  <h3>Acoperirea BET cu DAX, 2015–2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch14_hedge_ro.jpg" alt="Slide-ul 56: Acoperirea BET cu DAX, 2015–2026" loading="lazy"></a>
+      <figcaption>Slide-ul 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="hg-w">Fereastra mobilă (zile de tranzacționare; curs: 250): <b id="hg-w-v"></b></label><input type="range" id="hg-w" min="60" max="500" step="10" value="250"></div><div class="ctl"><label for="hg-a">Parametrul a al DCC (curs: estimarea 0,0086): <b id="hg-a-v"></b></label><input type="range" id="hg-a" min="0" max="0.012" step="any" value="0.008648568460345776"></div><button class="btn play" id="hg-play" type="button"></button></div><div class="charts "><div class="chart" id="hg-chart"></div></div><ul class="out" id="hg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ lungește fereastra OLS pînă la 500 de zile. Elimină atunci OLS pe ferestre mobile mai mult risc decît DCC (19,1%)?</div>
+  <details><summary>Răspuns</summary><p>Nu: între 17,0% (300 de zile) și 18,0% (500 de zile). Cu a = 0 în DCC eficiența scade la 15,5%, tot peste raportul static (13,6%): corelația este atunci constantă, dar raportul q̄ σ<sub>BET,t</sub>/σ<sub>DAX,t</sub> urmează încă volatilitățile GARCH.</p></details>
+</section>
+<section class="blk" id="t-hedge">
+  <h3>Interpretarea rapoartelor de acoperire</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol14_modele_garch_multivariate.pdf#page=58" target="_blank" rel="noopener"><img src="slides/ch14x_t-hedge_ro.jpg" alt="Slide-ul 57: Interpretarea rapoartelor de acoperire" loading="lazy"></a>
+      <figcaption>Slide-ul 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="th-w">Fereastra mobilă (zile de tranzacționare; curs: 250): <b id="th-w-v"></b></label><input type="range" id="th-w" min="60" max="500" step="10" value="250"></div><button class="btn play" id="th-play" type="button"></button></div><div class="charts "><div class="chart" id="th-chart"></div></div><div class="tbl c14t" id="th-tb"></div><ul class="out" id="th-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Există o fereastră (60–500 de zile) pentru care OLS pe ferestre mobile elimină mai mult risc decît DCC?</div>
+  <details><summary>Răspuns</summary><p>Nu: cel mai bun rezultat este 18,6%, cu 80 de zile, sub 19,1% pentru DCC; cu 300 de zile se obține doar 17,0%. Alegerea ferestrei schimbă rezultatul cu peste un punct procentual, iar DCC nu cere această alegere.</p></details>
+</section>
+<p class="src foot">Randamentele logaritmice zilnice (în %) ale eșantioanelor capitolului, în zilele comune de tranzacționare (S&P 500, DAX, BET, EUR/RON, Bitcoin; data/market, EODHD), nu sînt revizuite și reproduc exact cifrele din curs. Estimările provin din codul capitolului: modelele GARCH(1,1) ale pasului 1 (pachetul arch) și parametrii (a, b) ai pasului 2, cu erorile lor standard, pentru S&P 500 și DAX (2000–2026), pentru panelul cu cinci active (din 2015), pentru eșantionul de estimare 2000–2014 al VaR-ului și pentru eșantionul 2005–2014 al acoperirii. Browserul rulează din nou recurențele: filtrul de varianță GARCH cu parametrii dați, recurența DCC, corelațiile și pantele pe ferestre mobile, verosimilitatea de corelație, VaR-ul și testele Kupiec și Christoffersen. Variantele care nu apar în curs (alte ferestre, alte valori ale lui a și b, alt α al pasului 1 cu aceeași persistență, alte niveluri ale VaR-ului, randamente pe k zile, prognozele fără șocuri noi, mediile trimestriale) sînt rulări suplimentare ale codului capitolului pe aceleași date; graficele din casetele „Exemplu rezolvat”, „O capcană: tranzacționarea asincronă”, „Două condiții pentru Hₜ”, „Problema dimensionalității”, „Interpretarea parametrilor a și b”, „Pasul 1: două modele GARCH univariate”, „Pasul 2: modelul DCC estimat”, „Corelațiile în crize”, „Un model DCC cu cinci active”, „Interpretarea backtesting-ului” și „Interpretarea rapoartelor de acoperire” sînt grafice suplimentare pentru slide-uri care dau doar cifre.</p>
+</main>
+</body>
+</html>
