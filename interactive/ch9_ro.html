@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 9 · Învățare automată pentru serii de timp</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch9.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch9_data.js?v=20261101a", "ch9_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch9.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index_ro.html">Serii de timp</a></h1><p>Capitolul 9 · Învățare automată pentru serii de timp</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_09" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch9.html" class="lang-btn">EN</a><a href="ch9_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură sau același tabel, calculat în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas; casetele „Exemplu rezolvat” refac calculul cu cifrele capitolului.</p>
+<p class="toc"><a href="#s-sup">Prognoza ca învățare supervizată</a> · <a href="#s-val">Validare fără leakage</a> · <a href="#s-reg">Modele liniare regularizate: ridge și lasso</a> · <a href="#s-tree">Arbori, random forest și gradient boosting</a> · <a href="#s-nn">Rețele neuronale</a> · <a href="#s-load">Aplicație: consumul de energie electrică față de Capitolul 4</a> · <a href="#s-pi">Intervale de prognoză</a> · <a href="#s-inf">Modele locale și globale: inflația din România</a> · <a href="#s-fin">Aplicații în finanțe: volatilitatea și semnul randamentelor</a> · <a href="#s-case">Studii de caz de referință: M4, M5 și Gu, Kelly și Xiu</a></p>
+<h2 class="sec" id="s-sup">Prognoza ca învățare supervizată</h2>
+<section class="blk" id="wx-lag">
+  <h3>Exemplu rezolvat: un tabel de laguri pentru consumul de energie electrică</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=10" target="_blank" rel="noopener"><img src="slides/ch9x_wx-lag_ro.jpg" alt="Slide-ul 9: Exemplu rezolvat: un tabel de laguri pentru consumul de energie electrică" loading="lazy"></a>
+      <figcaption>Slide-ul 9</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wl-e">Ultima zi a tabelului: <b id="wl-e-v"></b></label><input type="range" id="wl-e" min="-14" max="14" step="1" value="0"></div><button class="btn play" id="wl-play" type="button"></button></div><div class="charts "><div class="chart" id="wl-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="wl-p">Laguri p (curs: 3): <b id="wl-p-v"></b></label><input type="range" id="wl-p" min="1" max="5" step="1" value="3"></div><div class="ctl"><label for="wl-h">Orizontul h (curs: 1): <b id="wl-h-v"></b></label><input type="range" id="wl-h" min="1" max="3" step="1" value="1"></div></div><div class="tbl c9t" id="wl-tb"></div><h4>Exemplu rezolvat</h4><ol id="wl-ws"></ol></div><ul class="out" id="wl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu p = 5 laguri și h = 3, cîte rînduri complete dau cele 9 zile?</div>
+  <details><summary>Răspuns</summary><p>9 − 5 − 3 + 1 = 2 rînduri, cu originile 25 și 26 iunie 2025. Pe toată seria, tabelul pentru h = 3 are 1642 − 28 − 3 + 1 = 1612 rînduri.</p></details>
+</section>
+<section class="blk" id="features">
+  <h3>Consumul de energie electrică: seria și trei variabile explicative</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=11" target="_blank" rel="noopener"><img src="slides/tsa_ch9_features_ro.jpg" alt="Slide-ul 10: Consumul de energie electrică: seria și trei variabile explicative" loading="lazy"></a>
+      <figcaption>Slide-ul 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fe-h">Orizontul țintei h (zile; curs: 1): <b id="fe-h-v"></b></label><input type="range" id="fe-h" min="1" max="14" step="1" value="1"></div><button class="btn play" id="fe-play" type="button"></button></div><style>.c9x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c9x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c9x .c9f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c9x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c9x li{margin:.18rem 0;overflow-wrap:anywhere}.c9x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c9t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c9t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c9t th,.c9t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c9t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c9t tbody tr:nth-child(even){background:#F5F7FB}.c9t tbody tr.hi{background:#E3F4F7}.c9t .r{text-align:right}.c9cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="fe-chart"></div></div><ul class="out" id="fe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți orizontul la h = 7. Cît devine corelația țintei cu y<sub>t</sub> și cu media pe 7 zile?</div>
+  <details><summary>Răspuns</summary><p>0,81 cu y<sub>t</sub> (0,77 la h = 1) și 0,60 cu media pe 7 zile (0,74 la h = 1). La h = 7 ziua de azi este aceeași zi a săptămînii ca ținta, deci y<sub>t</sub> preia rolul lagului săptămînal, iar media pe 7 zile nu mai poartă ziua săptămînii.</p></details>
+</section>
+<section class="blk" id="strategies">
+  <h3>Prognoze recursive, directe și cu ieșiri multiple</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=14" target="_blank" rel="noopener"><img src="slides/tsa_ch9_strategies_ro.jpg" alt="Slide-ul 13: Prognoze recursive, directe și cu ieșiri multiple" loading="lazy"></a>
+      <figcaption>Slide-ul 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="st-o">Originea prognozei</label><select id="st-o"><option value="2025-06-30" selected>30 iunie 2025 (curs)</option><option value="2025-07-14">14 iulie 2025</option><option value="2025-07-28">28 iulie 2025</option><option value="2025-08-11">11 august 2025</option><option value="2025-08-25">25 august 2025</option><option value="2025-09-08">8 septembrie 2025</option><option value="2025-09-22">22 septembrie 2025</option><option value="2025-10-06">6 octombrie 2025</option><option value="2025-10-20">20 octombrie 2025</option><option value="2025-11-03">3 noiembrie 2025</option><option value="2025-11-17">17 noiembrie 2025</option><option value="2025-12-01">1 decembrie 2025</option><option value="2025-12-15">15 decembrie 2025</option><option value="2025-12-29">29 decembrie 2025</option><option value="2026-01-12">12 ianuarie 2026</option><option value="2026-01-26">26 ianuarie 2026</option><option value="2026-02-09">9 februarie 2026</option><option value="2026-02-23">23 februarie 2026</option><option value="2026-03-09">9 martie 2026</option><option value="2026-03-23">23 martie 2026</option><option value="2026-04-06">6 aprilie 2026</option><option value="2026-04-20">20 aprilie 2026</option><option value="2026-05-04">4 mai 2026</option><option value="2026-05-18">18 mai 2026</option><option value="2026-06-01">1 iunie 2026</option><option value="2026-06-15">15 iunie 2026</option></select></div><button class="btn play" id="st-play" type="button"></button></div><div class="charts "><div class="chart" id="st-chart"></div></div><ul class="out" id="st-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți originea 6 aprilie 2026, cu Paștele în fereastră. Care strategie are MAE mai mic pe cele 14 zile?</div>
+  <details><summary>Răspuns</summary><p>Cea directă: 668 MW, față de 898 MW pentru cea recursivă. La h = 7 coeficientul direct al lui y<sub>T</sub> este 0,81, iar cel implicit b⁷ doar 0,15: iterarea unui AR(1) pierde tiparul săptămînal, pe care modelul direct îl păstrează.</p></details>
+</section>
+<section class="blk" id="wx-strat">
+  <h3>Exemplu rezolvat: prognoze recursive și directe pe doi pași</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=15" target="_blank" rel="noopener"><img src="slides/ch9x_wx-strat_ro.jpg" alt="Slide-ul 14: Exemplu rezolvat: prognoze recursive și directe pe doi pași" loading="lazy"></a>
+      <figcaption>Slide-ul 14</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ws-y">Ultima valoare y<sub>T</sub> (curs: 5): <b id="ws-y-v"></b></label><input type="range" id="ws-y" min="3" max="8" step="0.1" value="5"></div><div class="ctl"><label for="ws-b">Panta modelului pe un pas (curs: 0,8): <b id="ws-b-v"></b></label><input type="range" id="ws-b" min="0.5" max="0.95" step="0.05" value="0.8"></div><button class="btn play" id="ws-play" type="button"></button></div><div class="charts "><div class="chart" id="ws-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat</h4><div class="c9f">\[\hat y_{T+1}=a+b\,y_T,\quad \hat y_{T+2}=a+b\,\hat y_{T+1}=a(1+b)+b^2y_T;\qquad \text{direct: }\hat y_{T+2}=2{,}3+0{,}6\,y_T\]</div><ol id="ws-ws"></ol></div><ul class="out" id="ws-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Fixați y<sub>T</sub> = 7. Care prognoză pe doi pași este mai mare?</div>
+  <details><summary>Răspuns</summary><p>Cea recursivă: 2,16 + 0,64·7 = 6,64, față de 2,3 + 0,6·7 = 6,50 pentru cea directă. Cele două reguli se intersectează la y<sub>T</sub> = 3,5; peste acest prag regula recursivă, cu panta mai mare, dă mereu mai mult.</p></details>
+</section><h2 class="sec" id="s-val">Validare fără leakage</h2>
+<section class="blk" id="cv-schemes">
+  <h3>Patru scheme de validare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=18" target="_blank" rel="noopener"><img src="slides/tsa_ch9_cv_schemes_ro.jpg" alt="Slide-ul 17: Patru scheme de validare" loading="lazy"></a>
+      <figcaption>Slide-ul 17</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cv-k">Numărul de grupuri și de pași K: <b id="cv-k-v"></b></label><input type="range" id="cv-k" min="2" max="6" step="1" value="4"></div><div class="ctl"><label for="cv-g">Spațiul h (observații; curs: 3): <b id="cv-g-v"></b></label><input type="range" id="cv-g" min="0" max="6" step="1" value="3"></div><button class="btn play" id="cv-play" type="button"></button></div><div class="charts "><div class="chart" id="cv-chart"></div></div><ul class="out" id="cv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți spațiul la h = 6. Ce parte din rîndurile de test din walk-forward fără spațiu are un rînd de antrenare la mai puțin de 6 pași?</div>
+  <details><summary>Răspuns</summary><p>63% (25% la h = 3); în K-fold aleator 100%, cu spațiu 0%. Primele h − 1 = 5 dintre cele 8 rînduri ale fiecărui bloc de test au ținte care se suprapun cu ultimele rînduri de antrenare.</p></details>
+</section>
+<section class="blk" id="leakage">
+  <h3>Leakage-ul în practică: grupuri aleatoare pe ținte suprapuse</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=20" target="_blank" rel="noopener"><img src="slides/tsa_ch9_leakage_ro.jpg" alt="Slide-ul 19: Leakage-ul în practică: grupuri aleatoare pe ținte suprapuse" loading="lazy"></a>
+      <figcaption>Slide-ul 19</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lk-h">Ținta: suma următoarelor h randamente</label><select id="lk-h"><option value="1">h = 1</option><option value="5">h = 5</option><option value="10">h = 10</option><option value="21" selected>h = 21 (curs)</option><option value="42">h = 42</option><option value="63">h = 63</option></select></div><button class="btn play" id="lk-play" type="button"></button></div><div class="charts "><div class="chart" id="lk-chart"></div></div><ul class="out" id="lk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți h = 1: ținta este un singur randament, fără suprapunere. Ce R² raportează 5-fold aleator pentru mersul aleator simulat?</div>
+  <details><summary>Răspuns</summary><p>−4,5%, aproape de walk-forward (−6,3%) și de walk-forward cu spațiu (−6,1%). Fără ținte suprapuse, un rînd de test nu mai are aproape-copii în grupurile de antrenare, iar R² de 34,5% dispare.</p></details>
+</section>
+<section class="blk" id="wx-leak">
+  <h3>Interpretarea experimentului de leakage</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=21" target="_blank" rel="noopener"><img src="slides/ch9x_wx-leak_ro.jpg" alt="Slide-ul 20: Interpretarea experimentului de leakage" loading="lazy"></a>
+      <figcaption>Slide-ul 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wk-s">Seria</label><select id="wk-s"><option value="sp500" selected>S&P 500 (curs)</option><option value="sim">mersul aleator simulat</option></select></div><div class="ctl"><label for="wk-h">Ținta: suma următoarelor h randamente</label><select id="wk-h"><option value="1">h = 1</option><option value="5">h = 5</option><option value="10">h = 10</option><option value="21" selected>h = 21 (curs)</option><option value="42">h = 42</option><option value="63">h = 63</option></select></div><button class="btn play" id="wk-play" type="button"></button></div><div class="charts "><div class="chart" id="wk-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wk-c">Schema din calcul</label><select id="wk-c"><option value="kfold" selected>5-fold aleator (curs)</option><option value="wf">walk-forward</option><option value="gap">walk-forward cu spațiu</option></select></div></div><div class="c9f">\[\rho(Y_t,Y_{t+k})=\max\!\Big(0,1-\frac{k}{h}\Big),\qquad R^2=1-\frac{\sum_{\text{folds}}\sum_t(y_t-\hat y_t)^2}{\sum_{\text{folds}}\sum_t(y_t-\bar y_{\text{train}})^2}\]</div><ol id="wk-ws"></ol></div><ul class="out" id="wk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți h = 63. Ce R² dau 5-fold aleator și walk-forward cu spațiu pentru S&P 500?</div>
+  <details><summary>Răspuns</summary><p>43,4% și −43,6%. Țintele vecine au în comun 62 din 63 de randamente (corelația de selecție 0,976), deci grupurile aleatoare scurg și mai multă informație. Fără spațiu, walk-forward dă −36,2%: ultimele rînduri de antrenare au ținte care se suprapun cu primele rînduri de test, un leakage mic pe care spațiul îl elimină.</p></details>
+</section>
+<section class="blk" id="bias-variance">
+  <h3>Deplasarea și varianța arborilor de regresie</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=23" target="_blank" rel="noopener"><img src="slides/tsa_ch9_bias_variance_ro.jpg" alt="Slide-ul 22: Deplasarea și varianța arborilor de regresie" loading="lazy"></a>
+      <figcaption>Slide-ul 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bv-s">Abaterea standard a zgomotului σ (curs: 0,3): <b id="bv-s-v"></b></label><input type="range" id="bv-s" min="0.1" max="0.6" step="0.05" value="0.3"></div><div class="ctl"><label for="bv-d">Adîncimea arborelui roșu: <b id="bv-d-v"></b></label><input type="range" id="bv-d" min="1" max="10" step="1" value="10"></div><button class="btn play" id="bv-play" type="button"></button></div><div class="charts "><div class="chart" id="bv-chart"></div></div><ul class="out" id="bv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați zgomotul la σ = 0,6. La ce adîncime este minimă eroarea de test așteptată?</div>
+  <details><summary>Răspuns</summary><p>La adîncimea 2 (0,465; varianța zgomotului este 0,36). Cu σ = 0,1 minimul trece la adîncimea 6. Mai mult zgomot crește varianța arborilor adînci, deci complexitatea potrivită scade.</p></details>
+</section><h2 class="sec" id="s-reg">Modele liniare regularizate: ridge și lasso</h2>
+<section class="blk" id="wx-shrink">
+  <h3>Ridge și lasso</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=27" target="_blank" rel="noopener"><img src="slides/ch9x_wx-shrink_ro.jpg" alt="Slide-ul 26: Ridge și lasso" loading="lazy"></a>
+      <figcaption>Slide-ul 26</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wr-l">λ pentru lasso (curs: 40): <b id="wr-l-v"></b></label><input type="range" id="wr-l" min="0" max="200" step="5" value="40"></div><div class="ctl"><label for="wr-r">λ pentru ridge (curs: 50): <b id="wr-r-v"></b></label><input type="range" id="wr-r" min="0" max="200" step="5" value="50"></div><div class="ctl"><label for="wr-s">S<sub>xy</sub> (curs: 90; S<sub>xx</sub> = 100): <b id="wr-s-v"></b></label><input type="range" id="wr-s" min="-120" max="120" step="5" value="90"></div><button class="btn play" id="wr-play" type="button"></button></div><div class="charts "><div class="chart" id="wr-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat: ridge</h4><div class="c9f">\[\hat\beta_{\text{ridge}}=\frac{S_{xy}}{S_{xx}+\lambda}=\frac{S_{xx}}{S_{xx}+\lambda}\,\hat\beta_{\text{OLS}}\]</div><ol id="wr-ws1"></ol></div><div class="c9x"><h4>Exemplu rezolvat: lasso</h4><div class="c9f">\[\hat\beta_{\text{lasso}}=\operatorname{sign}(S_{xy})\,\frac{\max(|S_{xy}|-\lambda/2,\,0)}{S_{xx}}\]</div><ol id="wr-ws2"></ol></div><ul class="out" id="wr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți S<sub>xy</sub> = 30. De la ce λ devine coeficientul lasso exact 0 și cît dă ridge cu λ = 50?</div>
+  <details><summary>Răspuns</summary><p>De la λ = 2·30 = 60; ridge dă 30/150 = 0,200, nenul. Pragul lasso crește cu |S<sub>xy</sub>|: variabilele cu o legătură slabă cu ținta ies primele.</p></details>
+</section>
+<section class="blk" id="shrinkage">
+  <h3>Traiectoriile ridge și lasso pentru variabilele consumului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=28" target="_blank" rel="noopener"><img src="slides/tsa_ch9_shrinkage_ro.jpg" alt="Slide-ul 27: Traiectoriile ridge și lasso pentru variabilele consumului" loading="lazy"></a>
+      <figcaption>Slide-ul 27</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sh-e">Eșantionul se termină pe</label><select id="sh-e"><option value="2023-06-30">30 iunie 2023</option><option value="2023-12-31">31 decembrie 2023</option><option value="2024-06-30">30 iunie 2024</option><option value="2024-12-31">31 decembrie 2024</option><option value="2025-06-30" selected>30 iunie 2025 (curs)</option><option value="2025-12-31">31 decembrie 2025</option><option value="2026-06-29">29 iunie 2026</option></select></div><button class="btn play" id="sh-play" type="button"></button></div><div class="charts "><div class="chart" id="sh-chart"></div></div><ul class="out" id="sh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Tăiați eșantionul la 31 decembrie 2023. Cîte variabile păstrează lasso la penalizarea aleasă?</div>
+  <details><summary>Răspuns</summary><p>23 din 30 (22 pe datele pînă la 30 iunie 2025), pe 702 rînduri, cu λ = 0,00486; primele variabile care intră sînt tot lag6, lag0 și lag13.</p></details>
+</section>
+<section class="blk" id="lasso-table">
+  <h3>Interpretarea traiectoriilor coeficienților</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=29" target="_blank" rel="noopener"><img src="slides/ch9x_lasso-table_ro.jpg" alt="Slide-ul 28: Interpretarea traiectoriilor coeficienților" loading="lazy"></a>
+      <figcaption>Slide-ul 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lt-e">Eșantionul se termină pe</label><select id="lt-e"><option value="2023-06-30">30 iunie 2023</option><option value="2023-12-31">31 decembrie 2023</option><option value="2024-06-30">30 iunie 2024</option><option value="2024-12-31">31 decembrie 2024</option><option value="2025-06-30" selected>30 iunie 2025 (curs)</option><option value="2025-12-31">31 decembrie 2025</option><option value="2026-06-29">29 iunie 2026</option></select></div><div class="ctl"><label for="lt-k">Penalizarea: pași pe grilă față de cea aleasă prin validare (negativ: λ mai mare): <b id="lt-k-v"></b></label><input type="range" id="lt-k" min="-15" max="15" step="1" value="0"></div><button class="btn play" id="lt-play" type="button"></button></div><div class="charts "><div class="chart" id="lt-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="lt-n">Rînduri afișate: <b id="lt-n-v"></b></label><input type="range" id="lt-n" min="5" max="30" step="1" value="10"></div></div><div class="tbl c9t" id="lt-tb"></div></div><ul class="out" id="lt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați penalizarea 6 pași spre un λ mai mare (−6). Cîte variabile rămîn nenule?</div>
+  <details><summary>Răspuns</summary><p>19 din 30, la λ = 0,00441 (22 la λ ales, 0,00173). Ordinea de intrare nu depinde de λ ales: lag6, lag0, lag13.</p></details>
+</section><h2 class="sec" id="s-tree">Arbori, random forest și gradient boosting</h2>
+<section class="blk" id="tree">
+  <h3>Un arbore de adîncime 2 pentru consumul de mîine</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=32" target="_blank" rel="noopener"><img src="slides/tsa_ch9_tree_ro.jpg" alt="Slide-ul 31: Un arbore de adîncime 2 pentru consumul de mîine" loading="lazy"></a>
+      <figcaption>Slide-ul 31</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tr-e">Antrenare pînă la</label><select id="tr-e"><option value="2024-06-30">30 iunie 2024</option><option value="2024-12-31">31 decembrie 2024</option><option value="2025-06-30" selected>30 iunie 2025 (curs)</option><option value="2025-12-31">31 decembrie 2025</option><option value="2026-06-29">29 iunie 2026</option></select></div><div class="ctl"><label for="tr-d">Adîncimea maximă: <b id="tr-d-v"></b></label><input type="range" id="tr-d" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="tr-m">Cel puțin atîtea zile într-o frunză: <b id="tr-m-v"></b></label><input type="range" id="tr-m" min="10" max="300" step="10" value="20"></div><button class="btn play" id="tr-play" type="button"></button></div><div class="charts "><div class="chart" id="tr-chart"></div></div><ul class="out" id="tr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Antrenați arborele pe datele pînă la 29 iunie 2026. Se schimbă prima întrebare?</div>
+  <details><summary>Răspuns</summary><p>Variabila rămîne same_dow, iar pragul coboară de la 6,08 la 6,04 GW; frunzele devin 5,27; 5,86; 6,37 și 7,17 GW, cu 1613 zile, iar R² rămîne 0,64.</p></details>
+</section>
+<section class="blk" id="wx-boost">
+  <h3>Gradient boosting</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=35" target="_blank" rel="noopener"><img src="slides/ch9x_wx-boost_ro.jpg" alt="Slide-ul 34: Gradient boosting" loading="lazy"></a>
+      <figcaption>Slide-ul 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wb-n">Rata de învățare ν (curs: 0,1): <b id="wb-n-v"></b></label><input type="range" id="wb-n" min="0.05" max="1" step="0.05" value="0.1"></div><button class="btn play" id="wb-play" type="button"></button></div><div class="charts "><div class="chart" id="wb-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wb-m">Arborii m din calcul: <b id="wb-m-v"></b></label><input type="range" id="wb-m" min="1" max="30" step="1" value="1"></div></div><div class="c9f">\[F_0=\bar y,\qquad r_i=y_i-F_{m-1}(x_i),\qquad F_m(x)=F_{m-1}(x)+\nu\,g_m(x)\]</div><ol id="wb-ws"></ol></div><ul class="out" id="wb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți ν = 1. Cît este F<sub>1</sub> în cele trei puncte?</div>
+  <details><summary>Răspuns</summary><p>5,50; 5,50 și 8,00: primul arbore corectează complet reziduul punctului izolat, iar MSE la antrenare scade de la 1,56 la 0,167 după un singur arbore. O rată de învățare mare ajustează repede datele de antrenare, inclusiv zgomotul lor.</p></details>
+</section>
+<section class="blk" id="ensembles">
+  <h3>Un arbore, un random forest și boosting pe datele de consum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=36" target="_blank" rel="noopener"><img src="slides/tsa_ch9_ensembles_ro.jpg" alt="Slide-ul 35: Un arbore, un random forest și boosting pe datele de consum" loading="lazy"></a>
+      <figcaption>Slide-ul 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="en-s">Antrenare pînă la (validare pînă la 30 iunie 2025)</label><select id="en-s"><option value="2023-12-31">31 decembrie 2023</option><option value="2024-06-30">30 iunie 2024</option><option value="2024-12-31" selected>31 decembrie 2024 (curs)</option></select></div><button class="btn play" id="en-play" type="button"></button></div><div class="charts "><div class="chart" id="en-chart"></div></div><ul class="out" id="en-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Antrenați pînă la 31 decembrie 2023 (validare de 546 de zile). După cîți arbori atinge boosting-ul cu ν = 0,3 minimul?</div>
+  <details><summary>Răspuns</summary><p>După 24 de arbori (MSE 0,093), față de 72 în curs; cu ν = 0,05 minimul vine după 222 de arbori (0,092). Pe un eșantion de antrenare mai scurt, boosting-ul rapid începe mai devreme să ajusteze zgomotul.</p></details>
+</section>
+<section class="blk" id="extrapolation">
+  <h3>Arborii nu pot extrapola: nivelul prețurilor în România</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=38" target="_blank" rel="noopener"><img src="slides/tsa_ch9_extrapolation_ro.jpg" alt="Slide-ul 37: Arborii nu pot extrapola: nivelul prețurilor în România" loading="lazy"></a>
+      <figcaption>Slide-ul 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ex-s">Antrenare pînă la</label><select id="ex-s"><option value="2018-12">decembrie 2018</option><option value="2019-12">decembrie 2019</option><option value="2020-12" selected>decembrie 2020 (curs)</option><option value="2021-12">decembrie 2021</option><option value="2022-12">decembrie 2022</option></select></div><button class="btn play" id="ex-play" type="button"></button></div><div class="charts "><div class="chart" id="ex-chart"></div></div><ul class="out" id="ex-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Antrenați pădurile pînă în decembrie 2022. Cît este RMSE pe niveluri?</div>
+  <details><summary>Răspuns</summary><p>22,9 puncte de indice (36,9 cu antrenarea pînă în 2020): cel mai mare nivel văzut este acum 135,6, dar prognoza rămîne plafonată la 134,1, cînd indicele ajunge la 173,4. Pe variațiile lunare RMSE este 0,68.</p></details>
+</section>
+<section class="blk" id="importance">
+  <h3>Importanța prin permutare pentru gradient boosting</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=41" target="_blank" rel="noopener"><img src="slides/tsa_ch9_importance_ro.jpg" alt="Slide-ul 40: Importanța prin permutare pentru gradient boosting" loading="lazy"></a>
+      <figcaption>Slide-ul 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="im-h">Orizonturile h și 15 − h (curs: 1 și 14): <b id="im-h-v"></b></label><input type="range" id="im-h" min="1" max="7" step="1" value="1"></div><button class="btn play" id="im-play" type="button"></button></div><div class="charts "><div class="chart" id="im-chart"></div></div><ul class="out" id="im-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Duceți orizonturile la 7 și 8 zile. Ce variabilă domină la h = 8?</div>
+  <details><summary>Răspuns</summary><p>cos1 (+98 MW), urmată de lag6 (+84 MW). La h = 7 domină încă lag0 (+317 MW), pentru că la 7 zile y<sub>t</sub> este aceeași zi a săptămînii ca ținta.</p></details>
+</section><h2 class="sec" id="s-nn">Rețele neuronale</h2>
+<section class="blk" id="mlp">
+  <h3>O rețea mică și funcțiile ei de activare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=45" target="_blank" rel="noopener"><img src="slides/tsa_ch9_mlp_ro.jpg" alt="Slide-ul 44: O rețea mică și funcțiile ei de activare" loading="lazy"></a>
+      <figcaption>Slide-ul 44</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ml-q">Neuroni ascunși q (curs: 5): <b id="ml-q-v"></b></label><input type="range" id="ml-q" min="1" max="10" step="1" value="5"></div><button class="btn play" id="ml-play" type="button"></button></div><div class="charts "><div class="chart" id="ml-chart"></div></div><ul class="out" id="ml-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cîți parametri are rețeaua cu q = 10 neuroni ascunși?</div>
+  <details><summary>Răspuns</summary><p>3·10 + 10 + 10 + 1 = 51. Cu 10 neuroni ReLU, funcția liniară pe porțiuni aproximează tanh cu eroarea maximă 0,048, față de 0,102 cu 5.</p></details>
+</section>
+<section class="blk" id="rnn">
+  <h3>O rețea recurentă și celula LSTM</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch9_rnn_ro.jpg" alt="Slide-ul 48: O rețea recurentă și celula LSTM" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rn-o">Originea prognozei</label><select id="rn-o"><option value="2025-06-30" selected>30 iunie 2025 (curs)</option><option value="2025-07-14">14 iulie 2025</option><option value="2025-07-28">28 iulie 2025</option><option value="2025-08-11">11 august 2025</option><option value="2025-08-25">25 august 2025</option><option value="2025-09-08">8 septembrie 2025</option><option value="2025-09-22">22 septembrie 2025</option><option value="2025-10-06">6 octombrie 2025</option><option value="2025-10-20">20 octombrie 2025</option><option value="2025-11-03">3 noiembrie 2025</option><option value="2025-11-17">17 noiembrie 2025</option><option value="2025-12-01">1 decembrie 2025</option><option value="2025-12-15">15 decembrie 2025</option><option value="2025-12-29">29 decembrie 2025</option><option value="2026-01-12">12 ianuarie 2026</option><option value="2026-01-26">26 ianuarie 2026</option><option value="2026-02-09">9 februarie 2026</option><option value="2026-02-23">23 februarie 2026</option><option value="2026-03-09">9 martie 2026</option><option value="2026-03-23">23 martie 2026</option><option value="2026-04-06">6 aprilie 2026</option><option value="2026-04-20">20 aprilie 2026</option><option value="2026-05-04">4 mai 2026</option><option value="2026-05-18">18 mai 2026</option><option value="2026-06-01">1 iunie 2026</option><option value="2026-06-15">15 iunie 2026</option></select></div><button class="btn play" id="rn-play" type="button"></button></div><div class="charts "><div class="chart" id="rn-chart"></div></div><ul class="out" id="rn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți originea 6 aprilie 2026. Cît este MAE al LSTM, față de DHR?</div>
+  <details><summary>Răspuns</summary><p>661 MW față de 344 MW. LSTM nu vede indicatorul de sărbătoare și repetă tiparul săptămînal peste Paște, deși pierderea la antrenare scade de la 0,951 la 0,210.</p></details>
+</section><h2 class="sec" id="s-load">Aplicație: consumul de energie electrică față de Capitolul 4</h2>
+<section class="blk" id="wx-mase">
+  <h3>Exercițiul de prognoză</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=52" target="_blank" rel="noopener"><img src="slides/ch9x_wx-mase_ro.jpg" alt="Slide-ul 51: Exercițiul de prognoză" loading="lazy"></a>
+      <figcaption>Slide-ul 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wm-m">Perioada sezonieră m a scalei (curs: 7): <b id="wm-m-v"></b></label><input type="range" id="wm-m" min="1" max="14" step="1" value="7"></div><button class="btn play" id="wm-play" type="button"></button></div><div class="charts "><div class="chart" id="wm-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wm-x">Modelul din calcul</label><select id="wm-x"><option value="Seasonal naive">naivă sezonieră</option><option value="ETS">ETS</option><option value="SARIMA">SARIMA</option><option value="DHR" selected>DHR</option><option value="Combination">combinația</option><option value="Ridge">Ridge</option><option value="RF">RF</option><option value="GB direct">GB direct</option><option value="GB recursive">GB recursiv</option><option value="MLP">MLP</option><option value="LSTM">LSTM</option></select></div></div><div class="c9f">\[\text{MASE}=\frac{\text{MAE}}{\frac{1}{n-m}\sum_{t=m+1}^{n}|y_t-y_{t-m}|}\]</div><ol id="wm-ws"></ol></div><ul class="out" id="wm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Schimbați perioada scalei la m = 1. Cît devin scala și MASE pentru DHR?</div>
+  <details><summary>Răspuns</summary><p>Scala devine 371 MW și MASE 0,744 (309 MW și 0,894 cu m = 7). Diferențele de la o zi la alta sînt mai mari decît cele de la o săptămînă la alta, pentru că trecerea la weekend schimbă consumul; scala mută nivelul, nu ordinea modelelor.</p></details>
+</section>
+<section class="blk" id="load-table">
+  <h3>Rezultatele: 26 de origini, 14 orizonturi</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=53" target="_blank" rel="noopener"><img src="slides/ch9x_load-table_ro.jpg" alt="Slide-ul 52: Rezultatele: 26 de origini, 14 orizonturi" loading="lazy"></a>
+      <figcaption>Slide-ul 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ld-k">Primele origini eliminate (curs: 0): <b id="ld-k-v"></b></label><input type="range" id="ld-k" min="0" max="20" step="2" value="0"></div><button class="btn play" id="ld-play" type="button"></button></div><div class="charts "><div class="chart" id="ld-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="ld-r">Referința testului DM</label><select id="ld-r"><option value="DHR" selected>DHR (curs)</option><option value="Seasonal naive">naivă sezonieră</option></select></div><div class="ctl"><label for="ld-h">Orizonturile</label><select id="ld-h"><option value="1-14" selected>1–14 (curs)</option><option value="1-7">1–7</option><option value="8-14">8–14</option></select></div></div><div class="tbl c9t" id="ld-tb"></div></div><ul class="out" id="ld-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Eliminați primele 10 origini. Rămîne diferența dintre ridge și DHR nesemnificativă?</div>
+  <details><summary>Răspuns</summary><p>Da: pe 16 origini ridge are MASE 0,92 și DHR 0,93, iar DM p = 0,791. Nesemnificativ înseamnă că testul nu separă diferența de zgomot, nu că modelele sînt egale.</p></details>
+</section>
+<section class="blk" id="load-results">
+  <h3>MASE și acuratețea pe orizonturi</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=54" target="_blank" rel="noopener"><img src="slides/tsa_ch9_load_results_ro.jpg" alt="Slide-ul 53: MASE și acuratețea pe orizonturi" loading="lazy"></a>
+      <figcaption>Slide-ul 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lr-n">Primele n origini folosite (curs: 26): <b id="lr-n-v"></b></label><input type="range" id="lr-n" min="6" max="26" step="2" value="26"></div><button class="btn play" id="lr-play" type="button"></button></div><div class="charts "><div class="chart" id="lr-chart"></div></div><ul class="out" id="lr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Folosiți doar primele 10 origini (pînă la 3 noiembrie 2025). Care model are cel mai mic MASE?</div>
+  <details><summary>Răspuns</summary><p>Tot DHR (0,83), urmat de ridge (0,86). LSTM are aici 0,95, dar pe toate cele 26 de origini urcă la 1,16.</p></details>
+</section>
+<section class="blk" id="wx-dm">
+  <h3>Interpretarea rezultatelor pentru consum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=55" target="_blank" rel="noopener"><img src="slides/ch9x_wx-dm_ro.jpg" alt="Slide-ul 54: Interpretarea rezultatelor pentru consum" loading="lazy"></a>
+      <figcaption>Slide-ul 54</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-a">Modelul comparat</label><select id="wd-a"><option value="Ridge" selected>Ridge (curs)</option><option value="RF">RF</option><option value="GB direct">GB direct</option><option value="GB recursive">GB recursiv</option><option value="MLP">MLP</option><option value="LSTM">LSTM</option><option value="Combination">combinația</option><option value="SARIMA">SARIMA</option><option value="ETS">ETS</option></select></div><div class="ctl"><label for="wd-L">Autocovarianțe incluse, h − 1 (curs: 0): <b id="wd-L-v"></b></label><input type="range" id="wd-L" min="0" max="5" step="1" value="0"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wd-r">Referința B</label><select id="wd-r"><option value="DHR" selected>DHR (curs)</option><option value="Seasonal naive">naivă sezonieră</option></select></div></div><div class="c9f">\[d_t=\overline{|e|}_{t}^{\,A}-\overline{|e|}_{t}^{\,B},\quad \hat V=\frac{1}{n}\Big(\hat\gamma_0+2\sum_{k=1}^{h-1}\hat\gamma_k\Big),\quad DM=\frac{\bar d}{\sqrt{\hat V}},\quad DM^{*}=c_h\,DM\sim t_{n-1}\]</div><ol id="wd-ws"></ol></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Includeți 2 autocovarianțe (h = 3) pentru ridge față de DHR. Cît devine p?</div>
+  <details><summary>Răspuns</summary><p>0,953 (DM* = 0,060), față de 0,942 fără autocovarianțe: d̄ = 0,9 MW este mic față de abaterea sa standard, oricum ar fi estimată varianța.</p></details>
+</section>
+<section class="blk" id="load-forecasts">
+  <h3>Prognozele în jurul Paștelui ortodox din 2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=56" target="_blank" rel="noopener"><img src="slides/tsa_ch9_load_forecasts_ro.jpg" alt="Slide-ul 55: Prognozele în jurul Paștelui ortodox din 2026" loading="lazy"></a>
+      <figcaption>Slide-ul 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lf-o">Originea prognozei</label><select id="lf-o"><option value="2025-06-30">30 iunie 2025</option><option value="2025-07-14">14 iulie 2025</option><option value="2025-07-28">28 iulie 2025</option><option value="2025-08-11">11 august 2025</option><option value="2025-08-25">25 august 2025</option><option value="2025-09-08">8 septembrie 2025</option><option value="2025-09-22">22 septembrie 2025</option><option value="2025-10-06">6 octombrie 2025</option><option value="2025-10-20">20 octombrie 2025</option><option value="2025-11-03">3 noiembrie 2025</option><option value="2025-11-17">17 noiembrie 2025</option><option value="2025-12-01">1 decembrie 2025</option><option value="2025-12-15">15 decembrie 2025</option><option value="2025-12-29">29 decembrie 2025</option><option value="2026-01-12">12 ianuarie 2026</option><option value="2026-01-26">26 ianuarie 2026</option><option value="2026-02-09">9 februarie 2026</option><option value="2026-02-23">23 februarie 2026</option><option value="2026-03-09">9 martie 2026</option><option value="2026-03-23">23 martie 2026</option><option value="2026-04-06" selected>6 aprilie 2026 (curs)</option><option value="2026-04-20">20 aprilie 2026</option><option value="2026-05-04">4 mai 2026</option><option value="2026-05-18">18 mai 2026</option><option value="2026-06-01">1 iunie 2026</option><option value="2026-06-15">15 iunie 2026</option></select></div><button class="btn play" id="lf-play" type="button"></button></div><div class="charts "><div class="chart" id="lf-chart"></div></div><ul class="out" id="lf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți originea 20 aprilie 2026, după Paște. Care model are cel mai mic MAE?</div>
+  <details><summary>Răspuns</summary><p>MLP, cu 255 MW; GB recursiv are 260, GB direct 276, naivul sezonier 283, DHR 286 și LSTM 398 MW. Fără Paște în fereastră, diferențele dintre modele sînt mici.</p></details>
+</section><h2 class="sec" id="s-pi">Intervale de prognoză</h2>
+<section class="blk" id="wx-pinball">
+  <h3>Regresia cuantilică și funcția de pierdere pinball</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=59" target="_blank" rel="noopener"><img src="slides/ch9x_wx-pinball_ro.jpg" alt="Slide-ul 58: Regresia cuantilică și funcția de pierdere pinball" loading="lazy"></a>
+      <figcaption>Slide-ul 58</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wp-t">τ (curs: 0,95): <b id="wp-t-v"></b></label><input type="range" id="wp-t" min="0.05" max="0.95" step="0.05" value="0.95"></div><div class="ctl"><label for="wp-q">Prognoza q (GW; curs: 7,0): <b id="wp-q-v"></b></label><input type="range" id="wp-q" min="5" max="8" step="0.1" value="7"></div><button class="btn play" id="wp-play" type="button"></button></div><div class="charts "><div class="chart" id="wp-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat</h4><div class="c9f">\[L_\tau(y,q)=\begin{cases}\tau\,(y-q), & y\ge q\\(1-\tau)\,(q-y), & y<q\end{cases}\]</div><ol id="wp-ws"></ol></div><ul class="out" id="wp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți τ = 0,5. Cît costă y = 7,4 și y = 6,5 pentru q = 7,0?</div>
+  <details><summary>Răspuns</summary><p>0,200 și 0,250: cu τ = 0,5 pierderea este jumătate din eroarea absolută (0,4/2 și 0,5/2), iar minimul pierderii medii se mută la mediana celor 364 de valori.</p></details>
+</section>
+<section class="blk" id="wx-conformal">
+  <h3>Predicția conformală prin împărțire</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=60" target="_blank" rel="noopener"><img src="slides/ch9x_wx-conformal_ro.jpg" alt="Slide-ul 59: Predicția conformală prin împărțire" loading="lazy"></a>
+      <figcaption>Slide-ul 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wc-a">Nivelul 1 − α (curs: 90%): <b id="wc-a-v"></b></label><input type="range" id="wc-a" min="0.5" max="0.95" step="0.05" value="0.9"></div><div class="ctl"><label for="wc-h">Orizontul setului de calibrare afișat</label><select id="wc-h"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div><button class="btn play" id="wc-play" type="button"></button></div><div class="charts "><div class="chart" id="wc-chart"></div></div><div class="c9x"><h4>Exemplu rezolvat</h4><div class="c9f">\[k=\lceil (n+1)(1-\alpha)\rceil,\qquad \hat q=|e|_{(k)},\qquad \hat y\pm\hat q\]</div><ol id="wc-ws"></ol></div><ul class="out" id="wc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Coborîți nivelul la 50%. Cît este k și ce acoperire obține intervalul?</div>
+  <details><summary>Răspuns</summary><p>k = ⌈183·0,5⌉ = 92 și q̂ = 175 MW pentru h = 1; acoperirea pe cele 364 de prognoze este 49,5%, cu lățimea medie 509 MW.</p></details>
+</section>
+<section class="blk" id="intervals">
+  <h3>Intervale de 90% pentru consum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=61" target="_blank" rel="noopener"><img src="slides/tsa_ch9_intervals_ro.jpg" alt="Slide-ul 60: Intervale de 90% pentru consum" loading="lazy"></a>
+      <figcaption>Slide-ul 60</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="iv-l">Nivelul intervalului conformal: <b id="iv-l-v"></b></label><input type="range" id="iv-l" min="0.5" max="0.95" step="0.05" value="0.9"></div><button class="btn play" id="iv-play" type="button"></button></div><div class="charts "><div class="chart" id="iv-chart"></div></div><ul class="out" id="iv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Coborîți nivelul conformal la 80%. Ce acoperire obține?</div>
+  <details><summary>Răspuns</summary><p>77,5%, cu lățimea medie 1000 MW: 13,7% dintre valori sînt sub interval și 8,8% deasupra. GB cuantilic rămîne la 66,5% pentru un nivel nominal de 90%.</p></details>
+</section><h2 class="sec" id="s-inf">Modele locale și globale: inflația din România</h2>
+<section class="blk" id="inflation">
+  <h3>Inflația din România: prognoze și RMSE relativ</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=66" target="_blank" rel="noopener"><img src="slides/tsa_ch9_inflation_ro.jpg" alt="Slide-ul 65: Inflația din România: prognoze și RMSE relativ" loading="lazy"></a>
+      <figcaption>Slide-ul 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="in-y">Originile de test încep în ianuarie: <b id="in-y-v"></b></label><input type="range" id="in-y" min="2016" max="2022" step="1" value="2016"></div><div class="ctl"><label for="in-h">Orizontul din stînga (luni)</label><select id="in-h"><option value="1">1</option><option value="3">3</option><option value="6">6</option><option value="12" selected>12 (curs)</option></select></div><button class="btn play" id="in-play" type="button"></button></div><div class="charts "><div class="chart" id="in-chart"></div></div><ul class="out" id="in-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Începeți originile de test în 2022. Cît este RMSE relativ al GB local la 12 luni?</div>
+  <details><summary>Răspuns</summary><p>0,64 (1,21 pe toate originile), iar GB global are 1,19. Pe puținele origini ale perioadei de dezinflație de după vîrful din 2022, clasamentul de la 12 luni se inversează: o comparație pe cîteva zeci de erori este fragilă.</p></details>
+</section>
+<section class="blk" id="inf-table">
+  <h3>Rezultatele pentru inflație</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=67" target="_blank" rel="noopener"><img src="slides/ch9x_inf-table_ro.jpg" alt="Slide-ul 66: Rezultatele pentru inflație" loading="lazy"></a>
+      <figcaption>Slide-ul 66</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="it-p">Originile de test</label><select id="it-p"><option value="all" selected>ianuarie 2016 – iulie 2026 (curs)</option><option value="p1620">2016–2020</option><option value="p2123">2021–2023</option><option value="p2426">2024–2026</option></select></div><button class="btn play" id="it-play" type="button"></button></div><div class="charts "><div class="chart" id="it-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="it-r">Referința testului DM</label><select id="it-r"><option value="RW" selected>RW (curs)</option><option value="AR">AR</option><option value="GB local">GB local (pentru GB global, curs)</option></select></div></div><div class="tbl c9t" id="it-tb"></div><div class="tbl c9t" id="it-dm"></div></div><ul class="out" id="it-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți originile din 2021–2023. Cît este RMSE relativ al AR la h = 6?</div>
+  <details><summary>Răspuns</summary><p>0,83 (0,88; 0,86; 0,83 și 0,98 la h = 1, 3, 6, 12): în anii cu inflație mare AR rămîne sub mersul aleator pînă la 6 luni, iar GB global are 1,10 la h = 6.</p></details>
+</section><h2 class="sec" id="s-fin">Aplicații în finanțe: volatilitatea și semnul randamentelor</h2>
+<section class="blk" id="rv-table">
+  <h3>Rezultatele: S&P 500 și DAX, 2013–2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=72" target="_blank" rel="noopener"><img src="slides/ch9x_rv-table_ro.jpg" alt="Slide-ul 71: Rezultatele: S&P 500 și DAX, 2013–2026" loading="lazy"></a>
+      <figcaption>Slide-ul 71</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-y">Perioada de test începe în: <b id="rt-y-v"></b></label><input type="range" id="rt-y" min="2013" max="2024" step="1" value="2013"></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><div class="tbl c9t" id="rt-tb"></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Începeți perioada de test în 2020. Rămîne lasso semnificativ mai precis decît HAR pe S&P 500?</div>
+  <details><summary>Răspuns</summary><p>Da: R² față de HAR +7,4% și DM t = −3,42 pe 1682 de zile; MLP are +7,9% și t = −2,28.</p></details>
+</section>
+<section class="blk" id="rv">
+  <h3>Prognozele volatilității în două episoade de criză</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=73" target="_blank" rel="noopener"><img src="slides/tsa_ch9_rv_ro.jpg" alt="Slide-ul 72: Prognozele volatilității în două episoade de criză" loading="lazy"></a>
+      <figcaption>Slide-ul 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rv-k">Indicele</label><select id="rv-k"><option value="sp500" selected>S&P 500 (curs)</option><option value="dax">DAX</option></select></div><div class="ctl"><label for="rv-m">Modelele ML afișate lîngă HAR</label><select id="rv-m"><option value="RF,GB" selected>RF, GB (curs)</option><option value="Lasso,MLP">Lasso, MLP</option><option value="RF,Lasso">RF, Lasso</option><option value="GB,MLP">GB, MLP</option></select></div><div class="ctl"><label for="rv-a">Anul din stînga</label><select id="rv-a"><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020" selected>2020 (curs)</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="ctl"><label for="rv-b">Anul din dreapta</label><select id="rv-b"><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025 (curs)</option><option value="2026">2026</option></select></div><button class="btn play" id="rv-play" type="button"></button></div><div class="charts "><div class="chart" id="rv-chart"></div></div><ul class="out" id="rv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Afișați lasso și MLP pentru S&P 500 în 2022 (anul din stînga). Bate vreunul HAR după QLIKE în acel an?</div>
+  <details><summary>Răspuns</summary><p>Da, amîndouă: QLIKE 1,536 (lasso) și 1,541 (MLP), față de 1,553 pentru HAR. În 2025 HAR are 0,990, sub amîndouă (0,997 și 1,002): un singur an nu decide clasamentul.</p></details>
+</section>
+<section class="blk" id="sign-table">
+  <h3>Semnul randamentului de mîine: reperul corect</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=74" target="_blank" rel="noopener"><img src="slides/ch9x_sign-table_ro.jpg" alt="Slide-ul 73: Semnul randamentului de mîine: reperul corect" loading="lazy"></a>
+      <figcaption>Slide-ul 73</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sb-y">Perioada de test începe în: <b id="sb-y-v"></b></label><input type="range" id="sb-y" min="2008" max="2020" step="1" value="2008"></div><button class="btn play" id="sb-play" type="button"></button></div><div class="charts "><div class="chart" id="sb-chart"></div></div><div class="tbl c9t" id="sb-tb"></div><ul class="out" id="sb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Începeți perioada de test în 2016. Cît este cel mai mare AUC?</div>
+  <details><summary>Răspuns</summary><p>0,541, cel mai mic 0,507; zilele de creștere sînt 54,6% (S&P 500) și 55,7% (BET). AUC rămîne aproape de 0,5.</p></details>
+</section>
+<section class="blk" id="sign">
+  <h3>Acuratețea față de reper</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=75" target="_blank" rel="noopener"><img src="slides/tsa_ch9_sign_ro.jpg" alt="Slide-ul 74: Acuratețea față de reper" loading="lazy"></a>
+      <figcaption>Slide-ul 74</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="si-t">Pragul de decizie: „creștere” dacă probabilitatea ≥ prag: <b id="si-t-v"></b></label><input type="range" id="si-t" min="0.4" max="0.6" step="0.01" value="0.5"></div><button class="btn play" id="si-play" type="button"></button></div><div class="charts "><div class="chart" id="si-chart"></div></div><ul class="out" id="si-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați pragul la 0,55. Ce acuratețe are GB pe S&P 500?</div>
+  <details><summary>Răspuns</summary><p>49,3%, sub reperul de 54,4%: cu pragul mai sus modelul prognozează „creștere” doar în 40,4% din zile, deși piața crește în 54,4% din ele.</p></details>
+</section><h2 class="sec" id="s-case">Studii de caz de referință: M4, M5 și Gu, Kelly și Xiu</h2>
+<section class="blk" id="m4">
+  <h3>M4: acuratețea tuturor metodelor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=79" target="_blank" rel="noopener"><img src="slides/tsa_ch9_m4_ro.jpg" alt="Slide-ul 78: M4: acuratețea tuturor metodelor" loading="lazy"></a>
+      <figcaption>Slide-ul 78</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="m4-w">Ponderea sMAPE în OWA (curs: 0,5): <b id="m4-w-v"></b></label><input type="range" id="m4-w" min="0" max="1" step="0.1" value="0.5"></div><button class="btn play" id="m4-play" type="button"></button></div><div class="charts "><div class="chart" id="m4-chart"></div></div><ul class="out" id="m4-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți ponderea sMAPE la 1 (OWA calculat doar din sMAPE). Pe ce loc ajunge Comb?</div>
+  <details><summary>Răspuns</summary><p>Pe locul 23 (OWA 0,926), față de 19; cîștigătorul rămîne metoda 118, hibridă, cu 0,839, iar cea mai bună metodă ML pură coboară pe locul 27.</p></details>
+</section>
+<section class="blk" id="gkx">
+  <h3>Gu, Kelly și Xiu (2020): R² mic, valoare economică mare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol9_invatare_automata_serii_timp.pdf#page=83" target="_blank" rel="noopener"><img src="slides/tsa_ch9_gkx_ro.jpg" alt="Slide-ul 82: Gu, Kelly și Xiu (2020): R² mic, valoare economică mare" loading="lazy"></a>
+      <figcaption>Slide-ul 82</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gk-m">Modelul marcat</label><select id="gk-m"><option value="OLS-3+H">OLS-3+H</option><option value="PLS">PLS</option><option value="PCR">PCR</option><option value="ENet+H">ENet+H</option><option value="GLM+H">GLM+H</option><option value="RF">RF</option><option value="GBRT+H">GBRT+H</option><option value="NN1">NN1</option><option value="NN2">NN2</option><option value="NN3">NN3</option><option value="NN4" selected>NN4</option><option value="NN5">NN5</option></select></div><button class="btn play" id="gk-play" type="button"></button></div><div class="charts "><div class="chart" id="gk-chart"></div></div><ul class="out" id="gk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> De cîte ori este raportul Sharpe al NN4 mai mare decît cel al OLS-3+H?</div>
+  <details><summary>Răspuns</summary><p>1,35/0,61 = 2,21 ori, cu un R² lunar de doar 0,39%: o predictibilitate mică, folosită pe mii de acțiuni și luni, susține un portofoliu valoros.</p></details>
+</section>
+<p class="src foot">Consumul mediu zilnic de energie electrică al României (ENTSO-E, extrasul din Capitolul 4, 1 ianuarie 2022 – 30 iunie 2026). Prețurile zilnice S&P 500, DAX și BET (data/market, pînă la 18 septembrie 2026). Indicele IAPC al României (Eurostat prc_hicp_minr), citit cu funcția capitolului pe 4 noiembrie 2026 și tăiat la august 2026, ultima lună din slide-uri; reproduce exact cifrele din curs. Fișierul oficial de evaluare M4 (ch9_m4_owa.csv) și cifrele publicate de Gu, Kelly și Xiu (2020). Prognozele walk-forward ale modelelor (ch9_load_ml.csv, ch9_inflation.csv, ch4_load_cv.csv) și estimările care cer reantrenarea modelelor (random forest, gradient boosting, MLP, LSTM, lasso) sînt cele ale codului capitolului, cu aceeași sămînță; în browser se recalculează tabelele de laguri, corelațiile, arborii de regresie, MASE, testele Diebold–Mariano, acoperirea intervalelor, RMSE, QLIKE, acuratețea și AUC. Variantele care nu apar în curs (alt orizont, altă sămînță a eșantionului, alt sfîrșit al eșantionului, alt nivel al intervalului, alt prag) sînt rulări suplimentare ale codului capitolului, cu aceleași date și aceeași sămînță; modelele AR(1) ale blocului despre strategii și aproximarea lui tanh prin neuroni ReLU sînt calcule suplimentare, făcute în browser.</p>
+</main>
+</body>
+</html>

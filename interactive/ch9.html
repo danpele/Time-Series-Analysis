@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 9 · Machine Learning for Time Series</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch9.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch9_data.js?v=20261101a", "ch9_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch9.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index.html">Time Series Analysis</a></h1><p>Chapter 9 · Machine Learning for Time Series</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_09" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch9.html" class="lang-btn active">EN</a><a href="ch9_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure or table on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step; the “Worked example” boxes redo the calculation with the numbers of the chapter.</p>
+<p class="toc"><a href="#s-sup">Forecasting as supervised learning</a> · <a href="#s-val">Validation without leakage</a> · <a href="#s-reg">Regularised linear models: ridge and lasso</a> · <a href="#s-tree">Trees, random forest and gradient boosting</a> · <a href="#s-nn">Neural networks</a> · <a href="#s-load">Application: electricity load against Chapter 4</a> · <a href="#s-pi">Prediction intervals</a> · <a href="#s-inf">Local and global models: Romanian inflation</a> · <a href="#s-fin">Applications in finance: volatility and the sign of returns</a> · <a href="#s-case">Landmark case studies: M4, M5 and Gu, Kelly and Xiu</a></p>
+<h2 class="sec" id="s-sup">Forecasting as supervised learning</h2>
+<section class="blk" id="wx-lag">
+  <h3>Worked example: a lag table for the electricity load</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=9" target="_blank" rel="noopener"><img src="slides/ch9x_wx-lag_en.jpg" alt="Slide 8: Worked example: a lag table for the electricity load" loading="lazy"></a>
+      <figcaption>Slide 8</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wl-e">Last day of the table: <b id="wl-e-v"></b></label><input type="range" id="wl-e" min="-14" max="14" step="1" value="0"></div><button class="btn play" id="wl-play" type="button"></button></div><div class="charts "><div class="chart" id="wl-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="wl-p">Lags p (lecture: 3): <b id="wl-p-v"></b></label><input type="range" id="wl-p" min="1" max="5" step="1" value="3"></div><div class="ctl"><label for="wl-h">Horizon h (lecture: 1): <b id="wl-h-v"></b></label><input type="range" id="wl-h" min="1" max="3" step="1" value="1"></div></div><div class="tbl c9t" id="wl-tb"></div><h4>Worked example</h4><ol id="wl-ws"></ol></div><ul class="out" id="wl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> With p = 5 lags and h = 3, how many complete rows do the 9 days give?</div>
+  <details><summary>Answer</summary><p>9 − 5 − 3 + 1 = 2 rows, with origins 25 and 26 June 2025. On the whole series the table for h = 3 has 1642 − 28 − 3 + 1 = 1612 rows.</p></details>
+</section>
+<section class="blk" id="features">
+  <h3>Electricity load: the series and three features</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=10" target="_blank" rel="noopener"><img src="slides/tsa_ch9_features_en.jpg" alt="Slide 9: Electricity load: the series and three features" loading="lazy"></a>
+      <figcaption>Slide 9</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fe-h">Horizon of the target h (days; lecture: 1): <b id="fe-h-v"></b></label><input type="range" id="fe-h" min="1" max="14" step="1" value="1"></div><button class="btn play" id="fe-play" type="button"></button></div><style>.c9x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c9x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c9x .c9f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c9x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c9x li{margin:.18rem 0;overflow-wrap:anywhere}.c9x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c9t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c9t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c9t th,.c9t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c9t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c9t tbody tr:nth-child(even){background:#F5F7FB}.c9t tbody tr.hi{background:#E3F4F7}.c9t .r{text-align:right}.c9cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="fe-chart"></div></div><ul class="out" id="fe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the horizon to h = 7. What do the correlations of the target with y<sub>t</sub> and with the 7-day mean become?</div>
+  <details><summary>Answer</summary><p>0.81 with y<sub>t</sub> (0.77 at h = 1) and 0.60 with the 7-day mean (0.74 at h = 1). At h = 7 today is the same weekday as the target, so y<sub>t</sub> takes the role of the weekly lag, while the 7-day mean carries no weekday.</p></details>
+</section>
+<section class="blk" id="strategies">
+  <h3>Recursive, direct and multi-output forecasts</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=13" target="_blank" rel="noopener"><img src="slides/tsa_ch9_strategies_en.jpg" alt="Slide 12: Recursive, direct and multi-output forecasts" loading="lazy"></a>
+      <figcaption>Slide 12</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="st-o">Forecast origin</label><select id="st-o"><option value="2025-06-30" selected>30 June 2025 (lecture)</option><option value="2025-07-14">14 July 2025</option><option value="2025-07-28">28 July 2025</option><option value="2025-08-11">11 August 2025</option><option value="2025-08-25">25 August 2025</option><option value="2025-09-08">8 September 2025</option><option value="2025-09-22">22 September 2025</option><option value="2025-10-06">6 October 2025</option><option value="2025-10-20">20 October 2025</option><option value="2025-11-03">3 November 2025</option><option value="2025-11-17">17 November 2025</option><option value="2025-12-01">1 December 2025</option><option value="2025-12-15">15 December 2025</option><option value="2025-12-29">29 December 2025</option><option value="2026-01-12">12 January 2026</option><option value="2026-01-26">26 January 2026</option><option value="2026-02-09">9 February 2026</option><option value="2026-02-23">23 February 2026</option><option value="2026-03-09">9 March 2026</option><option value="2026-03-23">23 March 2026</option><option value="2026-04-06">6 April 2026</option><option value="2026-04-20">20 April 2026</option><option value="2026-05-04">4 May 2026</option><option value="2026-05-18">18 May 2026</option><option value="2026-06-01">1 June 2026</option><option value="2026-06-15">15 June 2026</option></select></div><button class="btn play" id="st-play" type="button"></button></div><div class="charts "><div class="chart" id="st-chart"></div></div><ul class="out" id="st-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the origin 6 April 2026, with Easter in the window. Which strategy has the lower MAE over the 14 days?</div>
+  <details><summary>Answer</summary><p>The direct one: 668 MW against 898 MW for the recursive one. At h = 7 the direct coefficient on y<sub>T</sub> is 0.81, the implied b⁷ only 0.15: iterating an AR(1) loses the weekly pattern, which the direct model keeps.</p></details>
+</section>
+<section class="blk" id="wx-strat">
+  <h3>Worked example: recursive and direct two-step forecasts</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=14" target="_blank" rel="noopener"><img src="slides/ch9x_wx-strat_en.jpg" alt="Slide 13: Worked example: recursive and direct two-step forecasts" loading="lazy"></a>
+      <figcaption>Slide 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ws-y">Last value y<sub>T</sub> (lecture: 5): <b id="ws-y-v"></b></label><input type="range" id="ws-y" min="3" max="8" step="0.1" value="5"></div><div class="ctl"><label for="ws-b">Slope of the one-step model (lecture: 0.8): <b id="ws-b-v"></b></label><input type="range" id="ws-b" min="0.5" max="0.95" step="0.05" value="0.8"></div><button class="btn play" id="ws-play" type="button"></button></div><div class="charts "><div class="chart" id="ws-chart"></div></div><div class="c9x"><h4>Worked example</h4><div class="c9f">\[\hat y_{T+1}=a+b\,y_T,\quad \hat y_{T+2}=a+b\,\hat y_{T+1}=a(1+b)+b^2y_T;\qquad \text{direct: }\hat y_{T+2}=2.3+0.6\,y_T\]</div><ol id="ws-ws"></ol></div><ul class="out" id="ws-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set y<sub>T</sub> = 7. Which two-step forecast is larger?</div>
+  <details><summary>Answer</summary><p>The recursive one: 2.16 + 0.64·7 = 6.64, against 2.3 + 0.6·7 = 6.50 for the direct one. The two rules cross at y<sub>T</sub> = 3.5; above it the recursive rule, with the steeper slope, always gives more.</p></details>
+</section><h2 class="sec" id="s-val">Validation without leakage</h2>
+<section class="blk" id="cv-schemes">
+  <h3>Four validation schemes</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=17" target="_blank" rel="noopener"><img src="slides/tsa_ch9_cv_schemes_en.jpg" alt="Slide 16: Four validation schemes" loading="lazy"></a>
+      <figcaption>Slide 16</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cv-k">Number of folds and steps K: <b id="cv-k-v"></b></label><input type="range" id="cv-k" min="2" max="6" step="1" value="4"></div><div class="ctl"><label for="cv-g">Gap h (observations; lecture: 3): <b id="cv-g-v"></b></label><input type="range" id="cv-g" min="0" max="6" step="1" value="3"></div><button class="btn play" id="cv-play" type="button"></button></div><div class="charts "><div class="chart" id="cv-chart"></div></div><ul class="out" id="cv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the gap to h = 6. What share of the test rows of walk-forward without a gap has a training row less than 6 steps away?</div>
+  <details><summary>Answer</summary><p>63% (25% at h = 3); 100% in random K-fold, 0% with a gap. The first h − 1 = 5 of the 8 rows of each test block have targets that overlap the last training rows.</p></details>
+</section>
+<section class="blk" id="leakage">
+  <h3>Leakage in practice: random folds on overlapping targets</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=19" target="_blank" rel="noopener"><img src="slides/tsa_ch9_leakage_en.jpg" alt="Slide 18: Leakage in practice: random folds on overlapping targets" loading="lazy"></a>
+      <figcaption>Slide 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lk-h">Target: sum of the next h returns</label><select id="lk-h"><option value="1">h = 1</option><option value="5">h = 5</option><option value="10">h = 10</option><option value="21" selected>h = 21 (lecture)</option><option value="42">h = 42</option><option value="63">h = 63</option></select></div><button class="btn play" id="lk-play" type="button"></button></div><div class="charts "><div class="chart" id="lk-chart"></div></div><ul class="out" id="lk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose h = 1: the target is one return, without overlap. What R² does random 5-fold report for the simulated random walk?</div>
+  <details><summary>Answer</summary><p>−4.5%, close to walk-forward (−6.3%) and to walk-forward with a gap (−6.1%). Without overlapping targets a test row has no near-copies in the training folds, and the 34.5% disappears.</p></details>
+</section>
+<section class="blk" id="wx-leak">
+  <h3>Interpreting the leakage experiment</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=20" target="_blank" rel="noopener"><img src="slides/ch9x_wx-leak_en.jpg" alt="Slide 19: Interpreting the leakage experiment" loading="lazy"></a>
+      <figcaption>Slide 19</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wk-s">Series</label><select id="wk-s"><option value="sp500" selected>S&P 500 (lecture)</option><option value="sim">simulated random walk</option></select></div><div class="ctl"><label for="wk-h">Target: sum of the next h returns</label><select id="wk-h"><option value="1">h = 1</option><option value="5">h = 5</option><option value="10">h = 10</option><option value="21" selected>h = 21 (lecture)</option><option value="42">h = 42</option><option value="63">h = 63</option></select></div><button class="btn play" id="wk-play" type="button"></button></div><div class="charts "><div class="chart" id="wk-chart"></div></div><div class="c9x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wk-c">Scheme of the calculation</label><select id="wk-c"><option value="kfold" selected>random 5-fold (lecture)</option><option value="wf">walk-forward</option><option value="gap">walk-forward with a gap</option></select></div></div><div class="c9f">\[\rho(Y_t,Y_{t+k})=\max\!\Big(0,1-\frac{k}{h}\Big),\qquad R^2=1-\frac{\sum_{\text{folds}}\sum_t(y_t-\hat y_t)^2}{\sum_{\text{folds}}\sum_t(y_t-\bar y_{\text{train}})^2}\]</div><ol id="wk-ws"></ol></div><ul class="out" id="wk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose h = 63. What R² do random 5-fold and walk-forward with a gap give for the S&P 500?</div>
+  <details><summary>Answer</summary><p>43.4% and −43.6%. Neighbouring targets share 62 of 63 returns (sample correlation 0.976), so random folds leak even more. Without a gap walk-forward gives −36.2%: the last training rows have targets that overlap the first test rows, a small leak that the gap removes.</p></details>
+</section>
+<section class="blk" id="bias-variance">
+  <h3>Bias and variance of regression trees</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=22" target="_blank" rel="noopener"><img src="slides/tsa_ch9_bias_variance_en.jpg" alt="Slide 21: Bias and variance of regression trees" loading="lazy"></a>
+      <figcaption>Slide 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bv-s">Noise standard deviation σ (lecture: 0.3): <b id="bv-s-v"></b></label><input type="range" id="bv-s" min="0.1" max="0.6" step="0.05" value="0.3"></div><div class="ctl"><label for="bv-d">Depth of the red tree: <b id="bv-d-v"></b></label><input type="range" id="bv-d" min="1" max="10" step="1" value="10"></div><button class="btn play" id="bv-play" type="button"></button></div><div class="charts "><div class="chart" id="bv-chart"></div></div><ul class="out" id="bv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise the noise to σ = 0.6. At what depth is the expected test error smallest?</div>
+  <details><summary>Answer</summary><p>At depth 2 (0.465; the noise variance is 0.36). With σ = 0.1 the minimum moves to depth 6. More noise raises the variance of deep trees, so the right complexity falls.</p></details>
+</section><h2 class="sec" id="s-reg">Regularised linear models: ridge and lasso</h2>
+<section class="blk" id="wx-shrink">
+  <h3>Ridge and lasso</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=26" target="_blank" rel="noopener"><img src="slides/ch9x_wx-shrink_en.jpg" alt="Slide 25: Ridge and lasso" loading="lazy"></a>
+      <figcaption>Slide 25</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wr-l">λ of the lasso (lecture: 40): <b id="wr-l-v"></b></label><input type="range" id="wr-l" min="0" max="200" step="5" value="40"></div><div class="ctl"><label for="wr-r">λ of ridge (lecture: 50): <b id="wr-r-v"></b></label><input type="range" id="wr-r" min="0" max="200" step="5" value="50"></div><div class="ctl"><label for="wr-s">S<sub>xy</sub> (lecture: 90; S<sub>xx</sub> = 100): <b id="wr-s-v"></b></label><input type="range" id="wr-s" min="-120" max="120" step="5" value="90"></div><button class="btn play" id="wr-play" type="button"></button></div><div class="charts "><div class="chart" id="wr-chart"></div></div><div class="c9x"><h4>Worked example: ridge</h4><div class="c9f">\[\hat\beta_{\text{ridge}}=\frac{S_{xy}}{S_{xx}+\lambda}=\frac{S_{xx}}{S_{xx}+\lambda}\,\hat\beta_{\text{OLS}}\]</div><ol id="wr-ws1"></ol></div><div class="c9x"><h4>Worked example: lasso</h4><div class="c9f">\[\hat\beta_{\text{lasso}}=\operatorname{sign}(S_{xy})\,\frac{\max(|S_{xy}|-\lambda/2,\,0)}{S_{xx}}\]</div><ol id="wr-ws2"></ol></div><ul class="out" id="wr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set S<sub>xy</sub> = 30. From what λ is the lasso coefficient exactly 0, and what does ridge give with λ = 50?</div>
+  <details><summary>Answer</summary><p>From λ = 2·30 = 60; ridge gives 30/150 = 0.200, not zero. The lasso threshold grows with |S<sub>xy</sub>|: features weakly related to the target leave first.</p></details>
+</section>
+<section class="blk" id="shrinkage">
+  <h3>Ridge and lasso paths on the load features</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=27" target="_blank" rel="noopener"><img src="slides/tsa_ch9_shrinkage_en.jpg" alt="Slide 26: Ridge and lasso paths on the load features" loading="lazy"></a>
+      <figcaption>Slide 26</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sh-e">Sample ends on</label><select id="sh-e"><option value="2023-06-30">30 June 2023</option><option value="2023-12-31">31 December 2023</option><option value="2024-06-30">30 June 2024</option><option value="2024-12-31">31 December 2024</option><option value="2025-06-30" selected>30 June 2025 (lecture)</option><option value="2025-12-31">31 December 2025</option><option value="2026-06-29">29 June 2026</option></select></div><button class="btn play" id="sh-play" type="button"></button></div><div class="charts "><div class="chart" id="sh-chart"></div></div><ul class="out" id="sh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Cut the sample at 31 December 2023. How many features does the lasso keep at the chosen penalty?</div>
+  <details><summary>Answer</summary><p>23 of 30 (22 on the data up to 30 June 2025), on 702 rows, with λ = 0.00486; the first features to enter are still lag6, lag0 and lag13.</p></details>
+</section>
+<section class="blk" id="lasso-table">
+  <h3>Interpreting the coefficient paths</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=28" target="_blank" rel="noopener"><img src="slides/ch9x_lasso-table_en.jpg" alt="Slide 27: Interpreting the coefficient paths" loading="lazy"></a>
+      <figcaption>Slide 27</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lt-e">Sample ends on</label><select id="lt-e"><option value="2023-06-30">30 June 2023</option><option value="2023-12-31">31 December 2023</option><option value="2024-06-30">30 June 2024</option><option value="2024-12-31">31 December 2024</option><option value="2025-06-30" selected>30 June 2025 (lecture)</option><option value="2025-12-31">31 December 2025</option><option value="2026-06-29">29 June 2026</option></select></div><div class="ctl"><label for="lt-k">Penalty: grid steps from the one chosen by validation (negative: larger λ): <b id="lt-k-v"></b></label><input type="range" id="lt-k" min="-15" max="15" step="1" value="0"></div><button class="btn play" id="lt-play" type="button"></button></div><div class="charts "><div class="chart" id="lt-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="lt-n">Rows shown: <b id="lt-n-v"></b></label><input type="range" id="lt-n" min="5" max="30" step="1" value="10"></div></div><div class="tbl c9t" id="lt-tb"></div></div><ul class="out" id="lt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the penalty 6 grid steps towards a larger λ (−6). How many features remain non-zero?</div>
+  <details><summary>Answer</summary><p>19 of 30, at λ = 0.00441 (22 at the chosen λ, 0.00173). The order of entry does not depend on the chosen λ: lag6, lag0, lag13.</p></details>
+</section><h2 class="sec" id="s-tree">Trees, random forest and gradient boosting</h2>
+<section class="blk" id="tree">
+  <h3>A depth-2 tree for tomorrow's load</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=31" target="_blank" rel="noopener"><img src="slides/tsa_ch9_tree_en.jpg" alt="Slide 30: A depth-2 tree for tomorrow's load" loading="lazy"></a>
+      <figcaption>Slide 30</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tr-e">Training up to</label><select id="tr-e"><option value="2024-06-30">30 June 2024</option><option value="2024-12-31">31 December 2024</option><option value="2025-06-30" selected>30 June 2025 (lecture)</option><option value="2025-12-31">31 December 2025</option><option value="2026-06-29">29 June 2026</option></select></div><div class="ctl"><label for="tr-d">Maximum depth: <b id="tr-d-v"></b></label><input type="range" id="tr-d" min="1" max="4" step="1" value="2"></div><div class="ctl"><label for="tr-m">At least this many days per leaf: <b id="tr-m-v"></b></label><input type="range" id="tr-m" min="10" max="300" step="10" value="20"></div><button class="btn play" id="tr-play" type="button"></button></div><div class="charts "><div class="chart" id="tr-chart"></div></div><ul class="out" id="tr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Train the tree on the data up to 29 June 2026. Does the first question change?</div>
+  <details><summary>Answer</summary><p>The feature stays same_dow and the threshold falls from 6.08 to 6.04 GW; the leaves become 5.27, 5.86, 6.37 and 7.17 GW, with 1613 days, and R² stays 0.64.</p></details>
+</section>
+<section class="blk" id="wx-boost">
+  <h3>Gradient boosting</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=34" target="_blank" rel="noopener"><img src="slides/ch9x_wx-boost_en.jpg" alt="Slide 33: Gradient boosting" loading="lazy"></a>
+      <figcaption>Slide 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wb-n">Learning rate ν (lecture: 0.1): <b id="wb-n-v"></b></label><input type="range" id="wb-n" min="0.05" max="1" step="0.05" value="0.1"></div><button class="btn play" id="wb-play" type="button"></button></div><div class="charts "><div class="chart" id="wb-chart"></div></div><div class="c9x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wb-m">Trees m in the calculation: <b id="wb-m-v"></b></label><input type="range" id="wb-m" min="1" max="30" step="1" value="1"></div></div><div class="c9f">\[F_0=\bar y,\qquad r_i=y_i-F_{m-1}(x_i),\qquad F_m(x)=F_{m-1}(x)+\nu\,g_m(x)\]</div><ol id="wb-ws"></ol></div><ul class="out" id="wb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set ν = 1. What is F<sub>1</sub> at the three points?</div>
+  <details><summary>Answer</summary><p>5.50, 5.50 and 8.00: the first tree fully corrects the residual of the isolated point, and the training MSE falls from 1.56 to 0.167 after one tree. A large learning rate fits the training data fast, noise included.</p></details>
+</section>
+<section class="blk" id="ensembles">
+  <h3>One tree, a forest and boosting on the load</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=35" target="_blank" rel="noopener"><img src="slides/tsa_ch9_ensembles_en.jpg" alt="Slide 34: One tree, a forest and boosting on the load" loading="lazy"></a>
+      <figcaption>Slide 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="en-s">Training up to (validation up to 30 June 2025)</label><select id="en-s"><option value="2023-12-31">31 December 2023</option><option value="2024-06-30">30 June 2024</option><option value="2024-12-31" selected>31 December 2024 (lecture)</option></select></div><button class="btn play" id="en-play" type="button"></button></div><div class="charts "><div class="chart" id="en-chart"></div></div><ul class="out" id="en-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Train up to 31 December 2023 (546 validation days). After how many trees does boosting with ν = 0.3 reach its minimum?</div>
+  <details><summary>Answer</summary><p>After 24 trees (MSE 0.093), against 72 in the lecture; with ν = 0.05 the minimum comes after 222 trees (0.092). On a shorter training sample fast boosting starts fitting noise earlier.</p></details>
+</section>
+<section class="blk" id="extrapolation">
+  <h3>Trees cannot extrapolate: the Romanian price level</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=37" target="_blank" rel="noopener"><img src="slides/tsa_ch9_extrapolation_en.jpg" alt="Slide 36: Trees cannot extrapolate: the Romanian price level" loading="lazy"></a>
+      <figcaption>Slide 36</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ex-s">Training up to</label><select id="ex-s"><option value="2018-12">December 2018</option><option value="2019-12">December 2019</option><option value="2020-12" selected>December 2020 (lecture)</option><option value="2021-12">December 2021</option><option value="2022-12">December 2022</option></select></div><button class="btn play" id="ex-play" type="button"></button></div><div class="charts "><div class="chart" id="ex-chart"></div></div><ul class="out" id="ex-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Train the forests up to December 2022. What is the RMSE on levels?</div>
+  <details><summary>Answer</summary><p>22.9 index points (36.9 with training up to 2020): the largest level seen is now 135.6, but the forecast stays capped at 134.1 while the index reaches 173.4. On monthly changes the RMSE is 0.68.</p></details>
+</section>
+<section class="blk" id="importance">
+  <h3>Permutation importance of gradient boosting</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=40" target="_blank" rel="noopener"><img src="slides/tsa_ch9_importance_en.jpg" alt="Slide 39: Permutation importance of gradient boosting" loading="lazy"></a>
+      <figcaption>Slide 39</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="im-h">Horizons h and 15 − h (lecture: 1 and 14): <b id="im-h-v"></b></label><input type="range" id="im-h" min="1" max="7" step="1" value="1"></div><button class="btn play" id="im-play" type="button"></button></div><div class="charts "><div class="chart" id="im-chart"></div></div><ul class="out" id="im-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the horizons to 7 and 8 days. Which feature dominates at h = 8?</div>
+  <details><summary>Answer</summary><p>cos1 (+98 MW), followed by lag6 (+84 MW). At h = 7 lag0 still dominates (+317 MW), because at 7 days y<sub>t</sub> is the same weekday as the target.</p></details>
+</section><h2 class="sec" id="s-nn">Neural networks</h2>
+<section class="blk" id="mlp">
+  <h3>A small network and its activation functions</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch9_mlp_en.jpg" alt="Slide 43: A small network and its activation functions" loading="lazy"></a>
+      <figcaption>Slide 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ml-q">Hidden neurons q (lecture: 5): <b id="ml-q-v"></b></label><input type="range" id="ml-q" min="1" max="10" step="1" value="5"></div><button class="btn play" id="ml-play" type="button"></button></div><div class="charts "><div class="chart" id="ml-chart"></div></div><ul class="out" id="ml-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> How many parameters does the network with q = 10 hidden neurons have?</div>
+  <details><summary>Answer</summary><p>3·10 + 10 + 10 + 1 = 51. With 10 ReLU neurons the piecewise-linear function approximates tanh with maximum error 0.048, against 0.102 with 5.</p></details>
+</section>
+<section class="blk" id="rnn">
+  <h3>A recurrent network and the LSTM cell</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=48" target="_blank" rel="noopener"><img src="slides/tsa_ch9_rnn_en.jpg" alt="Slide 47: A recurrent network and the LSTM cell" loading="lazy"></a>
+      <figcaption>Slide 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rn-o">Forecast origin</label><select id="rn-o"><option value="2025-06-30" selected>30 June 2025 (lecture)</option><option value="2025-07-14">14 July 2025</option><option value="2025-07-28">28 July 2025</option><option value="2025-08-11">11 August 2025</option><option value="2025-08-25">25 August 2025</option><option value="2025-09-08">8 September 2025</option><option value="2025-09-22">22 September 2025</option><option value="2025-10-06">6 October 2025</option><option value="2025-10-20">20 October 2025</option><option value="2025-11-03">3 November 2025</option><option value="2025-11-17">17 November 2025</option><option value="2025-12-01">1 December 2025</option><option value="2025-12-15">15 December 2025</option><option value="2025-12-29">29 December 2025</option><option value="2026-01-12">12 January 2026</option><option value="2026-01-26">26 January 2026</option><option value="2026-02-09">9 February 2026</option><option value="2026-02-23">23 February 2026</option><option value="2026-03-09">9 March 2026</option><option value="2026-03-23">23 March 2026</option><option value="2026-04-06">6 April 2026</option><option value="2026-04-20">20 April 2026</option><option value="2026-05-04">4 May 2026</option><option value="2026-05-18">18 May 2026</option><option value="2026-06-01">1 June 2026</option><option value="2026-06-15">15 June 2026</option></select></div><button class="btn play" id="rn-play" type="button"></button></div><div class="charts "><div class="chart" id="rn-chart"></div></div><ul class="out" id="rn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the origin 6 April 2026. What is the MAE of the LSTM, against DHR?</div>
+  <details><summary>Answer</summary><p>661 MW against 344 MW. The LSTM sees no holiday flag and repeats the weekly pattern over Easter, although its training loss falls from 0.951 to 0.210.</p></details>
+</section><h2 class="sec" id="s-load">Application: electricity load against Chapter 4</h2>
+<section class="blk" id="wx-mase">
+  <h3>The forecasting exercise</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=51" target="_blank" rel="noopener"><img src="slides/ch9x_wx-mase_en.jpg" alt="Slide 50: The forecasting exercise" loading="lazy"></a>
+      <figcaption>Slide 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wm-m">Seasonal period m of the scale (lecture: 7): <b id="wm-m-v"></b></label><input type="range" id="wm-m" min="1" max="14" step="1" value="7"></div><button class="btn play" id="wm-play" type="button"></button></div><div class="charts "><div class="chart" id="wm-chart"></div></div><div class="c9x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wm-x">Model of the calculation</label><select id="wm-x"><option value="Seasonal naive">seasonal naive</option><option value="ETS">ETS</option><option value="SARIMA">SARIMA</option><option value="DHR" selected>DHR</option><option value="Combination">combination</option><option value="Ridge">Ridge</option><option value="RF">RF</option><option value="GB direct">GB direct</option><option value="GB recursive">GB recursive</option><option value="MLP">MLP</option><option value="LSTM">LSTM</option></select></div></div><div class="c9f">\[\text{MASE}=\frac{\text{MAE}}{\frac{1}{n-m}\sum_{t=m+1}^{n}|y_t-y_{t-m}|}\]</div><ol id="wm-ws"></ol></div><ul class="out" id="wm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Change the period of the scale to m = 1. What do the scale and the MASE of DHR become?</div>
+  <details><summary>Answer</summary><p>The scale becomes 371 MW and the MASE 0.744 (309 MW and 0.894 with m = 7). Day-to-day differences are larger than week-to-week ones, because the step into the weekend changes the load; the scale moves the level, not the ranking of the models.</p></details>
+</section>
+<section class="blk" id="load-table">
+  <h3>Results: 26 origins, 14 horizons</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=52" target="_blank" rel="noopener"><img src="slides/ch9x_load-table_en.jpg" alt="Slide 51: Results: 26 origins, 14 horizons" loading="lazy"></a>
+      <figcaption>Slide 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ld-k">First origins dropped (lecture: 0): <b id="ld-k-v"></b></label><input type="range" id="ld-k" min="0" max="20" step="2" value="0"></div><button class="btn play" id="ld-play" type="button"></button></div><div class="charts "><div class="chart" id="ld-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="ld-r">Reference of the DM test</label><select id="ld-r"><option value="DHR" selected>DHR (lecture)</option><option value="Seasonal naive">seasonal naive</option></select></div><div class="ctl"><label for="ld-h">Horizons</label><select id="ld-h"><option value="1-14" selected>1–14 (lecture)</option><option value="1-7">1–7</option><option value="8-14">8–14</option></select></div></div><div class="tbl c9t" id="ld-tb"></div></div><ul class="out" id="ld-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Drop the first 10 origins. Does the difference between ridge and DHR stay not significant?</div>
+  <details><summary>Answer</summary><p>Yes: on 16 origins ridge has MASE 0.92 and DHR 0.93, and DM p = 0.791. Not significant means that the test does not separate the difference from noise, not that the models are equal.</p></details>
+</section>
+<section class="blk" id="load-results">
+  <h3>MASE and accuracy by horizon</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=53" target="_blank" rel="noopener"><img src="slides/tsa_ch9_load_results_en.jpg" alt="Slide 52: MASE and accuracy by horizon" loading="lazy"></a>
+      <figcaption>Slide 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lr-n">First n origins used (lecture: 26): <b id="lr-n-v"></b></label><input type="range" id="lr-n" min="6" max="26" step="2" value="26"></div><button class="btn play" id="lr-play" type="button"></button></div><div class="charts "><div class="chart" id="lr-chart"></div></div><ul class="out" id="lr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Use only the first 10 origins (up to 3 November 2025). Which model has the lowest MASE?</div>
+  <details><summary>Answer</summary><p>Still DHR (0.83), followed by ridge (0.86). The LSTM has 0.95 here, but over all 26 origins it rises to 1.16.</p></details>
+</section>
+<section class="blk" id="wx-dm">
+  <h3>Interpreting the load results</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=54" target="_blank" rel="noopener"><img src="slides/ch9x_wx-dm_en.jpg" alt="Slide 53: Interpreting the load results" loading="lazy"></a>
+      <figcaption>Slide 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-a">Model compared</label><select id="wd-a"><option value="Ridge" selected>Ridge (lecture)</option><option value="RF">RF</option><option value="GB direct">GB direct</option><option value="GB recursive">GB recursive</option><option value="MLP">MLP</option><option value="LSTM">LSTM</option><option value="Combination">combination</option><option value="SARIMA">SARIMA</option><option value="ETS">ETS</option></select></div><div class="ctl"><label for="wd-L">Autocovariances included, h − 1 (lecture: 0): <b id="wd-L-v"></b></label><input type="range" id="wd-L" min="0" max="5" step="1" value="0"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><div class="c9x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wd-r">Reference B</label><select id="wd-r"><option value="DHR" selected>DHR (lecture)</option><option value="Seasonal naive">seasonal naive</option></select></div></div><div class="c9f">\[d_t=\overline{|e|}_{t}^{\,A}-\overline{|e|}_{t}^{\,B},\quad \hat V=\frac{1}{n}\Big(\hat\gamma_0+2\sum_{k=1}^{h-1}\hat\gamma_k\Big),\quad DM=\frac{\bar d}{\sqrt{\hat V}},\quad DM^{*}=c_h\,DM\sim t_{n-1}\]</div><ol id="wd-ws"></ol></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Include 2 autocovariances (h = 3) for ridge against DHR. What does p become?</div>
+  <details><summary>Answer</summary><p>0.953 (DM* = 0.060), against 0.942 without autocovariances: d̄ = 0.9 MW is small relative to its standard error, however the variance is estimated.</p></details>
+</section>
+<section class="blk" id="load-forecasts">
+  <h3>Forecasts around Orthodox Easter 2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=55" target="_blank" rel="noopener"><img src="slides/tsa_ch9_load_forecasts_en.jpg" alt="Slide 54: Forecasts around Orthodox Easter 2026" loading="lazy"></a>
+      <figcaption>Slide 54</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lf-o">Forecast origin</label><select id="lf-o"><option value="2025-06-30">30 June 2025</option><option value="2025-07-14">14 July 2025</option><option value="2025-07-28">28 July 2025</option><option value="2025-08-11">11 August 2025</option><option value="2025-08-25">25 August 2025</option><option value="2025-09-08">8 September 2025</option><option value="2025-09-22">22 September 2025</option><option value="2025-10-06">6 October 2025</option><option value="2025-10-20">20 October 2025</option><option value="2025-11-03">3 November 2025</option><option value="2025-11-17">17 November 2025</option><option value="2025-12-01">1 December 2025</option><option value="2025-12-15">15 December 2025</option><option value="2025-12-29">29 December 2025</option><option value="2026-01-12">12 January 2026</option><option value="2026-01-26">26 January 2026</option><option value="2026-02-09">9 February 2026</option><option value="2026-02-23">23 February 2026</option><option value="2026-03-09">9 March 2026</option><option value="2026-03-23">23 March 2026</option><option value="2026-04-06" selected>6 April 2026 (lecture)</option><option value="2026-04-20">20 April 2026</option><option value="2026-05-04">4 May 2026</option><option value="2026-05-18">18 May 2026</option><option value="2026-06-01">1 June 2026</option><option value="2026-06-15">15 June 2026</option></select></div><button class="btn play" id="lf-play" type="button"></button></div><div class="charts "><div class="chart" id="lf-chart"></div></div><ul class="out" id="lf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the origin 20 April 2026, after Easter. Which model has the lowest MAE?</div>
+  <details><summary>Answer</summary><p>The MLP, with 255 MW; GB recursive has 260, GB direct 276, the seasonal naive 283, DHR 286 and the LSTM 398 MW. Without Easter in the window the differences between the models are small.</p></details>
+</section><h2 class="sec" id="s-pi">Prediction intervals</h2>
+<section class="blk" id="wx-pinball">
+  <h3>Quantile regression and the pinball loss</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=58" target="_blank" rel="noopener"><img src="slides/ch9x_wx-pinball_en.jpg" alt="Slide 57: Quantile regression and the pinball loss" loading="lazy"></a>
+      <figcaption>Slide 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wp-t">τ (lecture: 0.95): <b id="wp-t-v"></b></label><input type="range" id="wp-t" min="0.05" max="0.95" step="0.05" value="0.95"></div><div class="ctl"><label for="wp-q">Forecast q (GW; lecture: 7.0): <b id="wp-q-v"></b></label><input type="range" id="wp-q" min="5" max="8" step="0.1" value="7"></div><button class="btn play" id="wp-play" type="button"></button></div><div class="charts "><div class="chart" id="wp-chart"></div></div><div class="c9x"><h4>Worked example</h4><div class="c9f">\[L_\tau(y,q)=\begin{cases}\tau\,(y-q), & y\ge q\\(1-\tau)\,(q-y), & y<q\end{cases}\]</div><ol id="wp-ws"></ol></div><ul class="out" id="wp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set τ = 0.5. What do y = 7.4 and y = 6.5 cost for q = 7.0?</div>
+  <details><summary>Answer</summary><p>0.200 and 0.250: with τ = 0.5 the loss is half the absolute error (0.4/2 and 0.5/2), and the minimum of the mean loss moves to the median of the 364 values.</p></details>
+</section>
+<section class="blk" id="wx-conformal">
+  <h3>Split conformal prediction</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=59" target="_blank" rel="noopener"><img src="slides/ch9x_wx-conformal_en.jpg" alt="Slide 58: Split conformal prediction" loading="lazy"></a>
+      <figcaption>Slide 58</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wc-a">Level 1 − α (lecture: 90%): <b id="wc-a-v"></b></label><input type="range" id="wc-a" min="0.5" max="0.95" step="0.05" value="0.9"></div><div class="ctl"><label for="wc-h">Horizon of the calibration set shown</label><select id="wc-h"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div><button class="btn play" id="wc-play" type="button"></button></div><div class="charts "><div class="chart" id="wc-chart"></div></div><div class="c9x"><h4>Worked example</h4><div class="c9f">\[k=\lceil (n+1)(1-\alpha)\rceil,\qquad \hat q=|e|_{(k)},\qquad \hat y\pm\hat q\]</div><ol id="wc-ws"></ol></div><ul class="out" id="wc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Lower the level to 50%. What is k and what coverage does the interval reach?</div>
+  <details><summary>Answer</summary><p>k = ⌈183·0.5⌉ = 92 and q̂ = 175 MW for h = 1; the coverage over the 364 forecasts is 49.5%, with mean width 509 MW.</p></details>
+</section>
+<section class="blk" id="intervals">
+  <h3>90% intervals for the load</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=60" target="_blank" rel="noopener"><img src="slides/tsa_ch9_intervals_en.jpg" alt="Slide 59: 90% intervals for the load" loading="lazy"></a>
+      <figcaption>Slide 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="iv-l">Level of the conformal interval: <b id="iv-l-v"></b></label><input type="range" id="iv-l" min="0.5" max="0.95" step="0.05" value="0.9"></div><button class="btn play" id="iv-play" type="button"></button></div><div class="charts "><div class="chart" id="iv-chart"></div></div><ul class="out" id="iv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Lower the conformal level to 80%. What coverage does it reach?</div>
+  <details><summary>Answer</summary><p>77.5%, with mean width 1000 MW: 13.7% of the outcomes fall below the interval and 8.8% above. Quantile GB stays at 66.5% for a nominal 90%.</p></details>
+</section><h2 class="sec" id="s-inf">Local and global models: Romanian inflation</h2>
+<section class="blk" id="inflation">
+  <h3>Romanian inflation: forecasts and relative RMSE</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=65" target="_blank" rel="noopener"><img src="slides/tsa_ch9_inflation_en.jpg" alt="Slide 64: Romanian inflation: forecasts and relative RMSE" loading="lazy"></a>
+      <figcaption>Slide 64</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="in-y">Test origins start in January: <b id="in-y-v"></b></label><input type="range" id="in-y" min="2016" max="2022" step="1" value="2016"></div><div class="ctl"><label for="in-h">Horizon on the left (months)</label><select id="in-h"><option value="1">1</option><option value="3">3</option><option value="6">6</option><option value="12" selected>12 (lecture)</option></select></div><button class="btn play" id="in-play" type="button"></button></div><div class="charts "><div class="chart" id="in-chart"></div></div><ul class="out" id="in-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the test origins in 2022. What is the relative RMSE of GB local at 12 months?</div>
+  <details><summary>Answer</summary><p>0.64 (1.21 over all origins), while GB global has 1.19. On the few origins of the disinflation after the 2022 peak the 12-month ranking reverses: a comparison on a few dozen errors is fragile.</p></details>
+</section>
+<section class="blk" id="inf-table">
+  <h3>Inflation results</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=66" target="_blank" rel="noopener"><img src="slides/ch9x_inf-table_en.jpg" alt="Slide 65: Inflation results" loading="lazy"></a>
+      <figcaption>Slide 65</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="it-p">Test origins</label><select id="it-p"><option value="all" selected>January 2016 – July 2026 (lecture)</option><option value="p1620">2016–2020</option><option value="p2123">2021–2023</option><option value="p2426">2024–2026</option></select></div><button class="btn play" id="it-play" type="button"></button></div><div class="charts "><div class="chart" id="it-chart"></div></div><div class="c9x"><div class="wctl"><div class="ctl"><label for="it-r">Reference of the DM test</label><select id="it-r"><option value="RW" selected>RW (lecture)</option><option value="AR">AR</option><option value="GB local">GB local (for GB global, lecture)</option></select></div></div><div class="tbl c9t" id="it-tb"></div><div class="tbl c9t" id="it-dm"></div></div><ul class="out" id="it-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the origins of 2021–2023. What is the relative RMSE of the AR at h = 6?</div>
+  <details><summary>Answer</summary><p>0.83 (0.88, 0.86, 0.83 and 0.98 at h = 1, 3, 6, 12): in the high-inflation years the AR stays below the random walk up to 6 months, while GB global has 1.10 at h = 6.</p></details>
+</section><h2 class="sec" id="s-fin">Applications in finance: volatility and the sign of returns</h2>
+<section class="blk" id="rv-table">
+  <h3>Results: S&P 500 and DAX, 2013–2026</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=71" target="_blank" rel="noopener"><img src="slides/ch9x_rv-table_en.jpg" alt="Slide 70: Results: S&P 500 and DAX, 2013–2026" loading="lazy"></a>
+      <figcaption>Slide 70</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-y">Test period starts in: <b id="rt-y-v"></b></label><input type="range" id="rt-y" min="2013" max="2024" step="1" value="2013"></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><div class="tbl c9t" id="rt-tb"></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the test period in 2020. Is the lasso still significantly more accurate than HAR on the S&P 500?</div>
+  <details><summary>Answer</summary><p>Yes: R² against HAR +7.4% and DM t = −3.42 on 1682 days; the MLP has +7.9% and t = −2.28.</p></details>
+</section>
+<section class="blk" id="rv">
+  <h3>Volatility forecasts in two storms</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=72" target="_blank" rel="noopener"><img src="slides/tsa_ch9_rv_en.jpg" alt="Slide 71: Volatility forecasts in two storms" loading="lazy"></a>
+      <figcaption>Slide 71</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rv-k">Index</label><select id="rv-k"><option value="sp500" selected>S&P 500 (lecture)</option><option value="dax">DAX</option></select></div><div class="ctl"><label for="rv-m">ML models shown next to HAR</label><select id="rv-m"><option value="RF,GB" selected>RF, GB (lecture)</option><option value="Lasso,MLP">Lasso, MLP</option><option value="RF,Lasso">RF, Lasso</option><option value="GB,MLP">GB, MLP</option></select></div><div class="ctl"><label for="rv-a">Year on the left</label><select id="rv-a"><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020" selected>2020 (lecture)</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="ctl"><label for="rv-b">Year on the right</label><select id="rv-b"><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025 (lecture)</option><option value="2026">2026</option></select></div><button class="btn play" id="rv-play" type="button"></button></div><div class="charts "><div class="chart" id="rv-chart"></div></div><ul class="out" id="rv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Show the lasso and the MLP for the S&P 500 in 2022 (left year). Does either beat HAR by QLIKE in that year?</div>
+  <details><summary>Answer</summary><p>Yes, both: QLIKE 1.536 (lasso) and 1.541 (MLP), against 1.553 for HAR. In 2025 HAR has 0.990, below both (0.997 and 1.002): one year does not decide the ranking.</p></details>
+</section>
+<section class="blk" id="sign-table">
+  <h3>The sign of tomorrow's return: the right baseline</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=73" target="_blank" rel="noopener"><img src="slides/ch9x_sign-table_en.jpg" alt="Slide 72: The sign of tomorrow's return: the right baseline" loading="lazy"></a>
+      <figcaption>Slide 72</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sb-y">Test period starts in: <b id="sb-y-v"></b></label><input type="range" id="sb-y" min="2008" max="2020" step="1" value="2008"></div><button class="btn play" id="sb-play" type="button"></button></div><div class="charts "><div class="chart" id="sb-chart"></div></div><div class="tbl c9t" id="sb-tb"></div><ul class="out" id="sb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Start the test period in 2016. What is the largest AUC?</div>
+  <details><summary>Answer</summary><p>0.541, the smallest 0.507; the up days are 54.6% (S&P 500) and 55.7% (BET). AUC stays close to 0.5.</p></details>
+</section>
+<section class="blk" id="sign">
+  <h3>Accuracy against the baseline</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=74" target="_blank" rel="noopener"><img src="slides/tsa_ch9_sign_en.jpg" alt="Slide 73: Accuracy against the baseline" loading="lazy"></a>
+      <figcaption>Slide 73</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="si-t">Decision threshold: “up” if the probability ≥ threshold: <b id="si-t-v"></b></label><input type="range" id="si-t" min="0.4" max="0.6" step="0.01" value="0.5"></div><button class="btn play" id="si-play" type="button"></button></div><div class="charts "><div class="chart" id="si-chart"></div></div><ul class="out" id="si-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Raise the threshold to 0.55. What accuracy does GB reach on the S&P 500?</div>
+  <details><summary>Answer</summary><p>49.3%, below the 54.4% baseline: with the higher threshold the model forecasts “up” on only 40.4% of the days, while the market rises on 54.4% of them.</p></details>
+</section><h2 class="sec" id="s-case">Landmark case studies: M4, M5 and Gu, Kelly and Xiu</h2>
+<section class="blk" id="m4">
+  <h3>M4: the accuracy of all methods</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=78" target="_blank" rel="noopener"><img src="slides/tsa_ch9_m4_en.jpg" alt="Slide 77: M4: the accuracy of all methods" loading="lazy"></a>
+      <figcaption>Slide 77</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="m4-w">Weight of sMAPE in OWA (lecture: 0.5): <b id="m4-w-v"></b></label><input type="range" id="m4-w" min="0" max="1" step="0.1" value="0.5"></div><button class="btn play" id="m4-play" type="button"></button></div><div class="charts "><div class="chart" id="m4-chart"></div></div><ul class="out" id="m4-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the weight of sMAPE to 1 (OWA from sMAPE only). Where does Comb rank?</div>
+  <details><summary>Answer</summary><p>23rd (OWA 0.926), against 19th; the winner is still method 118, a hybrid, with 0.839, and the best pure ML method falls to rank 27.</p></details>
+</section>
+<section class="blk" id="gkx">
+  <h3>Gu, Kelly and Xiu (2020): small R², large economic value</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter9_machine_learning_time_series.pdf#page=82" target="_blank" rel="noopener"><img src="slides/tsa_ch9_gkx_en.jpg" alt="Slide 81: Gu, Kelly and Xiu (2020): small R², large economic value" loading="lazy"></a>
+      <figcaption>Slide 81</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gk-m">Model marked</label><select id="gk-m"><option value="OLS-3+H">OLS-3+H</option><option value="PLS">PLS</option><option value="PCR">PCR</option><option value="ENet+H">ENet+H</option><option value="GLM+H">GLM+H</option><option value="RF">RF</option><option value="GBRT+H">GBRT+H</option><option value="NN1">NN1</option><option value="NN2">NN2</option><option value="NN3">NN3</option><option value="NN4" selected>NN4</option><option value="NN5">NN5</option></select></div><button class="btn play" id="gk-play" type="button"></button></div><div class="charts "><div class="chart" id="gk-chart"></div></div><ul class="out" id="gk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> How many times larger is the Sharpe ratio of NN4 than that of OLS-3+H?</div>
+  <details><summary>Answer</summary><p>1.35/0.61 = 2.21 times, with a monthly R² of only 0.39%: a small predictability, used on thousands of stocks and months, supports a valuable portfolio.</p></details>
+</section>
+<p class="src foot">Daily mean electricity load of Romania (ENTSO-E, the extract of Chapter 4, 1 January 2022 – 30 June 2026). Daily S&P 500, DAX and BET prices (data/market, up to 18 September 2026). The Romanian HICP index (Eurostat prc_hicp_minr), read with the chapter’s loader on 4 November 2026 and cut at August 2026, the last month of the slides; it reproduces the numbers of the lecture exactly. The official M4 evaluation file (ch9_m4_owa.csv) and the published numbers of Gu, Kelly and Xiu (2020). The walk-forward forecasts of the models (ch9_load_ml.csv, ch9_inflation.csv, ch4_load_cv.csv) and the estimates that need the models to be retrained (random forest, gradient boosting, MLP, LSTM, lasso) are those of the chapter code, with the same seed; the browser recomputes the lag tables, the correlations, the regression trees, MASE, the Diebold–Mariano tests, the coverage of the intervals, RMSE, QLIKE, accuracy and AUC. Variants that do not appear in the lecture (another horizon, another noise level, another sample end, another interval level, another threshold) are extra runs of the chapter code with the same data and seed; the AR(1) models of the strategies block and the approximation of tanh by ReLU neurons are extra computations made in the browser.</p>
+</main>
+</body>
+</html>
