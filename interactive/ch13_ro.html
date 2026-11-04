@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 13 · Bule speculative și modele LPPL</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch13.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch13_data.js?v=20261101a", "ch13_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch13.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index_ro.html">Serii de timp</a></h1><p>Capitolul 13 · Bule speculative și modele LPPL</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_13" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch13.html" class="lang-btn">EN</a><a href="ch13_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură sau același tabel, calculat în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas; casetele „Exemplu rezolvat” refac calculul cu cifrele capitolului.</p>
+<p class="toc"><a href="#s-hi">Bule în istorie</a> · <a href="#s-rb">Bule raționale și rădăcini explozive</a> · <a href="#s-lp">Modelul LPPL</a> · <a href="#s-es">Estimarea</a> · <a href="#s-cf">Încrederea obținută din multe ferestre</a> · <a href="#s-ev">O evaluare riguroasă a prognozei crahurilor</a></p>
+<h2 class="sec" id="s-hi">Bule în istorie</h2>
+<section class="blk" id="episodes">
+  <h3>Șase creșteri și crahuri în datele cursului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=10" target="_blank" rel="noopener"><img src="slides/tsa_ch13_episodes_ro.jpg" alt="Slide-ul 9: Șase creșteri și crahuri în datele cursului" loading="lazy"></a>
+      <figcaption>Slide-ul 9</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ep-h">Orizontul scăderii după maximum</label><select id="ep-h"><option value="3">3 luni</option><option value="6">6 luni</option><option value="9">9 luni</option><option value="12" selected>12 luni (curs)</option><option value="18">18 luni</option></select></div><button class="btn play" id="ep-play" type="button"></button></div><style>.c13x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c13x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c13x .c13f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c13x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c13x li{margin:.18rem 0;overflow-wrap:anywhere}.c13x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c13t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c13t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c13t th,.c13t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c13t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c13t tbody tr:nth-child(even){background:#F5F7FB}.c13t tbody tr.hi{background:#E3F4F7}.c13t .r{text-align:right}.c13t .c{text-align:center}.c13cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="ep-chart"></div></div><ul class="out" id="ep-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți orizontul la 3 luni. Care episod are cea mai mare scădere în primele 3 luni după maximum?</div>
+  <details><summary>Răspuns</summary><p>Bitcoin, 2017: cea mai mică închidere din primele 91 de zile este cu 64% sub maximul din 16 decembrie 2017; urmează Bitcoin 2021 (50%), Shanghai (43%) și Nasdaq 100 (36%), iar S&P 500 scade doar cu 11%. La 12 luni ordinea rămîne aproape aceeași, dar S&P 500 ajunge la 27% și Nasdaq 100 la 66%: o parte din cădere vine încet.</p></details>
+</section>
+<section class="blk" id="t-ep">
+  <h3>Interpretarea celor șase episoade</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=11" target="_blank" rel="noopener"><img src="slides/ch13x_t-ep_ro.jpg" alt="Slide-ul 10: Interpretarea celor șase episoade" loading="lazy"></a>
+      <figcaption>Slide-ul 10</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="te-h">Orizontul scăderii după maximum</label><select id="te-h"><option value="3">3 luni</option><option value="6">6 luni</option><option value="9">9 luni</option><option value="12" selected>12 luni (curs)</option><option value="18">18 luni</option></select></div><button class="btn play" id="te-play" type="button"></button></div><div class="charts "><div class="chart" id="te-chart"></div></div><div class="c13x"><div class="wctl"><div class="ctl"><label for="te-f">Scăderea</label><select id="te-f"><option value="min" selected>cea mai mică închidere din orizont (curs)</option><option value="end">închiderea de la sfîrșitul orizontului</option></select></div></div><div class="tbl c13t" id="te-tb"></div></div><ul class="out" id="te-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți „închiderea de la sfîrșitul orizontului” și 18 luni. Cît de jos este atunci Shanghai Composite față de maximul din 12 iunie 2015?</div>
+  <details><summary>Răspuns</summary><p>Cu 37% sub maximum, mai puțin decît scăderea maximă de 49% din aceleași 18 luni: după minimul din ianuarie 2016 prețul a revenit parțial. Cele două măsuri răspund la întrebări diferite: cît de mare a fost căderea și unde a rămas prețul.</p></details>
+</section><h2 class="sec" id="s-rb">Bule raționale și rădăcini explozive</h2>
+<section class="blk" id="wx-bw">
+  <h3>Exemplu rezolvat: o bulă care se poate sparge</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=14" target="_blank" rel="noopener"><img src="slides/ch13x_wx-bw_ro.jpg" alt="Slide-ul 13: Exemplu rezolvat: o bulă care se poate sparge" loading="lazy"></a>
+      <figcaption>Slide-ul 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wb-r">Rata r (curs: 2%): <b id="wb-r-v"></b></label><input type="range" id="wb-r" min="0" max="0.05" step="0.005" value="0.02"></div><div class="ctl"><label for="wb-p">Probabilitatea de supraviețuire π (curs: 0,98): <b id="wb-p-v"></b></label><input type="range" id="wb-p" min="0.9" max="0.99" step="0.01" value="0.98"></div><button class="btn play" id="wb-play" type="button"></button></div><div class="charts "><div class="chart" id="wb-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wb-k">Numărul de perioade k din calcul: <b id="wb-k-v"></b></label><input type="range" id="wb-k" min="1" max="100" step="1" value="34"></div></div><div class="c13f">\[\begin{gathered}E_t[B_{t+1}]=\pi\cdot\frac{1+r}{\pi}B_t+(1-\pi)\cdot 0=(1+r)B_t\\ E[\text{lifetime}]=\frac{1}{1-\pi},\qquad P(\text{survives }k\text{ periods})=\pi^k\end{gathered}\]</div><ol id="wb-ws"></ol></div><ul class="out" id="wb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți π = 0,90 (cu r = 2%). Cu cît crește bula într-o perioadă în care supraviețuiește?</div>
+  <details><summary>Răspuns</summary><p>Cu 1,02/0,90 − 1 = 13,3% pe perioadă, față de 4,08% pentru π = 0,98: cu cît spargerea este mai probabilă, cu atît creșterea pe perioadele de supraviețuire trebuie să fie mai mare, ca media să rămînă 1 + r. Durata medie de viață scade la 1/(1 − 0,90) = 10 perioade.</p></details>
+</section>
+<section class="blk" id="rational">
+  <h3>O bulă rațională simulată și trei rădăcini AR(1)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=15" target="_blank" rel="noopener"><img src="slides/tsa_ch13_rational_ro.jpg" alt="Slide-ul 14: O bulă rațională simulată și trei rădăcini AR(1)" loading="lazy"></a>
+      <figcaption>Slide-ul 14</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ra-r">Rata r; AR(1) exploziv din dreapta are ρ = 1 + r (curs: 2%): <b id="ra-r-v"></b></label><input type="range" id="ra-r" min="0" max="0.04" step="0.0025" value="0.02"></div><div class="ctl"><label for="ra-p">Probabilitatea de supraviețuire π (curs: 0,98): <b id="ra-p-v"></b></label><input type="range" id="ra-p" min="0.9" max="0.99" step="0.01" value="0.98"></div><button class="btn play" id="ra-play" type="button"></button></div><div class="charts "><div class="chart" id="ra-chart"></div></div><ul class="out" id="ra-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește r. Cu r = 4%, AR(1) exploziv are ρ = 1,04. De cîte ori crește un șoc după 100 de perioade?</div>
+  <details><summary>Răspuns</summary><p>De 1,04¹⁰⁰ = 50,5 ori, față de 1,02¹⁰⁰ = 7,24: factorul crește exponențial cu numărul de perioade, deci dublarea ratei îl ridică la puterea a doua (7,24² ≈ 52, aproape de 50,5). Un șoc se dublează acum în 17,7 perioade, nu în 35.</p></details>
+</section>
+<section class="blk" id="wx-sadf">
+  <h3>SADF, GSADF și BSADF (1/2)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=18" target="_blank" rel="noopener"><img src="slides/ch13x_wx-sadf_ro.jpg" alt="Slide-ul 17: SADF, GSADF și BSADF (1/2)" loading="lazy"></a>
+      <figcaption>Slide-ul 17</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ws-e">Sfîrșitul r<sub>2</sub> al ferestrei (curs: întreg eșantionul): <b id="ws-e-v"></b></label><input type="range" id="ws-e" min="57" max="781" step="1" value="781"></div><div class="ctl"><label for="ws-m">Statistica</label><select id="ws-m"><option value="s" selected>SADF: începutul fixat</option><option value="g">GSADF: începutul se mișcă</option></select></div><button class="btn play" id="ws-play" type="button"></button></div><div class="charts "><div class="chart" id="ws-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="c13f">\[\begin{gathered}\mathrm{SADF}=\sup_{r_2\in[r_0,1]}\mathrm{ADF}_0^{r_2},\qquad \mathrm{GSADF}=\sup_{r_2\in[r_0,1]}\ \sup_{r_1\in[0,r_2-r_0]}\mathrm{ADF}_{r_1}^{r_2}\\ r_0=0.01+1.8/\sqrt T\end{gathered}\]</div><ol id="ws-ws"></ol></div><ul class="out" id="ws-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ mută sfîrșitul r₂. Cînd depășește statistica ADF pe fereastra [0, r₂] prima dată valoarea critică de 95% a SADF (1,48)?</div>
+  <details><summary>Răspuns</summary><p>În săptămîna 8 ianuarie 1999, cu peste un an înainte de maximul din martie 2000; SADF ajunge la 2,72. Testul ADF pe tot eșantionul (−1,27) nu respinge, pentru că prăbușirea din 2000–2002 trage statistica întregului eșantion în jos; supremumul pe ferestre evită această problemă.</p></details>
+</section>
+<section class="blk" id="wx-bsadf">
+  <h3>SADF, GSADF și BSADF (2/2)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=19" target="_blank" rel="noopener"><img src="slides/ch13x_wx-bsadf_ro.jpg" alt="Slide-ul 18: SADF, GSADF și BSADF (2/2)" loading="lazy"></a>
+      <figcaption>Slide-ul 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-e">Săptămîna curentă (datele pînă la ea): <b id="wd-e-v"></b></label><input type="range" id="wd-e" min="438" max="598" step="1" value="464"></div><div class="ctl"><label for="wd-c">Nivelul valorilor critice</label><select id="wd-c"><option value="95" selected>95% (curs)</option><option value="90">90%</option><option value="99">99%</option></select></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wd-l">Lungimea minimă a unui episod (săptămîni; curs: 7): <b id="wd-l-v"></b></label><input type="range" id="wd-l" min="1" max="20" step="1" value="7"></div></div><div class="c13f">\[\begin{gathered}\mathrm{BSADF}(r_2)=\sup_{r_1\in[0,r_2-r_0]}\mathrm{ADF}_{r_1}^{r_2}\\ \text{episode: }\mathrm{BSADF}(r_2)>cv(r_2)\ \text{for at least }\log T\text{ observations}\end{gathered}\]</div><ol id="wd-ws"></ol></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Episodul din 1998 începe pe 23 octombrie 1998. În ce săptămînă devine el un episod datat, cu 7 săptămîni peste valoarea critică?</div>
+  <details><summary>Răspuns</summary><p>Pe 4 decembrie 1998, a șaptea săptămînă la rînd peste valoarea critică: în timp real, regula lungimii minime confirmă un episod abia după log T ≈ 7 săptămîni, deși data lui de început rămîne 23 octombrie 1998. Sfîrșitul episodului (3 noiembrie 2000) se cunoaște și mai tîrziu.</p></details>
+</section>
+<section class="blk" id="wx-adf">
+  <h3>Exemplu rezolvat: o fereastră din Nasdaq 100</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=20" target="_blank" rel="noopener"><img src="slides/ch13x_wx-adf_ro.jpg" alt="Slide-ul 19: Exemplu rezolvat: o fereastră din Nasdaq 100" loading="lazy"></a>
+      <figcaption>Slide-ul 19</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wa-e">Sfîrșitul ferestrei r<sub>2</sub> (curs: 24 martie 2000): <b id="wa-e-v"></b></label><input type="range" id="wa-e" min="57" max="781" step="1" value="532"></div><button class="btn play" id="wa-play" type="button"></button></div><div class="charts "><div class="chart" id="wa-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wa-s">Începutul ferestrei</label><select id="wa-s"><option value="best" selected>cel cu statistica cea mai mare (curs)</option><option value="first">prima săptămînă (fereastra SADF)</option><option value="short">fereastra minimă, 58 de săptămîni</option></select></div></div><div class="c13f">\[\Delta y_t=a+\delta\,y_{t-1}+\varepsilon_t,\qquad t=\frac{\hat\delta}{\mathrm{SE}(\hat\delta)},\qquad H_0:\ \delta=0\ \text{against}\ H_1:\ \delta>0\]</div><ol id="wa-ws"></ol></div><ul class="out" id="wa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați sfîrșitul ferestrei la 29 decembrie 2000, după prăbușire. Este BSADF încă peste valoarea critică de 95%?</div>
+  <details><summary>Răspuns</summary><p>Nu: BSADF este −0,20, sub valoarea critică 0,53; cea mai mare statistică provine acum din începutul eșantionului (5 ianuarie 1990). Odată ce fereastra include scăderea, prețurile mari nu mai sînt urmate de creșteri mari, iar δ̂ devine negativ pentru orice început.</p></details>
+</section>
+<section class="blk" id="psy-ndx">
+  <h3>Episoadele explozive ale Nasdaq 100, 1990–2004</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=21" target="_blank" rel="noopener"><img src="slides/tsa_ch13_psy_ndx_ro.jpg" alt="Slide-ul 20: Episoadele explozive ale Nasdaq 100, 1990–2004" loading="lazy"></a>
+      <figcaption>Slide-ul 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pn-l">Lungimea minimă a unui episod (săptămîni; curs: 7): <b id="pn-l-v"></b></label><input type="range" id="pn-l" min="1" max="20" step="1" value="7"></div><div class="ctl"><label for="pn-c">Nivelul valorilor critice</label><select id="pn-c"><option value="95" selected>95% (curs)</option><option value="90">90%</option><option value="99">99%</option></select></div><button class="btn play" id="pn-play" type="button"></button></div><div class="charts "><div class="chart" id="pn-chart"></div></div><ul class="out" id="pn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește lungimea minimă a unui episod. La 20 de săptămîni, cîte episoade rămîn?</div>
+  <details><summary>Răspuns</summary><p>3: cele din septembrie 1996 – martie 1997 (26 de săptămîni), mai – decembrie 1997 (32) și octombrie 1998 – noiembrie 2000 (107). Episoadele scurte din 1995 și 1998 dispar; cu lungimea 1 BSADF ar data 17 episoade, multe de o săptămînă.</p></details>
+</section>
+<section class="blk" id="t-ndx">
+  <h3>Interpretarea testelor pentru Nasdaq 100</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=22" target="_blank" rel="noopener"><img src="slides/ch13x_t-ndx_ro.jpg" alt="Slide-ul 21: Interpretarea testelor pentru Nasdaq 100" loading="lazy"></a>
+      <figcaption>Slide-ul 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tn-c">Nivelul valorilor critice</label><select id="tn-c"><option value="95" selected>95% (curs)</option><option value="90">90%</option><option value="99">99%</option></select></div><button class="btn play" id="tn-play" type="button"></button></div><div class="charts "><div class="chart" id="tn-chart"></div></div><div class="c13x"><div class="wctl"><div class="ctl"><label for="tn-l">Lungimea minimă a unui episod (săptămîni; curs: 7): <b id="tn-l-v"></b></label><input type="range" id="tn-l" min="1" max="20" step="1" value="7"></div></div><div class="tbl c13t" id="tn-tb"></div><div class="tbl c13t" id="tn-tb2"></div></div><ul class="out" id="tn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți la nivelul de 99%. Cîte episoade de cel puțin 7 săptămîni datează BSADF?</div>
+  <details><summary>Răspuns</summary><p>3: iulie – septembrie 1997, noiembrie 1998 – iulie 1999 și august 1999 – aprilie 2000. Cu valori critice mai mari, episodul lung din 1998–2000 se rupe în două și se termină în aprilie 2000, la o lună după maximum, nu în noiembrie 2000. SADF (2,72) și GSADF (2,92) rămîn peste valorile critice de 99% (1,92 și 2,86).</p></details>
+</section>
+<section class="blk" id="psy-panel">
+  <h3>Bitcoin, BET și Shanghai: episoade datate</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=23" target="_blank" rel="noopener"><img src="slides/tsa_ch13_psy_panel_ro.jpg" alt="Slide-ul 22: Bitcoin, BET și Shanghai: episoade datate" loading="lazy"></a>
+      <figcaption>Slide-ul 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pp-s">Partea din eșantion observată pînă acum (curs: 100%): <b id="pp-s-v"></b></label><input type="range" id="pp-s" min="0.3" max="1" step="0.05" value="1"></div><div class="ctl"><label for="pp-l">Lungimea minimă a unui episod (săptămîni; curs: 6): <b id="pp-l-v"></b></label><input type="range" id="pp-l" min="1" max="20" step="1" value="6"></div><div class="ctl"><label for="pp-c">Nivelul valorilor critice</label><select id="pp-c"><option value="95" selected>95% (curs)</option><option value="90">90%</option><option value="99">99%</option></select></div><button class="btn play" id="pp-play" type="button"></button></div><div class="charts "><div class="chart" id="pp-chart"></div></div><ul class="out" id="pp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu primele 60% din eșantionul Shanghai (date pînă la 22 mai 2015, înainte de maximul din 12 iunie), este episodul 2014–2015 deja datat?</div>
+  <details><summary>Răspuns</summary><p>Da: BSADF este peste valoarea critică din 28 noiembrie 2014, de 26 de săptămîni la rînd, deci episodul este datat și încă în desfășurare. BSADF folosește doar datele pînă la fiecare dată, deci datarea începutului este posibilă în timp real; sfîrșitul (26 iunie 2015) apare doar după maximum.</p></details>
+</section>
+<section class="blk" id="t-psy">
+  <h3>Interpretarea celor trei piețe</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=24" target="_blank" rel="noopener"><img src="slides/ch13x_t-psy_ro.jpg" alt="Slide-ul 23: Interpretarea celor trei piețe" loading="lazy"></a>
+      <figcaption>Slide-ul 23</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ts-c">Nivelul valorilor critice</label><select id="ts-c"><option value="95" selected>95% (curs)</option><option value="90">90%</option><option value="99">99%</option></select></div><button class="btn play" id="ts-play" type="button"></button></div><div class="charts "><div class="chart" id="ts-chart"></div></div><div class="c13x"><div class="wctl"><div class="ctl"><label for="ts-l">Lungimea minimă a unui episod (săptămîni; curs: 6): <b id="ts-l-v"></b></label><input type="range" id="ts-l" min="1" max="20" step="1" value="6"></div></div><div class="tbl c13t" id="ts-tb"></div></div><ul class="out" id="ts-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți la 99%. Respinge GSADF rădăcina unitară pentru toate cele trei piețe?</div>
+  <details><summary>Răspuns</summary><p>Da: Bitcoin 3,85 față de 2,63, BET 3,53 față de 2,86, Shanghai 3,46 față de 2,60. Episoadele datate se schimbă totuși: la BET rămîn cinci episoade scurte, iar la Bitcoin doar faza din 2017, ruptă în două.</p></details>
+</section><h2 class="sec" id="s-lp">Modelul LPPL</h2>
+<section class="blk" id="growth">
+  <h3>Creștere exponențială și creștere superexponențială</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=29" target="_blank" rel="noopener"><img src="slides/tsa_ch13_growth_ro.jpg" alt="Slide-ul 28: Creștere exponențială și creștere superexponențială" loading="lazy"></a>
+      <figcaption>Slide-ul 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gr-m">Exponentul m (curs: 0,5): <b id="gr-m-v"></b></label><input type="range" id="gr-m" min="0.1" max="0.9" step="0.05" value="0.5"></div><div class="ctl"><label for="gr-w">Frecvența ω a curbei LPPL (curs: 8): <b id="gr-w-v"></b></label><input type="range" id="gr-w" min="4" max="16" step="1" value="8"></div><button class="btn play" id="gr-play" type="button"></button></div><div class="charts "><div class="chart" id="gr-chart"></div></div><ul class="out" id="gr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ schimbă m. Cu m = 0,2, cît este ritmul de creștere al singularității chiar înainte de t<sub>c</sub>?</div>
+  <details><summary>Răspuns</summary><p>5,52, față de 3,98 pentru m = 0,5, deși la început ritmul este doar 0,20 (față de 0,50): un m mic ține creșterea plată multă vreme și o concentrează aproape de t<sub>c</sub>. Ritmul exponențial rămîne 0,8 pe tot drumul.</p></details>
+</section>
+<section class="blk" id="wx-lam">
+  <h3>Oscilațiile log-periodice</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=34" target="_blank" rel="noopener"><img src="slides/ch13x_wx-lam_ro.jpg" alt="Slide-ul 33: Oscilațiile log-periodice" loading="lazy"></a>
+      <figcaption>Slide-ul 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wl-w">Frecvența ω (curs: 8): <b id="wl-w-v"></b></label><input type="range" id="wl-w" min="2" max="25" step="0.5" value="8"></div><button class="btn play" id="wl-play" type="button"></button></div><div class="charts "><div class="chart" id="wl-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wl-d">Prima corecție: zile înainte de t<sub>c</sub> (curs: 200): <b id="wl-d-v"></b></label><input type="range" id="wl-d" min="50" max="400" step="10" value="200"></div></div><div class="c13f">\[\frac{t_c-t_n}{t_c-t_{n+1}}=\lambda=e^{2\pi/\omega},\qquad t_c-t_{n+k}=\frac{t_c-t_n}{\lambda^{k}}\]</div><ol id="wl-ws"></ol></div><ul class="out" id="wl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți ω = 4. Cu ce factor λ se micșorează timpul rămas pînă la t<sub>c</sub> de la o corecție la următoarea?</div>
+  <details><summary>Răspuns</summary><p>λ = e<sup>2π/4</sup> = 4,81: o corecție cu 200 de zile înainte de t<sub>c</sub> este urmată de una cu 42 de zile înainte, apoi cu 9. Un ω mic dă cicluri puține și rare; pentru ω = 8 factorul este 2,19.</p></details>
+</section>
+<section class="blk" id="components">
+  <h3>Componentele ecuației LPPL</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=35" target="_blank" rel="noopener"><img src="slides/tsa_ch13_lppl_components_ro.jpg" alt="Slide-ul 34: Componentele ecuației LPPL" loading="lazy"></a>
+      <figcaption>Slide-ul 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cm-m">Exponentul m (curs: 0,5 în mijloc și în dreapta): <b id="cm-m-v"></b></label><input type="range" id="cm-m" min="0.1" max="0.9" step="0.05" value="0.5"></div><div class="ctl"><label for="cm-w">Frecvența ω a curbei din dreapta (curs: 8): <b id="cm-w-v"></b></label><input type="range" id="cm-w" min="2" max="20" step="1" value="8"></div><div class="ctl"><label for="cm-c">Raportul C/|B| (curs: 0,08): <b id="cm-c-v"></b></label><input type="range" id="cm-c" min="0" max="0.2" step="0.01" value="0.08"></div><button class="btn play" id="cm-play" type="button"></button></div><div class="charts "><div class="chart" id="cm-chart"></div></div><ul class="out" id="cm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Trece curba din dreapta (m = 0,5, ω = 8, C/|B| = 0,08) de condiția de amortizare m|B|/(ω|C|) ≥ 1 a filtrului?</div>
+  <details><summary>Răspuns</summary><p>Nu: 0,5/(8 · 0,08) = 0,78 &lt; 1. Deși |C| este mult mai mic decît |B|, termenul oscilant se înmulțește cu ω în derivată, iar cu ω = 8 oscilațiile ar face rata de hazard negativă în unele momente; condiția trece doar pentru C/|B| ≤ 0,0625 la m = 0,5 și ω = 8.</p></details>
+</section>
+<section class="blk" id="wx-lppl">
+  <h3>Exemplu rezolvat: o valoare LPPL calculată de mînă</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=37" target="_blank" rel="noopener"><img src="slides/ch13x_wx-lppl_ro.jpg" alt="Slide-ul 36: Exemplu rezolvat: o valoare LPPL calculată de mînă" loading="lazy"></a>
+      <figcaption>Slide-ul 36</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wp-m">Exponentul m (curs: 0,5): <b id="wp-m-v"></b></label><input type="range" id="wp-m" min="0.1" max="0.9" step="0.05" value="0.5"></div><div class="ctl"><label for="wp-w">Frecvența ω (curs: 8): <b id="wp-w-v"></b></label><input type="range" id="wp-w" min="2" max="20" step="1" value="8"></div><button class="btn play" id="wp-play" type="button"></button></div><div class="charts "><div class="chart" id="wp-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wp-t">Momentul t</label><select id="wp-t"><option value="1" selected>t = 1 (curs)</option><option value="1.75">t = 1,75</option><option value="1.99">t = 1,99</option><option value="0">t = 0</option></select></div></div><div class="c13f">\[\begin{gathered}\ln P(t)=A+B\,(t_c-t)^m+C\,(t_c-t)^m\cos\bigl(\omega\ln(t_c-t)-\phi\bigr)\\ A=8,\ B=-1.2,\ C=0.08,\ \phi=0,\ t_c=2\end{gathered}\]</div><ol id="wp-ws"></ol></div><ul class="out" id="wp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți m = 0,3 (restul ca în exemplu). Cît este P la t = 1,99?</div>
+  <details><summary>Răspuns</summary><p>Aproximativ 2234, față de 2658 pentru m = 0,5: un m mai mic lasă o parte mai mare din creștere pentru ultimele momente dinaintea lui t<sub>c</sub>, unde prețul atinge e<sup>A</sup> = 2981 pentru orice m. La t = 1 prețul este 973 pentru orice m, pentru că acolo t<sub>c</sub> − t = 1.</p></details>
+</section>
+<section class="blk" id="wx-filter">
+  <h3>Restricțiile parametrilor: filtrul</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=38" target="_blank" rel="noopener"><img src="slides/ch13x_wx-filter_ro.jpg" alt="Slide-ul 37: Restricțiile parametrilor: filtrul" loading="lazy"></a>
+      <figcaption>Slide-ul 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wf-e">Ajustarea (30 de zile înainte de maximum)</label><select id="wf-e"><option value="sp500">S&P 500, 2000</option><option value="ndx">Nasdaq 100, 2000</option><option value="bet">BET, 2007</option><option value="ssec" selected>Shanghai Composite, 2015</option><option value="btc17">Bitcoin, 2017</option><option value="btc21">Bitcoin, 2021</option></select></div><button class="btn play" id="wf-play" type="button"></button></div><div class="charts "><div class="chart" id="wf-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="c13f">\[\begin{gathered}B<0,\quad 0.01\le m\le 0.99,\quad 2\le\omega\le 25,\quad t_2\le t_c\le t_2+0.2\,(t_2-t_1)\\ \frac{\omega}{\pi}\ln\frac{t_c-t_1}{t_c-t_2}\ge 2.5,\qquad \frac{m|B|}{\omega|C|}\ge 1\end{gathered}\]</div><ol id="wf-ws"></ol></div><ul class="out" id="wf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ trece prin cele șase ajustări. Cîte au ω în intervalul filtrului, 2 ≤ ω ≤ 25?</div>
+  <details><summary>Răspuns</summary><p>4: S&P 500 și BET se opresc la ω = 1,0, marginea de jos a spațiului de căutare [1, 50]. Spațiul de căutare este mai larg decît filtrul: o ajustare poate avea cel mai mic SSR la o valoare pe care filtrul o respinge.</p></details>
+</section><h2 class="sec" id="s-es">Estimarea</h2>
+<section class="blk" id="cost">
+  <h3>Peisajul funcției de cost</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=42" target="_blank" rel="noopener"><img src="slides/tsa_ch13_cost_ro.jpg" alt="Slide-ul 41: Peisajul funcției de cost" loading="lazy"></a>
+      <figcaption>Slide-ul 41</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="co-w">Limita superioară a lui ω în minimizare (curs: 25): <b id="co-w-v"></b></label><input type="range" id="co-w" min="3" max="25" step="2" value="25"></div><div class="ctl"><label for="co-m">Limita superioară a lui m (curs: 0,99): <b id="co-m-v"></b></label><input type="range" id="co-m" min="0.29" max="0.99" step="0.02" value="0.99"></div><button class="btn play" id="co-play" type="button"></button></div><div class="charts "><div class="chart" id="co-chart"></div></div><ul class="out" id="co-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Limitați ω la intervalul [2, 5]. Unde este minimul global al lui t<sub>c</sub>?</div>
+  <details><summary>Răspuns</summary><p>La 21 iunie 2000, tot după maximul real din 27 martie 2000, cu m = 0,99 și 4 minime locale. Doar la ω ≤ 3 minimul se mută la marginea grilei (25 februarie 2000), cu un raport SSR de 1,49; pentru ω ≤ 7 rezultatul este deja cel din curs (19 iulie 2000).</p></details>
+</section>
+<section class="blk" id="wx-ssec">
+  <h3>Exemplu rezolvat: ajustarea pentru Shanghai la sfîrșitul ferestrei</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=44" target="_blank" rel="noopener"><img src="slides/ch13x_wx-ssec_ro.jpg" alt="Slide-ul 43: Exemplu rezolvat: ajustarea pentru Shanghai la sfîrșitul ferestrei" loading="lazy"></a>
+      <figcaption>Slide-ul 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wx-s">t<sub>c</sub> minus estimarea (zile; curs: 0): <b id="wx-s-v"></b></label><input type="range" id="wx-s" min="-30" max="60" step="2" value="0"></div><div class="ctl"><label for="wx-m">Exponentul m (curs: estimarea 0,392): <b id="wx-m-v"></b></label><input type="range" id="wx-m" min="0.2" max="0.8" step="any" value="0.39188098679015876"></div><div class="ctl"><label for="wx-w">Frecvența ω (curs: estimarea 5,50): <b id="wx-w-v"></b></label><input type="range" id="wx-w" min="2" max="12" step="any" value="5.497049635729809"></div><button class="btn play" id="wx-play" type="button"></button></div><div class="charts "><div class="chart" id="wx-chart"></div></div><div class="c13x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wx-t">Data calculului</label><select id="wx-t"><option value="t2" selected>sfîrșitul ferestrei t<sub>2</sub> (curs)</option><option value="mid">mijlocul ferestrei</option><option value="t1">începutul ferestrei t<sub>1</sub></option></select></div></div><div class="c13f">\[\begin{gathered}\ln P(t)=A+B f_t+C_1 g_t+C_2 h_t,\qquad \tau=t_c-t\\ f_t=\tau^m,\quad g_t=\tau^m\cos(\omega\ln\tau),\quad h_t=\tau^m\sin(\omega\ln\tau)\end{gathered}\]</div><ol id="wx-ws"></ol></div><ul class="out" id="wx-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați t<sub>c</sub> cu 30 de zile mai tîrziu, cu m și ω fixate. Cu cît crește SSR?</div>
+  <details><summary>Răspuns</summary><p>Cu aproximativ 55%. Cu m și ω fixate, SSR are o vale îngustă în jurul estimării (+11% la 10 zile); peisajul din „Peisajul funcției de cost” este plat pentru că acolo m și ω se reestimează pentru fiecare t<sub>c</sub> și compensează mutarea.</p></details>
+</section>
+<section class="blk" id="fits">
+  <h3>Ajustări LPPL cu 30 de zile înainte de maximum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=45" target="_blank" rel="noopener"><img src="slides/tsa_ch13_fits_ro.jpg" alt="Slide-ul 44: Ajustări LPPL cu 30 de zile înainte de maximum" loading="lazy"></a>
+      <figcaption>Slide-ul 44</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fi-l">Sfîrșitul ferestrei: zile înainte de maximum</label><select id="fi-l"><option value="90">90 de zile</option><option value="75">75 de zile</option><option value="60">60 de zile</option><option value="45">45 de zile</option><option value="30" selected>30 de zile (curs)</option><option value="15">15 zile</option><option value="0">0 zile (la maximum)</option></select></div><button class="btn play" id="fi-play" type="button"></button></div><div class="charts "><div class="chart" id="fi-chart"></div></div><ul class="out" id="fi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați sfîrșitul ferestrei la maximum (0 zile). Care ajustări trec de tot filtrul?</div>
+  <details><summary>Răspuns</summary><p>Doar Shanghai, cu t̂<sub>c</sub> la 11 zile după maximum. S&P 500 și Nasdaq 100 rămîn la m = 1 și la limita superioară a căutării (190 și 178 de zile după maximum); nici datele pînă la maximum nu fac din creșterea lor una superexponențială.</p></details>
+</section>
+<section class="blk" id="t-fits">
+  <h3>Interpretarea celor șase ajustări</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=46" target="_blank" rel="noopener"><img src="slides/ch13x_t-fits_ro.jpg" alt="Slide-ul 45: Interpretarea celor șase ajustări" loading="lazy"></a>
+      <figcaption>Slide-ul 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tf-l">Sfîrșitul ferestrei: zile înainte de maximum</label><select id="tf-l"><option value="90">90 de zile</option><option value="75">75 de zile</option><option value="60">60 de zile</option><option value="45">45 de zile</option><option value="30" selected>30 de zile (curs)</option><option value="15">15 zile</option><option value="0">0 zile (la maximum)</option></select></div><button class="btn play" id="tf-play" type="button"></button></div><div class="charts "><div class="chart" id="tf-chart"></div></div><div class="c13x"><div class="wctl"><div class="ctl"><label for="tf-v">Coloanele tabelului</label><select id="tf-v"><option value="p" selected>estimările (curs)</option><option value="c">fiecare condiție a filtrului</option></select></div></div><div class="tbl c13t" id="tf-tb"></div></div><ul class="out" id="tf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> La 90 de zile înainte de maximum, cîte dintre cele șase ajustări trec de condițiile asupra parametrilor?</div>
+  <details><summary>Răspuns</summary><p>Una, Bitcoin 2017; Shanghai, singura calificată la 30 de zile, nu trece cu 90 de zile înainte. Calificarea unei ajustări depinde de data de sfîrșit a ferestrei, de aceea indicatorul folosește multe ferestre.</p></details>
+</section><h2 class="sec" id="s-cf">Încrederea obținută din multe ferestre</h2>
+<section class="blk" id="windows">
+  <h3>Multe ferestre, o singură dată de sfîrșit</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch13_windows_ro.jpg" alt="Slide-ul 48: Multe ferestre, o singură dată de sfîrșit" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wi-f">Limita condiției asupra lui t<sub>c</sub>: t<sub>2</sub> + f (t<sub>2</sub> − t<sub>1</sub>), f (curs: 0,2): <b id="wi-f-v"></b></label><input type="range" id="wi-f" min="0.05" max="0.33" step="0.01" value="0.2"></div><div class="ctl"><label for="wi-m">Limita superioară a lui m în filtru (curs: 0,99): <b id="wi-m-v"></b></label><input type="range" id="wi-m" min="0.5" max="0.99" step="0.01" value="0.99"></div><button class="btn play" id="wi-play" type="button"></button></div><div class="charts "><div class="chart" id="wi-chart"></div></div><ul class="out" id="wi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați limita condiției asupra lui t<sub>c</sub> la 0,33, marginea spațiului de căutare. Cîte ferestre Nasdaq 100 trec de condițiile asupra parametrilor?</div>
+  <details><summary>Răspuns</summary><p>12 din 29, față de 11 cu limita 0,2; la Shanghai 7 față de 5. Pentru Nasdaq 100 condiția care elimină cele mai multe ferestre este cea asupra lui m (doar 69% o îndeplinesc), nu cea asupra lui t<sub>c</sub>.</p></details>
+</section>
+<section class="blk" id="t-win">
+  <h3>Interpretarea ferestrelor</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=50" target="_blank" rel="noopener"><img src="slides/ch13x_t-win_ro.jpg" alt="Slide-ul 49: Interpretarea ferestrelor" loading="lazy"></a>
+      <figcaption>Slide-ul 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tw-L">Cea mai scurtă fereastră inclusă (observații; curs: 50): <b id="tw-L-v"></b></label><input type="range" id="tw-L" min="50" max="500" step="25" value="50"></div><button class="btn play" id="tw-play" type="button"></button></div><div class="charts "><div class="chart" id="tw-chart"></div></div><div class="c13x"><div class="wctl"><div class="ctl"><label for="tw-q">Cuantilele lui t<sub>c</sub> din tabel</label><select id="tw-q"><option value="q" selected>ajustările care trec de condițiile asupra parametrilor (curs)</option><option value="all">toate ajustările</option></select></div></div><div class="tbl c13t" id="tw-tb"></div></div><ul class="out" id="tw-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Păstrați doar ferestrele de cel puțin 400 de observații. Ce pondere din ferestrele Shanghai trec de condiția asupra lui m?</div>
+  <details><summary>Răspuns</summary><p>13% (2 din 15), față de 41% pe toate cele 29: în 13 dintre cele 15 ferestre lungi, ajustarea Shanghai pune m la o margine a spațiului de căutare (0,001 sau 0,999). La Nasdaq 100 toate ferestrele lungi trec de această condiție.</p></details>
+</section>
+<section class="blk" id="ci">
+  <h3>Indicatorul în jurul a patru maxime</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=51" target="_blank" rel="noopener"><img src="slides/tsa_ch13_ci_ro.jpg" alt="Slide-ul 50: Indicatorul în jurul a patru maxime" loading="lazy"></a>
+      <figcaption>Slide-ul 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="c1-c">Pragul alarmei c (curs: 0,2): <b id="c1-c-v"></b></label><input type="range" id="c1-c" min="0.05" max="0.6" step="0.05" value="0.2"></div><button class="btn play" id="c1-play" type="button"></button></div><div class="charts "><div class="chart" id="c1-chart"></div></div><ul class="out" id="c1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați pragul alarmei la 0,3. Dă Shanghai vreo alarmă înainte de maximul din 12 iunie 2015?</div>
+  <details><summary>Răspuns</summary><p>Nu: versiunea pe parametri atinge cel mult 0,28 (22 aprilie 2015). Cu pragul 0,2 apar 4 date cu alarmă înainte de maximum, din 15 aprilie 2015; pragul fixat dinainte decide dacă un semnal slab devine alarmă.</p></details>
+</section>
+<section class="blk" id="ci-b">
+  <h3>Indicatorul în jurul a patru maxime</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=52" target="_blank" rel="noopener"><img src="slides/tsa_ch13_ci_b_ro.jpg" alt="Slide-ul 51: Indicatorul în jurul a patru maxime" loading="lazy"></a>
+      <figcaption>Slide-ul 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="c2-c">Pragul alarmei c (curs: 0,2): <b id="c2-c-v"></b></label><input type="range" id="c2-c" min="0.05" max="0.6" step="0.05" value="0.2"></div><button class="btn play" id="c2-play" type="button"></button></div><div class="charts "><div class="chart" id="c2-chart"></div></div><ul class="out" id="c2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cu pragul 0,5, cînd apare prima alarmă Bitcoin înainte de maximul din 16 decembrie 2017?</div>
+  <details><summary>Răspuns</summary><p>Pe 3 noiembrie 2017, cu șase săptămîni înainte de maximum (încă o dată pe 8 decembrie). Valoarea cea mai mare, 0,66, vine pe 29 decembrie 2017, după maximum: ea descrie creșterea deja încheiată.</p></details>
+</section>
+<section class="blk" id="tc-path">
+  <h3>Timpul critic se mută odată cu datele</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=54" target="_blank" rel="noopener"><img src="slides/tsa_ch13_tc_path_ro.jpg" alt="Slide-ul 53: Timpul critic se mută odată cu datele" loading="lazy"></a>
+      <figcaption>Slide-ul 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tp-k">Data de sfîrșit aleasă (a k-a dintre cele 38 Nasdaq / 39 Bitcoin): <b id="tp-k-v"></b></label><input type="range" id="tp-k" min="1" max="39" step="1" value="39"></div><button class="btn play" id="tp-play" type="button"></button></div><div class="charts "><div class="chart" id="tp-chart"></div></div><ul class="out" id="tp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Cîte dintre cele 38 de estimări Nasdaq 100 ale lui t<sub>c</sub> stau la limita superioară a căutării, t₂ + (t₂ − t₁)/3?</div>
+  <details><summary>Răspuns</summary><p>36 din 38: estimarea ar vrea un t<sub>c</sub> mai tîrziu decît permite căutarea, deci t̂<sub>c</sub> se mută odată cu t₂ doar pentru că limita se mută. La Bitcoin 2017 doar 3 din 39 ating limita; acolo mai multe estimări stau pe dreapta t<sub>c</sub> = t₂ sau aproape de ea.</p></details>
+</section><h2 class="sec" id="s-ev">O evaluare riguroasă a prognozei crahurilor</h2>
+<section class="blk" id="eval">
+  <h3>Alarmele pe tot eșantionul</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=58" target="_blank" rel="noopener"><img src="slides/tsa_ch13_eval_ro.jpg" alt="Slide-ul 57: Alarmele pe tot eșantionul" loading="lazy"></a>
+      <figcaption>Slide-ul 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="e1-c">Pragul alarmei c (curs: 0,2): <b id="e1-c-v"></b></label><input type="range" id="e1-c" min="0.05" max="0.5" step="0.05" value="0.2"></div><div class="ctl"><label for="e1-x">Scăderea care definește un crah (curs: 20%): <b id="e1-x-v"></b></label><input type="range" id="e1-x" min="10" max="40" step="5" value="20"></div><div class="ctl"><label for="e1-h">Orizontul scăderii</label><select id="e1-h"><option value="182" selected>182 de zile (curs)</option><option value="91">91 de zile</option><option value="365">365 de zile</option></select></div><button class="btn play" id="e1-play" type="button"></button></div><div class="charts "><div class="chart" id="e1-chart"></div></div><ul class="out" id="e1-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Ridicați pragul crahului la 30%. Cît devine frecvența necondiționată pentru S&P 500?</div>
+  <details><summary>Răspuns</summary><p>2,3% dintre date, față de 6,8% pentru 20%; rata de reușită după alarme rămîne 0%. Frecvența de bază depinde de definiția crahului, de aceea definiția trebuie fixată înainte de a compara alarmele cu ea.</p></details>
+</section>
+<section class="blk" id="eval-btc">
+  <h3>Alarmele pe tot eșantionul</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=59" target="_blank" rel="noopener"><img src="slides/tsa_ch13_eval_btc_ro.jpg" alt="Slide-ul 58: Alarmele pe tot eșantionul" loading="lazy"></a>
+      <figcaption>Slide-ul 58</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="e2-c">Pragul alarmei c (curs: 0,2): <b id="e2-c-v"></b></label><input type="range" id="e2-c" min="0.05" max="0.5" step="0.05" value="0.2"></div><div class="ctl"><label for="e2-x">Scăderea care definește un crah (curs: 20%): <b id="e2-x-v"></b></label><input type="range" id="e2-x" min="10" max="40" step="5" value="20"></div><div class="ctl"><label for="e2-h">Orizontul scăderii</label><select id="e2-h"><option value="182" selected>182 de zile (curs)</option><option value="91">91 de zile</option><option value="365">365 de zile</option></select></div><button class="btn play" id="e2-play" type="button"></button></div><div class="charts "><div class="chart" id="e2-chart"></div></div><ul class="out" id="e2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Prelungiți orizontul la 365 de zile. Cît devine frecvența de bază a unei scăderi de 20% la Bitcoin?</div>
+  <details><summary>Răspuns</summary><p>51%, față de 47% la 182 de zile; după o alarmă (c = 0,2) rata este 55%. Scăderile de 20% sînt atît de frecvente la Bitcoin încît aproape orice regulă pare să le prindă: comparația relevantă este cu frecvența de bază.</p></details>
+</section>
+<section class="blk" id="t-eval">
+  <h3>Interpretarea evaluării</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol13_bule_lppl.pdf#page=60" target="_blank" rel="noopener"><img src="slides/ch13x_t-eval_ro.jpg" alt="Slide-ul 59: Interpretarea evaluării" loading="lazy"></a>
+      <figcaption>Slide-ul 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tv-x">Scăderea care definește un crah (curs: 20%): <b id="tv-x-v"></b></label><input type="range" id="tv-x" min="10" max="40" step="5" value="20"></div><button class="btn play" id="tv-play" type="button"></button></div><div class="charts "><div class="chart" id="tv-chart"></div></div><div class="c13x"><div class="wctl"><div class="ctl"><label for="tv-v">Versiunea indicatorului</label><select id="tv-v"><option value="param" selected>condițiile asupra parametrilor (curs)</option><option value="full">toate condițiile</option></select></div></div><div class="tbl c13t" id="tv-tb"></div></div><ul class="out" id="tv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Coborîți pragul crahului la 10%. Cum se compară rata de reușită a S&P 500 la c = 0,2 cu frecvența de bază?</div>
+  <details><summary>Răspuns</summary><p>Rămîne sub ea: 16,9% față de 23,1%. Alarmele S&P 500 apar în creșteri calme și constante, după care scăderile, chiar și cele de 10%, sînt mai rare decît într-o zi oarecare.</p></details>
+</section>
+<p class="src foot">Închiderile zilnice ale celor șase episoade și ale evaluării (S&P 500, Nasdaq 100, BET, Shanghai Composite, Bitcoin; data/market, EODHD) nu sînt revizuite și reproduc exact cifrele din curs; browserul găsește din nou minimul, maximul, scăderile, ratele de reușită și grupurile de alarme. Simulările capitolului: valoarea fundamentală și șocurile celor trei AR(1) (sămînța 2026), extragerile Normale și uniforme ale bulei Blanchard–Watson (sămînța 13), în ordinea în care le face codul capitolului. Testele ADF, SADF, GSADF și BSADF sînt calculate în browser din prețurile logaritmice săptămînale; valorile lor critice sînt cele Monte Carlo ale capitolului (1000 de mersuri aleatoare cu driftul 1/T, sămînța 2026), exportate cu cuantilele de 90%, 95% și 99%. Ajustările LPPL, cu testele Lomb și de rădăcină unitară ale reziduurilor, peisajul funcției de cost și seriile indicatorului (fișierele ch13_ci_*.csv) provin din codul capitolului; pasul liniar (OLS) al exemplului Shanghai este refăcut în browser. Variantele care nu apar în curs (alte orizonturi, alte valori ale lui r și π, alte niveluri și lungimi minime, alte date de sfîrșit ale ferestrei LPPL, alte limite ale filtrului și ale lui ω, alte praguri, alte definiții ale crahului) sînt rulări suplimentare ale codului capitolului pe aceleași date; graficele din „Interpretarea celor șase episoade”, „SADF, GSADF și BSADF”, „Exemplu rezolvat”, „Interpretarea testelor pentru Nasdaq 100”, „Interpretarea celor trei piețe”, „Oscilațiile log-periodice”, „Restricțiile parametrilor: filtrul”, „Interpretarea celor șase ajustări”, „Interpretarea ferestrelor” și „Interpretarea evaluării” sînt grafice suplimentare pentru slide-uri care dau doar cifre.</p>
+</main>
+</body>
+</html>
