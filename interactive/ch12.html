@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 12 · Spectral Analysis</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch12.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch12_data.js?v=20261101a", "ch12_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch12.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index.html">Time Series Analysis</a></h1><p>Chapter 12 · Spectral Analysis</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_12" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch12.html" class="lang-btn active">EN</a><a href="ch12_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure or table on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step; the “Worked example” boxes redo the calculation with the numbers of the chapter.</p>
+<p class="toc"><a href="#s-cf">Cycles and frequencies</a> · <a href="#s-sd">The spectral density</a> · <a href="#s-pg">The periodogram</a> · <a href="#s-es">Estimating the spectrum</a> · <a href="#s-cy">Cycles in economic and energy data</a> · <a href="#s-lm">Long memory: the pole at zero</a> · <a href="#s-fi">Linear filters</a> · <a href="#s-co">Two series: coherence and phase</a> · <a href="#s-wv">A pointer: wavelets</a></p>
+<h2 class="sec" id="s-cf">Cycles and frequencies</h2>
+<section class="blk" id="wx-cycle">
+  <h3>A cycle: amplitude, frequency, phase</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=7" target="_blank" rel="noopener"><img src="slides/ch12x_wx-cycle_en.jpg" alt="Slide 6: A cycle: amplitude, frequency, phase" loading="lazy"></a>
+      <figcaption>Slide 6</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wy-p">Period 1/ν (observations; example of the lecture: 12): <b id="wy-p-v"></b></label><input type="range" id="wy-p" min="2" max="24" step="1" value="12"></div><div class="ctl"><label for="wy-a">Amplitude A: <b id="wy-a-v"></b></label><input type="range" id="wy-a" min="1" max="3" step="0.5" value="2"></div><div class="ctl"><label for="wy-f">Phase φ (radians): <b id="wy-f-v"></b></label><input type="range" id="wy-f" min="0" max="3" step="0.25" value="0"></div><button class="btn play" id="wy-play" type="button"></button></div><div class="charts "><div class="chart" id="wy-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wy-u">Frequency of the data</label><select id="wy-u"><option value="m" selected>monthly (lecture)</option><option value="h">hourly</option><option value="q">quarterly</option><option value="w">weekly</option></select></div></div><div class="c12f">\[\nu=\frac{1}{P},\qquad \omega=2\pi\nu,\qquad A\cos(2\pi\nu t+\varphi)=a\cos(2\pi\nu t)+b\sin(2\pi\nu t),\quad a=A\cos\varphi,\ b=-A\sin\varphi\]</div><ol id="wy-ws"></ol></div><ul class="out" id="wy-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set φ = 1.5 radians, with A = 2. What are a and b?</div>
+  <details><summary>Answer</summary><p>a = 2 cos 1.5 = 0.14 and b = −2 sin 1.5 = −1.99: with a phase close to π/2 the cycle is almost a pure sine with a negative sign. Whatever the phase, a² + b² = 4 = A².</p></details>
+</section>
+<section class="blk" id="fourier">
+  <h3>Two cycles plus noise</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=8" target="_blank" rel="noopener"><img src="slides/tsa_ch12_fourier_en.jpg" alt="Slide 7: Two cycles plus noise" loading="lazy"></a>
+      <figcaption>Slide 7</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fo-a">Amplitude of the period-4 cycle (lecture: 1): <b id="fo-a-v"></b></label><input type="range" id="fo-a" min="0" max="2" step="0.25" value="1"></div><div class="ctl"><label for="fo-s">Standard deviation of the noise (lecture: 0.7): <b id="fo-s-v"></b></label><input type="range" id="fo-s" min="0" max="1.5" step="0.1" value="0.7"></div><button class="btn play" id="fo-play" type="button"></button></div><style>.c12x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c12x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c12x .c12f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c12x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c12x li{margin:.18rem 0;overflow-wrap:anywhere}.c12x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c12t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c12t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c12t th,.c12t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c12t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c12t tbody tr:nth-child(even){background:#F5F7FB}.c12t tbody tr.hi{background:#E3F4F7}.c12t .r{text-align:right}.c12cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="fo-chart"></div></div><ul class="out" id="fo-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the amplitude of the period-4 cycle to 2, as large as the annual cycle. How high is the spike at ν = 1/4 now?</div>
+  <details><summary>Answer</summary><p>119.2, four times higher than with amplitude 1 (29.6) and close to the theory A²T/4 = 4·120/4 = 120: the spike grows with the square of the amplitude. The spike at 1/12 stays at 139.7, above its theoretical 120, because the noise also contributes at that frequency; without noise the two spikes are exactly 120 and 30.</p></details>
+</section>
+<section class="blk" id="wx-dft">
+  <h3>Worked example: the DFT of four numbers</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=12" target="_blank" rel="noopener"><img src="slides/ch12x_wx-dft_en.jpg" alt="Slide 11: Worked example: the DFT of four numbers" loading="lazy"></a>
+      <figcaption>Slide 11</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wd-a">Value x₁ (lecture: 4): <b id="wd-a-v"></b></label><input type="range" id="wd-a" min="0" max="8" step="1" value="4"></div><div class="ctl"><label for="wd-b">Value x₃ (lecture: 0): <b id="wd-b-v"></b></label><input type="range" id="wd-b" min="-4" max="4" step="1" value="0"></div><button class="btn play" id="wd-play" type="button"></button></div><div class="charts "><div class="chart" id="wd-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wd-j">Frequency of the calculation</label><select id="wd-j"><option value="1" selected>ν = 1/4 (lecture)</option><option value="2">ν = 1/2</option><option value="3">ν = 3/4</option></select></div></div><div class="c12f">\[d(\nu_j)=T^{-1/2}\sum_{t=1}^{T}y_t\,e^{-2\pi i\nu_j t},\qquad y_t=x_t-\bar x,\qquad \sum_{t=1}^{T}y_t^2=\sum_{j=1}^{T-1}|d(\nu_j)|^2\]</div><ol id="wd-ws"></ol></div><ul class="out" id="wd-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves x₃. With x = (4, 2, 4, 2), where does the variance sit?</div>
+  <details><summary>Answer</summary><p>All at ν = 1/2: the deviations (1, −1, 1, −1) alternate, so |d(1/2)|² = (−4)²/4 = 4 and |d(1/4)|² = |d(3/4)|² = 0; Parseval: 4 = 1 + 1 + 1 + 1. The series has period 2.</p></details>
+</section>
+<section class="blk" id="aliasing">
+  <h3>Aliasing</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=13" target="_blank" rel="noopener"><img src="slides/tsa_ch12_aliasing_en.jpg" alt="Slide 12: Aliasing" loading="lazy"></a>
+      <figcaption>Slide 12</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="al-d">Sampling interval Δ (months; lecture: 3): <b id="al-d-v"></b></label><input type="range" id="al-d" min="1" max="6" step="1" value="3"></div><div class="ctl"><label for="al-p">Period of the true cycle (months; lecture: 4): <b id="al-p-v"></b></label><input type="range" id="al-p" min="2" max="12" step="0.5" value="4"></div><button class="btn play" id="al-play" type="button"></button></div><div class="charts "><div class="chart" id="al-chart"></div></div><ul class="out" id="al-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ changes the sampling interval. At Δ = 4 months (one observation per cycle), what do the observations show?</div>
+  <details><summary>Answer</summary><p>A constant: the cycle has 4/4 = 1 cycle per observation, which folds to |1 − 1| = 0, so every observation falls at the same point of the cycle and the 4-month cycle disappears from the data (an alias of infinite period). At Δ = 5 months the same cycle appears as a 20-month cycle.</p></details>
+</section>
+<section class="blk" id="wx-alias">
+  <h3>Interpreting aliasing</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=14" target="_blank" rel="noopener"><img src="slides/ch12x_wx-alias_en.jpg" alt="Slide 13: Interpreting aliasing" loading="lazy"></a>
+      <figcaption>Slide 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wa-p">Period of the true cycle (months; lecture: 4): <b id="wa-p-v"></b></label><input type="range" id="wa-p" min="2" max="12" step="0.5" value="4"></div><button class="btn play" id="wa-play" type="button"></button></div><div class="charts "><div class="chart" id="wa-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wa-d">Sampling interval Δ</label><select id="wa-d"><option value="3" selected>3 months (lecture)</option><option value="2">2 months</option><option value="1">1 month</option><option value="6">6 months</option></select></div></div><div class="c12f">\[\nu_{\text{obs}}=\Delta\,\nu,\qquad \nu_{\text{alias}}=\bigl|\nu_{\text{obs}}-\operatorname{round}(\nu_{\text{obs}})\bigr|\le\tfrac12,\qquad \text{period}=\frac{\Delta}{\nu_{\text{alias}}}\ \text{months}\]</div><ol id="wa-ws"></ol></div><ul class="out" id="wa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the period of the true cycle to 2.5 months, with quarterly observations (Δ = 3). What period does the cycle appear to have?</div>
+  <details><summary>Answer</summary><p>15 months: 3/2.5 = 1.2 cycles per quarter, which folds to |1.2 − 1| = 0.2, i.e. 5 quarters. A cycle faster than the observations appears as a slower, false cycle.</p></details>
+</section><h2 class="sec" id="s-sd">The spectral density</h2>
+<section class="blk" id="wx-arma">
+  <h3>Worked example: AR(1) and MA(1) spectra</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=19" target="_blank" rel="noopener"><img src="slides/ch12x_wx-arma_en.jpg" alt="Slide 18: Worked example: AR(1) and MA(1) spectra" loading="lazy"></a>
+      <figcaption>Slide 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wr-p">φ of the AR(1) (lecture: 0.6): <b id="wr-p-v"></b></label><input type="range" id="wr-p" min="-0.9" max="0.9" step="0.1" value="0.6"></div><div class="ctl"><label for="wr-t">θ of the MA(1) (lecture: 0.5): <b id="wr-t-v"></b></label><input type="range" id="wr-t" min="-0.9" max="0.9" step="0.1" value="0.5"></div><button class="btn play" id="wr-play" type="button"></button></div><div class="charts "><div class="chart" id="wr-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="c12f">\[f_{AR}(\nu)=\frac{\sigma^2}{1-2\phi\cos 2\pi\nu+\phi^2},\qquad f_{MA}(\nu)=\sigma^2(1+2\theta\cos 2\pi\nu+\theta^2),\qquad \int_{-1/2}^{1/2}f=\gamma(0)\]</div><ol id="wr-ws"></ol></div><ul class="out" id="wr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set φ = −0.6. What are f(0) and f(1/2)?</div>
+  <details><summary>Answer</summary><p>f(0) = 1/1.6² = 0.39 and f(1/2) = 1/0.4² = 6.25: the mirror image of φ = 0.6. A negative φ makes the series alternate, so the power moves to the highest frequencies; the variance stays 1.5625.</p></details>
+</section>
+<section class="blk" id="wx-ar2">
+  <h3>Worked example: the peak of an AR(2) spectrum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=21" target="_blank" rel="noopener"><img src="slides/ch12x_wx-ar2_en.jpg" alt="Slide 20: Worked example: the peak of an AR(2) spectrum" loading="lazy"></a>
+      <figcaption>Slide 20</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="w2-a">φ₁ (lecture: 1.5): <b id="w2-a-v"></b></label><input type="range" id="w2-a" min="0.2" max="1.6" step="0.1" value="1.5"></div><div class="ctl"><label for="w2-b">φ₂ (lecture: −0.75): <b id="w2-b-v"></b></label><input type="range" id="w2-b" min="-0.95" max="-0.65" step="0.05" value="-0.75"></div><button class="btn play" id="w2-play" type="button"></button></div><div class="charts "><div class="chart" id="w2-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="c12f">\[\cos(2\pi\nu^*)=\frac{\phi_1(\phi_2-1)}{4\phi_2},\qquad f(\nu)=\frac{\sigma^2}{|1-\phi_1e^{-2\pi i\nu}-\phi_2e^{-4\pi i\nu}|^2},\qquad f(0)=\frac{\sigma^2}{(1-\phi_1-\phi_2)^2}\]</div><ol id="w2-ws"></ol></div><ul class="out" id="w2-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves φ₂ towards −0.95, with φ₁ = 1.5. Does the peak move to a longer or a shorter period?</div>
+  <details><summary>Answer</summary><p>To a shorter one: 9.1 observations at φ₂ = −0.95 (12.4 at −0.75 and 20.2 at −0.65), and the peak becomes much higher (981 against 64). A more negative φ₂ brings the complex roots closer to the unit circle (their modulus is √−φ₂) and speeds up the oscillation of the ACF.</p></details>
+</section>
+<section class="blk" id="spectra">
+  <h3>A gallery of spectral densities</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=22" target="_blank" rel="noopener"><img src="slides/tsa_ch12_spectra_en.jpg" alt="Slide 21: A gallery of spectral densities" loading="lazy"></a>
+      <figcaption>Slide 21</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sp-n">Upper limit ν of the shaded area (lecture: 0.5): <b id="sp-n-v"></b></label><input type="range" id="sp-n" min="0.05" max="0.5" step="0.05" value="0.5"></div><div class="ctl"><label for="sp-s">Noise variance σ² (lecture: 1): <b id="sp-s-v"></b></label><input type="range" id="sp-s" min="0.5" max="2" step="0.5" value="1"></div><button class="btn play" id="sp-play" type="button"></button></div><div class="charts "><div class="chart" id="sp-chart"></div></div><ul class="out" id="sp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the upper limit to ν = 0.1. What share of the variance of the AR(1) with φ = 0.6 lies at frequencies below 0.1 (periods longer than 10 observations)?</div>
+  <details><summary>Answer</summary><p>58%, against 20% for white noise, which spreads its variance evenly: the band [0, 0.1] is a fifth of [0, 0.5]. For the AR(2) the share is 81%, for the AR(1) with φ = −0.6 only 5%.</p></details>
+</section><h2 class="sec" id="s-pg">The periodogram</h2>
+<section class="blk" id="sunspots">
+  <h3>Sunspots and their periodogram</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=27" target="_blank" rel="noopener"><img src="slides/tsa_ch12_sunspots_en.jpg" alt="Slide 26: Sunspots and their periodogram" loading="lazy"></a>
+      <figcaption>Slide 26</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ss-a">First year (lecture: 1700): <b id="ss-a-v"></b></label><input type="range" id="ss-a" min="1700" max="1900" step="10" value="1700"></div><div class="ctl"><label for="ss-b">Last year (lecture: 2008): <b id="ss-b-v"></b></label><input type="range" id="ss-b" min="1808" max="2008" step="25" value="2008"></div><button class="btn play" id="ss-play" type="button"></button></div><div class="charts "><div class="chart" id="ss-chart"></div></div><ul class="out" id="ss-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ shortens the sample. With 1700–1808 (109 years), at what period is the highest ordinate?</div>
+  <details><summary>Answer</summary><p>At 10.9 years (j = 10), close to the 11.0 years of the full sample: the cycle shows in a century of data, but the Fourier grid is coarser (periods 109/j: 12.1, 10.9, 9.9 years). Fisher’s test gives g = 0.222 and a p-value of 0.00009.</p></details>
+</section>
+<section class="blk" id="t-sun">
+  <h3>Interpreting the sunspot periodogram</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=28" target="_blank" rel="noopener"><img src="slides/ch12x_t-sun_en.jpg" alt="Slide 27: Interpreting the sunspot periodogram" loading="lazy"></a>
+      <figcaption>Slide 27</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ts-a">Lower limit of the band (years; lecture: 9): <b id="ts-a-v"></b></label><input type="range" id="ts-a" min="5" max="11" step="1" value="9"></div><div class="ctl"><label for="ts-b">Upper limit of the band (years; lecture: 13): <b id="ts-b-v"></b></label><input type="range" id="ts-b" min="11" max="20" step="1" value="13"></div><button class="btn play" id="ts-play" type="button"></button></div><div class="charts "><div class="chart" id="ts-chart"></div></div><div class="c12x"><div class="wctl"><div class="ctl"><label for="ts-k">Rows of the table</label><select id="ts-k"><option value="3" selected>the 3 largest ordinates (lecture)</option><option value="5">the 5 largest</option><option value="10">the 10 largest</option></select></div></div><div class="tbl c12t" id="ts-tb"></div></div><ul class="out" id="ts-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Widen the band to 9–20 years. What share of the variance does it hold?</div>
+  <details><summary>Answer</summary><p>63%, against 60% for 9–13 years: the periods between 13 and 20 years add only 3 percentage points. Almost all the power of the solar cycle lies between 9 and 13 years; with the band 5–20 years the share reaches 73%, because the harmonic of about 5.5 years comes in as well.</p></details>
+</section>
+<section class="blk" id="x-prop">
+  <h3>Statistical properties of the periodogram</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=29" target="_blank" rel="noopener"><img src="slides/ch12x_x-prop_en.jpg" alt="Slide 28: Statistical properties of the periodogram" loading="lazy"></a>
+      <figcaption>Slide 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="xp-T">White-noise sample</label><select id="xp-T"><option value="2048" selected>T = 2048</option><option value="128">T = 128</option></select></div><div class="ctl"><label for="xp-c">Threshold c, a multiple of f (lecture: 3.00): <b id="xp-c-v"></b></label><input type="range" id="xp-c" min="1" max="5" step="0.5" value="3"></div><button class="btn play" id="xp-play" type="button"></button></div><div class="charts "><div class="chart" id="xp-chart"></div></div><ul class="out" id="xp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set c = 1 (the true value f itself). What share of the white-noise ordinates exceeds f?</div>
+  <details><summary>Answer</summary><p>37.6% for T = 2048, close to e<sup>−1</sup> = 36.8%, not 50%: the exponential distribution has mean 1 but median ln 2 = 0.69, so most ordinates lie below f and a few large values pull the mean up. For c = 3 the share is 5.1% (theory 5.0%).</p></details>
+</section>
+<section class="blk" id="noise">
+  <h3>The periodogram of white noise</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=30" target="_blank" rel="noopener"><img src="slides/tsa_ch12_inconsistency_en.jpg" alt="Slide 29: The periodogram of white noise" loading="lazy"></a>
+      <figcaption>Slide 29</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wn-m">Daniell smoothing m of both periodograms (lecture: 0, the raw periodogram): <b id="wn-m-v"></b></label><input type="range" id="wn-m" min="0" max="10" step="1" value="0"></div><div class="ctl"><label for="wn-T">Sample on the right</label><select id="wn-T"><option value="2048" selected>T = 2048 (lecture)</option><option value="1024">the first 1024 draws</option><option value="512">the first 512 draws</option><option value="256">the first 256 draws</option></select></div><button class="btn play" id="wn-play" type="button"></button></div><div class="charts "><div class="chart" id="wn-chart"></div></div><ul class="out" id="wn-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ raises the Daniell m. At m = 10 (L = 21), what is the standard deviation of the smoothed ordinates for T = 2048?</div>
+  <details><summary>Answer</summary><p>0.21, close to 1/√21 = 0.22: averaging L nearly independent ordinates divides the standard deviation by √L; for T = 128 it is 0.20. A longer sample alone did not achieve this: the raw periodograms have standard deviations 1.03 and 1.00.</p></details>
+</section><h2 class="sec" id="s-es">Estimating the spectrum</h2>
+<section class="blk" id="leakage">
+  <h3>Leakage: raw and tapered periodograms</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=36" target="_blank" rel="noopener"><img src="slides/tsa_ch12_leakage_en.jpg" alt="Slide 35: Leakage: raw and tapered periodograms" loading="lazy"></a>
+      <figcaption>Slide 35</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lk-j">Frequency of the strong cycle in Fourier bins j (ν = j/256; lecture: 25.5): <b id="lk-j-v"></b></label><input type="range" id="lk-j" min="25" max="26" step="0.1" value="25.5"></div><div class="ctl"><label for="lk-a">Amplitude of the weak cycle (lecture: 0.02): <b id="lk-a-v"></b></label><input type="range" id="lk-a" min="0.005" max="0.05" step="0.005" value="0.02"></div><button class="btn play" id="lk-play" type="button"></button></div><div class="charts "><div class="chart" id="lk-chart"></div></div><ul class="out" id="lk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the strong cycle to j = 26 (ν = 26/256, a Fourier frequency). How many times above the background does the weak cycle stand in the raw periodogram?</div>
+  <details><summary>Answer</summary><p>755 times, against 7.7 at j = 25.5: a cycle that fits a whole number of times in the sample does not leak, and the background falls to the level of the tiny noise. With the Hann taper the ratio is 4,176, almost the same for any j.</p></details>
+</section>
+<section class="blk" id="wx-daniell">
+  <h3>Smoothing the periodogram (1/2): the Daniell estimator</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=38" target="_blank" rel="noopener"><img src="slides/ch12x_wx-daniell_en.jpg" alt="Slide 37: Smoothing the periodogram (1/2): the Daniell estimator" loading="lazy"></a>
+      <figcaption>Slide 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wl-m">Neighbours on each side m (lecture: 2): <b id="wl-m-v"></b></label><input type="range" id="wl-m" min="0" max="8" step="1" value="2"></div><button class="btn play" id="wl-play" type="button"></button></div><div class="charts "><div class="chart" id="wl-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wl-j">Ordinate j (the smoothed peak of the lecture: 30): <b id="wl-j-v"></b></label><input type="range" id="wl-j" min="20" max="40" step="1" value="30"></div></div><div class="c12f">\[\hat f(\nu_j)=\frac1L\sum_{k=-m}^{m}I(\nu_{j+k}),\qquad L=2m+1,\qquad B=\frac{L}{T},\qquad \operatorname{Var}\hat f\approx\frac{f^2}{L}\]</div><ol id="wl-ws"></ol></div><ul class="out" id="wl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set m = 0. At what period is the peak?</div>
+  <details><summary>Answer</summary><p>At 11.0 years (j = 28), the highest raw ordinate; with m = 2 the smoothed peak moves to 10.3 years (j = 30), because the mean of the five ordinates around j = 30 is the largest. With m = 4 the peak returns to 11.0 years: the position of the smoothed peak varies by one or two Fourier frequencies.</p></details>
+</section>
+<section class="blk" id="smoothing">
+  <h3>Smoothed estimates of an AR(2) spectrum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=40" target="_blank" rel="noopener"><img src="slides/tsa_ch12_smoothing_en.jpg" alt="Slide 39: Smoothed estimates of an AR(2) spectrum" loading="lazy"></a>
+      <figcaption>Slide 39</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sm-m">m of the wider Daniell estimate (lecture: 10): <b id="sm-m-v"></b></label><input type="range" id="sm-m" min="1" max="20" step="1" value="10"></div><div class="ctl"><label for="sm-w">Welch segment length</label><select id="sm-w"><option value="128" selected>128 (lecture)</option><option value="64">64</option><option value="256">256</option></select></div><button class="btn play" id="sm-play" type="button"></button></div><div class="charts "><div class="chart" id="sm-chart"></div></div><ul class="out" id="sm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ widens the second Daniell window. At m = 20 (L = 41), where is its peak and how high is it?</div>
+  <details><summary>Answer</summary><p>At ν = 0.0625 (period 16.0), height 36.1, against the true peak at ν = 0.080 with height 64: the window is 41/512 = 0.08 wide, as wide as the peak frequency, so it flattens and shifts the peak. The mean squared error of log f̂ rises again, to 0.11 (0.09 at m = 10 and at m = 15).</p></details>
+</section>
+<section class="blk" id="t-smooth">
+  <h3>Interpreting the smoothed estimates</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=41" target="_blank" rel="noopener"><img src="slides/ch12x_t-smooth_en.jpg" alt="Slide 40: Interpreting the smoothed estimates" loading="lazy"></a>
+      <figcaption>Slide 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tm-m">m of the extra row (rows of the lecture: 2 and 10): <b id="tm-m-v"></b></label><input type="range" id="tm-m" min="0" max="30" step="1" value="10"></div><button class="btn play" id="tm-play" type="button"></button></div><div class="charts "><div class="chart" id="tm-chart"></div></div><div class="c12x"><div class="wctl"><div class="ctl"><label for="tm-w">Welch segments in the table</label><select id="tm-w"><option value="128" selected>128 (lecture)</option><option value="64">64</option><option value="256">256</option></select></div></div><div class="tbl c12t" id="tm-tb"></div></div><ul class="out" id="tm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ steps through m = 0, 2, …, 30. At which m is the mean squared error of log f̂ smallest?</div>
+  <details><summary>Answer</summary><p>At m = 12 (0.089), very close to m = 10 (0.092); at m = 30 the error climbs to 0.22. Up to m = 12 the variance falls, then the bias dominates: the height of the peak drops from 64 to 44.7 at m = 12 and to 31.5 at m = 30.</p></details>
+</section>
+<section class="blk" id="wx-band">
+  <h3>Worked example: a 95% band with L = 5</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=43" target="_blank" rel="noopener"><img src="slides/ch12x_wx-band_en.jpg" alt="Slide 42: Worked example: a 95% band with L = 5" loading="lazy"></a>
+      <figcaption>Slide 42</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wb-L">Number of ordinates L (lecture: 5): <b id="wb-L-v"></b></label><input type="range" id="wb-L" min="1" max="21" step="2" value="5"></div><button class="btn play" id="wb-play" type="button"></button></div><div class="charts "><div class="chart" id="wb-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wb-c">Confidence level</label><select id="wb-c"><option value="95" selected>95% (lecture)</option><option value="90">90%</option><option value="99">99%</option></select></div></div><div class="c12f">\[\frac{2L\,\hat f(\nu)}{f(\nu)}\approx\chi^2_{2L},\qquad \left[\frac{df\,\hat f}{\chi^2_{df}(1-\alpha/2)},\ \frac{df\,\hat f}{\chi^2_{df}(\alpha/2)}\right],\quad df=2L\]</div><ol id="wb-ws"></ol></div><ul class="out" id="wb-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set L = 21. What is the upper multiplier of the 95% band?</div>
+  <details><summary>Answer</summary><p>1.62 (and the lower one 0.68), against 3.08 and 0.49 for L = 5: the band narrows roughly like 1/√L. It stays asymmetric, wider upwards, because the chi-square distribution has its tail to the right.</p></details>
+</section>
+<section class="blk" id="sun-ci">
+  <h3>Sunspots: smoothed spectrum with a confidence band</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch12_sunspot_ci_en.jpg" alt="Slide 43: Sunspots: smoothed spectrum with a confidence band" loading="lazy"></a>
+      <figcaption>Slide 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sc-m">Daniell smoothing m (lecture: 2): <b id="sc-m-v"></b></label><input type="range" id="sc-m" min="0" max="8" step="1" value="2"></div><div class="ctl"><label for="sc-c">Confidence level</label><select id="sc-c"><option value="95" selected>95% (lecture)</option><option value="90">90%</option><option value="99">99%</option></select></div><button class="btn play" id="sc-play" type="button"></button></div><div class="charts "><div class="chart" id="sc-chart"></div></div><ul class="out" id="sc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set m = 0 (the raw periodogram, df = 2). How many times f̂ is the upper bound of the 95% band at the peak?</div>
+  <details><summary>Answer</summary><p>39.5 times (2/χ²₂(0.025) = 2/0.0506), and the lower bound is 0.27 × f̂: a single ordinate says very little about the height of the spectrum. With m = 2 the multipliers are 0.49 and 3.08, with m = 8 they are 0.65 and 1.72.</p></details>
+</section><h2 class="sec" id="s-cy">Cycles in economic and energy data</h2>
+<section class="blk" id="gdp-series">
+  <h3>GDP growth and HP cycles</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=48" target="_blank" rel="noopener"><img src="slides/tsa_ch12_gdp_series_en.jpg" alt="Slide 47: GDP growth and HP cycles" loading="lazy"></a>
+      <figcaption>Slide 47</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gs-l">Smoothing parameter λ</label><select id="gs-l"><option value="100">100</option><option value="400">400</option><option value="1600" selected>1600 (lecture)</option><option value="6400">6400</option><option value="25600">25600</option></select></div><button class="btn play" id="gs-play" type="button"></button></div><div class="charts "><div class="chart" id="gs-chart"></div></div><ul class="out" id="gs-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set λ = 100. Does the standard deviation of the US HP cycle rise or fall from 1.58?</div>
+  <details><summary>Answer</summary><p>It falls, to 1.03: a smaller λ lets the trend follow the data more closely, so the cycle keeps only the faster fluctuations; with λ = 25,600 it rises to 2.23. The growth rates do not depend on λ (standard deviation 0.93).</p></details>
+</section>
+<section class="blk" id="gdp-spectra">
+  <h3>Spectra of GDP growth and HP cycles</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=50" target="_blank" rel="noopener"><img src="slides/tsa_ch12_gdp_spectra_en.jpg" alt="Slide 49: Spectra of GDP growth and HP cycles" loading="lazy"></a>
+      <figcaption>Slide 49</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="gp-m">Daniell smoothing m (lecture: 2): <b id="gp-m-v"></b></label><input type="range" id="gp-m" min="0" max="6" step="1" value="2"></div><div class="ctl"><label for="gp-l">λ of the HP cycle</label><select id="gp-l"><option value="100">100</option><option value="400">400</option><option value="1600" selected>1600 (lecture)</option><option value="6400">6400</option><option value="25600">25600</option></select></div><button class="btn play" id="gp-play" type="button"></button></div><div class="charts "><div class="chart" id="gp-chart"></div></div><ul class="out" id="gp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set m = 0 (the raw periodograms). At what period is the highest ordinate of the US HP cycle?</div>
+  <details><summary>Answer</summary><p>At 26.5 quarters (6.6 years), against 24.3 with m = 2: a raw ordinate is noisy, and the smoothed peak can move by one Fourier frequency (T = 292: 292/11 = 26.5, 292/12 = 24.3). The peak of US growth stays at 8.8 quarters.</p></details>
+</section>
+<section class="blk" id="t-gdp">
+  <h3>Interpreting the GDP spectra</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=51" target="_blank" rel="noopener"><img src="slides/ch12x_t-gdp_en.jpg" alt="Slide 50: Interpreting the GDP spectra" loading="lazy"></a>
+      <figcaption>Slide 50</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tg-a">Shortest period of the band (quarters; lecture: 6): <b id="tg-a-v"></b></label><input type="range" id="tg-a" min="4" max="10" step="1" value="6"></div><div class="ctl"><label for="tg-b">Longest period of the band (quarters; lecture: 32): <b id="tg-b-v"></b></label><input type="range" id="tg-b" min="16" max="48" step="4" value="32"></div><button class="btn play" id="tg-play" type="button"></button></div><div class="charts "><div class="chart" id="tg-chart"></div></div><div class="c12x"><div class="wctl"><div class="ctl"><label for="tg-m">Daniell smoothing m for the peak</label><select id="tg-m"><option value="0">0</option><option value="1">1</option><option value="2" selected>2 (lecture)</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div></div><div class="tbl c12t" id="tg-tb"></div></div><ul class="out" id="tg-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the longest period of the band to 48 quarters. What share of the variance of the US HP cycle falls in the band?</div>
+  <details><summary>Answer</summary><p>90%, against 80% for 6–32 quarters: the US HP cycle still has much power between 8 and 12 years. For Romanian growth the share hardly changes (15.6% in both cases), because its variance sits at high frequencies.</p></details>
+</section>
+<section class="blk" id="load">
+  <h3>The rhythm of electricity demand</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=52" target="_blank" rel="noopener"><img src="slides/tsa_ch12_load_en.jpg" alt="Slide 51: The rhythm of electricity demand" loading="lazy"></a>
+      <figcaption>Slide 51</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ld-y">Sample</label><select id="ld-y"><option value="all" selected>2022–2026 (lecture)</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026 (January–June)</option></select></div><div class="ctl"><label for="ld-w">Welch segments</label><select id="ld-w"><option value="8" selected>8 weeks (lecture)</option><option value="2">2 weeks</option><option value="4">4 weeks</option><option value="12">12 weeks</option></select></div><button class="btn play" id="ld-play" type="button"></button></div><div class="charts "><div class="chart" id="ld-chart"></div></div><ul class="out" id="ld-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose 2026 (January–June, 4,344 hours). At what period is the highest Welch ordinate with 8-week segments?</div>
+  <details><summary>Answer</summary><p>At 12 hours, ahead of 24 hours (as in 2025); over 2022–2026 the 24-hour ordinate is the highest. The daily profile with two peaks, in the morning and in the evening, puts much power into the 12-hour harmonic, and the order of the two can change from one year to the next.</p></details>
+</section>
+<section class="blk" id="t-load">
+  <h3>Interpreting the load spectrum</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=53" target="_blank" rel="noopener"><img src="slides/ch12x_t-load_en.jpg" alt="Slide 52: Interpreting the load spectrum" loading="lazy"></a>
+      <figcaption>Slide 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tl-w">Half-width of the band around each harmonic (ordinates; lecture: 2): <b id="tl-w-v"></b></label><input type="range" id="tl-w" min="1" max="10" step="1" value="2"></div><button class="btn play" id="tl-play" type="button"></button></div><div class="charts "><div class="chart" id="tl-chart"></div></div><div class="c12x"><div class="wctl"><div class="ctl"><label for="tl-k">Daily and weekly harmonics included</label><select id="tl-k"><option value="6" selected>6 (lecture)</option><option value="3">3</option><option value="1">1 (the fundamental only)</option></select></div></div><div class="tbl c12t" id="tl-tb"></div></div><ul class="out" id="tl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the half-width to 1. How much does the share of the daily cycle and its harmonics fall?</div>
+  <details><summary>Answer</summary><p>Very little: from 33.7% to 33.4%. The daily cycle is almost perfectly periodic, so its power sits in a few very narrow ordinates at 24/k hours; the weekly cycle falls more, from 15.7% to 14.9%: its power is spread over more neighbouring ordinates.</p></details>
+</section><h2 class="sec" id="s-lm">Long memory: the pole at zero</h2>
+<section class="blk" id="long-memory">
+  <h3>The pole at zero in stock-market data</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=57" target="_blank" rel="noopener"><img src="slides/tsa_ch12_long_memory_en.jpg" alt="Slide 56: The pole at zero in stock-market data" loading="lazy"></a>
+      <figcaption>Slide 56</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="lm-b">Exponent b of the GPH bandwidth, m = ⌊T<sup>b</sup>⌋ (lecture: 0.65): <b id="lm-b-v"></b></label><input type="range" id="lm-b" min="0.45" max="0.85" step="0.05" value="0.65"></div><div class="ctl"><label for="lm-k">Log-frequency bins</label><select id="lm-k"><option value="40" selected>40 (lecture)</option><option value="20">20</option><option value="80">80</option></select></div><button class="btn play" id="lm-play" type="button"></button></div><div class="charts "><div class="chart" id="lm-chart"></div></div><ul class="out" id="lm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set the exponent to 0.45 (m = 52 frequencies, periods above 129 days). What is d̂ for the absolute returns?</div>
+  <details><summary>Answer</summary><p>0.38, against 0.56 with m = 307, with standard error 0.089; with exponent 0.80 (m = 1,152) it is 0.41. The estimate depends on the bandwidth: few frequencies give a large standard error, many frequencies bring in short-memory effects. For the returns d̂ stays between −0.04 and 0.14.</p></details>
+</section><h2 class="sec" id="s-fi">Linear filters</h2>
+<section class="blk" id="wx-hp">
+  <h3>Linear filters and their gain (2/2)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=60" target="_blank" rel="noopener"><img src="slides/ch12x_wx-hp_en.jpg" alt="Slide 59: Linear filters and their gain (2/2)" loading="lazy"></a>
+      <figcaption>Slide 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-l">Smoothing parameter λ</label><select id="wh-l"><option value="100">100</option><option value="400">400</option><option value="1600" selected>1600 (lecture)</option><option value="6400">6400</option><option value="25600">25600</option></select></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c12x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wh-p">Period P (quarters; lecture: 8, 32, 40): <b id="wh-p-v"></b></label><input type="range" id="wh-p" min="2" max="80" step="1" value="32"></div></div><div class="c12f">\[G(\nu)=\frac{4\lambda(1-\cos 2\pi\nu)^2}{1+4\lambda(1-\cos 2\pi\nu)^2},\qquad |H_{\text{cycle}}|^2=G^2,\quad |H_{\text{trend}}|^2=(1-G)^2,\quad |1-e^{-2\pi i\nu}|^2=4\sin^2(\pi\nu)\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose λ = 6400. At what period does the HP cycle filter keep half of the power?</div>
+  <details><summary>Answer</summary><p>At 45.0 quarters (11.3 years), against 31.8 quarters for λ = 1600: a 4 times larger λ moves the cut-off to slower cycles, by a factor of about 4<sup>1/4</sup> = 1.41. At 32 quarters G² rises from 0.49 to 0.82.</p></details>
+</section>
+<section class="blk" id="filters">
+  <h3>Squared gains of common filters</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=61" target="_blank" rel="noopener"><img src="slides/tsa_ch12_filters_en.jpg" alt="Slide 60: Squared gains of common filters" loading="lazy"></a>
+      <figcaption>Slide 60</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fl-p">Period marked (quarters): <b id="fl-p-v"></b></label><input type="range" id="fl-p" min="4" max="80" step="2" value="32"></div><div class="ctl"><label for="fl-l">Smoothing parameter λ</label><select id="fl-l"><option value="100">100</option><option value="400">400</option><option value="1600" selected>1600 (lecture)</option><option value="6400">6400</option><option value="25600">25600</option></select></div><button class="btn play" id="fl-play" type="button"></button></div><div class="charts "><div class="chart" id="fl-chart"></div></div><ul class="out" id="fl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves the marked period. At 4 quarters, what is the squared gain of the seasonal difference 1 − L⁴?</div>
+  <details><summary>Answer</summary><p>0: 4 sin²(4π/4) = 4 sin²(π) = 0. The seasonal difference removes the yearly cycle of quarterly data (and its 2-quarter harmonic), while the first difference amplifies it by 2. At 8 quarters the seasonal difference has its largest gain, 4.</p></details>
+</section>
+<section class="blk" id="t-filt">
+  <h3>Interpreting the filter gains</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=62" target="_blank" rel="noopener"><img src="slides/ch12x_t-filt_en.jpg" alt="Slide 61: Interpreting the filter gains" loading="lazy"></a>
+      <figcaption>Slide 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tf-l">Smoothing parameter λ</label><select id="tf-l"><option value="100">100</option><option value="400">400</option><option value="1600" selected>1600 (lecture)</option><option value="6400">6400</option><option value="25600">25600</option></select></div><button class="btn play" id="tf-play" type="button"></button></div><div class="charts "><div class="chart" id="tf-chart"></div></div><div class="c12x"><div class="wctl"><div class="ctl"><label for="tf-q">Values in the table</label><select id="tf-q"><option value="sq" selected>squared gains |H(ν)|² (lecture)</option><option value="g">gains |H(ν)|</option></select></div></div><div class="tbl c12t" id="tf-tb"></div></div><ul class="out" id="tf-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose λ = 100. What is the squared gain of the HP cycle filter at 32 quarters?</div>
+  <details><summary>Answer</summary><p>0.017, against 0.49 for λ = 1600: with λ = 100 the trend follows almost every 8-year cycle and the HP cycle keeps only the short periods (half power at 15.8 quarters). At 8 quarters the squared gain is still 0.94.</p></details>
+</section><h2 class="sec" id="s-co">Two series: coherence and phase</h2>
+<section class="blk" id="coherence">
+  <h3>Industrial production and unemployment</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=64" target="_blank" rel="noopener"><img src="slides/tsa_ch12_coherence_en.jpg" alt="Slide 63: Industrial production and unemployment" loading="lazy"></a>
+      <figcaption>Slide 63</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="co-n">Welch segment length</label><select id="co-n"><option value="48">48 months</option><option value="72">72 months</option><option value="96" selected>96 months (lecture)</option><option value="120">120 months</option><option value="144">144 months</option></select></div><button class="btn play" id="co-play" type="button"></button></div><div class="charts "><div class="chart" id="co-chart"></div></div><ul class="out" id="co-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose segments of 48 months (K = 17). What happens to the 5% significance threshold?</div>
+  <details><summary>Answer</summary><p>It falls from 0.35 to 0.17 (1 − 0.05<sup>1/16</sup>): more segments make the smoothed coherence more precise, so a smaller value is already significant. The mean coherence in the 18–96-month band rises to 0.90, and the phase at the 48-month cycle gives a lag of 2.1 months. With 144-month segments (K = 5) the threshold is 0.53.</p></details>
+</section><h2 class="sec" id="s-wv">A pointer: wavelets</h2>
+<section class="blk" id="wavelet">
+  <h3>Wavelet power of the sunspots</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter12_spectral_analysis.pdf#page=68" target="_blank" rel="noopener"><img src="slides/tsa_ch12_wavelet_en.jpg" alt="Slide 67: Wavelet power of the sunspots" loading="lazy"></a>
+      <figcaption>Slide 67</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wv-w">Morlet parameter ω₀</label><select id="wv-w"><option value="4">4</option><option value="5">5</option><option value="6" selected>6 (lecture)</option><option value="8">8</option><option value="10">10</option></select></div><div class="ctl"><label for="wv-a">The 36-year window compared (lecture: 1795–1830): <b id="wv-a-v"></b></label><input type="range" id="wv-a" min="1700" max="1970" step="5" value="1795"></div><button class="btn play" id="wv-play" type="button"></button></div><div class="charts "><div class="chart" id="wv-chart"></div></div><ul class="out" id="wv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose ω₀ = 10 (more oscillations inside the wavelet). How does the mean 8–14-year power in 1795–1830 change?</div>
+  <details><summary>Answer</summary><p>It rises from 2.0 to 2.5, while the mean over the whole sample goes from 5.7 to 5.9: a longer wavelet averages over more years, so the weak minimum around 1800 is blurred with its neighbours. The year of the maximum stays around 1956.</p></details>
+</section>
+<p class="src foot">Simulations of the chapter (seed 2026): the Normal draws of the two-cycles example (T = 120), of the white-noise periodograms (T = 128 and T = 2048), of the leakage example (T = 256) and the simulated AR(2) of the smoothing example (T = 512). The yearly sunspots 1700–2008 (statsmodels), the hourly electricity load of Romania 1 January 2022 – 30 June 2026 (the ENTSO-E extract of Chapter 4, put on a regular hourly grid by the chapter’s loader) and the daily S&P 500 returns 2000–2026 (EODHD) are not revised and reproduce the numbers of the lecture exactly. US real GDP (FRED GDPC1) and US industrial production and unemployment (FRED INDPRO, UNRATE), read on 4 November 2026 and cut at 2019 as in the lecture, reproduce the numbers of the lecture exactly. Romanian real GDP (Eurostat namq_10_gdp) has been revised since the slides were made: the page uses the vintage of the slides, read from the vector chart charts/tsa_ch12_gdp_series.pdf, in which every one of the 99 quarterly growth rates (1995 Q2 – 2019 Q4) is a vertex of the line; they reproduce the numbers of the lecture to the sixth significant digit; the values with the Eurostat data of 4 November 2026 are given next to them. Variants that do not appear in the lecture (other amplitudes, samples, bandwidths, values of λ, segments, ω₀) are extra runs of the chapter’s code on the same data; the charts of “Interpreting aliasing”, “Interpreting the sunspot periodogram”, “Statistical properties of the periodogram”, “Interpreting the smoothed estimates”, “Interpreting the GDP spectra”, “Interpreting the load spectrum” and “Interpreting the filter gains” are extra charts for slides that give only numbers.</p>
+</main>
+</body>
+</html>
