@@ -614,7 +614,8 @@ def fig_lppl_components(save_it=True):
     lam = {str(w): float(np.exp(2 * np.pi / w)) for w in (6, 6.28, 8, 10)}
     # successive local maxima of cos(omega ln(tc - t)) (phase 0): tc - t_n = exp(-2 pi n / omega)
     peaks = [float(tc - np.exp(-2 * np.pi * k / 8)) for k in range(0, 4)]
-    return dict(lam=lam, peaks8=peaks)
+    # damping condition m|B| / (omega |C|) >= 1 of the right panel (m = 0.5, B = -1, omega = 8, C = 0.08): 0.78, not met
+    return dict(lam=lam, peaks8=peaks, damping_full=float(0.5 * 1 / (8 * 0.08)))
 
 
 def fig_cost(save_it=True):
@@ -725,7 +726,9 @@ def fig_tc_path(save_it=True):
         ax.tick_params(axis='x', labelrotation=30)
         err = (d['tc'] - peak).dt.days
         out[k] = dict(n=int(len(d)), share_q=float(d['q'].mean()), tc_min=d2s(d['tc'].min()), tc_max=d2s(d['tc'].max()),
-                      err_med=float(np.median(np.abs(err))), range_days=int((d['tc'].max() - d['tc'].min()).days))
+                      err_med=float(np.median(np.abs(err))), range_days=int((d['tc'].max() - d['tc'].min()).days),
+                      at_t2=int(((d['tc'] - d['t2']).dt.days == 0).sum()),            # tc on the end date itself
+                      near20=int(((d['tc'] - d['t2']).dt.days.abs() <= 20).sum()))     # tc within 20 days of t2
     st.fig_legend_bottom(fig, ncol=4, y=0.02)
     fig.tight_layout(rect=(0, 0.08, 1, 1))
     save('tsa_ch13_tc_path', save_it)

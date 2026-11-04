@@ -529,8 +529,15 @@ const FPO = D.fcpath;
 function fpState(o) {
   const M = FPO.m[o], x = US.v.slice(0, M.T), fa = arfimaFc(x, M.d, M.phi, FPO.H), d0 = US.d[M.T - 1];
   const fut = months(isoM(+d0.slice(0, 4), +d0.slice(5, 7), 1), FPO.H);
-  const act = US.v.slice(M.T, M.T + FPO.H), e = (f) => Math.sqrt(mean(act.map((v, h) => (v - f[h]) ** 2)));
-  return { M, x, fa, fr: M.ar, fut, d0, mu: mean(x), m12: mean(x.slice(-12)), nact: act.length, ra: act.length ? e(fa) : null, rr: act.length ? e(M.ar) : null };
+  // months since the previous value (FRED has no October 2025 CPI: the November 2025 value covers two months)
+  const mo = i => 12 * +US.d[i].slice(0, 4) + +US.d[i].slice(5, 7), m0 = mo(M.T - 1);
+  const A = [];                                   // actual values matched by calendar month: [horizon, months covered, value]
+  for (let j = M.T; j < US.v.length && mo(j) - m0 <= FPO.H; j++) A.push([mo(j) - m0, mo(j) - mo(j - 1), US.v[j]]);
+  const fk = (f, h, k) => mean(f.slice(h - k, h));
+  const e = (f) => Math.sqrt(mean(A.map(([h, k, v]) => (v - fk(f, h, k)) ** 2)));
+  let w = 0, s12 = 0;                             // the last 12 calendar months: 100 ln(CPI_T / CPI_{T-12})
+  for (let j = M.T - 1; j > 0 && m0 - mo(j) < 12; j--) { const k = mo(j) - mo(j - 1); s12 += x[j] * k; w += k; }
+  return { M, x, fa, fr: M.ar, fut, d0, mu: mean(x), m12: s12 / w, nact: A.length, ra: A.length ? e(fa) : null, rr: A.length ? e(M.ar) : null };
 }
 function blkFp() {
   const o = $('fp-o').value, S = fpState(o);
@@ -550,7 +557,8 @@ function blkFp() {
 const FCM = ['ARFIMA', 'AR', 'Mean', 'RW'], FCL = { ARFIMA: 'ARFIMA(1,d,0)', AR: 'AR(p) with p by AIC', Mean: 'sample mean', RW: 'random walk' }, FCC = { ARFIMA: K.blue, AR: K.navy, Mean: K.green, RW: K.red };
 function fcState(k) {
   return memo('fc|' + k, () => ['ro', 'us'].map(c => { const F = D.fc[c], i0 = Math.floor(F.n * k / 100), o0 = isoM(+F.o0.slice(0, 4), +F.o0.slice(5, 7), i0);
-    const rm = Object.fromEntries(FCM.map(m => [m, range(0, 23, 1).map(h => Math.sqrt(mean(F.e[m].slice(i0).map(e => e[h] ** 2))))]));
+    // null: a month without a value (October 2025 for the US), left out of the RMSE
+    const rm = Object.fromEntries(FCM.map(m => [m, range(0, 23, 1).map(h => Math.sqrt(mean(F.e[m].slice(i0).map(e => e[h]).filter(v => v !== null).map(v => v * v))))]));
     return { c, n: F.n - i0, o0, rm }; }));
 }
 function blkFo() {
@@ -707,7 +715,7 @@ function blkRl() {
     ln(S.bet.d, S.bet.v, b, K.red, `BET returns: DFA exponent H, ${S.B.wd}-day windows`, { line: { width: 1.2 } }), legBand('95% band of i.i.d. series (Monte Carlo)')], G.lay);
   const iM = S.us.v.indexOf(Math.max(...S.us.v)), im = S.us.v.indexOf(Math.min(...S.us.v)), jm = S.sp.v.indexOf(Math.min(...S.sp.v));
   const above = mean(S.bet.v.map(v => (v > S.B.bh[1] ? 1 : 0)));
-  out('rl-out', [T.rl1(nf(20 * m, 0), f2(S.us.v[iM]), T.my(S.us.d[iM]), f2(S.us.v[im]), T.my(S.us.d[im]), f3(S.us.v[S.us.v.length - 1]), f3(S.B.bu[0]), f3(S.B.bu[1])),
+  out('rl-out', [T.rl1(nf(20 * m, 0), f2(S.us.v[iM]), T.my(S.us.d[iM]), f2(S.us.v[im]), T.my(S.us.d[im]), nf(S.us.v[S.us.v.length - 1], 4), f3(S.B.bu[0]), f3(S.B.bu[1]), nf(S.B.bu[1], 4), S.us.v[S.us.v.length - 1] > S.B.bu[1]),
     T.rl2(S.B.wd, f2(S.sp.v[jm]), T.my(S.sp.d[jm]), nf(100 * above, 0), f3(S.B.bh[0]), f3(S.B.bh[1]))]);
 }
 

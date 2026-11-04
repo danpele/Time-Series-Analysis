@@ -79,7 +79,7 @@ def module_body(mod, start, end=None):
 def style_cell():
     """Chart style (tsa_style.py), with save_fig writing into the current folder (or OUT_DIR in Colab)."""
     body = module_body(ST, '# Palette', '_HERE = ')
-    funcs = src(ST.apply, ST.legend_outside_bottom, ST.fig_legend_bottom, ST._is_grey, ST.check_no_grey)
+    funcs = src(ST.apply, ST._remember_tight_layout, ST.legend_outside_bottom, ST.fig_legend_bottom, ST._is_grey, ST.check_no_grey)
     return (body + '\n\n\n' + funcs + '''
 
 

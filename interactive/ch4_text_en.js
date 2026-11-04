@@ -40,7 +40,7 @@ window.CH4_TEXT = {
  sa4: (y, a, b) => `Total of ${y}: NSA ${a}, SCA ${b} bn EUR.`,
  fo1: (K, n, r) => `K = ${K}: ${n} coefficients, R² = ${r}.`,
  fo2: a => `Amplitudes of the harmonics k = 1, 2, …: ${j(a)} (log).`,
- fo3: (a, b) => `sin(2π6t/12) is zero in every month: the fit in the chart has 10 effective coefficients (R² = ${a}); with cos(2π6t/12) instead, the 11 coefficients pass through all 12 points (R² = ${b}).`,
+ fo3: (a, b) => `sin(2π6t/12) is zero in every month and is left out: with cos(2π6t/12), the 11 coefficients pass through all 12 points (R² = ${b}); K = 5, with 10 coefficients, gives R² = ${a}.`,
  ea1: (w, l, s, n) => `w = ${w} days` + (l ? ' (lecture)' : ' (an extra run of the chapter code)') + `: slope of the OLS line ${s} percentage points, ${n} months (March–May, without 2020–2021).`,
  ea2: (b, se, t, w, ws) => `Food, regression with SARIMA(0,1,1)(0,1,1)<sub>12</sub> errors: Easter ${b}% (standard error ${se}, t = ${t}); one more working day ${w}% (${ws}).`,
  ea3: (b, se, t, w, ws) => `Total retail: Easter ${b}% (${se}, t = ${t}); working days ${w}% (${ws}).`,
@@ -170,7 +170,7 @@ Object.assign(window.CH4_TEXT, { x: {
  // Fourier fits table
  ncoef: 'Coefficients', resSd: 'Residual sd', aug: 'Fit, August', jan: 'Fit, January',
  fkCap: (a, j) => `Monthly seasonal effect of ln(tourism nights), 2012–2019 (August ${a}, January ${j}); AICc = 12 ln(SSR/12) + 2k + 2k(k + 1)/(12 − k − 1), k = coefficients + 1`,
- fkNote: (a, b) => `K = 6: sin(2π·6t/12) = sin(πt) is 0 every month, so 11 coefficients reproduce the 12 points. The slide's “K = 6” fit drops cos(πt) instead and keeps the zero column: its R² = ${a} is the K = 5 fit (R² = ${b}).`,
+ fkNote: (a, b) => `K = 6: sin(2π·6t/12) = sin(πt) is 0 every month and is left out, so 11 coefficients reproduce the 12 points (R² = ${a}); K = 5 gives R² = ${b}.`,
  fk0: (K, n, r2, a, p) => `K = ${K}: ${n} coefficients, R² = ${r2}; August fitted ${a}, observed ${p}.`,
  fk1: (K, a) => `AICc is lowest at K = ${K} (${a}): with 12 points its penalty 2k(k + 1)/(12 − k − 1) is already 28 at K = 3, so it prefers the single wave, although the August peak needs K ≥ 3.`,
  // Easter share

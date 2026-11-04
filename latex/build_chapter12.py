@@ -182,7 +182,7 @@ for k in ('r', 'abs'):
     P(f'lm.{k}.d', LM[k]['d'], 2)
 P('lm.se', LM['r']['se'], 3)
 V.raw('lm.m', str(LM['r']['m']))
-P('lm.per', 1 / LM['r']['nu_m'], 0)
+P('lm.per', 1 / LM['r']['nu_m'], 1)
 
 FI = N['filt']
 P('fi.d40', FI['d1_40'], 3)
@@ -659,7 +659,7 @@ D.frame(T('Long memory in the frequency domain (2/2): the GPH estimator', 'Memor
      [T('$\\hat d$ close to 0: short memory; $0 < \\hat d < 0.5$: stationary long memory; $\\hat d \\ge 0.5$: nonstationary', '$\\hat d$ apropiat de 0: memorie scurtă; $0 < \\hat d < 0{,}5$: memorie lungă staționară; $\\hat d \\ge 0{,}5$: nestaționaritate')])))
 
 chart(T('The pole at zero in stock-market data', 'Polul de la zero în datele bursiere'), 'tsa_ch12_long_memory', 'TSA_ch12_long_memory', [
-    T('Daily S\\&P 500 log returns, 2000--2026, $T = @{lm.T}$ (EODHD); periodogram averaged in 40 log-frequency bins; GPH lines on the lowest $m = @{lm.m}$ frequencies (periods above @{lm.per} days)', 'Randamentele logaritmice zilnice S\\&P 500, 2000--2026, $T = @{lm.T}$ (EODHD); periodograma mediată în 40 de intervale logaritmice de frecvență; dreptele GPH pe cele mai joase $m = @{lm.m}$ frecvențe (perioade de peste @{lm.per} de zile)')],
+    T('Daily S\\&P 500 log returns, 2000--2026, $T = @{lm.T}$ (EODHD); periodogram averaged in 40 log-frequency bins; GPH lines on the lowest $m = @{lm.m}$ frequencies (periods of @{lm.per} days and longer)', 'Randamentele logaritmice zilnice S\\&P 500, 2000--2026, $T = @{lm.T}$ (EODHD); periodograma mediată în 40 de intervale logaritmice de frecvență; dreptele GPH pe cele mai joase $m = @{lm.m}$ frecvențe (perioade de @{lm.per} zile și mai lungi)')],
     h='0.58\\textheight')
 
 interp(('the log--log periodogram', 'periodogramei log--log'), [

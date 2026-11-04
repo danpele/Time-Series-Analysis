@@ -99,5 +99,26 @@ QUANTLETS = [
          consts=CONSTS, funcs=CORE + [g.fig_wavelet], run='print(fig_wavelet())', charts=['tsa_ch12_wavelet']),
 ]
 
+try:                                   # seminar code (instructor files, see .gitignore)
+    import seminar12 as s
+    SEM_CONSTS = CONSTS + [f'LOAD_YEAR = {s.LOAD_YEAR!r}', f'DFT_SEMINAR = {s.DFT_SEMINAR!r}', f'IP_SAMPLE = {s.IP_SAMPLE!r}',
+                           f'IP_BAND = {s.IP_BAND!r}', f'DANIELL_M = {s.DANIELL_M!r}', f'LAMBDAS = {s.LAMBDAS!r}']
+    SEM_GIVEN = [g.hp_gain, s.alias, s.fit_ar, s.band_share, s.hp_half_power, s.harmonic_share, s.ip_growth,
+                 s.a1_frequencies, s.a3_ar1_gdp, s.a5_gains, s.b1_load]
+    SEM_ANSWERS = [s.a2_small_periodogram, s.a4_ar2_sunspots, s.b2_ip, s.c1_check]
+    QUANTLETS.append(dict(
+        name='TSA_ch12_seminar',
+        desc='Seminar 12 of Time Series Analysis: frequencies, periods and aliasing of hourly data; the periodogram of '
+             'four values and Parseval; the AR(1) spectrum of US GDP growth and the AR(2) spectrum of the sunspots; '
+             'squared gains of differences and of the HP filter; the daily and weekly cycles of the Romanian electricity '
+             'load in 2025; a smoothed periodogram with a confidence band and an AR spectrum of US industrial production.',
+        keywords='seminar, spectral analysis, periodogram, aliasing, AR spectrum, Daniell smoother, HP filter, gain, electricity load',
+        consts=SEM_CONSTS, funcs=CORE + SEM_GIVEN + SEM_ANSWERS,
+        run="print(a1_frequencies())\nprint(a3_ar1_gdp())\nprint(a5_gains())\nb1 = b1_load()\n"
+            "print({k: v for k, v in b1.items() if k != 'monthly'})\nprint(b2_ip())",
+        charts=['ch12_sem_b1', 'ch12_sem_b2']))
+except ImportError:
+    pass
+
 if __name__ == '__main__':
     build_all(QUANTLETS, chapter=12, chapter_title='Spectral analysis', ql_dir=HERE, data=DATA, submitted=SUBMITTED)

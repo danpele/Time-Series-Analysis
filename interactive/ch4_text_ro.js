@@ -44,7 +44,7 @@ window.CH4_TEXT = {
  sa4: (y, a, b) => `Totalul anului ${y}: NSA ${a}, SCA ${b} mld. EUR.`,
  fo1: (K, n, r) => `K = ${K}: ${n} coeficienți, R² = ${r}.`,
  fo2: a => `Amplitudinile armonicelor k = 1, 2, …: ${j(a)} (log).`,
- fo3: (a, b) => `sin(2π6t/12) este zero în fiecare lună: ajustarea din grafic are 10 coeficienți efectivi (R² = ${a}); cu cos(2π6t/12) în locul lui, cei 11 coeficienți trec prin toate cele 12 puncte (R² = ${b}).`,
+ fo3: (a, b) => `sin(2π6t/12) este zero în fiecare lună și este omis: cu cos(2π6t/12), cei 11 coeficienți trec prin toate cele 12 puncte (R² = ${b}); K = 5, cu 10 coeficienți, dă R² = ${a}.`,
  ea1: (w, l, s, n) => `w = ${w} zile` + (l ? ' (curs)' : ' (o rulare suplimentară a codului capitolului)') + `: panta dreptei MCMMP (OLS) ${s} puncte procentuale, ${n}${de(n)} luni (martie–mai, fără 2020–2021).`,
  ea2: (b, se, t, w, ws) => `Alimente, regresie cu erori SARIMA(0,1,1)(0,1,1)<sub>12</sub>: Paștele ${b}% (eroarea standard ${se}, t = ${t}); o zi lucrătoare în plus ${w}% (${ws}).`,
  ea3: (b, se, t, w, ws) => `Totalul comerțului: Paștele ${b}% (${se}, t = ${t}); zilele lucrătoare ${w}% (${ws}).`,
@@ -177,7 +177,7 @@ Object.assign(window.CH4_TEXT, { x: {
  // tabelul ajustărilor Fourier
  ncoef: 'Coeficienți', resSd: 'Abaterea standard a reziduurilor', aug: 'Ajustarea, august', jan: 'Ajustarea, ianuarie',
  fkCap: (a, j) => `Efectul sezonier lunar al lui ln(înnoptări turistice), 2012–2019 (august ${a}, ianuarie ${j}); AICc = 12 ln(SSR/12) + 2k + 2k(k + 1)/(12 − k − 1), k = coeficienți + 1`,
- fkNote: (a, b) => `K = 6: sin(2π·6t/12) = sin(πt) este 0 în fiecare lună, deci 11 coeficienți reproduc cele 12 puncte. Ajustarea „K = 6” din slide elimină în schimb cos(πt) și păstrează coloana nulă: R² = ${a} este ajustarea cu K = 5 (R² = ${b}).`,
+ fkNote: (a, b) => `K = 6: sin(2π·6t/12) = sin(πt) este 0 în fiecare lună și este omis, deci 11 coeficienți reproduc cele 12 puncte (R² = ${a}); K = 5 dă R² = ${b}.`,
  fk0: (K, n, r2, a, p) => `K = ${K}: ${n} coeficienți, R² = ${r2}; august ajustat ${a}, observat ${p}.`,
  fk1: (K, a) => `AICc este minim la K = ${K} (${a}): cu 12 puncte penalizarea 2k(k + 1)/(12 − k − 1) este deja 28 la K = 3, așa că alege o singură undă, deși vîrful din august cere K ≥ 3.`,
  // ponderea Paștelui

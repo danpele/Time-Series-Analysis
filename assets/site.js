@@ -132,7 +132,7 @@
     const rowType = l => l.type !== 'notebook' ? l.type : (/seminar/i.test(l.href || '') ? 'seminarNb' : 'lectureNb');
 
     // seminar Quantlets: Quantlets/Ch_NN/TSA_chN_seminar, for the chapters that have that folder on GitHub
-    const SEM_QL = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15];
+    const SEM_QL = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
     function withSemQl(links, num) {
         const q = links.find(l => l.type === 'quantlets' && !l.soon);
         if (!q || !SEM_QL.includes(num) || links.some(l => l.type === 'seminarQl')) return links;

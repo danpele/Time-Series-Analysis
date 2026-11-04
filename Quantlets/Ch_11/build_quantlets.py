@@ -82,5 +82,27 @@ QUANTLETS = [
          charts=['tsa_ch11_context', 'tsa_ch11_prepost', 'tsa_ch11_size'], extra=['ch11_backtest.csv']),
 ]
 
+try:                                   # seminar code (instructor files, see .gitignore)
+    import seminar11 as s
+    SEM_CONSTS = CONSTS + [f'SAVED_RAW = {s.SAVED_RAW!r}', f'FAN_ORIGIN, FAN_HOUR = {s.FAN_ORIGIN!r}, {s.FAN_HOUR!r}',
+                           f'IP_ORIGIN = {s.IP_ORIGIN!r}', f'WQL_ORIGINS = {s.WQL_ORIGINS!r}', f'INFL_SPLIT = {s.INFL_SPLIT!r}',
+                           f'ROLL = {s.ROLL!r}']
+    SEM_FUNCS = [s.saved_path, s.backtest_rows, s.abs_errors, s.lecture_numbers, s.a1_pinball_hour, s.a2_mase_ip,
+                 s.a3_wql_origins, s.a4_coverage, s.b1_inflation, s.b2_horizon, s.dm_test, s.b3_dm]
+    QUANTLETS.append(dict(
+        name='TSA_ch11_seminar',
+        desc='Seminar 11 of Time Series Analysis: scoring zero-shot forecasts of open foundation models (Chronos-Bolt, '
+             'Chronos-2) against the seasonal naive forecast, ETS and ARIMA from the saved rolling-origin results of '
+             'Lecture 11 (no model is re-run): pinball losses and the 80% interval at one hour of Romanian load, MASE of '
+             'three forecasts of Romanian industrial production, the weighted quantile loss over several origins, '
+             'coverage tests; Romanian inflation, error by horizon for US retail sales, Diebold-Mariano tests on seven series.',
+        keywords='seminar, foundation model, zero-shot, Chronos, pinball loss, weighted quantile loss, MASE, coverage, Diebold-Mariano',
+        consts=SEM_CONSTS, funcs=CORE + SEM_FUNCS,
+        run="print(a1_pinball_hour())\nprint(a3_wql_origins())\nb1 = b1_inflation()\nprint(pd.DataFrame(b1['table']).T.round(3))\n"
+            "b3 = b3_dm()\nprint({k: {r: round(v[r]['dm'], 2) for r in v} for k, v in b3.items() if not k.startswith('_')})",
+        charts=['ch11_sem_b1', 'ch11_sem_b2', 'ch11_sem_b3']))
+except ImportError:
+    pass
+
 if __name__ == '__main__':
     build_all(QUANTLETS, 11, 'Foundation models for time series', HERE, data=DATA, submitted=SUBMITTED, install=INSTALL)

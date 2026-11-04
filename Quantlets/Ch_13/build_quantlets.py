@@ -93,5 +93,26 @@ QUANTLETS = [
          charts=['tsa_ch13_eval', 'tsa_ch13_eval_btc'], extra=['ch13_ci_eval_sp500.csv', 'ch13_ci_eval_btc.csv']),
 ]
 
+try:                                   # seminar code (instructor files, see .gitignore)
+    import seminar13 as s
+    QUANTLETS.append(dict(
+        name='TSA_ch13_seminar',
+        desc='Seminar 13 of Time Series Analysis: the right-tailed ADF regression on one window, reading SADF and GSADF, '
+             'dating a bubble from the BSADF sequence with the minimum duration ln T, the LPPL formula and its filter '
+             'conditions, the Blanchard-Watson rational bubble by hand; the PSY tests on the weekly S&P 500 (1990-2004) '
+             'against the Nasdaq 100; LPPL fits of the Bitcoin bubble of 2021 with windows ending 90, 60 and 30 days '
+             'before the peak.',
+        keywords='seminar, bubble, explosive root, right-tailed ADF, SADF, GSADF, BSADF, date-stamping, LPPL, rational bubble, S&P 500, Bitcoin',
+        consts=CONSTS + [f'SP_SAMPLE = {s.SP_SAMPLE!r}', f'SP_PEAK_WEEK = {s.SP_PEAK_WEEK!r}', f'LPPL_LAGS = {s.LPPL_LAGS!r}',
+                         f'LPPL_EX = {s.LPPL_EX!r}', f'BW_EX = {s.BW_EX!r}'],
+        funcs=CORE + [s.lecture_numbers, s.sp500_psy, s.b1_sp500, s.a1_adf_window, s.a2_reading, s.a3_datestamp,
+                      s.a4_lppl, s.a5_rational, s.b2_btc_lppl, s.c1_check],
+        run="res = sp500_psy()\nprint(a1_adf_window(res))\nprint(a3_datestamp(res))\nprint(a5_rational())\n"
+            "b1 = b1_sp500(res=res)\nprint({k: b1[k] for k in ('adf', 'sadf', 'gsadf', 'cv', 'episodes')})",
+        charts=['ch13_sem_b1', 'ch13_sem_b2'], extra=['ch13_numbers.json']))
+except ImportError:
+    pass
+
+
 if __name__ == '__main__':
     build_all(QUANTLETS, 13, 'Speculative bubbles: LPPL models', HERE, data=DATA, submitted=SUBMITTED, install=INSTALL)

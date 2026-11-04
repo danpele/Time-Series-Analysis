@@ -28,19 +28,20 @@ INSTALL = ("# The arch package (FIGARCH estimation) is not preinstalled in Googl
            "    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-q', 'arch'])")
 CONSTS = ['from scipy import special', 'from statsmodels.tsa.stattools import adfuller',
           'from statsmodels.tsa.ar_model import AutoReg',
-          f'SEED = {g.SEED!r}', f'HICP = {g.HICP!r}', f'INFL_START = {g.INFL_START!r}', f'BW = {g.BW!r}',
+          f'SEED = {g.SEED!r}', f'HICP = {g.HICP!r}', f'INFL_START = {g.INFL_START!r}', f'FRED_END = {g.FRED_END!r}', f'HICP_END = {g.HICP_END!r}', f'BW = {g.BW!r}',
           f'NMIN = {g.NMIN!r}', f'WINDOW, STEP = {g.WINDOW!r}, {g.STEP!r}', f'MC_REPS = {g.MC_REPS!r}',
           f'LO_CRIT = {g.LO_CRIT!r}', f'NAME = {g.NAME!r}', f'NILE_BREAK = {g.NILE_BREAK!r}',
           f'SHIFTS = {g.SHIFTS!r}', f'SWITCH = {g.SWITCH!r}', f'RS_EXAMPLE = {g.RS_EXAMPLE!r}',
           "COLORS = {'nile': st.MainBlue, 'infl': st.IDAred, 'infl12': st.Orange, 'usinfl': st.Forest, 'unrate': st.Purple, "
           "'sp500': st.COL['sp500'], 'bet': st.COL['bet'], 'eurron': st.COL['eurron'], 'abs': st.Purple, 'sq': st.Orange}",
           'HERE = "."']
-CORE = [g.nile, g.ro_hicp, g.ro_inflation12, g.seasonal_adjust, g.ro_inflation, g.us_inflation, g.us_unemployment,
-        g.returns, g.monthly_rv, g.parkinson_vol, g.save, g.frac_weights, g.frac_diff, g.arfima_acvf0, g.arma_psi,
+CORE = [g.nile, g.ro_hicp, g.ro_inflation12, g.seasonal_adjust, g.ro_inflation, g.months_between, g.us_inflation,
+        g.us_unemployment, g.us_unemployment_change, g.returns, g.monthly_rv, g.parkinson_vol, g.save, g.frac_weights, g.frac_diff, g.arfima_acvf0, g.arma_psi,
         g.arfima_acvf, g.arfima_acf, g.ma_inf_weights, g.ar_inf_weights, g.fgn_acvf, g.circulant_gaussian, g.sim_arfima,
         g.sim_fgn, g.acf, g.block_sizes, g.rs_curve, g.hurst_rs, g.rs_steps, g.dfa_curve, g.hurst_dfa, g.periodogram,
         g.bandwidth, g.gph, g.local_whittle, g.dl_quad_logdet, g._unpack, g._ok, g.arfima_exact_ml, g._se_numeric,
-        g.arfima_spec, g.arfima_whittle, g.lo_test, g.all_estimates, g.arfima_forecast, g.ar_forecast, g.oos_inflation,
+        g.arfima_spec, g.arfima_whittle, g.lo_test, g.all_estimates, g.arfima_forecast, g.ar_forecast,
+        g.oos_errors_by_month, g.oos_inflation,
         g.rolling_d, g.rolling_hurst, g.mc_band, g.figarch_weights]
 
 QUANTLETS = [

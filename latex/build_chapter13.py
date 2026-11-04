@@ -144,6 +144,8 @@ P('xe.se', XE['se'], 4)
 P('xe.t', XE['t'], 2)
 P('xe.cv', XE['cv'], 2)
 P('xe.a', XE['a'], 4)
+P('xe.delta6', XE['delta'], 6)
+P('xe.se6', XE['se'], 6)
 
 PS = N['psy']
 for k in ('btc', 'bet', 'ssec'):
@@ -155,6 +157,7 @@ for k in ('btc', 'bet', 'ssec'):
         V.raw(f'ps.{k}.e{i}.b', month(b))
 
 CO = N['comp']
+P('comp.damp', CO['damping_full'], 2)
 for w in ('6.28', '8', '10'):
     P(f'lam.{w}', CO['lam'][w], 2)
 for i in (1, 2, 3):
@@ -203,6 +206,8 @@ for k in ('ndx', 'btc17'):
     V.raw(f'tp.{k}.max', date(TP[k]['tc_max']))
     V.raw(f'tp.{k}.range', str(TP[k]['range_days']))
     V.raw(f'tp.{k}.err', str(int(TP[k]['err_med'])))
+    V.raw(f'tp.{k}.at', str(TP[k]['at_t2']))
+    V.raw(f'tp.{k}.n20', str(TP[k]['near20']))
 
 WI = N['windows']
 for k in ('ndx', 'ssec'):
@@ -439,7 +444,7 @@ D.frame(T('Worked example: one window of the Nasdaq 100', 'Exemplu rezolvat: o f
     (T('Weekly log closes of the Nasdaq 100, $T = @{pn.T}$ weeks; $r_0 = @{pn.r0}$, i.e.\\ a smallest window of @{pn.w0} weeks', 'Închideri săptămînale logaritmice ale Nasdaq 100, $T = @{pn.T}$@{pn.T.de} săptămîni; $r_0 = @{pn.r0}$, adică o fereastră minimă de @{pn.w0}@{pn.w0.de} săptămîni'),
      [T('end of the window: @{xe.end}, the week of the peak; among all start points the largest statistic comes from the start @{xe.start}', 'sfîrșitul ferestrei: @{xe.end}, săptămîna maximului; dintre toate punctele de început, cea mai mare statistică provine din începutul @{xe.start}')]),
     (T('OLS on this window ($n = @{xe.n}$ weekly changes): $\\widehat{\\Delta y_t} = @{xe.a} + @{xe.delta}\\, y_{t-1}$', 'OLS pe această fereastră ($n = @{xe.n}$@{xe.n.de} variații săptămînale): $\\widehat{\\Delta y_t} = @{xe.a} + @{xe.delta}\\, y_{t-1}$'),
-     [T('$t = \\hat\\delta / \\mathrm{SE}(\\hat\\delta) = @{xe.delta} / @{xe.se} = @{xe.t}$', '$t = \\hat\\delta / \\mathrm{SE}(\\hat\\delta) = @{xe.delta} / @{xe.se} = @{xe.t}$'),
+     [T('$t = \\hat\\delta / \\mathrm{SE}(\\hat\\delta) = @{xe.delta6} / @{xe.se6} = @{xe.t}$', '$t = \\hat\\delta / \\mathrm{SE}(\\hat\\delta) = @{xe.delta6} / @{xe.se6} = @{xe.t}$'),
       T('so BSADF at the peak is @{xe.t}, above its 95\\% critical value of @{xe.cv}', 'deci BSADF la maximum este @{xe.t}, peste valoarea critică de 95\\%, egală cu @{xe.cv}')]),
     T('Reading: $\\hat\\delta > 0$ means $\\hat\\rho = 1 + \\hat\\delta > 1$: the higher the price, the larger the next weekly rise, the mark of an explosive phase', 'Interpretarea: $\\hat\\delta > 0$ înseamnă $\\hat\\rho = 1 + \\hat\\delta > 1$: cu cît prețul este mai mare, cu atît creșterea săptămînală următoare este mai mare, semnul unei faze explozive')))
 
@@ -464,7 +469,7 @@ chart(T('Bitcoin, BET and Shanghai: dated episodes', 'Bitcoin, BET și Shanghai:
 interp(('the three markets', 'celor trei piețe'), [
     (T('GSADF: Bitcoin @{ps.btc.gsadf}, BET @{ps.bet.gsadf}, Shanghai @{ps.ssec.gsadf}; above their 95\\% critical values (@{ps.btc.cv}, @{ps.bet.cv}, @{ps.ssec.cv})', 'GSADF: Bitcoin @{ps.btc.gsadf}, BET @{ps.bet.gsadf}, Shanghai @{ps.ssec.gsadf}; peste valorile critice de 95\\% (@{ps.btc.cv}, @{ps.bet.cv}, @{ps.ssec.cv})'),
      [T('Bitcoin: @{ps.btc.e0.a} -- @{ps.btc.e0.b} and @{ps.btc.e1.a} -- @{ps.btc.e1.b}; Shanghai: @{ps.ssec.e0.a} -- @{ps.ssec.e0.b}', 'Bitcoin: @{ps.btc.e0.a} -- @{ps.btc.e0.b} și @{ps.btc.e1.a} -- @{ps.btc.e1.b}; Shanghai: @{ps.ssec.e0.a} -- @{ps.ssec.e0.b}')]),
-    (T('BET: the explosive phase is @{ps.bet.e1.a} -- @{ps.bet.e1.b}, not the run-up to July 2007, which was strong but not explosive', 'BET: faza explozivă este @{ps.bet.e1.a} -- @{ps.bet.e1.b}, nu creșterea pînă în iulie 2007, care a fost puternică, dar nu explozivă'),
+    (T('BET: the explosive phase is @{ps.bet.e1.a} -- @{ps.bet.e1.b}, not the run-up to July 2007, which was strong but not explosive; an earlier episode is dated @{ps.bet.e0.a} -- @{ps.bet.e0.b}', 'BET: faza explozivă este @{ps.bet.e1.a} -- @{ps.bet.e1.b}, nu creșterea pînă în iulie 2007, care a fost puternică, dar nu explozivă; un episod anterior este datat @{ps.bet.e0.a} -- @{ps.bet.e0.b}'),
      [T('the BET flag of @{ps.bet.e2.a} -- @{ps.bet.e2.b} is the collapse: an \\textbf{accelerating fall} also gives $\\hat\\delta > 0$; always read the dates against the price chart', 'semnalul BET din @{ps.bet.e2.a} -- @{ps.bet.e2.b} este prăbușirea: o \\textbf{scădere care se accelerează} dă tot $\\hat\\delta > 0$; citiți întotdeauna datele alături de graficul prețului')]),
     T('The Bitcoin 2017 episode lasts until @{ps.btc.e0.b}, again well after the peak', 'Episodul Bitcoin din 2017 ține pînă în @{ps.btc.e0.b}, din nou mult după maximum')])
 
@@ -570,8 +575,8 @@ D.frame(T('Log-periodic oscillations', 'Oscilațiile log-periodice'), items(
       T('$\\omega = 6.28$ gives $\\lambda = @{lam.6.28}$; $\\omega = 10$ gives $\\lambda = @{lam.10}$; the empirical literature reports $\\lambda$ near 2 \\refSornette', '$\\omega = 6{,}28$ dă $\\lambda = @{lam.6.28}$; $\\omega = 10$ dă $\\lambda = @{lam.10}$; literatura empirică raportează $\\lambda$ în jur de 2 \\refSornette')])))
 
 chart(T('The pieces of the LPPL equation', 'Componentele ecuației LPPL'), 'tsa_ch13_lppl_components', 'TSA_ch13_lppl_model', [
-    T('Left: $A + B(t_c - t)^m$ for $m = 0.3, 0.5, 0.8$; middle: the oscillation $(t_c - t)^m \\cos(\\omega \\ln(t_c - t))$ for $\\omega = 6$ and $10$; right: the full LPPL path; $t_c = 1$',
-      'Stînga: $A + B(t_c - t)^m$ pentru $m = 0{,}3;\\ 0{,}5;\\ 0{,}8$; mijloc: oscilația $(t_c - t)^m \\cos(\\omega \\ln(t_c - t))$ pentru $\\omega = 6$ și $10$; dreapta: traiectoria LPPL completă; $t_c = 1$')],
+    T('Left: $A + B(t_c - t)^m$ for $m = 0.3, 0.5, 0.8$; middle: the oscillation $(t_c - t)^m \\cos(\\omega \\ln(t_c - t))$ for $\\omega = 6$ and $10$; right: the full LPPL path ($m = 0.5$, $\\omega = 8$, $C/|B| = 0.08$), which fails the damping condition: $m|B|/(\\omega|C|) = @{comp.damp} < 1$; $t_c = 1$',
+      'Stînga: $A + B(t_c - t)^m$ pentru $m = 0{,}3;\\ 0{,}5;\\ 0{,}8$; mijloc: oscilația $(t_c - t)^m \\cos(\\omega \\ln(t_c - t))$ pentru $\\omega = 6$ și $10$; dreapta: traiectoria LPPL completă ($m = 0{,}5$, $\\omega = 8$, $C/|B| = 0{,}08$), care nu îndeplinește condiția de amortizare: $m|B|/(\\omega|C|) = @{comp.damp} < 1$; $t_c = 1$')],
     h='0.55\\textheight')
 
 interp(('the components', 'componentelor'), [
@@ -713,7 +718,7 @@ chart(T('The indicator around four peaks (2/2)', 'Indicatorul în jurul a patru 
 
 interp(('the indicator', 'indicatorului'), [
     (T('Nasdaq 100: the parameter version reaches @{ci.ndx.maxp} on @{ci.ndx.maxpd}, a year before the peak, and rises again in the last months; the full version stays below @{ci.ndx.maxf}', 'Nasdaq 100: versiunea pe parametri atinge @{ci.ndx.maxp} la @{ci.ndx.maxpd}, cu un an înainte de maximum, și crește din nou în ultimele luni; versiunea completă rămîne sub @{ci.ndx.maxf}'),
-     [T('Shanghai: both versions rise in the two months before the peak (maximum @{ci.ssec.maxf} on @{ci.ssec.maxfd})', 'Shanghai: ambele versiuni cresc în cele două luni dinaintea maximului (maximum @{ci.ssec.maxf} la @{ci.ssec.maxfd})')]),
+     [T('Shanghai: both versions rise in the two months before the peak (maximum on @{ci.ssec.maxfd}: @{ci.ssec.maxf} with the full filter, @{ci.ssec.maxp} with the parameter conditions only)', 'Shanghai: ambele versiuni cresc în cele două luni dinaintea maximului (maximum la @{ci.ssec.maxfd}: @{ci.ssec.maxf} cu filtrul complet, @{ci.ssec.maxp} doar cu condițiile asupra parametrilor)')]),
     (T('BET: the strongest full-filter signal, @{ci.bet.maxf}, comes on @{ci.bet.maxfd}, after the peak: the fits then describe the last part of the run-up, not the future', 'BET: cel mai puternic semnal cu filtrul complet, @{ci.bet.maxf}, vine la @{ci.bet.maxfd}, după maximum: ajustările descriu atunci ultima parte a creșterii, nu viitorul'),
      [T('Bitcoin 2017: the parameter version peaks at @{ci.btc17.maxp} on @{ci.btc17.maxpd}; the full version is almost always 0 (the 15\\% error condition)', 'Bitcoin 2017: versiunea pe parametri ajunge la @{ci.btc17.maxp} la @{ci.btc17.maxpd}; versiunea completă este aproape mereu 0 (condiția erorii de 15\\%)')]),
     T('The indicator does light up in bubbles, but early, late and with gaps; the choice of filter changes the picture', 'Indicatorul se aprinde în bule, dar devreme, tîrziu și cu întreruperi; alegerea filtrului schimbă imaginea')])
@@ -726,7 +731,7 @@ chart(T('The critical time moves with the data', 'Timpul critic se mută odată 
 interp(('the moving critical time', 'timpului critic care se mută'), [
     (T('Nasdaq 100: over @{tp.ndx.n} end dates $\\hat t_c$ ranges from @{tp.ndx.min} to @{tp.ndx.max} (@{tp.ndx.range} days); none of these fits passes the parameter conditions', 'Nasdaq 100: pe @{tp.ndx.n}@{tp.ndx.n.de} date de sfîrșit, $\\hat t_c$ variază de la @{tp.ndx.min} la @{tp.ndx.max} (@{tp.ndx.range}@{tp.ndx.range.de} zile); niciuna dintre aceste ajustări nu trece de condițiile asupra parametrilor'),
      [T('Bitcoin 2017: range @{tp.btc17.min} -- @{tp.btc17.max}; @{tp.btc17.q}\\% of the fits pass; median error @{tp.btc17.err} days', 'Bitcoin 2017: intervalul @{tp.btc17.min} -- @{tp.btc17.max}; @{tp.btc17.q}\\% dintre ajustări trec; eroarea mediană @{tp.btc17.err}@{tp.btc17.err.de} zile')]),
-    (T('Bitcoin: many points lie close to the line $t_c = t_2$, the fit often says ``the end is now\'\', week after week; Nasdaq 100: $\\hat t_c$ mostly sits at the upper bound of the search space', 'Bitcoin: multe puncte stau aproape de dreapta $t_c = t_2$, ajustarea spune adesea „sfîrșitul este acum”, săptămînă după săptămînă; Nasdaq 100: $\\hat t_c$ stă mai ales la limita superioară a spațiului de căutare'),
+    (T('Bitcoin: @{tp.btc17.at} of the @{tp.btc17.n} fits put $\\hat t_c$ exactly at $t_2$ and @{tp.btc17.n20} within 20 days of it: the fit then says ``the end is now\'\'; Nasdaq 100: $\\hat t_c$ mostly sits at the upper bound of the search space', 'Bitcoin: @{tp.btc17.at} dintre cele @{tp.btc17.n}@{tp.btc17.n.de} ajustări pun $\\hat t_c$ exact în $t_2$, iar @{tp.btc17.n20} la cel mult 20 de zile de $t_2$: atunci ajustarea spune „sfîrșitul este acum”; Nasdaq 100: $\\hat t_c$ stă mai ales la limita superioară a spațiului de căutare'),
      [T('a forecast that keeps moving with the data is a description of the past, not a prediction', 'o prognoză care se tot mută odată cu datele este o descriere a trecutului, nu o predicție')]),
     T('Picking, after the crash, the one window whose $\\hat t_c$ was right is \\textbf{look-ahead bias}', 'Alegerea, după crah, a singurei ferestre al cărei $\\hat t_c$ a fost corect înseamnă \\textbf{look-ahead bias} (folosirea informației din viitor)')])
 

@@ -85,5 +85,27 @@ QUANTLETS = [
          consts=CONSTS, funcs=CORE + [g.hedge, g.fig_hedge], run='print(fig_hedge())', charts=['tsa_ch14_hedge']),
 ]
 
+try:                                   # seminar code (instructor files, see .gitignore)
+    import seminar14 as s
+    QUANTLETS.append(dict(
+        name='TSA_ch14_seminar',
+        desc='Seminar 14 of Time Series Analysis: one step of the DCC recursion for the S&P 500 and the DAX on 17 March '
+             '2020, one step of a diagonal BEKK, the conditional covariance matrix under CCC and DCC, the portfolio '
+             'variance and the VaR 1% on that day, the minimum-variance hedge ratio of the BET with the DAX, the half-life '
+             'of a correlation shock; a DCC for the S&P 500 and long US Treasuries (TLT) since 2003; a VaR 1% backtest of a '
+             '50/50 BET and DAX portfolio, 2015-2026 (Kupiec and Christoffersen tests).',
+        keywords='seminar, multivariate GARCH, DCC, CCC, BEKK, portfolio variance, value at risk, backtesting, hedge ratio, stock-bond correlation',
+        consts=CONSTS + [f'SHOCK_DAY = {s.SHOCK_DAY!r}', f'HEDGE_DAY = {s.HEDGE_DAY!r}', f'BOND_START = {s.BOND_START!r}',
+                         f'BOND_BREAK = {s.BOND_BREAK!r}', f'VAR_PAIR = {s.VAR_PAIR!r}', f'VAR_W = {s.VAR_W!r}',
+                         f'BEKK_EX = {s.BEKK_EX!r}', f'HL_STEPS = {s.HL_STEPS!r}'],
+        funcs=CORE + [g.kupiec, g.christoffersen, s.lecture_numbers, s.dcc_Q, s.sp_dax, s.a1_dcc_step, s.a2_bekk,
+                      s.a3_portfolio, s.a4_hedge, s.a5_half_life, s.b1_stock_bond, s.b2_var_backtest, s.c1_check],
+        run="data = sp_dax()\nprint(a1_dcc_step(data))\nprint(a3_portfolio(data))\nprint(a2_bekk())\n"
+            "b1 = b1_stock_bond()\nprint({k: b1[k] for k in ('a', 'b', 'lr', 'hl', 'mean_pre', 'mean_post')})",
+        charts=['ch14_sem_b1', 'ch14_sem_b2'], extra=['ch14_numbers.json']))
+except ImportError:
+    pass
+
+
 if __name__ == '__main__':
     build_all(QUANTLETS, 14, 'Multivariate GARCH models', HERE, data=DATA, submitted=SUBMITTED, install=INSTALL)

@@ -455,10 +455,10 @@
                     ro: ['Foundation models și prognoza zero-shot: atenția, scalarea prin medie, cuantizarea și patching-ul; Chronos, Chronos-Bolt, Chronos-2, TimesFM, Moirai, Lag-Llama (TimeGPT ca API închis)', 'Prognozele probabiliste și scorurile lor: pierderea pinball, CRPS și pierderea cuantilică ponderată, MASE, acoperirea intervalului de 80%', 'Un test corect față de prognoza sezonieră naivă, ETS și ARIMA pe serii din România și SUA; lungimea contextului, dimensiunea modelului, scurgerea de informație și contaminarea benchmark-urilor']
                 },
                 links: {
-                    en: [pdf('slides', 'EN/Courses/chapter11_foundation_models_time_series.pdf'),
-                         nb('notebooks/EN/chapter11_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_11')],
-                    ro: [pdf('slides', 'RO/Cursuri/capitol11_foundation_models_serii_timp.pdf'),
-                         nb('notebooks/EN/chapter11_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_11')]
+                    en: [pdf('slides', 'EN/Courses/chapter11_foundation_models_time_series.pdf'), pdf('seminar', 'EN/Seminars/seminar11_foundation_models_time_series.pdf'),
+                         nb('notebooks/EN/chapter11_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter11_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_11')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol11_foundation_models_serii_timp.pdf'), pdf('seminar', 'RO/Seminarii/seminar11_foundation_models_serii_timp_ro.pdf'),
+                         nb('notebooks/EN/chapter11_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter11_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_11')]
                 },
                 quantinar: q('nextWord')
             },
@@ -470,10 +470,10 @@
                     ro: ['Cicluri și frecvențe Fourier, periodograma și densitatea spectrală a zgomotului alb și a modelelor ARMA; aliasing și scurgerea spectrală', 'Estimarea spectrului: ferestre de atenuare, netezirea Daniell și Welch, benzi de încredere chi-pătrat, testul lui Fisher; cicluri în petele solare, în PIB-ul SUA și al României și în consumul de energie electrică al României', 'Polul spectral al memoriei lungi, cîștigul filtrelor (diferențiere, Hodrick–Prescott), coerența și faza a două serii; o trimitere spre wavelets']
                 },
                 links: {
-                    en: [pdf('slides', 'EN/Courses/chapter12_spectral_analysis.pdf'),
-                         nb('notebooks/EN/chapter12_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_12')],
-                    ro: [pdf('slides', 'RO/Cursuri/capitol12_analiza_spectrala.pdf'),
-                         nb('notebooks/EN/chapter12_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_12')]
+                    en: [pdf('slides', 'EN/Courses/chapter12_spectral_analysis.pdf'), pdf('seminar', 'EN/Seminars/seminar12_spectral_analysis.pdf'),
+                         nb('notebooks/EN/chapter12_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter12_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_12')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol12_analiza_spectrala.pdf'), pdf('seminar', 'RO/Seminarii/seminar12_analiza_spectrala_ro.pdf'),
+                         nb('notebooks/EN/chapter12_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter12_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_12')]
                 },
                 quantinar: q('xfg')
             },
@@ -485,10 +485,10 @@
                     ro: ['Bule în istorie și semnăturile lor statistice; bule raționale și rădăcini explozive: ADF la dreapta, SADF, GSADF și datarea BSADF (Nasdaq 100, Bitcoin, BET, Shanghai)', 'Modelul LPPL al lui Johansen, Ledoit și Sornette: creștere superexponențială, oscilații log-periodice, timpul critic; estimarea în doi pași Filimonov–Sornette și condițiile de filtrare', 'Indicatorul de încredere LPPLS din multe ferestre; o evaluare onestă a prognozei crahurilor, cu alarme false și frecvențe de bază (S&P 500, Bitcoin)']
                 },
                 links: {
-                    en: [pdf('slides', 'EN/Courses/chapter13_bubbles_lppl.pdf'),
-                         nb('notebooks/EN/chapter13_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_13')],
-                    ro: [pdf('slides', 'RO/Cursuri/capitol13_bule_lppl.pdf'),
-                         nb('notebooks/EN/chapter13_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_13')]
+                    en: [pdf('slides', 'EN/Courses/chapter13_bubbles_lppl.pdf'), pdf('seminar', 'EN/Seminars/seminar13_bubbles_lppl.pdf'),
+                         nb('notebooks/EN/chapter13_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter13_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_13')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol13_bule_lppl.pdf'), pdf('seminar', 'RO/Seminarii/seminar13_bule_lppl_ro.pdf'),
+                         nb('notebooks/EN/chapter13_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter13_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_13')]
                 },
                 quantinar: q('sfm')
             },
@@ -500,10 +500,10 @@
                     ro: ['Volatilitatea multivariată și utilitatea ei: riscul portofoliului, acoperirea riscului, contagiunea; corelațiile pe ferestre mobile ale S&P 500, DAX, BET și Bitcoin; tranzacționarea asincronă', 'Matricea de covarianță condiționată; modelele VEC, BEKK, CCC și DCC și numărul lor de parametri; estimarea DCC în doi pași și testul față de corelația constantă', 'Aplicații: corelațiile în crizele din 2008 și 2020, un DCC cu cinci active, inclusiv BET și EUR/RON, VaR 1% al unui portofoliu, cu backtesting, rapoarte dinamice de acoperire']
                 },
                 links: {
-                    en: [pdf('slides', 'EN/Courses/chapter14_multivariate_garch_models.pdf'),
-                         nb('notebooks/EN/chapter14_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_14')],
-                    ro: [pdf('slides', 'RO/Cursuri/capitol14_modele_garch_multivariate.pdf'),
-                         nb('notebooks/EN/chapter14_lecture_notebook.ipynb', NB_LECT), ql('Quantlets/Ch_14')]
+                    en: [pdf('slides', 'EN/Courses/chapter14_multivariate_garch_models.pdf'), pdf('seminar', 'EN/Seminars/seminar14_multivariate_garch_models.pdf'),
+                         nb('notebooks/EN/chapter14_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter14_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_14')],
+                    ro: [pdf('slides', 'RO/Cursuri/capitol14_modele_garch_multivariate.pdf'), pdf('seminar', 'RO/Seminarii/seminar14_modele_garch_multivariate_ro.pdf'),
+                         nb('notebooks/EN/chapter14_lecture_notebook.ipynb', NB_LECT), nb('notebooks/EN/chapter14_seminar_notebook.ipynb', NB_SEM), ql('Quantlets/Ch_14')]
                 },
                 quantinar: q('statRisk')
             },

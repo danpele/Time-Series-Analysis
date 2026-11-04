@@ -317,8 +317,8 @@ for k, tag in (('g->i', 'gi'), ('pi->i', 'pii'), ('i->g', 'ig'), ('i->pi', 'ipi'
     P(f'e4.F.{tag}', GT[k]['F'], 2)
     V.raw(f'e4.p.{tag}', pv(GT[k]['p']))
 gh = c6['gr_hand']
-P('e4.rssr', gh['rss_r'], 2)
-P('e4.rssu', gh['rss_u'], 2)
+P('e4.rssr', gh['rss_r'], 3)
+P('e4.rssu', gh['rss_u'], 3)
 P('e4.F', gh['F'], 2)
 V.raw('e4.df2', str(gh['df2']))
 V.raw('e4.T', str(gh['T']))
@@ -423,8 +423,8 @@ Pb = (q8 + math.sqrt(q8 ** 2 + 4 * q8)) / 2
 P('e8.Pb', Pb, 4)
 P('e8.Kb', Pb / (Pb + 1), 3)
 MR = C[10]['msro']
-P('e8.p11', MR['p11'], 3)
-P('e8.p22', MR['p22'], 3)
+P('e8.p11', MR['p11'], 4)
+P('e8.p22', MR['p22'], 4)
 P('e8.d1', 1 / (1 - MR['p11']), 1)
 P('e8.d2', 1 / (1 - MR['p22']), 1)
 P('e8.pi1', (1 - MR['p22']) / (2 - MR['p11'] - MR['p22']), 3)

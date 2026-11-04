@@ -494,10 +494,10 @@ function blkQ4() {
   const Gg = granger(n, 0, 2), Gp = granger(n, 1, 2), Gi = granger(n, 2, 1);
   table('q4-tb2', T.q4Head2, [[T.q4h('g', 'i'), R_(f2(Gg.F)), R_(pv(Gg.p))], [T.q4h('π', 'i'), R_(f2(Gp.F)), R_(pv(Gp.p))], [T.q4h('i', 'π'), R_(f2(Gi.F)), R_(pv(Gi.p))]]);
   const r4 = x => Math.round(x * 1e4) / 1e4, num = r4(b[2]) + r4(b[5]), den = 1 - r4(b[3]) - r4(b[6]), crit = fppf(0.95, 2, Gg.df2);
-  const Fr = ((Math.round(Gg.rssR * 100) - Math.round(Gg.rssU * 100)) / 200) / (Math.round(Gg.rssU * 100) / 100 / Gg.df2);
+  const Fr = ((Math.round(Gg.rssR * 1000) - Math.round(Gg.rssU * 1000)) / 2000) / (Math.round(Gg.rssU * 1000) / 1000 / Gg.df2);   // from the RSS shown (3 decimals)
   steps('q4-ws', [T.q4s1(pvr(Gg.p), pvr(Gp.p), pvr(Gi.p), Gg.p < 0.05, Gp.p < 0.05, Gi.p < 0.05), T.q4s2(f3(b[0]), f3(b[1]), f3(b[4]), f3(b[2]), par(b[5], 3), f3(b[3]), par(b[6], 3)),
     T.q4s3(f4(b[2]), par(r4(b[5]), 4), f4(b[3]), par(r4(b[6]), 4), f4(num), f4(den), f2(num / den)),
-    T.q4s4(f2(Gg.rssR), f2(Gg.rssU), Gg.df2, f2(Gg.F), f2(crit), Gg.F > crit, f2(Fr), f2(Fr) !== f2(Gg.F))]);
+    T.q4s4(f3(Gg.rssR), f3(Gg.rssU), Gg.df2, f2(Gg.F), f2(crit), Gg.F > crit, f2(Fr), f2(Fr) !== f2(Gg.F))]);
   out('q4-out', [T.q4o(e, U.Tn, f2(lr), f4(den)), ...(e !== Q4[Q4.length - 1] ? [T.extraP] : [])]);
   return { b, t, lr, num, den, F: Gg.F, Fr, crit, Gg, Gp, Gi, r2: U.r2 };
 }

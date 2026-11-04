@@ -336,6 +336,8 @@ V.raw('rl.us.mind', month(RO['us']['min_d']))
 P('rl.us.last', RO['us']['last'], 3)
 P('rl.us.hi', RO['us']['band']['q975'], 3)
 P('rl.us.lo', RO['us']['band']['q025'], 3)
+P('rl.us.last4', RO['us']['last'], 4)
+P('rl.us.hi4', RO['us']['band']['q975'], 4)
 P('rl.h.lo', RO['band_h']['q025'], 2)
 P('rl.h.hi', RO['band_h']['q975'], 2)
 for k in ('sp500', 'bet'):
@@ -763,20 +765,20 @@ D.frame(T('Forecasts from the AR($\\infty$) form', 'Prognoze din forma AR($\\inf
     T('Forecasts revert to $\\mu$ hyperbolically; the forecast error variance $\\sigma^2\\sum_{j<h}\\psi_j^2$ ($\\psi_j$: the MA($\\infty$) weights) grows slowly towards $\\gamma(0)$ \\refRay', 'Prognozele revin la $\\mu$ hiperbolic; varianța erorii de prognoză $\\sigma^2\\sum_{j<h}\\psi_j^2$ ($\\psi_j$: ponderile MA($\\infty$)) crește lent spre $\\gamma(0)$ \\refRay')))
 
 chart(T('US inflation: ARFIMA and AR forecasts', 'Inflația din SUA: prognoze ARFIMA și AR'), 'tsa_ch8_forecast_path', 'TSA_ch8_forecasting', [
-    T('US monthly CPI inflation, annualised, $T = @{fp.T}$ months up to @{fp.lastd}; ARFIMA(1,$d$,0) estimated by Whittle; AR($p$) with $p$ by AIC; 36 months ahead',
-      'Inflația lunară IPC din SUA, anualizată, $T = @{fp.T}$ de luni pînă în @{fp.lastd}; ARFIMA(1,$d$,0) estimat prin Whittle; AR($p$) cu $p$ ales după AIC; 36 de luni înainte')],
+    T('US monthly CPI inflation, annualised, $T = @{fp.T}$ values up to @{fp.lastd}; ARFIMA(1,$d$,0) estimated by Whittle; AR($p$) with $p$ by AIC; 36 months ahead. FRED has no October 2025 CPI (not published): the November 2025 value is the change since September, annualised over its two months',
+      'Inflația lunară IPC din SUA, anualizată, $T = @{fp.T}$ de valori pînă în @{fp.lastd}; ARFIMA(1,$d$,0) estimat prin Whittle; AR($p$) cu $p$ ales după AIC; 36 de luni înainte. FRED nu are IPC pentru octombrie 2025 (nepublicat): valoarea din noiembrie 2025 este variația față de septembrie, anualizată pe cele două luni')],
     h='0.7\\textheight')
 
 interp(('the two forecasts', 'celor două prognoze'), [
     (T('ARFIMA: $\\hat d = @{fp.d}$, $\\hat\\phi = @{fp.phi}$; AR: $p = @{fp.p}$ lags, the largest allowed', 'ARFIMA: $\\hat d = @{fp.d}$, $\\hat\\phi = @{fp.phi}$; AR: $p = @{fp.p}$ laguri, numărul maxim permis'),
      [T('the AR needs a year of lags to imitate what $d$ does with one parameter', 'AR are nevoie de un an de laguri pentru a imita ce face $d$ cu un singur parametru')]),
-    (T('Last 12 months average @{fp.m12}\\%; the forecasts: @{fp.fa1}\\% and @{fp.fr1}\\% next month, @{fp.fa12}\\% and @{fp.fr12}\\% in a year, @{fp.fa36}\\% and @{fp.fr36}\\% in three years', 'Media ultimelor 12 luni @{fp.m12}\\%; prognozele: @{fp.fa1}\\% și @{fp.fr1}\\% luna viitoare, @{fp.fa12}\\% și @{fp.fr12}\\% peste un an, @{fp.fa36}\\% și @{fp.fr36}\\% peste trei ani'),
+    (T('Last 12 months (12-month inflation) @{fp.m12}\\%; the forecasts: @{fp.fa1}\\% and @{fp.fr1}\\% next month, @{fp.fa12}\\% and @{fp.fr12}\\% in a year, @{fp.fa36}\\% and @{fp.fr36}\\% in three years', 'Ultimele 12 luni (inflația anuală) @{fp.m12}\\%; prognozele: @{fp.fa1}\\% și @{fp.fr1}\\% luna viitoare, @{fp.fa12}\\% și @{fp.fr12}\\% peste un an, @{fp.fa36}\\% și @{fp.fr36}\\% peste trei ani'),
      [T('both approach the long-run mean @{fp.mean}\\%; the paths differ little because the AR(12) already carries a long memory', 'ambele se apropie de media pe termen lung @{fp.mean}\\%; traiectoriile diferă puțin, deoarece AR(12) poartă deja o memorie lungă')]),
     T('Whether the long-run mean of 1947--2026 is the right anchor today is a question about regimes, not about $d$', 'Dacă media pe termen lung din 1947--2026 este ancora potrivită azi este o întrebare despre regimuri, nu despre $d$')])
 
 chart(T('Does long memory improve forecasts?', 'Contribuția memoriei lungi la prognoză'), 'tsa_ch8_forecast', 'TSA_ch8_forecasting', [
-    T('Pseudo out-of-sample, expanding window: Romania @{fc.ro.n} origins (@{fc.ro.f0}--@{fc.ro.f1}), seasonal adjustment inside each window; United States @{fc.us.n} origins (@{fc.us.f0}--@{fc.us.f1}). RMSE relative to AR($p$); below 1: better',
-      'În afara eșantionului, fereastră extinsă: România @{fc.ro.nde} origini (@{fc.ro.f0}--@{fc.ro.f1}), ajustare sezonieră în fiecare fereastră; Statele Unite @{fc.us.nde} origini (@{fc.us.f0}--@{fc.us.f1}). RMSE relativ la AR($p$); sub 1: mai bun')],
+    T('Pseudo out-of-sample, expanding window: Romania @{fc.ro.n} origins (@{fc.ro.f0}--@{fc.ro.f1}), seasonal adjustment inside each window; United States @{fc.us.n} origins (@{fc.us.f0}--@{fc.us.f1}), errors matched by calendar month (no October 2025 CPI). RMSE relative to AR($p$); below 1: better',
+      'În afara eșantionului, fereastră extinsă: România @{fc.ro.nde} origini (@{fc.ro.f0}--@{fc.ro.f1}), ajustare sezonieră în fiecare fereastră; Statele Unite @{fc.us.nde} origini (@{fc.us.f0}--@{fc.us.f1}), erori asociate după luna calendaristică (fără IPC pentru octombrie 2025). RMSE relativ la AR($p$); sub 1: mai bun')],
     h='0.7\\textheight')
 
 interp(('the forecast comparison', 'comparației prognozelor'), [
@@ -913,7 +915,7 @@ chart(T('The stability of memory over time', 'Stabilitatea memoriei în timp'), 
 
 interp(('the rolling estimates', 'estimărilor pe ferestre mobile'), [
     (T('US inflation: $\\hat d$ peaks at @{rl.us.max} in the window ending @{rl.us.maxd} (the Great Inflation and the Volcker disinflation) and falls to @{rl.us.min} (@{rl.us.mind})', 'Inflația din SUA: $\\hat d$ atinge @{rl.us.max} în fereastra care se încheie în @{rl.us.maxd} (Marea Inflație și dezinflația Volcker) și coboară la @{rl.us.min} (@{rl.us.mind})'),
-     [T('in the calm years of the Great Moderation (the Fed announced an explicit 2\\% target only in 2012) $d$ is inside the band of no memory [@{rl.us.lo}, @{rl.us.hi}]; the 2021--2022 surge brings it to @{rl.us.last}, just above the band', 'în anii calmi ai Marii Moderații (Fed a anunțat o țintă explicită de 2\\% abia în 2012) $d$ se află în banda fără memorie [@{rl.us.lo}; @{rl.us.hi}]; creșterea bruscă din 2021--2022 îl duce la @{rl.us.last}, puțin peste bandă')]),
+     [T('in the calm years of the Great Moderation (the Fed announced an explicit 2\\% target only in 2012) $d$ is inside the band of no memory [@{rl.us.lo}, @{rl.us.hi}]; the 2021--2022 surge lifts it to @{rl.us.last4}, at the upper edge of the band (@{rl.us.hi4}) but not above it', 'în anii calmi ai Marii Moderații (Fed a anunțat o țintă explicită de 2\\% abia în 2012) $d$ se află în banda fără memorie [@{rl.us.lo}; @{rl.us.hi}]; creșterea bruscă din 2021--2022 îl duce la @{rl.us.last4}, la marginea de sus a benzii (@{rl.us.hi4}), dar nu peste ea')]),
     (T('Returns: the S\\&P 500 exponent stays mostly below 0.5 (minimum @{rl.sp500.min}, @{rl.sp500.mind}); the BET exceeds the band in @{rl.bet.above}\\% of the windows', 'Randamentele: exponentul S\\&P 500 stă mai ales sub 0,5 (minimum @{rl.sp500.min}, @{rl.sp500.mind}); BET depășește banda în @{rl.bet.above}\\% din ferestre'),
      [T('a less liquid market shows some persistence in returns, fading in recent years', 'o piață mai puțin lichidă arată o anumită persistență a randamentelor, care slăbește în ultimii ani')]),
     T('The full-sample US estimate (0.55) mixes regimes: memory that comes and goes with monetary regimes is a sign of breaks, not of a constant $d$', 'Estimarea pe tot eșantionul pentru SUA (0,55) amestecă regimuri: o memorie care apare și dispare odată cu regimurile monetare semnalează rupturi, nu un $d$ constant')])

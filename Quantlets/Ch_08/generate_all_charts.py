@@ -44,6 +44,8 @@ warnings.filterwarnings('ignore')
 SEED = 2026
 HICP = ('prc_hicp_minr', 'M.I15.TOTAL.RO')    # Romanian HICP, 2015 = 100 (Eurostat)
 INFL_START = '2005-01-01'                      # inflation targeting in Romania since August 2005
+FRED_END = {'CPIAUCSL': '2026-08-01', 'UNRATE': '2026-09-01'}   # last month of the slides
+HICP_END = '2026-08-01'                                          # last month of the slides
 BW = 0.65                                      # bandwidth m = [T^0.65] of the GPH and local Whittle estimators
 NMIN = 10                                      # smallest block of R/S and DFA
 WINDOW, STEP = 1000, 21                        # rolling windows: 1000 days moved by 21 days
@@ -67,8 +69,8 @@ def nile():
 
 
 def ro_hicp():
-    """Romanian HICP, monthly, 2015 = 100 (Eurostat prc_hicp_minr)."""
-    return read_eurostat(*HICP)
+    """Romanian HICP, monthly, 2015 = 100 (Eurostat prc_hicp_minr), cut at the last month of the slides."""
+    return read_eurostat(*HICP).loc[:HICP_END]
 
 
 def ro_inflation12(start=INFL_START):
@@ -90,15 +92,33 @@ def ro_inflation(start=INFL_START):
     return (sa + x.mean()).rename('infl')
 
 
+def months_between(idx):
+    """Number of months between consecutive dates of a monthly index (1 for contiguous months)."""
+    m = np.asarray(idx.year) * 12 + np.asarray(idx.month)
+    return pd.Series(np.r_[np.nan, np.diff(m)], index=idx)
+
+
 def us_inflation(start=None, end=None):
-    """US monthly CPI inflation, annualised: 1200 ln(CPI_t / CPI_{t-1}), in % (FRED CPIAUCSL, seasonally adjusted)."""
-    cpi = read_fred('CPIAUCSL').dropna()
-    return (1200 * np.log(cpi).diff()).dropna().loc[start:end].rename('usinfl')
+    """US monthly CPI inflation, annualised: (1200 / k) ln(CPI_t / CPI_{t-k}), in % (FRED CPIAUCSL, seasonally adjusted),
+    where k is the number of months since the previous published value. FRED has no October 2025 CPI (not published),
+    so the November 2025 value is the change from September to November annualised over its two months (k = 2), not a
+    two-month change annualised as one month; every other month has k = 1. Cut at the last month of the slides."""
+    cpi = read_fred('CPIAUCSL').dropna().loc[:FRED_END['CPIAUCSL']]
+    k = months_between(cpi.index)
+    return (1200 * np.log(cpi).diff() / k).dropna().loc[start:end].rename('usinfl')
 
 
 def us_unemployment(start=None, end=None):
-    """US civilian unemployment rate, monthly, seasonally adjusted, in % (FRED UNRATE)."""
-    return read_fred('UNRATE').dropna().loc[start:end].rename('unrate')
+    """US civilian unemployment rate, monthly, seasonally adjusted, in % (FRED UNRATE; no October 2025 value, not
+    published). Cut at the last month of the slides."""
+    return read_fred('UNRATE').dropna().loc[:FRED_END['UNRATE']].loc[start:end].rename('unrate')
+
+
+def us_unemployment_change(start=None, end=None):
+    """Monthly change of the US unemployment rate, in percentage points. The change from September to November 2025
+    spans two months (no October 2025 value), so it is left out: no change covers more than one month."""
+    u = us_unemployment(start, end)
+    return u.diff()[months_between(u.index) == 1].rename('dunrate')
 
 
 def returns(name, start='2000-01-01'):
@@ -516,12 +536,28 @@ def ar_forecast(x, H=24, pmax=12):
     return np.asarray(AutoReg(x, lags=p, trend='c').fit().forecast(H)), p
 
 
+def oos_errors_by_month(series, t, f, H):
+    """Forecast errors at horizons 1..H (months) after origin t, matched by calendar month. A value that covers k > 1
+    months (US CPI inflation in November 2025: no October 2025 CPI) is compared with the mean of the forecasts of its k
+    months; a month without a value (October 2025) has no error (NaN). Contiguous series: series[t + h] - f[h - 1]."""
+    mo = np.asarray(series.index.year) * 12 + np.asarray(series.index.month)
+    e = np.full(H, np.nan)
+    j = t + 1
+    while j < len(series) and mo[j] - mo[t] <= H:
+        h, k = mo[j] - mo[t], mo[j] - mo[j - 1]
+        e[h - 1] = series.values[j] - np.mean(f[h - k:h])
+        j += 1
+    return e
+
+
 def oos_inflation(series, start, H=24, refit=12, seasonal=False):
     """Pseudo out-of-sample comparison (expanding window, origins from `start`): ARFIMA(1,d,0) (Whittle, re-estimated
-    every `refit` months), AR(p) by AIC, the random walk and the sample mean; RMSE by horizon. With seasonal=True the
+    every `refit` months), AR(p) by AIC, the random walk and the sample mean; RMSE by horizon (errors matched by calendar
+    month, see oos_errors_by_month). With seasonal=True the
     raw monthly series is seasonally adjusted inside each window (window monthly means) and the means are added back."""
     idx = series.index
-    origins = [t for t in range(len(series)) if idx[t] >= pd.Timestamp(start) and t + H < len(series)]
+    mo = np.asarray(idx.year) * 12 + np.asarray(idx.month)
+    origins = [t for t in range(len(series)) if idx[t] >= pd.Timestamp(start) and mo[-1] - mo[t] >= H]
     E = {m: [] for m in ('ARFIMA', 'AR', 'RW', 'Mean')}
     est, ps = None, []
     for i, t in enumerate(origins):
@@ -539,10 +575,9 @@ def oos_inflation(series, start, H=24, refit=12, seasonal=False):
         ps.append(p)
         f = {'ARFIMA': arfima_forecast(y, est['d'], est['phi'], [], H), 'AR': fa,
              'RW': np.repeat(y[-1], H), 'Mean': np.repeat(y.mean(), H)}
-        act = series.values[t + 1:t + H + 1]
         for m in E:
-            E[m].append(act - (f[m] + add))
-    rmse = {m: np.sqrt(np.mean(np.array(e) ** 2, axis=0)) for m, e in E.items()}
+            E[m].append(oos_errors_by_month(series, t, f[m] + add, H))
+    rmse = {m: np.sqrt(np.nanmean(np.array(e) ** 2, axis=0)) for m, e in E.items()}
     return {'n': len(origins), 'first': idx[origins[0]].date().isoformat(), 'last': idx[origins[-1]].date().isoformat(),
             'rmse': {m: v.tolist() for m, v in rmse.items()}, 'last_est': {'d': est['d'], 'phi': est['phi'][0]},
             'p_median': float(np.median(ps)), 'p_min': int(min(ps)), 'p_max': int(max(ps))}
@@ -971,6 +1006,9 @@ def fig_forecast_path(save_it=True, H=36):
     fa = arfima_forecast(x, e['d'], e['phi'], [], H)
     fr, p = ar_forecast(x, H)
     fut = pd.date_range(y.index[-1], periods=H + 1, freq='MS')[1:]
+    last12 = y.loc[y.index[-1] - pd.DateOffset(months=11):]      # the last 12 calendar months (November 2025 counts twice)
+    k = months_between(y.index).loc[last12.index]
+    m12 = float((last12 * k).sum() / k.sum())                     # = 100 ln(CPI_T / CPI_{T-12})
     hist = y.loc['2019-01-01':]
     fig, ax = plt.subplots(figsize=(10.17, 3.10))
     ax.plot(hist.index, hist.values, color=COLORS['usinfl'], lw=1.0, label='US inflation, monthly, annualised (%)')
@@ -983,7 +1021,7 @@ def fig_forecast_path(save_it=True, H=36):
     return {'d': e['d'], 'phi': e['phi'][0], 'p': p, 'mean': float(x.mean()), 'last': float(x[-1]),
             'last_d': y.index[-1].date().isoformat(), 'fa1': float(fa[0]), 'fa12': float(fa[11]), 'fa36': float(fa[-1]),
             'fr1': float(fr[0]), 'fr12': float(fr[11]), 'fr36': float(fr[-1]), 'T': int(len(x)),
-            'm12': float(np.mean(x[-12:]))}
+            'm12': m12}
 
 
 # =============================================================================
@@ -1253,7 +1291,7 @@ def memory_table():
     S = {'Nile flow': nile().values, 'RO inflation, monthly SA': ro_inflation().values,
          'RO inflation, 12-month': ro_inflation12().values, 'US inflation, monthly': us_inflation().values,
          'US inflation, 1985-2019': us_inflation('1985-01-01', '2019-12-01').values,
-         'US unemployment': us_unemployment().values, 'US unemployment, change': us_unemployment().diff().dropna().values}
+         'US unemployment': us_unemployment().values, 'US unemployment, change': us_unemployment_change().values}
     for k in ('sp500', 'bet', 'eurron'):
         r = returns(k)
         S[f'{NAME[k]} r'] = r.values

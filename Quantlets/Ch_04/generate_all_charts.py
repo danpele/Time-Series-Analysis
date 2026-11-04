@@ -734,16 +734,17 @@ def fig_fourier(save_it=True):
     ax[0].plot(t, pat.values, 'o', color=st.DarkText, ms=6, label='monthly seasonal effect (log)')
     tt = np.linspace(0.6, 12.4, 300)
     out = {}
-    for K, c in [(1, st.MainBlue), (2, st.Forest), (3, st.Orange), (6, st.IDAred)]:
-        X = fourier(t, 12, K).values
+    for K, c in [(1, st.MainBlue), (2, st.Forest), (3, st.Orange), (5, None), (6, st.IDAred)]:
+        keep = np.ones(2 * K, bool)
         if K == 6:
-            X = X[:, :-1]                 # sin(pi t) = 0 at integer t: 11 regressors
+            keep[-2] = False              # sin(2 pi 6 t / 12) = sin(pi t) = 0 at integer t: drop it, keep cos(pi t); 11 regressors
+        X = fourier(t, 12, K).values[:, keep]
         b = np.linalg.lstsq(X, pat.values, rcond=None)[0]
-        Xg = fourier(tt, 12, K).values
-        Xg = Xg[:, :-1] if K == 6 else Xg
+        Xg = fourier(tt, 12, K).values[:, keep]
         fit = X @ b
         r2 = 1 - np.sum((pat.values - fit) ** 2) / np.sum(pat.values ** 2)
-        ax[0].plot(tt, Xg @ b, color=c, lw=1.5, label=f'K = {K}: {X.shape[1]} coefficients, $R^2$ = {r2:.3f}')
+        if c is not None:                 # K = 5 is reported, not drawn
+            ax[0].plot(tt, Xg @ b, color=c, lw=1.5, label=f'K = {K}: {X.shape[1]} coefficients, $R^2$ = {r2:.3f}')
         out[f'K{K}'] = {'r2': float(r2), 'ncoef': int(X.shape[1])}
     ax[0].set_xticks(range(1, 13))
     ax[0].set_xticklabels(list('JFMAMJJASOND'))

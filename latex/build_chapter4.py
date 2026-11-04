@@ -211,7 +211,7 @@ V.put('sa.sum.n', SA['sum_nsa_2024'], 1)
 V.put('sa.sum.s', SA['sum_sca_2024'], 1)
 
 FO = N['fourier']
-for K in (1, 2, 3, 6):
+for K in (1, 2, 3, 5, 6):
     V.put(f'fo.r{K}', FO[f'K{K}']['r2'], 3)
 
 EA = N['easter']
@@ -794,13 +794,13 @@ D.frame(T('Seasonal dummies and Fourier terms', 'Variabile dummy sezoniere și t
     T('$K$ is chosen by AICc or by cross-validation; the same terms are inside TBATS and Prophet (Section 9)', '$K$ se alege cu AICc sau prin validare încrucișată; aceiași termeni se află în TBATS și Prophet (secțiunea 9)')))
 
 chart(T('Fourier approximation of a seasonal pattern', 'Aproximarea Fourier a unui tipar sezonier'), 'tsa_ch4_fourier', 'TSA_ch4_calendar_fourier', [
-    T('Monthly seasonal effect of $\\ln$(tourism nights), 2012--2019, after removing a 13-month centred mean; fits with $K = 1, 2, 3, 5$ (the legend label ``$K = 6$, 11 coefficients'' is the $K = 5$ fit plus $\\sin(\\pi t)$, which is 0 at every month)', 'Efectul sezonier lunar al $\\ln$(înnoptări turistice), 2012--2019, după eliminarea unei medii centrate pe 13 luni; ajustări cu $K = 1, 2, 3, 5$ (eticheta „$K = 6$, 11 coefficients” din legendă este ajustarea cu $K = 5$ plus $\\sin(\\pi t)$, egal cu 0 în fiecare lună)')],
+    T('Monthly seasonal effect of $\\ln$(tourism nights), 2012--2019, after removing a 13-month centred mean; fits with $K = 1, 2, 3, 6$; for $K = 6$, $\\sin(\\pi t)$ is 0 at every month and is left out (11 coefficients)', 'Efectul sezonier lunar al $\\ln$(înnoptări turistice), 2012--2019, după eliminarea unei medii centrate pe 13 luni; ajustări cu $K = 1, 2, 3, 6$; pentru $K = 6$, $\\sin(\\pi t)$ este 0 în fiecare lună și este omis (11 coeficienți)')],
     h='0.58\\textheight')
 
 interp(('the Fourier fits', 'ajustărilor Fourier'), [
     (T('$K = 1$ (two coefficients) already gives $R^2 = @{fo.r1}$: the summer peak is close to a single wave', '$K = 1$ (doi coeficienți) dă deja $R^2 = @{fo.r1}$: vîrful de vară este aproape o singură undă'),
      [T('$K = 2$: @{fo.r2}; $K = 3$: @{fo.r3} with six coefficients instead of eleven', '$K = 2$: @{fo.r2}; $K = 3$: @{fo.r3} cu șase coeficienți în loc de unsprezece')]),
-    T('$K = 5$ (10 coefficients): $R^2 = @{fo.r6}$; the full $K = 6$ adds $\\cos(\\pi t)$, 11 coefficients, and interpolates the 12 points like 11 dummies ($R^2 = 1$)', '$K = 5$ (10 coeficienți): $R^2 = @{fo.r6}$; $K = 6$ complet adaugă $\\cos(\\pi t)$, 11 coeficienți, și trece prin cele 12 puncte, ca 11 variabile dummy ($R^2 = 1$)'),
+    T('$K = 5$ (10 coefficients): $R^2 = @{fo.r5}$; $K = 6$ adds $\\cos(\\pi t)$, 11 coefficients, and interpolates the 12 points like 11 dummies ($R^2 = @{fo.r6}$)', '$K = 5$ (10 coeficienți): $R^2 = @{fo.r5}$; $K = 6$ adaugă $\\cos(\\pi t)$, 11 coeficienți, și trece prin cele 12 puncte, ca 11 variabile dummy ($R^2 = @{fo.r6}$)'),
     T('Higher harmonics add sharper detail: the August peak needs $K \\ge 3$', 'Armonicele superioare adaugă detalii mai fine: vîrful din august cere $K \\ge 3$')])
 
 D.frame(T('Calendar effects and Orthodox Easter', 'Efecte de calendar și Paștele ortodox'), cols(items(

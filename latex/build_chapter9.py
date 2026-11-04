@@ -378,7 +378,7 @@ interp(('the load features', 'variabilelor pentru consum'), [
      [T('weekly cycle, annual cycle (winter heating, summer cooling) and deep holiday dips: the multiple seasonality of Chapter 4', 'ciclul săptămînal, ciclul anual (încălzire iarna, răcire vara) și scăderi mari de sărbători: sezonalitatea multiplă din Capitolul 4')]),
     (T('Correlation with tomorrow\'s load: $y_t$ @{f.c0}; the same weekday last week @{f.c6}; the 7-day mean @{f.c7}', 'Corelația cu consumul de mîine: $y_t$ @{f.c0}; aceeași zi a săptămînii trecute @{f.c6}; media pe 7 zile @{f.c7}'),
      [T('with $y_t$ alone the Sundays form a separate cloud: a single linear lag cannot represent the weekly pattern', 'doar cu $y_t$, duminicile formează un nor separat: un singur lag liniar nu poate reprezenta tiparul săptămînal'),
-      T('the table used below has @{f.rows} rows and @{f.p} features (14 lags, two means, the same weekday, calendar)', 'tabelul folosit mai departe are @{f.rows} de rînduri și @{f.p} de variabile explicative (14 laguri, două medii, aceeași zi a săptămînii, calendar)')])])
+      T('the table used below has @{f.rows} rows and @{f.p} features (14 lags, two means, the same weekday, calendar)', 'tabelul folosit mai departe are @{f.rows} rînduri și @{f.p} variabile explicative (14 laguri, două medii, aceeași zi a săptămînii, calendar)')])])
 
 D.frame(T('Multi-step forecasts: three strategies', 'Prognoze pe mai mulți pași: trei strategii'), items(
     (T('\\textbf{Recursive} (iterated): one model for $h = 1$; its forecast replaces the unknown $y_{T+1}$ and the model is applied again', '\\textbf{Recursivă} (iterată): un model pentru $h = 1$; prognoza lui înlocuiește valoarea necunoscută $y_{T+1}$ și modelul se aplică din nou'),

@@ -406,16 +406,15 @@ function blkSa() {
 }
 
 // ================================================================= 11. Fourier approximation
-// K = 6 as in the chart of the lecture: sin and cos for k = 1..5 plus sin(2π6t/12), which is zero at every month (11 regressors, 10 effective);
-// full = true uses cos(2π6t/12) instead, and the 11 coefficients reproduce the 12 monthly points.
-function fourierCols(t, K0, full) {
+// K = 6 as in the chart of the lecture: sin and cos for k = 1..5 plus cos(2π6t/12); sin(2π6t/12) = sin(πt) is zero at every
+// month and is left out, so the 11 coefficients reproduce the 12 monthly points.
+function fourierCols(t, K0) {
   const X = []; for (let k = 1; k <= Math.min(K0, 5); k++) { X.push(t.map(u => Math.sin(2 * Math.PI * k * u / 12))); X.push(t.map(u => Math.cos(2 * Math.PI * k * u / 12))); }
-  if (K0 === 6) X.push(t.map(u => (full ? Math.cos(Math.PI * u) : Math.sin(Math.PI * u))));
+  if (K0 === 6) X.push(t.map(u => Math.cos(Math.PI * u)));
   return X;
 }
-function fourierFit(K0, full) {
-  const t = range(1, 12, 1), pat = D.fourier.pat, X = fourierCols(t, K0, full), F = lsq(K0 === 6 && !full ? X.slice(0, -1) : X, pat);
-  const b = K0 === 6 && !full ? F.b.concat([0]) : F.b;     // the coefficient of the zero column is 0 (minimum-norm least squares)
+function fourierFit(K0) {
+  const t = range(1, 12, 1), pat = D.fourier.pat, X = fourierCols(t, K0), F = lsq(X, pat), b = F.b;
   const r2 = 1 - sum(pat.map((v, i) => (v - F.fit[i]) ** 2)) / sum(pat.map(v => v * v));
   return { b, r2, nc: X.length };
 }
@@ -438,7 +437,7 @@ function blkFourier() {
   plot('fo-chart', tr, G.lay);
   const F = fourierFit(K0), amp = range(1, Math.min(K0, 5), 1).map(k => nf(Math.hypot(F.b[2 * k - 2], F.b[2 * k - 1]), 3));
   const res = [T.fo1(K0, F.nc, nf(F.r2, 3)), T.fo2(amp)];
-  if (K0 === 6) res.push(T.fo3(nf(fourierFit(5).r2, 3), nf(fourierFit(6, true).r2, 3)));
+  if (K0 === 6) res.push(T.fo3(nf(fourierFit(5).r2, 3), nf(fourierFit(6).r2, 3)));
   out('fo-out', res);
 }
 
@@ -932,7 +931,7 @@ function blkXFour() {
 
 // ---------------------------------------------------------------- Interpreting the Fourier fits: R2 and AICc by K
 function fourierRow(K0) {
-  const pat = D.fourier.pat, n = 12, F = K0 === 6 ? fourierFit(6, true) : fourierFit(K0), t = range(1, 12, 1), Xc = fourierCols(t, K0, K0 === 6);
+  const pat = D.fourier.pat, n = 12, F = fourierFit(K0), t = range(1, 12, 1), Xc = fourierCols(t, K0);
   const fit = t.map((_, i) => Xc.reduce((s, c, j) => s + F.b[j] * c[i], 0)), ssr = sum(pat.map((v, i) => (v - fit[i]) ** 2)), kc = K0 === 6 ? 11 : 2 * K0, kk = kc + 1;
   const aicc = ssr > 1e-12 && n - kk - 1 > 0 ? n * Math.log(ssr / n) + 2 * kk + 2 * kk * (kk + 1) / (n - kk - 1) : NaN;
   return { K0, kc, r2: F.r2, ssr, sd: n - kc > 0 ? Math.sqrt(ssr / (n - kc)) : NaN, aicc, aug: fit[7], jan: fit[0] };
