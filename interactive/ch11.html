@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 11 · Foundation Models for Time Series</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'en';</script>
+<link rel="preload" as="script" href="ch11.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch11_data.js?v=20261101a", "ch11_text_en.js?v=20261101a", "common.js?v=20261101a"], "ch11.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index.html">Time Series Analysis</a></h1><p>Chapter 11 · Foundation Models for Time Series</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index.html#chapters">← Course site</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf" target="_blank" rel="noopener">Lecture PDF</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_11" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch11.html" class="lang-btn active">EN</a><a href="ch11_ro.html" class="lang-btn">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">The slide of the lecture is on the left, the same figure or table on the right, computed in the browser from the same data. The ▶ button moves the parameter step by step; the “Worked example” boxes redo the calculation with the numbers of the chapter. No foundation model runs in the browser: the page uses the forecasts, quantiles and scores saved by the chapter’s code.</p>
+<p class="toc"><a href="#s-tr">Transformers in brief</a> · <a href="#s-tok">From numbers to tokens</a> · <a href="#s-fam">The main model families</a> · <a href="#s-sc">Probabilistic forecasts and their scores</a> · <a href="#s-zs">Zero-shot forecasts on real data</a> · <a href="#s-ev">An honest evaluation</a> · <a href="#s-lk">Leakage and contamination</a></p>
+<h2 class="sec" id="s-tr">Transformers in brief</h2>
+<section class="blk" id="wx-att">
+  <h3>Worked example: attention weights</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=14" target="_blank" rel="noopener"><img src="slides/ch11x_wx-att_en.jpg" alt="Slide 13: Worked example: attention weights" loading="lazy"></a>
+      <figcaption>Slide 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wa-c">Multiplier c of the scores (lecture: 1): <b id="wa-c-v"></b></label><input type="range" id="wa-c" min="0" max="3" step="0.25" value="1"></div><button class="btn play" id="wa-play" type="button"></button></div><div class="charts "><div class="chart" id="wa-chart"></div></div><div class="c11x"><h4>Worked example</h4><div class="c11f">\[s=(2c,\ c,\ 0),\qquad w_j=\frac{\exp(s_j)}{\sum_l \exp(s_l)},\qquad \text{out}=\sum_j w_jv_j,\quad v=(10,\ 20,\ 30)\]</div><ol id="wa-ws"></ol></div><ul class="out" id="wa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ raises c to 3 (scores 6, 3, 0). What happens to the output?</div>
+  <details><summary>Answer</summary><p>It falls to 10.5, close to the value of the first key (10): its weight rises to 95%. With c = 0 all weights are 1/3 and the output is the mean, 20; dividing by √d keeps the scores moderate, so that the other positions also contribute.</p></details>
+</section><h2 class="sec" id="s-tok">From numbers to tokens</h2>
+<section class="blk" id="wx-tok">
+  <h3>Worked example: scaling and tokens</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=19" target="_blank" rel="noopener"><img src="slides/ch11x_wx-tok_en.jpg" alt="Slide 18: Worked example: scaling and tokens" loading="lazy"></a>
+      <figcaption>Slide 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wt-b">Number of bins B in [−15, 15]</label><select id="wt-b"><option value="4093" selected>4093 (lecture)</option><option value="1001">1001</option><option value="101">101</option><option value="21">21</option></select></div><button class="btn play" id="wt-play" type="button"></button></div><div class="charts "><div class="chart" id="wt-chart"></div></div><div class="c11x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wt-m">Month of the calculation</label><select id="wt-m"><option value="0" selected>March 2026</option><option value="1">April 2026</option><option value="2">May 2026</option><option value="3">June 2026</option><option value="4">July 2026</option><option value="5">August 2026</option></select></div></div><div class="c11f">\[s=\frac1C\sum_{t=1}^{C}|x_t|,\qquad \tilde x_t=\frac{x_t}{s},\qquad \text{token}_t=\operatorname{round}\Big(\frac{\tilde x_t+15}{w}\Big),\quad w=\frac{30}{B-1}\]</div><ol id="wt-ws"></ol></div><ul class="out" id="wt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose 21 bins in [−15, 15]. How many distinct tokens do the six months give?</div>
+  <details><summary>Answer</summary><p>A single one: the bins have width 1.5 and all scaled values (from 0.970 to 1.030) fall in the same bin. With 4093 bins (width 0.0073) there are 4 tokens; a change of 0.1 points in the rate moves the scaled value by 2.07 bins.</p></details>
+</section>
+<section class="blk" id="tokens">
+  <h3>Scaling and quantisation on real data</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=20" target="_blank" rel="noopener"><img src="slides/tsa_ch11_tokens_en.jpg" alt="Slide 19: Scaling and quantisation on real data" loading="lazy"></a>
+      <figcaption>Slide 19</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tk-n">Context length (months; lecture: 96): <b id="tk-n-v"></b></label><input type="range" id="tk-n" min="12" max="96" step="12" value="96"></div><div class="ctl"><label for="tk-b">Quantisation grid</label><select id="tk-b"><option value="21" selected>21 bins in [−3, 3] (lecture)</option><option value="41">41 bins in [−3, 3]</option><option value="101">101 bins in [−3, 3]</option><option value="4093">4093 bins in [−15, 15] (Chronos)</option></select></div><button class="btn play" id="tk-play" type="button"></button></div><style>.c11x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c11x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c11x .c11f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c11x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c11x li{margin:.18rem 0;overflow-wrap:anywhere}.c11x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c11t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c11t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c11t th,.c11t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c11t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c11t tbody tr:nth-child(even){background:#F5F7FB}.c11t tbody tr.hi{background:#E3F4F7}.c11t .r{text-align:right}.c11cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="tk-chart"></div></div><ul class="out" id="tk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ shortens the context to 24 months (August 2024 – July 2026). How many distinct tokens does the context use on the coarse grid of 21 bins?</div>
+  <details><summary>Answer</summary><p>Two (three for 96 months): without April 2020 the scaled values stay between 0.87 and 1.11, that is in two bins of width 0.30. The scale adapts to the context (s = 94.1 instead of 97.8), so the tokens describe the shape relative to the recent level, not the level.</p></details>
+</section>
+<section class="blk" id="patching">
+  <h3>Patching the Romanian electricity load</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=23" target="_blank" rel="noopener"><img src="slides/tsa_ch11_patching_en.jpg" alt="Slide 22: Patching the Romanian electricity load" loading="lazy"></a>
+      <figcaption>Slide 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pa-P">Patch length P (values; lecture: 16): <b id="pa-P-v"></b></label><input type="range" id="pa-P" min="4" max="48" step="4" value="16"></div><div class="ctl"><label for="pa-n">Hours shown, from 1 June 2026 (lecture: 336): <b id="pa-n-v"></b></label><input type="range" id="pa-n" min="168" max="672" step="168" value="336"></div><button class="btn play" id="pa-play" type="button"></button></div><div class="charts "><div class="chart" id="pa-chart"></div></div><ul class="out" id="pa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set P = 24 (one patch per day). How many patches does one week (168 hours) need?</div>
+  <details><summary>Answer</summary><p>7 = 168/24, against 11 for P = 16 (168/16 = 10.5, rounded up). With P = 24 the patches align with the daily cycle and the 336 hours give 14 patches; the attention comparisons fall from 441 to 196.</p></details>
+</section><h2 class="sec" id="s-fam">The main model families</h2>
+<section class="blk" id="fam-table">
+  <h3>The families side by side</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=29" target="_blank" rel="noopener"><img src="slides/ch11x_fam-table_en.jpg" alt="Slide 28: The families side by side" loading="lazy"></a>
+      <figcaption>Slide 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ft-c">Context length C (values; slide Patching: 2048): <b id="ft-c-v"></b></label><input type="range" id="ft-c" min="256" max="4096" step="256" value="2048"></div><button class="btn play" id="ft-play" type="button"></button></div><div class="charts "><div class="chart" id="ft-chart"></div></div><div class="c11x"><div class="wctl"><div class="ctl"><label for="ft-h">Highlight</label><select id="ft-h"><option value="none" selected>nothing</option><option value="apache">the Apache-2.0 licence</option><option value="patch">patch inputs</option><option value="dec">decoder-only</option></select></div></div><div class="tbl c11t" id="ft-tb"></div></div><ul class="out" id="ft-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set C = 512. How many patches of 16 does Chronos-Bolt receive?</div>
+  <details><summary>Answer</summary><p>32 = 512/16, with 32² = 1,024 comparisons in one attention layer, against 512² = 262,144 for one token per value (Chronos). TimesFM, with patches of 32, receives 16.</p></details>
+</section><h2 class="sec" id="s-sc">Probabilistic forecasts and their scores</h2>
+<section class="blk" id="wx-wql">
+  <h3>The weighted quantile loss (WQL)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=34" target="_blank" rel="noopener"><img src="slides/ch11x_wx-wql_en.jpg" alt="Slide 33: The weighted quantile loss (WQL)" loading="lazy"></a>
+      <figcaption>Slide 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ww-s">Series</label><select id="ww-s"><option value="load" selected>RO load (hourly)</option><option value="ip">RO industrial production</option><option value="gdp">RO real GDP</option><option value="infl">RO inflation</option><option value="unemp">RO unemployment</option><option value="eurron">EUR/RON (daily)</option><option value="retail">US retail sales</option></select></div><div class="ctl"><label for="ww-m">Model</label><select id="ww-m"><option value="ETS">ETS</option><option value="ARIMA">ARIMA</option><option value="Chronos-Bolt tiny">Chronos-Bolt tiny</option><option value="Chronos-Bolt small">Chronos-Bolt small</option><option value="Chronos-2" selected>Chronos-2</option></select></div><button class="btn play" id="ww-play" type="button"></button></div><div class="charts "><div class="chart" id="ww-chart"></div></div><div class="c11x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="ww-o">Origin of the calculation: <b id="ww-o-v"></b></label><input type="range" id="ww-o" min="1" max="52" step="1" value="1"></div></div><div class="c11f">\[\text{WQL}=\frac{1}{9}\sum_{\tau}\frac{2\sum_t L_\tau(y_t,\hat q_{\tau,t})}{\sum_t|y_t|}=\frac{\sum_{\text{origins}}\text{num}}{\sum_{\text{origins}}\text{den}},\quad \text{num}=\sum_\tau\sum_t 2L_\tau,\ \ \text{den}=9\sum_t|y_t|\]</div><ol id="ww-ws"></ol></div><ul class="out" id="ww-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ switches to EUR/RON. What is the WQL ratio of Chronos-2 to the seasonal naive?</div>
+  <details><summary>Answer</summary><p>0.87: WQL 0.0019 against 0.0022 for the naive forecast, although the MASE ratio of the median is 1.05. The WQL scores all quantiles, and the narrower bands of Chronos-2 win even when the median is no better.</p></details>
+</section>
+<section class="blk" id="scores">
+  <h3>The pinball loss and the CRPS</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=35" target="_blank" rel="noopener"><img src="slides/tsa_ch11_scores_en.jpg" alt="Slide 34: The pinball loss and the CRPS" loading="lazy"></a>
+      <figcaption>Slide 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sc-y">Outcome y (lecture: 1): <b id="sc-y-v"></b></label><input type="range" id="sc-y" min="-3" max="3" step="0.25" value="1"></div><div class="ctl"><label for="sc-s">σ of the forecast N(0, σ²) (lecture: 1): <b id="sc-s-v"></b></label><input type="range" id="sc-s" min="0.5" max="3" step="0.25" value="1"></div><button class="btn play" id="sc-play" type="button"></button></div><div class="charts "><div class="chart" id="sc-chart"></div></div><ul class="out" id="sc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move the outcome to y = 0, the median of the forecast N(0, 1). What is the CRPS?</div>
+  <details><summary>Answer</summary><p>0.234, not 0: the CRPS scores the whole distribution, and a forecast with standard deviation 1 remains uncertain even when its median hits the outcome. Only a forecast that puts all its mass on y has CRPS 0; at y = 1 the score is 0.602.</p></details>
+</section>
+<section class="blk" id="wx-pin">
+  <h3>Worked example: pinball losses</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=37" target="_blank" rel="noopener"><img src="slides/ch11x_wx-pin_en.jpg" alt="Slide 36: Worked example: pinball losses" loading="lazy"></a>
+      <figcaption>Slide 36</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wp-y">Outcome y (%; lecture: 7.2): <b id="wp-y-v"></b></label><input type="range" id="wp-y" min="6.0" max="8.4" step="0.1" value="7.2"></div><button class="btn play" id="wp-play" type="button"></button></div><div class="charts "><div class="chart" id="wp-chart"></div></div><div class="c11x"><h4>Worked example</h4><div class="c11f">\[L_\tau(y,\hat q_\tau)=\begin{cases}\tau\,(y-\hat q_\tau), & y\ge \hat q_\tau\\(1-\tau)(\hat q_\tau-y), & y<\hat q_\tau\end{cases},\qquad \text{CRPS}\approx\tfrac{2}{3}\sum_{\tau\in\{0.1,0.5,0.9\}}L_\tau\]</div><ol id="wp-ws"></ol></div><ul class="out" id="wp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move y to 8.0, above q̂<sub>0.9</sub> = 7.6. Which level has the largest loss?</div>
+  <details><summary>Answer</summary><p>Level 0.5: 0.5·(8.0 − 7.0) = 0.50, against 0.9·(8.0 − 7.6) = 0.36 and 0.1·(8.0 − 6.5) = 0.15. Exceeding the 0.9 quantile costs a lot per unit, but the distance to it is small; the approximate CRPS rises to 0.673.</p></details>
+</section>
+<section class="blk" id="wx-mase">
+  <h3>Point accuracy: the MASE</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=38" target="_blank" rel="noopener"><img src="slides/ch11x_wx-mase_en.jpg" alt="Slide 37: Point accuracy: the MASE" loading="lazy"></a>
+      <figcaption>Slide 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wm-m">Season m of the scale</label><select id="wm-m"><option value="168" selected>168 hours (lecture)</option><option value="24">24 hours</option><option value="1">1 hour</option></select></div><button class="btn play" id="wm-play" type="button"></button></div><div class="charts "><div class="chart" id="wm-chart"></div></div><div class="c11x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wm-a">MAE of the forecast (lecture: 0.30): <b id="wm-a-v"></b></label><input type="range" id="wm-a" min="0.05" max="1" step="0.05" value="0.3"></div><div class="ctl"><label for="wm-b">In-sample naive MAE (lecture: 0.25): <b id="wm-b-v"></b></label><input type="range" id="wm-b" min="0.05" max="1" step="0.05" value="0.25"></div></div><div class="c11f">\[\text{MASE}=\frac{\frac1h\sum_{j=1}^{h}|y_{T+j}-\hat y_{T+j}|}{\frac{1}{T-m}\sum_{t=m+1}^{T}|y_t-y_{t-m}|}\]</div><ol id="wm-ws"></ol></div><ul class="out" id="wm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose m = 1 (the one-hour naive forecast in the denominator). What does the MASE of Chronos-Bolt small become?</div>
+  <details><summary>Answer</summary><p>2.13 (1.31 with m = 168): the denominator falls from 0.421 GW to 0.260 GW, the mean error of the one-hour forecast inside the context, while the forecasts stay the same. The value of the MASE and the threshold 1 make sense only together with the stated m.</p></details>
+</section>
+<section class="blk" id="wx-cov">
+  <h3>Coverage and relative scores</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=39" target="_blank" rel="noopener"><img src="slides/ch11x_wx-cov_en.jpg" alt="Slide 38: Coverage and relative scores" loading="lazy"></a>
+      <figcaption>Slide 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wc-m">Model</label><select id="wc-m"><option value="Seasonal naive">Seasonal naive</option><option value="ETS">ETS</option><option value="ARIMA">ARIMA</option><option value="Chronos-Bolt tiny">Chronos-Bolt tiny</option><option value="Chronos-Bolt small">Chronos-Bolt small</option><option value="Chronos-2" selected>Chronos-2</option></select></div><div class="ctl"><label for="wc-s">Series on the left</label><select id="wc-s"><option value="load">RO load (hourly)</option><option value="ip">RO industrial production</option><option value="gdp">RO real GDP</option><option value="infl">RO inflation</option><option value="unemp">RO unemployment</option><option value="eurron">EUR/RON (daily)</option><option value="retail" selected>US retail sales</option></select></div><button class="btn play" id="wc-play" type="button"></button></div><div class="charts "><div class="chart" id="wc-chart"></div></div><div class="c11x"><h4>Worked example</h4><div class="wctl"><div class="ctl"><label for="wc-k">Outcomes inside (lecture: 7): <b id="wc-k-v"></b></label><input type="range" id="wc-k" min="0" max="20" step="1" value="7"></div><div class="ctl"><label for="wc-n">Number of forecasts n (lecture: 10): <b id="wc-n-v"></b></label><input type="range" id="wc-n" min="1" max="20" step="1" value="10"></div><div class="ctl"><label for="wc-r">Ratio r₁ of the first series (lecture: 2; r₂ = 0.5): <b id="wc-r-v"></b></label><input type="range" id="wc-r" min="0.25" max="4" step="0.25" value="2"></div></div><div class="c11f">\[\text{Cov}=\frac1n\sum_{i=1}^{n}\mathbf 1\{\hat q^{(i)}_{0.1}\le y_i\le \hat q^{(i)}_{0.9}\},\qquad \bar r=(r_1r_2\cdots r_S)^{1/S}\]</div><ol id="wc-ws"></ol></div><ul class="out" id="wc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ cycles through the models. What is the coverage of Chronos-Bolt tiny on US retail sales?</div>
+  <details><summary>Answer</summary><p>75.2%, the highest of the six models, but still below 80%; Chronos-2 has 65.0%, the seasonal naive 64.7%. The 2020 shock and the 2021 jump fall outside the bands of every model.</p></details>
+</section><h2 class="sec" id="s-zs">Zero-shot forecasts on real data</h2>
+<section class="blk" id="series">
+  <h3>Seven series for the test</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=41" target="_blank" rel="noopener"><img src="slides/tsa_ch11_series_en.jpg" alt="Slide 40: Seven series for the test" loading="lazy"></a>
+      <figcaption>Slide 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sr-v">Show</label><select id="sr-v"><option value="lev" selected>the levels (lecture)</option><option value="sd">seasonal differences y<sub>t</sub> − y<sub>t−m</sub> (m of the backtest)</option><option value="d1">first differences y<sub>t</sub> − y<sub>t−1</sub></option></select></div><button class="btn play" id="sr-play" type="button"></button></div><div class="charts "><div class="chart" id="sr-chart"></div></div><ul class="out" id="sr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ switches to seasonal and then to first differences. For the hourly load of June 2026, is the mean of |y<sub>t</sub> − y<sub>t−168</sub>| larger or smaller than the mean of |y<sub>t</sub> − y<sub>t−1</sub>|?</div>
+  <details><summary>Answer</summary><p>Larger: 0.43 GW against 0.24 GW. Load changes little from one hour to the next, while within a week the weather and the level change; so the denominator of the MASE with m = 168 is larger than the error of the one-hour forecast. For industrial production it is the other way round (4.86 with m = 12, 6.37 with m = 1), because the yearly seasonality dominates.</p></details>
+</section>
+<section class="blk" id="fan-load">
+  <h3>Romanian electricity load, 48 hours ahead</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch11_fan_load_en.jpg" alt="Slide 43: Romanian electricity load, 48 hours ahead" loading="lazy"></a>
+      <figcaption>Slide 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fl-H">Hours scored (lecture: 48): <b id="fl-H-v"></b></label><input type="range" id="fl-H" min="6" max="48" step="6" value="48"></div><button class="btn play" id="fl-play" type="button"></button></div><div class="charts "><div class="chart" id="fl-chart"></div></div><ul class="out" id="fl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ scores only the first 6 hours. What is the coverage of the 80% band of Chronos-Bolt in hours 1–6?</div>
+  <details><summary>Answer</summary><p>100% (6 of 6 hours), against 29% over 48 hours; the MASE is 0.11 in the first 6 hours. The forecast starts from the last observed values and the gap to the actual load builds up during the day: the coverage of a single origin depends strongly on the horizon.</p></details>
+</section>
+<section class="blk" id="wx-hour">
+  <h3>Worked example: scoring one hour</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=46" target="_blank" rel="noopener"><img src="slides/ch11x_wx-hour_en.jpg" alt="Slide 45: Worked example: scoring one hour" loading="lazy"></a>
+      <figcaption>Slide 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-h">Hour h of the forecast (lecture: 24): <b id="wh-h-v"></b></label><input type="range" id="wh-h" min="1" max="48" step="1" value="24"></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c11x"><h4>Worked example</h4><div class="c11f">\[L_\tau(y,\hat q_\tau)=\max\{\tau(y-\hat q_\tau),\ (\tau-1)(y-\hat q_\tau)\},\qquad \mathbf 1\{\hat q_{0.1}\le y\le \hat q_{0.9}\}\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Move to hour 1 (22 June 2026, 00:00). What is the coverage indicator?</div>
+  <details><summary>Answer</summary><p>1: the outcome lies in the 80% band and the losses are small (0.017, 0.010, 0.012 GW). The forecast starts from the last values; only during the day does the actual load rise above the band, as at hour 24 (0.062, 0.163, 0.025 GW).</p></details>
+</section>
+<section class="blk" id="fan-ip">
+  <h3>Romanian industrial production, 12 months ahead</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=47" target="_blank" rel="noopener"><img src="slides/tsa_ch11_fan_ip_en.jpg" alt="Slide 46: Romanian industrial production, 12 months ahead" loading="lazy"></a>
+      <figcaption>Slide 46</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fi-H">Months scored (lecture: 12): <b id="fi-H-v"></b></label><input type="range" id="fi-H" min="1" max="12" step="1" value="12"></div><button class="btn play" id="fi-play" type="button"></button></div><div class="charts "><div class="chart" id="fi-chart"></div></div><ul class="out" id="fi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set H = 3 (August–October 2025). Which forecast has the lowest MASE?</div>
+  <details><summary>Answer</summary><p>The seasonal naive: 0.43, against 0.79 for ETS and 0.95 for Chronos-Bolt. For this origin the previous year forecasts the next months best; over 12 months the naive forecast stays first (0.67), while ETS (1.20) and Chronos-Bolt (1.04) swap places.</p></details>
+</section>
+<section class="blk" id="fan-eurron">
+  <h3>EUR/RON, 20 days ahead</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch11_fan_eurron_en.jpg" alt="Slide 48: EUR/RON, 20 days ahead" loading="lazy"></a>
+      <figcaption>Slide 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fe-H">Days scored (lecture: 20): <b id="fe-H-v"></b></label><input type="range" id="fe-H" min="1" max="20" step="1" value="20"></div><button class="btn play" id="fe-play" type="button"></button></div><div class="charts "><div class="chart" id="fe-chart"></div></div><ul class="out" id="fe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Set H = 5. At day 5, is the 80% band of Chronos-Bolt wider or narrower than that of the random walk?</div>
+  <details><summary>Answer</summary><p>Wider: 0.044 against 0.031. The band of the random walk grows with √h, from 0.014 on the first day, while the band of Chronos-Bolt starts at 0.035; the two become almost equal only at 20 days (0.064 and 0.063).</p></details>
+</section><h2 class="sec" id="s-ev">An honest evaluation</h2>
+<section class="blk" id="res-table">
+  <h3>Results: WQL relative to the seasonal naive</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=53" target="_blank" rel="noopener"><img src="slides/ch11x_res-table_en.jpg" alt="Slide 52: Results: WQL relative to the seasonal naive" loading="lazy"></a>
+      <figcaption>Slide 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-k">Score in the heat map</label><select id="rt-k"><option value="rel_wql" selected>WQL / seasonal naive (lecture)</option><option value="rel_mase">MASE / seasonal naive</option><option value="cov">coverage of the 80% interval</option></select></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><div class="c11x"><div class="wctl"><div class="ctl"><label for="rt-v">Values in the table</label><select id="rt-v"><option value="rel" selected>ratio to the seasonal naive (lecture)</option><option value="abs">absolute WQL</option></select></div></div><div class="tbl c11t" id="rt-tb"></div></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Switch the heat map to the MASE ratio. On which series is the MASE ratio of Chronos-2 above 1?</div>
+  <details><summary>Answer</summary><p>EUR/RON: 1.05, although the WQL ratio is 0.87. On the other six series the MASE ratio of Chronos-2 is below 1, from 0.59 (US retail sales) to 0.98 (unemployment).</p></details>
+</section>
+<section class="blk" id="benchmark">
+  <h3>MASE and WQL by series and model</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=54" target="_blank" rel="noopener"><img src="slides/tsa_ch11_benchmark_en.jpg" alt="Slide 53: MASE and WQL by series and model" loading="lazy"></a>
+      <figcaption>Slide 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bm-f">Origins included</label><select id="bm-f"><option value="" selected>all (lecture)</option><option value="2018-01-01">from 2018</option><option value="2020-01-01">from 2020</option><option value="2022-01-01">from 2022</option><option value="2024-01-01">from 2024</option></select></div><button class="btn play" id="bm-play" type="button"></button></div><div class="charts "><div class="chart" id="bm-chart"></div></div><ul class="out" id="bm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Keep only the origins from 2024. Which model has the smallest geometric mean of the WQL ratio?</div>
+  <details><summary>Answer</summary><p>Still Chronos-2 (0.78), followed by ARIMA (0.92); Chronos-Bolt small moves to 1.06, worse than the seasonal naive, and ETS to 1.01. With 175 origins instead of 708 the order of the other models changes: one ranking does not describe every period.</p></details>
+</section>
+<section class="blk" id="coverage">
+  <h3>Coverage of the 80% intervals</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=56" target="_blank" rel="noopener"><img src="slides/tsa_ch11_coverage_en.jpg" alt="Slide 55: Coverage of the 80% intervals" loading="lazy"></a>
+      <figcaption>Slide 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cv-f">Origins included</label><select id="cv-f"><option value="" selected>all (lecture)</option><option value="2018-01-01">from 2018</option><option value="2020-01-01">from 2020</option><option value="2022-01-01">from 2022</option><option value="2024-01-01">from 2024</option></select></div><button class="btn play" id="cv-play" type="button"></button></div><div class="charts "><div class="chart" id="cv-chart"></div></div><ul class="out" id="cv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Keep only the origins from 2024. What is the mean coverage of the seasonal naive?</div>
+  <details><summary>Answer</summary><p>94%: the naive intervals become too wide, because their standard deviation is estimated on the whole context, which contains the shocks of 2020–2022. Chronos-2 reaches 83%: coverage depends on the test period, not only on the model.</p></details>
+</section>
+<section class="blk" id="horizon">
+  <h3>Romanian load: error by horizon</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=58" target="_blank" rel="noopener"><img src="slides/tsa_ch11_horizon_en.jpg" alt="Slide 57: Romanian load: error by horizon" loading="lazy"></a>
+      <figcaption>Slide 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="hz-s">Series</label><select id="hz-s"><option value="load" selected>RO load (hourly) (lecture)</option><option value="ip">RO industrial production</option><option value="gdp">RO real GDP</option><option value="infl">RO inflation</option><option value="unemp">RO unemployment</option><option value="eurron">EUR/RON (daily)</option><option value="retail">US retail sales</option></select></div><div class="ctl"><label for="hz-w">Origins</label><select id="hz-w"><option value="all" selected>all (lecture)</option><option value="a">first half</option><option value="b">second half</option></select></div><button class="btn play" id="hz-play" type="button"></button></div><div class="charts "><div class="chart" id="hz-chart"></div></div><ul class="out" id="hz-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the second half of the origins (January–June 2026). From which hour on, up to hour 48, does ETS have the largest error of the six models?</div>
+  <details><summary>Answer</summary><p>From hour 41, against hour 4 over all origins. In the second half every model has larger errors (the naive forecast 0.32 GW at hour 24, against 0.19 in the first half), while Chronos-2 stays at 0.15 GW.</p></details>
+</section>
+<section class="blk" id="context">
+  <h3>How much context is needed?</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=60" target="_blank" rel="noopener"><img src="slides/tsa_ch11_context_en.jpg" alt="Slide 59: How much context is needed?" loading="lazy"></a>
+      <figcaption>Slide 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cx-c">Context highlighted (hours): <b id="cx-c-v"></b></label><input type="range" id="cx-c" min="0" max="5" step="1" value="0"></div><div class="ctl"><label for="cx-r">Vertical axis</label><select id="cx-r"><option value="abs" selected>MASE (lecture)</option><option value="rel">MASE / seasonal naive</option></select></div><button class="btn play" id="cx-play" type="button"></button></div><div class="charts "><div class="chart" id="cx-chart"></div></div><ul class="out" id="cx-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> ▶ moves to 192 hours (8 days). How many of the three foundation models now beat the seasonal naive (MASE 1.16)?</div>
+  <details><summary>Answer</summary><p>All three: Chronos-Bolt tiny 1.09, Chronos-Bolt small 0.98, Chronos-2 1.04. With 96 hours none of them did; the context of 8 days contains the first full weekly cycle. Chronos-2, the best with 2048 hours (0.63), is only second here: it needs the longest context.</p></details>
+</section>
+<section class="blk" id="size">
+  <h3>Size and accuracy</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch11_size_en.jpg" alt="Slide 61: Size and accuracy" loading="lazy"></a>
+      <figcaption>Slide 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sz-f">Origins included</label><select id="sz-f"><option value="" selected>all (lecture)</option><option value="2018-01-01">from 2018</option><option value="2020-01-01">from 2020</option><option value="2022-01-01">from 2022</option><option value="2024-01-01">from 2024</option></select></div><div class="ctl"><label for="sz-m">Score</label><select id="sz-m"><option value="rel_wql" selected>WQL / seasonal naive (lecture)</option><option value="rel_mase">MASE / seasonal naive</option></select></div><button class="btn play" id="sz-play" type="button"></button></div><div class="charts "><div class="chart" id="sz-chart"></div></div><ul class="out" id="sz-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Keep only the origins from 2022. Does Chronos-Bolt small (48 million parameters) still beat the seasonal naive?</div>
+  <details><summary>Answer</summary><p>No: the geometric mean of the WQL ratio becomes 1.04 (0.90 over all origins), while Chronos-2 stays at 0.83 and ARIMA at 0.91. The number of parameters does not guarantee a gain; Chronos-2 also differs in architecture and training data.</p></details>
+</section><h2 class="sec" id="s-lk">Leakage and contamination</h2>
+<section class="blk" id="prepost">
+  <h3>A contamination check: before and after the release</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../EN/Courses/chapter11_foundation_models_time_series.pdf#page=69" target="_blank" rel="noopener"><img src="slides/tsa_ch11_prepost_en.jpg" alt="Slide 68: A contamination check: before and after the release" loading="lazy"></a>
+      <figcaption>Slide 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pp-c">Cut date</label><select id="pp-c"><option value="-12">release − 12 months (placebo)</option><option value="-6">release − 6 months (placebo)</option><option value="0" selected>release of the weights (lecture)</option><option value="6">release + 6 months (placebo)</option></select></div><button class="btn play" id="pp-play" type="button"></button></div><div class="charts "><div class="chart" id="pp-chart"></div></div><ul class="out" id="pp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Question for the room</span> Choose the placebo cut 6 months before the release (25 May 2024 for Chronos-Bolt small). What does the WQL ratio of Chronos-Bolt small on US retail sales become after the cut?</div>
+  <details><summary>Answer</summary><p>1.08, as after the real release (0.81 before): the jump also appears at a date at which nothing happened. The difference between the periods, not necessarily contamination, can produce such a jump; this is why a drop is a warning, not a proof.</p></details>
+</section>
+<p class="src foot">Results of the backtest (Quantlets/Ch_11: ch11_backtest.csv, ch11_abs_err.json, ch11_numbers.json): MASE, the WQL parts, the coverage of the 80% interval and the absolute error of the median at every step, for every origin and model; they reproduce the numbers of the lecture exactly. The zero-shot quantiles of Chronos-Bolt small in the three fan charts (levels 0.1, 0.3, 0.5, 0.7, 0.9) are read from the vector charts of the slides (charts/tsa_ch11_fan_load.pdf, tsa_ch11_fan_ip.pdf, tsa_ch11_fan_eurron.pdf), in which every forecast step is a vertex of the band and of the median; they reproduce the numbers of the lecture to the fifth significant digit. The series, read with the chapter’s loaders on 4 November 2026 and cut at the last period of the slides: the hourly Romanian load (the ENTSO-E extract of Chapter 4), inflation and the unemployment rate (Eurostat) and EUR/RON (BNR) have not been revised and reproduce the numbers of the lecture exactly. Industrial production (Eurostat sts_inpr_m): the July 2026 value has been revised since the slides were made (94.5 on the slide, 94.6 with the data of 4 November 2026); the 96 months of the token chart and the 60 months of the fan chart are read from the charts of the slides (every month is a vertex of the line). Romanian real GDP (Eurostat namq_10_gdp) has been revised: the series chart uses the line of charts/tsa_ch11_series.pdf (every quarter 2005–2026). US retail sales (FRED RSXFSN): July and August 2026 have been revised; the chart uses the data of 4 November 2026 and the slide values are given next to them. Variants that do not appear in the lecture (other origins, horizons, contexts, cut dates, season m, quantisation grids) are extra runs of the chapter’s code on the saved results; the charts of “The families side by side”, “The weighted quantile loss (WQL)”, “Coverage and relative scores”, “Point accuracy: the MASE” and “Results: WQL relative to the seasonal naive” are extra charts for slides that give only numbers.</p>
+</main>
+</body>
+</html>

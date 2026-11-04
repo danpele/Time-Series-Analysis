@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitolul 11 · Foundation models pentru serii de timp</title>
+<link rel="icon" href="../logos/ida_square.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=20261016e">
+<link rel="stylesheet" href="interactive.css?v=20261101a">
+<script>window.TSA_LANG = 'ro';</script>
+<link rel="preload" as="script" href="ch11.js?v=20261101a">
+<script>
+(function (early, page, rest) {
+  'use strict';
+  let left = early.length, ok = true, parsed = document.readyState !== 'loading', started = false;
+  function add(src, k, done, ordered) {
+    const s = document.createElement('script');
+    s.src = k ? src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + k : src;
+    s.async = !ordered;
+    s.onload = () => done(true);
+    s.onerror = () => { s.remove(); if (k < 3) setTimeout(() => add(src, k + 1, done, ordered), 300 * (k + 1)); else done(false); };
+    document.head.appendChild(s);
+  }
+  function chain(list) { if (list.length) add(list[0], 0, () => chain(list.slice(1)), true); }
+  function go() {
+    if (started || left || !parsed) return;
+    started = true;
+    if (!ok || !window.TSAI) console.error('TSA: a script of the interactive charts did not load; the live charts are off.');
+    chain((ok && window.TSAI ? [page] : []).concat(rest));
+  }
+  early.forEach(src => add(src, 0, r => { ok = ok && r; left--; go(); }, false));
+  if (!parsed) document.addEventListener('DOMContentLoaded', () => { parsed = true; go(); });
+  go();
+})(["https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js", "ch11_data.js?v=20261101a", "ch11_text_ro.js?v=20261101a", "common.js?v=20261101a"], "ch11.js?v=20261101a", []);
+</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { pageReady: () => MathJax.startup.defaultPageReady().then(() => document.body.setAttribute('data-mj', 'done')) } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="https://www.ase.ro" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ase_logo.png" alt="ASE"></a>
+    <div class="header-title"><h1><a class="home-link" href="../index_ro.html">Serii de timp</a></h1><p>Capitolul 11 · Foundation models pentru serii de timp</p></div>
+    <a href="https://www.theida.net/" target="_blank" rel="noopener"><img class="header-logo" src="../logos/ida_logo.png" alt="IDA"></a>
+  </div>
+</header>
+<nav><ul>
+  <li><a href="../index_ro.html#chapters">← Site-ul cursului</a></li>
+  <li><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf" target="_blank" rel="noopener">PDF-ul cursului</a></li>
+  <li><a href="https://github.com/danpele/Time-Series-Analysis/tree/main/Quantlets/Ch_11" target="_blank" rel="noopener">Quantlets</a></li>
+  <li class="lang-switcher"><a href="ch11.html" class="lang-btn">EN</a><a href="ch11_ro.html" class="lang-btn active">RO</a></li>
+</ul></nav>
+<main class="imain">
+<p class="lead">În stînga este slide-ul din curs, în dreapta aceeași figură sau același tabel, calculat în browser din aceleași date. Butonul ▶ modifică parametrul pas cu pas; casetele „Exemplu rezolvat” refac calculul cu cifrele capitolului. Niciun foundation model nu rulează în browser: pagina folosește prognozele, cuantilele și scorurile salvate de codul capitolului.</p>
+<p class="toc"><a href="#s-tr">Transformer-ul, pe scurt</a> · <a href="#s-tok">De la numere la tokeni</a> · <a href="#s-fam">Principalele familii de modele</a> · <a href="#s-sc">Prognozele probabiliste și scorurile lor</a> · <a href="#s-zs">Prognoze zero-shot pe date reale</a> · <a href="#s-ev">O evaluare corectă</a> · <a href="#s-lk">Leakage-ul și contaminarea</a></p>
+<h2 class="sec" id="s-tr">Transformer-ul, pe scurt</h2>
+<section class="blk" id="wx-att">
+  <h3>Exemplu rezolvat: ponderile atenției</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=14" target="_blank" rel="noopener"><img src="slides/ch11x_wx-att_ro.jpg" alt="Slide-ul 13: Exemplu rezolvat: ponderile atenției" loading="lazy"></a>
+      <figcaption>Slide-ul 13</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wa-c">Multiplicatorul c al scorurilor (curs: 1): <b id="wa-c-v"></b></label><input type="range" id="wa-c" min="0" max="3" step="0.25" value="1"></div><button class="btn play" id="wa-play" type="button"></button></div><div class="charts "><div class="chart" id="wa-chart"></div></div><div class="c11x"><h4>Exemplu rezolvat</h4><div class="c11f">\[s=(2c,\ c,\ 0),\qquad w_j=\frac{\exp(s_j)}{\sum_l \exp(s_l)},\qquad \text{out}=\sum_j w_jv_j,\quad v=(10,\ 20,\ 30)\]</div><ol id="wa-ws"></ol></div><ul class="out" id="wa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ crește c pînă la 3 (scorurile 6, 3, 0). Ce se întîmplă cu ieșirea?</div>
+  <details><summary>Răspuns</summary><p>Scade la 10,5, aproape de valoarea primei chei (10): ponderea ei crește la 95%. Cu c = 0 toate ponderile sînt 1/3 și ieșirea este media, 20; împărțirea la √d ține scorurile moderate, astfel încît și celelalte poziții contribuie.</p></details>
+</section><h2 class="sec" id="s-tok">De la numere la tokeni</h2>
+<section class="blk" id="wx-tok">
+  <h3>Exemplu rezolvat: scalarea și tokenii</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=19" target="_blank" rel="noopener"><img src="slides/ch11x_wx-tok_ro.jpg" alt="Slide-ul 18: Exemplu rezolvat: scalarea și tokenii" loading="lazy"></a>
+      <figcaption>Slide-ul 18</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wt-b">Numărul de intervale B în [−15, 15]</label><select id="wt-b"><option value="4093" selected>4093 (curs)</option><option value="1001">1001</option><option value="101">101</option><option value="21">21</option></select></div><button class="btn play" id="wt-play" type="button"></button></div><div class="charts "><div class="chart" id="wt-chart"></div></div><div class="c11x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wt-m">Luna din calcul</label><select id="wt-m"><option value="0" selected>martie 2026</option><option value="1">aprilie 2026</option><option value="2">mai 2026</option><option value="3">iunie 2026</option><option value="4">iulie 2026</option><option value="5">august 2026</option></select></div></div><div class="c11f">\[s=\frac1C\sum_{t=1}^{C}|x_t|,\qquad \tilde x_t=\frac{x_t}{s},\qquad \text{token}_t=\operatorname{round}\Big(\frac{\tilde x_t+15}{w}\Big),\quad w=\frac{30}{B-1}\]</div><ol id="wt-ws"></ol></div><ul class="out" id="wt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți 21 de intervale în [−15, 15]. Cîți tokeni distincți dau cele șase luni?</div>
+  <details><summary>Răspuns</summary><p>Unul singur: intervalele au lățimea 1,5, iar toate valorile scalate (de la 0,970 la 1,030) cad în același interval. Cu 4093 de intervale (lățimea 0,0073) sînt 4 tokeni; o variație de 0,1 puncte a ratei mută valoarea scalată cu 2,07 intervale.</p></details>
+</section>
+<section class="blk" id="tokens">
+  <h3>Scalarea și cuantizarea pe date reale</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=20" target="_blank" rel="noopener"><img src="slides/tsa_ch11_tokens_ro.jpg" alt="Slide-ul 19: Scalarea și cuantizarea pe date reale" loading="lazy"></a>
+      <figcaption>Slide-ul 19</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="tk-n">Lungimea contextului (luni; curs: 96): <b id="tk-n-v"></b></label><input type="range" id="tk-n" min="12" max="96" step="12" value="96"></div><div class="ctl"><label for="tk-b">Grila de cuantizare</label><select id="tk-b"><option value="21" selected>21 de intervale în [−3, 3] (curs)</option><option value="41">41 de intervale în [−3, 3]</option><option value="101">101 intervale în [−3, 3]</option><option value="4093">4093 de intervale în [−15, 15] (Chronos)</option></select></div><button class="btn play" id="tk-play" type="button"></button></div><style>.c11x{margin:.6rem 0 .3rem;padding:.55rem .8rem;border:1px solid #D5DEEC;border-left:4px solid #17A2B8;border-radius:6px;background:#F7FAFD;min-width:0}.c11x h4{margin:0 0 .2rem;font-size:.95rem;color:#1A3A6E}.c11x .c11f{overflow-x:auto;overflow-y:hidden;max-width:100%;font-size:.92rem}.c11x ol{margin:.3rem 0 0 1.25rem;padding:0;font-size:.92rem}.c11x li{margin:.18rem 0;overflow-wrap:anywhere}.c11x .wctl .ctl{max-width:360px;margin:.15rem 0 .2rem}.c11t{max-width:100%;overflow-x:auto;margin:.55rem 0 .3rem}.c11t table{border-collapse:collapse;font-size:.86rem;margin:0;border-top:2px solid #1A3A6E;border-bottom:2px solid #1A3A6E}.c11t th,.c11t td{padding:.24rem .55rem;text-align:left;white-space:nowrap;vertical-align:top}.c11t thead tr:last-child th{border-bottom:1px solid #1A3A6E}.c11t tbody tr:nth-child(even){background:#F5F7FB}.c11t tbody tr.hi{background:#E3F4F7}.c11t .r{text-align:right}.c11cap{font-size:.84rem;margin:.15rem 0 .3rem;color:#1F2A44;white-space:normal}</style><div class="charts "><div class="chart" id="tk-chart"></div></div><ul class="out" id="tk-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ scurtează contextul la 24 de luni (august 2024 – iulie 2026). Cîți tokeni distincți folosește contextul pe grila grosieră de 21 de intervale?</div>
+  <details><summary>Răspuns</summary><p>Doi (față de trei pentru 96 de luni): fără aprilie 2020, valorile scalate rămîn între 0,87 și 1,11, adică în două intervale de lățime 0,30. Scala se adaptează contextului (s = 94,1 în loc de 97,8), deci tokenii descriu forma relativă la nivelul recent, nu nivelul.</p></details>
+</section>
+<section class="blk" id="patching">
+  <h3>Patching-ul consumului de energie electrică al României</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=23" target="_blank" rel="noopener"><img src="slides/tsa_ch11_patching_ro.jpg" alt="Slide-ul 22: Patching-ul consumului de energie electrică al României" loading="lazy"></a>
+      <figcaption>Slide-ul 22</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pa-P">Lungimea patch-ului P (valori; curs: 16): <b id="pa-P-v"></b></label><input type="range" id="pa-P" min="4" max="48" step="4" value="16"></div><div class="ctl"><label for="pa-n">Ore afișate, din 1 iunie 2026 (curs: 336): <b id="pa-n-v"></b></label><input type="range" id="pa-n" min="168" max="672" step="168" value="336"></div><button class="btn play" id="pa-play" type="button"></button></div><div class="charts "><div class="chart" id="pa-chart"></div></div><ul class="out" id="pa-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți P = 24 (un patch pe zi). Cîte patch-uri cere o săptămînă (168 de ore)?</div>
+  <details><summary>Răspuns</summary><p>7 = 168/24, față de 11 pentru P = 16 (168/16 = 10,5, rotunjit în sus). Cu P = 24 patch-urile se aliniază cu ciclul zilnic, iar cele 336 de ore dau 14 patch-uri; comparațiile atenției scad de la 441 la 196.</p></details>
+</section><h2 class="sec" id="s-fam">Principalele familii de modele</h2>
+<section class="blk" id="fam-table">
+  <h3>Comparația familiilor de modele</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=29" target="_blank" rel="noopener"><img src="slides/ch11x_fam-table_ro.jpg" alt="Slide-ul 28: Comparația familiilor de modele" loading="lazy"></a>
+      <figcaption>Slide-ul 28</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ft-c">Lungimea contextului C (valori; slide-ul Patching: 2048): <b id="ft-c-v"></b></label><input type="range" id="ft-c" min="256" max="4096" step="256" value="2048"></div><button class="btn play" id="ft-play" type="button"></button></div><div class="charts "><div class="chart" id="ft-chart"></div></div><div class="c11x"><div class="wctl"><div class="ctl"><label for="ft-h">Evidențiați</label><select id="ft-h"><option value="none" selected>nimic</option><option value="apache">licența Apache-2.0</option><option value="patch">intrarea prin patch-uri</option><option value="dec">decoder-only</option></select></div></div><div class="tbl c11t" id="ft-tb"></div></div><ul class="out" id="ft-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți C = 512. Cîte patch-uri de 16 primește Chronos-Bolt?</div>
+  <details><summary>Răspuns</summary><p>32 = 512/16, cu 32² = 1024 de comparații într-un strat de atenție, față de 512² = 262 144 pentru un token pe valoare (Chronos). TimesFM, cu patch-uri de 32, primește 16.</p></details>
+</section><h2 class="sec" id="s-sc">Prognozele probabiliste și scorurile lor</h2>
+<section class="blk" id="wx-wql">
+  <h3>Pierderea cuantilă ponderată (WQL)</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=34" target="_blank" rel="noopener"><img src="slides/ch11x_wx-wql_ro.jpg" alt="Slide-ul 33: Pierderea cuantilă ponderată (WQL)" loading="lazy"></a>
+      <figcaption>Slide-ul 33</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="ww-s">Seria</label><select id="ww-s"><option value="load" selected>Consumul RO (orar)</option><option value="ip">Producția industrială RO</option><option value="gdp">PIB-ul real RO</option><option value="infl">Inflația RO</option><option value="unemp">Șomajul RO</option><option value="eurron">EUR/RON (zilnic)</option><option value="retail">Vînzările cu amănuntul SUA</option></select></div><div class="ctl"><label for="ww-m">Modelul</label><select id="ww-m"><option value="ETS">ETS</option><option value="ARIMA">ARIMA</option><option value="Chronos-Bolt tiny">Chronos-Bolt tiny</option><option value="Chronos-Bolt small">Chronos-Bolt small</option><option value="Chronos-2" selected>Chronos-2</option></select></div><button class="btn play" id="ww-play" type="button"></button></div><div class="charts "><div class="chart" id="ww-chart"></div></div><div class="c11x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="ww-o">Originea din calcul: <b id="ww-o-v"></b></label><input type="range" id="ww-o" min="1" max="52" step="1" value="1"></div></div><div class="c11f">\[\text{WQL}=\frac{1}{9}\sum_{\tau}\frac{2\sum_t L_\tau(y_t,\hat q_{\tau,t})}{\sum_t|y_t|}=\frac{\sum_{\text{origins}}\text{num}}{\sum_{\text{origins}}\text{den}},\quad \text{num}=\sum_\tau\sum_t 2L_\tau,\ \ \text{den}=9\sum_t|y_t|\]</div><ol id="ww-ws"></ol></div><ul class="out" id="ww-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ trece la EUR/RON. Cît este raportul WQL al Chronos-2 față de prognoza sezonieră naivă?</div>
+  <details><summary>Răspuns</summary><p>0,87: WQL 0,0019 față de 0,0022 pentru prognoza naivă, deși raportul MASE al medianei este 1,05. WQL evaluează toate cuantilele, iar benzile mai înguste ale Chronos-2 cîștigă chiar cînd mediana nu este mai bună.</p></details>
+</section>
+<section class="blk" id="scores">
+  <h3>Pierderea pinball și CRPS</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=35" target="_blank" rel="noopener"><img src="slides/tsa_ch11_scores_ro.jpg" alt="Slide-ul 34: Pierderea pinball și CRPS" loading="lazy"></a>
+      <figcaption>Slide-ul 34</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sc-y">Valoarea observată y (curs: 1): <b id="sc-y-v"></b></label><input type="range" id="sc-y" min="-3" max="3" step="0.25" value="1"></div><div class="ctl"><label for="sc-s">σ al prognozei N(0, σ²) (curs: 1): <b id="sc-s-v"></b></label><input type="range" id="sc-s" min="0.5" max="3" step="0.25" value="1"></div><button class="btn play" id="sc-play" type="button"></button></div><div class="charts "><div class="chart" id="sc-chart"></div></div><ul class="out" id="sc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați valoarea observată la y = 0, mediana prognozei N(0, 1). Cît este CRPS?</div>
+  <details><summary>Răspuns</summary><p>0,234, nu 0: CRPS evaluează toată distribuția, iar o prognoză cu abaterea standard 1 rămîne incertă chiar dacă mediana nimerește valoarea. Doar o prognoză care pune toată masa în y are CRPS 0; în y = 1 scorul este 0,602.</p></details>
+</section>
+<section class="blk" id="wx-pin">
+  <h3>Exemplu rezolvat: pierderile pinball</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=37" target="_blank" rel="noopener"><img src="slides/ch11x_wx-pin_ro.jpg" alt="Slide-ul 36: Exemplu rezolvat: pierderile pinball" loading="lazy"></a>
+      <figcaption>Slide-ul 36</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wp-y">Valoarea observată y (%; curs: 7,2): <b id="wp-y-v"></b></label><input type="range" id="wp-y" min="6.0" max="8.4" step="0.1" value="7.2"></div><button class="btn play" id="wp-play" type="button"></button></div><div class="charts "><div class="chart" id="wp-chart"></div></div><div class="c11x"><h4>Exemplu rezolvat</h4><div class="c11f">\[L_\tau(y,\hat q_\tau)=\begin{cases}\tau\,(y-\hat q_\tau), & y\ge \hat q_\tau\\(1-\tau)(\hat q_\tau-y), & y<\hat q_\tau\end{cases},\qquad \text{CRPS}\approx\tfrac{2}{3}\sum_{\tau\in\{0.1,0.5,0.9\}}L_\tau\]</div><ol id="wp-ws"></ol></div><ul class="out" id="wp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați y la 8,0, peste q̂<sub>0,9</sub> = 7,6. Care nivel are cea mai mare pierdere?</div>
+  <details><summary>Răspuns</summary><p>Nivelul 0,5: 0,5·(8,0 − 7,0) = 0,50, față de 0,9·(8,0 − 7,6) = 0,36 și 0,1·(8,0 − 6,5) = 0,15. Depășirea cuantilei de 0,9 costă mult pe unitate, dar distanța pînă la ea este mică; CRPS aproximat crește la 0,673.</p></details>
+</section>
+<section class="blk" id="wx-mase">
+  <h3>Precizia punctuală: MASE</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=38" target="_blank" rel="noopener"><img src="slides/ch11x_wx-mase_ro.jpg" alt="Slide-ul 37: Precizia punctuală: MASE" loading="lazy"></a>
+      <figcaption>Slide-ul 37</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wm-m">Sezonul m din scală</label><select id="wm-m"><option value="168" selected>168 de ore (curs)</option><option value="24">24 de ore</option><option value="1">1 oră</option></select></div><button class="btn play" id="wm-play" type="button"></button></div><div class="charts "><div class="chart" id="wm-chart"></div></div><div class="c11x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wm-a">MAE al prognozei (curs: 0,30): <b id="wm-a-v"></b></label><input type="range" id="wm-a" min="0.05" max="1" step="0.05" value="0.3"></div><div class="ctl"><label for="wm-b">MAE naiv în eșantion (curs: 0,25): <b id="wm-b-v"></b></label><input type="range" id="wm-b" min="0.05" max="1" step="0.05" value="0.25"></div></div><div class="c11f">\[\text{MASE}=\frac{\frac1h\sum_{j=1}^{h}|y_{T+j}-\hat y_{T+j}|}{\frac{1}{T-m}\sum_{t=m+1}^{T}|y_t-y_{t-m}|}\]</div><ol id="wm-ws"></ol></div><ul class="out" id="wm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți m = 1 (prognoza naivă de o oră în numitor). Cît devine MASE pentru Chronos-Bolt small?</div>
+  <details><summary>Răspuns</summary><p>2,13 (1,31 cu m = 168): numitorul scade de la 0,421 GW la 0,260 GW, eroarea medie a prognozei de o oră în context, iar prognozele rămîn aceleași. Valoarea MASE și pragul 1 au sens doar împreună cu m-ul declarat.</p></details>
+</section>
+<section class="blk" id="wx-cov">
+  <h3>Acoperirea și scorurile relative</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=39" target="_blank" rel="noopener"><img src="slides/ch11x_wx-cov_ro.jpg" alt="Slide-ul 38: Acoperirea și scorurile relative" loading="lazy"></a>
+      <figcaption>Slide-ul 38</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wc-m">Modelul</label><select id="wc-m"><option value="Seasonal naive">Seasonal naive</option><option value="ETS">ETS</option><option value="ARIMA">ARIMA</option><option value="Chronos-Bolt tiny">Chronos-Bolt tiny</option><option value="Chronos-Bolt small">Chronos-Bolt small</option><option value="Chronos-2" selected>Chronos-2</option></select></div><div class="ctl"><label for="wc-s">Seria din stînga</label><select id="wc-s"><option value="load">Consumul RO (orar)</option><option value="ip">Producția industrială RO</option><option value="gdp">PIB-ul real RO</option><option value="infl">Inflația RO</option><option value="unemp">Șomajul RO</option><option value="eurron">EUR/RON (zilnic)</option><option value="retail" selected>Vînzările cu amănuntul SUA</option></select></div><button class="btn play" id="wc-play" type="button"></button></div><div class="charts "><div class="chart" id="wc-chart"></div></div><div class="c11x"><h4>Exemplu rezolvat</h4><div class="wctl"><div class="ctl"><label for="wc-k">Valori observate în interval (curs: 7): <b id="wc-k-v"></b></label><input type="range" id="wc-k" min="0" max="20" step="1" value="7"></div><div class="ctl"><label for="wc-n">Numărul de prognoze n (curs: 10): <b id="wc-n-v"></b></label><input type="range" id="wc-n" min="1" max="20" step="1" value="10"></div><div class="ctl"><label for="wc-r">Raportul r₁ al primei serii (curs: 2; r₂ = 0,5): <b id="wc-r-v"></b></label><input type="range" id="wc-r" min="0.25" max="4" step="0.25" value="2"></div></div><div class="c11f">\[\text{Cov}=\frac1n\sum_{i=1}^{n}\mathbf 1\{\hat q^{(i)}_{0.1}\le y_i\le \hat q^{(i)}_{0.9}\},\qquad \bar r=(r_1r_2\cdots r_S)^{1/S}\]</div><ol id="wc-ws"></ol></div><ul class="out" id="wc-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ trece prin modele. Ce acoperire are Chronos-Bolt tiny pe vînzările din SUA?</div>
+  <details><summary>Răspuns</summary><p>75,2%, cea mai mare dintre cele șase modele, dar tot sub 80%; Chronos-2 are 65,0%, prognoza sezonieră naivă 64,7%. Șocul din 2020 și saltul din 2021 ies din benzile tuturor modelelor.</p></details>
+</section><h2 class="sec" id="s-zs">Prognoze zero-shot pe date reale</h2>
+<section class="blk" id="series">
+  <h3>Șapte serii pentru test</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=41" target="_blank" rel="noopener"><img src="slides/tsa_ch11_series_ro.jpg" alt="Slide-ul 40: Șapte serii pentru test" loading="lazy"></a>
+      <figcaption>Slide-ul 40</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sr-v">Afișați</label><select id="sr-v"><option value="lev" selected>nivelurile (curs)</option><option value="sd">diferențele sezoniere y<sub>t</sub> − y<sub>t−m</sub> (m din backtest)</option><option value="d1">primele diferențe y<sub>t</sub> − y<sub>t−1</sub></option></select></div><button class="btn play" id="sr-play" type="button"></button></div><div class="charts "><div class="chart" id="sr-chart"></div></div><ul class="out" id="sr-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ trece la diferențele sezoniere și apoi la primele diferențe. Pentru consumul orar din iunie 2026, media lui |y<sub>t</sub> − y<sub>t−168</sub>| este mai mare sau mai mică decît media lui |y<sub>t</sub> − y<sub>t−1</sub>|?</div>
+  <details><summary>Răspuns</summary><p>Mai mare: 0,43 GW față de 0,24 GW. Consumul variază puțin de la o oră la alta, iar într-o săptămînă se schimbă vremea și nivelul; de aceea numitorul MASE cu m = 168 este mai mare decît eroarea prognozei de o oră. La producția industrială este invers (4,86 cu m = 12, 6,37 cu m = 1), pentru că sezonalitatea anuală domină.</p></details>
+</section>
+<section class="blk" id="fan-load">
+  <h3>Consumul de energie electrică al României, prognoză pe 48 de ore</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=44" target="_blank" rel="noopener"><img src="slides/tsa_ch11_fan_load_ro.jpg" alt="Slide-ul 43: Consumul de energie electrică al României, prognoză pe 48 de ore" loading="lazy"></a>
+      <figcaption>Slide-ul 43</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fl-H">Orele evaluate (curs: 48): <b id="fl-H-v"></b></label><input type="range" id="fl-H" min="6" max="48" step="6" value="48"></div><button class="btn play" id="fl-play" type="button"></button></div><div class="charts "><div class="chart" id="fl-chart"></div></div><ul class="out" id="fl-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ evaluează doar primele 6 ore. Ce acoperire are banda de 80% a Chronos-Bolt în orele 1–6?</div>
+  <details><summary>Răspuns</summary><p>100% (6 din 6 ore), față de 29% pe 48 de ore; MASE este 0,11 în primele 6 ore. Prognoza pornește de la ultimele valori observate, iar abaterea consumului efectiv se acumulează în cursul zilei: acoperirea unei singure origini depinde mult de orizont.</p></details>
+</section>
+<section class="blk" id="wx-hour">
+  <h3>Exemplu rezolvat: evaluarea unei ore</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=46" target="_blank" rel="noopener"><img src="slides/ch11x_wx-hour_ro.jpg" alt="Slide-ul 45: Exemplu rezolvat: evaluarea unei ore" loading="lazy"></a>
+      <figcaption>Slide-ul 45</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="wh-h">Ora h a prognozei (curs: 24): <b id="wh-h-v"></b></label><input type="range" id="wh-h" min="1" max="48" step="1" value="24"></div><button class="btn play" id="wh-play" type="button"></button></div><div class="charts "><div class="chart" id="wh-chart"></div></div><div class="c11x"><h4>Exemplu rezolvat</h4><div class="c11f">\[L_\tau(y,\hat q_\tau)=\max\{\tau(y-\hat q_\tau),\ (\tau-1)(y-\hat q_\tau)\},\qquad \mathbf 1\{\hat q_{0.1}\le y\le \hat q_{0.9}\}\]</div><ol id="wh-ws"></ol></div><ul class="out" id="wh-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Mutați ora la 1 (22 iunie 2026, ora 00:00). Cît este indicatorul de acoperire?</div>
+  <details><summary>Răspuns</summary><p>1: valoarea observată este în banda de 80%, iar pierderile sînt mici (0,017; 0,010; 0,012 GW). Prognoza pornește de la ultimele valori; abia în cursul zilei consumul efectiv iese peste bandă, ca la ora 24 (0,062; 0,163; 0,025 GW).</p></details>
+</section>
+<section class="blk" id="fan-ip">
+  <h3>Producția industrială a României, prognoză pe 12 luni</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=47" target="_blank" rel="noopener"><img src="slides/tsa_ch11_fan_ip_ro.jpg" alt="Slide-ul 46: Producția industrială a României, prognoză pe 12 luni" loading="lazy"></a>
+      <figcaption>Slide-ul 46</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fi-H">Lunile evaluate (curs: 12): <b id="fi-H-v"></b></label><input type="range" id="fi-H" min="1" max="12" step="1" value="12"></div><button class="btn play" id="fi-play" type="button"></button></div><div class="charts "><div class="chart" id="fi-chart"></div></div><ul class="out" id="fi-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți H = 3 (august–octombrie 2025). Care prognoză are cel mai mic MASE?</div>
+  <details><summary>Răspuns</summary><p>Prognoza sezonieră naivă: 0,43, față de 0,79 pentru ETS și 0,95 pentru Chronos-Bolt. Pentru această origine, anul precedent prognozează cel mai bine lunile următoare; pe 12 luni prognoza naivă rămîne prima (0,67), iar ETS (1,20) și Chronos-Bolt (1,04) își schimbă locurile.</p></details>
+</section>
+<section class="blk" id="fan-eurron">
+  <h3>EUR/RON, prognoză pe 20 de zile</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=49" target="_blank" rel="noopener"><img src="slides/tsa_ch11_fan_eurron_ro.jpg" alt="Slide-ul 48: EUR/RON, prognoză pe 20 de zile" loading="lazy"></a>
+      <figcaption>Slide-ul 48</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="fe-H">Zilele evaluate (curs: 20): <b id="fe-H-v"></b></label><input type="range" id="fe-H" min="1" max="20" step="1" value="20"></div><button class="btn play" id="fe-play" type="button"></button></div><div class="charts "><div class="chart" id="fe-chart"></div></div><ul class="out" id="fe-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Puneți H = 5. La ziua 5, banda de 80% a Chronos-Bolt este mai largă sau mai îngustă decît cea a mersului aleator?</div>
+  <details><summary>Răspuns</summary><p>Mai largă: 0,044 față de 0,031. Banda mersului aleator crește cu √h, de la 0,014 în prima zi, în timp ce banda Chronos-Bolt pornește de la 0,035; cele două ajung aproape egale abia la 20 de zile (0,064 și 0,063).</p></details>
+</section><h2 class="sec" id="s-ev">O evaluare corectă</h2>
+<section class="blk" id="res-table">
+  <h3>Rezultate: WQL relativ la prognoza sezonieră naivă</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=53" target="_blank" rel="noopener"><img src="slides/ch11x_res-table_ro.jpg" alt="Slide-ul 52: Rezultate: WQL relativ la prognoza sezonieră naivă" loading="lazy"></a>
+      <figcaption>Slide-ul 52</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="rt-k">Scorul din harta de culori</label><select id="rt-k"><option value="rel_wql" selected>WQL / prognoza sezonieră naivă (curs)</option><option value="rel_mase">MASE / prognoza sezonieră naivă</option><option value="cov">acoperirea intervalului de 80%</option></select></div><button class="btn play" id="rt-play" type="button"></button></div><div class="charts "><div class="chart" id="rt-chart"></div></div><div class="c11x"><div class="wctl"><div class="ctl"><label for="rt-v">Valorile din tabel</label><select id="rt-v"><option value="rel" selected>raportul față de prognoza sezonieră naivă (curs)</option><option value="abs">WQL absolut</option></select></div></div><div class="tbl c11t" id="rt-tb"></div></div><ul class="out" id="rt-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Treceți harta la raportul MASE. Pe ce serie raportul MASE al Chronos-2 este peste 1?</div>
+  <details><summary>Răspuns</summary><p>EUR/RON: 1,05, deși raportul WQL este 0,87. Pe celelalte șase serii raportul MASE al Chronos-2 este sub 1, de la 0,59 (vînzările din SUA) pînă la 0,98 (șomajul).</p></details>
+</section>
+<section class="blk" id="benchmark">
+  <h3>MASE și WQL pe serii și modele</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=54" target="_blank" rel="noopener"><img src="slides/tsa_ch11_benchmark_ro.jpg" alt="Slide-ul 53: MASE și WQL pe serii și modele" loading="lazy"></a>
+      <figcaption>Slide-ul 53</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="bm-f">Originile incluse</label><select id="bm-f"><option value="" selected>toate (curs)</option><option value="2018-01-01">din 2018</option><option value="2020-01-01">din 2020</option><option value="2022-01-01">din 2022</option><option value="2024-01-01">din 2024</option></select></div><button class="btn play" id="bm-play" type="button"></button></div><div class="charts "><div class="chart" id="bm-chart"></div></div><ul class="out" id="bm-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Păstrați doar originile din 2024. Care model are cea mai mică medie geometrică a raportului WQL?</div>
+  <details><summary>Răspuns</summary><p>Tot Chronos-2 (0,78), urmat de ARIMA (0,92); Chronos-Bolt small trece la 1,06, mai slab decît prognoza sezonieră naivă, iar ETS la 1,01. Cu 175 de origini în loc de 708, ordinea celorlalte modele se schimbă: un singur clasament nu descrie toate perioadele.</p></details>
+</section>
+<section class="blk" id="coverage">
+  <h3>Acoperirea intervalelor de 80%</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=56" target="_blank" rel="noopener"><img src="slides/tsa_ch11_coverage_ro.jpg" alt="Slide-ul 55: Acoperirea intervalelor de 80%" loading="lazy"></a>
+      <figcaption>Slide-ul 55</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cv-f">Originile incluse</label><select id="cv-f"><option value="" selected>toate (curs)</option><option value="2018-01-01">din 2018</option><option value="2020-01-01">din 2020</option><option value="2022-01-01">din 2022</option><option value="2024-01-01">din 2024</option></select></div><button class="btn play" id="cv-play" type="button"></button></div><div class="charts "><div class="chart" id="cv-chart"></div></div><ul class="out" id="cv-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Păstrați doar originile din 2024. Cît este acoperirea medie a prognozei sezoniere naive?</div>
+  <details><summary>Răspuns</summary><p>94%: intervalele naive devin prea largi, pentru că abaterea lor standard este estimată pe tot contextul, care include șocurile din 2020–2022. Chronos-2 ajunge la 83%: acoperirea depinde de perioada testată, nu doar de model.</p></details>
+</section>
+<section class="blk" id="horizon">
+  <h3>Consumul României: eroarea în funcție de orizont</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=58" target="_blank" rel="noopener"><img src="slides/tsa_ch11_horizon_ro.jpg" alt="Slide-ul 57: Consumul României: eroarea în funcție de orizont" loading="lazy"></a>
+      <figcaption>Slide-ul 57</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="hz-s">Seria</label><select id="hz-s"><option value="load" selected>Consumul RO (orar) (curs)</option><option value="ip">Producția industrială RO</option><option value="gdp">PIB-ul real RO</option><option value="infl">Inflația RO</option><option value="unemp">Șomajul RO</option><option value="eurron">EUR/RON (zilnic)</option><option value="retail">Vînzările cu amănuntul SUA</option></select></div><div class="ctl"><label for="hz-w">Originile</label><select id="hz-w"><option value="all" selected>toate (curs)</option><option value="a">prima jumătate</option><option value="b">a doua jumătate</option></select></div><button class="btn play" id="hz-play" type="button"></button></div><div class="charts "><div class="chart" id="hz-chart"></div></div><ul class="out" id="hz-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți a doua jumătate a originilor (ianuarie–iunie 2026). De la ce oră ETS are, pînă la ora 48, cea mai mare eroare dintre cele șase modele?</div>
+  <details><summary>Răspuns</summary><p>De la ora 41, față de ora 4 pe toate originile. În a doua jumătate erorile tuturor modelelor sînt mai mari (prognoza naivă 0,32 GW la ora 24, față de 0,19 în prima jumătate), iar Chronos-2 rămîne la 0,15 GW.</p></details>
+</section>
+<section class="blk" id="context">
+  <h3>Lungimea necesară a contextului</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=60" target="_blank" rel="noopener"><img src="slides/tsa_ch11_context_ro.jpg" alt="Slide-ul 59: Lungimea necesară a contextului" loading="lazy"></a>
+      <figcaption>Slide-ul 59</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="cx-c">Contextul evidențiat (ore): <b id="cx-c-v"></b></label><input type="range" id="cx-c" min="0" max="5" step="1" value="0"></div><div class="ctl"><label for="cx-r">Axa verticală</label><select id="cx-r"><option value="abs" selected>MASE (curs)</option><option value="rel">MASE / prognoza sezonieră naivă</option></select></div><button class="btn play" id="cx-play" type="button"></button></div><div class="charts "><div class="chart" id="cx-chart"></div></div><ul class="out" id="cx-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> ▶ trece la 192 de ore (8 zile). Cîte dintre cele trei foundation models bat acum prognoza sezonieră naivă (MASE 1,16)?</div>
+  <details><summary>Răspuns</summary><p>Toate trei: Chronos-Bolt tiny 1,09, Chronos-Bolt small 0,98, Chronos-2 1,04. Cu 96 de ore niciunul nu reușea; contextul de 8 zile conține primul ciclu săptămînal complet. Chronos-2, cel mai bun cu 2048 de ore (0,63), este aici abia al doilea: el are nevoie de cel mai lung context.</p></details>
+</section>
+<section class="blk" id="size">
+  <h3>Dimensiunea și precizia</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=62" target="_blank" rel="noopener"><img src="slides/tsa_ch11_size_ro.jpg" alt="Slide-ul 61: Dimensiunea și precizia" loading="lazy"></a>
+      <figcaption>Slide-ul 61</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="sz-f">Originile incluse</label><select id="sz-f"><option value="" selected>toate (curs)</option><option value="2018-01-01">din 2018</option><option value="2020-01-01">din 2020</option><option value="2022-01-01">din 2022</option><option value="2024-01-01">din 2024</option></select></div><div class="ctl"><label for="sz-m">Scorul</label><select id="sz-m"><option value="rel_wql" selected>WQL / prognoza sezonieră naivă (curs)</option><option value="rel_mase">MASE / prognoza sezonieră naivă</option></select></div><button class="btn play" id="sz-play" type="button"></button></div><div class="charts "><div class="chart" id="sz-chart"></div></div><ul class="out" id="sz-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Păstrați doar originile din 2022. Chronos-Bolt small (48 de milioane de parametri) mai bate prognoza sezonieră naivă?</div>
+  <details><summary>Răspuns</summary><p>Nu: media geometrică a raportului WQL devine 1,04 (0,90 pe toate originile), în timp ce Chronos-2 rămîne la 0,83 și ARIMA la 0,91. Numărul de parametri nu garantează un cîștig; Chronos-2 diferă și prin arhitectură și date de antrenare.</p></details>
+</section><h2 class="sec" id="s-lk">Leakage-ul și contaminarea</h2>
+<section class="blk" id="prepost">
+  <h3>O verificare a contaminării: înainte și după lansare</h3>
+  <div class="pair">
+    <figure class="slide"><a href="../pdfjs/web/viewer.html?file=../../RO/Cursuri/capitol11_foundation_models_serii_timp.pdf#page=69" target="_blank" rel="noopener"><img src="slides/tsa_ch11_prepost_ro.jpg" alt="Slide-ul 68: O verificare a contaminării: înainte și după lansare" loading="lazy"></a>
+      <figcaption>Slide-ul 68</figcaption></figure>
+    <div class="live"><div class="ctls"><div class="ctl"><label for="pp-c">Data de tăiere</label><select id="pp-c"><option value="-12">lansarea − 12 luni (placebo)</option><option value="-6">lansarea − 6 luni (placebo)</option><option value="0" selected>data lansării ponderilor (curs)</option><option value="6">lansarea + 6 luni (placebo)</option></select></div><button class="btn play" id="pp-play" type="button"></button></div><div class="charts "><div class="chart" id="pp-chart"></div></div><ul class="out" id="pp-out"></ul></div>
+  </div>
+  <div class="ask"><span class="ask-tag">Întrebare pentru sală</span> Alegeți tăierea placebo cu 6 luni înainte de lansare (25 mai 2024 pentru Chronos-Bolt small). Cît devine raportul WQL al Chronos-Bolt small pe vînzările din SUA după tăiere?</div>
+  <details><summary>Răspuns</summary><p>1,08, ca după lansarea reală (0,81 înainte): saltul apare și la o dată la care nu s-a întîmplat nimic. Diferența dintre perioade, nu neapărat contaminarea, poate produce un astfel de salt; de aceea o scădere este un semnal de alarmă, nu o dovadă.</p></details>
+</section>
+<p class="src foot">Rezultatele backtestului (Quantlets/Ch_11: ch11_backtest.csv, ch11_abs_err.json, ch11_numbers.json): MASE, părțile WQL, acoperirea intervalului de 80% și eroarea absolută a medianei la fiecare pas, pentru fiecare origine și fiecare model; reproduc exact cifrele din curs. Cuantilele zero-shot ale Chronos-Bolt small din cele trei fan charts (nivelurile 0,1; 0,3; 0,5; 0,7; 0,9) sînt citite din graficele vectoriale ale slide-urilor (charts/tsa_ch11_fan_load.pdf, tsa_ch11_fan_ip.pdf, tsa_ch11_fan_eurron.pdf), în care fiecare pas al prognozei este un vîrf al benzii și al medianei; reproduc cifrele din curs pînă la a cincea cifră semnificativă. Seriile, citite cu funcțiile capitolului pe 4 noiembrie 2026 și tăiate la ultima perioadă din slide-uri: consumul orar al României (extrasul ENTSO-E din Capitolul 4), inflația și rata șomajului (Eurostat), cursul EUR/RON (BNR) nu au fost revizuite și reproduc exact cifrele din curs. Producția industrială (Eurostat sts_inpr_m): valoarea din iulie 2026 a fost revizuită după realizarea slide-urilor (94,5 în slide, 94,6 cu datele din 4 noiembrie 2026); cele 96 de luni ale graficului tokenilor și cele 60 de luni ale fan chart-ului sînt citite din graficele slide-urilor (fiecare lună este un vîrf al liniei). PIB-ul real al României (Eurostat namq_10_gdp) a fost revizuit: graficul seriilor folosește linia din charts/tsa_ch11_series.pdf (toate trimestrele 2005–2026). Vînzările cu amănuntul din SUA (FRED RSXFSN): iulie și august 2026 au fost revizuite; graficul folosește datele din 4 noiembrie 2026, iar valorile din slide sînt date alături. Variantele care nu apar în curs (alte origini, alte orizonturi, alt context, altă dată de tăiere, alt sezon m, alte intervale de cuantizare) sînt rulări suplimentare ale codului capitolului pe rezultatele salvate; graficele din „Comparația familiilor de modele”, „Pierderea cuantilă ponderată (WQL)”, „Acoperirea și scorurile relative”, „Precizia punctuală: MASE” și „Rezultate: WQL relativ la prognoza sezonieră naivă” sînt grafice suplimentare pentru slide-uri care dau doar cifre.</p>
+</main>
+</body>
+</html>
