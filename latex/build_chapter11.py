@@ -639,7 +639,7 @@ D.recap(('Zero-shot forecasts', 'prognozele zero-shot'), [
 # =============================================================================
 # 7. EVALUARE
 # =============================================================================
-D.section('An honest evaluation', 'O evaluare corectă')
+D.section('Rolling-origin evaluation on seven series', 'Evaluarea cu origine mobilă pe șapte serii')
 
 D.frame(T('The test protocol', 'Protocolul testului'), items(
     (T('\\textbf{Rolling origin} (Chapter 4)', '\\textbf{Origine mobilă} (Capitolul 4)'),
@@ -728,7 +728,7 @@ D.frame(T('Landmark benchmarks', 'Benchmark-uri de referință'), items(
     (T('Critical studies: simple linear models beat early Transformer forecasters (\\refZeng); LLM parts add no accuracy (\\refTan)', 'Studii critice: modele liniare simple au bătut primele modele de prognoză cu Transformer (\\refZeng); componentele LLM nu adaugă precizie (\\refTan)'), [])),
     size='footnotesize')
 
-D.frame(T('When foundation models help, and when not', 'Utilitatea foundation models: avantaje și limite'), items(
+D.frame(T('Advantages and limitations of foundation models', 'Utilitatea foundation models: avantaje și limite'), items(
     (T('\\textbf{Help}', '\\textbf{Ajută}'),
      [T('many series, little time per series; strong and regular seasonality; long contexts (load, sales, traffic)', 'multe serii, puțin timp pentru fiecare; sezonalitate puternică și regulată; contexte lungi (consum, vînzări, trafic)'),
       T('a quick, strong benchmark before building a dedicated model; probabilistic output at no extra cost', 'un reper rapid și puternic înaintea unui model dedicat; ieșire probabilistă fără cost suplimentar')]),

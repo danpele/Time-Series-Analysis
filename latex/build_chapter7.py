@@ -945,7 +945,7 @@ interp(('the backtest', 'testului istoric'), [
      [T('with a deep loss in the autumn of 2008: cointegration can break exactly when it matters', 'cu o pierdere mare în toamna lui 2008: relația de cointegrare poate dispărea exact atunci cînd este cea mai importantă')]),
     T('Many small wins and a few large losses: the typical profile of a mean-reversion strategy', 'Multe cîștiguri mici și cîteva pierderi mari: profilul tipic al unei strategii de revenire la medie')])
 
-D.frame(T('Pitfalls of pairs trading', 'Capcanele pairs trading'), items(
+D.frame(T('Limitations of pairs trading', 'Limitele strategiei pairs trading'), items(
     (T('\\textbf{Multiple testing}: with 28 pairs and a 5\\% test, about @{pb.fp} pairs pass by chance in each window', '\\textbf{Testarea multiplă}: cu 28 de perechi și un test de 5\\%, circa @{pb.fp} perechi trec întîmplător în fiecare fereastră'), []),
     (T('\\textbf{Look-ahead}: choosing pairs, start dates or thresholds after seeing the whole sample', '\\textbf{Informațiile din viitor}: alegerea perechilor, a datelor de început sau a pragurilor după ce am văzut întregul eșantion'), []),
     (T('\\textbf{Breaks}: mergers, recapitalisations, regulation and crises change $\\beta$; the spread may never come back', '\\textbf{Rupturile}: fuziunile, recapitalizările, reglementările și crizele schimbă $\\beta$; spread-ul poate să nu mai revină'), []),

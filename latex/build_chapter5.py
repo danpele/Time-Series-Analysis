@@ -187,7 +187,7 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 # =============================================================================
 D.section('Stylised facts of financial returns', 'Faptele stilizate ale randamentelor financiare')
 
-chart(T('Four markets, one pattern', 'Patru piețe, același tipar'), 'tsa_ch5_returns', 'TSA_ch5_stylised_facts', [
+chart(T('Daily log returns in four markets', 'Randamentele logaritmice zilnice pe patru piețe'), 'tsa_ch5_returns', 'TSA_ch5_stylised_facts', [
     T('Daily log returns $r_t = 100(\\ln P_t - \\ln P_{t-1})$, in \\%, to @{end}: S\\&P 500 and BET since 2000, EUR/RON (BNR reference rate) since July 2005, Bitcoin since September 2014',
       'Randamente logaritmice zilnice $r_t = 100(\\ln P_t - \\ln P_{t-1})$, în \\%, pînă la @{end}: S\\&P 500 și BET din 2000, EUR/RON (cursul de referință BNR) din iulie 2005, Bitcoin din septembrie 2014'),
     T('Shaded: the global financial crisis (September 2008 -- March 2009) and the COVID-19 crash (February -- May 2020)',

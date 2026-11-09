@@ -309,7 +309,7 @@ interp(('the rolling correlations', 'corelațiilor pe ferestre mobile'), [
        'S\\&P 500 și Bitcoin: de la @{bc.min} (@{bc.dmin}) la @{bc.max} (@{bc.dmax}); Bitcoin a devenit după 2020 un activ riscant, corelat cu acțiunile'), []),
     T('Correlations wander far from any constant value: a model must let them move', 'Corelațiile se îndepărtează mult de orice valoare constantă: modelul trebuie să le permită să se miște')])
 
-D.frame(T('A trap: asynchronous trading', 'O capcană: tranzacționarea asincronă'), items(
+D.frame(T('Asynchronous trading and the bias of daily correlations', 'Tranzacționarea asincronă și deplasarea corelațiilor zilnice'), items(
     (T('Markets close at different hours: Bucharest at 16:45 CET (17:45 local time), Frankfurt at 17:30 CET, New York at 22:00 CET; Bitcoin trades all day, every day',
        'Piețele se închid la ore diferite: București la 16:45 CET (17:45, ora locală), Frankfurt la 17:30 CET, New York la 22:00 CET; Bitcoin se tranzacționează non-stop'),
      [T('news that arrives after the European close shows up in the European prices only the next day', 'o știre care apare după închiderea piețelor europene intră în prețurile europene abia a doua zi')]),

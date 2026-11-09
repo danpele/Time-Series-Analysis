@@ -281,7 +281,7 @@ D.frame(T('The question of the chapter', 'Întrebarea capitolului'), items(
      [T('bubbles in history and the statistical signatures of a bubble', 'bulele din istorie și semnăturile statistice ale unei bule'),
       T('rational bubbles and explosive roots: the right-tailed unit-root tests of Phillips, Shi and Yu (link with Chapter 3)', 'bulele raționale și rădăcinile explozive: testele de rădăcină unitară la dreapta ale lui Phillips, Shi și Yu (legătura cu Capitolul 3)'),
       T('the LPPL model of Johansen, Ledoit and Sornette: super-exponential growth, log-periodic oscillations, the critical time', 'modelul LPPL al lui Johansen, Ledoit și Sornette: creștere superexponențială, oscilații log-periodice, timpul critic'),
-      T('estimation, confidence from many windows and an honest evaluation of crash prediction', 'estimarea, încrederea obținută din multe ferestre și o evaluare riguroasă a prognozei crahurilor')])))
+      T('estimation, confidence from many windows and the evaluation of crash predictions', 'estimarea, încrederea obținută din multe ferestre și evaluarea prognozelor de crah')])))
 
 D.frame(T('Self-study guide', 'Ghid de studiu individual'), items(
     (T('This chapter is for \\textbf{self-study}', 'Acest capitol este pentru \\textbf{studiu individual}'),
@@ -695,7 +695,7 @@ D.frame(T('The LPPLS confidence indicator', 'Indicatorul de încredere LPPLS'), 
       T('\\textbf{all conditions}: also the 15\\% error, the Lomb test and stationary residuals (\\refSZ)', '\\textbf{toate condițiile}: și eroarea de 15\\%, testul Lomb și reziduurile staționare (\\refSZ)')]),
     T('Computed only with data up to $t_2$: a real-time indicator; an alarm when it exceeds a threshold fixed in advance (here 0.2)', 'Se calculează doar cu date pînă la $t_2$: un indicator în timp real; o alarmă cînd depășește un prag fixat dinainte (aici 0,2)')))
 
-chart(T('Many windows, one end date', 'Multe ferestre, o singură dată de sfîrșit'), 'tsa_ch13_windows', 'TSA_ch13_confidence', [
+chart(T('Estimated critical time across estimation windows', 'Timpul critic estimat pe mai multe ferestre de estimare'), 'tsa_ch13_windows', 'TSA_ch13_confidence', [
     T('Estimated $t_c$ for each of the 29 windows ending 30 days before the peak; green dots: the fit passes the parameter conditions; red crosses: it fails them',
       '$t_c$ estimat pentru fiecare dintre cele 29 de ferestre care se încheie cu 30 de zile înainte de maximum; puncte verzi: ajustarea trece de condițiile asupra parametrilor; cruci roșii: nu trece')],
     h='0.6\\textheight')
@@ -741,11 +741,11 @@ D.recap(('Confidence from many windows', 'încrederea obținută din multe feres
     T('$\\hat t_c$ moves with the end of the data: report its spread over windows, never one value', '$\\hat t_c$ se mută odată cu sfîrșitul datelor: raportați dispersia lui pe ferestre, niciodată o singură valoare')])
 
 # =============================================================================
-# 6. EVALUARE ONESTĂ
+# 6. EVALUAREA PROGNOZELOR DE CRAH
 # =============================================================================
-D.section('An honest evaluation of crash prediction', 'O evaluare riguroasă a prognozei crahurilor')
+D.section('Evaluation of crash predictions', 'Evaluarea prognozelor de crah')
 
-D.frame(T('Traps in evaluating crash predictions', 'Capcane în evaluarea prognozelor de crah'), items(
+D.frame(T('Common errors in evaluating crash predictions', 'Erori frecvente în evaluarea prognozelor de crah'), items(
     (T('\\textbf{Look-ahead bias}', '\\textbf{Look-ahead bias}'),
          [T('using information from after $t_2$', 'folosirea informației de după $t_2$'),
           T('choosing $t_1$ at the low of the run-up, the episodes after the crash, or the filter after seeing the results', 'alegerea lui $t_1$ la minimul creșterii, a episoadelor după crah sau a filtrului după ce am văzut rezultatele')]),
@@ -794,7 +794,7 @@ D.frame(T('Strengths and limits of LPPL', 'Posibilitățile și limitele modelul
           T('tell whether the price is above the fundamental value: that needs fundamentals', 'spune dacă prețul este peste valoarea fundamentală: pentru aceasta sînt necesare fundamentele')]),
     T('Use it with the explosive-root tests, with fundamentals (valuation ratios) and with risk measures such as VaR 1\\% (Chapter 5), not alone', 'Folosiți-l împreună cu testele de rădăcini explozive, cu fundamentele (rapoarte de evaluare) și cu măsuri de risc precum VaR 1\\% (Capitolul 5), nu singur')))
 
-D.recap(('An honest evaluation', 'o evaluare riguroasă'), [
+D.recap(('Evaluation of crash predictions', 'evaluarea prognozelor de crah'), [
     T('Fix windows, filter, threshold and the definition of a crash before looking at the outcomes', 'Fixați ferestrele, filtrul, pragul și definiția crahului înainte de a vă uita la rezultate'),
     T('Compare the hit rate after alarms with the base rate; count the false alarms', 'Comparați rata de reușită după alarme cu frecvența de bază; numărați alarmele false'),
     T('LPPL describes bubbles well; as a crash-timing tool its record is weak', 'LPPL descrie bine bulele; ca instrument de datare a crahurilor, rezultatele lui sînt slabe')])

@@ -758,7 +758,7 @@ interp(('the market tests', 'testelor pentru piețe'), [
     T('Can you trade on it? You would buy at the Bucharest open, after prices have already adjusted: Granger causality in closing prices is not a free profit',
       'Regularitatea nu aduce un profit sigur: ați cumpăra la deschiderea Bursei de la București, după ce prețurile s-au ajustat deja; cauzalitatea Granger în prețurile de închidere nu este o sursă de profit fără risc')])
 
-D.frame(T('Pitfall 1: omitted variables', 'Capcana 1: variabilele omise'), items(
+D.frame(T('Limitations of Granger causality: omitted variables', 'Limitele cauzalității Granger: variabilele omise'), items(
     (T('Granger causality is relative to the information set: adding or removing a variable can create or destroy it \\refLutOm', 'Cauzalitatea Granger depinde de setul de informații: adăugarea sau eliminarea unei variabile o poate crea sau distruge \\refLutOm'),
      [T('a common driver $z$ that affects $x$ earlier than $y$ makes $x$ look like a cause of $y$', 'un factor comun $z$ care afectează pe $x$ mai devreme decît pe $y$ îl face pe $x$ să pară o cauză a lui $y$')]),
     (T('Simulation: $z_t = 0.5z_{t-1} + e_t$, $x_t = 0.8z_{t-1} + u_t$, $y_t = 0.8z_{t-2} + v_t$', 'Simulare: $z_t = 0{,}5z_{t-1} + e_t$, $x_t = 0{,}8z_{t-1} + u_t$, $y_t = 0{,}8z_{t-2} + v_t$'),
@@ -778,7 +778,7 @@ interp(('the simulation', 'simulării'), [
      [T('Granger causality is a property of the chosen system, not of the world', 'cauzalitatea Granger este o proprietate a sistemului ales, nu a lumii')]),
     T('Romanian example: inflation $\\to$ GDP growth has p @{gr.pig.p} in the three-variable VAR and @{gr.bi.pig} in the bivariate one', 'Exemplu românesc: inflația $\\to$ creșterea PIB are p @{gr.pig.p} în VAR-ul cu trei variabile și @{gr.bi.pig} în cel cu două variabile')])
 
-D.frame(T('Pitfall 2: instantaneous causality', 'Capcana 2: cauzalitatea instantanee'), items(
+D.frame(T('Limitations of Granger causality: instantaneous causality', 'Limitele cauzalității Granger: cauzalitatea instantanee'), items(
     (T('Granger tests only use lags; effects within the same period are hidden in the correlation of the shocks $\\bSigma$', 'Testele Granger folosesc doar laguri; efectele din aceeași perioadă sînt ascunse în corelația șocurilor $\\bSigma$'),
      [T('\\textbf{instantaneous causality} between $x$ and $y$: $\\Cov(\\varepsilon_{xt}, \\varepsilon_{yt}) \\ne 0$; tested by a Wald test on the off-diagonal elements of $\\bSigma$', '\\textbf{cauzalitate instantanee} între $x$ și $y$: $\\Cov(\\varepsilon_{xt}, \\varepsilon_{yt}) \\ne 0$; testată printr-un test Wald pe elementele din afara diagonalei lui $\\bSigma$')]),
     (T('It has \\textbf{no direction}: the data cannot tell whether $x$ moved $y$ or $y$ moved $x$ within the quarter', 'Nu are \\textbf{direcție}: datele nu pot spune dacă $x$ l-a mișcat pe $y$ sau $y$ pe $x$ în cursul trimestrului'),
@@ -786,7 +786,7 @@ D.frame(T('Pitfall 2: instantaneous causality', 'Capcana 2: cauzalitatea instant
     T('With quarterly data, many true effects happen within the quarter: a VAR in which nothing is Granger-significant can still have strong links (Section 7)',
       'În datele trimestriale, multe efecte reale au loc în cursul trimestrului: un VAR în care nimic nu este semnificativ în sens Granger poate avea totuși legături puternice (secțiunea 7)')))
 
-D.frame(T('Pitfall 3: trends, expectations and the meaning of "cause"', 'Capcana 3: trenduri, așteptări și sensul cuvîntului „cauză”'), items(
+D.frame(T('Limitations of Granger causality: trends, expectations and the meaning of "cause"', 'Limitele cauzalității Granger: trenduri, așteptări și sensul cuvîntului „cauză”'), items(
     (T('\\textbf{Non-stationary variables}: with $I(1)$ series the $F$ and Wald tests do not have their usual distributions \\refSSW', '\\textbf{Variabile nestaționare}: pentru serii $I(1)$, testele $F$ și Wald nu au distribuțiile obișnuite \\refSSW'),
      [T('remedies: test on differences (if there is no cointegration), or the Toda--Yamamoto approach \\refTY: estimate a VAR$(p + d_{\\max})$ in levels and test only the first $p$ lags', 'remedii: testăm pe diferențe (dacă nu există cointegrare) sau abordarea Toda--Yamamoto \\refTY: estimăm un VAR$(p + d_{\\max})$ în niveluri și testăm doar primele $p$ laguri'),
       T('$d_{\\max}$: the highest order of integration of the series (usually 1); the extra lags are estimated but not tested', '$d_{\\max}$: ordinul maxim de integrare al seriilor (de obicei 1); lagurile suplimentare se estimează, dar nu se testează'),

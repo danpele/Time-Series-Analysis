@@ -444,7 +444,7 @@ D.frame(T("Today's question and route", 'Întrebarea de azi și traseul'), two(i
        '\\textbf{Întrebarea}: ce spune întregul curs despre o serie de timp și cum se evaluează aceste cunoștințe la examen?'),
      [T('one chapter that ties Chapters 0--14 together', 'un capitol care leagă Capitolele 0--14')]),
     (T('\\textbf{Route}', '\\textbf{Traseul}'),
-     [T('Part I: the course map, two recap slides per chapter, the toolbox of tests and models', 'Partea I: harta cursului, cîte două slide-uri de recapitulare pentru fiecare capitol, trusa de teste și modele'),
+     [T('Part I: the course map, two recap slides per chapter, a summary of tests and models', 'Partea I: harta cursului, cîte două slide-uri de recapitulare pentru fiecare capitol, o sinteză a testelor și a modelelor'),
       T('Part II: the Box--Jenkins method from start to finish on Romanian inflation', 'Partea a II-a: metoda Box--Jenkins de la un capăt la altul, pe inflația din România'),
       T('Part III: the exam (format, grading, eight solved problems), the team project, attendance and quizzes', 'Partea a III-a: examenul (format, criterii, opt probleme rezolvate), proiectul de echipă, prezența și quiz-urile')]),
     T('Chapters 11--14 are for self-study', 'Capitolele 11--14 sînt pentru studiu individual')),
@@ -666,15 +666,15 @@ selfstudy(14, ('Multivariate GARCH models', 'modele GARCH multivariate'),
           [T('GARCH for each series (Chapter 5) and the multivariate view of the VAR (Chapter 6)', 'GARCH pentru fiecare serie (Capitolul 5) și perspectiva multivariată a VAR (Capitolul 6)')])
 
 # =============================================================================
-# 6. TRUSA DE INSTRUMENTE
+# 6. SINTEZA TESTELOR ȘI A MODELELOR
 # =============================================================================
-D.section('The toolbox', 'Trusa de instrumente')
+D.section('Summary of tests and models', 'Sinteza testelor și a modelelor')
 
 TB = '>{\\raggedright\\arraybackslash}'
 TH = (T('\\textbf{Question}', '\\textbf{Întrebarea}') + ' & ' + T('\\textbf{Tool}', '\\textbf{Instrumentul}') + ' & '
       + T('\\textbf{Decision}', '\\textbf{Decizia}') + ' & \\textbf{' + T('Ch.', 'Cap.') + '}')
 SPEC = TB + 'p{3.5cm}' + TB + 'p{3.5cm}' + TB + 'p{3.6cm}' + 'c'
-D.frame(T('Toolbox (1/2): one series, the mean', 'Trusa de instrumente (1/2): o serie, media'), table(
+D.frame(T('Tests and models (1/2): univariate series and the mean', 'Teste și modele (1/2): serii univariate și media'), table(
     SPEC, TH,
     [T('Is the series stationary?', 'Este seria staționară?') + ' & ' + T('plot, ACF; ADF and KPSS', 'grafic, ACF; ADF și KPSS') + ' & ' + T('ADF rejects, KPSS does not: stationary', 'ADF respinge, KPSS nu: staționară') + ' & 1, 3',
      T('Trend: deterministic or stochastic?', 'Trend: determinist sau stochastic?') + ' & ' + T('ADF and KPSS with a trend', 'ADF și KPSS cu trend') + ' & ' + T('detrend, or difference', 'eliminarea trendului sau diferențierea') + ' & 3',
@@ -684,7 +684,7 @@ D.frame(T('Toolbox (1/2): one series, the mean', 'Trusa de instrumente (1/2): o 
      T('Which forecast is better?', 'Care prognoză este mai bună?') + ' & ' + T('test sample, rolling origins; MASE, DM', 'eșantion de test, origini mobile; MASE, DM') + ' & ' + T('DM $p < 0.05$; otherwise a tie', 'DM cu $p < 0{,}05$; altfel egalitate') + ' & 0, 4'],
     size='footnotesize'))
 
-D.frame(T('Toolbox (2/2): variance, several series, extensions', 'Trusa de instrumente (2/2): varianță, mai multe serii, extensii'), table(
+D.frame(T('Tests and models (2/2): variance, multivariate series and extensions', 'Teste și modele (2/2): varianța, serii multivariate și extensii'), table(
     SPEC, TH,
     [T('Does the variance change?', 'Se schimbă varianța?') + ' & ' + T('Ljung--Box on $r_t^2$, ARCH-LM', 'Ljung--Box pe $r_t^2$, ARCH-LM') + ' & ' + T('reject: GARCH(1,1)-$t$, GJR', 'respingem: GARCH(1,1)-$t$, GJR') + ' & 5',
      T('Does $x$ help to forecast $y$?', 'Ajută $x$ la prognoza lui $y$?') + ' & ' + T('VAR, Granger $F$ test', 'VAR, testul Granger $F$') + ' & ' + T('$p < 0.05$: Granger causality', '$p < 0{,}05$: cauzalitate Granger') + ' & 6',
@@ -1078,7 +1078,7 @@ D.frame(T('Project grading criteria and the oral defence', 'Criterii de evaluare
      [T('clear, answerable with the data, useful to someone', 'clară, cu răspuns posibil pe baza datelor, utilă cuiva'),
       T('``Can a SARIMA forecast Romanian inflation better than the seasonal naive method?\'\' is a question; ``an analysis of inflation\'\' is not', '„Poate un SARIMA să prognozeze inflația din România mai bine decît metoda naivă sezonieră?” este o întrebare; „o analiză a inflației” nu este')]),
     (T('\\textbf{Methods, checks, interpretation, reproducibility}', '\\textbf{Metode, verificări, interpretare, reproductibilitate}'),
-     [T('the right test for the question (the toolbox); residual diagnostics; out-of-sample evaluation against a benchmark', 'testul potrivit pentru întrebare (trusa de instrumente); diagnosticarea reziduurilor; evaluare în afara eșantionului, față de un reper'),
+     [T('the right test for the question (the summary of tests and models); residual diagnostics; out-of-sample evaluation against a benchmark', 'testul potrivit pentru întrebare (sinteza testelor și a modelelor); diagnosticarea reziduurilor; evaluare în afara eșantionului, față de un reper'),
       T('what the numbers mean and what the data cannot show; the repository runs from the data to every chart', 'ce înseamnă cifrele și ce nu pot arăta datele; repository-ul rulează de la date pînă la fiecare grafic')]),
     (T('\\textbf{The oral defence}', '\\textbf{Susținerea orală}'),
          [T('the project is graded only after its presentation', 'proiectul se notează numai după prezentarea lui'),

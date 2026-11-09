@@ -427,7 +427,7 @@ D.frame(T('Difference-stationary series', 'Serii staționare în diferențe'), i
       T('forecast intervals widen without limit as the horizon grows', 'intervalele de prognoză se lărgesc fără limită pe măsură ce orizontul crește')]),
     T('Right treatment: difference the series and model $\\Delta y_t$ as ARMA: the ARIMA model of this chapter', 'Tratamentul corect: diferențiem seria și modelăm $\\Delta y_t$ ca ARMA: modelul ARIMA din acest capitol')))
 
-chart(T('Same drift, different memory', 'Aceeași derivă, memorie diferită'), 'tsa_ch3_ts_ds', 'TSA_ch3_trends', [
+chart(T('Trend-stationary and difference-stationary series: the effect of a shock', 'Serii staționare în jurul trendului și serii staționare în diferențe: efectul unui șoc'), 'tsa_ch3_ts_ds', 'TSA_ch3_trends', [
     T('Left and centre: the same shocks drive a TS series ($u_t$ AR(1), $\\phi = 0.8$) and a random walk with drift 0.2; the red paths add one shock of $+6$ at $t = 100$',
       'Stînga și centru: aceleași șocuri generează o serie staționară în jurul trendului ($u_t$ AR(1), $\\phi = 0{,}8$) și un mers aleator cu deriva 0,2; traiectoriile roșii adaugă un șoc de $+6$ la $t = 100$'),
     T('Right: the effect of a unit shock after $h$ periods', 'Dreapta: efectul unui șoc unitar după $h$ perioade')], h='0.54\\textheight')

@@ -606,7 +606,7 @@ TIMELINE = r"""\centering
   \node[above, text=DarkGray, inner sep=1pt] at (\x,\h-0.12) {\l};
 }
 \end{tikzpicture}"""
-D.frame('⟦A century in one line||Un secol pe o singură axă⟧', TIMELINE + '\n' + items(
+D.frame('⟦A timeline of time series analysis||Cronologia analizei seriilor de timp⟧', TIMELINE + '\n' + items(
     '⟦1927 Yule, 1937 Slutsky, 1941 Kolmogorov, 1949 Wiener: the foundations (Chapters 1 and 2)||1927 Yule, 1937 Slutsky, 1941 Kolmogorov, 1949 Wiener: fundamentele (Capitolele 1 și 2)⟧',
     '⟦1957 \\refHolt, 1960 \\refWinters: exponential smoothing, born in industry for sales and inventories (this chapter)||1957 \\refHolt, 1960 \\refWinters: netezirea exponențială, apărută în industrie, pentru vînzări și stocuri (acest capitol)⟧',
     '⟦1970 Box--Jenkins (Chapters 2--4); 1980 \\refSims\\ (Chapter 6); 1982 \\refEngle\\ (Chapter 5); 1987 \\refEG\\ (Chapter 7)||1970 Box--Jenkins (Capitolele 2--4); 1980 \\refSims\\ (Capitolul 6); 1982 \\refEngle\\ (Capitolul 5); 1987 \\refEG\\ (Capitolul 7)⟧',
@@ -956,7 +956,7 @@ chart(D, '⟦Forecasting electricity generation||Prognoza producției de electri
     '⟦Test set: @{fc_test_first_m} -- @{fc_test_last_m} (24 months); training data: all earlier months; dashed: forecasts made once, at the end of the training set||Setul de test: @{fc_test_first_m} -- @{fc_test_last_m} (24 de luni); datele de antrenare: toate lunile anterioare; linii întrerupte: prognoze făcute o singură dată, la sfîrșitul setului de antrenare⟧'],
     h='0.58\\textheight')
 
-D.frame('⟦Interpretation: which forecast wins?||Interpretarea: metoda cîștigătoare⟧', cols(
+D.frame('⟦Interpretation: comparison of forecast accuracy||Interpretarea: compararea preciziei prognozelor⟧', cols(
     table('lrrrr', '\\textbf{⟦Method||Metodă⟧} & MAE & RMSE & MAPE & MASE',
           ['⟦Naive||Naivă⟧ & @{fc_nv_mae} & @{fc_nv_rmse} & @{fc_nv_mape}\\% & @{fc_nv_mase}',
            '⟦Seasonal naive||Naivă sezonieră⟧ & @{fc_snv_mae} & @{fc_snv_rmse} & @{fc_snv_mape}\\% & @{fc_snv_mase}',

@@ -323,7 +323,7 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 # =============================================================================
 D.section('Forecasting as supervised learning', 'Prognoza ca învățare supervizată')
 
-D.frame(T('Supervised learning in one slide', 'Învățarea supervizată pe un slide'), items(
+D.frame(T('Supervised learning: data, loss function and training', 'Învățarea supervizată: date, funcția de pierdere și antrenarea'), items(
     (T('\\textbf{Data}: pairs $(\\mathbf{x}_i, y_i)$, $i = 1, \\dots, n$; $\\mathbf{x}_i$: the \\textbf{features} (inputs), $y_i$: the \\textbf{target}',
        '\\textbf{Datele}: perechi $(\\mathbf{x}_i, y_i)$, $i = 1, \\dots, n$; $\\mathbf{x}_i$: \\textbf{variabilele explicative} (features, intrările), $y_i$: \\textbf{ținta} (target)'),
      [T('goal: a function $\\hat f$ with small expected loss $E[L(y, \\hat f(\\mathbf{x}))]$ on \\textbf{new} data', 'scopul: o funcție $\\hat f$ cu pierdere așteptată $E[L(y, \\hat f(\\mathbf{x}))]$ mică pe date \\textbf{noi}'),
