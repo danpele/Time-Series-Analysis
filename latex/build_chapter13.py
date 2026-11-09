@@ -326,7 +326,7 @@ D.frame(T('Speculative bubbles, 1636--2021', 'Bule speculative, 1636--2021'), tw
           T('The common pattern \\refKA: a new story, easy credit, rising prices that attract new buyers, then panic', 'Tiparul comun \\refKA: o poveste nouă, credit ieftin, prețuri în creștere care atrag noi cumpărători, apoi panică'))),
     size='footnotesize')
 
-D.frame(T('1929 and 1987', '1929 și 1987'), two(
+D.frame(T('The crashes of 1929 and 1987', 'Crahurile din 1929 și 1987'), two(
     ph('nyse', T('Crowd outside the New York Stock Exchange, 29 October 1929', 'Mulțime în fața Bursei din New York, 29 octombrie 1929'), h='0.25\\textheight')
     + '\n\\par\\vspace{2mm}\n'
     + ph('amsterdam', T('Amsterdam Stock Exchange, 21 October 1987', 'Bursa din Amsterdam, 21 octombrie 1987'), h='0.16\\textheight'),
@@ -378,7 +378,7 @@ D.recap(('Bubbles in history', 'bule în istorie'), [
 # =============================================================================
 D.section('Rational bubbles and explosive roots', 'Bule raționale și rădăcini explozive')
 
-D.frame(T('Why a rational bubble must explode', 'Bula rațională și explozia ei inevitabilă'), items(
+D.frame(T('Explosive growth of a rational bubble', 'Creșterea explozivă a unei bule raționale'), items(
     (T('No-arbitrage pricing: $P_t = \\dfrac{E_t[P_{t+1} + D_{t+1}]}{1+r}$; the fundamental value $F_t$ is one solution', 'Evaluarea fără arbitraj: $P_t = \\dfrac{E_t[P_{t+1} + D_{t+1}]}{1+r}$; valoarea fundamentală $F_t$ este o soluție'),
      [T('in words: today\'s price is the discounted expected value of tomorrow\'s price plus tomorrow\'s dividend', 'în cuvinte: prețul de azi este valoarea actualizată a sumei așteptate dintre prețul și dividendul de mîine'),
       T('every $P_t = F_t + B_t$ with $E_t[B_{t+1}] = (1+r)\\,B_t$ is also a solution', 'orice $P_t = F_t + B_t$ cu $E_t[B_{t+1}] = (1+r)\\,B_t$ este tot o soluție')]),
@@ -387,7 +387,7 @@ D.frame(T('Why a rational bubble must explode', 'Bula rațională și explozia e
       T('$1+r > 1$: the bubble component is an \\textbf{explosive} process', '$1+r > 1$: componenta de bulă este un proces \\textbf{exploziv}')]),
     T('Consequence: if dividends are $I(1)$ (Chapter 3), the price is $I(1)$ without a bubble and explosive with one', 'Consecință: dacă dividendele sînt $I(1)$ (Capitolul 3), prețul este $I(1)$ fără bulă și exploziv cu bulă')), size='footnotesize')
 
-D.frame(T('Worked example: a bubble that can burst', 'Exemplu rezolvat: o bulă care se poate sparge'), items(
+D.frame(T('Worked example: the Blanchard--Watson bubble', 'Exemplu rezolvat: bula Blanchard--Watson'), items(
     (T('\\refBW: each period the bubble survives with probability $\\pi$ and then grows to $\\frac{1+r}{\\pi}B_t$; otherwise it bursts ($B_{t+1} \\approx 0$)', '\\refBW: în fiecare perioadă bula supraviețuiește cu probabilitatea $\\pi$ și crește atunci la $\\frac{1+r}{\\pi}B_t$; altfel se sparge ($B_{t+1} \\approx 0$)'),
      [T('check: $E_t[B_{t+1}] = \\pi \\cdot \\frac{1+r}{\\pi} B_t + (1-\\pi) \\cdot 0 = (1+r)B_t$', 'verificare: $E_t[B_{t+1}] = \\pi \\cdot \\frac{1+r}{\\pi} B_t + (1-\\pi) \\cdot 0 = (1+r)B_t$')]),
     (T('With $r = 2\\%$ and $\\pi = 0.98$ per period:', 'Cu $r = 2\\%$ și $\\pi = 0{,}98$ pe perioadă:'),
@@ -683,7 +683,7 @@ D.recap(('Estimation', 'estimarea'), [
 # =============================================================================
 # 5. ÎNCREDERE DIN MAI MULTE FERESTRE
 # =============================================================================
-D.section('Confidence from many windows', 'Încrederea obținută din multe ferestre')
+D.section('Estimation over many windows', 'Estimarea pe mai multe ferestre')
 
 D.frame(T('The LPPLS confidence indicator', 'Indicatorul de încredere LPPLS'), items(
     (T('So far $t_1$ was the low before the run-up, a date known only \\textbf{after} the bubble; in real time the start is unknown', 'Pînă acum $t_1$ a fost minimul dinaintea creșterii, o dată cunoscută doar \\textbf{după} bulă; în timp real începutul nu este cunoscut'),
@@ -723,7 +723,7 @@ interp(('the indicator', 'indicatorului'), [
      [T('Bitcoin 2017: the parameter version peaks at @{ci.btc17.maxp} on @{ci.btc17.maxpd}; the full version is almost always 0 (the 15\\% error condition)', 'Bitcoin 2017: versiunea pe parametri ajunge la @{ci.btc17.maxp} la @{ci.btc17.maxpd}; versiunea completă este aproape mereu 0 (condiția erorii de 15\\%)')]),
     T('The indicator does light up in bubbles, but early, late and with gaps; the choice of filter changes the picture', 'Indicatorul se aprinde în bule, dar devreme, tîrziu și cu întreruperi; alegerea filtrului schimbă imaginea')])
 
-chart(T('The critical time moves with the data', 'Timpul critic se mută odată cu datele'), 'tsa_ch13_tc_path', 'TSA_ch13_confidence', [
+chart(T('Instability of the estimated critical time', 'Instabilitatea timpului critic estimat'), 'tsa_ch13_tc_path', 'TSA_ch13_confidence', [
     T('Window start fixed at the low before the run-up; the end $t_2$ moves from 8 months before to 1 month after the peak (weekly); each point: the $\\hat t_c$ of the fit ending at $t_2$',
       'Începutul ferestrei fixat la minimul dinaintea creșterii; sfîrșitul $t_2$ se mută de la 8 luni înainte pînă la o lună după maximum (săptămînal); fiecare punct: $\\hat t_c$ al ajustării care se încheie la $t_2$')],
     h='0.6\\textheight')
@@ -735,7 +735,7 @@ interp(('the moving critical time', 'timpului critic care se mută'), [
      [T('a forecast that keeps moving with the data is a description of the past, not a prediction', 'o prognoză care se tot mută odată cu datele este o descriere a trecutului, nu o predicție')]),
     T('Picking, after the crash, the one window whose $\\hat t_c$ was right is \\textbf{look-ahead bias}', 'Alegerea, după crah, a singurei ferestre al cărei $\\hat t_c$ a fost corect înseamnă \\textbf{look-ahead bias} (folosirea informației din viitor)')])
 
-D.recap(('Confidence from many windows', 'încrederea obținută din multe ferestre'), [
+D.recap(('Estimation over many windows', 'estimarea pe mai multe ferestre'), [
     T('The start of a bubble is unknown: fit 29 windows for each end date', 'Începutul unei bule nu este cunoscut: ajustăm 29 de ferestre pentru fiecare dată de sfîrșit'),
     T('Indicator = share of qualified windows; it depends strongly on the filter', 'Indicatorul = ponderea ferestrelor calificate; depinde puternic de filtru'),
     T('$\\hat t_c$ moves with the end of the data: report its spread over windows, never one value', '$\\hat t_c$ se mută odată cu sfîrșitul datelor: raportați dispersia lui pe ferestre, niciodată o singură valoare')])
@@ -815,7 +815,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that fits the LPPL model to the daily log price of the Shanghai Composite between two dates with the Filimonov-Sornette method (OLS for A, B, C1, C2; grid search plus Nelder-Mead for tc, m, omega), checks the filter conditions of Shu and Zhu (2020) and plots the fit.}',
         '\\aiprompt{Write Python code that fits the LPPL model to the daily log price of the Shanghai Composite between two dates with the Filimonov-Sornette method (OLS for A, B, C1, C2; grid search plus Nelder-Mead for tc, m, omega), checks the filter conditions of Shu and Zhu (2020) and plots the fit.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('Simulate an LPPL path with known parameters plus noise and check that the code recovers $t_c$, $m$ and $\\omega$', 'Simulați o traiectorie LPPL cu parametri cunoscuți plus zgomot și verificați că codul regăsește $t_c$, $m$ și $\\omega$'),
     T('The sign conventions: $B < 0$ for a rising bubble; the test of explosive roots uses the right tail, not the left tail of Chapter 3', 'Convențiile de semn: $B < 0$ pentru o bulă în creștere; testul de rădăcini explozive folosește coada din dreapta, nu coada din stînga din Capitolul 3'),
     T('Critical values: SADF and GSADF need their own simulated critical values, not the Dickey--Fuller table', 'Valorile critice: SADF și GSADF au nevoie de propriile valori critice simulate, nu de tabelul Dickey--Fuller'),

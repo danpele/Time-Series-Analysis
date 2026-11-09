@@ -538,7 +538,7 @@ D.frame(T('Granger, Joyeux and Hosking (1980--1981)', 'Granger, Joyeux și Hoski
           T('Their model connects the Hurst exponent of hydrology with the Box--Jenkins models of econometrics', 'Modelul lor leagă exponentul Hurst din hidrologie de modelele Box--Jenkins din econometrie'),
           T('Applications followed in inflation \\refHW, output, interest rates and volatility \\refDGE', 'Au urmat aplicații pentru inflație \\refHW, producție, dobînzi și volatilitate \\refDGE'))))
 
-D.frame(T('The parameter $d$: what each range means', 'Parametrul $d$: semnificația fiecărui interval'), table(
+D.frame(T('The parameter $d$: the meaning of each range', 'Parametrul $d$: semnificația fiecărui interval'), table(
     'lll', T('\\textbf{Range of $d$}', '\\textbf{Intervalul lui $d$}') + ' & ' + T('\\textbf{Properties}', '\\textbf{Proprietăți}') + ' & ' + T('\\textbf{ACF / shocks}', '\\textbf{ACF / șocuri}'),
     [T('$d \\le -0.5$', '$d \\le -0{,}5$') + ' & ' + T('not invertible (no AR($\\infty$) form)', 'neinversabil (fără formă AR($\\infty$))') + ' & --',
      T('$-0.5 < d < 0$', '$-0{,}5 < d < 0$') + ' & ' + T('stationary, invertible, anti-persistent', 'staționar, inversabil, antipersistent') + ' & ' + T('negative, summable to $-1/2$', 'negativă, cu suma $-1/2$'),
@@ -707,7 +707,7 @@ interp(('the Monte Carlo', 'simulării Monte Carlo'), [
      [T('a misspecified parametric model turns short memory into ``long memory\'\'; semiparametric estimators suffer less, but are not immune', 'un model parametric greșit specificat transformă memoria scurtă în „memorie lungă”; estimatorii semiparametrici sînt mai puțin afectați, dar nu sînt imuni')]),
     T('Practice: always fit ARFIMA$(p,d,q)$ with $p, q \\ge 1$ as alternatives, and check the semiparametric $\\hat d$ for several $m$', 'În practică: estimați întotdeauna și ARFIMA$(p,d,q)$ cu $p, q \\ge 1$ și verificați $\\hat d$ semiparametric pentru mai multe valori ale lui $m$')])
 
-D.frame(T('Romanian inflation: ARMA or ARFIMA?', 'Inflația din România: ARMA sau ARFIMA?'), table(
+D.frame(T('Romanian inflation: ARMA and ARFIMA compared', 'Inflația din România: comparația ARMA și ARFIMA'), table(
     'lrrrrr', T('\\textbf{Model (exact ML)}', '\\textbf{Model (ML exactă)}') + ' & $\\hat d$ & ' + T('\\textbf{AR / MA}', '\\textbf{AR / MA}') + ' & $\\ell$ & AIC & BIC',
     ['ARMA(1,1) & 0 & @{ft.ARMA11.phi} / @{ft.ARMA11.th} & @{ft.ARMA11.ll} & @{ft.ARMA11.aic} & @{ft.ARMA11.bic}',
      'ARMA(2,0) & 0 & @{ft.ARMA20.phi}, \\dots & @{ft.ARMA20.ll} & @{ft.ARMA20.aic} & @{ft.ARMA20.bic}',
@@ -776,7 +776,7 @@ interp(('the two forecasts', 'celor două prognoze'), [
      [T('both approach the long-run mean @{fp.mean}\\%; the paths differ little because the AR(12) already carries a long memory', 'ambele se apropie de media pe termen lung @{fp.mean}\\%; traiectoriile diferă puțin, deoarece AR(12) poartă deja o memorie lungă')]),
     T('Whether the long-run mean of 1947--2026 is the right anchor today is a question about regimes, not about $d$', 'Dacă media pe termen lung din 1947--2026 este ancora potrivită azi este o întrebare despre regimuri, nu despre $d$')])
 
-chart(T('Does long memory improve forecasts?', 'Contribuția memoriei lungi la prognoză'), 'tsa_ch8_forecast', 'TSA_ch8_forecasting', [
+chart(T('The contribution of long memory to forecasting', 'Contribuția memoriei lungi la prognoză'), 'tsa_ch8_forecast', 'TSA_ch8_forecasting', [
     T('Pseudo out-of-sample, expanding window: Romania @{fc.ro.n} origins (@{fc.ro.f0}--@{fc.ro.f1}), seasonal adjustment inside each window; United States @{fc.us.n} origins (@{fc.us.f0}--@{fc.us.f1}), errors matched by calendar month (no October 2025 CPI). RMSE relative to AR($p$); below 1: better',
       'În afara eșantionului, fereastră extinsă: România @{fc.ro.nde} origini (@{fc.ro.f0}--@{fc.ro.f1}), ajustare sezonieră în fiecare fereastră; Statele Unite @{fc.us.nde} origini (@{fc.us.f0}--@{fc.us.f1}), erori asociate după luna calendaristică (fără IPC pentru octombrie 2025). RMSE relativ la AR($p$); sub 1: mai bun')],
     h='0.7\\textheight')
@@ -827,7 +827,7 @@ D.frame(T('Realised volatility', 'Volatilitatea realizată'), items(
      [T('the stylised fact of \\refABDL: log RV is well described by a long-memory model with $d \\approx 0.4$', 'faptul stilizat din \\refABDL: logaritmul RV este bine descris de un model cu memorie lungă, cu $d \\approx 0{,}4$')]),
     T('Unlike $|r_t|$, $\\log\\sqrt{RV_m}$ is a precise measure: the noise of single days averages out within the month', 'Spre deosebire de $|r_t|$, $\\log\\sqrt{RV_m}$ este o măsură precisă: zgomotul zilelor individuale se compensează în cadrul lunii')))
 
-chart(T('Monthly realised volatility: ARFIMA or ARMA?', 'Volatilitatea realizată lunară: ARFIMA sau ARMA?'), 'tsa_ch8_rv', 'TSA_ch8_volatility_memory', [
+chart(T('Monthly realised volatility: ARFIMA and ARMA compared', 'Volatilitatea realizată lunară: comparația ARFIMA și ARMA'), 'tsa_ch8_rv', 'TSA_ch8_volatility_memory', [
     T('Log monthly realised volatility from daily returns, @{rv.sp500.T} months (2000--2026); lines: ACF of ARFIMA(1,$d$,0) and ARMA(1,1), both by exact ML', 'Logaritmul volatilității realizate lunare din randamentele zilnice, @{rv.sp500.T} de luni (2000--2026); linii: ACF a modelelor ARFIMA(1,$d$,0) și ARMA(1,1), ambele prin ML exactă')],
     h='0.7\\textheight')
 
@@ -894,7 +894,7 @@ interp(('the spurious memory', 'memoriei aparente'), [
      [T('rare regimes look like memory, frequent ones average out into short memory', 'regimurile rare imită memoria lungă, cele frecvente se compensează și dau memorie scurtă')]),
     T('A significant $\\hat d$ is consistent with long memory and with breaks: other evidence is needed to decide', 'Un $\\hat d$ semnificativ este compatibil atît cu memoria lungă, cît și cu rupturile: este nevoie de alte dovezi pentru a decide')])
 
-chart(T('The Nile in 1898: memory or a break?', 'Nilul în 1898: memorie sau ruptură?'), 'tsa_ch8_nile_break', 'TSA_ch8_spurious_memory', [
+chart(T('The Nile in 1898: long memory and a structural break', 'Nilul în 1898: memorie lungă și ruptură structurală'), 'tsa_ch8_nile_break', 'TSA_ch8_spurious_memory', [
     T('Left: the flow with the means before and after 1898, the change point of \\refCobb (the first Aswan dam was completed in 1902); right: R/S plot of the raw series and of the series with the two regime means removed',
       'Stînga: debitul, cu mediile dinainte și de după 1898, punctul de schimbare din \\refCobb (primul baraj de la Aswan a fost finalizat în 1902); dreapta: graficul R/S pentru seria brută și pentru seria fără cele două medii de regim')],
     h='0.7\\textheight')
@@ -935,7 +935,7 @@ D.recap(('Spurious long memory', 'memoria lungă aparentă'), [
 # =============================================================================
 # 8. COINTEGRARE FRACȚIONARĂ (TRIMITERE)
 # =============================================================================
-D.section('A pointer: fractional cointegration', 'O trimitere: cointegrarea fracționară')
+D.section('Extension: fractional cointegration', 'Extensie: cointegrarea fracționară')
 
 D.frame(T('Fractional cointegration', 'Cointegrarea fracționară'), items(
     (T('Chapter 7: two $I(1)$ series are cointegrated if a combination $y_t - \\beta x_t$ is $I(0)$', 'Capitolul 7: două serii $I(1)$ sînt cointegrate dacă o combinație $y_t - \\beta x_t$ este $I(0)$'),
@@ -958,7 +958,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that downloads Romanian monthly HICP (Eurostat prc\\_hicp\\_minr), computes the monthly inflation rate, removes the monthly means, estimates d with GPH and local Whittle for bandwidths T\\^{}0.5 to T\\^{}0.8, fits ARFIMA(p,d,q) by exact Gaussian maximum likelihood and compares it with ARMA(1,1) by BIC.}',
         '\\aiprompt{Write Python code that downloads Romanian monthly HICP (Eurostat prc\\_hicp\\_minr), computes the monthly inflation rate, removes the monthly means, estimates d with GPH and local Whittle for bandwidths T\\^{}0.5 to T\\^{}0.8, fits ARFIMA(p,d,q) by exact Gaussian maximum likelihood and compares it with ARMA(1,1) by BIC.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The library: \\texttt{statsmodels} has no ARFIMA class; an AI answer that calls one has invented it', 'Biblioteca: \\texttt{statsmodels} nu are o clasă ARFIMA; un răspuns AI care folosește una a inventat-o'),
     T('The sign and the scale: GPH regresses on $-\\log(4\\sin^2(\\lambda/2))$, so the slope is $d$, not $-2d$; R/S and DFA give $H$, not $d$', 'Semnul și scala: GPH regresează pe $-\\log(4\\sin^2(\\lambda/2))$, deci panta este $d$, nu $-2d$; R/S și DFA dau $H$, nu $d$'),
     T('The range: a stationary ARFIMA likelihood needs $d < 0.5$; difference first if $\\hat d$ is near or above 0.5', 'Intervalul: verosimilitatea unui ARFIMA staționar cere $d < 0{,}5$; diferențiați întîi dacă $\\hat d$ este aproape de 0,5 sau peste'),

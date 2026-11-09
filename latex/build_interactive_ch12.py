@@ -56,9 +56,9 @@ PFX = {'fourier': 'fo', 'aliasing': 'al', 'spectra': 'sp', 'sunspots': 'ss', 'no
 
 SECTIONS = {
  'ro': dict(cf='Cicluri și frecvențe', sd='Densitatea spectrală', pg='Periodograma', es='Estimarea spectrului', cy='Cicluri în datele economice și energetice',
-            lm='Memoria lungă: polul de la zero', fi='Filtre liniare', co='Două serii: coerență și fază', wv='O trimitere: wavelets'),
+            lm='Memoria lungă: polul de la zero', fi='Filtre liniare', co='Două serii: coerență și fază', wv='Extensie: wavelets'),
  'en': dict(cf='Cycles and frequencies', sd='The spectral density', pg='The periodogram', es='Estimating the spectrum', cy='Cycles in economic and energy data',
-            lm='Long memory: the pole at zero', fi='Linear filters', co='Two series: coherence and phase', wv='A pointer: wavelets'),
+            lm='Long memory: the pole at zero', fi='Linear filters', co='Two series: coherence and phase', wv='Extension: wavelets'),
 }
 
 L = {

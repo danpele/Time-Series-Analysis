@@ -395,7 +395,7 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 # =============================================================================
 D.section('From one series to several', 'De la o serie la mai multe')
 
-chart(T('Romania: four macro series that move together', 'România: patru serii macroeconomice care evoluează împreună'), 'tsa_ch6_ro_macro', 'TSA_ch6_multivariate_data', [
+chart(T('Four Romanian macroeconomic series', 'Patru serii macroeconomice românești'), 'tsa_ch6_ro_macro', 'TSA_ch6_multivariate_data', [
     T('Real GDP growth (q/q) and unemployment rate, seasonally adjusted; 12-month HICP inflation; ROBOR 3M, the 3-month interbank rate; source: Eurostat; EUR/RON: the BNR reference rate',
       'Creșterea PIB-ului real (față de trimestrul anterior) și rata șomajului, ajustate sezonier; inflația anuală IAPC; ROBOR 3M, dobînda la 3 luni; sursa: Eurostat; EUR/RON: cursul de referință BNR')],
     h='0.6\\textheight')
@@ -611,7 +611,7 @@ D.frame(T('Choosing $p$: information criteria', 'Alegerea lui $p$: criterii info
      [T('penalties: AIC $<$ HQ $<$ BIC (for $T \\ge 16$): BIC chooses the smallest $p$, AIC the largest', 'penalizările: AIC $<$ HQ $<$ BIC (pentru $T \\ge 16$): BIC alege cel mai mic $p$, AIC cel mai mare'),
       T('BIC and HQ are consistent (they find the true $p$ as $T \\to \\infty$); AIC tends to overfit, but often forecasts well', 'BIC și HQ sînt consistente (găsesc $p$ adevărat cînd $T \\to \\infty$); AIC tinde să supraajusteze, dar prognozează adesea bine')])))
 
-chart(T('Romanian VAR: which $p$?', 'VAR-ul românesc: alegerea lui $p$'), 'tsa_ch6_ic', 'TSA_ch6_estimation_diagnostics', [
+chart(T('Romanian VAR: the choice of $p$', 'VAR-ul românesc: alegerea lui $p$'), 'tsa_ch6_ic', 'TSA_ch6_estimation_diagnostics', [
     T('GDP growth, 12-month inflation and ROBOR 3M, @{ro.q0}--@{ro.q1}; VAR$(p)$ for $p = 0, \\dots, @{ic.pmax}$ on the common sample of @{ic.T} quarters; circles mark the minima',
       'Creșterea PIB-ului, inflația anuală și ROBOR 3M, @{ro.q0}--@{ro.q1}; VAR$(p)$ pentru $p = 0, \\dots, @{ic.pmax}$ pe eșantionul comun de @{ic.T} de trimestre; cercurile marchează minimele')],
     h='0.56\\textheight')
@@ -653,7 +653,7 @@ D.recap(('Estimation and lag selection', 'estimare și alegerea numărului de la
 # =============================================================================
 D.section('Residual diagnostics', 'Diagnosticarea reziduurilor')
 
-D.frame(T('Are the residuals white noise?', 'Verificarea reziduurilor: zgomot alb'), items(
+D.frame(T('White-noise tests for the residuals', 'Teste de zgomot alb pentru reziduuri'), items(
     (T('\\textbf{Multivariate portmanteau test} \\refHosking', '\\textbf{Testul portmanteau multivariat} \\refHosking'),
      [T('$H_0$: no autocorrelation and no cross-correlation of the residuals up to lag $h$', '$H_0$: nicio autocorelație și nicio corelație încrucișată a reziduurilor pînă la lagul $h$'),
       T('$Q_h = T^2\\sum_{j=1}^{h}\\frac{1}{T - j}\\mathrm{tr}(\\hat{\\mathbf{C}}_j\'\\hat{\\mathbf{C}}_0^{-1}\\hat{\\mathbf{C}}_j\\hat{\\mathbf{C}}_0^{-1})$, $\\hat{\\mathbf{C}}_j = \\frac{1}{T}\\sum_t\\hat\\bepsilon_t\\hat\\bepsilon_{t-j}\'$: the residual autocovariance matrix at lag $j$; $\\mathrm{tr}$: the trace', '$Q_h = T^2\\sum_{j=1}^{h}\\frac{1}{T - j}\\mathrm{tr}(\\hat{\\mathbf{C}}_j\'\\hat{\\mathbf{C}}_0^{-1}\\hat{\\mathbf{C}}_j\\hat{\\mathbf{C}}_0^{-1})$, $\\hat{\\mathbf{C}}_j = \\frac{1}{T}\\sum_t\\hat\\bepsilon_t\\hat\\bepsilon_{t-j}\'$: matricea de autocovarianță a reziduurilor la lagul $j$; $\\mathrm{tr}$: urma'),
@@ -736,7 +736,7 @@ interp(('the Granger tests', 'testelor Granger'), [
     T('ROBOR $\\to$ GDP growth (p @{gr.ig.p}): higher rates come before weaker growth; in the bivariate VAR (GDP, ROBOR) alone the p-value is @{gr.bi.ig}',
       'ROBOR $\\to$ creșterea PIB (p @{gr.ig.p}): dobînzile mai mari preced o creștere mai slabă; în VAR-ul cu două variabile (PIB, ROBOR) p-value-ul este @{gr.bi.ig}')])
 
-D.frame(T('Markets: does New York lead Frankfurt and Bucharest?', 'Piețe: New York-ul precedă Frankfurtul și Bucureștiul'), '\\begin{columns}[T]\n\\begin{column}{0.36\\textwidth}\n'
+D.frame(T('Markets: Granger causality from New York to Frankfurt and Bucharest', 'Piețe: cauzalitatea Granger de la New York către Frankfurt și București'), '\\begin{columns}[T]\n\\begin{column}{0.36\\textwidth}\n'
         + ph('fse', T('Trading floor of the Frankfurt Stock Exchange (DAX)', 'Sala de tranzacționare a Bursei din Frankfurt (DAX)'), h='0.34\\textheight')
         + '\n\\end{column}\n\\begin{column}{0.62\\textwidth}\n' + table(
             'llrr', T('\\textbf{Cause} & \\textbf{Effect} & $F$ & \\textbf{p}', '\\textbf{Cauza} & \\textbf{Efectul} & $F$ & \\textbf{p}'),
@@ -806,7 +806,7 @@ D.recap(('Granger causality', 'cauzalitatea Granger'), [
 # =============================================================================
 D.section('Impulse responses', 'Funcții de răspuns la impuls')
 
-D.frame(T('Impulse responses and why we orthogonalise', 'Răspunsurile la impuls și necesitatea ortogonalizării'), items(
+D.frame(T('Impulse responses and the need for orthogonalisation', 'Răspunsurile la impuls și necesitatea ortogonalizării'), items(
     (T('\\textbf{Impulse response function} (IRF): the path of $Y_{j,t+h}$, $h = 0, 1, 2, \\dots$, after a one-time shock to variable $k$ at time $t$', '\\textbf{Funcția de răspuns la impuls} (IRF): traiectoria lui $Y_{j,t+h}$, $h = 0, 1, 2, \\dots$, după un șoc unic în variabila $k$ la momentul $t$'),
      [T('from the moving-average form: the response to a unit change in $\\varepsilon_{kt}$ is the column $k$ of $\\bPhi_h$', 'din forma de medie mobilă: răspunsul la o modificare unitară a lui $\\varepsilon_{kt}$ este coloana $k$ a lui $\\bPhi_h$')]),
     (T('\\textbf{Problem}: the shocks are correlated ($\\bSigma$ not diagonal)', '\\textbf{Problema}: șocurile sînt corelate ($\\bSigma$ nu este diagonală)'),
@@ -845,7 +845,7 @@ interp(('the Romanian responses', 'răspunsurilor românești'), [
       T('a likely reason: the rate rises when the central bank expects inflation; information omitted from the VAR (exchange rate, energy prices) shows up as a ``shock\'\'', 'un motiv probabil: dobînda crește atunci cînd banca centrală anticipează inflația; informația omisă din VAR (cursul de schimb, prețurile energiei) apare ca „șoc”')]),
     T('Inflation shocks themselves are persistent: @{ir.pi4} pp after a year, @{ir.pi12} pp after three', 'Șocurile inflației sînt persistente: @{ir.pi4} pp după un an, @{ir.pi12} pp după trei')])
 
-chart(T('Does the ordering change the answer?', 'Efectul ordinii asupra răspunsurilor'), 'tsa_ch6_irf_order', 'TSA_ch6_irf_fevd', [
+chart(T('Effect of the ordering on the responses', 'Efectul ordinii asupra răspunsurilor'), 'tsa_ch6_irf_order', 'TSA_ch6_irf_fevd', [
     T('Same VAR(2), two Cholesky orderings (inflation before ROBOR, ROBOR before inflation) and the generalised responses of \\refPS, which do not depend on the order',
       'Același VAR(2), două ordini Cholesky (inflația înaintea ROBOR, ROBOR înaintea inflației) și răspunsurile generalizate din \\refPS, care nu depind de ordine')],
     h='0.52\\textheight')
@@ -998,7 +998,7 @@ D.recap(('Forecasting with a VAR', 'prognoza cu un VAR'), [
 # =============================================================================
 # 9. VAR STRUCTURAL ȘI STUDIU DE CAZ
 # =============================================================================
-D.section('Structural VARs and a landmark case study', 'VAR-uri structurale și un studiu de caz de referință')
+D.section('Structural VARs and the Stock--Watson case study', 'VAR-uri structurale și studiul de caz Stock--Watson')
 
 D.frame(T('From reduced form to structural VAR', 'De la forma redusă la VAR-ul structural'), items(
     (T('\\textbf{Structural VAR} (SVAR): $\\mathbf{B}_0\\bY_t = \\mathbf{d} + \\mathbf{B}_1\\bY_{t-1} + \\dots + \\mathbf{B}_p\\bY_{t-p} + \\mathbf{u}_t$, $\\mathbf{u}_t$ uncorrelated \\textbf{structural shocks}', '\\textbf{VAR structural} (SVAR): $\\mathbf{B}_0\\bY_t = \\mathbf{d} + \\mathbf{B}_1\\bY_{t-1} + \\dots + \\mathbf{B}_p\\bY_{t-p} + \\mathbf{u}_t$, $\\mathbf{u}_t$ \\textbf{șocuri structurale} necorelate'),
@@ -1069,7 +1069,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that builds a quarterly data set for Romania (real GDP growth from Eurostat namq\\_10\\_gdp, 12-month HICP inflation from prc\\_hicp\\_minr, ROBOR 3M from irt\\_st\\_m), chooses the VAR lag order by AIC, BIC and HQ, checks stability and residuals, runs Granger tests and plots orthogonalised impulse responses with bootstrap bands.}',
         '\\aiprompt{Write Python code that builds a quarterly data set for Romania (real GDP growth from Eurostat namq\\_10\\_gdp, 12-month HICP inflation from prc\\_hicp\\_minr, ROBOR 3M from irt\\_st\\_m), chooses the VAR lag order by AIC, BIC and HQ, checks stability and residuals, runs Granger tests and plots orthogonalised impulse responses with bootstrap bands.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The dates: series aligned on the same quarters, no forward-filled or overlapping values that create spurious leads', 'Datele calendaristice: serii aliniate pe aceleași trimestre, fără valori propagate înainte (forward fill) sau suprapuse, care creează precedențe false'),
     T('Stationarity of each variable (Chapter 3) before Granger tests; with $I(1)$ variables, differences, Toda--Yamamoto or a VECM', 'Staționaritatea fiecărei variabile (Capitolul 3) înaintea testelor Granger; pentru variabile $I(1)$: diferențe, Toda--Yamamoto sau un VECM'),
     T('Stability from the companion matrix, not from $\\bA_1$ alone', 'Stabilitatea din matricea companion, nu doar din $\\bA_1$'),

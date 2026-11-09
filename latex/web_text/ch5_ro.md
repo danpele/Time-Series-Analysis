@@ -181,7 +181,7 @@ Valoarea necondiționată este o medie care nu descrie nicio zi reală. O zi lin
 
 Amestecul are și o altă consecință. Cu $z_t$ Normale, kurtosis-ul lui $r_t$ este $3E[\sigma_t^4]/(E[\sigma_t^2])^2$. Aici $E[\sigma_t^4] = 0{,}5 \times 0{,}25 + 0{,}5 \times 20{,}25 = 10{,}25$ și $(E[\sigma_t^2])^2 = 6{,}25$, deci kurtosis-ul este $3 \times 10{,}25/6{,}25 = 4{,}92$. O varianță variabilă în timp creează singură cozi groase, chiar dacă distribuția fiecărei zile este Normală. O parte din kurtosis-ul din tabelul secțiunii precedente se explică astfel.
 
-## Modelul pentru medie lasă efecte ARCH {h=ee028f7f}
+## Efecte ARCH în reziduurile modelului pentru medie {h=98307cdf}
 
 Graficul compară două modele pentru BET. În stînga, un model AR(1) pentru medie, cu varianță constantă; ordinul $p = 1$ a fost ales după criteriul informațional bayesian (BIC) dintre AR(0) și AR(5). Barele albastre sînt autocorelațiile reziduurilor lui, iar barele roșii cele ale pătratelor reziduurilor. În dreapta, aceeași medie AR(1) cu o varianță GARCH(1,1) și inovații Student-t, modelul din [secțiunea 6](#sec-6); barele sînt autocorelațiile reziduurilor standardizate (*standardised residuals*) $\hat z_t = \hat\varepsilon_t/\hat\sigma_t$ și ale pătratelor lor.
 
@@ -207,7 +207,7 @@ Varianța condiționată este varianța randamentului de mîine, dată fiind inf
 
 Primul model pentru varianța condiționată face din varianța de azi o funcție liniară de pătratul șocului de ieri. Această secțiune prezintă modelul ARCH(1) al lui @Engle1982, deduce varianța lui necondiționată și kurtosis-ul, compară traiectorii ARCH simulate cu traiectorii i.i.d. și GARCH și arată pe S&P 500 de ce ARCH are nevoie de multe laguri pentru a se potrivi datelor reale.
 
-## 1982: Robert Engle și modelul ARCH {h=8500013d}
+## Robert Engle și modelul ARCH (1982) {h=4e244c4b}
 
 @Engle1982 a introdus modelul de heteroscedasticitate condiționată autoregresivă (ARCH, *autoregressive conditional heteroskedasticity*): varianța de azi depinde de pătratele șocurilor de ieri. Prima aplicație nu a fost o piață financiară, ci varianța inflației din Regatul Unit, unde obiectul de interes era incertitudinea prognozei însăși. Modelul a fost adoptat curînd în finanțe, unde volatility clustering este trăsătura dominantă a datelor.
 
@@ -269,7 +269,7 @@ ARCH surprinde ideea centrală a capitolului: pătratul șocului de ieri anticip
 
 GARCH(1,1) adaugă la ARCH(1) un singur termen, varianța condiționată de ieri, și transformă astfel o memorie de o zi într-o memorie a tuturor șocurilor trecute, care scade geometric. Această secțiune definește modelul, îl scrie ca ARMA(1,1) pentru pătratele șocurilor, deduce varianța de lungă durată, kurtosis-ul și timpul de înjumătățire al unui șoc și parcurge un pas de actualizare. Apoi tratează cazul de frontieră $\alpha + \beta = 1$, modelul IGARCH, și legătura lui cu estimatorul EWMA folosit în industrie, și compară GARCH, EWMA și o fereastră mobilă în timpul crahului COVID-19.
 
-## 1986: Tim Bollerslev și modelul GARCH {h=8b1c2397}
+## Tim Bollerslev și modelul GARCH (1986) {h=671b25b9}
 
 @Bollerslev1986, pe atunci doctorand al lui Engle la University of California, San Diego, a propus adăugarea varianței de ieri în ecuația ARCH. Modelul ARCH generalizat (GARCH, *generalised ARCH*) care rezultă înlocuiește un ARCH($q$) lung cu cîțiva parametri. Un an mai tîrziu, @Bollerslev1987 a combinat GARCH cu inovații Student-t pentru prețuri speculative și randamente, specificația folosită pentru majoritatea estimărilor din acest capitol.
 

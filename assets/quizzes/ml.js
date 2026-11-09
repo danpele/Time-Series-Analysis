@@ -578,7 +578,7 @@ window.TSA_DATA.quizzes['ml'] = {
         {
             "correct": 3,
             "en": {
-                "title": "The right baseline for the sign of returns",
+                "title": "The baseline for forecasting the sign of returns",
                 "text": "From 2008 to 2026 the S&P 500 rose on 54.4% of the test days. A logit model predicts the sign of the next daily return with 53.8% accuracy. What is the correct conclusion?",
                 "options": [
                     "The model has skill, because its accuracy is above 50%",
@@ -590,7 +590,7 @@ window.TSA_DATA.quizzes['ml'] = {
                 "incorrectExplanation": "Comparing with 50% ignores that markets rise more often than they fall, and an accuracy below the baseline cannot be a profitable signal. The right comparison is with \"always up\"."
             },
             "ro": {
-                "title": "Reperul corect pentru semnul randamentelor",
+                "title": "Reperul pentru prognoza semnului randamentelor",
                 "text": "Între 2008 și 2026, S&P 500 a crescut în 54,4% din zilele de test. Un model logit prognozează semnul randamentului zilnic următor cu acuratețea de 53,8%. Care este concluzia corectă?",
                 "options": [
                     "Modelul are capacitate predictivă, deoarece acuratețea lui depășește 50%",

@@ -121,7 +121,7 @@ Statistical data come in three structures. Cross-section data observe many units
 
 What changes in a time series is the dependence between observations. In a random sample of countries, knowing the GDP of one country says nothing about the next one drawn. In a time series, this quarter resembles the previous one. This dependence is the information used to forecast: if consecutive values were independent, the past would contain nothing about the future beyond the overall mean. It also means that the classical formulas derived for independent samples must be adapted. The standard error of a sample mean, $s/\sqrt{T}$, assumes independent observations; with positively dependent observations, $T$ values contain less information than $T$ independent ones, and the formula understates the uncertainty. The corrections are developed from Chapter 1 onwards.
 
-## Why time series matter {h=aab39be7}
+## The importance of time series {h=8e6bf4ae}
 
 The table pairs four fields with their series and a typical question. In economics, GDP, inflation and unemployment are followed by governments and central banks, and a typical question is where inflation will be in a year. In finance, exchange rates, stock indices and interest rates are the objects, and a typical question is how risky the BET index will be tomorrow. In energy, the production and consumption of electricity and its prices are planned months ahead. In climate science, the concentration of CO2 and temperatures are measured to separate a long-run rise from the seasonal swing.
 
@@ -705,7 +705,7 @@ An AI assistant helps in three places. It can write a first draft of the code th
 
 Some errors recur in AI-generated time-series code. A random split into training and test sets lets the model see the future, so the measured errors are too small. Growth over one quarter is called "annual growth", or shift(1) is used where shift(4) is needed, which on unadjusted GDP turns the seasonal fall of the first quarter into an apparent recession. An RMSE is computed without the square root, and a MAPE is computed on a series that crosses zero. Exercise C2 of Seminar 0 asks students to find three such errors in an AI answer.
 
-## Checks before trusting a result {h=a538dd36}
+## Necessary checks {h=e8bfb8e8}
 
 The checks start with the data. The series is plotted before any computation, and its frequency, its units and its first and last dates are compared with the source. The analyst must also know whether the series is seasonally adjusted: a model for the season needs the unadjusted series, since in the adjusted one the season has already been removed.
 
@@ -725,7 +725,7 @@ A time series is ordered in time, and its dependence on the past is what makes f
 
 The ACF reveals a trend by a slow decay, a season by peaks at multiples of $m$, and the absence of memory by values close to zero. Exponential smoothing gives more weight to the recent past, with a slope and seasonal factors when needed. Every forecast must be evaluated against naive benchmarks on a test set that follows the training set in time.
 
-## Self-assessment, project idea and next: Chapter 1 {h=5a85ccd5}
+## Self-assessment, project idea and the next lecture: Chapter 1 {h=236c3bc0}
 
 The four self-assessment questions test the central ideas of the chapter. The first, on the quarter-on-quarter growth of unadjusted GDP, is answered by the worked example of the [notation section](#sec-6). The second, on the meaning of a seasonal factor of 0.76 for the first quarter, is answered by the GDP decomposition. The third, on what an estimated $\alpha$ close to 1 says about a series, is answered by the EUR/RON example. The fourth, on why the test set must follow the training set, is answered by the [section on forecast evaluation](#sec-8).
 

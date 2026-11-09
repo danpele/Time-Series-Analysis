@@ -41,7 +41,7 @@ BLOCKS = [('episodes', 'tsa_ch13_episodes', 'hi'),
 
 # worked examples and result tables: (anchor, frame title EN, frame title RO, section key, host chart block)
 EXTRA = [('t-ep', 'Interpreting the six episodes', 'Interpretarea celor șase episoade', 'hi', 'episodes'),
-         ('wx-bw', 'Worked example: a bubble that can burst', 'Exemplu rezolvat: o bulă care se poate sparge', 'rb', 'rational'),
+         ('wx-bw', 'Worked example: the Blanchard–Watson bubble', 'Exemplu rezolvat: bula Blanchard–Watson', 'rb', 'rational'),
          ('wx-sadf', 'SADF, GSADF and BSADF (1/2)', 'SADF, GSADF și BSADF (1/2)', 'rb', 'psy-ndx'),
          ('wx-bsadf', 'SADF, GSADF and BSADF (2/2)', 'SADF, GSADF și BSADF (2/2)', 'rb', 'psy-ndx'),
          ('wx-adf', 'Worked example: one window of the Nasdaq 100', 'Exemplu rezolvat: o fereastră din Nasdaq 100', 'rb', 'psy-ndx'),
@@ -61,9 +61,9 @@ PFX = {'episodes': 'ep', 'rational': 'ra', 'psy-ndx': 'pn', 'psy-panel': 'pp', '
        'wx-filter': 'wf', 'wx-ssec': 'wx', 't-fits': 'tf', 't-win': 'tw', 't-eval': 'tv'}
 
 SECTIONS = {
- 'ro': dict(hi='Bule în istorie', rb='Bule raționale și rădăcini explozive', lp='Modelul LPPL', es='Estimarea', cf='Încrederea obținută din multe ferestre',
+ 'ro': dict(hi='Bule în istorie', rb='Bule raționale și rădăcini explozive', lp='Modelul LPPL', es='Estimarea', cf='Estimarea pe mai multe ferestre',
             ev='Evaluarea prognozelor de crah'),
- 'en': dict(hi='Bubbles in history', rb='Rational bubbles and explosive roots', lp='The LPPL model', es='Estimation', cf='Confidence from many windows',
+ 'en': dict(hi='Bubbles in history', rb='Rational bubbles and explosive roots', lp='The LPPL model', es='Estimation', cf='Estimation over many windows',
             ev='Evaluation of crash predictions'),
 }
 

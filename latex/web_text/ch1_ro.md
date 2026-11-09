@@ -140,7 +140,7 @@ Niciuna dintre definiții nu o implică pe cealaltă fără o condiție suplimen
 
 În sens invers, staționaritatea slabă fixează doar primele două momente, deci forma distribuției se poate schimba în timp, în timp ce media și autocovarianțele rămîn fixe; slide-ul următor construiește un astfel de proces. Excepția este clasa **proceselor gaussiene** (*Gaussian processes*), ale căror distribuții finit-dimensionale sînt toate Normale multivariate. O distribuție Normală multivariată este determinată complet de medii și covarianțe, deci pentru un proces gaussian staționaritatea slabă și cea strictă coincid.
 
-## Slab, dar nu strict staționar {h=6e81a68a}
+## Un proces slab staționar care nu este strict staționar {h=03a6af43}
 
 Graficul arată un proces construit pentru a fi slab, dar nu strict staționar. Variabilele $X_t$ sînt independente; la datele pare $X_t$ urmează distribuția Normală standard, $N(0, 1)$, iar la datele impare este o variabilă hi-pătrat standardizată, $(\chi^2_5 - 5)/\sqrt{10}$. Distribuția hi-pătrat cu 5 grade de libertate are media 5 și varianța 10, deci ambele distribuții au media 0 și varianța 1.
 

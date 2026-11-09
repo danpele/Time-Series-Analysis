@@ -388,7 +388,7 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 # =============================================================================
 D.section('Deterministic and stochastic trends', 'Trend determinist și trend stochastic')
 
-chart(T('Four series that drift', 'Patru serii care urcă în timp'), 'tsa_ch3_four_series', 'TSA_ch3_trends', [
+chart(T('Four trending series', 'Patru serii cu trend'), 'tsa_ch3_four_series', 'TSA_ch3_trends', [
     T('Romanian real GDP (Eurostat, seasonally adjusted) and HICP (Eurostat); EUR/RON, the BNR reference rate; BET and S\\&P 500 log prices, daily since 2000',
       'PIB-ul real (Eurostat, ajustat sezonier) și IAPC ale României (Eurostat); cursul EUR/RON, cursul de referință BNR; logaritmii prețurilor BET și S\\&P 500, zilnic din 2000'),
     T('None of them has a constant mean: Chapter 1 called them non-stationary', 'Niciuna nu are o medie constantă: în Capitolul 1 le-am numit nestaționare')], h='0.66\\textheight')
@@ -494,7 +494,7 @@ D.recap(('Deterministic and stochastic trends', 'trend determinist și trend sto
 # =============================================================================
 D.section('Spurious regression', 'Regresia falsă')
 
-D.frame(T('1926: nonsense correlations', '1926: corelații fără sens'), items(
+D.frame(T('Yule (1926): nonsense correlations', 'Yule (1926): corelații fără sens'), items(
     (T('\\refYule\\ asked: \\textit{Why do we sometimes get nonsense-correlations between time-series?}', '\\refYule\\ a întrebat: \\textit{Why do we sometimes get nonsense-correlations between time-series?} (De ce obținem uneori corelații fără sens între serii de timp?)'),
      [T('his example: in England and Wales, 1866--1911, the share of Church of England marriages and the mortality rate had a correlation of about 0.95',
         'exemplul lui: în Anglia și Țara Galilor, 1866--1911, ponderea căsătoriilor oficiate de Biserica Angliei și rata mortalității aveau o corelație de circa 0,95'),
@@ -503,7 +503,7 @@ D.frame(T('1926: nonsense correlations', '1926: corelații fără sens'), items(
      [T('large values occur often by chance; the usual standard error does not apply', 'valorile mari apar des din întîmplare; eroarea standard obișnuită nu se aplică')]),
     T('Fifty years later, the same problem reappeared in econometric models estimated on levels', 'Cincizeci de ani mai tîrziu, aceeași problemă a reapărut în modelele econometrice estimate pe niveluri')))
 
-D.frame(T('1974: Granger and Newbold', '1974: Granger și Newbold'), cols(
+D.frame(T('Granger and Newbold (1974): spurious regressions', 'Granger și Newbold (1974): regresii false'), cols(
     ph('granger', T('Clive Granger (1934--2009), Nobel Prize in Economics 2003', 'Clive Granger (1934--2009), Premiul Nobel pentru economie 2003'), h='0.42\\textheight'),
     items((T('\\refGN: regress one random walk on another, \\textbf{independent} random walk', '\\refGN: regresia unui mers aleator pe un alt mers aleator, \\textbf{independent}'),
            [T('$y_t = a + b x_t + e_t$ with $y_t$, $x_t$ independent $I(1)$ series', '$y_t = a + b x_t + e_t$, cu $y_t$, $x_t$ serii $I(1)$ independente'),
@@ -525,7 +525,7 @@ interp(('the simulation', 'simulării'), [
     (T('Differences: @{sm.200.drej}\\% at $T = 200$, close to the nominal 5\\%', 'Diferențe: @{sm.200.drej}\\% la $T = 200$, aproape de nivelul nominal de 5\\%'),
      [T('the $t$-test works again because $\\Delta y_t$ and $\\Delta x_t$ are stationary', 'testul $t$ funcționează din nou, deoarece $\\Delta y_t$ și $\\Delta x_t$ sînt staționare')])])
 
-D.frame(T('Why the $t$-test fails', 'Motivul pentru care testul $t$ eșuează'), items(
+D.frame(T('Failure of the $t$-test in spurious regressions', 'Eșecul testului $t$ în regresia falsă'), items(
     (T('Under $b = 0$ the error $e_t = y_t - a$ is itself a random walk: the OLS assumptions (stationary, uncorrelated errors) fail', 'În ipoteza $b = 0$, eroarea $e_t = y_t - a$ este ea însăși un mers aleator: ipotezele OLS (erori staționare, necorelate) nu sînt îndeplinite'),
      [T('the usual standard error is far too small', 'eroarea standard obișnuită este mult prea mică')]),
     (T('\\refPhillips\\ derived the large-sample behaviour', '\\refPhillips\\ a dedus comportamentul în eșantioane mari'),
@@ -659,7 +659,7 @@ D.frame(T('Choosing the deterministic terms', 'Alegerea termenilor determiniști
      [T('adding an unneeded trend: lower power (previous chart)', 'adăugarea unui trend inutil: putere mai mică (graficul anterior)')]),
     T('Look at the plot first, then choose; \\refDFb\\ give joint $F$-type tests of the unit root and the trend', 'Ne uităm întîi la grafic, apoi alegem; \\refDFb\\ propun teste comune de tip $F$ pentru rădăcina unitară și trend')))
 
-D.frame(T('How many differences: $I(1)$ or $I(2)$?', 'Cîte diferențieri: $I(1)$ sau $I(2)$?'), items(
+D.frame(T('The number of differences: $I(1)$ or $I(2)$', 'Numărul de diferențieri: $I(1)$ sau $I(2)$'), items(
     (T('\\refDP: test from the highest plausible order downwards', '\\refDP: testăm de la cel mai mare ordin plauzibil în jos'),
      [T('step 1: ADF on $\\Delta y_t$; if it does not reject, $y_t$ may be $I(2)$', 'pasul 1: ADF pe $\\Delta y_t$; dacă nu respinge, $y_t$ poate fi $I(2)$'),
       T('step 2: if it rejects, ADF on $y_t$; reject: $I(0)$; do not reject: $I(1)$', 'pasul 2: dacă respinge, ADF pe $y_t$; respingere: $I(0)$; nerespingere: $I(1)$')]),
@@ -701,7 +701,7 @@ D.frame(T('The KPSS test: stationarity as the null', 'Testul KPSS: staționarita
       T('reject stationarity for \\textbf{large} $\\eta$: 5\\% critical values 0.463 (level) and 0.146 (trend); 1\\%: 0.739 and 0.216', 'respingem staționaritatea pentru valori \\textbf{mari} ale lui $\\eta$: valorile critice de 5\\% sînt 0,463 (nivel) și 0,146 (trend); la 1\\%: 0,739 și 0,216')]),
     T('A test of stationarity, not of a unit root: it reverses the burden of proof', 'Un test al staționarității, nu al rădăcinii unitare: inversează sarcina probei')))
 
-chart(T('KPSS: why partial sums', 'KPSS: rolul sumelor parțiale'), 'tsa_ch3_kpss_sums', 'TSA_ch3_unit_root_tests', [
+chart(T('KPSS: the role of partial sums', 'KPSS: rolul sumelor parțiale'), 'tsa_ch3_kpss_sums', 'TSA_ch3_unit_root_tests', [
     T('A stationary AR(1) ($\\phi = 0.5$) and a random walk, $T = 250$: the demeaned series and their partial sums $S_t$',
       'Un AR(1) staționar ($\\phi = 0{,}5$) și un mers aleator, $T = 250$: seriile centrate și sumele lor parțiale $S_t$'),
     T('KPSS (level): @{kp.ar} for the AR(1), @{kp.rw} for the random walk; 5\\% critical value 0.463', 'KPSS (nivel): @{kp.ar} pentru AR(1), @{kp.rw} pentru mersul aleator; valoarea critică de 5\\% este 0,463')], h='0.52\\textheight')
@@ -750,7 +750,7 @@ D.recap(('Phillips--Perron and KPSS', 'Phillips--Perron și KPSS'), [
 # =============================================================================
 D.section('Structural breaks', 'Rupturi structurale')
 
-D.frame(T('Perron (1989): a break can look like a unit root', 'Perron (1989): o ruptură poate semăna cu o rădăcină unitară'), items(
+D.frame(T('Perron (1989): structural breaks and unit-root tests', 'Perron (1989): rupturi structurale și teste de rădăcină unitară'), items(
     (T('\\refPerron: a stationary series around a mean or a trend that \\textbf{shifts once} looks persistent', '\\refPerron: o serie staționară în jurul unei medii sau al unui trend care \\textbf{se schimbă o dată} pare persistentă'),
      [T('the DF regression explains the shift by $\\hat\\phi$ close to 1; the test loses power', 'regresia DF explică schimbarea printr-un $\\hat\\phi$ apropiat de 1; testul își pierde puterea')]),
     (T('He re-examined Nelson and Plosser with two known breaks: the 1929 crash (level) and the 1973 oil shock (slope)', 'A reexaminat seriile Nelson și Plosser cu două rupturi cunoscute: crahul din 1929 (nivel) și șocul petrolier din 1973 (pantă)'),
@@ -758,7 +758,7 @@ D.frame(T('Perron (1989): a break can look like a unit root', 'Perron (1989): o 
       T('reading: most shocks are transitory; only a few rare events are permanent', 'interpretarea: majoritatea șocurilor sînt temporare; doar cîteva evenimente rare sînt permanente')]),
     T('The critique: the break date was chosen after looking at the data', 'Critica: data rupturii a fost aleasă după ce s-au văzut datele')))
 
-chart(T('A level shift misleads the ADF test', 'O schimbare de nivel înșală testul ADF'), 'tsa_ch3_breaks_sim', 'TSA_ch3_structural_breaks', [
+chart(T('The ADF test under a level shift', 'Testul ADF în prezența unei schimbări de nivel'), 'tsa_ch3_breaks_sim', 'TSA_ch3_structural_breaks', [
     T('Left: AR(1) noise ($\\phi = 0.6$) around a mean that jumps from 0 to 5 at $t = 100$; right: the $t$-statistic on $y_{t-1}$ for every candidate break date, with a level dummy',
       'Stînga: zgomot AR(1) ($\\phi = 0{,}6$) în jurul unei medii care sare de la 0 la 5 la $t = 100$; dreapta: statistica $t$ a lui $y_{t-1}$ pentru fiecare dată posibilă a rupturii, cu o variabilă dummy de nivel')], h='0.54\\textheight')
 
@@ -880,7 +880,7 @@ D.frame(T('Worked example: ARIMA(1,1,0) forecasts', 'Exemplu rezolvat: prognoze 
       T('95\\% half-widths: @{hb.h0}, @{hb.h1}, @{hb.h2}: the interval almost triples in three steps', 'semilățimile de 95\\%: @{hb.h0}, @{hb.h1}, @{hb.h2}: intervalul aproape se triplează în trei pași')]),
     T('The momentum $\\phi = 0.6$ makes the uncertainty grow faster than for a random walk ($\\sqrt{3} = 1.73$ times in three steps)', 'Inerția $\\phi = 0{,}6$ face ca incertitudinea să crească mai repede decît la un mers aleator ($\\sqrt{3} = 1{,}73$ ori în trei pași)')))
 
-chart(T('How fast the intervals grow', 'Viteza de creștere a intervalelor'), 'tsa_ch3_interval_width', 'TSA_ch3_forecast_intervals', [
+chart(T('Growth of the forecast intervals with the horizon', 'Creșterea intervalelor de prognoză cu orizontul'), 'tsa_ch3_interval_width', 'TSA_ch3_forecast_intervals', [
     T('Half-width of the 95\\% forecast interval, in units of $\\sigma$, for horizons 1 to 20, from the $\\psi$ weights of five models',
       'Semilățimea intervalului de prognoză de 95\\%, în unități $\\sigma$, pentru orizonturile 1--20, din ponderile $\\psi$ ale a cinci modele')], h='0.56\\textheight')
 
@@ -951,7 +951,7 @@ D.frame(T('Automatic ARIMA: checks', 'Selecția automată ARIMA: verificări'), 
       T('a model fitted to the noise of the 1990s data, not a description of the economy', 'un model ajustat pe zgomotul datelor din anii 1990, nu o descriere a economiei')]),
     T('\\textbf{Always}: plot the data, check the convergence and the roots, run the residual tests, compare with a simple benchmark (random walk, Chapter 0)', '\\textbf{Întotdeauna}: reprezentăm grafic datele, verificăm convergența și rădăcinile, aplicăm testele pe reziduuri, comparăm cu o metodă simplă de referință (mersul aleator, Capitolul 0)')))
 
-chart(T('Romanian inflation: $d = 0$ or $d = 1$?', 'Inflația din România: $d = 0$ sau $d = 1$?'), 'tsa_ch3_inflation_d', 'TSA_ch3_arima_in_practice', [
+chart(T('Romanian inflation: the choice between $d = 0$ and $d = 1$', 'Inflația din România: alegerea între $d = 0$ și $d = 1$'), 'tsa_ch3_inflation_d', 'TSA_ch3_arima_in_practice', [
     T('12-month HICP inflation (Eurostat), January 2005--@{in.last}; best model by AICc for $d = 0$ (with a mean) and for $d = 1$, $p \\le 3$, $q \\le 2$; forecasts for 24 months',
       'Inflația anuală IAPC (Eurostat), ianuarie 2005--@{in.last}; cel mai bun model după AICc pentru $d = 0$ (cu medie) și pentru $d = 1$, $p \\le 3$, $q \\le 2$; prognoze pentru 24 de luni')], h='0.54\\textheight')
 
@@ -1013,7 +1013,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that loads Romanian quarterly real GDP (Eurostat namq\\_10\\_gdp, seasonally adjusted), runs ADF with constant and trend and KPSS on 100*log GDP and on its difference, fits ARIMA(p,1,q) with drift for p, q <= 2, and plots 8-quarter forecasts with 95\\% intervals.}',
         '\\aiprompt{Write Python code that loads Romanian quarterly real GDP (Eurostat namq\\_10\\_gdp, seasonally adjusted), runs ADF with constant and trend and KPSS on 100*log GDP and on its difference, fits ARIMA(p,1,q) with drift for p, q <= 2, and plots 8-quarter forecasts with 95\\% intervals.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The direction of each test: ADF and PP have the unit root as $H_0$, KPSS has stationarity as $H_0$', 'Sensul fiecărui test: ADF și PP au rădăcina unitară ca $H_0$, KPSS are staționaritatea ca $H_0$'),
     T('The deterministic terms, the number of lags and the critical values actually used (Dickey--Fuller, not Normal)', 'Termenii determiniști, numărul de laguri și valorile critice folosite efectiv (Dickey--Fuller, nu ale distribuției Normale)'),
     T('That ``not rejected\'\' is not reported as ``proved\'\'', 'Că „nerespins” nu este raportat ca „demonstrat”'),

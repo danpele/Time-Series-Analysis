@@ -181,7 +181,7 @@ The unconditional figure is an average that describes no actual day. A calm day 
 
 The mixture has another consequence. With Normal $z_t$, the kurtosis of $r_t$ equals $3E[\sigma_t^4]/(E[\sigma_t^2])^2$. Here $E[\sigma_t^4] = 0.5 \times 0.25 + 0.5 \times 20.25 = 10.25$ and $(E[\sigma_t^2])^2 = 6.25$, so the kurtosis is $3 \times 10.25/6.25 = 4.92$. A time-varying variance alone creates heavy tails, even when every day's distribution is Normal. Part of the kurtosis in the table of the previous section is explained this way.
 
-## The mean model leaves ARCH effects {h=d7b6902a}
+## ARCH effects in the residuals of the mean model {h=87f1d372}
 
 The chart compares two models for the BET. On the left, an AR(1) model for the mean with a constant variance; the order $p = 1$ was chosen by the Bayesian information criterion (BIC) among AR(0) to AR(5). The blue bars are the autocorrelations of its residuals and the red bars those of the squared residuals. On the right, the same AR(1) mean with a GARCH(1,1) variance and Student-t innovations, the model of [Section 6](#sec-6); the bars are the autocorrelations of the standardised residuals $\hat z_t = \hat\varepsilon_t/\hat\sigma_t$ and of their squares.
 
@@ -207,7 +207,7 @@ The conditional variance is the variance of tomorrow's return given today's info
 
 The first model for the conditional variance makes today's variance a linear function of yesterday's squared shock. This section presents the ARCH(1) model of @Engle1982, derives its unconditional variance and kurtosis, compares simulated ARCH paths with i.i.d. and GARCH paths, and shows on the S&P 500 why ARCH needs many lags to fit real data.
 
-## 1982: Robert Engle and ARCH {h=14df1ef0}
+## Robert Engle and the ARCH model (1982) {h=cdbdf593}
 
 @Engle1982 introduced the autoregressive conditional heteroskedasticity (ARCH) model: today's variance depends on yesterday's squared shocks. The first application was not a financial market but the variance of inflation in the United Kingdom, where the uncertainty of the forecast itself was the object of interest. The model was soon adopted in finance, where volatility clustering is the dominant feature of the data.
 
@@ -269,7 +269,7 @@ ARCH captures the core idea of the chapter: yesterday's squared shock predicts t
 
 GARCH(1,1) adds one term to ARCH(1), yesterday's conditional variance, and thereby turns a one-day memory into a geometrically decaying memory of all past shocks. This section defines the model, writes it as an ARMA(1,1) for the squared shocks, derives the long-run variance, the kurtosis and the half-life of a shock, and works through a one-step update. It then treats the boundary case $\alpha + \beta = 1$, the IGARCH model, and its relation to the EWMA estimator used in industry, and compares GARCH, EWMA and a rolling window during the COVID-19 crash.
 
-## 1986: Tim Bollerslev and GARCH {h=726ce755}
+## Tim Bollerslev and the GARCH model (1986) {h=e4ceeafb}
 
 @Bollerslev1986, then a doctoral student of Engle at the University of California, San Diego, proposed adding yesterday's variance to the ARCH equation. The resulting generalised ARCH (GARCH) model replaces a long ARCH($q$) with a few parameters. A year later, @Bollerslev1987 combined GARCH with Student-t innovations for speculative prices and returns, the specification used for most estimates in this chapter.
 
@@ -465,7 +465,7 @@ The same plot for the two IGARCH series shows a different picture. The EUR/RON v
 
 Bitcoin peaked at 301% on 13 March 2020, and its median volatility is 58.7%, 4.1 times the median of the S&P 500. For both series the volatility levels wander without returning to a fixed reference: there is no single "normal" level of volatility, which is what the boundary estimate $\hat\alpha + \hat\beta = 1$ says.
 
-## How long does a volatility shock last? {h=cb86fca3}
+## The duration of a volatility shock {h=0d44bc25}
 
 The chart plots the share of a variance shock left after $h$ days, $(\alpha+\beta)^h$, for each of the four markets, over one year of trading days. The half-life is where a curve crosses the dotted line at 1/2.
 
@@ -573,7 +573,7 @@ The sign-bias test of @EngleNg1993 checks whether asymmetry is missing. It regre
 
 Diagnostics are asymmetric in what they can show. A passed diagnostic does not prove that the model is right, because the tests have limited power against many alternatives. A failed diagnostic shows where the model is wrong and points to the extension that is needed.
 
-## What GARCH removes {h=154ba116}
+## Autocorrelations removed by GARCH {h=9222659d}
 
 The chart compares, for the S&P 500, the ACF of the squared returns $r_t^2$ (blue) with the ACF of the squared standardised residuals $\hat z_t^2$ of the GARCH(1,1)-t (red), for lags 1 to 50. The dashed lines are the 95% band $\pm 1.96/\sqrt{T} = \pm 0.024$.
 
@@ -643,7 +643,7 @@ The chart plots the term structure of volatility, the forecast volatility as a f
 
 On the calm day the forecast is 7.3% for tomorrow and 19.0% on average over a year. At the COVID-19 peak it is 111.0% for tomorrow and still 84.7% on average over a year. All curves move towards the long-run level at the same slow speed, set by the persistence 0.9947. The slope of the curve therefore tells whether the forecast is made in a calm period, rising curve, or in a storm, falling curve.
 
-## How to evaluate a volatility forecast {h=c74150ce}
+## Evaluation of a volatility forecast {h=77989fd1}
 
 The true variance $\sigma_t^2$ is never observed, so a forecast $h_t$ can only be compared with a noisy proxy, here the squared return $r_t^2$. The proxy is conditionally unbiased, $E_{t-1}[r_t^2] = \sigma_t^2$ when $\mu \approx 0$, but very noisy: $r_t^2 = \sigma_t^2 z_t^2$, and $z_t^2$ varies a lot from day to day. @AndersenBollerslev1998 showed that this noise makes the $R^2$ of a regression of $r_t^2$ on the forecast low even for a perfect forecast, so a low $R^2$ is not evidence of a bad model.
 
@@ -733,7 +733,7 @@ Three uses are realistic. The first is code: an assistant can draft a script tha
 
 The example prompt specifies every choice that matters: the data (daily BET closes), the transformation (log returns in percent), the test (ARCH-LM with 5 lags), the model (AR(1)-GARCH(1,1) with Student-t innovations, in *arch*) and the output (the annualised conditional volatility). A precise prompt makes the result checkable against the numbers of this chapter.
 
-## Checks you must run {h=2cd73932}
+## Necessary checks {h=cf41bef0}
 
 The checks follow the errors that this chapter has shown to be common. Returns must be in percent, not decimals, and a series with a very small variance, such as the EUR/RON rate, must be rescaled, with $\omega$ converted back afterwards. The persistence must be computed for the right model: $\alpha + \beta$ for GARCH, $\alpha + \beta + \gamma/2$ for GJR and $\beta$ for EGARCH. Boundary estimates with $\alpha + \beta = 1$ have no half-life and no long-run volatility, so infinite or huge numbers must not be reported.
 

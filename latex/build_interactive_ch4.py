@@ -430,8 +430,8 @@ EXTRA = [('wx-sdiff', 'Diferența sezonieră', 'The seasonal difference', 'roots
          ('dm-h', 'Testul Diebold–Mariano', 'The Diebold–Mariano test', 'ev', 'cv-scheme'),
          ('wx-dm', 'Exemplu rezolvat: un test Diebold–Mariano', 'Worked example: a Diebold–Mariano test', 'ev', 'cv-scheme'),
          ('cv-table', 'Interpretarea rezultatelor validării încrucișate', 'Interpreting the cross-validation results', 'ev', 'cv-results'),
-         ('gdpcv-table', 'Un al doilea test: PIB-ul României', 'A second test: Romanian GDP', 'ev', 'cv-results'),
-         ('wx-comb', 'Avantajul combinării prognozelor', 'Why combining forecasts works', 'comb', 'combination'),
+         ('gdpcv-table', 'Evaluarea prognozelor pentru PIB-ul României', 'Forecast evaluation for Romanian GDP', 'ev', 'cv-results'),
+         ('wx-comb', 'Avantajul combinării prognozelor', 'The advantage of combining forecasts', 'comb', 'combination'),
          ('comb-table', 'Interpretarea combinării', 'Interpreting the combination', 'comb', 'combination')]
 PFX.update({'wx-sdiff': 'xs', 'wx-roots': 'xr', 'hegy-table': 'hg', 'sur-table': 'su', 'wx-air': 'xa', 'wx-fc': 'xf', 'air-table': 'at', 'gdpm-table': 'gm',
             'gdpfc-table': 'gt', 'sa-table': 'st', 'wx-fourier': 'xo', 'fourier-table': 'fk', 'wx-easter': 'xe', 'easter-table': 'et', 'dhr-table': 'dr',

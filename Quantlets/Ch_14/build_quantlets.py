@@ -41,7 +41,7 @@ CORE = [g.save, g.shade, g.common_returns, g.weekly_returns, g.garch11_negloglik
 
 QUANTLETS = [
     dict(name='TSA_ch14_correlations',
-         desc='Why multivariate volatility: the risk of a 50/50 portfolio of two assets against the correlation, and rolling '
+         desc='The role of multivariate volatility: the risk of a 50/50 portfolio of two assets against the correlation, and rolling '
               '250-day correlations of daily returns on common trading days (S&P 500 and DAX, BET and DAX, S&P 500 and '
               'Bitcoin); the asynchronous closes of April 2025; the worked examples of the chapter.',
          keywords='correlation, rolling correlation, diversification, portfolio risk, asynchronous trading, S&P 500, DAX, BET, Bitcoin',

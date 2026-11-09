@@ -43,7 +43,7 @@ EXTRA = [('wx-lag', 'Worked example: a lag table for the electricity load', 'Exe
          ('lasso-table', 'Interpreting the coefficient paths', 'Interpretarea traiectoriilor coeficienților', 'reg', 'shrinkage'),
          ('wx-boost', 'Gradient boosting', 'Gradient boosting', 'tree', 'ensembles'),
          ('wx-mase', 'The forecasting exercise', 'Exercițiul de prognoză', 'load', 'load-results'),
-         ('load-table', 'Results: 26 origins, 14 horizons', 'Rezultatele: 26 de origini, 14 orizonturi', 'load', 'load-results'),
+         ('load-table', 'Results for 26 origins and 14 horizons', 'Rezultatele pentru 26 de origini și 14 orizonturi', 'load', 'load-results'),
          ('wx-dm', 'Interpreting the load results', 'Interpretarea rezultatelor pentru consum', 'load', 'load-results'),
          ('wx-pinball', 'Quantile regression and the pinball loss', 'Regresia cuantilică și funcția de pierdere pinball', 'pi', 'intervals'),
          ('wx-conformal', 'Split conformal prediction', 'Predicția conformală prin împărțire', 'pi', 'intervals'),
@@ -61,11 +61,11 @@ SECTIONS = {
  'ro': dict(sup='Prognoza ca învățare supervizată', val='Validare fără leakage', reg='Modele liniare regularizate: ridge și lasso',
             tree='Arbori, random forest și gradient boosting', nn='Rețele neuronale', load='Aplicație: consumul de energie electrică față de Capitolul 4',
             pi='Intervale de prognoză', inf='Modele locale și globale: inflația din România', fin='Aplicații în finanțe: volatilitatea și semnul randamentelor',
-            case='Studii de caz de referință: M4, M5 și Gu, Kelly și Xiu'),
+            case='Studii de caz: M4, M5 și Gu, Kelly și Xiu'),
  'en': dict(sup='Forecasting as supervised learning', val='Validation without leakage', reg='Regularised linear models: ridge and lasso',
-            tree='Trees, random forest and gradient boosting', nn='Neural networks', load='Application: electricity load against Chapter 4',
+            tree='Trees, random forest and gradient boosting', nn='Neural networks', load='Application: electricity load and the models of Chapter 4',
             pi='Prediction intervals', inf='Local and global models: Romanian inflation', fin='Applications in finance: volatility and the sign of returns',
-            case='Landmark case studies: M4, M5 and Gu, Kelly and Xiu'),
+            case='Case studies: M4, M5 and Gu, Kelly and Xiu'),
 }
 
 L = {

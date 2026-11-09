@@ -33,7 +33,7 @@ EXTRA = [('wx-var1', 'Exemplu rezolvat: un VAR(1)', 'Worked example: a VAR(1)', 
          ('var-table', 'VAR(2) românesc estimat', 'The estimated Romanian VAR(2)', 'est'),
          ('granger-wx', 'Exemplu rezolvat: este creșterea PIB-ului o cauză Granger pentru ROBOR?', 'Worked example: does GDP growth Granger-cause ROBOR?', 'gr'),
          ('granger-ro', 'Cauzalitatea Granger în VAR(2) românesc', 'Granger causality in the Romanian VAR(2)', 'gr'),
-         ('granger-mkt', 'Piețe: New York-ul precedă Frankfurtul și Bucureștiul', 'Markets: does New York lead Frankfurt and Bucharest?', 'gr'),
+         ('granger-mkt', 'Piețe: cauzalitatea Granger de la New York către Frankfurt și București', 'Markets: Granger causality from New York to Frankfurt and Bucharest', 'gr'),
          ('wx-orth', 'Exemplu rezolvat: răspunsuri ortogonalizate', 'Worked example: orthogonalised responses', 'irf'),
          ('wx-fevd', 'Descompunerea varianței erorii de prognoză', 'Forecast error variance decomposition', 'fevd'),
          ('spill-table', 'Tabelul de spillover: S&P 500, DAX, BET', 'Spillover table: S&P 500, DAX, BET', 'fevd')]
@@ -45,10 +45,10 @@ PFX = {'ro-macro': 'rm', 'ccf': 'cc', 'wx-var1': 'w1', 'var-sim': 'vs', 'roots':
 SECTIONS = {
  'ro': dict(ms='De la o serie la mai multe', var='Modelul VAR(p)', stab='Staționaritate și forma companion', est='Estimare și alegerea numărului de laguri',
             diag='Diagnosticarea reziduurilor', gr='Cauzalitatea Granger', irf='Funcții de răspuns la impuls', fevd='Descompunerea varianței erorii de prognoză',
-            fc='Prognoza cu un VAR', svar='VAR-uri structurale și un studiu de caz de referință'),
+            fc='Prognoza cu un VAR', svar='VAR-uri structurale și studiul de caz Stock–Watson'),
  'en': dict(ms='From one series to several', var='The VAR(p) model', stab='Stationarity and the companion form', est='Estimation and lag selection',
             diag='Residual diagnostics', gr='Granger causality', irf='Impulse responses', fevd='Forecast error variance decomposition',
-            fc='Forecasting with a VAR', svar='Structural VARs and a landmark case study'),
+            fc='Forecasting with a VAR', svar='Structural VARs and the Stock–Watson case study'),
 }
 
 L = {

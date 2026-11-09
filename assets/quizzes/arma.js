@@ -632,7 +632,7 @@ window.TSA_DATA.quizzes['arma'] = {
         {
             "correct": 3,
             "en": {
-                "title": "Significant or useful?",
+                "title": "Statistical significance and practical usefulness",
                 "text": "An AR(1) for BET daily returns gives $\\hat\\phi = 0.11$ with $t = 21$. What follows?",
                 "options": [
                     "Yesterday's return explains most of today's return",
@@ -644,7 +644,7 @@ window.TSA_DATA.quizzes['arma'] = {
                 "incorrectExplanation": "A high $t$-ratio reflects the many observations, not a large effect; the coefficient is clearly significant; and the random walk describes prices, not returns."
             },
             "ro": {
-                "title": "Semnificativ sau util?",
+                "title": "Semnificația statistică și utilitatea practică",
                 "text": "Un AR(1) pentru randamentele zilnice ale BET dă $\\hat\\phi = 0{,}11$, cu $t = 21$. Ce rezultă?",
                 "options": [
                     "Randamentul de ieri explică cea mai mare parte a randamentului de azi",

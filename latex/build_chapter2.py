@@ -354,7 +354,7 @@ D.frame(T('Tools from Chapter 1', 'Instrumente din Capitolul 1'), items(
        '\\textbf{Descompunerea Wold} (\\refWold): orice proces staționar pur nedeterminist este $X_t = \\mu + \\sum_{j \\ge 0}\\psi_j\\varepsilon_{t-j}$, $\\psi_0 = 1$, $\\sum_j\\psi_j^2 < \\infty$'),
      [T('details and charts: Chapter 1, sections on the lag operator, Wold and the sample ACF and PACF', 'detalii și grafice: Capitolul 1, secțiunile despre operatorul lag, descompunerea Wold și ACF și PACF de selecție')])))
 
-D.frame(T('The problem: infinitely many weights', 'Problema: o infinitate de ponderi'), items(
+D.frame(T('Parsimonious representation of the Wold weights', 'Reprezentarea parcimonioasă a ponderilor Wold'), items(
     (T('Wold says \\textbf{what} a stationary process looks like, not \\textbf{how to estimate it}', 'Teorema Wold spune \\textbf{cum arată} un proces staționar, nu \\textbf{cum îl estimăm}'),
      [T('$\\psi_1, \\psi_2, \\dots$: infinitely many unknowns, and only $T$ observations', '$\\psi_1, \\psi_2, \\dots$: o infinitate de necunoscute și doar $T$ observații')]),
     (T('\\textbf{Idea}: write $\\psi(L) = \\sum_j\\psi_jL^j$ as a \\textbf{ratio of two short polynomials}', '\\textbf{Ideea}: scriem $\\psi(L) = \\sum_j\\psi_jL^j$ ca \\textbf{raport a două polinoame scurte}'),
@@ -365,7 +365,7 @@ D.frame(T('The problem: infinitely many weights', 'Problema: o infinitate de pon
     (T('A rational function approximates almost any smooth $\\psi(L)$ well with small $p$ and $q$', 'O funcție rațională aproximează bine aproape orice $\\psi(L)$ netedă, cu $p$ și $q$ mici'),
      [T('the principle of \\textbf{parsimony}: the smallest model that leaves white-noise residuals', 'principiul \\textbf{parcimoniei}: cel mai mic model care lasă reziduuri de tip zgomot alb')])))
 
-D.frame(T('Three building blocks', 'Trei piese de bază'), items(
+D.frame(T('AR, MA and ARMA models', 'Modelele AR, MA și ARMA'), items(
     (T('\\textbf{AR($p$)}, autoregressive: today depends on the last $p$ values of the series', '\\textbf{AR($p$)}, autoregresiv: valoarea de azi depinde de ultimele $p$ valori ale seriei'),
      [T('$X_t = c + \\phi_1X_{t-1} + \\dots + \\phi_pX_{t-p} + \\varepsilon_t$; origin: \\refYule, sunspots', '$X_t = c + \\phi_1X_{t-1} + \\dots + \\phi_pX_{t-p} + \\varepsilon_t$; originea: \\refYule, petele solare')]),
     (T('\\textbf{MA($q$)}, moving average: today depends on the last $q$ shocks', '\\textbf{MA($q$)}, medie mobilă: valoarea de azi depinde de ultimele $q$ șocuri'),
@@ -696,7 +696,7 @@ D.frame(T('Information criteria', 'Criterii informaționale'), cols(items(
     ph('akaike', T('Hirotugu Akaike (1927--2009), Institute of Statistical Mathematics, Tokyo', 'Hirotugu Akaike (1927--2009), Institutul de Matematică Statistică, Tokyo'), h='0.44\\textheight'),
     wl='0.64', wr='0.32'), 'footnotesize')
 
-D.frame(T('AIC or BIC?', 'AIC sau BIC?'), items(
+D.frame(T('AIC and BIC compared', 'Comparația criteriilor AIC și BIC'), items(
     (T('\\textbf{BIC is consistent}: if the true model is among the candidates, BIC finds it with probability $\\to 1$', '\\textbf{BIC este consistent}: dacă modelul adevărat se află printre candidați, BIC îl găsește cu probabilitate $\\to 1$'),
      [T('but it may choose a model that is too small when $T$ is small', 'dar poate alege un model prea mic cînd $T$ este mic')]),
     (T('\\textbf{AIC targets forecasting}: it estimates the expected out-of-sample fit (Kullback--Leibler distance)', '\\textbf{AIC este orientat spre prognoză}: estimează ajustarea așteptată în afara eșantionului (distanța Kullback--Leibler)'),
@@ -729,7 +729,7 @@ D.frame(T('Residual diagnostics', 'Diagnosticarea reziduurilor'), items(
       T('non-Normal residuals do not bias $\\hat\\phi$, but they make Normal intervals wrong', 'reziduurile ne-normale nu deplasează $\\hat\\phi$, dar fac greșite intervalele construite cu distribuția Normală')]),
     T('\\textbf{Squared residuals}: Ljung--Box on $\\hat\\varepsilon_t^2$ detects volatility clustering (Chapter 5)', '\\textbf{Pătratele reziduurilor}: testul Ljung--Box pentru $\\hat\\varepsilon_t^2$ detectează volatility clustering (Capitolul 5)')))
 
-chart(T('Why $m - p - q$ degrees of freedom', 'Justificarea celor $m - p - q$ grade de libertate'), 'tsa_ch2_lb_df', 'TSA_ch2_selection', [
+chart(T('Justification of the $m - p - q$ degrees of freedom', 'Justificarea celor $m - p - q$ grade de libertate'), 'tsa_ch2_lb_df', 'TSA_ch2_selection', [
     T('Ljung--Box at 5\\% on the residuals of the \\textbf{true} model; @{lbdf.nrep} samples of AR(1), half as many of ARMA(1,1)', 'Testul Ljung--Box la 5\\% pentru reziduurile modelului \\textbf{adevărat}; @{lbdf.nrep} de eșantioane AR(1), jumătate pentru ARMA(1,1)')],
     h='0.72\\textheight')
 
@@ -996,7 +996,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code with statsmodels that fits ARMA(p,q), p,q <= 3, to Romanian annual GDP growth from Eurostat, reports AIC, BIC and the Ljung-Box p-value with model\\_df = p + q, and forecasts 8 quarters from the BIC model.}',
         '\\aiprompt{Write Python code with statsmodels that fits ARMA(p,q), p,q <= 3, to Romanian annual GDP growth from Eurostat, reports AIC, BIC and the Ljung-Box p-value with model\\_df = p + q, and forecasts 8 quarters from the BIC model.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The sign convention of $\\theta$ and $\\phi$ in the software ($\\theta(L) = 1 + \\theta L$ in statsmodels, $1 - \\theta L$ in some books)', 'Convenția de semn pentru $\\theta$ și $\\phi$ în program ($\\theta(L) = 1 + \\theta L$ în statsmodels, $1 - \\theta L$ în unele manuale)'),
     T('Intercept or mean: the \\texttt{const} of \\texttt{ARIMA} is the mean $\\mu$, not $c$', 'Termenul liber sau media: \\texttt{const} din \\texttt{ARIMA} este media $\\mu$, nu $c$'),
     T('Ljung--Box degrees of freedom on residuals ($m - p - q$), and that all models are compared on the same sample', 'Gradele de libertate ale testului Ljung--Box pentru reziduuri ($m - p - q$) și faptul că toate modelele sînt comparate pe același eșantion'),

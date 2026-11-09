@@ -730,7 +730,7 @@ D.recap(('Airline passengers and Romanian GDP', 'pasagerii aerieni și PIB-ul Ro
 # =============================================================================
 D.section('Seasonal adjustment in practice', 'Ajustarea sezonieră în practică')
 
-D.frame(T('Why official statistics adjust for seasonality', 'Rostul ajustării sezoniere în statistica oficială'), items(
+D.frame(T('The purpose of seasonal adjustment in official statistics', 'Scopul ajustării sezoniere în statistica oficială'), items(
     (T('Users want to know whether the economy \\textbf{grew this quarter}, not whether Q3 is bigger than Q2', 'Utilizatorii vor să știe dacă economia \\textbf{a crescut în acest trimestru}, nu dacă T3 este mai mare decît T2'),
      [T('@{sa.q}: unadjusted GDP changed by @{sa.nsa}\\% (log points) from the previous quarter; the adjusted series by @{sa.sca}\\%', '@{sa.q}: PIB-ul neajustat s-a modificat cu @{sa.nsa}\\% (puncte logaritmice) față de trimestrul anterior; seria ajustată cu @{sa.sca}\\%'),
       T('the first number is pure season; only the second says something about the business cycle', 'prima cifră este doar sezon; doar a doua spune ceva despre ciclul economic')]),
@@ -1020,7 +1020,7 @@ D.frame(T('Interpreting the cross-validation results', 'Interpretarea rezultatel
     T('DHR wins; with the combination, it is the only method with MASE below 1; Prophet is the second single model: the two that know the holidays', 'DHR cîștigă; împreună cu combinarea, este singura metodă cu MASE sub 1; Prophet este al doilea model individual: singurele două care includ sărbătorile'),
     T('ETS, SARIMA and TBATS are not significantly better than the seasonal naive method', 'ETS, SARIMA și TBATS nu sînt semnificativ mai bune decît metoda sezonieră naivă')), 'footnotesize')
 
-D.frame(T('A second test: Romanian GDP', 'Un al doilea test: PIB-ul României'), table(
+D.frame(T('Forecast evaluation for Romanian GDP', 'Evaluarea prognozelor pentru PIB-ul României'), table(
     'lrrrr', T('\\textbf{Method}', '\\textbf{Metoda}') + ' & ' + T('MAE, $h = 1$', 'MAE, $h = 1$') + ' & ' + T('MAE, $h = 4$', 'MAE, $h = 4$') + ' & ' + T('without 2019--2020, $h = 1$', 'fără 2019--2020, $h = 1$') + ' & ' + T('without 2019--2020, $h = 4$', 'fără 2019--2020, $h = 4$'),
     ['SARIMA (airline) & @{gc.sar.1} & @{gc.sar.4} & @{gc.sar.x1} & @{gc.sar.x4}',
      'ETS & @{gc.ets.1} & @{gc.ets.4} & @{gc.ets.x1} & @{gc.ets.x4}',
@@ -1042,7 +1042,7 @@ D.recap(('Forecast evaluation', 'evaluarea prognozelor'), [
 # =============================================================================
 D.section('Forecast combination', 'Combinarea prognozelor')
 
-D.frame(T('Why combining forecasts works', 'Avantajul combinării prognozelor'), items(
+D.frame(T('The advantage of combining forecasts', 'Avantajul combinării prognozelor'), items(
     (T('\\refBG: a weighted average of two unbiased forecasts, $f_c = wf_1 + (1 - w)f_2$', '\\refBG: o medie ponderată a două prognoze nedeplasate, $f_c = wf_1 + (1 - w)f_2$'),
      [T('$w$: the weight of forecast 1; $\\sigma_1$, $\\sigma_2$: the standard deviations of the two errors; $\\rho$: their correlation', '$w$: ponderea prognozei 1; $\\sigma_1$, $\\sigma_2$: abaterile standard ale celor două erori; $\\rho$: corelația lor'),
       T('$\\mathrm{MSE}(w) = w^2\\sigma_1^2 + (1 - w)^2\\sigma_2^2 + 2w(1 - w)\\rho\\sigma_1\\sigma_2$', '$\\mathrm{MSE}(w) = w^2\\sigma_1^2 + (1 - w)^2\\sigma_2^2 + 2w(1 - w)\\rho\\sigma_1\\sigma_2$'),
@@ -1076,7 +1076,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that forecasts daily electricity load 14 days ahead with a regression on annual Fourier terms, weekday dummies and Romanian public holidays (Orthodox Easter from dateutil) with ARMA errors, and evaluates it against SARIMA by rolling origins and a Diebold-Mariano test.}',
         '\\aiprompt{Write Python code that forecasts daily electricity load 14 days ahead with a regression on annual Fourier terms, weekday dummies and Romanian public holidays (Orthodox Easter from dateutil) with ARMA errors, and evaluates it against SARIMA by rolling origins and a Diebold-Mariano test.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The Easter date: Orthodox, not Western (\\texttt{EASTER\\_ORTHODOX}); in 2024 the two differ by five weeks', 'Data Paștelui: ortodox, nu occidental (\\texttt{EASTER\\_ORTHODOX}); în 2024 cele două diferă cu cinci săptămîni'),
     T('No look-ahead: features, model orders and holiday lists must be available at each origin', 'Fără informații din viitor: variabilele, ordinele modelelor și listele de sărbători trebuie să fie disponibile la fiecare origine'),
     T('The sign conventions of $\\theta$ and $\\Theta$ in the software, and the degrees of freedom of Ljung--Box', 'Convențiile de semn pentru $\\theta$ și $\\Theta$ în program și gradele de libertate ale testului Ljung--Box'),

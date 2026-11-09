@@ -27,10 +27,10 @@ Ambele instrumente sînt aplicate închiderilor zilnice și săptămînale ale i
 @plan
 - Motivație | Întrebarea capitolului, traseul, bibliografia și instrumentele.
 - Bule în istorie | Bule speculative începînd din 1636, valoarea fundamentală și bula, șase episoade din datele cursului.
-- Bule raționale și rădăcini explozive | De ce o bulă rațională trebuie să explodeze; testele SADF, GSADF și BSADF pe Nasdaq 100, Bitcoin, BET și Shanghai.
+- Bule raționale și rădăcini explozive | Creșterea explozivă a unei bule raționale; testele SADF, GSADF și BSADF pe Nasdaq 100, Bitcoin, BET și Shanghai.
 - Modelul LPPL | Crahurile ca puncte critice, creșterea superexponențială, rata de hazard și ecuația LPPL, log-periodicitatea și filtrul.
 - Estimarea | Metoda în doi pași a lui Filimonov și Sornette, peisajul funcției de cost și șase ajustări cu 30 de zile înainte de maximum.
-- Încrederea obținută din multe ferestre | Indicatorul de încredere LPPLS, comportamentul lui în jurul a patru maxime și un timp critic care se mută odată cu datele.
+- Estimarea pe mai multe ferestre | Indicatorul de încredere LPPLS, comportamentul lui în jurul a patru maxime și un timp critic care se mută odată cu datele.
 - Evaluarea prognozelor de crah | Look-ahead bias, selecția, alarmele false și frecvențele de bază pe S&P 500 și Bitcoin.
 - Contribuția posibilă a AI | Ce poate scrie un asistent și ce trebuie verificat.
 - Rezumat | Ideile principale, formulele, autoevaluarea și o idee de proiect.
@@ -77,7 +77,7 @@ Mania lalelelor din Țările de Jos, în 1636–1637, este cel mai vechi exemplu
 
 Episoadele ulterioare includ Compania Mării Sudului (*South Sea Company*) în 1720, Wall Street în 1929, Japonia în 1989, acțiunile dot-com în 2000, piața imobiliară în 2007 și criptomonedele în 2017 și 2021. @KindlebergerAliber2005 descriu un tipar comun: o poveste nouă care pare să justifice prețuri mai mari, credit ieftin, prețuri în creștere care atrag cumpărători noi, care înainte nu se interesau de acel activ, și în final o panică în care toată lumea încearcă să vîndă în același timp. Tiparul este o narațiune, nu un test, dar sugerează ce trebuie căutat în date: o accelerare a prețurilor și un sfîrșit care vine din interiorul pieței.
 
-## 1929 și 1987 {h=a3451e46}
+## Crahurile din 1929 și 1987 {h=26d6d835}
 
 Crahul din octombrie 1929 a încheiat boom-ul anilor 1920 și a deschis Marea Depresiune. Crahul din 19 octombrie 1987, Lunea Neagră (*Black Monday*), este cea mai mare scădere într-o singură zi a indicelui Dow Jones și a venit fără vreo știre importantă în acea zi. Cele două fotografii arată mulțimea din fața Bursei din New York pe 29 octombrie 1929 și bursa din Amsterdam la două zile după Lunea Neagră.
 
@@ -125,7 +125,7 @@ Istoria oferă exemplele și sugerează semnăturile, dar nu spune care creșter
 
 Secțiunea arată că o bulă deținută de investitori raționali trebuie să crească exploziv, simulează o astfel de bulă și construiește testele de rădăcină unitară la dreapta, care caută episoadele explozive. Testele sînt apoi aplicate pe Nasdaq 100, Bitcoin, BET și Shanghai Composite.
 
-## Bula rațională și explozia ei inevitabilă {h=3f349d05}
+## Creșterea explozivă a unei bule raționale {h=f546c0ae}
 
 Într-o piață fără oportunități de arbitraj și cu investitori neutri la risc, prețul de azi este egal cu valoarea actualizată a mediei prețului de mîine plus dividendul de mîine:
 
@@ -137,7 +137,7 @@ Orice preț $P_t = F_t + B_t$ satisface și el @eq:noarb, cu condiția ca bula s
 
 Deoarece $1 + r > 1$, componenta de bulă este un proces exploziv, în sensul din [Capitolul 3](../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf): o autoregresie cu un coeficient mai mare decît 1. De aici rezultă implicația testabilă. Dacă dividendele sînt integrate de ordinul unu, $I(1)$, și valoarea fundamentală este $I(1)$, iar prețul este $I(1)$ fără bulă, dar exploziv cu bulă. Un comportament exploziv al prețurilor, absent din dividende, este urma statistică a unei bule raționale.
 
-## Exemplu rezolvat: o bulă care se poate sparge {h=5377b3c1}
+## Exemplu rezolvat: bula Blanchard–Watson {h=5aaf68f8}
 
 O bulă care crește la nesfîrșit nu este realistă. @BlanchardWatson1982 au propus o bulă care se poate sparge: în fiecare perioadă supraviețuiește cu probabilitatea $\pi$ și crește atunci pînă la $\frac{1+r}{\pi}B_t$; altfel se sparge, iar $B_{t+1}$ scade aproape de zero. Media din perioada următoare este
 
@@ -493,7 +493,7 @@ O fereastră dă o ajustare. Cu date care se opresc cu 30 de zile înainte de ma
 
 O singură ajustare este fragilă: depinde de începutul ferestrei, care în timp real nu este cunoscut, și de o funcție de cost care abia deosebește un timp critic de altul. Secțiunea următoare înlocuiește ajustarea unică prin multe ajustări pe ferestre de lungimi diferite și le rezumă într-un singur număr.
 
-# Încrederea obținută din multe ferestre
+# Estimarea pe mai multe ferestre
 
 Secțiunea construiește indicatorul de încredere LPPLS, ponderea ajustărilor calificate printre multe ferestre care se încheie la aceeași dată. Arată indicatorul în jurul a patru maxime și felul în care timpul critic estimat se mută pe măsură ce sosesc date noi.
 
@@ -539,7 +539,7 @@ Pentru BET cel mai puternic semnal cu filtrul complet, 0,28, vine pe 28 august 2
 
 Indicatorul se aprinde în timpul bulelor, dar devreme, tîrziu și cu întreruperi, iar alegerea filtrului schimbă complet imaginea: cu condițiile asupra parametrilor Bitcoin arată ca o bulă în cea mai mare parte a lui 2017, cu toate condițiile aproape niciodată. Un cititor care vede doar una dintre cele două versiuni trage o altă concluzie decît unul care o vede pe cealaltă.
 
-## Timpul critic se mută odată cu datele {h=fe34941e}
+## Instabilitatea timpului critic estimat {h=0663e9a4}
 
 Graficul urmărește timpul critic estimat pe măsură ce datele cresc. Începutul ferestrei este fixat la minimul dinaintea creșterii, iar sfîrșitul $t_2$ se mută săptămînal de la 8 luni înainte pînă la 1 lună după maximum. Axa orizontală este $t_2$, axa verticală este $\hat t_c$ al ajustării care se încheie la $t_2$; punctele verzi sînt ajustări care trec de condițiile asupra parametrilor, iar crucile roșii ajustări care nu trec. Diagonala punctată este dreapta $t_c = t_2$, o ajustare care plasează sfîrșitul bulei la ultima observație, iar linia roșie întreruptă este maximul real.
 
@@ -553,7 +553,7 @@ Cele două cazuri arată două feluri de a eșua. Pentru Bitcoin, 4 dintre cele 
 
 Graficul arată și cum apare o falsă impresie de succes. Printre multele ajustări, unele au plasat $t_c$ aproape de maximul real. Alegerea, după crah, a singurei ferestre al cărei $\hat t_c$ a fost corect și prezentarea ei drept prognoză înseamnă look-ahead bias: folosește cunoașterea momentului crahului pentru a alege fereastra.
 
-## Recapitulare: încrederea obținută din multe ferestre {h=354ddbec}
+## Recapitulare: estimarea pe mai multe ferestre {h=42a630e7}
 
 Începutul unei bule nu este cunoscut în timp real, așa că modelul este ajustat pe 29 de ferestre de lungimi diferite pentru fiecare dată de sfîrșit. Indicatorul este ponderea ferestrelor calificate și depinde puternic de filtru: versiunea cu parametri și versiunea completă pot spune povești diferite.
 

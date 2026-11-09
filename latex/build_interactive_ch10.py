@@ -40,13 +40,13 @@ EXTRA = [('wx-arma', 'Worked example: AR(2) for US GDP growth', 'Exemplu rezolva
          ('kf-table', 'Worked example: three periods by hand (2/2)', 'Exemplu rezolvat: trei perioade de mînă (2/2)', 'kf', 'nile-filter'),
          ('wx-ss', 'Steady state and exponential smoothing', 'Starea de echilibru și netezirea exponențială', 'kf', 'nile-filter'),
          ('nile-ml', 'Interpreting the Nile filter', 'Interpretarea filtrului pentru Nil', 'kf', 'nile-filter'),
-         ('wx-rts', 'Smoothing: using the whole sample', 'Netezirea: folosim tot eșantionul', 'sm', 'nile-smooth'),
+         ('wx-rts', 'Smoothing with the full sample', 'Netezirea pe întregul eșantion', 'sm', 'nile-smooth'),
          ('wx-lik', 'The likelihood: prediction-error decomposition', 'Verosimilitatea: descompunerea erorilor de predicție', 'sm', 'likelihood'),
-         ('wx-hp', 'The HP filter is a state space smoother', 'Filtrul HP este un netezitor în spațiul stărilor', 'tc', 'ro-trend'),
+         ('wx-hp', 'The HP filter as a state space smoother', 'Filtrul HP ca netezitor în spațiul stărilor', 'tc', 'ro-trend'),
          ('wx-dur', 'Transition matrix, durations and ergodic probabilities', 'Matricea de tranziție, durate și probabilități ergodice', 'ms', 'ms-us'),
          ('wx-ham', 'The Hamilton filter', 'Filtrul Hamilton', 'ms', 'ms-us'),
          ('ms-table', "Hamilton's specification on today's data", 'Specificația lui Hamilton pe datele de azi', 'ms', 'ms-us'),
-         ('ms-checks', 'Checks: which regimes did the model find?', 'Verificări: regimurile găsite de model', 'ms', 'ms-filtered'),
+         ('ms-checks', 'Checks: the regimes identified by the model', 'Verificări: regimurile identificate de model', 'ms', 'ms-filtered'),
          ('ms-params', 'Recap: Markov switching', 'Recapitulare: modelele Markov switching', 'ms', 'regimes-memory')]
 
 PFX = {'ss-examples': 'se', 'wx-arma': 'wa', 'wx-kf': 'wk', 'kf-table': 'kt', 'wx-ss': 'ws', 'nile-filter': 'nf', 'nile-ml': 'nm', 'gain-ses': 'gs',
@@ -77,7 +77,7 @@ L = {
        'factorul comun, probabilitățile celor două maxime ale MS-AR(4), volatilitatea GARCH(1,1) și traiectoriile simulate ale regimurilor provin din codul capitolului, '
        'cu aceeași sămînță; în browser se recalculează filtrul și netezitorul Kalman, verosimilitatea, diagnosticarea, filtrul HP, filtrul Hamilton (2018), deviațiile '
        'în timp real, beta variabil, filtrul Hamilton (1989) și netezitorul Kim. Variantele care nu apar în curs (alt q, alt λ, alt h, alt sfîrșit al eșantionului, '
-       'alt p₁₁, alt număr de luni lipsă) sînt rulări suplimentare ale codului capitolului, cu aceleași date; graficul „Verificări: regimurile găsite de model” este '
+       'alt p₁₁, alt număr de luni lipsă) sînt rulări suplimentare ale codului capitolului, cu aceleași date; graficul „Verificări: regimurile identificate de model” este '
        'o rulare suplimentară pentru un slide care dă doar cifre.'),
  'en': dict(file='ch10.html', html_lang='en', site='../index.html#chapters', course='Time Series Analysis',
    h1='Chapter 10 · State Space Models, the Kalman Filter and Markov Switching', back='Course site', pdf_btn='Lecture PDF', ql='Quantlets',
@@ -94,7 +94,7 @@ L = {
        'the common factor, the probabilities of the two maxima of the MS-AR(4), the GARCH(1,1) volatility and the simulated regime paths come from the chapter’s '
        'code, with the same seed; the browser recomputes the Kalman filter and smoother, the likelihood, the diagnostics, the HP filter, the Hamilton (2018) filter, '
        'the real-time gaps, the time-varying beta, the Hamilton (1989) filter and the Kim smoother. Variants that do not appear in the lecture (another q, λ, h, '
-       'sample end, p₁₁ or number of missing months) are extra runs of the chapter’s code with the same data; the chart “Checks: which regimes did the model find?” '
+       'sample end, p₁₁ or number of missing months) are extra runs of the chapter’s code with the same data; the chart “Checks: the regimes identified by the model” '
        'is an extra run for a slide that gives only numbers.'),
 }
 
@@ -754,7 +754,7 @@ TICKET = [
   (('1/(1 − 0,9) = 10 perioade.', '1/(1 − 0.9) = 10 periods.'),
    ('Durata este geometrică cu probabilitatea de ieșire 0,1: media 1/0,1 = 10.', 'The duration is geometric with exit probability 0.1: mean 1/0.1 = 10.')),
   (('0,9/(1 − 0,9) = 9 perioade.', '0.9/(1 − 0.9) = 9 periods.'),
-   ('p/(1 − p) numără doar perioadele de după prima; slide-ul „Verificări necesare” avertizează asupra acestei greșeli.', 'p/(1 − p) counts only the periods after the first; the slide “Checks you must run” warns about this mistake.')),
+   ('p/(1 − p) numără doar perioadele de după prima; slide-ul „Verificări necesare” avertizează asupra acestei greșeli.', 'p/(1 − p) counts only the periods after the first; the slide “Necessary checks” warns about this mistake.')),
   (('1/0,9 = 1,1 perioade.', '1/0.9 = 1.1 periods.'),
    ('1/p₁₁ ar însemna că un regim foarte persistent durează puțin.', '1/p₁₁ would mean that a very persistent regime is short.'))]),
 ]

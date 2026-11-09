@@ -517,7 +517,7 @@ D.recap(('The Kalman filter', 'filtrul Kalman'), [
 # =============================================================================
 D.section('Smoothing, likelihood and missing data', 'Netezire, verosimilitate și valori lipsă')
 
-D.frame(T('Smoothing: using the whole sample', 'Netezirea: folosim tot eșantionul'), items(
+D.frame(T('Smoothing with the full sample', 'Netezirea pe întregul eșantion'), items(
     (T('\\textbf{Filtering} uses $Y_t$ (the past and the present): the real-time estimate', '\\textbf{Filtrarea} folosește $Y_t$ (trecutul și prezentul): estimarea în timp real'),
      [T('\\textbf{smoothing} uses $Y_n$ (the whole sample): $\\hat\\alpha_t = E(\\alpha_t \\mid Y_n)$, with variance $V_t \\le P_{t|t}$', '\\textbf{netezirea} folosește $Y_n$ (tot eșantionul): $\\hat\\alpha_t = E(\\alpha_t \\mid Y_n)$, cu varianța $V_t \\le P_{t|t}$')]),
     (T('\\textbf{Rauch--Tung--Striebel} smoother \\refRTS: one backward pass after the filter, from $t = n-1$ to 1', 'Netezitorul \\textbf{Rauch--Tung--Striebel} \\refRTS: o trecere înapoi după filtru, de la $t = n-1$ la 1'),
@@ -628,7 +628,7 @@ D.frame(T('Unobserved components models', 'Modele cu componente neobservate'), i
     T('In Python: \\texttt{UnobservedComponents(y, level=\'smooth trend\', autoregressive=2)}; the whole state is estimated by the Kalman filter and smoother',
       'În Python: \\texttt{UnobservedComponents(y, level=\'smooth trend\', autoregressive=2)}; toată starea se estimează cu filtrul și netezitorul Kalman')))
 
-D.frame(T('The HP filter is a state space smoother', 'Filtrul HP este un netezitor în spațiul stărilor'), items(
+D.frame(T('The HP filter as a state space smoother', 'Filtrul HP ca netezitor în spațiul stărilor'), items(
     (T('\\refHPf: the trend $\\tau_t$ minimises $\\sum_t(y_t - \\tau_t)^2 + \\lambda\\sum_t(\\Delta^2\\tau_t)^2$; $\\lambda = 1600$ for quarterly data', '\\refHPf: trendul $\\tau_t$ minimizează $\\sum_t(y_t - \\tau_t)^2 + \\lambda\\sum_t(\\Delta^2\\tau_t)^2$; $\\lambda = 1600$ pentru date trimestriale'),
      [T('$\\Delta^2\\tau_t = \\tau_t - 2\\tau_{t-1} + \\tau_{t-2}$: the change in the slope of the trend; $\\lambda \\ge 0$: the smoothing parameter', '$\\Delta^2\\tau_t = \\tau_t - 2\\tau_{t-1} + \\tau_{t-2}$: variația pantei trendului; $\\lambda \\ge 0$: parametrul de netezire'),
       T('large $\\lambda$: a straight-line trend; $\\lambda = 0$: the trend is the series itself', '$\\lambda$ mare: un trend liniar; $\\lambda = 0$: trendul este chiar seria')]),
@@ -636,7 +636,7 @@ D.frame(T('The HP filter is a state space smoother', 'Filtrul HP este un netezit
      [T('the HP filter imposes the signal-to-noise ratio and a white-noise gap; the UC model estimates both', 'filtrul HP impune raportul semnal--zgomot și o deviație de tip zgomot alb; modelul UC le estimează pe amîndouă')]),
     T('Being a smoother, HP uses future data: its last values are revised as new quarters arrive', 'Fiind un netezitor, HP folosește date viitoare: ultimele lui valori se revizuiesc pe măsură ce sosesc trimestre noi')))
 
-D.frame(T('Hamilton (2018): why you should never use the HP filter', 'Hamilton (2018): argumentele împotriva filtrului HP'), items(
+D.frame(T('Hamilton (2018): the case against the HP filter', 'Hamilton (2018): argumentele împotriva filtrului HP'), items(
     (T('\\refHamHP\\ lists three problems', '\\refHamHP\\ enumeră trei probleme'),
      [T('the HP gap of a random walk has cycles that are not in the data: spurious dynamics', 'deviația HP a unui mers aleator are cicluri care nu există în date: dinamică aparentă'),
       T('the end of the sample is treated differently from the middle: large revisions, misleading real-time gaps', 'sfîrșitul eșantionului este tratat altfel decît mijlocul: revizuiri mari, deviații înșelătoare în timp real'),
@@ -807,7 +807,7 @@ interp(('the real-time probabilities', 'probabilităților în timp real'), [
      [T('real-time dating is harder: \\refCP\\ compare the methods on real-time data', 'datarea în timp real este mai grea: \\refCP\\ compară metodele pe date în timp real')]),
     T('Never judge a model\'s real-time skill from its smoothed probabilities: they use the future', 'Nu judecați niciodată capacitatea unui model în timp real după probabilitățile netezite: ele folosesc viitorul')])
 
-D.frame(T('Checks: which regimes did the model find?', 'Verificări: regimurile găsite de model'), items(
+D.frame(T('Checks: the regimes identified by the model', 'Verificări: regimurile identificate de model'), items(
     (T('\\textbf{Switching variance} on 1947--2019: the regimes become high and low volatility, not recession and expansion', '\\textbf{Varianță cu schimbare de regim} pe 1947--2019: regimurile devin volatilitate mare și volatilitate mică, nu recesiune și expansiune'),
      [T('standard deviations @{pi.s2} and @{pi.s1}; durations @{pi.d2} and @{pi.d1} quarters; the switch to the calm regime in @{pi.sw}', 'abateri standard @{pi.s2} și @{pi.s1}; durate de @{pi.d2} și @{pi.d1} trimestre; trecerea la regimul calm în @{pi.sw}'),
       T('this is the ``Great Moderation\'\' of the mid-1980s; agreement with the NBER falls to @{pi.con}\\% (@{pi.false}\\% false alarms)', 'aceasta este „Marea Moderație” de la mijlocul anilor 1980; concordanța cu NBER scade la @{pi.con}\\% (@{pi.false}\\% alarme false)')]),
@@ -877,7 +877,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that downloads Romanian quarterly real GDP from Eurostat (namq\\_10\\_gdp, Q.CLV10\\_MEUR.SCA.B1GQ.RO), fits UnobservedComponents with a smooth trend and an AR(2) cycle, compares the smoothed and the filtered cycle with the HP gap and with the Hamilton (2018) regression filter, and reports the revisions of the last eight quarters.}',
         '\\aiprompt{Write Python code that downloads Romanian quarterly real GDP from Eurostat (namq\\_10\\_gdp, Q.CLV10\\_MEUR.SCA.B1GQ.RO), fits UnobservedComponents with a smooth trend and an AR(2) cycle, compares the smoothed and the filtered cycle with the HP gap and with the Hamilton (2018) regression filter, and reports the revisions of the last eight quarters.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('Simulate from known parameters and check that the code recovers them (the Nile values of \\refDK\\ are a good test)', 'Simulați din parametri cunoscuți și verificați că acest cod îi regăsește (valorile pentru Nil din \\refDK\\ sînt un test bun)'),
     T('Filtered or smoothed? Real-time claims need filtered estimates; an AI answer that uses \\texttt{smoothed} for a ``forecast\'\' is wrong', 'Filtrat sau netezit? Afirmațiile despre timp real cer estimări filtrate; un răspuns AI care folosește \\texttt{smoothed} pentru o „prognoză” este greșit'),
     T('Durations: $1/(1 - p_{ii})$, not $p_{ii}/(1 - p_{ii})$; check the convention of the transition matrix (rows or columns) in the library', 'Duratele: $1/(1 - p_{ii})$, nu $p_{ii}/(1 - p_{ii})$; verificați convenția matricei de tranziție (rînduri sau coloane) în bibliotecă'),

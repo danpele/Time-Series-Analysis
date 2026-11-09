@@ -281,7 +281,7 @@ Filtrul Kalman alternează predicția și actualizarea, iar cîștigul lui împa
 
 Filtrul Kalman este doar primul pas. Aceeași recursie, completată cu o trecere înapoi, dă estimarea stării pe baza întregului eșantion. Erorile de predicție ale filtrului dau verosimilitatea, deci estimarea parametrilor, și reziduurile pentru diagnosticare. Valorile lipsă și prognozele se tratează prin omiterea pasului de actualizare. Secțiunea prezintă aceste instrumente și le aplică pe seria Nilului.
 
-## Netezirea: folosim tot eșantionul {h=f4bb8548}
+## Netezirea pe întregul eșantion {h=0c73676c}
 
 Filtrarea folosește informația $Y_t$, adică trecutul și prezentul: este estimarea pe care o poate face un analist în timp real. Netezirea (*smoothing*) folosește informația $Y_n$, adică tot eșantionul de volum $n$: estimarea netezită $\hat\alpha_t = E(\alpha_t \mid Y_n)$ ține cont și de observațiile de după $t$. Varianța ei $V_t$ nu poate depăși varianța estimării filtrate, $V_t \le P_{t|t}$, deoarece folosește mai multă informație.
 
@@ -407,7 +407,7 @@ Ciclul se poate modela ca un AR(2) staționar, $\psi_t = \phi_1\psi_{t-1} + \phi
 
 Pentru logaritmul PIB-ului, ciclul $\psi_t$ este deviația PIB (*output gap*): abaterea procentuală a producției de la trend, interpretat ca producție potențială. O deviație pozitivă indică o economie care produce peste potențial, cu riscul supraîncălzirii; una negativă indică resurse nefolosite. În Python, modelul se estimează cu *UnobservedComponents*, cu specificația *level='smooth trend'* și *autoregressive=2*, iar toată starea se estimează cu filtrul și netezitorul Kalman.
 
-## Filtrul HP este un netezitor în spațiul stărilor {h=cdb9ad32}
+## Filtrul HP ca netezitor în spațiul stărilor {h=85ff9341}
 
 Filtrul Hodrick–Prescott (HP) al lui @HodrickPrescott1997 alege trendul $\tau_t$ care minimizează
 
@@ -611,7 +611,7 @@ Folosind doar probabilitățile filtrate, concordanța cu NBER scade la 92% din 
 
 Principiul este același ca la deviația PIB: capacitatea unui model în timp real nu se judecă niciodată după probabilitățile netezite, deoarece acestea folosesc viitorul. Un model care pare să anunțe recesiunile la timp în graficul netezit poate fi mult mai lent în practică.
 
-## Verificări: regimurile găsite de model {h=a6ad4ad1}
+## Verificări: regimurile identificate de model {h=77bd85de}
 
 Regimurile găsite de un model Markov switching depind de specificație. Dacă pe perioada 1947–2019 se lasă să depindă de regim varianța, nu media, regimurile devin volatilitate mare și volatilitate mică. Abaterile standard sînt 1,20 și 0,44, iar duratele așteptate sînt 45 și 39 de trimestre. Trecerea la regimul calm are loc în al treilea trimestru din 1984: este Marea Moderație (*Great Moderation*), scăderea volatilității macroeconomice din SUA de la mijlocul anilor 1980. Ca instrument de datare a recesiunilor, acest model este slab: concordanța cu NBER scade la 60%, cu 47% alarme false.
 

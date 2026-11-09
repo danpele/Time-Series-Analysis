@@ -55,7 +55,7 @@ The ADF, KPSS and Zivot–Andrews tests and ARIMA estimation are available in th
 
 A trending series can be described in two ways. The first is a fixed line plus stationary deviations from it: a deterministic trend. The second is a cumulative sum of shocks, possibly with a drift: a stochastic trend. On a chart the two look almost the same; they differ in the effect of a shock, in the long-run variance and in the correct treatment. The section defines the two models, integrated processes and the unit root, then shows what happens when a series receives the wrong treatment.
 
-## Four series that drift {h=4f2dd595}
+## Four trending series {h=34203332}
 
 The chart brings together four Romanian and international series observed since 2000. Top left is the logarithm of Romania's quarterly real GDP, seasonally adjusted, together with the line fitted by least squares. Top right is the logarithm of the harmonised index of consumer prices (HICP), monthly, with base 2015 = 100. Bottom left is the daily EUR/RON rate, the reference rate of the National Bank of Romania (BNR), from July 2005. Bottom right are the logarithms of the daily prices of the BET and S&P 500 indices, each minus its value in 2000, so that both start at zero.
 
@@ -155,7 +155,7 @@ Trending economic series can be stationary around a line or can contain a stocha
 
 The problem of the previous section, a regression on time that looks significant although there is no slope, also arises when one $I(1)$ series is regressed on another $I(1)$ series independent of it. The phenomenon is called spurious regression. The section follows its history, from Yule (1926) to Granger and Newbold (1974), reproduces it by simulation, explains why the $t$-test fails and illustrates it on real Romanian and US data.
 
-## 1926: nonsense correlations {h=02fc6363}
+## Yule (1926): nonsense correlations {h=a751362f}
 
 The first to raise the problem systematically was the British statistician George Udny Yule. The paper of @Yule1926 opens with the question in its title: why do we sometimes get nonsense correlations between time series? His example: in England and Wales, between 1866 and 1911, the proportion of marriages celebrated by the Church of England and the mortality rate had a correlation of about 0.95. There is no causal link between them; both series fell over the period.
 
@@ -163,7 +163,7 @@ Yule's explanation anticipates the modern theory. For series that evolve as cumu
 
 The problem returned fifty years later, in econometric models estimated on the levels of trending macroeconomic series. The next frame describes its rediscovery.
 
-## 1974: Granger and Newbold {h=ff87cbaf}
+## Granger and Newbold (1974): spurious regressions {h=189fdbcb}
 
 @GrangerNewbold1974 studied by simulation the regression of one random walk on another, independent random walk: $y_t = a + bx_t + e_t$, with $y_t$ and $x_t$ independent $I(1)$ series. The true slope is $b = 0$. The $t$-test of $b = 0$ nevertheless rejected far too often, the $R^2$ was frequently large and the Durbin–Watson (DW) statistic was close to 0.
 
@@ -183,7 +183,7 @@ In levels, the true hypothesis $b = 0$ is rejected in 68% of samples for $T = 50
 
 In differences, the share of rejections is 4.7% at $T = 200$, close to the nominal 5%, and the blue histogram follows the $N(0,1)$ density. The $t$-test works again, because $\Delta y_t$ and $\Delta x_t$ are independent white noises and the OLS assumptions hold.
 
-## Why the t-test fails {h=25ecdde4}
+## Failure of the t-test in spurious regressions {h=b5c37e6c}
 
 The explanation lies in the error term. If $b = 0$, the regression error is $e_t = y_t - a$, a random walk. The OLS assumptions, stationary and uncorrelated errors, do not hold: the residuals are strongly autocorrelated, and the usual standard error, computed as if they were independent, is far too small. The $t$-ratio is therefore far too large.
 
@@ -319,7 +319,7 @@ The errors have asymmetric costs. If a needed trend is omitted, a trend-stationa
 
 In practice, the chart of the series is examined first and the regression is chosen afterwards. For ambiguous cases, @DickeyFuller1981 propose joint $F$-type tests for the unit root and for the trend coefficient.
 
-## How many differences: I(1) or I(2)? {h=58c69d71}
+## The number of differences: I(1) or I(2) {h=c403d9c1}
 
 When a series may be $I(2)$, the order of the tests matters. @DickeyPantula1987 recommend testing from the highest plausible order downwards. Step 1 applies ADF to $\Delta y_t$; if the test does not reject, $\Delta y_t$ has a unit root and $y_t$ may be $I(2)$. Step 2, only if the first step rejected, applies ADF to $y_t$: a rejection indicates $I(0)$, a non-rejection $I(1)$.
 
@@ -371,7 +371,7 @@ $$ \eta = \frac{1}{T^2\hat\lambda^2}\sum_{t=1}^{T} S_t^2, $$ {#eq:kpss}
 
 where $\hat\lambda^2$ is the long-run variance of $e_t$. Stationarity is rejected for large values of $\eta$. The 5% critical values are 0.463 for the level version and 0.146 for the trend version, and the 1% values are 0.739 and 0.216. KPSS is thus a test of stationarity, not of a unit root: the burden of proof moves from stationarity to the unit root.
 
-## KPSS: why partial sums {h=b2a3e618}
+## KPSS: the role of partial sums {h=956d22ee}
 
 The chart shows why statistic @eq:kpss uses partial sums. The left panel compares two demeaned series of length $T = 250$: a stationary AR(1) with $\phi = 0.5$ (blue) and a random walk (red). The right panel shows their partial sums $S_t$, the cumulative deviations from the mean.
 
@@ -423,7 +423,7 @@ On the real series of the chapter, the three tests give a coherent picture: the 
 
 Unit-root tests compare two models: a series stationary around a fixed mean or trend and a series with a stochastic trend. A third possibility is a series stationary around a mean or a trend that changes once, through a structural break. The section shows that such a break makes the usual tests fail to reject the unit root, presents the Zivot–Andrews test, which searches for the break date, and applies it to the flow of the Nile and to the EUR/RON rate.
 
-## Perron (1989): a break can look like a unit root {h=a26f6b7d}
+## Perron (1989): structural breaks and unit-root tests {h=542dff9a}
 
 @Perron1989 observed that a series stationary around a mean or a trend that changes once looks highly persistent. The Dickey–Fuller regression does not contain the break and can explain it only through a $\hat\phi$ close to 1: after the jump, the series does not return to the old mean, which resembles a permanent shock. The test thus loses power, and the unit root is not rejected.
 
@@ -431,7 +431,7 @@ Perron re-examined the Nelson–Plosser series with two breaks treated as known:
 
 The main criticism concerned the procedure: the break dates were chosen after looking at the series. Choosing the date from the same data makes the critical values computed for a date fixed in advance too lenient, and the test rejects too easily.
 
-## A level shift misleads the ADF test {h=9665e358}
+## The ADF test under a level shift {h=b149d199}
 
 The simulation builds a stationary series with a known break. The left panel shows AR(1) noise with $\phi = 0.6$ around a mean that jumps from 0 to 5 at $t = 100$; the red dashed line is the true mean. The series is stationary on each side of the break, and a level shift is its only non-stationarity.
 
@@ -569,7 +569,7 @@ The $\psi$ weights of the levels are the partial sums of the powers of $\phi$: $
 
 The interval almost triples in three steps: the ratio is $10.66/3.92 = 2.72$. For a random walk, the same ratio would be $\sqrt{3} = 1.73$. Momentum $\phi = 0.6$ amplifies uncertainty, because today's shock also changes the following growth rates and therefore accumulates in the level with weights larger than 1.
 
-## How fast the intervals grow {h=50fd5f7a}
+## Growth of the forecast intervals with the horizon {h=0b03e51b}
 
 The chart compares the half-width of the 95% forecast interval, in units of $\sigma$, for horizons 1–20 and five models. All start at $1.96\sigma$ at $h = 1$, because the one-step error is the shock $\varepsilon_{T+1}$ itself. The differences appear from the second step on and come only from the $\psi_j$ weights of each model.
 
@@ -647,7 +647,7 @@ The second check concerns roots that nearly cancel. On Romanian GDP with the sam
 
 The general rule is to check the output of automatic selection every time. The data are plotted, the convergence of the estimation and the position of the roots are checked, the residual tests are applied, and the forecasts are compared with a simple benchmark, for example the random walk ([Chapter 0](ch0.html)).
 
-## Romanian inflation: d = 0 or d = 1? {h=4fd1b98a}
+## Romanian inflation: the choice between d = 0 and d = 1 {h=04b06af4}
 
 Romania's 12-month HICP inflation, from January 2005 to August 2026, is the inconclusive series of the table in section 4. The chart compares two models, each the best by AICc in its class, with $p \le 3$ and $q \le 2$: one with $d = 0$ and a mean, the other with $d = 1$. Both produce forecasts for 24 months, with 95% intervals.
 
@@ -717,7 +717,7 @@ An AI assistant can write a first version of a script that applies ADF, PP and K
 
 The example prompt asks for complete code for the analysis of section 6: loading Romania's quarterly real GDP from Eurostat, the ADF tests with constant and trend and KPSS on the level and on the difference, estimation of ARIMA$(p,1,q)$ models with drift for $p, q \le 2$, and a chart of the 8-quarter forecasts with 95% intervals. A precise prompt, with the series, the transformation, the tests and the grid of models specified, reduces the number of choices the assistant makes implicitly.
 
-## Checks you must run {h=498df3b5}
+## Necessary checks {h=f4af6bcf}
 
 The code and text produced by the assistant are checked at the points where errors are frequent. The first is the direction of each test: ADF and PP have the unit root as their null, KPSS has stationarity, and a reversal changes the conclusion. The second is the deterministic terms, the lag length and the critical values actually used: the Dickey–Fuller values, not those of the Normal distribution.
 

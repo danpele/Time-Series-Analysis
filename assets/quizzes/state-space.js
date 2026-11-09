@@ -524,7 +524,7 @@ window.TSA_DATA.quizzes['state-space'] = {
         {
             "correct": 1,
             "en": {
-                "title": "Calling a recession in real time",
+                "title": "Detecting a recession in real time",
                 "text": "A forecaster wants to know, at the end of each quarter, whether the economy is in recession. Which output of a Markov-switching model should she use?",
                 "options": [
                     "The smoothed probabilities",
@@ -536,7 +536,7 @@ window.TSA_DATA.quizzes['state-space'] = {
                 "incorrectExplanation": "Smoothed probabilities use future data, ergodic probabilities are long-run averages, and transition probabilities do not depend on the data of the current quarter."
             },
             "ro": {
-                "title": "Anunțarea unei recesiuni în timp real",
+                "title": "Identificarea unei recesiuni în timp real",
                 "text": "Un prognozator vrea să știe, la sfîrșitul fiecărui trimestru, dacă economia este în recesiune. Ce rezultat al unui model Markov switching trebuie să folosească?",
                 "options": [
                     "Probabilitățile netezite",
@@ -551,7 +551,7 @@ window.TSA_DATA.quizzes['state-space'] = {
         {
             "correct": 2,
             "en": {
-                "title": "What regime did the model find?",
+                "title": "The regime identified by the model",
                 "text": "A two-regime model with switching mean and variance, fitted to US GDP growth 1947--2019, gives regimes lasting about 40 quarters with very different variances. What did it most likely find?",
                 "options": [
                     "The NBER recessions",
@@ -563,7 +563,7 @@ window.TSA_DATA.quizzes['state-space'] = {
                 "incorrectExplanation": "Recessions last about 3--4 quarters, not 40; the data are seasonally adjusted; and 2020 lies outside 1947--2019."
             },
             "ro": {
-                "title": "Regimul găsit de model",
+                "title": "Regimul identificat de model",
                 "text": "Un model cu două regimuri, cu medie și varianță variabile, estimat pe creșterea PIB din SUA în 1947--2019, dă regimuri de aproximativ 40 de trimestre, cu varianțe foarte diferite. Ce a găsit cel mai probabil?",
                 "options": [
                     "Recesiunile NBER",

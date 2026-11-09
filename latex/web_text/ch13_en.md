@@ -27,10 +27,10 @@ Six run-ups and crashes in the course data: daily closes on a log scale, from si
 @plan
 - Motivation | The question of the chapter, the route, the reading and the tools.
 - Bubbles in history | Speculative bubbles since 1636, fundamental value and bubble, six episodes in the course data.
-- Rational bubbles and explosive roots | Why a rational bubble must explode; the SADF, GSADF and BSADF tests on the Nasdaq 100, Bitcoin, BET and Shanghai.
+- Rational bubbles and explosive roots | The explosive growth of a rational bubble; the SADF, GSADF and BSADF tests on the Nasdaq 100, Bitcoin, BET and Shanghai.
 - The LPPL model | Crashes as critical points, super-exponential growth, the hazard rate and the LPPL equation, log-periodicity and the filter.
 - Estimation | The two-step method of Filimonov and Sornette, the cost landscape and six fits 30 days before the peak.
-- Confidence from many windows | The LPPLS confidence indicator, its behaviour around four peaks and a critical time that moves with the data.
+- Estimation over many windows | The LPPLS confidence indicator, its behaviour around four peaks and a critical time that moves with the data.
 - Evaluation of crash predictions | Look-ahead bias, selection, false alarms and base rates on the S&P 500 and Bitcoin.
 - Possible contribution of AI | What an assistant can write and what must be checked.
 - Summary | Key ideas, formulas, self-assessment and a project idea.
@@ -77,7 +77,7 @@ The tulip mania in the Netherlands, in 1636–1637, is the oldest well-known exa
 
 Later episodes include the South Sea Company in 1720, Wall Street in 1929, Japan in 1989, the dot-com shares in 2000, housing in 2007 and the cryptocurrencies in 2017 and 2021. @KindlebergerAliber2005 describe a common pattern across them: a new story that seems to justify higher prices, easy credit, rising prices that attract new buyers who did not care about the asset before, and finally a panic in which everyone tries to sell at the same time. The pattern is a narrative, not a test, but it suggests what to look for in the data: an acceleration of prices and an end that comes from within the market.
 
-## 1929 and 1987 {h=8af66985}
+## The crashes of 1929 and 1987 {h=405d3a5e}
 
 The crash of October 1929 ended the boom of the 1920s and opened the Great Depression. The crash of 19 October 1987, Black Monday, is the largest one-day fall of the Dow Jones index, and it came without any major news on that day. The two photographs show the crowd outside the New York Stock Exchange on 29 October 1929 and the Amsterdam exchange two days after Black Monday.
 
@@ -125,7 +125,7 @@ History supplies the examples and suggests the signatures, but it does not say w
 
 The section shows that a bubble held by rational investors must grow at an explosive rate, simulates such a bubble, and builds the right-tailed unit-root tests that look for explosive episodes. The tests are then applied to the Nasdaq 100, Bitcoin, the BET and the Shanghai Composite.
 
-## Why a rational bubble must explode {h=40d8c9d4}
+## Explosive growth of a rational bubble {h=8d51471e}
 
 In a market without arbitrage opportunities and with risk-neutral investors, today's price equals the discounted expected value of tomorrow's price plus tomorrow's dividend:
 
@@ -137,7 +137,7 @@ Any price $P_t = F_t + B_t$ also satisfies @eq:noarb, as long as the bubble comp
 
 Since $1 + r > 1$, the bubble component is an explosive process, in the sense of [Chapter 3](../EN/Courses/chapter3_unit_roots_arima_models.pdf): an autoregression with a coefficient above one. This gives the testable implication. If dividends are integrated of order one, $I(1)$, the fundamental value is also $I(1)$, and the price is $I(1)$ without a bubble but explosive with one. Explosive behaviour in prices that is absent from the dividends is the statistical trace of a rational bubble.
 
-## Worked example: a bubble that can burst {h=b1a078d3}
+## Worked example: the Blanchard–Watson bubble {h=4fa29f89}
 
 A bubble that grows forever is not realistic. @BlanchardWatson1982 proposed a bubble that can burst: each period it survives with probability $\pi$ and then grows to $\frac{1+r}{\pi}B_t$; otherwise it bursts and $B_{t+1}$ falls to about zero. The expected value next period is
 
@@ -493,7 +493,7 @@ One window gives one fit. With data ending 30 days before the peak, only one of 
 
 A single fit is fragile: it depends on the start of the window, which in real time is unknown, and on a cost function that barely distinguishes one critical time from another. The next section replaces the single fit with many fits on windows of different lengths and summarises them in one number.
 
-# Confidence from many windows
+# Estimation over many windows
 
 The section builds the LPPLS confidence indicator, the share of qualified fits among many windows that end on the same date. It shows the indicator around four peaks and shows how the estimated critical time moves as new data arrive.
 
@@ -539,7 +539,7 @@ For the BET the strongest full-filter signal, 0.28, comes on 28 August 2007, a m
 
 The indicator does light up during bubbles, but early, late and with gaps, and the choice of filter changes the picture completely: with the parameter conditions Bitcoin looks like a bubble for most of 2017, with all conditions it almost never does. A reader who sees only one of the two versions draws a different conclusion from a reader who sees the other.
 
-## The critical time moves with the data {h=698c9003}
+## Instability of the estimated critical time {h=44114c3f}
 
 The chart follows the estimated critical time as the data grow. The start of the window is fixed at the low before the run-up, and the end $t_2$ moves weekly from 8 months before to 1 month after the peak. The horizontal axis is $t_2$, the vertical axis is the $\hat t_c$ of the fit that ends at $t_2$; green dots are fits that pass the parameter conditions and red crosses fits that fail them. The dotted diagonal is the line $t_c = t_2$, a fit that places the end of the bubble at the last observation, and the dashed red line is the actual peak.
 
@@ -553,7 +553,7 @@ The two cases show two ways of failing. For Bitcoin, 4 of the 39 fits put $\hat 
 
 The chart also shows how a false impression of success arises. Among the many fits, some placed $t_c$ close to the actual peak. Picking, after the crash, the one window whose $\hat t_c$ was right, and presenting it as the prediction, is look-ahead bias: it uses the knowledge of when the crash happened to choose the window.
 
-## Recap: Confidence from many windows {h=bd718b06}
+## Recap: Estimation over many windows {h=2ca93dd8}
 
 The start of a bubble is unknown in real time, so the model is fitted on 29 windows of different lengths for each end date. The indicator is the share of qualified windows, and it depends strongly on the filter: the parameter version and the full version can tell different stories.
 
@@ -631,7 +631,7 @@ An AI assistant can write a first version of the code: the BSADF recursion over 
 
 The greatest benefit is in exploration: computing the indicator on many markets and periods, with different filters. Exploration is useful only under a protocol fixed in advance; otherwise it becomes a search for the setting that makes the method look good. The prompt on the slide is an example of a precise request: it names the data, the method for each group of parameters, the source of the filter conditions and the chart, so that the result can be checked step by step.
 
-## Checks you must run {h=f46bd9b6}
+## Necessary checks {h=21ac9086}
 
 The first check is a simulation: generate an LPPL path with known parameters, add noise, and check that the code recovers $t_c$, $m$ and $\omega$. A code that cannot recover known parameters from clean data cannot be trusted on real data. The second check concerns signs and tails: $B < 0$ for a rising bubble, and the explosive-root test uses the right tail, not the left tail of [Chapter 3](../EN/Courses/chapter3_unit_roots_arima_models.pdf). SADF and GSADF need their own simulated critical values, not the Dickey–Fuller table.
 

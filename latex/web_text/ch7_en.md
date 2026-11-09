@@ -37,9 +37,9 @@ Four pairs of trending series: US Treasury yields at 3 months and 10 years (mont
 - The VECM and the Granger representation theorem | Rewriting a VAR, the rank of $\Pi$, deterministic terms and weak exogeneity.
 - The Johansen tests | Reduced-rank regression, the trace and maximum-eigenvalue statistics, three real systems.
 - Estimating and interpreting β and α | The US term structure of yields: equilibria, adjustment and impulse responses.
-- Forecasting: VECM or VAR in differences? | An out-of-sample forecasting experiment for levels and for a spread.
+- Forecasting with a VECM and with a VAR in differences | An out-of-sample forecasting experiment for levels and for a spread.
 - Economic examples: parity and interest rates | PPP for the leu, ROBOR and Euribor, three Central European currencies.
-- An application: pairs trading | A rule without look-ahead on the Bucharest Stock Exchange and on US banks.
+- An application: pairs trading | A trading rule without look-ahead bias on the Bucharest Stock Exchange and on US banks.
 - Possible contribution of AI | What an assistant can draft and what must be checked.
 - Summary | Key ideas, formulas and self-assessment questions.
 
@@ -111,7 +111,7 @@ A simple example shows the mechanism. Let $x_t = x_{t-1} + \varepsilon_t$ be a r
 
 The worked example uses three series: $x_t$ a random walk, $y_t = 2x_t + u_t$ and $z_t = -x_t + v_t$, with $u_t$ and $v_t$ stationary. All three are driven by the same trend, so $n = 3$, $n - r = 1$ and $r = 2$. In the order $(x_t, y_t, z_t)$, two cointegrating vectors are $\beta_1 = (-2, 1, 0)^\top$, because $y_t - 2x_t = u_t$, and $\beta_2 = (0, 1, 2)^\top$, because $y_t + 2z_t = 2x_t + u_t - 2x_t + 2v_t = u_t + 2v_t$. Any linear combination of the two vectors is again a cointegrating vector; the rank says how many independent directions exist.
 
-## Where economics predicts cointegration {h=25dae643}
+## Cointegration in economic theory {h=6d54f776}
 
 Many economic theories state that some combination of non-stationary variables must be stable. Purchasing power parity (PPP) writes the log exchange rate as $s_t = p_t - p_t^* + q_t$, where $s_t$ is the log exchange rate (lei per euro), $p_t$ and $p_t^*$ are the logs of the domestic and foreign price levels, and $q_t$ is the real exchange rate. The theory requires $q_t$ to be stationary, which means cointegration of $s_t$, $p_t$ and $p_t^*$; [Section 8](#sec-8) tests this requirement for the leu.
 
@@ -151,7 +151,7 @@ Cointegration is the exception to the rule of spurious regression: series that, 
 
 The method of @EngleGranger1987 is the simplest way to test two series for cointegration: a regression in levels, followed by a unit root test on the residuals. The simplicity hides a trap: the critical values are no longer the Dickey–Fuller ones. The section explains why, obtains them by simulation, presents the alternative Phillips–Ouliaris test, applies both tests to real data and closes with the limits of the method.
 
-## Two steps {h=ad08d530}
+## The two steps of the method {h=fbb4001b}
 
 Step 1 estimates the long-run relation by ordinary least squares (OLS) in levels, $y_t = a + bx_t + u_t$, and keeps the residuals $\hat u_t = y_t - \hat a - \hat bx_t$. If the series are cointegrated, the estimator $\hat b$ has an unusual property: it is super-consistent, meaning that its error shrinks like $1/T$, faster than the usual rate $1/\sqrt{T}$. The intuition is that any wrong value of $b$ leaves a stochastic trend in the residuals, whose variance then grows with the sample; OLS, which minimises this variance, finds the right value very quickly.
 
@@ -163,7 +163,7 @@ Here $\delta_j$ are the coefficients of the $k$ lagged differences, which absorb
 
 The test has a precondition: each series must be $I(1)$. An $I(0)$ series and an $I(1)$ series cannot be cointegrated, because any combination with a non-zero coefficient on the $I(1)$ series remains $I(1)$. That is why every cointegration analysis starts with unit root tests on each series.
 
-## The reason the Dickey–Fuller table is wrong here {h=4993cd80}
+## Engle–Granger residuals and the Dickey–Fuller critical values {h=c5252494}
 
 The step-1 residuals are not an observed series but the result of an optimisation. OLS chooses $\hat b$ so that the variance of the residuals is as small as possible, that is, so that $\hat u_t$ looks as "calm" as possible. Even when the series are not cointegrated, $\hat u_t$ therefore looks more stationary than the true error $u_t$. Under the null, the statistic $\tau$ is pushed towards negative values, and its distribution lies to the left of the Dickey–Fuller distribution.
 
@@ -357,7 +357,7 @@ The theorem has three practical consequences. First, a VAR in differences omits 
 
 A VAR in levels is not misspecified either: its estimators are consistent, since the VECM is only a rewriting of it. It ignores, however, the restriction $\mathrm{rank}(\Pi) = r$, so it estimates more parameters than necessary, and some of its tests have non-standard distributions.
 
-## 2003: the Nobel Prize for cointegration {h=a7c66b3a}
+## Clive Granger and the 2003 Nobel Prize {h=2a166cec}
 
 The 2003 Nobel Prize in economics was shared between Clive Granger, for cointegration, and Robert Engle, for the ARCH models of [Chapter 5](../EN/Courses/chapter5_conditional_volatility_garch.pdf). Both contributions concern economic time series, and both changed empirical practice: one for series with common trends, the other for series with time-varying volatility.
 
@@ -403,7 +403,7 @@ The VECM form separates the short-run dynamics of a VAR from its long-run struct
 
 @Johansen1988 and @Johansen1991 gave the method for estimating a VECM by maximum likelihood and, with it, tests for the cointegrating rank. Unlike the Engle–Granger method, the approach works directly with the system, can find several cointegrating vectors and does not depend on the choice of the left-hand variable. The section explains the idea of reduced-rank regression, defines the two test statistics, computes them on an example and applies them to three real systems.
 
-## The idea: reduced-rank regression {h=c1df0485}
+## Reduced-rank regression {h=1315be61}
 
 The method of @Johansen1988 and @Johansen1991 estimates a VECM by maximum likelihood, assuming Gaussian errors. The idea is a reduced-rank regression. First the short-run dynamics are removed: $\Delta\mathbf y_t$ and $\mathbf y_{t-1}$ are each regressed on the lagged differences, and the residuals are denoted $R_{0t}$ and $R_{1t}$. What remains is the relation between current changes and lagged levels, cleaned of short-run effects.
 
@@ -445,7 +445,7 @@ For GDP, consumption and investment, the trace statistic for $r = 0$ is 28.9 aga
 
 For the three currencies, the trace statistic of 24.2 is clearly below the critical value. The test finds no cointegrating relation, and the data are compatible with three separate stochastic trends; [Section 8](#sec-8) returns to this case.
 
-## The deterministic case changes the answer {h=1a9fe3ae}
+## Sensitivity of the Johansen tests to the deterministic terms {h=30bc29a0}
 
 The table repeats the trace test for the US yields at 1, 5 and 10 years with three specifications of the deterministic terms. Without deterministic terms (*det_order=-1*, case 1), the statistics are 45.9, 13.3 and 0.4, with 5% critical values of 24.28, 12.32 and 4.13: rank 2. With a constant (*det_order=0*, case 3), the statistics are 54.6, 21.6 and 3.1, against 29.80, 15.49 and 3.84: rank 2 again. With a constant and a linear trend (*det_order=1*, case 5), the statistics are 60.0, 23.7 and 4.8, against 35.01, 18.40 and 3.84: rank 3.
 
@@ -517,11 +517,11 @@ The vectors $\hat\beta$ are normalised and interpreted as equilibria, for exampl
 
 For the term structure of US yields, the rank-2 VECM gives two equilibrium relations close to the spreads against the 10-year yield, with positive term premia. The 1-year yield does not adjust significantly and drives the system; the 5-year and 10-year yields do the correcting, with half-lives of about 9 and 22 months for the two equilibrium errors. A shock to the 1-year yield shifts the whole curve permanently, while the spreads revert.
 
-# Forecasting: VECM or VAR in differences?
+# Forecasting with a VECM and with a VAR in differences
 
 The representation theorem says that a VAR in differences is misspecified for cointegrated series. The practical question is whether the correctly specified VECM also forecasts better. The section presents the theoretical arguments, then an out-of-sample forecasting experiment on US yields, for the levels and for a spread.
 
-## The theoretical arguments {h=2226f38b}
+## Theoretical arguments for the VECM {h=0e487433}
 
 VECM forecasts preserve the equilibria. As the horizon $h$ grows, the forecast of the equilibrium error, $\hat\beta^\top\hat{\mathbf y}_{T+h}$, returns to its mean, because the correction term pushes the forecasts towards equilibrium. A VAR in differences does not use the information in the levels: its forecasts of the spreads stay, over long horizons, close to the current value, however far from the mean it is.
 
@@ -633,7 +633,7 @@ It is a relative-value trade: because the position is long one share and short t
 
 Pairs trading is a good test for any time-series idea, because it requires three things that an in-sample analysis can hide: the rule must work out of sample, after costs and on pairs chosen without looking ahead.
 
-## A rule without look-ahead {h=b47ab3c4}
+## A trading rule without look-ahead bias {h=ed31c59d}
 
 The rule has two windows that follow each other. In the formation window, the previous 252 trading days, about one year, each pair of shares is tested with Engle–Granger, and the pairs with a p-value below 0.05 are kept. For a kept pair, with prices $P_{A,t}$ and $P_{B,t}$, the hedge ratio $\hat b$ is estimated by OLS of $\ln P_A$ on $\ln P_B$. The spread is $s_t = \ln P_{A,t} - \hat a - \hat b\ln P_{B,t}$, and its mean $\bar s$ and standard deviation $\hat\sigma_s$ are also computed in the formation window.
 
@@ -695,7 +695,7 @@ Three uses are realistic. The first is code: a first draft of a script that appl
 
 The example prompt states every choice that matters: the data (the monthly yields GS1, GS5 and GS10 from FRED), the test (the Johansen trace test with a constant and BIC lags), the model (a VECM with the chosen rank, in *statsmodels*) and the required output ($\beta$ normalised on the first variables, $\alpha$ with $t$-statistics and the half-lives of the equilibrium errors). A precise prompt makes the result checkable against the figures in [Section 6](#sec-6).
 
-## Checks you must run {h=f646321a}
+## Necessary checks {h=5932d8da}
 
 The first check concerns the critical values: for residuals, the Engle–Granger values computed by MacKinnon, not the Dickey–Fuller ones, and for the Johansen tests, the values for the chosen case of deterministic terms. The second concerns the direction of the null hypothesis: "no cointegration" in the Engle–Granger test and "rank at most $r$" in the trace test. The third: each series must be $I(1)$ before testing, and a high correlation between levels is not reported as cointegration.
 

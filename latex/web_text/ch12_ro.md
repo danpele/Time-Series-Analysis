@@ -33,7 +33,7 @@ Numărul mediu anual de pete solare, 1700–2008, 309 observații (seria Wolf / 
 - Memoria lungă: polul de la zero | Spectrul ARFIMA și estimatorul Geweke–Porter-Hudak pe randamentele S&P 500.
 - Filtre liniare | Cîștigul primei diferențe, al diferenței sezoniere și al filtrului HP.
 - Două serii: coerență și fază | Spectrul încrucișat, coerența și faza producției industriale și a șomajului din Statele Unite.
-- O trimitere: wavelets | Transformata wavelet continuă și scalograma petelor solare.
+- Extensie: wavelets | Transformata wavelet continuă și scalograma petelor solare.
 - Contribuția posibilă a AI | Ce poate scrie un asistent și ce trebuie verificat.
 - Rezumat | Ideile principale, formulele și întrebările de autoevaluare.
 
@@ -623,11 +623,11 @@ La ciclul de 48 de luni, faza este $-0{,}23$ radiani; cu $\nu = 1/48$, formula $
 
 Coerența și faza descompun pe frecvențe legătura dintre două serii: cît de strîns sînt legate ciclurile lor și care dintre ele o precede pe cealaltă. Pentru producția industrială și șomajul din Statele Unite, legătura este puternică în banda ciclului economic și slabă la frecvențele înalte, o informație pe care o singură corelație nu o poate da.
 
-# O trimitere: wavelets
+# Extensie: wavelets
 
 Spectrul presupune că ciclurile unei serii sînt aceleași pe tot eșantionul. Secțiunea prezintă, ca trimitere spre lecturi suplimentare și proiecte, o metodă care renunță la această ipoteză: transformata wavelet continuă și scalograma, aplicate petelor solare.
 
-## Wavelets (1/2): frecvența care se schimbă în timp {h=eca45707}
+## Wavelets (1/2): frecvența variabilă în timp {h=4669befe}
 
 Densitatea spectrală este definită pentru serii staționare, ale căror cicluri au aceeași putere la orice dată. Petele solare au însă cicluri slabe în jurul anului 1800 și cicluri puternice în secolul XX, iar periodograma mediază aceste perioade într-un singur vîrf. O primă soluție este transformata Fourier pe ferestre scurte (*short-time Fourier transform*, STFT), care calculează spectre în ferestre mobile de lungime fixă. Lungimea fixă impune însă un compromis: o fereastră scurtă localizează bine în timp, dar nu poate măsura ciclurile lungi; una lungă le măsoară, dar pierde localizarea.
 

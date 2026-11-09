@@ -407,7 +407,7 @@ D.frame(T('Common stochastic trends', 'Trenduri stochastice comune'), items(
      [T('$n = 3$, one common trend, so $r = 2$: in the order $(x_t, y_t, z_t)$, e.g.\\ $\\beta_1 = (-2, 1, 0)^\\top$ and $\\beta_2 = (0, 1, 2)^\\top$ (since $y_t - 2x_t = u_t$ and $y_t + 2z_t = u_t + 2v_t$)',
         '$n = 3$, un singur trend comun, deci $r = 2$: în ordinea $(x_t, y_t, z_t)$, de exemplu $\\beta_1 = (-2, 1, 0)^\\top$ și $\\beta_2 = (0, 1, 2)^\\top$ (deoarece $y_t - 2x_t = u_t$ și $y_t + 2z_t = u_t + 2v_t$)')])))
 
-D.frame(T('Where economics predicts cointegration', 'Cointegrarea în teoria economică'), items(
+D.frame(T('Cointegration in economic theory', 'Cointegrarea în teoria economică'), items(
     (T('\\textbf{Purchasing power parity}: $s_t = p_t - p^*_t + q_t$, with the real exchange rate $q_t$ stationary (Section 8)', '\\textbf{Paritatea puterii de cumpărare}: $s_t = p_t - p^*_t + q_t$, cu cursul real $q_t$ staționar (secțiunea 8)'),
      [T('$s_t$: log exchange rate (lei per euro); $p_t$, $p^*_t$: log price levels at home and abroad', '$s_t$: logaritmul cursului (lei pentru un euro); $p_t$, $p^*_t$: logaritmii nivelurilor prețurilor în țară și în străinătate')]),
     T('\\textbf{Term structure of interest rates}: by the expectations hypothesis, the spread between a long and a short yield is stationary \\refCS',
@@ -447,7 +447,7 @@ D.recap(('The idea of cointegration', 'ideea de cointegrare'), [
 # =============================================================================
 D.section('The Engle--Granger two-step method', 'Metoda Engle--Granger în doi pași')
 
-D.frame(T('Two steps', 'Doi pași'), items(
+D.frame(T('The two steps of the method', 'Cei doi pași ai metodei'), items(
     (T('\\textbf{Step 1}: estimate the long-run relation by OLS (ordinary least squares) in levels: $y_t = a + b\\,x_t + u_t$', '\\textbf{Pasul 1}: estimăm relația pe termen lung prin OLS (ordinary least squares, metoda celor mai mici pătrate) în niveluri: $y_t = a + b\\,x_t + u_t$'),
      [T('keep the residuals $\\hat u_t = y_t - \\hat a - \\hat b x_t$', 'păstrăm reziduurile $\\hat u_t = y_t - \\hat a - \\hat b x_t$'),
       T('if the series are cointegrated, $\\hat b$ is \\textbf{super-consistent}: its error shrinks like $1/T$, faster than the usual $1/\\sqrt{T}$', 'dacă seriile sînt cointegrate, $\\hat b$ este \\textbf{superconsistent}: eroarea lui scade ca $1/T$, mai repede decît de obicei ($1/\\sqrt{T}$)')]),
@@ -458,7 +458,7 @@ D.frame(T('Two steps', 'Doi pași'), items(
       T('statistic $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, SE: standard error; reject $H_0$ when $\\tau$ is below the critical value', 'statistica $\\tau = \\hat\\gamma/\\mathrm{SE}(\\hat\\gamma)$, SE: eroarea standard; respingem $H_0$ cînd $\\tau$ este sub valoarea critică')]),
     T('Pretest: each series must be $I(1)$; cointegration between an $I(0)$ and an $I(1)$ series is impossible', 'Testare prealabilă: fiecare serie trebuie să fie $I(1)$; o serie $I(0)$ și una $I(1)$ nu pot fi cointegrate')))
 
-D.frame(T('The reason the Dickey--Fuller table is wrong here', 'Motivul pentru care tabelul Dickey--Fuller este greșit aici'), items(
+D.frame(T('Engle--Granger residuals and the Dickey--Fuller critical values', 'Reziduurile Engle--Granger și valorile critice Dickey--Fuller'), items(
     (T('OLS chooses $\\hat b$ to make the residual variance as small as possible', 'OLS alege $\\hat b$ astfel încît varianța reziduurilor să fie cît mai mică'),
      [T('so $\\hat u_t$ looks more stationary than the true $u_t$, even when there is no cointegration', 'deci $\\hat u_t$ pare mai staționar decît adevăratul $u_t$, chiar și atunci cînd nu există cointegrare'),
       T('under $H_0$ the statistic $\\tau$ is shifted to the left of the Dickey--Fuller distribution', 'în ipoteza $H_0$, statistica $\\tau$ este deplasată la stînga distribuției Dickey--Fuller')]),
@@ -649,7 +649,7 @@ D.frame(T('The Granger representation theorem', 'Teorema de reprezentare a lui G
       T('the levels are driven by $n - r$ common stochastic trends; the effects of shocks on the levels do not die out', 'nivelurile sînt antrenate de $n - r$ trenduri stochastice comune; efectele șocurilor asupra nivelurilor nu se sting')]),
     T('A VAR in levels is not wrong either: it is consistent, but it ignores the restriction $\\mathrm{rank}(\\Pi) = r$ and its tests are non-standard', 'Un VAR în niveluri nu este nici el greșit: este consistent, dar ignoră restricția $\\mathrm{rang}(\\Pi) = r$, iar testele lui sînt nestandard')))
 
-D.frame(T('2003: the Nobel Prize for cointegration', '2003: Premiul Nobel pentru cointegrare'), cols(
+D.frame(T('Clive Granger and the 2003 Nobel Prize', 'Clive Granger și Premiul Nobel din 2003'), cols(
     ph('granger', T('Clive Granger (1934--2009)', 'Clive Granger (1934--2009)'), h='0.40\\textheight'),
     ph('nottingham', T('The Sir Clive Granger Building, University of Nottingham', 'Clădirea Sir Clive Granger, Universitatea din Nottingham'), h='0.30\\textheight') + '\n' +
     items(T('The 2003 prize: Granger for cointegration, shared with Robert Engle for ARCH (Chapter 5)', 'Premiul din 2003: Granger pentru cointegrare, împreună cu Robert Engle pentru ARCH (Capitolul 5)'),
@@ -699,7 +699,7 @@ D.recap(('The VECM', 'modelul VECM'), [
 # =============================================================================
 D.section('The Johansen tests', 'Testele Johansen')
 
-D.frame(T('The idea: reduced-rank regression', 'Ideea: regresia cu rang redus'), cols(
+D.frame(T('Reduced-rank regression', 'Regresia cu rang redus'), cols(
     ph('copenhagen', T('University of Copenhagen, where Søren Johansen and Katarina Juselius developed the method', 'Universitatea din Copenhaga, unde Søren Johansen și Katarina Juselius au dezvoltat metoda'), h='0.36\\textheight'),
     items((T('\\refJohA, \\refJohB: maximum likelihood for the VECM with Gaussian errors', '\\refJohA, \\refJohB: verosimilitate maximă pentru VECM, cu erori gaussiene'),
            [T('regress $\\Delta\\mathbf y_t$ and $\\mathbf y_{t-1}$ on the lagged differences; keep the residuals $R_{0t}$ and $R_{1t}$', 'regresăm $\\Delta\\mathbf y_t$ și $\\mathbf y_{t-1}$ pe lagurile diferențelor; păstrăm reziduurile $R_{0t}$ și $R_{1t}$'),
@@ -748,7 +748,7 @@ interp(('the three systems', 'celor trei sisteme'), [
         'creșterea echilibrată implică rangul 2 (ponderi stabile ale consumului și investițiilor); cu Engle--Granger, consumul și venitul erau cointegrate (p = @{eg0.p}): putere mică, nu dovada absenței')]),
     (T('Currencies: trace @{j2.t0}: rank @{j2.rt}; three separate stochastic trends (Section 8)', 'Monedele: urma @{j2.t0}: rangul @{j2.rt}; trei trenduri stochastice separate (secțiunea 8)'), [])])
 
-D.frame(T('The deterministic case changes the answer', 'Cazul termenilor determiniști schimbă răspunsul'), table(
+D.frame(T('Sensitivity of the Johansen tests to the deterministic terms', 'Sensibilitatea testelor Johansen la termenii determiniști'), table(
     'lcccccc', T('\\textbf{Deterministic terms}', '\\textbf{Termeni determiniști}') + ' & $\\lambda_{\\mathrm{trace}}(0)$ & 5\\% & $\\lambda_{\\mathrm{trace}}(1)$ & 5\\% & $\\lambda_{\\mathrm{trace}}(2)$ & 5\\%',
     [lab + ' & ' + ' & '.join(f'@{{yd.{d}.t{r}}} & @{{yd.{d}.c{r}}}' for r in range(3)) for lab, d in
      [(T('none, case 1 (\\texttt{det\\_order=-1})', 'niciunul, cazul 1 (\\texttt{det\\_order=-1})'), '-1'), (T('constant, case 3 (\\texttt{det\\_order=0})', 'constantă, cazul 3 (\\texttt{det\\_order=0})'), '0'),
@@ -817,9 +817,9 @@ D.recap(('$\\beta$ and $\\alpha$', '$\\beta$ și $\\alpha$'), [
 # =============================================================================
 # 7. PROGNOZA
 # =============================================================================
-D.section('Forecasting: VECM or VAR in differences?', 'Prognoza: VECM sau VAR în diferențe?')
+D.section('Forecasting with a VECM and with a VAR in differences', 'Prognoza cu VECM și cu VAR în diferențe')
 
-D.frame(T('The theoretical arguments', 'Argumentele teoretice'), items(
+D.frame(T('Theoretical arguments for the VECM', 'Argumentele teoretice în favoarea modelului VECM'), items(
     (T('VECM forecasts keep the equilibria: as the horizon grows, $\\hat\\beta^\\top\\hat{\\mathbf y}_{T+h}$ returns to its mean', 'Prognozele VECM păstrează echilibrele: pe măsură ce orizontul crește, $\\hat\\beta^\\top\\hat{\\mathbf y}_{T+h}$ revine la media sa'),
      [T('a VAR in differences forgets the levels: its forecasts of the spreads stay where they are', 'un VAR în diferențe nu folosește informația din niveluri: prognozele lui pentru spread-uri rămîn la valoarea curentă')]),
     (T('\\refEY: imposing cointegration improves long-horizon forecasts in simulated systems', '\\refEY: impunerea cointegrării îmbunătățește prognozele pe orizonturi lungi în sisteme simulate'), []),
@@ -913,7 +913,7 @@ D.frame(T('The idea of pairs trading', 'Ideea de pairs trading'), items(
     T('A good test of a time-series idea: it must work \\textbf{out of sample}, \\textbf{after costs}, and on pairs chosen \\textbf{without looking ahead}',
       'Un bun test pentru o idee din seriile de timp: trebuie să funcționeze \\textbf{în afara eșantionului}, \\textbf{după costuri} și pe perechi alese \\textbf{fără a privi în viitor}')))
 
-D.frame(T('A rule without look-ahead', 'O regulă fără informații din viitor'), items(
+D.frame(T('A trading rule without look-ahead bias', 'O regulă de tranzacționare fără look-ahead bias'), items(
     (T('\\textbf{Formation} (the previous 252 trading days): test every pair with Engle--Granger; keep the pairs with p $<$ 0.05', '\\textbf{Formarea} (cele 252 de zile de tranzacționare anterioare): testăm fiecare pereche cu Engle--Granger; păstrăm perechile cu p $<$ 0,05'),
      [T('$P_{A,t}$, $P_{B,t}$: the prices of shares A and B; $r_A$, $r_B$: their daily log returns', '$P_{A,t}$, $P_{B,t}$: prețurile acțiunilor A și B; $r_A$, $r_B$: randamentele lor logaritmice zilnice'),
       T('hedge ratio $\\hat b$ by OLS of $\\ln P_A$ on $\\ln P_B$; mean $\\bar s$ and standard deviation $\\hat\\sigma_s$ of the spread $s_t = \\ln P_{A,t} - \\hat a - \\hat b\\ln P_{B,t}$',
@@ -971,7 +971,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that loads monthly US Treasury yields GS1, GS5 and GS10 from FRED, runs the Johansen trace test with a constant and BIC lags, fits a VECM with the chosen rank using statsmodels, and prints beta normalised on the first variables, alpha with t-statistics and the half-lives of the equilibrium errors.}',
         '\\aiprompt{Write Python code that loads monthly US Treasury yields GS1, GS5 and GS10 from FRED, runs the Johansen trace test with a constant and BIC lags, fits a VECM with the chosen rank using statsmodels, and prints beta normalised on the first variables, alpha with t-statistics and the half-lives of the equilibrium errors.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The critical values: Engle--Granger (MacKinnon) for residuals, not Dickey--Fuller; Johansen for the right deterministic case', 'Valorile critice: Engle--Granger (MacKinnon) pentru reziduuri, nu Dickey--Fuller; Johansen pentru cazul potrivit al termenilor determiniști'),
     T('The direction of the null: ``no cointegration\'\' in Engle--Granger; ``rank $\\le r$\'\' in the trace test', 'Sensul ipotezei nule: „fără cointegrare” la Engle--Granger; „rang $\\le r$” la testul urmei'),
     T('That every series is $I(1)$ before testing, and that a high correlation of levels is not reported as cointegration', 'Că fiecare serie este $I(1)$ înainte de testare și că o corelație mare între niveluri nu este raportată drept cointegrare'),

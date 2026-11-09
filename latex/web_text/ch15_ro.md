@@ -31,7 +31,7 @@ IAPC al României, ianuarie 2005 – august 2026. Sus: indicele, 2015 = 100. Jos
 - Capitolele 8–10: memorie lungă, învățare automată, spațiul stărilor | ARFIMA, validarea walk-forward, filtrul Kalman și regimurile Markov.
 - Capitolele 11–14: studiu individual | Foundation models, analiză spectrală, bule LPPL, GARCH multivariat.
 - Sinteza testelor și a modelelor | De la întrebarea despre serie la test și la decizie; convențiile cursului.
-- Box–Jenkins de la un capăt la altul: inflația din România | Șase pași pe IAPC: teste, corelogramă, candidați, reziduuri, prognoze.
+- Procedura Box–Jenkins completă: inflația din România | Șase pași pe IAPC: teste, corelogramă, candidați, reziduuri, prognoze.
 - Proiectul de echipă și prezența | Conținutul proiectului, criteriile, susținerea orală și declararea utilizării AI.
 - Contribuția posibilă a AI | Ce poate face un asistent și ce trebuie verificat.
 - Rezumat | Ideile de reținut și autoevaluarea.
@@ -352,7 +352,7 @@ Fiecare test se raportează la fel: ipoteza nulă, statistica, distribuția ei s
 
 Sinteza transformă cursul într-o listă de întrebări cu răspunsuri verificabile. O analiză bună le parcurge în ordine, raportează fiecare test cu ipoteza lui nulă și decizia lui și respectă convențiile de transformare, de comparare a modelelor și de raportare a riscului.
 
-# Box–Jenkins de la un capăt la altul: inflația din România
+# Procedura Box–Jenkins completă: inflația din România
 
 Secțiunea aplică metoda Box–Jenkins, în șase pași, pe IAPC al României. Fiecare pas folosește instrumente din capitolele anterioare, iar fiecare decizie se sprijină pe un rezultat raportat.
 

@@ -34,11 +34,11 @@ Daily electricity load of Romania, 26 forecast origins from 30 June 2025 to 15 J
 - Regularised linear models: ridge and lasso | Penalised least squares on many correlated lags.
 - Trees, random forest and gradient boosting | Regression trees, their ensembles, extrapolation and permutation importance.
 - Neural networks | The multilayer perceptron, its training, the recurrent network and the LSTM.
-- Application: electricity load against Chapter 4 | Eleven models on 26 origins and 14 horizons, and the Easter window.
+- Application: electricity load and the models of Chapter 4 | Eleven models on 26 origins and 14 horizons, and the Easter window.
 - Prediction intervals | Quantile regression, the pinball loss and split conformal prediction.
 - Local and global models: Romanian inflation | One model per series against one model for 27 countries.
 - Applications in finance: volatility and the sign of returns | HAR against ML for realised volatility; the sign of tomorrow's return.
-- Landmark case studies: M4, M5 and Gu, Kelly and Xiu | Forecasting competitions and machine learning for stock returns.
+- Case studies: M4, M5 and Gu, Kelly and Xiu | Forecasting competitions and machine learning for stock returns.
 - Possible contribution of AI | Foundation models, what an assistant can draft and what must be checked.
 - Summary | Key ideas, formulas and self-assessment questions.
 
@@ -211,7 +211,7 @@ Honest validation keeps the order of time, refits every step of the analysis ins
 
 Before nonlinear methods, the section returns to linear regression on lags, the AR model of [Chapter 2](../EN/Courses/chapter2_arma_models.pdf) with many lags and calendar features. With 30 correlated features, ordinary least squares becomes unstable; ridge and lasso add a penalty on the size of the coefficients, which trades a little bias for a large reduction in variance. The section derives both estimators, works through a one-feature example and shows their coefficient paths on the electricity load.
 
-## Many lags, unstable least squares {h=f71d08a8}
+## Instability of least squares with many lags {h=744fbefb}
 
 The linear model on $p$ features predicts $\hat y = \beta_0 + \sum_j \beta_j x_j$, and ordinary least squares (OLS) chooses the coefficients that minimise the sum of squared errors $\sum_t (y_t - \hat y_t)^2$. When the features are 14 lags of a daily series, neighbouring lags are strongly correlated: yesterday's load and the load of the day before carry almost the same information. OLS can then trade a large positive coefficient on one lag against a large negative one on its neighbour with little change in the fit, so the coefficients become large, of opposite signs, and change from one training window to the next.
 
@@ -330,7 +330,7 @@ The highest index value in training was 111.3; by August 2026 the index had reac
 
 The same forest applied to monthly changes, with the forecasts cumulated onto the last observed level, follows the index closely, with an RMSE of 0.71 index points. Monthly inflation rates after 2021 were higher than before, but they stayed within a range that the forest could learn, while the level moved far outside it. The lesson repeats [Chapter 3](../EN/Courses/chapter3_unit_roots_arima_models.pdf): a non-stationary series is differenced or transformed before a tree sees it.
 
-## The features a model uses {h=0b62175c}
+## Feature importance {h=45504f92}
 
 A random forest or a boosted model has no coefficients to read, so its use of the features has to be measured. Permutation importance shuffles the values of one feature in the test data, which destroys its link with the target while keeping its distribution, and measures how much the forecast error grows. A feature that the model relies on produces a large increase; an unused feature produces none. The measure works for any model and is computed out of sample.
 
@@ -451,7 +451,7 @@ An MLP stacks layers of units $g(b + \mathbf{w}'\mathbf{x})$ and is trained by g
 
 Neural networks can approximate any continuous function, but this flexibility has to be paid for with data and careful training. For a single daily series with a few thousand observations, a small MLP is a reasonable candidate; recurrent networks and the LSTM are designed for long sequences and many related series, and the next section shows what happens when they are applied to one series of moderate length.
 
-# Application: electricity load against Chapter 4
+# Application: electricity load and the models of Chapter 4
 
 This section puts the ML methods into the forecasting exercise of [Chapter 4](../EN/Courses/chapter4_seasonality_forecasting.pdf). The statistical models of that chapter and six ML models forecast the daily electricity load of Romania from the same 26 origins, for the same 14 horizons, and are compared with the same accuracy measures and the Diebold–Mariano test.
 
@@ -463,7 +463,7 @@ The ML models are refitted at every origin. Ridge, a random forest of 200 trees 
 
 The MASE divides the MAE of the forecasts by a fixed scale, the in-sample MAE of the weekly seasonal naive method, 309 MW. A MASE below 1 means that the model is more accurate out of sample than the seasonal naive forecast is in sample.
 
-## Results: 26 origins, 14 horizons {h=69ac729f}
+## Results for 26 origins and 14 horizons {h=7200f53f}
 
 The table gives, for each model, the MAE and the RMSE in GW over all 364 forecasts (26 origins times 14 horizons), the MASE, and the p-value of the Diebold–Mariano test against DHR, the most accurate model. The test is applied to the 26 origin-average absolute errors, with the small-sample correction of @HarveyLeybourneNewbold1997. A small p-value means that the difference in accuracy from DHR is unlikely to be due to chance.
 
@@ -683,7 +683,7 @@ For realised volatility, the lasso and the MLP with extra features are more accu
 
 Machine learning adds value in finance where there is structure to find: the lasso and the MLP gain 7 to 9% of $R^2$ over HAR in volatility forecasting, thanks to the asymmetric response of volatility to returns. Where there is no structure, as in the direction of daily returns, flexible models only fit noise, and the majority-class baseline exposes it.
 
-# Landmark case studies: M4, M5 and Gu, Kelly and Xiu
+# Case studies: M4, M5 and Gu, Kelly and Xiu
 
 The applications of this chapter use one series or a few. The three case studies below show the evidence at a much larger scale: two open forecasting competitions on tens of thousands of series, and a study of machine learning for the returns of US stocks.
 
@@ -753,7 +753,7 @@ An assistant can help in three ways. It can write a first draft of the code: the
 
 The example prompt specifies every choice that matters for a leakage-free result: the features (lags, rolling means, calendar), the model (*HistGradientBoostingRegressor*), the strategy (direct, horizons 1 to 14), the evaluation (walk-forward against the seasonal naive forecast, with the MASE and the Diebold–Mariano test) and the rule that every preprocessing step is refitted inside each training window. A precise prompt produces code whose results can be checked against those of this chapter.
 
-## Checks you must run {h=0df18780}
+## Necessary checks {h=f253bd4f}
 
 The checks follow the errors described in this chapter. Every feature must use data up to the origin only; the simplest check is to print a few rows of the table and verify the shifts of the lags and rolling windows by hand. The code must contain no random shuffling of the rows in cross-validation, such as *KFold(shuffle=True)*, and no scaler or feature selection fitted on the full sample.
 

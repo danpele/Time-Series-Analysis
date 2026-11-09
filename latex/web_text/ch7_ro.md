@@ -37,9 +37,9 @@ Patru perechi de serii cu trend: randamentele titlurilor de stat americane la 3 
 - Modelul VECM și teorema de reprezentare a lui Granger | Rescrierea unui VAR, rangul matricei $\Pi$, termenii determiniști și exogenitatea slabă.
 - Testele Johansen | Regresia cu rang redus, statisticile urmei și a valorii proprii maxime, trei sisteme reale.
 - Estimarea și interpretarea lui β și α | Structura la termen a randamentelor americane: echilibre, ajustare și răspunsuri la impuls.
-- Prognoza: VECM sau VAR în diferențe? | Un experiment de prognoză în afara eșantionului pentru niveluri și pentru spread.
+- Prognoza cu VECM și cu VAR în diferențe | Un experiment de prognoză în afara eșantionului pentru niveluri și pentru spread.
 - Exemple economice: paritate și rate ale dobînzii | PPP pentru leu, ROBOR și Euribor, trei monede central-europene.
-- O aplicație: pairs trading | O regulă fără informații din viitor la Bursa de Valori București și pe bănci americane.
+- O aplicație: pairs trading | O regulă de tranzacționare fără look-ahead bias la Bursa de Valori București și pe bănci americane.
 - Contribuția posibilă a AI | Ce poate schița un asistent și ce trebuie verificat.
 - Rezumat | Ideile principale, formulele și întrebările de autoevaluare.
 
@@ -151,7 +151,7 @@ Cointegrarea este excepția de la regula regresiei false: serii care, luate sepa
 
 Metoda lui @EngleGranger1987 este cea mai simplă cale de a testa cointegrarea a două serii: o regresie în niveluri, urmată de un test de rădăcină unitară pe reziduuri. Simplitatea ascunde o capcană: valorile critice nu mai sînt cele Dickey–Fuller. Secțiunea explică de ce, le obține prin simulare, prezintă testul alternativ Phillips–Ouliaris, aplică ambele teste pe date reale și încheie cu limitele metodei.
 
-## Doi pași {h=128f6f1e}
+## Cei doi pași ai metodei {h=e4f152a1}
 
 Pasul 1 estimează relația pe termen lung prin metoda celor mai mici pătrate (*ordinary least squares*, OLS) în niveluri, $y_t = a + bx_t + u_t$, și păstrează reziduurile $\hat u_t = y_t - \hat a - \hat bx_t$. Dacă seriile sînt cointegrate, estimatorul $\hat b$ are o proprietate neobișnuită: este superconsistent (*super-consistent*), adică eroarea lui scade ca $1/T$, mai repede decît ritmul obișnuit $1/\sqrt{T}$. Intuiția este că orice valoare greșită a lui $b$ lasă un trend stochastic în reziduuri, iar varianța reziduurilor crește atunci odată cu eșantionul; OLS, care minimizează această varianță, găsește foarte repede valoarea corectă.
 
@@ -163,7 +163,7 @@ Aici $\delta_j$ sînt coeficienții celor $k$ laguri ale diferențelor, care pre
 
 Testul are o condiție prealabilă: fiecare serie trebuie să fie $I(1)$. O serie $I(0)$ și una $I(1)$ nu pot fi cointegrate, deoarece orice combinație cu coeficient nenul pe seria $I(1)$ rămîne $I(1)$. De aceea, fiecare analiză de cointegrare începe cu teste de rădăcină unitară pe fiecare serie.
 
-## Motivul pentru care tabelul Dickey–Fuller este greșit aici {h=86a55336}
+## Reziduurile Engle–Granger și valorile critice Dickey–Fuller {h=5d08017e}
 
 Reziduurile din pasul 1 nu sînt o serie observată, ci rezultatul unei optimizări. OLS alege $\hat b$ astfel încît varianța reziduurilor să fie cît mai mică, adică astfel încît $\hat u_t$ să arate cît mai „liniștit”. Chiar și atunci cînd seriile nu sînt cointegrate, $\hat u_t$ pare deci mai staționar decît eroarea adevărată $u_t$. În ipoteza nulă, statistica $\tau$ este împinsă spre valori negative, iar distribuția ei este deplasată la stînga distribuției Dickey–Fuller.
 
@@ -357,7 +357,7 @@ Teorema are trei consecințe practice. Prima: un VAR în diferențe omite termen
 
 Un VAR în niveluri nu este nici el greșit specificat: estimatorii lui sînt consistenți, deoarece VECM este doar o rescriere a lui. El ignoră însă restricția $\mathrm{rang}(\Pi) = r$, deci estimează mai mulți parametri decît este necesar, iar unele dintre testele lui au distribuții nestandard.
 
-## 2003: Premiul Nobel pentru cointegrare {h=419463e9}
+## Clive Granger și Premiul Nobel din 2003 {h=a188d0fb}
 
 Premiul Nobel pentru economie din 2003 a fost împărțit între Clive Granger, pentru cointegrare, și Robert Engle, pentru modelele ARCH din [Capitolul 5](../RO/Cursuri/capitol5_volatilitate_conditionata_garch.pdf). Ambele contribuții privesc seriile de timp economice și ambele au schimbat practica empirică: una pentru serii cu trenduri comune, cealaltă pentru serii cu volatilitate variabilă.
 
@@ -403,7 +403,7 @@ Forma VECM separă dinamica pe termen scurt de structura pe termen lung a unui V
 
 @Johansen1988 și @Johansen1991 au dat metoda de estimare a unui VECM prin verosimilitate maximă și, odată cu ea, teste pentru rangul de cointegrare. Spre deosebire de metoda Engle–Granger, abordarea lucrează direct cu sistemul, poate găsi mai mulți vectori de cointegrare și nu depinde de alegerea variabilei din stînga. Secțiunea explică ideea regresiei cu rang redus, definește cele două statistici de test, le calculează pe un exemplu și le aplică pe trei sisteme reale.
 
-## Ideea: regresia cu rang redus {h=c2a45d13}
+## Regresia cu rang redus {h=39f92d67}
 
 Metoda lui @Johansen1988 și @Johansen1991 estimează un VECM prin verosimilitate maximă, presupunînd erori gaussiene. Ideea este o regresie cu rang redus (*reduced-rank regression*). Mai întîi se elimină dinamica pe termen scurt: $\Delta\mathbf y_t$ și $\mathbf y_{t-1}$ se regresează, fiecare, pe lagurile diferențelor, iar reziduurile se notează $R_{0t}$ și $R_{1t}$. Ce rămîne este relația dintre variațiile curente și nivelurile întîrziate, curățată de efectele pe termen scurt.
 
@@ -445,7 +445,7 @@ Pentru PIB, consum și investiții, statistica urmei pentru $r = 0$ este 28,9, f
 
 Pentru cele trei monede, statistica urmei, 24,2, este clar sub valoarea critică. Testul nu găsește nicio relație de cointegrare, iar datele sînt compatibile cu trei trenduri stochastice separate; [secțiunea 8](#sec-8) reia acest caz.
 
-## Cazul termenilor determiniști schimbă răspunsul {h=b795d004}
+## Sensibilitatea testelor Johansen la termenii determiniști {h=4d6070c3}
 
 Tabelul repetă testul urmei pentru randamentele SUA la 1, 5 și 10 ani cu trei specificații ale termenilor determiniști. Fără termeni determiniști (*det_order=-1*, cazul 1), statisticile sînt 45,9, 13,3 și 0,4, cu valorile critice de 5% 24,28, 12,32 și 4,13: rangul 2. Cu constantă (*det_order=0*, cazul 3), statisticile sînt 54,6, 21,6 și 3,1, față de 29,80, 15,49 și 3,84: tot rangul 2. Cu constantă și trend liniar (*det_order=1*, cazul 5), statisticile sînt 60,0, 23,7 și 4,8, față de 35,01, 18,40 și 3,84: rangul 3.
 
@@ -517,11 +517,11 @@ Vectorii $\hat\beta$ se normalizează și se interpretează ca echilibre, de exe
 
 Pentru structura la termen a randamentelor americane, VECM-ul cu rangul 2 dă două relații de echilibru apropiate de spread-urile față de randamentul la 10 ani, cu prime de termen pozitive. Randamentul la 1 an nu se ajustează semnificativ și antrenează sistemul; randamentele la 5 și 10 ani fac corecția, cu timpi de înjumătățire de circa 9 și 22 de luni pentru cele două erori de echilibru. Un șoc asupra randamentului la 1 an deplasează permanent toată curba, iar spread-urile revin.
 
-# Prognoza: VECM sau VAR în diferențe?
+# Prognoza cu VECM și cu VAR în diferențe
 
 Teorema de reprezentare spune că un VAR în diferențe este greșit specificat pentru serii cointegrate. Întrebarea practică este dacă VECM-ul corect specificat prognozează și mai bine. Secțiunea prezintă argumentele teoretice, apoi un experiment de prognoză în afara eșantionului pe randamentele americane, pentru niveluri și pentru un spread.
 
-## Argumentele teoretice {h=d24b7954}
+## Argumentele teoretice în favoarea modelului VECM {h=96caa4aa}
 
 Prognozele unui VECM păstrează echilibrele. Pe măsură ce orizontul $h$ crește, prognoza erorii de echilibru, $\hat\beta^\top\hat{\mathbf y}_{T+h}$, revine la media ei, deoarece termenul de corecție împinge prognozele spre echilibru. Un VAR în diferențe nu folosește informația din niveluri: prognozele lui pentru spread-uri rămîn, pe orizonturi lungi, aproape de valoarea curentă, oricît de departe de medie ar fi aceasta.
 
@@ -633,7 +633,7 @@ Este o tranzacție de valoare relativă (*relative value*): deoarece poziția es
 
 Pairs trading este un test bun pentru orice idee din seriile de timp, deoarece cere trei lucruri pe care o analiză în eșantion le poate ascunde: regula trebuie să funcționeze în afara eșantionului, după costuri și pe perechi alese fără a privi în viitor.
 
-## O regulă fără informații din viitor {h=15618403}
+## O regulă de tranzacționare fără look-ahead bias {h=9c5189d7}
 
 Regula are două ferestre care se succed. În fereastra de formare, cele 252 de zile de tranzacționare anterioare, adică aproximativ un an, fiecare pereche de acțiuni este testată cu Engle–Granger, iar perechile cu p-value sub 0,05 sînt păstrate. Pentru o pereche păstrată, cu prețurile $P_{A,t}$ și $P_{B,t}$, raportul de acoperire (*hedge ratio*) $\hat b$ se estimează prin OLS pentru $\ln P_A$ pe $\ln P_B$. Spread-ul este $s_t = \ln P_{A,t} - \hat a - \hat b\ln P_{B,t}$, iar media lui $\bar s$ și abaterea lui standard $\hat\sigma_s$ se calculează tot în fereastra de formare.
 

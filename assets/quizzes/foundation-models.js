@@ -389,7 +389,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
         {
             "correct": 2,
             "en": {
-                "title": "Leakage in your own pipeline",
+                "title": "Leakage in the forecasting pipeline",
                 "text": "Which step leaks information from the test period into the forecasts?",
                 "options": [
                     "Scaling each context by the mean of its own values",
@@ -401,7 +401,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
                 "incorrectExplanation": "Scaling by the context only, a common horizon and a rolling origin are all correct practice."
             },
             "ro": {
-                "title": "Leakage-ul în propriul cod",
+                "title": "Leakage-ul în fluxul de prognoză",
                 "text": "Care pas introduce în prognoze informație din perioada de test?",
                 "options": [
                     "Scalarea fiecărui context cu media propriilor valori",
@@ -605,7 +605,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
         {
             "correct": 1,
             "en": {
-                "title": "When a foundation model is a good choice",
+                "title": "Appropriate uses of foundation models",
                 "text": "In which situation is a zero-shot foundation model most useful?",
                 "options": [
                     "One long financial return series must be forecast one day ahead",
@@ -617,7 +617,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
                 "incorrectExplanation": "Returns are close to unpredictable, causal questions need a design (Chapter 6), and a network with millions of parameters cannot be explained parameter by parameter."
             },
             "ro": {
-                "title": "Cînd este util un foundation model",
+                "title": "Utilizările adecvate ale foundation models",
                 "text": "În ce situație este cel mai util un foundation model zero-shot?",
                 "options": [
                     "Trebuie prognozată cu o zi înainte o singură serie lungă de randamente financiare",

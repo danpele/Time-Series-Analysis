@@ -444,7 +444,7 @@ D.frame(T('Strict and weak stationarity compared', 'Staționaritatea strictă ș
     (T('\\textbf{Gaussian processes}: all finite-dimensional distributions are multivariate Normal', '\\textbf{Procese gaussiene}: toate distribuțiile finit-dimensionale sînt Normale multivariate'),
      [T('a Normal distribution is fixed by its means and covariances, so for them weak $\\Leftrightarrow$ strict', 'o distribuție Normală este determinată de medii și covarianțe, deci pentru ele slabă $\\Leftrightarrow$ strictă')])))
 
-chart(T('Weakly but not strictly stationary', 'Slab, dar nu strict staționar'), 'tsa_ch1_counterexample', 'TSA_ch1_processes', [
+chart(T('A weakly but not strictly stationary process', 'Un proces slab staționar care nu este strict staționar'), 'tsa_ch1_counterexample', 'TSA_ch1_processes', [
     T('Independent $X_t$: $N(0, 1)$ for even $t$, $(\\chi^2_5 - 5)/\\sqrt{10}$ for odd $t$; both have mean 0 and variance 1',
       '$X_t$ independente: $N(0, 1)$ pentru $t$ par, $(\\chi^2_5 - 5)/\\sqrt{10}$ pentru $t$ impar; ambele au media 0 și varianța 1'),
     T('Sample of 4000: variance @{cx.vare} (even) and @{cx.varo} (odd); skewness $@{cx.skewe}$ and $@{cx.skewo}$ (theory: 0 and @{cx.skewth})',
@@ -963,7 +963,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that loads the Romanian monthly HICP from Eurostat, computes 100 times the monthly log difference since 2005, plots the series with its ACF and PACF up to lag 36, and reports the Ljung-Box statistic for m = 12 and m = 24.}',
         '\\aiprompt{Write Python code that loads the Romanian monthly HICP from Eurostat, computes 100 times the monthly log difference since 2005, plots the series with its ACF and PACF up to lag 36, and reports the Ljung-Box statistic for m = 12 and m = 24.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The divisor of $\\hat\\gamma(h)$ ($T$, not $T - h$) and whether lag 0 is included in the plot', 'Împărțitorul lui $\\hat\\gamma(h)$ ($T$, nu $T - h$) și dacă lagul 0 este inclus în grafic'),
     T('Which bands are drawn: $\\pm 1.96/\\sqrt{T}$ or Bartlett\'s MA bands; they answer different questions', 'Tipul benzilor desenate: $\\pm 1{,}96/\\sqrt{T}$ sau benzile Bartlett pentru MA; ele răspund la întrebări diferite'),
     T('That Ljung--Box is applied to the stationary transformation, not to the level; and with $m - p - q$ degrees of freedom on residuals', 'Că testul Ljung--Box se aplică transformării staționare, nu nivelului; și cu $m - p - q$ grade de libertate pentru reziduuri'),

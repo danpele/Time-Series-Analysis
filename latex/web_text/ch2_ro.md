@@ -57,7 +57,7 @@ Zgomotul alb (*white noise*), $\varepsilon_t \sim \mathrm{WN}(0, \sigma^2)$, are
 
 Descompunerea Wold [@Wold1938] leagă aceste piese. Orice proces staționar pur nedeterminist (*purely nondeterministic*) se poate scrie ca $X_t = \mu + \sum_{j \ge 0}\psi_j\varepsilon_{t-j}$, cu $\psi_0 = 1$ și $\sum_j\psi_j^2 < \infty$. Condiția „pur nedeterminist” exclude componentele pe care trecutul infinit le prezice exact, cum ar fi o sinusoidă fixă. Teorema spune că un astfel de proces este o medie mobilă de ordin infinit a șocurilor sale trecute; restul capitolului scrie această sumă cu puțini parametri.
 
-## Problema: o infinitate de ponderi {h=db160375}
+## Reprezentarea parcimonioasă a ponderilor Wold {h=625666bc}
 
 Descompunerea Wold spune cum arată un proces staționar, nu cum îl estimăm. Ponderile $\psi_1, \psi_2, \dots$ sînt o infinitate de necunoscute, iar eșantionul are doar $T$ observații. Dacă trunchiem suma la un lag mare, rămîn tot mulți parametri, fiecare estimat cu o eroare mare.
 
@@ -69,7 +69,7 @@ Modelul are $p + q + 2$ parametri: cei $p$ coeficienți autoregresivi, cei $q$ c
 
 Un raport a două polinoame de grad mic aproximează bine aproape orice $\psi(L)$ netedă. El reproduce descreșteri geometrice, oscilații amortizate și ponderi care se opresc după un lag finit, adică formele întîlnite în practică. Principiul care ghidează alegerea lui $p$ și $q$ este parcimonia (*parsimony*): cel mai mic model ale cărui reziduuri sînt zgomot alb. Fiecare parametru suplimentar adaugă eroare de estimare, iar după ce reziduurile au devenit zgomot alb el nu mai îmbunătățește prognozele.
 
-## Trei piese de bază {h=ad651848}
+## Modelele AR, MA și ARMA {h=19cf2471}
 
 Modelul autoregresiv AR($p$) face ca valoarea de azi să depindă de ultimele $p$ valori ale seriei și de un șoc nou: $X_t = c + \phi_1X_{t-1} + \dots + \phi_pX_{t-p} + \varepsilon_t$. El provine de la @Yule1927 și din analiza petelor solare. Modelul de medie mobilă (*moving average*) MA($q$) face ca valoarea de azi să depindă de ultimele $q$ șocuri: $X_t = \mu + \varepsilon_t + \theta_1\varepsilon_{t-1} + \dots + \theta_q\varepsilon_{t-q}$. @Slutzky1937 a arătat că astfel de sume de cauze aleatoare produc serii care par ciclice. Modelul ARMA($p,q$) conține ambele părți; @BoxJenkinsReinsel2008, a căror primă ediție a apărut în 1970, l-au transformat într-o metodă completă de identificare, estimare, verificare și prognoză.
 
@@ -435,7 +435,7 @@ Criteriul informațional Akaike (AIC, *Akaike information criterion*) provine de
 
 Cele două criterii diferă doar prin penalizarea pe parametru: 2 pentru AIC și $\ln T$ pentru BIC. Cum $\ln T > 2$ de îndată ce $T \ge 8$, BIC penalizează mai puternic în orice eșantion realist și preferă modele mai mici. Se alege modelul cu valoarea cea mai mică. Pot fi comparate doar modele estimate pe aceleași observații: dacă, de exemplu, modele AR de ordine diferite sînt estimate prin cele mai mici pătrate condiționate, fiecare renunță la un alt număr de observații inițiale, iar verosimilitățile lor nu mai sînt comparabile.
 
-## AIC sau BIC? {h=c63be021}
+## Comparația criteriilor AIC și BIC {h=59403658}
 
 BIC este consistent (*consistent*): dacă modelul adevărat se află printre candidați, probabilitatea ca BIC să îl aleagă tinde la 1 cînd $T$ crește. Prețul este că, în eșantioane mici, penalizarea lui mare poate alege un model prea mic, care omite un coeficient real, dar mic.
 

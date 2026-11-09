@@ -38,7 +38,7 @@ window.TSA_DATA.quizzes['lppl'] = {
         {
             "correct": 1,
             "en": {
-                "title": "A bubble that can burst",
+                "title": "The Blanchard–Watson bubble",
                 "text": "In a Blanchard–Watson bubble with $r = 2\\%$ and survival probability $\\pi = 0.98$ per period, by how much does the bubble grow in a period in which it survives?",
                 "options": [
                     "By exactly 2%",
@@ -50,7 +50,7 @@ window.TSA_DATA.quizzes['lppl'] = {
                 "incorrectExplanation": "A growth of exactly $r$ would make the expected growth lower than $r$ once bursts are counted; 98% confuses the probability with the growth; and a bubble that never grows cannot exist. The survival growth is $(1+r)/\\pi - 1 \\approx 4.1\\%$."
             },
             "ro": {
-                "title": "O bulă care se poate sparge",
+                "title": "Bula Blanchard–Watson",
                 "text": "Într-o bulă Blanchard–Watson cu $r = 2\\%$ și probabilitatea de supraviețuire $\\pi = 0{,}98$ pe perioadă, cu cît crește bula într-o perioadă în care supraviețuiește?",
                 "options": [
                     "Cu exact 2%",
@@ -200,7 +200,7 @@ window.TSA_DATA.quizzes['lppl'] = {
         {
             "correct": 3,
             "en": {
-                "title": "Explosive price, bubble?",
+                "title": "Explosive prices and bubbles",
                 "text": "A GSADF test finds an explosive episode in a stock index. What else is needed before calling it a bubble?",
                 "options": [
                     "Nothing: an explosive price is always a bubble",
@@ -212,7 +212,7 @@ window.TSA_DATA.quizzes['lppl'] = {
                 "incorrectExplanation": "An explosive price is not enough, a left-tailed test answers another question and more data of the same price do not remove the problem. The fundamentals must be checked, e.g. with the price–dividend ratio."
             },
             "ro": {
-                "title": "Preț exploziv, deci bulă?",
+                "title": "Prețuri explozive și bule",
                 "text": "Un test GSADF găsește un episod exploziv într-un indice bursier. Ce mai este necesar înainte de a-l numi bulă?",
                 "options": [
                     "Nimic: un preț exploziv este întotdeauna o bulă",
@@ -551,7 +551,7 @@ window.TSA_DATA.quizzes['lppl'] = {
         {
             "correct": 0,
             "en": {
-                "title": "Why many windows",
+                "title": "Estimation over many windows",
                 "text": "Why is LPPL fitted on many windows instead of one?",
                 "options": [
                     "Because the start of a bubble is unknown in real time and $\\hat t_c$ depends on the window; the spread over windows measures the uncertainty",
@@ -563,7 +563,7 @@ window.TSA_DATA.quizzes['lppl'] = {
                 "incorrectExplanation": "One window does not always fail, and neither OLS nor the Lomb test requires several windows. The reason is the unknown start of the bubble and the instability of $\\hat t_c$."
             },
             "ro": {
-                "title": "De ce multe ferestre",
+                "title": "Estimarea pe mai multe ferestre",
                 "text": "De ce se ajustează LPPL pe multe ferestre în loc de una singură?",
                 "options": [
                     "Pentru că începutul unei bule nu este cunoscut în timp real, iar $\\hat t_c$ depinde de fereastră; dispersia pe ferestre măsoară incertitudinea",
@@ -605,7 +605,7 @@ window.TSA_DATA.quizzes['lppl'] = {
         {
             "correct": 2,
             "en": {
-                "title": "Judging an alarm",
+                "title": "Evaluating an alarm",
                 "text": "An indicator gave an alarm before 8 of the last 10 crashes. What must you also know to judge it?",
                 "options": [
                     "Nothing: 80% is a good hit rate",
@@ -617,7 +617,7 @@ window.TSA_DATA.quizzes['lppl'] = {
                 "incorrectExplanation": "A hit rate on crashes alone ignores the false alarms, and one date or one parameter says nothing about usefulness. The comparison with the base rate is what matters."
             },
             "ro": {
-                "title": "Judecarea unei alarme",
+                "title": "Evaluarea unei alarme",
                 "text": "Un indicator a dat o alarmă înainte de 8 dintre ultimele 10 crahuri. Ce mai trebuie să știți pentru a-l judeca?",
                 "options": [
                     "Nimic: 80% este o rată de reușită bună",

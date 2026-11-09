@@ -31,7 +31,7 @@ HICP of Romania, January 2005 – August 2026. Top: the index, 2015 = 100. Botto
 - Chapters 8–10: long memory, machine learning, state space | ARFIMA, walk-forward validation, the Kalman filter and Markov regimes.
 - Chapters 11–14: self-study | Foundation models, spectral analysis, LPPL bubbles, multivariate GARCH.
 - Summary of tests and models | From the question about a series to the test and the decision; the conventions of the course.
-- Box–Jenkins from start to finish: Romanian inflation | Six steps on the HICP: tests, correlogram, candidates, residuals, forecasts.
+- The complete Box–Jenkins procedure: Romanian inflation | Six steps on the HICP: tests, correlogram, candidates, residuals, forecasts.
 - The team project and attendance | The content of the project, the criteria, the oral defence and the declaration of AI use.
 - Possible contribution of AI | What an assistant can do and what must be checked.
 - Summary | The key takeaways and the self-assessment.
@@ -352,7 +352,7 @@ Every test is reported the same way: the null hypothesis, the statistic, its dis
 
 The summary turns the course into a list of questions with verifiable answers. A good analysis goes through them in order, reports each test with its null hypothesis and its decision, and respects the conventions for transformations, model comparison and risk reporting.
 
-# Box–Jenkins from start to finish: Romanian inflation
+# The complete Box–Jenkins procedure: Romanian inflation
 
 The section applies the Box–Jenkins method, in six steps, to the Romanian HICP. Each step uses tools from earlier chapters, and each decision rests on a reported result.
 
@@ -668,11 +668,11 @@ The first criterion is the question: it must be clear, answerable from the data 
 
 The other criteria concern methods, checks, interpretation and reproducibility: the right test for the question, chosen from the summary of tests and models, residual diagnostics, out-of-sample evaluation against a benchmark, an interpretation that says what the numbers mean and what the data cannot show, and a repository that runs from the data to every chart. The project is graded only after the oral defence, in which every team member explains the code and the results. A line of code its author cannot explain does not count as own work, whether or not it was written with the help of an AI tool.
 
-## The file AI_USE.md {h=1c978457}
+## The file AI_USE.md {h=26f8dd5b}
 
 AI tools are allowed in the project, provided they are declared. The file AI_USE.md records, for each use, the tool, the prompt, what was kept from the answer and what was corrected. It also lists the errors of the tool that the team found, together with how they found them; this part shows best whether the results were checked.
 
-Responsibility for every number and every reference stays with the team. Every number must be recomputed with the team's own code, from the data, and every reference must be checked by opening its digital object identifier (DOI) and comparing the title. The typical errors of AI tools in this course are collected on the slide "Checks you must run" of the next section.
+Responsibility for every number and every reference stays with the team. Every number must be recomputed with the team's own code, from the data, and every reference must be checked by opening its digital object identifier (DOI) and comparing the title. The typical errors of AI tools in this course are collected on the slide "Necessary checks" of the next section.
 
 ## The final grade {h=6039a5a4}
 
@@ -694,7 +694,7 @@ An AI assistant can help in three ways. For practice, it can set new problems, w
 
 The prompt on the slide is an example of a precise request. It names the data source and the exact code of the Eurostat series, the transformation ($100\ln$ HICP), the model family and the limits on the orders, the training sample, the comparison criteria, the degrees of freedom of the Ljung–Box test and the forecast benchmark. A prompt this precise produces code that can be checked step by step, by comparing each result with the tables of the Box–Jenkins section.
 
-## Checks you must run {h=09e6b2f8}
+## Necessary checks {h=c8d73185}
 
 The first checks concern the hypotheses and the degrees of freedom. For ADF the null hypothesis is the unit root, for KPSS it is stationarity; an answer that swaps them leads to opposite decisions. The Ljung–Box test on residuals uses $m - k$ degrees of freedom, and the Granger $F$ test uses $p$ and $T - Kp - 1$. The signs of the MA terms and of the error correction coefficient depend on the software's convention: EViews and Python write them differently, so a sign must be read together with the equation the software uses.
 

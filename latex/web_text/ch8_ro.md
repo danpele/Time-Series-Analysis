@@ -33,7 +33,7 @@ Cele patru serii ale capitolului: debitul anual al Nilului la Assuan (1871–197
 - Prognoza cu ARFIMA | Prognoze din forma AR($\infty$) și o comparație out-of-sample pentru inflație.
 - Memoria lungă a volatilității | Randamente absolute, volatilitate realizată, FIGARCH și modelul HAR.
 - Memoria lungă aparentă | Rupturi și regimuri care imită memoria lungă, Nilul în 1898 și estimări pe ferestre mobile.
-- O trimitere: cointegrarea fracționară | Abateri de la echilibru care se corectează încet.
+- Extensie: cointegrarea fracționară | Abateri de la echilibru care se corectează încet.
 - Contribuția posibilă a AI | Ce poate schița un asistent și ce trebuie verificat.
 - Rezumat | Ideile principale, formulele și întrebările de autoevaluare.
 
@@ -413,7 +413,7 @@ Al treilea scenariu arată cealaltă față. Pentru un AR(1) cu $\phi = 0{,}6$ �
 
 Regula practică rezultă de aici. Ajustați întotdeauna modele ARFIMA$(p,d,q)$ cu $p, q \ge 1$ ca alternative la ARFIMA$(0,d,0)$, astfel încît dependența pe termen scurt să aibă proprii parametri, și verificați estimările semiparametrice pentru mai multe lățimi de bandă.
 
-## Inflația din România: ARMA sau ARFIMA? {h=11b184ca}
+## Inflația din România: comparația ARMA și ARFIMA {h=9456f384}
 
 Tabelul compară șase modele pentru inflația lunară IAPC din România, ajustată sezonier, $T = 260$ de luni din 2005 pînă în 2026, toate estimate prin verosimilitate maximă exactă. Pentru fiecare model, tabelul dă estimarea lui $d$ (zero pentru modelele ARMA), coeficienții AR și MA, log-verosimilitatea maximizată $\ell$ și criteriile informaționale AIC și BIC; cele mai mici valori ale criteriilor sînt îngroșate.
 
@@ -547,7 +547,7 @@ Capitolul modelează logaritmul, $\log\sqrt{RV_m}$, din două motive. Distribuț
 
 Volatilitatea realizată este o măsură mult mai precisă decît un singur randament absolut. Randamentul absolut al unei zile amestecă volatilitatea acelei zile cu mărimea aleatoare a șocului; într-o lună de aproximativ 21 de zile de tranzacționare, o mare parte din acest zgomot se compensează, astfel încît memoria lungă a volatilității este mai ușor de văzut și de estimat.
 
-## Volatilitatea realizată lunară: ARFIMA sau ARMA? {h=22ac033f}
+## Volatilitatea realizată lunară: comparația ARFIMA și ARMA {h=00ca0ecc}
 
 Graficul arată ACF de selecție a logaritmului volatilității realizate lunare a S&P 500 (stînga) și a BET (dreapta), 321 de luni din 2000 pînă în 2026, împreună cu autocorelațiile implicate de două modele estimate prin ML exactă: ARFIMA$(1,d,0)$, linia continuă, și ARMA(1,1), linia întreruptă. Titlurile panourilor dau estimările lui $d$ obținute prin trei metode: ML, Whittle local (LW) și GPH.
 
@@ -625,7 +625,7 @@ Schimbarea de regim dă o imagine nemonotonă. Cu $p = 0{,}01$, aproximativ 10 s
 
 O estimare semnificativă a lui $d$ este deci compatibilă atît cu memoria lungă, cît și cu rupturile sau regimurile. Estimarea singură nu poate decide între ele: este nevoie de alte dovezi, cum ar fi teste pentru rupturi, estimări pe subeșantioane și comparații cu modele cu schimbare de regim.
 
-## Nilul în 1898: memorie sau ruptură? {h=62a7f65f}
+## Nilul în 1898: memorie lungă și ruptură structurală {h=a1eb75e1}
 
 Panoul din stînga arată debitul Nilului din 1871 pînă în 1970, cu două linii orizontale: media dinainte și media de după 1898, punctul de schimbare identificat de @Cobb1978. Primul baraj de la Assuan a fost terminat în 1902, la cîțiva ani după punctul de schimbare. Panoul din dreapta este un grafic R/S al seriei inițiale și al seriei din care au fost scăzute cele două medii de regim, cu o dreaptă de referință de pantă 0,5.
 
@@ -669,7 +669,7 @@ Rupturile și schimbările rare de regim produc $\hat d > 0$ în serii cu memori
 
 O estimare a lui $d$ măsoară puterea la frecvențe joase, indiferent de originea ei. O schimbare a mediei de o jumătate de abatere standard sau un regim care se schimbă de aproximativ zece ori într-un eșantion sînt suficiente pentru a produce un $\hat d$ între 0,2 și 0,35 într-o serie fără memorie. Memoria Nilului din 1871–1970 dispare după eliminarea schimbării din 1898, iar memoria inflației din SUA crește și scade odată cu regimurile monetare. Memoria lungă poate fi afirmată doar după ce rupturile, regimurile și datele suprapuse au fost excluse.
 
-# O trimitere: cointegrarea fracționară
+# Extensie: cointegrarea fracționară
 
 Ultima temă de modelare leagă acest capitol de cointegrarea din Capitolul 7. Este o trimitere către un domeniu aflat dincolo de curs, nu o tratare completă.
 

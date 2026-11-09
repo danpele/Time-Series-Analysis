@@ -482,7 +482,7 @@ D.recap(('Validation without leakage', 'validare fără leakage'), [
 # =============================================================================
 D.section('Regularised linear models: ridge and lasso', 'Modele liniare regularizate: ridge și lasso')
 
-D.frame(T('Many lags, unstable least squares', 'Multe laguri, metoda celor mai mici pătrate instabilă'), items(
+D.frame(T('Instability of least squares with many lags', 'Instabilitatea metodei celor mai mici pătrate cu multe laguri'), items(
     (T('Linear model on $p$ standardised features: $\\hat y = \\beta_0 + \\sum_j \\beta_j x_j$; OLS (ordinary least squares) minimises $\\sum_t (y_t - \\hat y_t)^2$',
        'Model liniar pe $p$ variabile standardizate: $\\hat y = \\beta_0 + \\sum_j \\beta_j x_j$; OLS (ordinary least squares, metoda celor mai mici pătrate) minimizează $\\sum_t (y_t - \\hat y_t)^2$'),
      [T('neighbouring lags are highly correlated: OLS coefficients become large, of opposite signs and unstable from one window to the next', 'lagurile vecine sînt puternic corelate: coeficienții OLS devin mari, de semne opuse și instabili de la o fereastră la alta')]),
@@ -586,7 +586,7 @@ interp(('the extrapolation failure', 'eșecului de extrapolare'), [
     T('The same forest on monthly changes, then cumulated, follows the index: RMSE @{ex.rc}', 'Același random forest pe variațiile lunare, apoi cumulate, urmărește indicele: RMSE @{ex.rc}'),
     T('Chapter 3 again: difference or transform non-stationary series before a tree sees them', 'Din nou Capitolul 3: diferențiem sau transformăm seriile nestaționare înainte ca un arbore să le vadă')])
 
-D.frame(T('The features a model uses', 'Variabilele folosite de model'), items(
+D.frame(T('Feature importance', 'Importanța variabilelor'), items(
     (T('\\textbf{Permutation importance}: shuffle one feature in the test data and measure how much the error grows', '\\textbf{Importanța prin permutare}: amestecăm o variabilă în datele de test și măsurăm cît crește eroarea'),
      [T('model-agnostic; measured out of sample; correlated features share (and hide) their importance', 'nu depinde de tipul modelului; se măsoară în afara eșantionului; variabilele corelate își împart (și își ascund) importanța')]),
     T('Impurity-based importance of trees (MDI, mean decrease impurity) is computed in training and favours continuous features: prefer permutation', 'Importanța calculată din impuritatea arborilor (MDI, mean decrease impurity) se obține la antrenare și favorizează variabilele continue: preferăm permutarea'),
@@ -681,7 +681,7 @@ D.recap(('Neural networks', 'rețele neuronale'), [
 # =============================================================================
 # 6. APLICAȚIE: CONSUMUL DE ENERGIE ELECTRICĂ
 # =============================================================================
-D.section('Application: electricity load against Chapter 4', 'Aplicație: consumul de energie electrică și Capitolul 4')
+D.section('Application: electricity load and the models of Chapter 4', 'Aplicație: consumul de energie electrică și modelele din Capitolul 4')
 
 D.frame(T('The forecasting exercise', 'Exercițiul de prognoză'), twocol(
     ph('pylon', T('750 kV line at Mărășești: the Romanian transmission grid', 'Linia de 750 kV de la Mărășești: rețeaua de transport a României'), h='0.45\\textheight'),
@@ -694,7 +694,7 @@ D.frame(T('The forecasting exercise', 'Exercițiul de prognoză'), twocol(
           T('MASE scale: in-sample MAE of the weekly seasonal naive method, @{ld.scale} MW', 'Scala MASE: MAE în eșantion a metodei naive sezoniere săptămînale, @{ld.scale} MW')),
     wl='0.34', wr='0.64'), 'footnotesize')
 
-D.frame(T('Results: 26 origins, 14 horizons', 'Rezultatele: 26 de origini, 14 orizonturi'), table(
+D.frame(T('Results for 26 origins and 14 horizons', 'Rezultatele pentru 26 de origini și 14 orizonturi'), table(
     'lrrrr', T('\\textbf{Model}', '\\textbf{Model}') + ' & MAE (GW) & RMSE (GW) & MASE & ' + T('DM p, against DHR', 'DM p, față de DHR'),
     [T(m, {'Seasonal naive': 'Naivă sezonieră', 'Combination': 'Combinația', 'GB direct': 'GB direct', 'GB recursive': 'GB recursiv'}.get(m, m))
      + f' & @{{ld.{KEY[m]}.MAE}} & @{{ld.{KEY[m]}.RMSE}} & @{{ld.{KEY[m]}.MASE}} & ' + ('--' if m == 'DHR' else f'@{{dm.{KEY[m]}.DHR}}')
@@ -878,7 +878,7 @@ D.recap(('Volatility and the sign of returns', 'volatilitatea și semnul randame
 # =============================================================================
 # 10. STUDII DE CAZ
 # =============================================================================
-D.section('Landmark case studies: M4, M5 and Gu, Kelly and Xiu', 'Studii de caz de referință: M4, M5 și Gu, Kelly și Xiu')
+D.section('Case studies: M4, M5 and Gu, Kelly and Xiu', 'Studii de caz: M4, M5 și Gu, Kelly și Xiu')
 
 D.frame(T('The M competitions', 'Competițiile M'), items(
     (T('Since 1982 Spyros Makridakis has organised open forecasting competitions: all methods forecast the same series, evaluated by the organisers on hidden data', 'Din 1982, Spyros Makridakis organizează competiții deschise de prognoză: toate metodele prognozează aceleași serii, evaluate de organizatori pe date ascunse'),
@@ -957,7 +957,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that builds lag, rolling-mean and calendar features for daily electricity load, trains HistGradientBoostingRegressor with the direct strategy for horizons 1-14, evaluates it walk-forward against the seasonal naive forecast with MASE and the Diebold-Mariano test, and refits every preprocessing step inside each training window.}',
         '\\aiprompt{Write Python code that builds lag, rolling-mean and calendar features for daily electricity load, trains HistGradientBoostingRegressor with the direct strategy for horizons 1-14, evaluates it walk-forward against the seasonal naive forecast with MASE and the Diebold-Mariano test, and refits every preprocessing step inside each training window.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('Every feature uses data up to the origin only: check the shifts of lags and rolling windows on a printed table', 'Fiecare variabilă folosește doar date pînă la origine: verificați deplasarea lagurilor și a ferestrelor mobile pe un tabel tipărit'),
     T('No \\texttt{KFold(shuffle=True)}, no scaler or feature selection fitted on the full sample', 'Fără \\texttt{KFold(shuffle=True)}, fără scalare sau selecție de variabile estimate pe tot eșantionul'),
     T('The benchmarks are there: naive or seasonal naive, ETS or ARIMA, on the same origins', 'Metodele de referință sînt prezente: naivă sau naivă sezonieră, ETS sau ARIMA, pe aceleași origini'),

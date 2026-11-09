@@ -632,7 +632,7 @@ window.TSA_DATA.quizzes['var'] = {
         {
             "correct": 3,
             "en": {
-                "title": "Why the S&P 500 leads European markets",
+                "title": "The lead of the S&P 500 over European markets",
                 "text": "In daily data, yesterday's S&P 500 return Granger-causes today's BET and DAX returns, but not the reverse. The most plausible explanation is:",
                 "options": [
                     "The VAR was estimated by OLS, which creates spurious lags",

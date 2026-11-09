@@ -378,7 +378,7 @@ Pentru PIB-ul României, un singur parametru, MA sezonier $\hat\Theta = -0{,}577
 
 Institutele de statistică publică, pe lîngă seriile brute, serii ajustate sezonier. Această secțiune explică de ce, cum funcționează programele folosite, X-11 și X-13ARIMA-SEATS, și ce variantă a unei serii Eurostat se potrivește fiecărei întrebări. Ultimele două cadre compară seriile neajustate și ajustate pentru PIB și comerțul cu amănuntul și citesc factorii sezonieri implicați.
 
-## Rostul ajustării sezoniere în statistica oficială {h=6f27f549}
+## Scopul ajustării sezoniere în statistica oficială {h=8906700c}
 
 Utilizatorii statisticilor economice vor să știe dacă economia a crescut în ultimul trimestru, nu dacă trimestrul al treilea este mai mare decît al doilea. Seria brută amestecă cele două întrebări. În primul trimestru din 2026, PIB-ul neajustat s-a modificat cu −42,1% față de trimestrul anterior, în puncte logaritmice, iar seria ajustată cu −0,06%. Prima cifră este aproape în întregime efect sezonier; doar a doua spune ceva despre ciclul economic.
 
@@ -700,7 +700,7 @@ DHR are cea mai mică eroare: MAE 276 MW, RMSE 350 MW și MASE 0,89. Împreună 
 
 ETS, SARIMA și TBATS nu sînt separate de metoda sezonieră naivă: statisticile HLN sînt −0,80, −1,23 și −1,50, cu p-value 0,431, 0,231 și 0,145. Trei modele cu parametri estimați nu se disting, pe un an de prognoze, de o metodă care repetă săptămîna trecută. Pentru consumul zilnic, informația de calendar contează mai mult decît clasa de modele.
 
-## Un al doilea test: PIB-ul României {h=35d8fb70}
+## Evaluarea prognozelor pentru PIB-ul României {h=55702621}
 
 A doua evaluare folosește PIB-ul trimestrial $100\ln Y$, cu erorile exprimate în procente. Ea are 51 de origini trimestriale, de la T4 2012 la T2 2025, cu fereastră care se extinde, și compară modelul airline, ETS, metoda sezonieră naivă și combinarea SARIMA–ETS. Tabelul dă MAE la orizonturile de 1 și 4 trimestre, pentru toate originile și pentru cele 43 de origini rămase după eliminarea anilor 2019–2020.
 

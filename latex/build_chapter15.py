@@ -713,7 +713,7 @@ D.frame(T('Conventions used throughout the course', 'Convențiile folosite în t
 # =============================================================================
 # 7. BOX-JENKINS PE INFLAȚIA DIN ROMÂNIA
 # =============================================================================
-D.section('Box--Jenkins from start to finish: Romanian inflation', 'Box--Jenkins de la un capăt la altul: inflația din România')
+D.section('The complete Box--Jenkins procedure: Romanian inflation', 'Procedura Box--Jenkins completă: inflația din România')
 
 D.frame(T('The method in six steps', 'Metoda în șase pași'), two(enum(
     T('\\textbf{Plot} and transform: logarithm, $\\Delta$, $\\Delta_{12}$', '\\textbf{Graficul} și transformarea: logaritm, $\\Delta$, $\\Delta_{12}$'),
@@ -1092,7 +1092,7 @@ D.frame(T('The file AI\\_USE.md', 'Fișierul AI\\_USE.md'), items(
     (T('\\textbf{You are responsible for every number and every reference}', '\\textbf{Răspundeți pentru fiecare cifră și pentru fiecare referință}'),
      [T('every number: recomputed with your own code from the data', 'fiecare cifră: recalculată cu propriul cod, din date'),
       T('every reference: its DOI opened and its title checked', 'fiecare referință: DOI-ul deschis și titlul verificat')]),
-    T('The typical AI errors of this course: the slide ``Checks you must run\'\' of the section on AI', 'Erorile AI tipice din acest curs: slide-ul „Verificări necesare” din secțiunea despre AI')))
+    T('The typical AI errors of this course: the slide ``Necessary checks\'\' of the section on AI', 'Erorile AI tipice din acest curs: slide-ul „Verificări necesare” din secțiunea despre AI')))
 
 D.frame(T('The final grade', 'Nota finală'), table(
     TB + 'p{3.2cm}cc' + TB + 'p{5.6cm}',
@@ -1120,7 +1120,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that downloads the Romanian HICP from Eurostat (prc\\_hicp\\_minr, M.I15.TOTAL.RO), fits every SARIMA(p,1,q)(P,1,Q)12 with p, q <= 2 and P, Q <= 1 to 100 log HICP up to August 2024, reports AICc, BIC and Ljung-Box p-values with m - k degrees of freedom, and compares one-step forecasts with the seasonal naive method by MASE and the Diebold-Mariano test.}',
         '\\aiprompt{Write Python code that downloads the Romanian HICP from Eurostat (prc\\_hicp\\_minr, M.I15.TOTAL.RO), fits every SARIMA(p,1,q)(P,1,Q)12 with p, q <= 2 and P, Q <= 1 to 100 log HICP up to August 2024, reports AICc, BIC and Ljung-Box p-values with m - k degrees of freedom, and compares one-step forecasts with the seasonal naive method by MASE and the Diebold-Mariano test.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The null hypotheses: ADF has a unit root under $H_0$, KPSS has stationarity; an answer that swaps them is wrong', 'Ipotezele nule: la ADF, $H_0$ este rădăcina unitară, la KPSS staționaritatea; un răspuns care le inversează este greșit'),
     T('The degrees of freedom: Ljung--Box on residuals uses $m - k$; Granger $F$ uses $(p, T - Kp - 1)$', 'Gradele de libertate: Ljung--Box pe reziduuri folosește $m - k$; testul Granger $F$ folosește $(p, T - Kp - 1)$'),
     T('The signs: the EViews and Python conventions for MA terms and for the error-correction coefficient', 'Semnele: convențiile EViews și Python pentru termenii MA și pentru coeficientul de corecție a erorii'),

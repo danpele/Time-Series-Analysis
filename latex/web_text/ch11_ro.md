@@ -539,7 +539,7 @@ Pentru foundation models, benchmark-ul de referință este GIFT-Eval, al lui @Ak
 
 Literatura are și studii critice. @ZengEtAl2023 au arătat că modele liniare foarte simple au bătut primele modele de prognoză bazate pe Transformer pe benchmark-urile de prognoză pe termen lung folosite atunci. @TanEtAl2024 au arătat că, în metodele care adaptează LLM-uri la serii de timp, componenta de model de limbaj nu adaugă precizie. Ambele studii întăresc lecția testului din acest capitol: un model complex trebuie comparat cu repere simple înainte de a fi preferat.
 
-## Utilitatea foundation models: avantaje și limite {h=84a49652}
+## Avantajele și limitele foundation models {h=9b5d2bd1}
 
 Foundation models ajută în primul rînd cînd există multe serii și puțin timp pentru fiecare. Ele funcționează cel mai bine pe serii cu sezonalitate puternică și regulată și cu contexte lungi, ca în cazul consumului de energie, al vînzărilor sau al traficului. Sînt un reper rapid și puternic înaintea unui model dedicat și dau o prognoză probabilistă fără cost suplimentar.
 
@@ -559,7 +559,7 @@ Testul pe 708 origini dă un tablou mai nuanțat decît orice exemplu izolat. Ce
 
 Un scor de test este credibil doar dacă prognoza nu a folosit informație din perioada de test. Secțiunea deosebește două surse ale acestei probleme. Leakage-ul apare în codul analistului și poate fi controlat. Contaminarea apare în corpusul de pre-antrenare al modelului și poate fi doar verificată, indirect, comparînd rezultatele de dinainte și de după lansarea modelului.
 
-## Leakage-ul în propriul cod {h=a11d49e0}
+## Leakage-ul în fluxul de prognoză {h=aab82824}
 
 Leakage-ul (*data leakage*) înseamnă că informația din perioada de test ajunge, direct sau indirect, în prognoze [@HewamalageEtAl2023]. Efectul este întotdeauna optimist: modelul pare mai bun decît va fi atunci cînd va prognoza un viitor necunoscut. Cauzele tipice sînt banale, de aceea sînt ușor de trecut cu vederea.
 

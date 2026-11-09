@@ -725,7 +725,7 @@ O serie de timp este ordonată în timp, iar dependența ei de trecut face posib
 
 ACF dezvăluie un trend printr-o descreștere lentă, o sezonalitate prin vîrfuri la multiplii lui $m$, iar absența memoriei prin valori apropiate de zero. Netezirea exponențială dă o pondere mai mare trecutului recent, cu o pantă și cu factori sezonieri atunci cînd este nevoie. Fiecare prognoză trebuie evaluată față de metodele naive de referință, pe un set de test care urmează în timp după setul de antrenare.
 
-## Autoevaluare, idee de proiect; urmează Capitolul 1 {h=6f6a3d79}
+## Autoevaluare, idee de proiect și cursul următor: Capitolul 1 {h=7e8a8b5d}
 
 Cele patru întrebări de autoevaluare verifică ideile centrale ale capitolului. Prima, despre creșterea de la un trimestru la altul a PIB-ului neajustat, are răspunsul în exemplul rezolvat din [secțiunea despre notație](#sec-6). A doua, despre semnificația unui factor sezonier de 0,76 pentru trimestrul I, are răspunsul în descompunerea PIB-ului. A treia, despre ce spune despre o serie o valoare estimată a lui $\alpha$ apropiată de 1, are răspunsul în exemplul EUR/RON. A patra, despre motivul pentru care setul de test trebuie să urmeze după setul de antrenare, are răspunsul în [secțiunea despre evaluarea prognozelor](#sec-8).
 

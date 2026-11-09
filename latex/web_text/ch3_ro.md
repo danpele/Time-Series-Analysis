@@ -55,7 +55,7 @@ Testele ADF, KPSS și Zivot–Andrews și estimarea modelelor ARIMA sînt dispon
 
 O serie cu trend poate fi descrisă în două feluri. Primul este o dreaptă fixă plus abateri staționare de la ea: un trend determinist (*deterministic trend*). Al doilea este o sumă cumulată de șocuri, eventual cu o derivă: un trend stochastic (*stochastic trend*). Pe un grafic, cele două arată aproape la fel; diferă însă efectul unui șoc, varianța pe termen lung și tratamentul corect. Secțiunea definește cele două modele, procesele integrate și rădăcina unitară, apoi arată ce se întîmplă cînd unei serii i se aplică tratamentul greșit.
 
-## Patru serii care urcă în timp {h=91a92aa2}
+## Patru serii cu trend {h=6c28b4d5}
 
 Graficul reunește patru serii românești și internaționale observate din 2000. Sus în stînga este logaritmul PIB-ului real trimestrial al României, ajustat sezonier, împreună cu dreapta ajustată prin metoda celor mai mici pătrate. Sus în dreapta este logaritmul indicelui armonizat al prețurilor de consum (IAPC), lunar, cu baza 2015 = 100. Jos în stînga este cursul zilnic EUR/RON, cursul de referință al Băncii Naționale a României (BNR), din iulie 2005. Jos în dreapta sînt logaritmii prețurilor zilnice ale indicilor BET și S&P 500, fiecare minus valoarea lui din 2000, ca să pornească de la zero.
 
@@ -155,7 +155,7 @@ Seriile cu trend din economie pot fi staționare în jurul unei drepte sau pot c
 
 Problema din secțiunea precedentă, o regresie pe timp care pare semnificativă deși nu există nicio pantă, apare și cînd o serie $I(1)$ este regresată pe o altă serie $I(1)$, independentă de ea. Fenomenul se numește regresie falsă (*spurious regression*). Secțiunea urmărește istoria lui, de la Yule (1926) la Granger și Newbold (1974), îl reproduce prin simulare, explică de ce eșuează testul $t$ și îl ilustrează pe date reale românești și americane.
 
-## 1926: corelații fără sens {h=c089152a}
+## Yule (1926): corelații fără sens {h=f1f8611a}
 
 Primul care a pus problema sistematic a fost statisticianul britanic George Udny Yule. Lucrarea lui @Yule1926 începe cu întrebarea din titlu: de ce obținem uneori corelații fără sens (*nonsense correlations*) între serii de timp? Exemplul lui: în Anglia și Țara Galilor, între 1866 și 1911, ponderea căsătoriilor oficiate de Biserica Angliei și rata mortalității aveau o corelație de circa 0,95. Nu există nicio legătură cauzală între ele; ambele serii au scăzut în acea perioadă.
 
@@ -163,7 +163,7 @@ Explicația lui Yule anticipează teoria modernă. Pentru serii care evoluează 
 
 Problema a reapărut cincizeci de ani mai tîrziu, în modelele econometrice estimate pe nivelurile unor serii macroeconomice cu trend. Cadrul următor descrie redescoperirea ei.
 
-## 1974: Granger și Newbold {h=6ecd183a}
+## Granger și Newbold (1974): regresii false {h=7b276074}
 
 @GrangerNewbold1974 au studiat prin simulare regresia unui mers aleator pe un alt mers aleator, independent de primul: $y_t = a + bx_t + e_t$, cu $y_t$ și $x_t$ serii $I(1)$ independente. Valoarea adevărată a pantei este $b = 0$. Testul $t$ pentru $b = 0$ a respins totuși mult prea des, coeficientul $R^2$ a fost frecvent mare, iar statistica Durbin–Watson (DW) a fost apropiată de 0.
 
@@ -183,7 +183,7 @@ Panoul din dreapta arată histograma statisticii $t$ pentru $T = 200$, în nivel
 
 În diferențe, proporția respingerilor este 4,7% la $T = 200$, aproape de nivelul nominal de 5%, iar histograma albastră urmează densitatea $N(0,1)$. Testul $t$ funcționează din nou, deoarece $\Delta y_t$ și $\Delta x_t$ sînt zgomote albe independente și ipotezele OLS sînt îndeplinite.
 
-## Motivul pentru care testul t eșuează {h=24b5945d}
+## Eșecul testului t în regresia falsă {h=2bf09530}
 
 Explicația este în termenul de eroare. Dacă $b = 0$, eroarea regresiei este $e_t = y_t - a$, adică un mers aleator. Ipotezele OLS, erori staționare și necorelate, nu sînt îndeplinite: reziduurile sînt puternic autocorelate, iar eroarea standard obișnuită, calculată ca și cum ar fi independente, este mult prea mică. Raportul $t$ este deci mult prea mare.
 
@@ -319,7 +319,7 @@ Erorile au costuri asimetrice. Dacă se omite un trend necesar, o serie stațion
 
 Practic, se examinează întîi graficul seriei, apoi se alege regresia. Pentru cazurile ambigue, @DickeyFuller1981 propun teste comune, de tip $F$, pentru rădăcina unitară și pentru coeficientul trendului.
 
-## Cîte diferențieri: I(1) sau I(2)? {h=2afab766}
+## Numărul de diferențieri: I(1) sau I(2) {h=5d5d26d0}
 
 Cînd o serie poate fi $I(2)$, ordinea testelor contează. @DickeyPantula1987 recomandă testarea de la cel mai mare ordin plauzibil în jos. Pasul 1 aplică ADF pe $\Delta y_t$; dacă testul nu respinge, $\Delta y_t$ are o rădăcină unitară, iar $y_t$ poate fi $I(2)$. Pasul 2, doar dacă primul pas a respins, aplică ADF pe $y_t$: o respingere indică $I(0)$, o nerespingere indică $I(1)$.
 
@@ -423,7 +423,7 @@ Cele trei teste dau, pe seriile reale ale capitolului, o imagine coerentă: nive
 
 Testele de rădăcină unitară compară două modele: o serie staționară în jurul unei medii sau al unui trend fix și o serie cu trend stochastic. O a treia posibilitate este o serie staționară în jurul unei medii sau al unui trend care se schimbă o singură dată, printr-o ruptură structurală (*structural break*). Secțiunea arată că o asemenea ruptură face ca testele obișnuite să nu respingă rădăcina unitară, prezintă testul Zivot–Andrews, care caută data rupturii, și îl aplică pe debitul Nilului și pe cursul EUR/RON.
 
-## Perron (1989): o ruptură poate semăna cu o rădăcină unitară {h=5accd454}
+## Perron (1989): rupturi structurale și teste de rădăcină unitară {h=19cdec44}
 
 @Perron1989 a observat că o serie staționară în jurul unei medii sau al unui trend care se schimbă o dată pare foarte persistentă. Regresia Dickey–Fuller nu conține ruptura și o poate explica doar printr-un $\hat\phi$ apropiat de 1: după salt, seria nu revine la vechea medie, ceea ce seamănă cu un șoc permanent. Testul își pierde astfel puterea, iar rădăcina unitară nu se respinge.
 
@@ -431,7 +431,7 @@ Perron a reexaminat seriile lui Nelson și Plosser cu două rupturi considerate 
 
 Critica principală a vizat procedura: datele rupturilor au fost alese după examinarea seriilor. Alegerea datei pe baza acelorași date face ca valorile critice calculate pentru o dată fixată în avans să fie prea puțin severe, iar testul să respingă prea ușor.
 
-## O schimbare de nivel înșală testul ADF {h=85b3b18a}
+## Testul ADF în prezența unei schimbări de nivel {h=a5c78cfb}
 
 Simularea construiește o serie staționară cu o ruptură cunoscută. Panoul din stînga arată zgomot AR(1) cu $\phi = 0{,}6$ în jurul unei medii care sare de la 0 la 5 la $t = 100$; linia roșie întreruptă este media adevărată. Seria este staționară de fiecare parte a rupturii, iar o schimbare de nivel (*level shift*) este singura ei nestaționaritate.
 
@@ -569,7 +569,7 @@ Ponderile $\psi$ ale nivelurilor sînt sumele parțiale ale puterilor lui $\phi$
 
 Intervalul aproape se triplează în trei pași: raportul este $10{,}66/3{,}92 = 2{,}72$. La un mers aleator, același raport ar fi $\sqrt{3} = 1{,}73$. Inerția $\phi = 0{,}6$ amplifică incertitudinea, pentru că un șoc de azi modifică și creșterile următoare, deci se acumulează în nivel cu ponderi mai mari decît 1.
 
-## Viteza de creștere a intervalelor {h=c4a45411}
+## Creșterea intervalelor de prognoză cu orizontul {h=7b9ed80a}
 
 Graficul compară semilățimea intervalului de prognoză de 95%, în unități $\sigma$, pentru orizonturile 1–20 și cinci modele. Toate pornesc de la $1{,}96\sigma$ la $h = 1$, pentru că eroarea la un pas este chiar șocul $\varepsilon_{T+1}$. Diferențele apar de la al doilea pas și provin doar din ponderile $\psi_j$ ale fiecărui model.
 
@@ -647,7 +647,7 @@ A doua verificare privește rădăcinile care aproape se anulează. Pe PIB-ul Ro
 
 Regula generală este ca rezultatul selecției automate să fie verificat de fiecare dată. Se reprezintă grafic datele, se verifică convergența estimării și poziția rădăcinilor, se aplică testele pe reziduuri și se compară prognozele cu o metodă simplă de referință, de exemplu mersul aleator ([Capitolul 0](ch0_ro.html)).
 
-## Inflația din România: d = 0 sau d = 1? {h=ab6e8b2c}
+## Inflația din România: alegerea între d = 0 și d = 1 {h=81543dac}
 
 Inflația anuală IAPC a României, din ianuarie 2005 pînă în august 2026, este seria neconcludentă din tabelul secțiunii 4. Graficul compară două modele, fiecare cel mai bun după AICc în clasa lui, cu $p \le 3$ și $q \le 2$: unul cu $d = 0$ și medie, celălalt cu $d = 1$. Ambele produc prognoze pentru 24 de luni, cu intervale de 95%.
 

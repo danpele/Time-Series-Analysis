@@ -76,7 +76,7 @@ QUANTLETS = [
          consts=CONSTS, funcs=CORE + [g.fig_cost, g.fig_fits], run='print(fig_cost())\nfits = fig_fits()\nprint(fits)',
          charts=['tsa_ch13_cost', 'tsa_ch13_fits']),
     dict(name='TSA_ch13_confidence',
-         desc='Confidence from many windows: the estimated critical time for 29 windows ending at one date, the critical '
+         desc='Estimation over many windows: the estimated critical time for 29 windows ending at one date, the critical '
               'time as the end of the window moves, and the LPPLS confidence indicator around the peaks of the Nasdaq '
               '100 (2000), Shanghai Composite (2015), BET (2007) and Bitcoin (2017).',
          keywords='LPPLS confidence indicator, multiple windows, critical time, look-ahead bias, bubble diagnosis',

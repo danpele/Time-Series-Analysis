@@ -40,7 +40,7 @@ Romania: real GDP growth quarter on quarter and the unemployment rate, seasonall
 - Impulse responses | Orthogonalisation with the Cholesky decomposition, the role of the ordering and generalised responses.
 - Forecast error variance decomposition | The shares of each shock in the forecast uncertainty and the Diebold–Yilmaz spillover index.
 - Forecasting with a VAR | Point forecasts, forecast intervals and a fair out-of-sample comparison with univariate benchmarks.
-- Structural VARs and a landmark case study | From the reduced form to structural shocks, and the VAR of Stock and Watson (2001).
+- Structural VARs and the Stock–Watson case study | From the reduced form to structural shocks, and the VAR of Stock and Watson (2001).
 - Possible contribution of AI | What an assistant can draft and what must be checked.
 - Summary | Key ideas, formulas and self-assessment questions.
 
@@ -66,7 +66,7 @@ The computations use the VAR class of *statsmodels* in Python: select_order for 
 
 This section introduces the objects of multivariate time-series analysis. It starts with four Romanian macroeconomic series and the questions they raise, defines a vector time series and its autocovariance matrices, and introduces the cross-correlation function, the multivariate analogue of the autocorrelation function. Two applications, one on daily stock returns and one on Romanian inflation and interest rates, show what the cross-correlation function reveals and where it stops being informative. The section ends with the argument for a single model of all the series.
 
-## Romania: four macro series that move together {h=93fb4a9e}
+## Four Romanian macroeconomic series {h=10846bf3}
 
 The chart shows four panels of Romanian data. The top-left panel is the growth of real gross domestic product (GDP) over the previous quarter, seasonally adjusted, in percent. The top-right panel shows two series on one axis: the 12-month inflation rate of the harmonised index of consumer prices (HICP), in red, and ROBOR 3M, the three-month interest rate at which Romanian banks offer interbank deposits, in blue, in percent per year. The bottom panels show the seasonally adjusted unemployment rate and the EUR/RON reference rate of the National Bank of Romania (BNR), as a monthly mean.
 
@@ -292,7 +292,7 @@ The first term measures the fit: it falls as lags are added. The second is a pen
 
 The comparison must use a common sample. A VAR(6) loses six initial observations to the lags, a VAR(1) only one; if each model used all its available observations, the criteria would compare fits on different data.
 
-## Romanian VAR: which p? {h=46a93339}
+## Romanian VAR: the choice of p {h=bab367ac}
 
 The chart shows the three criteria for the Romanian VAR in GDP growth, 12-month inflation and ROBOR 3M, from 2005 Q1 to 2026 Q2, for $p = 0, \dots, 6$, all estimated on the common sample of 80 quarters. The horizontal axis is the lag order, the vertical axis the value of the criterion; the circled points mark the minimum of each criterion.
 
@@ -334,7 +334,7 @@ Estimating a VAR requires nothing beyond OLS, and choosing its order requires a 
 
 If a VAR captures the dynamics of the data, its residuals should be white noise: uncorrelated over time and across equations at different dates. This section introduces the multivariate portmanteau test for this property and a test of normality, and applies both to the Romanian VAR(2).
 
-## Are the residuals white noise? {h=e9b854d7}
+## White-noise tests for the residuals {h=e427d1fa}
 
 The multivariate portmanteau test of @Hosking1980 tests the null hypothesis $H_0$ that the residuals have no autocorrelation and no cross-correlation up to lag $h$. Its statistic is
 
@@ -416,7 +416,7 @@ ROBOR does not Granger-cause inflation, with p = 0.417: there is no evidence tha
 
 ROBOR → GDP growth, with p = 0.022, says that higher interest rates precede weaker growth, the expected direction of a monetary tightening. The result depends on the information set: in a bivariate VAR with only GDP growth and ROBOR, the p-value is 0.063.
 
-## Markets: does New York lead Frankfurt and Bucharest? {h=a091098f}
+## Markets: Granger causality from New York to Frankfurt and Bucharest {h=3133f99b}
 
 The table reports Granger tests in a VAR(4) for the daily log returns of the S&P 500, the DAX and the BET, on 6,429 days from 2000 to 2026. The order 4 follows the specification of @DieboldYilmaz2012; HQ would choose $p = 2$ and AIC $p = 8$. The tests are $F(4, \cdot)$, with four restrictions each, and the very large sample makes even small effects significant.
 
@@ -482,7 +482,7 @@ Granger causality is a precise and testable concept, but a narrow one: it says w
 
 An impulse response traces how all variables of a VAR move over time after a single shock. This section defines impulse responses through the moving-average representation, explains why the correlation of the shocks forces an orthogonalisation, and introduces the Cholesky decomposition, in which the ordering of the variables is an identifying assumption. It applies the method to the Romanian VAR, shows how much the ordering matters, and introduces generalised impulse responses, which do not depend on the ordering, with an application to stock markets.
 
-## Impulse responses and why we orthogonalise {h=e49fab4e}
+## Impulse responses and the need for orthogonalisation {h=fd699f3b}
 
 The impulse response function (IRF) is the path of $Y_{j,t+h}$, for $h = 0, 1, 2, \dots$, after a single shock in variable $k$ at time $t$, with all other shocks set to zero. From the moving-average representation @eq:ma, the response to a unit change in $\varepsilon_{kt}$ is the column $k$ of $\bPhi_h$: element $(j, k)$ is the response of variable $j$ after $h$ periods.
 
@@ -524,7 +524,7 @@ A ROBOR shock reduces GDP growth by 0.61 pp in the following quarter, and then t
 
 Inflation shocks are persistent: the response of inflation to its own shock is 1.18 pp after one year and 0.24 pp after three. The slow fading reflects the largest eigenvalue of the model, 0.869.
 
-## Does the ordering change the answer? {h=ffd60a63}
+## Effect of the ordering on the responses {h=90789a07}
 
 The chart compares, for the same VAR(2), the two responses that involve inflation and ROBOR under three schemes. The solid blue line uses the ordering $g, \pi, i$, with inflation before ROBOR; the dashed red line uses $g, i, \pi$, with ROBOR before inflation; the dotted green line shows the generalised responses of @PesaranShin1998, which do not depend on the ordering. The left panel is the response of ROBOR to an inflation shock, the right panel the response of inflation to a ROBOR shock, both in percentage points for horizons 0 to 12 quarters.
 
@@ -708,7 +708,7 @@ For Romania, the VAR brings no forecasting gain; for the United States in 1985�
 
 A VAR produces joint forecasts with intervals by the same recursion as an ARMA model, and its forecasts revert to the mean at the speed set by the largest eigenvalue. Whether it forecasts better than univariate models is an empirical question, answered out of sample: often it does not, because estimating many coefficients costs more than the extra information is worth. The [next section](#sec-10) returns to the interpretation of the shocks.
 
-# Structural VARs and a landmark case study
+# Structural VARs and the Stock–Watson case study
 
 The reduced-form VAR describes the data; a structural VAR gives its shocks an economic meaning, such as a monetary policy shock. This section shows how the two are related and why the step from one to the other always requires assumptions. It then re-estimates the VAR of @StockWatson2001 for the United States and closes with the legacy of the VAR approach.
 
@@ -780,7 +780,7 @@ An AI assistant helps in three places. It can draft the code of a VAR analysis: 
 
 The prompt on the slide asks for a complete Romanian VAR pipeline: GDP growth from the Eurostat table namq_10_gdp, 12-month HICP inflation from prc_hicp_minr and ROBOR 3M from irt_st_m, the choice of the lag order by AIC, BIC and HQ, stability and residual checks, Granger tests and orthogonalised impulse responses with bootstrap bands. A precise prompt of this kind names the data sources, the transformations and the diagnostics, which makes the answer easier to check.
 
-## Checks you must run {h=c6544b1f}
+## Necessary checks {h=6291ab97}
 
 The first checks concern the data. The series must be aligned on the same quarters, without values carried forward (forward fill) or overlapping periods, which create false leads: a monthly series carried forward to fill a missing quarter appears to precede the others. Each variable must be tested for stationarity, with the tests of [Chapter 3](../EN/Courses/chapter3_unit_roots_arima_models.pdf), before any Granger test; for $I(1)$ variables, the options are differences, the Toda–Yamamoto approach or a VECM.
 

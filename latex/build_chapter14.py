@@ -220,7 +220,7 @@ for _k, _v in list(V.items()):
 # =============================================================================
 # INTRODUCERE
 # =============================================================================
-D.frame(T('Why this chapter', 'Motivația capitolului'), items(
+D.frame(T('Motivation for the chapter', 'Motivația capitolului'), items(
     (T('\\textbf{Question}: how do the risks of several assets move \\textbf{together}? Chapter 5 modelled the volatility of one series at a time',
        '\\textbf{Întrebarea}: cum se mișcă \\textbf{împreună} riscurile mai multor active? Capitolul 5 a modelat volatilitatea cîte unei singure serii'),
      [T('the risk of a portfolio, a hedge or the spread of a crisis depends on \\textbf{covariances and correlations}, and these change in time',
@@ -256,9 +256,9 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 # =============================================================================
 # 1. DE CE VOLATILITATE MULTIVARIATĂ
 # =============================================================================
-D.section('Why multivariate volatility', 'Rolul volatilității multivariate')
+D.section('The role of multivariate volatility', 'Rolul volatilității multivariate')
 
-D.frame(T('Three questions that need covariances', 'Trei întrebări care cer covarianțe'), items(
+D.frame(T('Three applications that require covariances', 'Trei aplicații care necesită covarianțe'), items(
     (T('\\textbf{Portfolio risk}', '\\textbf{Riscul portofoliului}'),
          [T('the variance of a portfolio with weights $\\mathbf{w}$ is $\\sigma_p^2 = \\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$ \\refMark', 'varianța unui portofoliu cu ponderile $\\mathbf{w}$ este $\\sigma_p^2 = \\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$ \\refMark'),
           T('$\\mathbf{w}$: the vector of portfolio weights; $\\mathbf{H}$: the covariance matrix of the returns; $\\sigma_p^2$: the portfolio variance', '$\\mathbf{w}$: vectorul ponderilor din portofoliu; $\\mathbf{H}$: matricea de covarianță a randamentelor; $\\sigma_p^2$: varianța portofoliului'),
@@ -295,7 +295,7 @@ interp(('the diversification curve', 'curbei de diversificare'), [
        'Curba este concavă: aceeași creștere a lui $\\rho$ adaugă mai multă volatilitate la corelații mici decît la corelații mari'), []),
     T('The question of the chapter: does $\\rho$ stay put in real markets, or does it move with the state of the market?', 'Întrebarea capitolului: rămîne $\\rho$ constant pe piețele reale sau se mișcă odată cu starea pieței?')])
 
-chart(T('Correlations change over time', 'Corelațiile se schimbă în timp'), 'tsa_ch14_rolling_corr', 'TSA_ch14_correlations', [
+chart(T('Time-varying correlations', 'Corelații variabile în timp'), 'tsa_ch14_rolling_corr', 'TSA_ch14_correlations', [
     (T('Correlation of daily log returns over rolling windows of 250 trading days (about one year), dated at the window end', 'Corelația randamentelor logaritmice zilnice pe ferestre mobile de 250 de zile de tranzacționare (aproximativ un an), datată la sfîrșitul ferestrei'),
      [T('returns on the days on which both markets trade; shaded: September 2008--March 2009 and February--April 2020', 'randamente în zilele în care se tranzacționează ambele piețe; zonele colorate: septembrie 2008--martie 2009 și februarie--aprilie 2020')])],
     h='0.62\\textheight')
@@ -321,7 +321,7 @@ D.frame(T('Asynchronous trading and the bias of daily correlations', 'Tranzacți
      [T('the gap is small for BET and DAX, which close almost together; remedies: weekly returns or returns between synchronous times',
         'diferența este mică pentru BET și DAX, care se închid aproape simultan; remedii: randamente săptămînale sau randamente între momente sincrone')])), size='footnotesize')
 
-D.recap(('Why multivariate volatility', 'rolul volatilității multivariate'), [
+D.recap(('The role of multivariate volatility', 'rolul volatilității multivariate'), [
     T('Portfolio variance $\\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$, hedge ratios and contagion all depend on covariances', 'Varianța portofoliului $\\mathbf{w}^\\top\\mathbf{H}\\mathbf{w}$, rapoartele de acoperire și contagiunea depind toate de covarianțe'),
     T('Rolling correlations of real markets move a lot: integration, crises, new asset classes', 'Corelațiile pe ferestre mobile se mișcă mult pe piețele reale: integrare, crize, clase noi de active'),
     T('Check the trading hours: asynchronous closes bias daily correlations towards zero', 'Verificați orele de tranzacționare: închiderile asincrone deplasează corelațiile zilnice spre zero')])
@@ -498,7 +498,7 @@ D.frame(T('Worked example: one step of the DCC recursion', 'Exemplu rezolvat: un
     (T('Step 4: $\\rho_{12,t} = @{ex.q12}/\\sqrt{@{ex.q11} \\cdot @{ex.q22}} = @{ex.rho}$', 'Pasul 4: $\\rho_{12,t} = @{ex.q12}/\\sqrt{@{ex.q11} \\cdot @{ex.q22}} = @{ex.rho}$'),
      [T('a large joint fall raises tomorrow\'s correlation from 0.50 to @{ex.rho}; without step 3 the ``correlation\'\' $q_{12,t}$ would be @{ex.q12}', 'o scădere comună mare crește corelația de mîine de la 0,50 la @{ex.rho}; fără pasul 3, „corelația” $q_{12,t}$ ar fi @{ex.q12}')])), size='footnotesize')
 
-D.frame(T('Reading $a$ and $b$', 'Interpretarea parametrilor $a$ și $b$'), items(
+D.frame(T('Interpreting $a$ and $b$', 'Interpretarea parametrilor $a$ și $b$'), items(
     (T('$a$ is the \\textbf{news} coefficient', '$a$ este coeficientul de \\textbf{știri}'),
          [T("how much one day's joint shock moves the correlation", 'cît mișcă un șoc comun de o zi corelația'),
           T('typical daily values 0.01--0.05', 'valori zilnice tipice: 0,01--0,05')]),
@@ -781,7 +781,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that fits a GARCH(1,1) to daily BET and DAX log returns on common trading days, estimates a DCC(1,1) model by two-step maximum likelihood with correlation targeting, plots the dynamic hedge ratio and compares its out-of-sample hedging effectiveness with static OLS.}',
         '\\aiprompt{Write Python code that fits a GARCH(1,1) to daily BET and DAX log returns on common trading days, estimates a DCC(1,1) model by two-step maximum likelihood with correlation targeting, plots the dynamic hedge ratio and compares its out-of-sample hedging effectiveness with static OLS.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The library: \\texttt{arch} has no DCC model; an AI answer that calls \\texttt{arch\\_model(..., vol=\'DCC\')} has invented it', 'Biblioteca: \\texttt{arch} nu are model DCC; un răspuns AI care apelează \\texttt{arch\\_model(..., vol=\'DCC\')} l-a inventat'),
     T('The timing: $\\mathbf{Q}_t$ must use $\\mathbf{z}_{t-1}$, not $\\mathbf{z}_t$; otherwise the VaR and the hedge use tomorrow\'s information', 'Momentul: $\\mathbf{Q}_t$ trebuie să folosească $\\mathbf{z}_{t-1}$, nu $\\mathbf{z}_t$; altfel VaR-ul și acoperirea folosesc informația de mîine'),
     T('The rescaling: $\\rho_{ij,t} = q_{ij,t}/\\sqrt{q_{ii,t}q_{jj,t}}$, and every $\\mathbf{R}_t$ must have ones on the diagonal and $|\\rho| < 1$', 'Rescalarea: $\\rho_{ij,t} = q_{ij,t}/\\sqrt{q_{ii,t}q_{jj,t}}$, iar fiecare $\\mathbf{R}_t$ trebuie să aibă 1 pe diagonală și $|\\rho| < 1$'),

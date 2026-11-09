@@ -306,7 +306,7 @@ D.frame(T('Worked example: conditional and unconditional variance', 'Exemplu rez
     T('With Normal $z_t$, the mixture has kurtosis $3E[\\sigma_t^4]/(E[\\sigma_t^2])^2 = @{ltv.k}$: a time-varying variance creates heavy tails',
       'Cu $z_t$ Normale, amestecul are kurtosis-ul $3E[\\sigma_t^4]/(E[\\sigma_t^2])^2 = @{ltv.k}$: o varianță variabilă în timp creează cozi groase')))
 
-chart(T('The mean model leaves ARCH effects', 'Modelul pentru medie lasă efecte ARCH'), 'tsa_ch5_arma_resid', 'TSA_ch5_mean_model', [
+chart(T('ARCH effects in the residuals of the mean model', 'Efecte ARCH în reziduurile modelului pentru medie'), 'tsa_ch5_arma_resid', 'TSA_ch5_mean_model', [
     T('BET: left, an AR(1) for the mean (order chosen by BIC among AR(0)--AR(5): $p = @{ar.p}$), constant variance; right, the same AR(1) with a GARCH(1,1)-t variance (Section 6)',
       'BET: stînga, un AR(1) pentru medie (ordinul ales după BIC dintre AR(0)--AR(5): $p = @{ar.p}$), cu varianță constantă; dreapta, același AR(1) cu o varianță GARCH(1,1)-t (secțiunea 6)')], h='0.56\\textheight')
 
@@ -328,7 +328,7 @@ D.recap(('conditional mean and variance', 'media și varianța condiționată'),
 # =============================================================================
 D.section('The ARCH model', 'Modelul ARCH')
 
-D.frame(T('1982: Robert Engle and ARCH', '1982: Robert Engle și modelul ARCH'), cols(items(
+D.frame(T('Robert Engle and the ARCH model (1982)', 'Robert Engle și modelul ARCH (1982)'), cols(items(
     (T('\\refEngle: \\textbf{ARCH} (autoregressive conditional heteroskedasticity): today\'s variance depends on yesterday\'s squared shocks',
        '\\refEngle: \\textbf{ARCH} (autoregressive conditional heteroskedasticity, heteroscedasticitate condiționată autoregresivă): varianța de azi depinde de pătratele șocurilor de ieri'),
      [T('first application: the variance of inflation in the United Kingdom, not a financial market', 'prima aplicație: varianța inflației din Regatul Unit, nu o piață financiară')]),
@@ -400,7 +400,7 @@ D.recap(('the ARCH model', 'modelul ARCH'), [
 # =============================================================================
 D.section('The GARCH(1,1) model', 'Modelul GARCH(1,1)')
 
-D.frame(T('1986: Tim Bollerslev and GARCH', '1986: Tim Bollerslev și modelul GARCH'), cols(items(
+D.frame(T('Tim Bollerslev and the GARCH model (1986)', 'Tim Bollerslev și modelul GARCH (1986)'), cols(items(
     (T('\\refBoll, a doctoral student of Engle at the University of California, San Diego: add yesterday\'s variance to the equation',
        '\\refBoll, doctorand al lui Engle la University of California, San Diego: adaugă în ecuație varianța de ieri'),
      [T('\\textbf{GARCH} (generalised ARCH): a few parameters replace a long ARCH($q$)', '\\textbf{GARCH} (generalised ARCH, ARCH generalizat): cîțiva parametri înlocuiesc un ARCH($q$) lung')]),
@@ -628,7 +628,7 @@ chart(T('Conditional volatility: EUR/RON and Bitcoin', 'Volatilitatea condițion
     T('Interpretation: the two IGARCH series have volatility levels that wander: no single ``normal\'\' level', 'Interpretare: cele două serii IGARCH au niveluri de volatilitate care se deplasează: nu există un singur nivel „normal”')],
     h='0.60\\textheight')
 
-chart(T('How long does a volatility shock last?', 'Durata unui șoc de volatilitate'), 'tsa_ch5_persistence', 'TSA_ch5_volatility_markets', [
+chart(T('The duration of a volatility shock', 'Durata unui șoc de volatilitate'), 'tsa_ch5_persistence', 'TSA_ch5_volatility_markets', [
     T('Share of a variance shock left after $h$ days: $(\\alpha + \\beta)^h$; the half-life is where the curve crosses 1/2', 'Ponderea unui șoc de varianță rămasă după $h$ zile: $(\\alpha + \\beta)^h$; timpul de înjumătățire este punctul în care curba trece de 1/2'),
     T('Interpretation: after a crisis the S\\&P 500 needs about half a year to halve the excess variance, the BET about three months; EUR/RON and Bitcoin never',
       'Interpretare: după o criză, S\\&P 500 are nevoie de circa jumătate de an ca să înjumătățească varianța în exces, BET de circa trei luni; EUR/RON și Bitcoin, niciodată')],
@@ -748,7 +748,7 @@ D.frame(T('Checking a fitted model', 'Verificarea unui model estimat'), items(
      [T('joint test $T R^2 \\sim \\chi^2(3)$: a rejection means that the sign of past shocks still predicts the variance', 'testul comun $T R^2 \\sim \\chi^2(3)$: o respingere înseamnă că semnul șocurilor trecute încă anticipează varianța')]),
     T('A passed diagnostic does not prove the model right; a failed one shows where it is wrong', 'Un diagnostic trecut nu dovedește că modelul este corect; unul picat arată unde greșește')))
 
-chart(T('What GARCH removes', 'Autocorelațiile eliminate de GARCH'), 'tsa_ch5_acf_diag', 'TSA_ch5_diagnostics', [
+chart(T('Autocorrelations removed by GARCH', 'Autocorelațiile eliminate de GARCH'), 'tsa_ch5_acf_diag', 'TSA_ch5_diagnostics', [
     T('S\\&P 500: ACF of $r_t^2$: $@{acf.r1}$ at lag 1, still $@{acf.r50}$ at lag 50; ACF of $\\hat z_t^2$ (GARCH(1,1)-t): $@{acf.z1}$ at lag 1, at most $@{acf.zmax}$ in absolute value; band $\\pm@{acf.band}$',
       'S\\&P 500: ACF a lui $r_t^2$: $@{acf.r1}$ la lagul 1, încă $@{acf.r50}$ la lagul 50; ACF a lui $\\hat z_t^2$ (GARCH(1,1)-t): $@{acf.z1}$ la lagul 1, cel mult $@{acf.zmax}$ în valoare absolută; banda $\\pm@{acf.band}$'),
     T('Interpretation: four parameters absorb almost all the volatility clustering of @{yrs} years of daily data', 'Interpretare: patru parametri absorb aproape tot volatility clustering din @{yrs} ani de date zilnice')],
@@ -830,7 +830,7 @@ chart(T('The term structure of volatility', 'Structura la termen a volatilităț
       'Interpretare: toate curbele se îndreaptă spre nivelul de lungă durată (@{ts.lr}\\%) cu aceeași viteză redusă; panta arată dacă sîntem într-o perioadă liniștită sau într-o furtună')],
     h='0.54\\textheight')
 
-D.frame(T('How to evaluate a volatility forecast', 'Evaluarea unei prognoze de volatilitate'), items(
+D.frame(T('Evaluation of a volatility forecast', 'Evaluarea unei prognoze de volatilitate'), items(
     (T('The true $\\sigma_t^2$ is never observed: we compare the forecast $h_t$ with a noisy \\textbf{proxy}, here $r_t^2$', 'Adevăratul $\\sigma_t^2$ nu este observat niciodată: comparăm prognoza $h_t$ cu o \\textbf{aproximare} zgomotoasă, aici $r_t^2$'),
      [T('$E_{t-1}[r_t^2] = \\sigma_t^2$ (with $\\mu \\approx 0$), but $r_t^2$ is very noisy: a low $R^2$ even for a perfect forecast \\refAB',
         '$E_{t-1}[r_t^2] = \\sigma_t^2$ (cu $\\mu \\approx 0$), dar $r_t^2$ este foarte zgomotos: un $R^2$ mic chiar și pentru o prognoză perfectă \\refAB')]),
@@ -943,7 +943,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that loads daily BET closes, computes log returns in percent, runs the ARCH-LM test with 5 lags, fits AR(1)-GARCH(1,1) with Student-t innovations using the arch package, and plots the annualised conditional volatility.}',
         '\\aiprompt{Write Python code that loads daily BET closes, computes log returns in percent, runs the ARCH-LM test with 5 lags, fits AR(1)-GARCH(1,1) with Student-t innovations using the arch package, and plots the annualised conditional volatility.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('Units: returns in \\%, not decimals; rescale a series with a very small variance (EUR/RON) and convert $\\omega$ back', 'Unitățile: randamente în \\%, nu în zecimale; rescalăm o serie cu varianță foarte mică (EUR/RON) și convertim înapoi $\\omega$'),
     T('The persistence: $\\alpha + \\beta$ for GARCH, $\\alpha + \\beta + \\gamma/2$ for GJR, $\\beta$ for EGARCH', 'Persistența: $\\alpha + \\beta$ pentru GARCH, $\\alpha + \\beta + \\gamma/2$ pentru GJR, $\\beta$ pentru EGARCH'),
     T('Boundary estimates ($\\alpha + \\beta = 1$): no half-life and no long-run volatility; do not report infinite numbers', 'Estimările pe frontieră ($\\alpha + \\beta = 1$): fără timp de înjumătățire și fără volatilitate de lungă durată; nu raportăm valori infinite'),

@@ -54,7 +54,7 @@ White noise, $\varepsilon_t \sim \mathrm{WN}(0, \sigma^2)$, has mean 0, variance
 
 The Wold decomposition [@Wold1938] connects these pieces. Every stationary, purely nondeterministic process can be written as $X_t = \mu + \sum_{j \ge 0}\psi_j\varepsilon_{t-j}$, with $\psi_0 = 1$ and $\sum_j\psi_j^2 < \infty$. "Purely nondeterministic" excludes components that the infinite past predicts exactly, such as a fixed sine wave. The theorem says that such a process is a moving average of infinite order of its past shocks; the rest of the chapter writes this sum with few parameters.
 
-## The problem: infinitely many weights {h=22327161}
+## Parsimonious representation of the Wold weights {h=b1e78ca4}
 
 The Wold decomposition says what a stationary process looks like, not how to estimate it. The weights $\psi_1, \psi_2, \dots$ are infinitely many unknowns, and the sample has only $T$ observations. Truncating the sum at a long lag would still leave many parameters, each estimated with a large error.
 
@@ -66,7 +66,7 @@ The model has $p + q + 2$ parameters: the $p$ autoregressive coefficients, the $
 
 A ratio of two low-order polynomials approximates almost any smooth $\psi(L)$ well. It reproduces geometric decays, damped oscillations and weights that stop after a finite lag, the shapes met in practice. The principle that guides the choice of $p$ and $q$ is parsimony: the smallest model whose residuals are white noise. Every additional parameter adds estimation error, and beyond the point where the residuals are white noise it no longer improves the forecasts.
 
-## Three building blocks {h=7d1cb143}
+## AR, MA and ARMA models {h=aeb8198a}
 
 The autoregressive model AR($p$) makes today's value depend on the last $p$ values of the series and on a new shock: $X_t = c + \phi_1X_{t-1} + \dots + \phi_pX_{t-p} + \varepsilon_t$. It goes back to @Yule1927 and his analysis of the sunspots. The moving-average model MA($q$) makes today's value depend on the last $q$ shocks: $X_t = \mu + \varepsilon_t + \theta_1\varepsilon_{t-1} + \dots + \theta_q\varepsilon_{t-q}$. @Slutzky1937 showed that such sums of random causes produce series that look cyclical. The ARMA($p,q$) model contains both parts; @BoxJenkinsReinsel2008, whose first edition appeared in 1970, turned it into a complete method of identification, estimation, checking and forecasting.
 
@@ -432,7 +432,7 @@ The Akaike information criterion (AIC) comes from @Akaike1974; its small-sample 
 
 The two criteria differ only in the penalty per parameter: 2 for AIC and $\ln T$ for BIC. Since $\ln T > 2$ once $T \ge 8$, BIC penalises more heavily in every realistic sample and prefers smaller models. The model with the smallest value is chosen. Only models fitted to the same observations can be compared: if, for example, AR models of different orders are fitted by conditional least squares, each drops a different number of initial observations, and their likelihoods are no longer comparable.
 
-## AIC or BIC? {h=3daa0ea4}
+## AIC and BIC compared {h=e5ca97d6}
 
 BIC is consistent: if the true model is among the candidates, the probability that BIC selects it tends to 1 as $T$ grows. The price is that, in small samples, its heavy penalty may choose a model that is too small, missing a coefficient that is real but small.
 
@@ -466,7 +466,7 @@ The null hypothesis is that the model is correct. Estimating $p + q$ coefficient
 
 Normality is tested with the Jarque–Bera statistic [@JarqueBera1987], $\mathrm{JB} = \frac{T}{6}\big(S^2 + (K - 3)^2/4\big) \approx \chi^2(2)$, where $S$ is the skewness and $K$ the kurtosis of the residuals (0 and 3 for the Normal distribution), together with a quantile–quantile (QQ) plot. Normality is rejected at 5% if $\mathrm{JB} > 5.99$, the 95% quantile of $\chi^2(2)$. Non-Normal residuals do not bias $\hat\phi$, but they make the Normal forecast intervals wrong. Finally, a Ljung–Box test on the squared residuals $\hat\varepsilon_t^2$ detects volatility clustering, the subject of Chapter 5.
 
-## Why m - p - q degrees of freedom {h=b103dff0}
+## Justification of the m - p - q degrees of freedom {h=b94fe600}
 
 The experiment applies the Ljung–Box test at the 5% level to the residuals of the true model, with $T = 200$ and $m = 10$: 1,000 samples of an AR(1) and 500 samples of an ARMA(1,1). For each model the chart shows the rejection rate with $m = 10$ degrees of freedom (orange) and with $m - p - q$ degrees of freedom (blue); the red dashed line marks the nominal level of 5%.
 
@@ -738,7 +738,7 @@ It can extend an analysis to many series: the same Box–Jenkins loop applied to
 
 The example prompt on the slide shows the level of detail a useful request needs: the data source, the grid of orders, the criteria, the degrees of freedom of the Ljung–Box test (model_df = p + q) and the forecast horizon. A vague request leaves these choices to the tool, and the defaults are often the ones the next frame warns against.
 
-## Checks you must run {h=1e95475c}
+## Necessary checks {h=28b317cb}
 
 The first checks concern conventions. Software writes the MA polynomial as $\theta(L) = 1 + \theta L$ (as statsmodels does) or as $1 - \theta L$ (as some textbooks do), so the sign of every $\theta$ must be checked. The constant reported by the ARIMA class of statsmodels is the mean $\mu$, not the intercept $c$.
 

@@ -40,7 +40,7 @@ România: creșterea PIB-ului real față de trimestrul anterior și rata șomaj
 - Funcții de răspuns la impuls | Ortogonalizarea prin descompunerea Cholesky, rolul ordinii și răspunsurile generalizate.
 - Descompunerea varianței erorii de prognoză | Ponderile fiecărui șoc în incertitudinea prognozei și indicele de spillover Diebold–Yilmaz.
 - Prognoza cu un VAR | Prognoze punctuale, intervale de prognoză și o comparație corectă în afara eșantionului cu metode univariate.
-- VAR-uri structurale și un studiu de caz de referință | De la forma redusă la șocuri structurale și VAR-ul lui Stock și Watson (2001).
+- VAR-uri structurale și studiul de caz Stock–Watson | De la forma redusă la șocuri structurale și VAR-ul lui Stock și Watson (2001).
 - Contribuția posibilă a AI | Ce poate schița un asistent și ce trebuie verificat.
 - Rezumat | Ideile și formulele de reținut și întrebări de autoevaluare.
 
@@ -66,7 +66,7 @@ Calculele folosesc clasa VAR din *statsmodels*, în Python: select_order pentru 
 
 Această secțiune introduce obiectele analizei seriilor de timp multivariate. Pornește de la patru serii macroeconomice românești și de la întrebările pe care le ridică, definește o serie de timp vectorială și matricele ei de autocovarianță și introduce funcția de corelație încrucișată, analogul multivariat al funcției de autocorelație. Două aplicații, una pe randamentele bursiere zilnice și una pe inflația și dobînzile din România, arată ce dezvăluie funcția de corelație încrucișată și unde încetează să mai fie informativă. Secțiunea se încheie cu argumentul pentru un singur model al tuturor seriilor.
 
-## România: patru serii macroeconomice care evoluează împreună {h=29420843}
+## Patru serii macroeconomice românești {h=70ff4f86}
 
 Graficul are patru panouri cu date românești. Panoul din stînga sus este creșterea produsului intern brut (PIB) real față de trimestrul anterior, ajustată sezonier, în procente. Panoul din dreapta sus arată două serii pe aceeași axă: rata anuală a inflației măsurate prin indicele armonizat al prețurilor de consum (IAPC), cu roșu, și ROBOR 3M, dobînda la trei luni la care băncile din România oferă depozite interbancare, cu albastru, în procente pe an. Panourile de jos arată rata șomajului ajustată sezonier și cursul de referință EUR/RON al Băncii Naționale a României (BNR), ca medie lunară.
 
@@ -334,7 +334,7 @@ Estimarea unui VAR nu cere nimic în plus față de OLS, iar alegerea ordinului 
 
 Dacă un VAR surprinde dinamica datelor, reziduurile lui trebuie să fie zgomot alb: necorelate în timp și între ecuații la date diferite. Această secțiune introduce testul portmanteau multivariat pentru această proprietate și un test de normalitate și le aplică pe amîndouă VAR(2) românesc.
 
-## Verificarea reziduurilor: zgomot alb {h=c43f3818}
+## Teste de zgomot alb pentru reziduuri {h=394117bd}
 
 Testul portmanteau multivariat al lui @Hosking1980 testează ipoteza nulă $H_0$ că reziduurile nu au nicio autocorelație și nicio corelație încrucișată pînă la lagul $h$. Statistica lui este
 
@@ -416,7 +416,7 @@ ROBOR nu cauzează inflația în sens Granger, cu p = 0,417: nu există dovezi c
 
 ROBOR → creșterea PIB, cu p = 0,022, spune că dobînzile mai mari preced o creștere mai slabă, sensul așteptat al unei înăspriri monetare. Rezultatul depinde de setul de informații: într-un VAR cu două variabile, doar creșterea PIB-ului și ROBOR, p-value-ul este 0,063.
 
-## Piețe: New York-ul precedă Frankfurtul și Bucureștiul {h=3b1e3fd9}
+## Piețe: cauzalitatea Granger de la New York către Frankfurt și București {h=60544d80}
 
 Tabelul prezintă teste Granger într-un VAR(4) pentru randamentele logaritmice zilnice ale S&P 500, DAX și BET, pe 6.429 de zile din 2000 pînă în 2026. Ordinul 4 urmează specificația din @DieboldYilmaz2012; HQ ar alege $p = 2$, iar AIC $p = 8$. Testele sînt $F(4, \cdot)$, cu cîte patru restricții, iar eșantionul foarte mare face semnificative chiar și efecte mici.
 
@@ -708,7 +708,7 @@ Pentru România, VAR-ul nu aduce niciun cîștig de prognoză; pentru Statele Un
 
 Un VAR produce prognoze comune cu intervale prin aceeași recurență ca un model ARMA, iar prognozele lui revin la medie cu viteza stabilită de cea mai mare valoare proprie. Dacă prognozează mai bine decît modelele univariate este o întrebare empirică, la care se răspunde în afara eșantionului: adesea nu, deoarece estimarea multor coeficienți costă mai mult decît valorează informația suplimentară. [Secțiunea următoare](#sec-10) revine la interpretarea șocurilor.
 
-# VAR-uri structurale și un studiu de caz de referință
+# VAR-uri structurale și studiul de caz Stock–Watson
 
 VAR-ul în formă redusă descrie datele; un VAR structural dă șocurilor lui un sens economic, de exemplu un șoc de politică monetară. Această secțiune arată cum sînt legate cele două și de ce trecerea de la unul la celălalt cere întotdeauna ipoteze. Apoi reestimează VAR-ul lui @StockWatson2001 pentru Statele Unite și se încheie cu moștenirea abordării VAR.
 

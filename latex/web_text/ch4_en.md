@@ -378,7 +378,7 @@ For Romanian GDP, a single parameter, the seasonal MA $\hat\Theta = -0.577$, des
 
 Besides raw series, statistical offices publish seasonally adjusted series. This section explains why, how the programs used, X-11 and X-13ARIMA-SEATS, work, and which version of a Eurostat series fits each question. The last two frames compare unadjusted and adjusted series for GDP and retail trade and read the implied seasonal factors.
 
-## Why official statistics adjust for seasonality {h=dcd8db62}
+## The purpose of seasonal adjustment in official statistics {h=148f2f30}
 
 Users of economic statistics want to know whether the economy grew in the last quarter, not whether the third quarter is larger than the second. The raw series mixes the two questions. In the first quarter of 2026, unadjusted GDP changed by −42.1% on the previous quarter, in log points, and the adjusted series by −0.06%. The first figure is almost entirely a seasonal effect; only the second says something about the business cycle.
 
@@ -700,7 +700,7 @@ DHR has the smallest error: MAE 276 MW, RMSE 350 MW and MASE 0.89. Together with
 
 ETS, SARIMA and TBATS are not separated from the seasonal naive method: the HLN statistics are −0.80, −1.23 and −1.50, with p-values 0.431, 0.231 and 0.145. Three models with estimated parameters cannot be distinguished, over one year of forecasts, from a method that repeats last week. For daily load, calendar information matters more than the model class.
 
-## A second test: Romanian GDP {h=474a2661}
+## Forecast evaluation for Romanian GDP {h=e4eab891}
 
 The second evaluation uses quarterly GDP $100\ln Y$, with errors expressed in per cent. It has 51 quarterly origins, from Q4 2012 to Q2 2025, with an expanding window, and compares the airline model, ETS, the seasonal naive method and the SARIMA–ETS combination. The table gives the MAE at horizons of 1 and 4 quarters, for all origins and for the 43 origins left after excluding 2019–2020.
 
@@ -720,7 +720,7 @@ Over one year of out-of-sample forecasts for daily load, DHR has an MAE of 276 M
 
 When it is not known in advance which method will be the most accurate, an alternative to choosing a single method is to combine several forecasts. The section gives the theoretical result of @BatesGranger1969 for the optimal weight, explains why equal weights are hard to beat in practice and applies the idea to the DHR and Prophet forecasts of daily load.
 
-## Why combining forecasts works {h=3e0505e2}
+## The advantage of combining forecasts {h=eb4ef485}
 
 @BatesGranger1969 combine two unbiased forecasts $f_1$ and $f_2$ into a weighted average $f_c = wf_1 + (1 - w)f_2$, where $w$ is the weight of forecast 1. If $\sigma_1$ and $\sigma_2$ are the standard deviations of the two errors and $\rho$ their correlation, the mean squared error of the combination is
 
@@ -766,7 +766,7 @@ The second use is calendars: lists of public and moving holidays for other count
 
 The prompt on the slide asks for Python code that forecasts daily load 14 days ahead with a regression on annual Fourier terms, day-of-week dummies and Romanian public holidays, with ARMA errors, evaluated against SARIMA by rolling origins and a Diebold–Mariano test. The prompt specifies every element of the model and of the evaluation, so the result can be checked point by point.
 
-## Checks you must run {h=999f6c1b}
+## Necessary checks {h=21d23286}
 
 The first checks concern the data. The Easter date must be the Orthodox one, not the Western one (EASTER_ORTHODOX in dateutil); in 2024 the two dates differed by five weeks. All variables, model orders and holiday lists must be available at each origin, with no look-ahead information. SARIMA uses the NSA series, and growth rates are computed on the appropriate version of the series.
 

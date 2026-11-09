@@ -62,7 +62,7 @@ Codul capitolului folosește pachetul arch pentru modelele GARCH univariate din 
 
 Secțiunea arată de ce un model pentru o singură volatilitate nu este suficient. Riscul portofoliului, acoperirea riscului și contagiunea depind toate de corelații, iar corelațiile observate pe piețele reale se schimbă mult în timp. Secțiunea se încheie cu o capcană practică a datelor zilnice: piețele care se închid la ore diferite.
 
-## Trei întrebări care cer covarianțe {h=fec9fb34}
+## Trei aplicații care necesită covarianțe {h=404204e5}
 
 Prima întrebare este riscul unui portofoliu. Dacă vectorul $\mathbf{w}$ conține ponderile activelor și $\mathbf{H}$ este matricea de covarianță a randamentelor lor, varianța randamentului portofoliului este o formă pătratică, ca la @Markowitz1952:
 
@@ -92,7 +92,7 @@ Trei puncte ale curbei merită reținute. La $\rho = 1$ cele două active se mi�
 
 Deoarece curba este concavă, aceeași creștere a corelației adaugă mai multă volatilitate la corelații mici decît la corelații mari. Pentru portofoliile care combină active slab corelate, tocmai portofoliile construite pentru diversificare, o creștere a corelației este deci cea mai costisitoare. De aici vine întrebarea empirică a capitolului: rămîne $\rho$ constant pe piețele reale sau se mișcă odată cu starea pieței?
 
-## Corelațiile se schimbă în timp {h=14ff0fd2}
+## Corelații variabile în timp {h=79126fd5}
 
 Un prim răspuns vine din corelațiile pe ferestre mobile (*rolling windows*): corelația de selecție a randamentelor logaritmice zilnice calculată pe ultimele 250 de zile de tranzacționare, aproximativ un an, și datată la sfîrșitul ferestrei. Graficul arată această corelație pe axa verticală, în funcție de timp pe axa orizontală, pentru trei perechi: S&P 500 și DAX, din 2001; BET și DAX, din 2001; S&P 500 și Bitcoin, din 2015. Benzile colorate marchează septembrie 2008 – martie 2009 și februarie – aprilie 2020, iar o linie punctată marchează zero.
 

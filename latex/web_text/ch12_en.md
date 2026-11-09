@@ -33,7 +33,7 @@ The yearly mean sunspot number, 1700–2008, 309 observations (Wolf / SILSO seri
 - Long memory: the pole at zero | The ARFIMA spectrum and the Geweke–Porter-Hudak estimator on S&P 500 returns.
 - Linear filters | The gain of the first difference, of the seasonal difference and of the HP filter.
 - Two series: coherence and phase | The cross-spectrum, coherence and phase of US industrial production and unemployment.
-- A pointer: wavelets | The continuous wavelet transform and the scalogram of the sunspots.
+- Extension: wavelets | The continuous wavelet transform and the scalogram of the sunspots.
 - Possible contribution of AI | What an assistant can write and what must be checked.
 - Summary | Key ideas, formulas and self-assessment questions.
 
@@ -623,11 +623,11 @@ At the 48-month cycle the phase is $-0.23$ radians; with $\nu = 1/48$, the formu
 
 Coherence and phase split the relation between two series across frequencies: how closely their cycles are linked and which of them leads the other. For US industrial production and unemployment, the relation is strong in the business-cycle band and weak at the high frequencies, information that a single correlation cannot give.
 
-# A pointer: wavelets
+# Extension: wavelets
 
 The spectrum assumes that the cycles of a series are the same over the whole sample. The section presents, as a pointer towards further reading and projects, a method that drops this assumption: the continuous wavelet transform and the scalogram, applied to the sunspots.
 
-## Wavelets (1/2): frequency that changes over time {h=d0a84721}
+## Wavelets (1/2): time-varying frequency {h=94920022}
 
 The spectral density is defined for stationary series, whose cycles have the same power at every date. The sunspots, however, have weak cycles around 1800 and strong cycles in the twentieth century, and the periodogram averages these periods into a single peak. A first solution is the short-time Fourier transform (STFT), which computes spectra in moving windows of fixed length. The fixed length imposes a trade-off, however: a short window localises well in time but cannot measure long cycles; a long one measures them but loses the localisation.
 
@@ -683,7 +683,7 @@ An AI assistant can quickly write a first version of the code for the chapter's 
 
 The greatest benefit comes in exploration: the spectra of many series at once, for example the electricity load of several countries or the GDP of all European Union member states, and a first description of the peaks. The prompt on the slide is an example of a precise request: it specifies the data, the removal of the mean, the Hann taper, the length of the Welch segments, the log–log scale and the periods to be marked. The more of these choices the request fixes, the easier the result is to check.
 
-## Checks you must run {h=55c13834}
+## Necessary checks {h=eda8ba5b}
 
 The most frequent errors concern units. Frequency can be in cycles per observation or in radians per observation, and scipy.signal.welch returns a one-sided density, equal to twice $f$. The period $1/\nu$ is expressed in observations and must be converted explicitly into years, quarters or hours. A simple test of any code is Parseval's theorem: the ordinates must add up to $T$ times the variance, and a cosine with a known frequency must produce a peak exactly at that frequency.
 

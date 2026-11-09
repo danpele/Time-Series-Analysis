@@ -735,9 +735,9 @@ interp(('coherence and phase', 'coerenței și fazei'), [
 # =============================================================================
 # 9. WAVELETS
 # =============================================================================
-D.section('A pointer: wavelets', 'O trimitere: wavelets')
+D.section('Extension: wavelets', 'Extensie: wavelets')
 
-D.frame(T('Wavelets (1/2): frequency that changes over time', 'Wavelets (1/2): frecvența care se schimbă în timp'), items(
+D.frame(T('Wavelets (1/2): time-varying frequency', 'Wavelets (1/2): frecvența variabilă în timp'), items(
     (T('The spectrum assumes stationarity: the same cycles at every date', 'Spectrul presupune staționaritate: aceleași cicluri la orice dată'),
      [T('the \\textbf{short-time Fourier transform} (STFT) computes spectra in moving windows of fixed length', '\\textbf{transformata Fourier pe ferestre scurte} (STFT) calculează spectre în ferestre mobile de lungime fixă')]),
     (T('A \\textbf{wavelet} is a short wave packet; the \\textbf{continuous wavelet transform} (CWT) stretches it to each period and slides it along the series', 'Un \\textbf{wavelet} este un pachet scurt de unde; \\textbf{transformata wavelet continuă} (CWT) îl întinde la fiecare perioadă și îl glisează de-a lungul seriei'),
@@ -787,7 +787,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that reads hourly electricity load, removes the mean, computes the periodogram with a Hann taper and a Welch estimate with 8-week segments, plots both on a log-log scale against the period in hours, and marks 24, 12 and 168 hours.}',
         '\\aiprompt{Write Python code that reads hourly electricity load, removes the mean, computes the periodogram with a Hann taper and a Welch estimate with 8-week segments, plots both on a log-log scale against the period in hours, and marks 24, 12 and 168 hours.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The units: frequency in cycles per observation or radians; \\texttt{scipy.signal.welch} returns a one-sided density (twice our $f$)', 'Unitățile: frecvența în cicluri pe observație sau în radiani; \\texttt{scipy.signal.welch} întoarce o densitate unilaterală (dublul lui $f$)'),
     T('The period: $1/\\nu$ in observations; convert to years, quarters or hours yourself', 'Perioada: $1/\\nu$ în observații; transformați-o singuri în ani, trimestre sau ore'),
     T("Parseval: the ordinates must add up to $T$ times the variance; test the code on a cosine with a known frequency", 'Parseval: ordonatele trebuie să se adune la $T$ înmulțit cu varianța; testați codul pe un cosinus cu frecvență cunoscută'),

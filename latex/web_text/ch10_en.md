@@ -281,7 +281,7 @@ The Kalman filter alternates prediction and update, and its gain splits each sur
 
 The Kalman filter is only the first step. The same recursion, completed by a backward pass, gives the estimate of the state based on the whole sample. The filter's prediction errors give the likelihood, and hence the parameter estimates, and the residuals for diagnostics. Missing values and forecasts are handled by skipping the update step. The section presents these tools and applies them to the Nile series.
 
-## Smoothing: using the whole sample {h=f2e442a6}
+## Smoothing with the full sample {h=6a2d1f4e}
 
 Filtering uses the information $Y_t$, the past and the present: it is the estimate an analyst can make in real time. Smoothing uses the information $Y_n$, the whole sample of size $n$: the smoothed estimate $\hat\alpha_t = E(\alpha_t \mid Y_n)$ also takes into account the observations after $t$. Its variance $V_t$ cannot exceed the variance of the filtered estimate, $V_t \le P_{t|t}$, because it uses more information.
 
@@ -407,7 +407,7 @@ The cycle can be modelled as a stationary AR(2), $\psi_t = \phi_1\psi_{t-1} + \p
 
 For log GDP, the cycle $\psi_t$ is the output gap: the percentage deviation of output from trend, interpreted as potential output. A positive gap indicates an economy producing above potential, with the risk of overheating; a negative one indicates idle resources. In Python the model is estimated with *UnobservedComponents*, with the specification *level='smooth trend'* and *autoregressive=2*, and the whole state is estimated with the Kalman filter and smoother.
 
-## The HP filter is a state space smoother {h=eb4eec2d}
+## The HP filter as a state space smoother {h=e72febe0}
 
 The Hodrick–Prescott (HP) filter of @HodrickPrescott1997 chooses the trend $\tau_t$ that minimises
 
@@ -419,7 +419,7 @@ where $\Delta^2\tau_t = \tau_t - 2\tau_{t-1} + \tau_{t-2}$ is the change in the 
 
 Being a smoother, the HP filter uses future data. The trend in a given quarter depends on the observations after it, so the last values of the trend and the gap are revised as new quarters arrive. The problem is most serious precisely at the end of the sample, where economic policy decisions are made.
 
-## Hamilton (2018): why you should never use the HP filter {h=81faa2e0}
+## Hamilton (2018): the case against the HP filter {h=c4a77f7d}
 
 @Hamilton2018 raises three objections. First: applied to a random walk, which has no cycles, the HP filter produces a gap with regular cycles. The dynamics of the gap are created by the filter, not by the data. Second: the end of the sample is treated differently from the middle, because at the end the filter has no future data; hence the large revisions and the misleading real-time gaps. Third: the value $\lambda = 1600$ is a convention, far from the value a likelihood would choose for typical macroeconomic series.
 
@@ -611,7 +611,7 @@ Using only the filtered probabilities, agreement with the NBER falls to 92% of q
 
 The principle is the same as for the output gap: a model's real-time ability is never judged from the smoothed probabilities, because they use the future. A model that seems to call recessions on time in the smoothed chart can be much slower in practice.
 
-## Checks: which regimes did the model find? {h=4bc16173}
+## Checks: the regimes identified by the model {h=cae578bb}
 
 The regimes found by a Markov-switching model depend on the specification. If, over 1947–2019, the variance rather than the mean is allowed to depend on the regime, the regimes become high volatility and low volatility. The standard deviations are 1.20 and 0.44, and the expected durations are 45 and 39 quarters. The switch to the calm regime happens in the third quarter of 1984: this is the Great Moderation, the fall in US macroeconomic volatility in the mid-1980s. As a recession-dating tool this model is poor: agreement with the NBER falls to 60%, with 47% false alarms.
 
@@ -687,7 +687,7 @@ Three uses are realistic. The first is code: an assistant can write a first vers
 
 The example prompt states every choice that matters: the source and exact code of the series (Romanian quarterly real GDP from Eurostat), the model (*UnobservedComponents* with a smooth trend and an AR(2) cycle), the comparisons (the smoothed and the filtered cycle, the HP gap and Hamilton's regression filter) and the required output (the revisions of the last eight quarters). A prompt this precise makes the result checkable against the numbers in this chapter.
 
-## Checks you must run {h=5db8214f}
+## Necessary checks {h=1b00a4af}
 
 The first check is simulation: generate data from known parameters and check that the code recovers them. The Nile variances of @DurbinKoopman2012, 15100 and 1468, are a good test for any implementation of the local level model. The second check concerns the information used: claims about real time require filtered estimates, and an answer that uses the smoothed estimates for a "forecast" is wrong, because it uses future data.
 

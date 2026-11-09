@@ -140,7 +140,7 @@ Neither definition implies the other without qualification. If a process is stri
 
 In the other direction, weak stationarity fixes only the first two moments, so the shape of the distribution may change over time while the mean and the autocovariances stay fixed; the next frame builds such a process. The exception is the class of **Gaussian processes**, whose finite-dimensional distributions are all multivariate Normal. A multivariate Normal distribution is fully determined by its means and covariances, so for a Gaussian process weak and strict stationarity coincide.
 
-## Weakly but not strictly stationary {h=683eb84d}
+## A weakly but not strictly stationary process {h=48cd95d4}
 
 The chart shows a process built to be weakly but not strictly stationary. The variables $X_t$ are independent; at even dates $X_t$ is standard Normal, $N(0, 1)$, and at odd dates it is a standardised chi-square, $(\chi^2_5 - 5)/\sqrt{10}$. The chi-square with 5 degrees of freedom has mean 5 and variance 10, so both distributions have mean 0 and variance 1.
 
@@ -712,7 +712,7 @@ Three uses fit the material of this chapter. An AI tool can write a first draft 
 
 The example prompt on the slide is specific about the data source (Eurostat), the series (Romanian monthly HICP), the transformation (100 times the monthly log difference since 2005), the plots (ACF and PACF up to lag 36) and the tests (Ljung–Box for $m = 12$ and $m = 24$). Such precision matters: each choice corresponds to a decision discussed in this chapter, and a vague prompt leaves those decisions to the tool. The choice of $m = 12$ and $m = 24$ follows the rule $m = 2s$ for monthly data with $s = 12$.
 
-## Checks you must run {h=fc567e96}
+## Necessary checks {h=289ec1cd}
 
 Several conventions differ between software packages and between texts, and generated code can mix them. Check the divisor of $\hat\gamma(h)$, which should be $T$ and not $T - h$, and whether lag 0, always equal to 1, is included in the plot. Check which bands are drawn: the white-noise band $\pm 1.96/\sqrt{T}$ tests each lag against zero, while Bartlett's MA bands @eq:bartlett test whether the ACF has cut off; they answer different questions.
 

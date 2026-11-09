@@ -33,7 +33,7 @@ The four series of the chapter: the annual flow of the Nile at Aswan (1871–197
 - Forecasting with ARFIMA | Forecasts from the AR($\infty$) form and an out-of-sample comparison for inflation.
 - Long memory in volatility | Absolute returns, realised volatility, FIGARCH and the HAR model.
 - Spurious long memory | Breaks and regimes that imitate long memory, the Nile in 1898 and rolling estimates.
-- A pointer: fractional cointegration | Equilibrium errors that revert slowly.
+- Extension: fractional cointegration | Equilibrium errors that revert slowly.
 - Possible contribution of AI | What an assistant can draft and what must be checked.
 - Summary | Key ideas, formulas and self-assessment questions.
 
@@ -227,7 +227,7 @@ Their model connected two traditions that had developed separately. Hydrologists
 
 Applications followed in many areas of economics: inflation, studied across countries by @HasslerWolters1995, output, interest rates and, through @DingGrangerEngle1993, the volatility of financial returns. Clive Granger, shown in the photograph, received the Nobel Prize in economics in 2003, shared with Robert Engle.
 
-## The parameter d: what each range means {h=8d20ad6a}
+## The parameter d: the meaning of each range {h=3f217de9}
 
 The table lists what the value of $d$ implies. For $d \le -0.5$ the process is not invertible: it has no AR($\infty$) form, so it cannot be written as a function of its own past, which forecasting requires. For $-0.5 < d < 0$ the process is stationary, invertible and anti-persistent: its autocorrelations are negative, and summed over all positive lags they give exactly $-1/2$. For $d = 0$ the model is an ARMA with short memory and exponential decay. For $0 < d < 0.5$ it is stationary with long memory, and its autocorrelations decay hyperbolically and are not summable.
 
@@ -413,7 +413,7 @@ The third design shows the other side. For an AR(1) with $\phi = 0.6$ and no lon
 
 The practical rule follows. Always fit ARFIMA$(p,d,q)$ models with $p, q \ge 1$ as alternatives to ARFIMA$(0,d,0)$, so that the short-run dependence has its own parameters, and check the semiparametric estimates for several bandwidths.
 
-## Romanian inflation: ARMA or ARFIMA? {h=d9bef53c}
+## Romanian inflation: ARMA and ARFIMA compared {h=b84a5549}
 
 The table compares six models for Romanian monthly HICP inflation, seasonally adjusted, $T = 260$ months from 2005 to 2026, all estimated by exact maximum likelihood. For each model it gives the estimate of $d$ (zero for ARMA models), the AR and MA coefficients, the maximised log-likelihood $\ell$, and the information criteria AIC and BIC; the smallest values of the criteria are in bold.
 
@@ -491,7 +491,7 @@ Over the last 12 months, from August 2025 to August 2026, inflation was 3.30%. T
 
 Both models assume that the long-run mean of 1947–2026 is the level to which inflation returns. Whether this anchor is right today is a question about regimes, not about $d$: if the mean itself has changed, a model with any memory parameter will revert to the wrong level.
 
-## Does long memory improve forecasts? {h=00a68d67}
+## The contribution of long memory to forecasting {h=0ab2c048}
 
 The chart reports a pseudo out-of-sample forecast comparison with an expanding window. At each forecast origin the models are estimated only on the data available up to that date, forecasts are made for horizons of 1 to 24 months, and the forecast errors are recorded once the outcomes are known. For Romania there are 128 origins, from January 2014 to August 2024, and the seasonal adjustment is redone within each window so that no future information enters; for the United States there are 416 origins, from January 1990 to August 2024. Errors are matched by calendar month: October 2025 has no US value, and the November 2025 value, which covers two months, is compared with the mean of the forecasts for October and November.
 
@@ -547,7 +547,7 @@ The chapter models the logarithm, $\log\sqrt{RV_m}$, for two reasons. The distri
 
 Realised volatility is a much more precise measure than a single absolute return. The absolute return of one day mixes the volatility of that day with the random size of the shock; within a month of about 21 trading days much of this noise averages out, so the long memory of volatility is easier to see and to estimate.
 
-## Monthly realised volatility: ARFIMA or ARMA? {h=bf1e3fff}
+## Monthly realised volatility: ARFIMA and ARMA compared {h=f6c24671}
 
 The chart shows the sample ACF of the log monthly realised volatility of the S&P 500 (left) and of the BET (right), 321 months from 2000 to 2026, together with the autocorrelations implied by two models estimated by exact ML: ARFIMA$(1,d,0)$, the solid line, and ARMA(1,1), the dashed line. The panel titles report the estimates of $d$ from three methods: ML, local Whittle (LW) and GPH.
 
@@ -625,7 +625,7 @@ Regime switching gives a non-monotonic picture. With $p = 0.01$, about 10 switch
 
 A significant estimate of $d$ is therefore consistent both with long memory and with breaks or regimes. The estimate alone cannot decide between them: other evidence is needed, such as tests for breaks, estimates on subsamples and comparisons with regime-switching models.
 
-## The Nile in 1898: memory or a break? {h=6ce67012}
+## The Nile in 1898: long memory and a structural break {h=b31c35d4}
 
 The left panel shows the Nile flow from 1871 to 1970 with two horizontal lines: the mean before and the mean after 1898, the change point identified by @Cobb1978. The first Aswan dam was completed in 1902, a few years after the change point. The right panel is an R/S plot of the raw series and of the series after the two regime means have been subtracted, with a reference line of slope 0.5.
 
@@ -669,7 +669,7 @@ Breaks and rare regime switches produce $\hat d > 0$ in short-memory series. For
 
 An estimate of $d$ measures low-frequency power, whatever its origin. A mean shift of half a standard deviation or a regime that switches about ten times in a sample is enough to produce a $\hat d$ of 0.2 to 0.35 in a series with no memory. The Nile's memory over 1871–1970 disappears once the change of 1898 is removed, and the memory of US inflation rises and falls with monetary regimes. Long memory should be claimed only after breaks, regimes and overlapping data have been ruled out.
 
-# A pointer: fractional cointegration
+# Extension: fractional cointegration
 
 The last modelling topic connects this chapter with the cointegration of Chapter 7. It is a pointer to a field beyond the course rather than a full treatment.
 
@@ -695,7 +695,7 @@ Three uses are realistic. The first is code: a first draft of fractional differe
 
 The example prompt specifies every choice that matters: the data source (Romanian monthly HICP from Eurostat), the transformation (the monthly inflation rate with the monthly means removed), the estimators and the range of bandwidths ($T^{0.5}$ to $T^{0.8}$), the model and the estimation method (ARFIMA$(p,d,q)$ by exact Gaussian maximum likelihood) and the comparison (with ARMA(1,1) by BIC). A precise prompt produces a result that can be checked against the numbers of this chapter.
 
-## Checks you must run {h=c51f04bc}
+## Necessary checks {h=668e8eec}
 
 The first checks concern the library and the formulas. The *statsmodels* library has no ARFIMA class, so an answer that calls one has invented it. Signs and scales are frequent errors: the GPH regression of @eq:gph uses $-\log(4\sin^2(\lambda/2))$ as regressor, so its slope is $d$, not $-2d$, and R/S and DFA give $H$, not $d$. The range matters as well: a stationary ARFIMA likelihood requires $d < 0.5$, so a series whose $\hat d$ is near or above 0.5 should be differenced first.
 

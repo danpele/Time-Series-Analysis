@@ -57,8 +57,8 @@ PFX = {'data': 'da', 'acf': 'ac', 'diag': 'dg', 'fc': 'fc', 't-data': 'td', 't-t
        't-fc': 'tf', **{f'p{k}': f'q{k}' for k in range(1, 9)}}
 
 SECTIONS = {
- 'ro': dict(bj='Box–Jenkins de la un capăt la altul: inflația din România', ex='Examenul'),
- 'en': dict(bj='Box–Jenkins from start to finish: Romanian inflation', ex='The exam'),
+ 'ro': dict(bj='Procedura Box–Jenkins completă: inflația din România', ex='Examenul'),
+ 'en': dict(bj='The complete Box–Jenkins procedure: Romanian inflation', ex='The exam'),
 }
 
 L = {

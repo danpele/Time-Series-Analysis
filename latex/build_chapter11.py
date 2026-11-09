@@ -696,7 +696,7 @@ interp(('the error by horizon', 'erorii în funcție de orizont'), [
     T('Chronos-2 keeps an advantage over the whole horizon (@{h.c2.48} GW at 48 hours against @{h.sn.48})', 'Chronos-2 își păstrează avantajul pe tot orizontul (@{h.c2.48} GW la 48 de ore, față de @{h.sn.48})'),
     T('ETS is good for a few hours and then the worst: a daily season cannot represent the weekend', 'ETS este bun cîteva ore, apoi cel mai slab: un sezon zilnic nu poate reprezenta weekendul')])
 
-chart_alone(T('How much context is needed?', 'Lungimea necesară a contextului'), 'tsa_ch11_context', 'TSA_ch11_context_contamination', [
+chart_alone(T('The required context length', 'Lungimea necesară a contextului'), 'tsa_ch11_context', 'TSA_ch11_context_contamination', [
     T('MASE on Romanian load for contexts of 96 to 2048 hours; @{cx.n} weekly origins (the last half year); the dashed line is the seasonal naive', 'MASE pentru consumul României cu contexte de 96 pînă la 2048 de ore; @{cx.n} @{cx.de}origini săptămînale (ultima jumătate de an); linia punctată este prognoza sezonieră naivă')], notes=[
     T('With 96 hours (4 days) every model is worse than the seasonal naive: Chronos-Bolt small @{cx.bs.96}, Chronos-2 @{cx.c2.96}, naive @{cx.naive}', 'Cu 96 de ore (4 zile), fiecare model este mai slab decît prognoza sezonieră naivă: Chronos-Bolt small @{cx.bs.96}, Chronos-2 @{cx.c2.96}, naiv @{cx.naive}'),
     T('From 192 hours (more than one week) on, the weekly cycle is in the context and the error drops', 'De la 192 de ore (peste o săptămînă), ciclul săptămînal intră în context și eroarea scade'),
@@ -713,7 +713,7 @@ interp(('size and cost', 'dimensiunii și a costului'), [
     T('Time per load forecast on a laptop CPU: Bolt small @{sec.bs} ms, Chronos-2 @{sec.c2} ms, ARIMA @{sec.arima} ms, ETS @{sec.ets} ms', 'Timpul pentru o prognoză a consumului pe procesorul unui laptop: Bolt small @{sec.bs} ms, Chronos-2 @{sec.c2} ms, ARIMA @{sec.arima} ms, ETS @{sec.ets} ms'),
     T('Zero-shot inference is cheap; the cost was paid once, in pretraining', 'Inferența zero-shot este ieftină; costul a fost plătit o singură dată, la pre-antrenare')])
 
-D.frame(T('Landmark benchmarks', 'Benchmark-uri de referință'), items(
+D.frame(T('Reference benchmarks', 'Benchmark-uri de referință'), items(
     (T('\\textbf{M3} (\\refMH)', '\\textbf{M3} (\\refMH)'),
          [T('3003 series', '3003 serii'),
           T('sophisticated methods did not beat simple ones on average', 'metodele sofisticate nu le-au bătut în medie pe cele simple')]),
@@ -728,7 +728,7 @@ D.frame(T('Landmark benchmarks', 'Benchmark-uri de referință'), items(
     (T('Critical studies: simple linear models beat early Transformer forecasters (\\refZeng); LLM parts add no accuracy (\\refTan)', 'Studii critice: modele liniare simple au bătut primele modele de prognoză cu Transformer (\\refZeng); componentele LLM nu adaugă precizie (\\refTan)'), [])),
     size='footnotesize')
 
-D.frame(T('Advantages and limitations of foundation models', 'Utilitatea foundation models: avantaje și limite'), items(
+D.frame(T('Advantages and limitations of foundation models', 'Avantajele și limitele foundation models'), items(
     (T('\\textbf{Help}', '\\textbf{Ajută}'),
      [T('many series, little time per series; strong and regular seasonality; long contexts (load, sales, traffic)', 'multe serii, puțin timp pentru fiecare; sezonalitate puternică și regulată; contexte lungi (consum, vînzări, trafic)'),
       T('a quick, strong benchmark before building a dedicated model; probabilistic output at no extra cost', 'un reper rapid și puternic înaintea unui model dedicat; ieșire probabilistă fără cost suplimentar')]),
@@ -750,7 +750,7 @@ D.recap(('The evaluation', 'evaluarea'), [
 # =============================================================================
 D.section('Leakage and contamination', 'Leakage-ul și contaminarea')
 
-D.frame(T('Leakage in your own pipeline', 'Leakage-ul în propriul cod'), items(
+D.frame(T('Leakage in the forecasting pipeline', 'Leakage-ul în fluxul de prognoză'), items(
     (T('\\textbf{Leakage}', '\\textbf{Leakage}'),
          [T('information from the test period reaches the forecasts (\\refHew)', 'informația din perioada de test ajunge în prognoze (\\refHew)')]),
     (T('Typical mistakes', 'Greșeli tipice'),
@@ -804,7 +804,7 @@ D.frame(T('Possible contribution of AI', 'Contribuția posibilă a AI'), items(
      [T('\\aiprompt{Write Python code that downloads Romanian monthly industrial production (Eurostat sts\\_inpr\\_m, not seasonally adjusted), forecasts 12 months ahead from monthly origins since 2016 with amazon/chronos-bolt-small (package chronos-forecasting, CPU), ETS and the seasonal naive, and reports MASE, the weighted quantile loss and the coverage of the 80\\% interval.}',
         '\\aiprompt{Write Python code that downloads Romanian monthly industrial production (Eurostat sts\\_inpr\\_m, not seasonally adjusted), forecasts 12 months ahead from monthly origins since 2016 with amazon/chronos-bolt-small (package chronos-forecasting, CPU), ETS and the seasonal naive, and reports MASE, the weighted quantile loss and the coverage of the 80\\% interval.}')])))
 
-D.frame(T('Checks you must run', 'Verificări necesare'), items(
+D.frame(T('Necessary checks', 'Verificări necesare'), items(
     T('The package and the model names: \\texttt{BaseChronosPipeline}, \\texttt{amazon/chronos-bolt-small}; an invented class or model name fails at once', 'Pachetul și numele modelelor: \\texttt{BaseChronosPipeline}, \\texttt{amazon/chronos-bolt-small}; o clasă sau un nume de model inventat eșuează imediat'),
     T('The context ends at the origin: no scaling, ordering or tuning with test data', 'Contextul se termină la origine: nicio scalare, ordonare sau calibrare cu date de test'),
     T('The quantile levels: Chronos-Bolt gives only 0.1 to 0.9; a ``1\\% quantile\'\' from it is an extrapolation', 'Nivelurile cuantilelor: Chronos-Bolt dă doar 0,1--0,9; o „cuantilă de 1\\%” obținută din el este o extrapolare'),

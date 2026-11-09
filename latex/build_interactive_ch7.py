@@ -38,7 +38,7 @@ EXTRA = [('wx-trends', 'Trenduri stochastice comune', 'Common stochastic trends'
          ('wx-vecm', 'Exemplu rezolvat: un VECM cu două variabile', 'Worked example: a bivariate VECM', 'vecm', 'ecm'),
          ('wx-joh', 'Exemplu rezolvat: de la valori proprii la statistici', 'Worked example: from eigenvalues to statistics', 'joh', 'rates'),
          ('joh-table', 'Testele Johansen pe trei sisteme', 'Johansen tests on three systems', 'joh', 'rates'),
-         ('joh-det', 'Cazul termenilor determiniști schimbă răspunsul', 'The deterministic case changes the answer', 'joh', 'rates'),
+         ('joh-det', 'Sensibilitatea testelor Johansen la termenii determiniști', 'Sensitivity of the Johansen tests to the deterministic terms', 'joh', 'rates'),
          ('alpha-table', 'Coeficienții de ajustare', 'The adjustment coefficients', 'beta', 'rates')]
 
 PFX = {'drunk': 'dd', 'examples': 'ex', 'eg-dist': 'ed', 'eg-steps': 'es', 'ecm': 'em', 'rates': 'ra', 'vecm-irf': 'ir', 'forecast': 'fc', 'ppp': 'pp',
@@ -48,10 +48,10 @@ PFX = {'drunk': 'dd', 'examples': 'ex', 'eg-dist': 'ed', 'eg-steps': 'es', 'ecm'
 SECTIONS = {
  'ro': dict(idea='Ideea de cointegrare', eg='Metoda Engle–Granger în doi pași', ecm='Modele cu corecția erorii',
             vecm='Modelul VECM și teorema de reprezentare a lui Granger', joh='Testele Johansen', beta='Estimarea și interpretarea lui β și α',
-            fc='Prognoza: VECM sau VAR în diferențe?', app='Exemple economice: paritate și rate ale dobînzii', pairs='O aplicație: pairs trading'),
+            fc='Prognoza cu VECM și cu VAR în diferențe', app='Exemple economice: paritate și rate ale dobînzii', pairs='O aplicație: pairs trading'),
  'en': dict(idea='The idea of cointegration', eg='The Engle–Granger two-step method', ecm='Error correction models',
             vecm='The VECM and the Granger representation theorem', joh='The Johansen tests', beta='Estimating and interpreting β and α',
-            fc='Forecasting: VECM or VAR in differences?', app='Economic examples: parity and interest rates', pairs='An application: pairs trading'),
+            fc='Forecasting with a VECM and with a VAR in differences', app='Economic examples: parity and interest rates', pairs='An application: pairs trading'),
 }
 
 L = {

@@ -92,7 +92,7 @@ window.TSA_DATA.quizzes['seasonal'] = {
         {
             "correct": 1,
             "en": {
-                "title": "Seasonal MA or seasonal AR?",
+                "title": "Identifying a seasonal MA or a seasonal AR",
                 "text": "After differencing, the ACF has a single significant value at lag 12 and the PACF decays at lags 12, 24, 36. Which seasonal term is suggested?",
                 "options": [
                     "A seasonal AR(1), $\\Phi(L^{12}) = 1 - \\Phi L^{12}$",
@@ -104,7 +104,7 @@ window.TSA_DATA.quizzes['seasonal'] = {
                 "incorrectExplanation": "A seasonal AR(1) gives the opposite pattern (ACF decaying at 12, 24, 36, PACF cutting off); an MA(12) would spend 12 parameters on one spike; and a significant seasonal spike must be modelled."
             },
             "ro": {
-                "title": "MA sezonier sau AR sezonier?",
+                "title": "Identificarea unui MA sezonier sau a unui AR sezonier",
                 "text": "După diferențiere, ACF are o singură valoare semnificativă la lagul 12, iar PACF descrește la lagurile 12, 24, 36. Ce termen sezonier este sugerat?",
                 "options": [
                     "Un AR(1) sezonier, $\\Phi(L^{12}) = 1 - \\Phi L^{12}$",
@@ -578,7 +578,7 @@ window.TSA_DATA.quizzes['seasonal'] = {
         {
             "correct": 0,
             "en": {
-                "title": "Why combine forecasts",
+                "title": "The advantage of combining forecasts",
                 "text": "Two unbiased forecasts have error variances $\\sigma_1^2 = \\sigma_2^2 = 1$ and error correlation $\\rho = 0.5$. What is the MSE of their simple average?",
                 "options": [
                     "0.75",

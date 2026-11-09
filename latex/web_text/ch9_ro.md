@@ -34,11 +34,11 @@ Consumul zilnic de energie electrică al României, 26 de origini ale prognozei,
 - Modele liniare regularizate: ridge și lasso | Cele mai mici pătrate penalizate pe multe laguri corelate.
 - Arbori, random forest și gradient boosting | Arborii de regresie, ansamblurile lor, extrapolarea și importanța prin permutare.
 - Rețele neuronale | Perceptronul multistrat, antrenarea lui, rețeaua recurentă și LSTM.
-- Aplicație: consumul de energie electrică și Capitolul 4 | Unsprezece modele pe 26 de origini și 14 orizonturi și fereastra de Paște.
+- Aplicație: consumul de energie electrică și modelele din Capitolul 4 | Unsprezece modele pe 26 de origini și 14 orizonturi și fereastra de Paște.
 - Intervale de prognoză | Regresia cuantilică, funcția de pierdere pinball și predicția conformală prin împărțire.
 - Modele locale și globale: inflația din România | Un model pentru fiecare serie față de un model pentru 27 de țări.
 - Aplicații în finanțe: volatilitatea și semnul randamentului | HAR față de ML pentru volatilitatea realizată; semnul randamentului de mîine.
-- Studii de caz de referință: M4, M5 și Gu, Kelly și Xiu | Competiții de prognoză și învățare automată pentru randamentele acțiunilor.
+- Studii de caz: M4, M5 și Gu, Kelly și Xiu | Competiții de prognoză și învățare automată pentru randamentele acțiunilor.
 - Contribuția posibilă a AI | Foundation models, ce poate schița un asistent și ce trebuie verificat.
 - Rezumat | Ideile principale, formulele și întrebările de autoevaluare.
 
@@ -211,7 +211,7 @@ O validare onestă păstrează ordinea în timp, reestimează fiecare pas al ana
 
 Înaintea metodelor neliniare, secțiunea revine la regresia liniară pe laguri, modelul AR din [Capitolul 2](../RO/Cursuri/capitol2_modele_arma.pdf) cu multe laguri și variabile de calendar. Cu 30 de variabile corelate, metoda celor mai mici pătrate devine instabilă; ridge și lasso adaugă o penalizare pe mărimea coeficienților, care schimbă puțină deplasare pe o reducere mare a varianței. Secțiunea deduce cei doi estimatori, rezolvă un exemplu cu o singură variabilă și arată traiectoriile coeficienților pentru consumul de energie electrică.
 
-## Multe laguri, metoda celor mai mici pătrate instabilă {h=4e3969bd}
+## Instabilitatea metodei celor mai mici pătrate cu multe laguri {h=d912d727}
 
 Modelul liniar pe $p$ variabile prezice $\hat y = \beta_0 + \sum_j \beta_j x_j$, iar metoda celor mai mici pătrate (*ordinary least squares*, OLS) alege coeficienții care minimizează suma pătratelor erorilor, $\sum_t (y_t - \hat y_t)^2$. Cînd variabilele sînt 14 laguri ale unei serii zilnice, lagurile vecine sînt puternic corelate: consumul de ieri și cel de alaltăieri poartă aproape aceeași informație. OLS poate atunci compensa un coeficient pozitiv mare pe un lag cu unul negativ mare pe lagul vecin, fără să schimbe mult ajustarea, astfel încît coeficienții devin mari, de semne opuse, și se schimbă de la o fereastră de antrenare la alta.
 
@@ -330,7 +330,7 @@ Cea mai mare valoare a indicelui în datele de antrenare a fost 111,3; în augus
 
 Același random forest aplicat variațiilor lunare, cu prognozele cumulate pornind de la ultimul nivel observat, urmărește îndeaproape indicele, cu un RMSE de 0,71 puncte de indice. Ratele lunare ale inflației de după 2021 au fost mai mari decît înainte, dar au rămas într-un interval pe care random forest îl putea învăța, în timp ce nivelul a ieșit mult din el. Lecția repetă [Capitolul 3](../RO/Cursuri/capitol3_radacini_unitare_modele_arima.pdf): o serie nestaționară se diferențiază sau se transformă înainte ca un arbore să o vadă.
 
-## Variabilele folosite de model {h=0c0b9f01}
+## Importanța variabilelor {h=7c7fd7af}
 
 Un random forest sau un model de boosting nu are coeficienți care să poată fi citiți, deci felul în care folosește variabilele trebuie măsurat. Importanța prin permutare (*permutation importance*) amestecă valorile unei variabile în datele de test, ceea ce îi distruge legătura cu ținta păstrîndu-i distribuția, și măsoară cît crește eroarea de prognoză. O variabilă pe care modelul se sprijină produce o creștere mare; o variabilă nefolosită nu produce niciuna. Măsura funcționează pentru orice model și se calculează în afara eșantionului.
 
@@ -451,7 +451,7 @@ Un MLP suprapune straturi de unități $g(b + \mathbf{w}'\mathbf{x})$ și se ant
 
 Rețelele neuronale pot aproxima orice funcție continuă, dar această flexibilitate se plătește cu date și cu o antrenare atentă. Pentru o singură serie zilnică cu cîteva mii de observații, un MLP mic este un candidat rezonabil; rețelele recurente și LSTM sînt construite pentru secvențe lungi și multe serii înrudite, iar secțiunea următoare arată ce se întîmplă cînd sînt aplicate unei singure serii de lungime moderată.
 
-# Aplicație: consumul de energie electrică și Capitolul 4
+# Aplicație: consumul de energie electrică și modelele din Capitolul 4
 
 Secțiunea introduce metodele ML în exercițiul de prognoză din [Capitolul 4](../RO/Cursuri/capitol4_sezonalitate_prognoza.pdf). Modelele statistice din acel capitol și șase modele ML prognozează consumul zilnic de energie electrică al României de la aceleași 26 de origini, pentru aceleași 14 orizonturi, și sînt comparate cu aceleași măsuri de acuratețe și cu testul Diebold–Mariano.
 
@@ -463,7 +463,7 @@ Modelele ML sînt reestimate la fiecare origine. Ridge, un random forest cu 200 
 
 MASE împarte MAE-ul prognozelor la o scală fixă, MAE-ul în eșantion al metodei naive sezoniere săptămînale, 309 MW. O valoare MASE sub 1 înseamnă că modelul este mai precis în afara eșantionului decît este prognoza naivă sezonieră în eșantion.
 
-## Rezultatele: 26 de origini, 14 orizonturi {h=e8428054}
+## Rezultatele pentru 26 de origini și 14 orizonturi {h=727f2b6f}
 
 Tabelul dă, pentru fiecare model, MAE și RMSE, în GW, pe toate cele 364 de prognoze (26 de origini înmulțite cu 14 orizonturi), MASE și p-value-ul testului Diebold–Mariano față de DHR, cel mai precis model. Testul se aplică celor 26 de erori absolute medii pe origine, cu corecția pentru eșantioane mici a lui @HarveyLeybourneNewbold1997. Un p-value mic înseamnă că diferența de acuratețe față de DHR este puțin probabil să se datoreze întîmplării.
 
@@ -683,7 +683,7 @@ Pentru volatilitatea realizată, lasso și MLP cu variabile suplimentare sînt m
 
 Învățarea automată aduce valoare în finanțe acolo unde există structură de găsit: lasso și MLP cîștigă 7–9% din $R^2$ față de HAR în prognoza volatilității, datorită răspunsului asimetric al volatilității la randamente. Acolo unde nu există structură, ca în direcția randamentelor zilnice, modelele flexibile doar ajustează zgomotul, iar reperul clasei majoritare o arată.
 
-# Studii de caz de referință: M4, M5 și Gu, Kelly și Xiu
+# Studii de caz: M4, M5 și Gu, Kelly și Xiu
 
 Aplicațiile acestui capitol folosesc o serie sau cîteva. Cele trei studii de caz de mai jos arată dovezile la o scară mult mai mare: două competiții deschise de prognoză, pe zeci de mii de serii, și un studiu de învățare automată pentru randamentele acțiunilor americane.
 

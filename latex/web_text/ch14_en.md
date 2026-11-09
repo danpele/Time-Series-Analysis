@@ -26,7 +26,7 @@ The one-step-ahead DCC correlation of daily S&P 500 and DAX returns, the 250-day
 - **Compute** dynamic minimum-variance hedge ratios and their hedging effectiveness.
 
 @plan
-- Why multivariate volatility | Portfolio variance, hedging and contagion; rolling correlations and asynchronous trading.
+- The role of multivariate volatility | Portfolio variance, hedging and contagion; rolling correlations and asynchronous trading.
 - The multivariate GARCH framework | The conditional covariance matrix, symmetry, positive definiteness and the likelihood.
 - VEC and BEKK models | The general models, volatility spillovers and the number of parameters.
 - Constant and dynamic conditional correlations | The decomposition into volatilities and correlations, the DCC recursion and two-step estimation.
@@ -38,7 +38,7 @@ The one-step-ahead DCC correlation of daily S&P 500 and DAX returns, the 250-day
 - Possible contribution of AI | What an assistant can write and what must be checked.
 - Summary | Key ideas, formulas and self-assessment questions.
 
-## Why this chapter {h=a8352c75}
+## Motivation for the chapter {h=08ac1655}
 
 The question of the chapter is how the risks of several assets move together. In [Chapter 5](../EN/Courses/chapter5_conditional_volatility_garch.pdf) the conditional variance of a single return series was enough to describe its risk. For a portfolio of two or more assets this is no longer enough: two portfolios with the same individual volatilities can have very different risk, depending on whether their components tend to fall on the same days or on different days. The quantity that captures this is the covariance, or its standardised version, the correlation, and the chapter treats both as variables that change from day to day.
 
@@ -58,11 +58,11 @@ The other outcomes are computational and empirical. One step of the DCC recursio
 
 The chapter's code uses the arch package for the univariate GARCH models of step 1. The package has no DCC model, so step 2 is written out in about 40 lines of numpy: the recursion for $\mathbf{Q}_t$, the rescaling to correlations and the correlation part of the likelihood. Writing the recursion explicitly has a teaching advantage, since every element of the model is visible in the code. The lecture notebook reproduces the computations and the charts of the chapter.
 
-# Why multivariate volatility
+# The role of multivariate volatility
 
 The section shows why a model for a single volatility is not enough. Portfolio risk, hedging and contagion all depend on correlations, and the correlations observed in real markets move a great deal over time. The section ends with a practical trap of daily data: markets that close at different hours.
 
-## Three questions that need covariances {h=9b385b77}
+## Three applications that require covariances {h=3bb38524}
 
 The first question is the risk of a portfolio. If the vector $\mathbf{w}$ holds the weights of the assets and $\mathbf{H}$ is the covariance matrix of their returns, the variance of the portfolio return is a quadratic form, as in @Markowitz1952:
 
@@ -92,7 +92,7 @@ Three points of the curve are worth remembering. At $\rho = 1$ the two assets mo
 
 Because the curve is concave, the same increase of the correlation adds more volatility at low correlations than at high ones. For portfolios that combine weakly correlated assets, the very portfolios built for diversification, a rise in correlation is therefore most costly. This leads to the empirical question of the chapter: does $\rho$ stay put in real markets, or does it move with the state of the market?
 
-## Correlations change over time {h=5ab63b9c}
+## Time-varying correlations {h=ba949959}
 
 A first answer comes from rolling correlations (*rolling windows*): the sample correlation of daily log returns computed over the last 250 trading days, about one year, and dated at the end of the window. The chart plots this correlation on the vertical axis against time on the horizontal axis for three pairs: the S&P 500 and the DAX, from 2001; the BET and the DAX, from 2001; the S&P 500 and Bitcoin, from 2015. The shaded bands mark September 2008 – March 2009 and February – April 2020, and a dashed line marks zero.
 
@@ -114,7 +114,7 @@ The tariff announcement of 9 April 2025 shows the effect. The pause of the Unite
 
 Weekly returns are much less affected, because a one-day delay matters little over five days. Since 2015 the correlation of daily against weekly returns is 0.32 against 0.46 for the S&P 500 and the BET, 0.56 against 0.68 for the S&P 500 and the DAX, and 0.42 against 0.47 for the BET and the DAX. The gap is small for the last pair, whose markets close almost together. The remedies are weekly returns or returns measured between synchronous times; the daily models of this chapter keep the bias in mind when reading transatlantic correlations.
 
-## Recap: Why multivariate volatility {h=0db68c1e}
+## Recap: The role of multivariate volatility {h=ada4bf84}
 
 The portfolio variance $\mathbf{w}^\top\mathbf{H}\mathbf{w}$, the hedge ratio and the question of contagion all depend on covariances. Rolling correlations of real markets move a great deal, through market integration, through crises and through the arrival of new asset classes such as Bitcoin. Before computing any daily correlation, the trading hours must be checked, because asynchronous closes bias daily correlations towards zero.
 
@@ -300,7 +300,7 @@ The correlation is $\rho_{12,t} = 0.725/\sqrt{1.150 \cdot 1.2625} = 0.602$.
 
 The large joint fall raises tomorrow's correlation from 0.50 to 0.602. The rescaling matters: without it, the value 0.725 of $q_{12,t}$ would be read as the correlation and overstate the reaction. Large shocks raise the diagonal of $\mathbf{Q}_t$ as well, and the division by $\sqrt{q_{11,t}q_{22,t}}$ takes this into account.
 
-## Reading a and b {h=0b8237e5}
+## Interpreting a and b {h=c65ef033}
 
 The parameter $a$ is the news coefficient: it measures how much one day's joint shock moves the correlation. Typical daily estimates lie between 0.01 and 0.05, so a single day moves the correlation only a little, and a large change requires a run of joint shocks.
 
@@ -586,7 +586,7 @@ An AI assistant can quickly write a first version of the code the chapter needs:
 
 The greatest benefit comes in exploration: DCC models for many pairs at once, such as the markets of Central and Eastern Europe (CEE), sectors or currencies, and a first look at how their correlations behaved in crises. The prompt on the slide is an example of a precise request: it names the data, the alignment on common trading days, the two steps of estimation, correlation targeting and the out-of-sample comparison with static OLS. The more of these choices the request fixes, the easier the result is to check.
 
-## Checks you must run {h=584723eb}
+## Necessary checks {h=26be2e86}
 
 The first check is the library. The arch package has no DCC model, so an answer that calls arch_model(..., vol='DCC') has invented a function. The second is timing: $\mathbf{Q}_t$ must use $\mathbf{z}_{t-1}$, not $\mathbf{z}_t$; otherwise the VaR and the hedge ratio use tomorrow's information, and the backtest looks better than any real forecast could. The third is the rescaling @eq:dcc: every $\mathbf{R}_t$ must have ones on the diagonal and correlations below one in absolute value.
 

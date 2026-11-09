@@ -503,13 +503,13 @@ After one day, ARIMA returns to the level of the naive forecast: 0.24 GW against
 
 ETS is good for a few hours, while the recent level dominates, and then becomes the worst model. A daily season cannot represent the weekend, so on a Sunday ETS forecasts the load of a working day. The chart thus explains the WQL ratio of 1.75 in the results table.
 
-## How much context is needed? (1/2) {h=6a3f9af0}
+## The required context length (1/2) {h=88a3f006}
 
 The chart shows the MASE for Romanian load as a function of the context length given to the model: 96, 192, 336, 672, 1344 and 2048 hours, that is from 4 to 85 days. The test uses the last 26 weekly origins, that is the last half-year. Each line with dots is a foundation model, and the dashed horizontal line is the seasonal naive forecast, which does not depend on the context.
 
 All three curves fall as the context grows, steeply at first and slowly at the end. Chronos-2 starts highest and ends lowest.
 
-## How much context is needed? (2/2) {h=d4f51478}
+## The required context length (2/2) {h=a1305d52}
 
 With a context of 96 hours, that is 4 days, every model is worse than the seasonal naive forecast, which has a MASE of 1.16: Chronos-Bolt small has 1.33 and Chronos-2 has 2.04. Four days do not contain a full week, so the model cannot know what the weekend looks like; the seasonal naive forecast, which repeats last week from the full history of the series, has this information.
 
@@ -531,7 +531,7 @@ The cost of use is small. The time for one load forecast on a laptop processor i
 
 Zero-shot inference is cheap because the real cost was paid once, at pretraining, by the developer. For a user with thousands of series this changes the calculation: a strong benchmark is obtained in seconds for all the series, before any dedicated model.
 
-## Landmark benchmarks {h=70f59414}
+## Reference benchmarks {h=0123e7e7}
 
 The test of this chapter has only seven series. General conclusions about forecasting methods rest on large benchmarks. The M3 competition, described by @MakridakisHibon2000, used 3003 series and showed that sophisticated methods do not, on average, beat simple ones. The M4 competition [@MakridakisEtAl2020] used 100,000 series; it was won by forecast combinations and a hybrid of exponential smoothing and a neural network. The Monash archive [@GodahewaEtAl2021] collects public data sets with fixed horizons and reference results.
 
@@ -559,7 +559,7 @@ The test on 708 origins gives a more nuanced picture than any single example. Th
 
 A test score is credible only if the forecast did not use information from the test period. This section distinguishes two sources of the problem. Leakage arises in the analyst's code and can be controlled. Contamination arises in the model's pretraining corpus and can only be checked, indirectly, by comparing results before and after the model's release.
 
-## Leakage in your own pipeline {h=d540ecd8}
+## Leakage in the forecasting pipeline {h=64f2bd49}
 
 Leakage means that information from the test period reaches the forecasts, directly or indirectly [@HewamalageEtAl2023]. Its effect is always optimistic: the model looks better than it will be when it forecasts an unknown future. The typical causes are mundane, which is why they are easy to overlook.
 
@@ -607,7 +607,7 @@ Three uses are realistic. The first is code: an assistant can write a first vers
 
 The example prompt on the slide shows how to phrase a verifiable request. It specifies the data (Romania's monthly industrial production, the Eurostat data set *sts_inpr_m*, not seasonally adjusted), the protocol (12-month forecasts from monthly origins since 2016), the models (Chronos-Bolt small from the package *chronos-forecasting*, on a CPU, ETS and the seasonal naive forecast) and the scores (the MASE, the WQL and the coverage of the 80% interval). A prompt this precise produces results that can be compared with those of this chapter.
 
-## Checks you must run {h=69bd5e89}
+## Necessary checks {h=3edaac65}
 
 The first check concerns names: the package and the models must exist, for example the class *BaseChronosPipeline* and the model *amazon/chronos-bolt-small*. An invented class or model name fails at once, which is in fact the lucky case. The dangerous errors are those that do not stop the code: scaling or calibration done with data from after the origin, which produces leakage, or a quantile requested outside the model's levels. Chronos-Bolt outputs only the 0.1–0.9 quantiles; a "1% quantile" obtained from it is an extrapolation, not a forecast of the model.
 

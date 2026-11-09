@@ -42,7 +42,7 @@ EXTRA = [('wx-div', 'Worked example: correlation and portfolio risk', 'Exemplu r
          ('wx-bekk', 'Worked example: one step of a diagonal BEKK', 'Exemplu rezolvat: un pas al unui BEKK diagonal', 'vb', 'params'),
          ('t-dim', 'The curse of dimensionality', 'Problema dimensionalității', 'vb', 'params'),
          ('wx-dcc', 'Worked example: one step of the DCC recursion', 'Exemplu rezolvat: un pas al recurenței DCC', 'cd', 'step1'),
-         ('wx-hl', 'Reading a and b', 'Interpretarea parametrilor a și b', 'cd', 'step1'),
+         ('wx-hl', 'Interpreting a and b', 'Interpretarea parametrilor a și b', 'cd', 'step1'),
          ('t-step1', 'Step 1: two univariate GARCH models', 'Pasul 1: două modele GARCH univariate', 'sd', 'step1'),
          ('t-dcc', 'Step 2: the estimated DCC', 'Pasul 2: modelul DCC estimat', 'sd', 'dcc'),
          ('t-crisis', 'Correlations in crises', 'Corelațiile în crize', 'sd', 'zoom'),
@@ -59,7 +59,7 @@ PFX = {'divers': 'dv', 'rolling': 'ro', 'params': 'pc', 'step1': 's1', 'dcc': 'd
 SECTIONS = {
  'ro': dict(wm='Rolul volatilității multivariate', fw='Cadrul GARCH multivariat', vb='Modelele VEC și BEKK', cd='Corelații condiționate constante și dinamice',
             sd='DCC pentru S&P 500 și DAX', fm='Cinci piețe: S&P 500, DAX, BET, EUR/RON, Bitcoin', pv='VaR 1% al unui portofoliu cu DCC', hr='Rapoarte dinamice de acoperire'),
- 'en': dict(wm='Why multivariate volatility', fw='The multivariate GARCH framework', vb='VEC and BEKK models', cd='Constant and dynamic conditional correlations',
+ 'en': dict(wm='The role of multivariate volatility', fw='The multivariate GARCH framework', vb='VEC and BEKK models', cd='Constant and dynamic conditional correlations',
             sd='DCC for the S&P 500 and the DAX', fm='Five markets: S&P 500, DAX, BET, EUR/RON, Bitcoin', pv='Portfolio VaR 1% with DCC', hr='Dynamic hedge ratios'),
 }
 
@@ -90,7 +90,7 @@ L = {
        'correlations and slopes, the correlation log-likelihood, the VaR and the Kupiec and Christoffersen tests. Variants that do not appear in the lecture (other windows, '
        'other values of a and b, another α of step 1 with the same persistence, other VaR levels, k-day returns, the forecasts without new shocks, the quarterly means) are '
        'extra runs of the chapter’s code on the same data; the charts of the “Worked example” boxes, “Asynchronous trading and the bias of daily correlations”, “Two conditions on Hₜ”, “The curse of '
-       'dimensionality”, “Reading a and b”, “Step 1: two univariate GARCH models”, “Step 2: the estimated DCC”, “Correlations in crises”, “A five-asset DCC”, “Interpreting '
+       'dimensionality”, “Interpreting a and b”, “Step 1: two univariate GARCH models”, “Step 2: the estimated DCC”, “Correlations in crises”, “A five-asset DCC”, “Interpreting '
        'the backtest” and “Interpreting the hedge ratios” are extra charts for slides that give only numbers.'),
 }
 

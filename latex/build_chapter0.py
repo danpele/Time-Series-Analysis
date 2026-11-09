@@ -360,7 +360,7 @@ D.frame('⟦Three kinds of data||Trei tipuri de date⟧', table(
       '⟦the classical formulas for independent samples (standard errors, tests) must be adapted||formulele clasice pentru eșantioane independente (erori standard, teste) trebuie adaptate⟧']),
     '⟦EU: European Union||UE: Uniunea Europeană⟧'), size='footnotesize')
 
-D.frame('⟦Why time series matter||Importanța seriilor de timp⟧', table(
+D.frame('⟦The importance of time series||Importanța seriilor de timp⟧', table(
     '>{\\raggedright\\arraybackslash}p{1.9cm}>{\\raggedright\\arraybackslash}p{4.3cm}>{\\raggedright\\arraybackslash}p{6.2cm}',
     '\\textbf{⟦Field||Domeniu⟧} & \\textbf{⟦Series||Serie⟧} & \\textbf{⟦Typical question||Întrebare tipică⟧}',
     ['⟦Economics||Economie⟧ & ⟦GDP, inflation, unemployment||PIB, inflație, șomaj⟧ & ⟦Where will inflation be in a year?||Unde va fi inflația peste un an?⟧',
@@ -1059,7 +1059,7 @@ D.frame('⟦Possible contribution of AI||Contribuția posibilă a AI⟧', items(
       '⟦an RMSE without the square root; a MAPE on a series that crosses zero||RMSE fără rădăcina pătrată; MAPE pe o serie care trece prin zero⟧']),
     '⟦Seminar 0, exercise C2: find three such errors in an AI answer||Seminarul 0, exercițiul C2: găsiți trei astfel de greșeli într-un răspuns generat de AI⟧'))
 
-D.frame('⟦Checks before trusting a result||Verificări necesare⟧', items(
+D.frame('⟦Necessary checks||Verificări necesare⟧', items(
     ('⟦\\textbf{The data}||\\textbf{Datele}⟧',
      ['⟦plot the series first; check the frequency, the units, the first and the last date||reprezentați seria grafic înainte de orice calcul; verificați frecvența, unitățile de măsură, prima și ultima dată⟧',
       '⟦adjusted or unadjusted? A model for the season needs the unadjusted series||ajustată sau neajustată? Un model pentru sezonalitate are nevoie de seria neajustată⟧']),
@@ -1078,7 +1078,7 @@ D.frame('⟦Key takeaways||Idei de reținut⟧', items(
     '⟦The ACF reveals trend (slow decay), season (peaks at $m$) and memory||ACF dezvăluie trendul (descreștere lentă), sezonalitatea (vîrfuri la $m$) și memoria⟧',
     '⟦Exponential smoothing weighs the recent past more; evaluate every forecast against naive benchmarks on a test set||Netezirea exponențială acordă ponderi mai mari trecutului recent; evaluați orice prognoză față de metodele naive, pe un set de test⟧'))
 
-D.frame('⟦Self-assessment, project idea and next: Chapter 1||Autoevaluare, idee de proiect; urmează Capitolul 1⟧', cols(
+D.frame('⟦Self-assessment, project idea and the next lecture: Chapter 1||Autoevaluare, idee de proiect și cursul următor: Capitolul 1⟧', cols(
     items(('⟦\\textbf{Self-assessment}||\\textbf{Autoevaluare}⟧',
            ['⟦Why is the quarter-on-quarter growth of unadjusted GDP misleading?||De ce este înșelătoare creșterea față de trimestrul anterior a PIB-ului neajustat?⟧',
             '⟦What does a seasonal factor of 0.76 for Q1 mean?||Ce înseamnă un factor sezonier de 0,76 pentru trimestrul I?⟧',
