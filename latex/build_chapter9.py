@@ -847,12 +847,12 @@ D.frame(T('Results: S\\&P 500 and DAX, 2013--2026', 'Rezultatele: S\\&P 500 și 
     T('The lasso and the MLP gain 7--9\\% of $R^2$ over HAR and lower QLIKE significantly on the S\\&P 500; the random forest and GB do not beat HAR', 'Lasso și MLP obțin un $R^2$ față de HAR de 7--9\\% și reduc semnificativ QLIKE pe S\\&P 500; random forest și GB nu depășesc HAR'),
     T('The gain comes from the extra features (the negative return: the leverage effect of Chapter 5), used smoothly; trees cut a smooth relation into steps', 'Cîștigul vine din variabilele suplimentare (randamentul negativ: efectul de levier din Capitolul 5), folosite lin; arborii taie o relație netedă în trepte')), 'footnotesize')
 
-chart(T('Volatility forecasts in two storms', 'Prognozele volatilității în două episoade de criză'), 'tsa_ch9_rv', 'TSA_ch9_finance', [
+chart(T('Volatility forecasts in 2020 and 2025', 'Prognozele volatilității în 2020 și 2025'), 'tsa_ch9_rv', 'TSA_ch9_finance', [
     T('S\\&P 500: annualised realised volatility of the next 5 days and the HAR, random forest and GB forecasts, 2020 and 2025',
       'S\\&P 500: volatilitatea realizată anualizată a următoarelor 5 zile și prognozele HAR, random forest și GB, 2020 și 2025')],
     h='0.52\\textheight')
 
-D.frame(T('The sign of tomorrow\'s return: the right baseline', 'Semnul randamentului de mîine: reperul corect'), items(
+D.frame(T('Forecasting the sign of the next-day return: choice of the baseline', 'Prognoza semnului randamentului din ziua următoare: alegerea reperului'), items(
     (T('Classification: target $1\\{r_{t+1} > 0\\}$ (1 if tomorrow\'s return is positive, 0 otherwise); features: the last five returns, sums over 5, 21, 63 days, volatility over 21 and 63 days', 'Clasificare: ținta $1\\{r_{t+1} > 0\\}$ (1 dacă randamentul de mîine este pozitiv, altfel 0); variabile: ultimele cinci randamente, sume pe 5, 21, 63 de zile, volatilitatea pe 21 și 63 de zile'),
      [T('models: logistic regression (logit), random forest, GB; yearly walk-forward from 2008', 'modele: regresia logistică (logit), random forest, GB; walk-forward anual din 2008')]),
     (T('\\textbf{The right baseline} is not 50\\%: markets rise on more days than they fall', '\\textbf{Reperul corect} nu este 50\\%: piețele cresc în mai multe zile decît scad'),
@@ -903,7 +903,7 @@ interp(('M4', 'M4'), [
      [T('@{m4.top17} of the 17 best methods were combinations', '@{m4.top17} dintre cele mai bune 17 metode au fost combinații')]),
     T('Lesson: on short, heterogeneous series, combine statistical models, or let ML learn across series; pure local ML loses', 'Lecția: pe serii scurte și eterogene, combinăm modele statistice sau lăsăm ML să învețe de la toate seriile; ML pur, aplicat local, este mai slab')])
 
-D.frame(T('M5: gradient boosting wins on retail data', 'M5: gradient boosting, cel mai precis pe datele din comerț'), twocol(
+D.frame(T('M5: accuracy of gradient boosting on retail data', 'M5: precizia gradient boosting pe datele din comerț'), twocol(
     ph('walmart', T('A Walmart store: the M5 data are the daily unit sales of 3\\,049 products in 10 stores', 'Un magazin Walmart: datele M5 sînt vînzările zilnice a 3\\,049 de produse în 10 magazine'), h='0.42\\textheight'),
     items((T('5\\,507 teams from 101 countries; error measure WRMSSE (weighted root mean squared scaled error)', '5\\,507 echipe din 101 țări; măsura erorii WRMSSE (weighted root mean squared scaled error)'),
            [T('RMSSE: the RMSE of the forecasts over the in-sample RMSE of the one-step naive forecast', 'RMSSE: RMSE a prognozelor raportată la RMSE în eșantion a prognozei naive la un pas'),
@@ -925,7 +925,7 @@ D.frame(T('Gu, Kelly and Xiu (2020): machine learning for stock returns', 'Gu, K
             T('Sharpe ratio: the mean annual return divided by its annual standard deviation', 'raportul Sharpe: randamentul mediu anual împărțit la abaterea lui standard anuală')])),
     wl='0.34', wr='0.64'), 'footnotesize')
 
-chart(T('Gu, Kelly and Xiu (2020): small $R^2$, large economic value', 'Gu, Kelly și Xiu (2020): $R^2$ mic, valoare economică mare'), 'tsa_ch9_gkx', 'TSA_ch9_case_studies', [
+chart(T('Gu, Kelly and Xiu (2020): out-of-sample $R^2$ and Sharpe ratios', 'Gu, Kelly și Xiu (2020): $R^2$ în afara eșantionului și rapoarte Sharpe'), 'tsa_ch9_gkx', 'TSA_ch9_case_studies', [
     T('Published numbers: Table 1 (monthly out-of-sample $R^2$, all stocks) and Table 7 (annualised Sharpe ratio of the value-weighted long-short decile portfolio); +H: Huber loss',
       'Cifrele publicate: Tabelul 1 ($R^2$ lunar în afara eșantionului, toate acțiunile) și Tabelul 7 (raportul Sharpe anualizat al portofoliului long-short pe decile, ponderat cu valoarea); +H: funcția de pierdere Huber'),
     T('OLS-3: OLS on size, book-to-market and momentum; PLS, PCR: partial least squares, principal component regression; ENet: elastic net',

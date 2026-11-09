@@ -163,7 +163,7 @@ function blkReturns() {
   out('re-out', rows);
 }
 
-// ================================================================= 2. the sign is unpredictable, the size is not
+// ================================================================= 2. autocorrelation of returns and of squared returns
 function acfSq(k, y0, f) {
   const i0 = idx(k, `${y0}-01-01`), x = S[k].r.slice(i0), x2 = x.map(v => (f === 'abs' ? Math.abs(v) : v * v));
   const a1 = acf(x, 50), a2 = acf(x2, 50), b = 1.96 / Math.sqrt(x.length);
@@ -426,7 +426,7 @@ function blkPers() {
   out('pe-out', rows.concat([T.pe2(nf(ph, 3), nf(Math.log(0.5) / Math.log(ph), 1))]));
 }
 
-// ================================================================= 12. forecast intervals that breathe (BET)
+// ================================================================= 12. forecast intervals with time-varying width (BET)
 function bandStats(cov) {
   const r = S.bet.r, d = S.bet.d, { b, res } = arOls(r, 1), s = Math.sqrt(sum(res.map(v => v * v)) / (res.length - 2));
   const zc = cov === 95 ? 1.96 : normPpf((1 + cov / 100) / 2), g = D.ag, Z = zArGarch(), q = stdT((1 + cov / 100) / 2, g.nu);

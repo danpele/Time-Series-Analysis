@@ -573,7 +573,7 @@ D.frame(T('Correlations in crises', 'Corelațiile în crize'), two(
               'Atenție \\refFR: corelația de selecție crește mecanic cînd crește volatilitatea, chiar dacă legătura nu s-a schimbat; DCC reduce acest efect, deoarece lucrează cu $z_t$, nu cu $r_t$')),
     wl='0.36', wr='0.62'), size='footnotesize')
 
-chart(T('Inside the crises of 2008 and 2020', 'În interiorul crizelor din 2008 și 2020'), 'tsa_ch14_crisis_zoom', 'TSA_ch14_dcc_estimation', [
+chart(T('DCC correlation in the crises of 2008 and 2020', 'Corelația DCC în crizele din 2008 și 2020'), 'tsa_ch14_crisis_zoom', 'TSA_ch14_dcc_estimation', [
     T('DCC correlation of the S\\&P 500 and the DAX (left axis) and the GARCH volatility of the S\\&P 500 (right axis)', 'Corelația DCC dintre S\\&P 500 și DAX (axa din stînga) și volatilitatea GARCH a S\\&P 500 (axa din dreapta)')],
     h='0.6\\textheight')
 
@@ -667,7 +667,7 @@ D.frame(T('Backtesting a VaR (2/2): independence', 'Backtesting pentru VaR (2/2)
          [T('$LR_{ind} = -2\\log\\dfrac{(1-\\hat\\pi)^{n_{00}+n_{10}}\\,\\hat\\pi^{\\,n_{01}+n_{11}}}{(1-\\hat\\pi_{01})^{n_{00}}\\,\\hat\\pi_{01}^{\\,n_{01}}\\,(1-\\hat\\pi_{11})^{n_{10}}\\,\\hat\\pi_{11}^{\\,n_{11}}} \\sim \\chi^2(1)$', '$LR_{ind} = -2\\log\\dfrac{(1-\\hat\\pi)^{n_{00}+n_{10}}\\,\\hat\\pi^{\\,n_{01}+n_{11}}}{(1-\\hat\\pi_{01})^{n_{00}}\\,\\hat\\pi_{01}^{\\,n_{01}}\\,(1-\\hat\\pi_{11})^{n_{10}}\\,\\hat\\pi_{11}^{\\,n_{11}}} \\sim \\chi^2(1)$'),
           T('$n_{ij}$: the number of days in state $j$ after a day in state $i$ (1: violation, 0: none); $\\hat\\pi_{01} = n_{01}/(n_{00}+n_{01})$, $\\hat\\pi_{11} = n_{11}/(n_{10}+n_{11})$', '$n_{ij}$: numărul de zile în starea $j$ după o zi în starea $i$ (1: încălcare, 0: fără); $\\hat\\pi_{01} = n_{01}/(n_{00}+n_{01})$, $\\hat\\pi_{11} = n_{11}/(n_{10}+n_{11})$'),
           T('$\\hat\\pi$: the overall violation rate; the numerator assumes $\\pi_{01} = \\pi_{11}$ (no clustering); a small $p$-value rejects independence', '$\\hat\\pi$: rata totală a încălcărilor; numărătorul presupune $\\pi_{01} = \\pi_{11}$ (fără grupare); un p-value mic respinge independența')]),
-    (T('\\textbf{Honest design}', '\\textbf{O schemă de evaluare corectă}'),
+    (T('\\textbf{Out-of-sample design}', '\\textbf{Schema de evaluare în afara eșantionului}'),
          [T('estimate all parameters on 2000--2014 (@{vr.nin} days), then run the filters forward on 2015--2026 (@{vr.n} days) without re-estimating', 'estimați toți parametrii pe 2000--2014 (@{vr.nin} zile), apoi rulați filtrele mai departe pe 2015--2026 (@{vr.n} zile), fără reestimare')])), size='footnotesize')
 
 chart(T('VaR 1\\% of an S\\&P 500 and DAX portfolio, 2015--2026', 'VaR 1\\% al unui portofoliu S\\&P 500 și DAX, 2015--2026'), 'tsa_ch14_var_backtest', 'TSA_ch14_portfolio_var', [

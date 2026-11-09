@@ -551,7 +551,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
         {
             "correct": 1,
             "en": {
-                "title": "Lessons of the M competitions",
+                "title": "Results of the M competitions",
                 "text": "Which lesson of the M3 and M4 forecasting competitions is most relevant for foundation models?",
                 "options": [
                     "Neural networks won every category of M3",
@@ -563,7 +563,7 @@ window.TSA_DATA.quizzes['foundation-models'] = {
                 "incorrectExplanation": "Neural networks did not win M3; seasonal naive is a benchmark, not always the best; M4 also scored prediction intervals."
             },
             "ro": {
-                "title": "Lecțiile competițiilor M",
+                "title": "Rezultatele competițiilor M",
                 "text": "Care lecție a competițiilor de prognoză M3 și M4 este cea mai relevantă pentru foundation models?",
                 "options": [
                     "Rețelele neuronale au cîștigat toate categoriile din M3",

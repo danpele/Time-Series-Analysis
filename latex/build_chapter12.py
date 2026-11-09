@@ -619,7 +619,7 @@ interp(('the GDP spectra', 'spectrelor PIB'), [
      [T('Romanian HP cycle: @{gs.RO.c.bc}\\% in the band and @{gs.RO.c.low}\\% at periods longer than 8 years: one long cycle in a short sample', 'ciclul HP al României: @{gs.RO.c.bc}\\% în bandă și @{gs.RO.c.low}\\% la perioade de peste 8 ani: un singur ciclu lung într-un eșantion scurt')]),
     T('Caution: the HP filter itself removes low frequencies and can shape the peak (Section 7); 99 Romanian observations give a very wide confidence band', 'Atenție: filtrul HP elimină el însuși frecvențele joase și poate modela vîrful (secțiunea 7); cele 99 de observații ale României dau o bandă de încredere foarte largă')])
 
-chart(T('The rhythm of electricity demand', 'Ritmul consumului de energie electrică'), 'tsa_ch12_load', 'TSA_ch12_electricity_load', [
+chart(T('Spectrum of the Romanian hourly electricity load', 'Spectrul consumului orar de energie electrică al României'), 'tsa_ch12_load', 'TSA_ch12_electricity_load', [
     T('Hourly electricity load of Romania (ENTSO-E, MW, UTC hours), 2022--2026, @{lo.T} hours, mean @{lo.mean} MW (Chapter 4); Welch spectrum with 8-week segments', 'Consumul orar de energie electrică al României (ENTSO-E, MW, ore UTC), 2022--2026, @{lo.T} ore, media @{lo.mean} MW (Capitolul 4); spectrul Welch cu segmente de 8 săptămîni')],
     h='0.58\\textheight')
 

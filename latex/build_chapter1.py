@@ -719,7 +719,7 @@ D.frame(T('Confidence bands for the sample ACF', 'Benzi de încredere pentru ACF
       T('95\\% band: $\\pm 1.96/\\sqrt{T}$; a bar outside it rejects $\\rho(h) = 0$ at 5\\%, \\textbf{for that lag alone}', 'banda de 95\\%: $\\pm 1{,}96/\\sqrt{T}$; o bară în afara ei respinge $\\rho(h) = 0$ la 5\\%, \\textbf{doar pentru acel lag}')]),
     (T('For an MA($q$), at lags $h > q$: $\\mathrm{Var}(\\hat\\rho(h)) \\approx \\frac1T\\big(1 + 2\\sum_{k=1}^{q}\\rho(k)^2\\big)$', 'Pentru un MA($q$), la laguri $h > q$: $\\mathrm{Var}(\\hat\\rho(h)) \\approx \\frac1T\\big(1 + 2\\sum_{k=1}^{q}\\rho(k)^2\\big)$'),
      [T('the wider bands of \\texttt{statsmodels} \\texttt{plot\\_acf} (Chapter 2)', 'benzile mai largi din \\texttt{plot\\_acf} din \\texttt{statsmodels} (Capitolul 2)')]),
-    (T('Two traps', 'Două capcane'),
+    (T('Limitations of the band', 'Limitele benzii'),
      [T('with 20 lags and no correlation, about one bar is expected outside the band by chance', 'cu 20 de laguri și nicio corelație, ne așteptăm ca aproximativ o bară să iasă din bandă din întîmplare'),
       T('the band assumes i.i.d. data; for a weak white noise (GARCH returns) the true band is wider', 'banda presupune date i.i.d.; pentru un zgomot alb slab (randamente GARCH) banda adevărată este mai largă')])))
 

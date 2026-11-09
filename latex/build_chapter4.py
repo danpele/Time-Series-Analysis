@@ -682,7 +682,7 @@ interp(('the airline forecasts', 'prognozelor airline'), [
 # =============================================================================
 # 5. STUDIU DE CAZ: PIB
 # =============================================================================
-D.section('Case study: Romanian GDP, not adjusted', 'Studiu de caz: PIB-ul neajustat al României')
+D.section('Case study: seasonally unadjusted Romanian GDP', 'Studiu de caz: PIB-ul neajustat al României')
 
 D.frame(T('SARIMA models for Romanian GDP', 'Modele SARIMA pentru PIB-ul României'), table(
     'lrrrr', T('\\textbf{Model}', '\\textbf{Modelul}') + ' & \\textbf{AICc} & \\textbf{BIC} & ' + T('\\textbf{LB(8), p}', '\\textbf{LB(8), p}') + ' & $\\hat\\sigma$ (\\%)',

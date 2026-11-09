@@ -201,7 +201,7 @@ interp(('the four series', 'celor patru serii'), [
     T('EUR/RON: @{ret.eurron.sd2008}\\% in the 2008 crisis, only @{ret.eurron.sd2020}\\% in 2020: the BNR kept the leu almost fixed', 'EUR/RON: @{ret.eurron.sd2008}\\% în criza din 2008, doar @{ret.eurron.sd2020}\\% în 2020: BNR a menținut leul aproape fix'),
     T('A model with a constant variance (white noise, Chapter 1) describes none of these series', 'Un model cu varianță constantă (zgomot alb, Capitolul 1) nu descrie niciuna dintre aceste serii')])
 
-D.frame(T('Two storms: 2008 and 2020', 'Două furtuni: 2008 și 2020'), cols(
+D.frame(T('The crises of 2008 and 2020', 'Crizele din 2008 și 2020'), cols(
     ph('lehman', T('Lehman Brothers headquarters, New York, 15 September 2008', 'Sediul Lehman Brothers, New York, 15 septembrie 2008'), h='0.42\\textheight'),
     ph('fidi', T('The Financial District of New York, 25 March 2020', 'Districtul financiar din New York, 25 martie 2020'), h='0.42\\textheight'),
     wl='0.48', wr='0.48') + items(
@@ -227,7 +227,7 @@ D.frame(T('Stylised facts in numbers', 'Faptele stilizate în cifre'), table(
     T('$Q(10)$: the statistic of \\refLB\\ (Chapter 1), $\\chi^2(10)$, 5\\% value 18.31; LM(5): the ARCH-LM test (two slides ahead), $\\chi^2(5)$, 5\\% value @{lm.chi}',
       '$Q(10)$: statistica lui \\refLB\\ (Capitolul 1), $\\chi^2(10)$, valoarea de 5\\%: 18,31; LM(5): testul ARCH-LM (peste două slide-uri), $\\chi^2(5)$, valoarea de 5\\%: @{lm.chi}')) + ql('TSA_ch5_stylised_facts'), 'footnotesize')
 
-chart(T('The sign is unpredictable, the size is not', 'Semnul este imprevizibil, mărimea nu'), 'tsa_ch5_acf_squares', 'TSA_ch5_stylised_facts', [
+chart(T('Autocorrelation of returns and of squared returns', 'Autocorelația randamentelor și a pătratelor lor'), 'tsa_ch5_acf_squares', 'TSA_ch5_stylised_facts', [
     T('Sample ACF (autocorrelation function, Chapter 1) of $r_t$ and of $r_t^2$, lags 1--50, with the band $\\pm 1.96/\\sqrt{T}$ of an i.i.d.\\ (independent and identically distributed) series',
       'ACF de selecție (autocorrelation function, funcția de autocorelație, Capitolul 1) a lui $r_t$ și a lui $r_t^2$, lagurile 1--50, cu banda $\\pm 1.96/\\sqrt{T}$ a unei serii i.i.d.\\ (independente și identic distribuite)')],
     h='0.64\\textheight')
@@ -662,7 +662,7 @@ D.frame(T('AR(1)-GARCH(1,1)-t on four series', 'AR(1)-GARCH(1,1)-t pe patru seri
       'BET: autocorelația pozitivă se menține ($\\hat\\phi = @{ag.bet.phig}$, $t = @{ag.bet.tg}$): ajustarea lentă a prețurilor pe o piață mai puțin lichidă; EUR/RON: de la @{ag.eurron.phio} la @{ag.eurron.phig}, nu mai este semnificativ'),
     T('Interpretation: the mean model and the variance model must be chosen together; the conclusions about $\\phi$ can change', 'Interpretare: modelul pentru medie și cel pentru varianță trebuie alese împreună; concluziile despre $\\phi$ se pot schimba')) + ql('TSA_ch5_arma_garch'), 'footnotesize')
 
-chart(T('Forecast intervals that breathe', 'Intervale de prognoză variabile în timp'), 'tsa_ch5_bands', 'TSA_ch5_arma_garch', [
+chart(T('Forecast intervals with time-varying width', 'Intervale de prognoză variabile în timp'), 'tsa_ch5_bands', 'TSA_ch5_arma_garch', [
     T('BET, one-day-ahead 95\\% intervals: AR(1) with constant variance (width @{bd.wc} points every day) and AR(1)-GARCH(1,1)-t (width from @{bd.wgmin} to @{bd.wgmax} points in this window)',
       'BET, intervale de 95\\% cu o zi înainte: AR(1) cu varianță constantă (lățimea de @{bd.wc} puncte în fiecare zi) și AR(1)-GARCH(1,1)-t (lățimea de la @{bd.wgmin} la @{bd.wgmax} puncte în această fereastră)')],
     h='0.60\\textheight')

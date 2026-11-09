@@ -242,7 +242,7 @@ D.frame('⟦Route of this chapter||Traseul acestui capitol⟧', cols(
           '⟦Seminar 0 comes \\textbf{before} this lecture and practises the first tools on data||Seminarul 0 are loc \\textbf{înaintea} acestui curs și exersează primele instrumente pe date⟧'),
     '0.47', '0.50'), size='footnotesize')
 
-D.frame('⟦The course at a glance||Cursul pe scurt⟧', cols(
+D.frame('⟦Course overview||Cursul pe scurt⟧', cols(
     items(('⟦\\textbf{Programme}||\\textbf{Program}⟧',
            ["⟦Bachelor's programmes Economic Informatics and Economic Cybernetics, year 3, semester 2||Licență, programele Informatică economică și Cibernetică economică, anul III, semestrul 2⟧",
             '⟦Faculty of Cybernetics, Statistics and Economic Informatics (CSIE), ASE Bucharest||Facultatea de Cibernetică, Statistică și Informatică Economică (CSIE), ASE București⟧',
@@ -540,7 +540,7 @@ D.frame('⟦Sunspots: the first famous time series||Petele solare: prima serie d
     + '\n' + ph('sunspots', '⟦Sunspots drawn by Richard Carrington, 1 September 1859||Pete solare desenate de Richard Carrington, 1 septembrie 1859⟧', h='0.26\\textheight'),
     '0.30', '0.66'), size='footnotesize')
 
-D.frame('⟦Yule (1926, 1927): dependence is the model||Yule (1926, 1927): dependența este modelul⟧', items(
+D.frame('⟦Yule (1926, 1927): nonsense correlations and the autoregressive model||Yule (1926, 1927): corelațiile fără sens și modelul autoregresiv⟧', items(
     ('⟦\\textbf{1926}: \\emph{nonsense correlations} between time series (\\refYuleNonsense)||\\textbf{1926}: \\emph{corelațiile fără sens} dintre seriile de timp (\\refYuleNonsense)⟧',
      ['⟦two unrelated series with trends can show a correlation close to 1||două serii fără nicio legătură, dar cu trend, pot avea o corelație apropiată de 1⟧',
       '⟦his example: the share of Church of England marriages and the mortality rate in England and Wales||exemplul lui: ponderea căsătoriilor oficiate de Biserica Angliei și rata mortalității în Anglia și Țara Galilor⟧',
@@ -569,7 +569,7 @@ D.frame('⟦Interpretation: Slutsky\'s experiment||Interpretarea: experimentul l
     ('⟦\\textbf{No cycle was put in, yet waves appear}||\\textbf{Nu am introdus niciun ciclu, totuși apar valuri}⟧',
      ['⟦the moving sum crosses zero upwards @{slutsky_waves} times in 240 periods: waves of irregular length||suma mobilă traversează zero în sus de @{slutsky_waves} ori în 240 de perioade: valuri de lungime neregulată⟧',
       '⟦neighbouring values share 9 of their 10 shocks, so they are strongly correlated||valorile vecine au în comun 9 din cele 10 șocuri, deci sînt puternic corelate⟧']),
-    ('⟦\\textbf{Two lessons}||\\textbf{Două lecții}⟧',
+    ('⟦\\textbf{Implications}||\\textbf{Implicații}⟧',
      ['⟦a cycle in a chart is not proof of a periodic cause||un ciclu într-un grafic nu dovedește existența unei cauze periodice⟧',
       '⟦smoothing (moving averages) can \\emph{create} apparent cycles: be careful with smoothed data||netezirea (mediile mobile) poate \\emph{crea} cicluri aparente: atenție la datele netezite⟧']),
     '⟦Yule (AR) and Slutsky (MA) gave the two building blocks of the ARMA models||Yule (AR) și Slutsky (MA) au oferit cele două componente de bază ale modelelor ARMA⟧'))

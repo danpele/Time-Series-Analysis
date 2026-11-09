@@ -686,7 +686,7 @@ function blkRt() {
   out('rt-out', [T.rt1(y0, S.sp500.n, S.dax.n, sgn(100 * S.sp500.R.Lasso.r2, 1), sgn(100 * S.sp500.R.MLP.r2, 1), f2(S.sp500.R.Lasso.dm.t), f2(S.sp500.R.MLP.dm.t))]);
 }
 
-// ================================================================= 17. volatility forecasts in two storms
+// ================================================================= 17. volatility forecasts in 2020 and 2025
 const RVSETS = { 'RF,GB': ['RF', 'GB'], 'Lasso,MLP': ['Lasso', 'MLP'], 'RF,Lasso': ['RF', 'Lasso'], 'GB,MLP': ['GB', 'MLP'] };
 function blkRv() {
   const k = $('rv-k').value, ms = RVSETS[$('rv-m').value], ya = +$('rv-a').value, yb = +$('rv-b').value, V = D.rv[k], nm = { sp500: 'S&P 500', dax: 'DAX' }[k];
@@ -706,7 +706,7 @@ function blkRv() {
   out('rv-out', ql.map(([y, qq]) => T.rv1(nm, y, Object.entries(qq).map(([m, v]) => `${m} ${f3(v)}`).join(T.sep))));
 }
 
-// ================================================================= EXTRA. the sign of tomorrow's return: accuracy, the baseline and AUC
+// ================================================================= EXTRA. forecasting the sign of the next-day return: accuracy, the baseline and AUC
 const SGM = ['Logit', 'RF', 'GB'];
 function signState(k, y0, thr) {
   const S = D.sign[k], yr = S.d.map(d => +d.slice(0, 4)), ix = range(0, S.d.length - 1, 1).filter(i => yr[i] >= y0), n = ix.length, y = ix.map(i => S.y[i]);

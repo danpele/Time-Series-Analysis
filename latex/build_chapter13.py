@@ -317,7 +317,7 @@ D.frame(T('Reading and tools', 'Bibliografie și instrumente'), items(
 # =============================================================================
 D.section('Bubbles in history', 'Bule în istorie')
 
-D.frame(T('Four centuries of manias', 'Patru secole de manii'), two(
+D.frame(T('Speculative bubbles, 1636--2021', 'Bule speculative, 1636--2021'), two(
     ph('tulip', T('Flora\'s wagon of fools, c.~1637', 'Carul nebunilor al Florei, c.~1637'), h='0.36\\textheight'),
     items((T('\\textbf{Tulip mania}, Netherlands, 1636--1637', '\\textbf{Mania lalelelor}, Olanda, 1636--1637'),
                [T('contracts on rare bulbs traded at extreme prices, then collapsed in February 1637', 'contracte pe bulbi rari tranzacționate la prețuri extreme, apoi prăbușite în februarie 1637'),

@@ -362,7 +362,7 @@ window.TSA_DATA.quizzes['var'] = {
         {
             "correct": 1,
             "en": {
-                "title": "Pitfalls of Granger causality",
+                "title": "Limitations of Granger causality",
                 "text": "Which of the following can produce a spurious finding that $X$ Granger-causes $Y$?",
                 "options": [
                     "Adding a further relevant variable to the VAR",
@@ -374,7 +374,7 @@ window.TSA_DATA.quizzes['var'] = {
                 "incorrectExplanation": "Adding relevant variables reduces, rather than creates, this omitted-variable problem; OLS equation by equation is the standard estimator of a VAR; $F$ and Wald tests are asymptotically equivalent ways of testing the same restrictions."
             },
             "ro": {
-                "title": "Capcanele cauzalității Granger",
+                "title": "Limitele cauzalității Granger",
                 "text": "Care dintre următoarele poate produce o concluzie falsă că $X$ cauzează Granger pe $Y$?",
                 "options": [
                     "Adăugarea în VAR a încă unei variabile relevante",

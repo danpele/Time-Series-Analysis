@@ -874,7 +874,7 @@ D.recap(('Long memory in volatility', 'memoria lungă a volatilității'), [
 # =============================================================================
 D.section('Spurious long memory', 'Memoria lungă aparentă')
 
-D.frame(T('Breaks and regimes look like long memory', 'Rupturile și regimurile seamănă cu memoria lungă'), items(
+D.frame(T('Structural breaks, regime switching and spurious long memory', 'Rupturi structurale, schimbări de regim și memorie lungă aparentă'), items(
     (T('A level shift adds a slow, step-like component: low frequencies gain power and the sample ACF decays slowly', 'O schimbare de nivel adaugă o componentă lentă, în trepte: crește puterea spectrală la frecvențele joase, iar ACF de selecție scade lent'),
      [T('the same mechanism that makes a broken series look like a unit root (Perron, Chapter 3)', 'același mecanism care face ca o serie cu ruptură să pară cu rădăcină unitară (Perron, Capitolul 3)')]),
     (T('\\refDI: a Markov-switching mean with rare switches is ``observationally equivalent\'\' to long memory', '\\refDI: o medie cu schimbări de regim de tip Markov, cu schimbări rare, este „echivalentă observațional” cu memoria lungă'),
@@ -882,7 +882,7 @@ D.frame(T('Breaks and regimes look like long memory', 'Rupturile și regimurile 
       T('regime-switching models are the topic of Chapter 10', 'modelele cu schimbare de regim sînt tema Capitolului 10')]),
     T('\\refGH: occasional breaks explain much of the long memory of S\\&P 500 absolute returns', '\\refGH: rupturile ocazionale explică o mare parte din memoria lungă a randamentelor absolute S\\&P 500')))
 
-chart(T('Short memory that looks long', 'Memorie scurtă care pare lungă'), 'tsa_ch8_spurious', 'TSA_ch8_spurious_memory', [
+chart(T('Apparent long memory in short-memory processes', 'Memorie lungă aparentă în procese cu memorie scurtă'), 'tsa_ch8_spurious', 'TSA_ch8_spurious_memory', [
     T('@{sp.reps} samples of $T = @{sp.T}$, true $d = 0$. Left: $N(0,1)$ noise with one mean shift at $T/2$; right: $N(0,1)$ noise plus a mean that switches between 0 and 1 with probability $p$ each period',
       '@{sp.reps} de eșantioane de $T = @{sp.T}$, $d = 0$ în realitate. Stînga: zgomot $N(0,1)$ cu o singură schimbare a mediei la $T/2$; dreapta: zgomot $N(0,1)$ plus o medie care trece între 0 și 1 cu probabilitatea $p$ în fiecare perioadă')],
     h='0.7\\textheight')

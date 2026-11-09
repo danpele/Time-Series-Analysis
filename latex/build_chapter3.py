@@ -568,7 +568,7 @@ D.frame(T('Testing $\\phi = 1$', 'Testarea ipotezei $\\phi = 1$'), items(
       T('the limit of $\\tau$ is a functional of Brownian motion, skewed to the left \\refHamilton, Ch.~17', 'limita lui $\\tau$ este o funcțională a mișcării browniene, asimetrică la stînga \\refHamilton, cap.~17'),
       T('critical values come from simulation: \\refFuller; today from response surfaces \\refMacKinnonb', 'valorile critice provin din simulare: \\refFuller; astăzi, din suprafețe de răspuns \\refMacKinnonb')])))
 
-D.frame(T('Iowa State: where the test was born', 'Iowa State: locul unde s-a născut testul'), cols(
+D.frame(T('Dickey and Fuller at Iowa State University', 'Dickey și Fuller la Iowa State University'), cols(
     ph('iowa', T('Snedecor Hall, Iowa State University: the department of statistics and its Statistical Laboratory (1933)', 'Snedecor Hall, Iowa State University: departamentul de statistică și laboratorul său de statistică (1933)'), h='0.44\\textheight'),
     items(T('\\textbf{Wayne A. Fuller}: statistician at Iowa State, author of \\textit{Introduction to Statistical Time Series} \\refFuller', '\\textbf{Wayne A. Fuller}: statistician la Iowa State, autorul lucrării \\textit{Introduction to Statistical Time Series} \\refFuller'),
           T('\\textbf{David A. Dickey}: his doctoral student at Iowa State (1976), later at North Carolina State University', '\\textbf{David A. Dickey}: doctorandul lui la Iowa State (1976), apoi la North Carolina State University'),

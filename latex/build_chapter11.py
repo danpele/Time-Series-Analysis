@@ -357,7 +357,7 @@ D.recap(('Transformers', 'Transformer-ul'), [
 # =============================================================================
 D.section('From numbers to tokens', 'De la numere la tokeni')
 
-D.frame(T('The problem: a language model reads words, a series has numbers', 'Problema: un model de limbaj citește cuvinte, o serie are numere'), items(
+D.frame(T('Representing numerical series as model inputs', 'Reprezentarea seriilor numerice ca date de intrare'), items(
     (T('Series differ in units and levels: load in GW, an index around 100, an exchange rate around 5', 'Seriile diferă prin unități și niveluri: consumul în GW, un indice în jur de 100, un curs de schimb în jur de 5'),
      [T('one model for all of them needs a common scale', 'un singur model pentru toate are nevoie de o scală comună')]),
     (T('Three solutions used in practice', 'Trei soluții folosite în practică'),

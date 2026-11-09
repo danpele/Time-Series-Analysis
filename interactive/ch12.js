@@ -433,7 +433,7 @@ function blkGp() {
   return S;
 }
 
-// ================================================================= 11. the rhythm of electricity demand
+// ================================================================= 11. spectrum of the Romanian hourly electricity load
 const loadPg = () => memo('loadpg', () => periodogram(LOAD));
 function loadShares(width, nh) {
   const P = loadPg(), I = P.I, nu = P.nu, T_ = LOAD.length, tot = sum(I);

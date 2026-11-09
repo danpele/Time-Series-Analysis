@@ -494,7 +494,7 @@ interp(('the Nile filter', 'filtrului pentru Nil'), [
      [T('the filter needs several low years to accept the new level (@{ni.a05} in 1905): the first Aswan dam was completed in 1902', 'filtrul are nevoie de mai mulți ani slabi pentru a accepta noul nivel (@{ni.a05} în 1905): primul baraj de la Aswan a fost finalizat în 1902')]),
     T('In 1970 the level is @{ni.alast} with standard error @{ni.sdlast}, well below the sample mean @{ni.ymean}', 'În 1970 nivelul este @{ni.alast}, cu eroarea standard @{ni.sdlast}, mult sub media eșantionului, @{ni.ymean}')])
 
-chart(T('The gain converges; SES reproduces the filter', 'Cîștigul converge; SES reproduce filtrul'), 'tsa_ch10_gain_ses', 'TSA_ch10_kalman_filter', [
+chart(T('Convergence of the Kalman gain and equivalence with SES', 'Convergența cîștigului Kalman și echivalența cu SES'), 'tsa_ch10_gain_ses', 'TSA_ch10_kalman_filter', [
     T('Left: $K_t$ of the Nile filter; right: the Kalman one-step forecasts $a_{t}$ and SES with $\\alpha = \\bar K$, started at the first observation',
       'Stînga: $K_t$ al filtrului pentru Nil; dreapta: prognozele Kalman la un pas $a_{t}$ și SES cu $\\alpha = \\bar K$, pornită de la prima observație')],
     h='0.66\\textheight')
@@ -668,7 +668,7 @@ interp(('the output gaps', 'deviațiilor PIB'), [
      [T('the four regression coefficients sum to @{gp.ham_bsum}: GDP is close to a random walk with drift', 'cei patru coeficienți ai regresiei au suma @{gp.ham_bsum}: PIB-ul este aproape de un mers aleator cu derivă')]),
     T('Latest gap (@{gp.lastd}): UC @{gp.last_uc}\\%, HP @{gp.last_hp}\\%, Hamilton @{gp.last_ham}\\%: the sign agrees, the size does not', 'Ultima deviație (@{gp.lastd}): UC @{gp.last_uc}\\%, HP @{gp.last_hp}\\%, Hamilton @{gp.last_ham}\\%: semnul coincide, mărimea nu')])
 
-chart(T('Real time against hindsight', 'Timp real și retrospectivă'), 'tsa_ch10_realtime', 'TSA_ch10_trend_cycle', [
+chart(T('The output gap in real time and with the full sample', 'Deviația PIB în timp real și pe întregul eșantion'), 'tsa_ch10_realtime', 'TSA_ch10_trend_cycle', [
     T('Left: the HP gap computed with all data (two-sided) and the last value of the HP gap computed with the data available at each date (one-sided, from 2004); right: the UC cycle, filtered and smoothed',
       'Stînga: deviația HP calculată cu toate datele (bilaterală) și ultima valoare a deviației HP calculate cu datele disponibile la fiecare dată (unilaterală, din 2004); dreapta: ciclul UC, filtrat și netezit')],
     h='0.66\\textheight')
@@ -845,7 +845,7 @@ D.frame(T('Regimes, GARCH persistence and long memory', 'Regimuri, persistența 
     (T('\\refDI: rare regime switches produce a slowly decaying ACF and $\\hat d > 0$ (Chapter 8, spurious long memory)', '\\refDI: schimbările rare de regim produc o ACF care scade lent și $\\hat d > 0$ (Capitolul 8, memoria lungă aparentă)'),
      [T('three models, one fact: volatility shocks persist; the next chart simulates the fitted regime model to see how far regimes alone go', 'trei modele, un singur fapt: șocurile volatilității persistă; graficul următor simulează modelul de regimuri estimat, pentru a vedea cît explică doar regimurile')])))
 
-chart(T('Regimes imitate memory', 'Regimurile imită memoria'), 'tsa_ch10_regimes_memory', 'TSA_ch10_volatility_regimes', [
+chart(T('Regime switching and spurious long memory', 'Schimbările de regim și memoria lungă aparentă'), 'tsa_ch10_regimes_memory', 'TSA_ch10_volatility_regimes', [
     T('ACF of weekly $|r_t|$ of the S\\&P 500; mean ACF of @{me.reps} series simulated from the fitted two-regime model (constant variance within each regime, no GARCH); the same returns in random order',
       'ACF a lui $|r_t|$ săptămînal pentru S\\&P 500; ACF medie a @{me.reps} de serii simulate din modelul cu două regimuri estimat (varianță constantă în fiecare regim, fără GARCH); aceleași randamente în ordine aleatoare')],
     h='0.56\\textheight')
